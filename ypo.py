@@ -215,7 +215,11 @@ if "auto" not in st.session_state:
 if "rand" not in st.session_state:
     st.session_state.rand = False
 
-
+idx_key = f"{nome_tema}_{numero_linea}_{ideia_numero}"
+if 'indices_ypo' not in st.session_state:
+    st.session_state.indices_ypo = {}
+    st.session_state.indices_ypo[idx_key] = itimos_atual
+    
 ### eof: settings
 ### bof: tools
 
