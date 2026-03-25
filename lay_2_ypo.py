@@ -89,7 +89,7 @@ def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo y
             fonte_itimos = alinhas[3]
             se_randomico = alinhas[4]
             total_itimos = int(alinhas[5])
-            itimos_atual = int(alinhas[6])
+             = int(alinhas[6])
             array_itimos = alinhas[7 : len(alinhas) - 1]
             
             tabs = array_itimos[0].count('$')
@@ -205,6 +205,12 @@ def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo y
                     itimos_atual = 1
                 else:
                     itimos_atual = total_itimos
+                    
+            # SALVAR NA MEMÓRIA (Session State)
+            idx_key = f"{nome_tema}_{numero_linea}_{alinhas[2]}"
+            if 'indices_ypo' not in st.session_state:
+                st.session_state.indices_ypo = {}
+            st.session_state.indices_ypo[idx_key] = itimos_atual
 
             if se_randomico == "T":
                 changed_line += "T"
@@ -228,28 +234,6 @@ def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo y
         novo_poema.append(
             '<a href="https://thispersondoesnotexist.com/" target="_blank">... quem será essa pessoa que não existe?</a>'
         )
-
-    if len(lista_errata) > 0:
-        st.warning(
-            "Algo deu errado com o tema "
-            + nome_tema.upper()
-            + ". Se puder, entre em contato com o '[autor](mailto:lopes.fernando@hotmail.com)'"
-        )
-    else:
-        # rebuild script with new positions
-        with open(
-            os.path.join("./data/" + nome_tema + ".ypo"), "w", encoding="utf-8"
-        ) as file:
-            for linha in lista_header:
-                file.write(linha)
-
-            for linha in lista_change:
-                file.write(linha)
-
-            for linha in lista_finais:
-                file.write(linha)
-
-        file.close()
 
     return novo_poema
 
