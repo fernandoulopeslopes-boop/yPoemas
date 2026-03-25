@@ -79,6 +79,12 @@ def have_internet(host="8.8.8.8", port=53, timeout=3):
         return False
 
 
+@st.cache_resource
+def get_translator_service():
+    # Isso garante que o serviço de tradução seja instanciado apenas uma vez
+    # e compartilhado entre todos os usuários, economizando memória.
+    return GoogleTranslator(source="pt", target="en")
+    
 if have_internet():
     try:
         from deep_translator import GoogleTranslator
