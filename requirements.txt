@@ -1,8 +1,7 @@
+edge-tts
 setuptools
 matplotlib
 streamlit
 extra-streamlit-components
-deep-translator
-gtts
 protobuf
 altair <5
