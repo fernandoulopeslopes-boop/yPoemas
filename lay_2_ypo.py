@@ -1,11 +1,9 @@
 import os
 import random
-import datetime
+import datetimde
 import streamlit as st
 
 from random import randrange
-
-# new deploy test
 
 def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo yPoema
     """
@@ -301,23 +299,32 @@ def acerto_final(texto):
 
     return texto
 
+@st.cache_data
+def carregar_base(caminho):
+    """Lê o arquivo uma única vez e guarda na memória."""
+    if not os.path.exists(caminho):
+        return ["Arquivo não encontrado"]
+    with open(caminho, encoding="utf8") as f:
+        return [line.strip() for line in f]
 
 def fala_cidade_fato():
-    """
-    :return: alguma cidade do arquivo fatos_cidades.txt
-    """
-    cidades = []
-    with open(os.path.join("./base/fatos_cidades.txt"), encoding="utf8") as file:
-        for line in file:
-            cidades.append(line)
-        file.close()
+    # O cache fica na leitura, o sorteio fica fora
+    cidades = carregar_base("./base/fatos_cidades.txt")
+    return random.choice(cidades)
 
-    x = randrange(0, len(cidades))
+@st.cache_data
+def abre(nome_do_tema):
+    """Carrega o script YPO. O cache aqui é bom, 
+    mas lembre-se: se você alterou o arquivo no disco, 
+    precisará limpar o cache para ver a mudança."""
+    full_name = os.path.join("./data/", nome_do_tema) + ".ypo"
+    with open(full_name, encoding="utf-8") as file:
+        return [line for line in file]    x = randrange(0, len(cidades))
     city = cidades[x]
     city = city.replace("\n", "")
     return city
 
-
+@st.cache_data
 def fala_cidade_oficio():
     """
     :return: alguma cidade do arquivo cidade_país.txt
@@ -412,7 +419,7 @@ def fala_abnp():
     nany = randrange(0, len(lista))
     return lista[nany]
 
-
+@st.cache_data
 def abre(nome_do_tema):
     """
     :param nome_do_tema
@@ -429,7 +436,7 @@ def abre(nome_do_tema):
     return lista
 
 
-@st.cache(allow_output_mutation=True)
+@st.cache_data
 def load_babel():
     lista = []
     with open(os.path.join("./base/babel.txt"), "r") as babel:
