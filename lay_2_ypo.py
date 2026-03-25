@@ -84,6 +84,12 @@ def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo y
             continue
 
         if len(alinhas) >= 7:
+            # Criamos uma chave única para aquela linha/ideia
+            idx_key = f"{nome_tema}_{numero_linea}_{ideia_numero}"
+            # Se o usuário já passou por aqui, pegamos o índice da memória. 
+            # Se for a primeira vez, usamos o que está no arquivo (alinhas[6]).
+            itimos_atual = st.session_state.indices_ypo.get(idx_key, int(alinhas[6]))
+
             numero_linea = alinhas[1]
             ideia_numero = alinhas[2]
             fonte_itimos = alinhas[3]
