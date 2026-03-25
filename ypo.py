@@ -219,7 +219,7 @@ if "rand" not in st.session_state:
 ### eof: settings
 ### bof: tools
 
-
+@st.cache_data(show_spinner="Traduzindo poema...")
 def translate(input_text):
     if st.session_state.lang == "pt":  # don't need translations here
         return input_text
