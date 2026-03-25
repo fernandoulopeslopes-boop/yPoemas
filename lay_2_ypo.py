@@ -89,7 +89,17 @@ def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo y
             fonte_itimos = alinhas[3]
             se_randomico = alinhas[4]
             total_itimos = int(alinhas[5])
-            itimos_atual = int(alinhas[6])
+            array_itimos = alinhas[7 : len(alinhas) - 1]
+            
+            # --- NOVA LÓGICA DE LEITURA (Troque a linha do itimos_atual por esta) ---
+            idx_key = f"{nome_tema}_{numero_linea}_{ideia_numero}"
+            
+            if 'indices_ypo' in st.session_state and idx_key in st.session_state.indices_ypo:
+                itimos_atual = st.session_state.indices_ypo[idx_key]
+            else:
+                itimos_atual = int(alinhas[6])
+            # -----------------------------------------------------------------------
+            
             array_itimos = alinhas[7 : len(alinhas) - 1]
             
             tabs = array_itimos[0].count('$')
@@ -124,6 +134,7 @@ def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo y
 
                 if itimos_atual >= 0 and itimos_atual <= len(array_itimos):
                     itimo_escolhido = array_itimos[itimos_atual]  # escolheu ítimo
+                    st.session_state.indices_ypo[idx_key] = itimos_atual
                 else:
                     st.warning(
                         "Algo deu errado em "
@@ -206,6 +217,13 @@ def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo y
                 else:
                     itimos_atual = total_itimos
 
+            # --- NOVA LÓGICA DE GRAVAÇÃO NA MEMÓRIA ---
+            idx_key = f"{nome_tema}_{numero_linea}_{alinhas[2]}"
+            if 'indices_ypo' not in st.session_state:
+                st.session_state.indices_ypo = {}
+            st.session_state.indices_ypo[idx_key] = itimos_atual
+            # ------------------------------------------
+            
             if se_randomico == "T":
                 changed_line += "T"
             else:
