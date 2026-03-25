@@ -92,7 +92,13 @@ def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo y
             itimos_atual = int(alinhas[6])
             array_itimos = alinhas[7 : len(alinhas) - 1]
             
-            tabs = array_itimos[0].count('$')
+            # LER DA MEMÓRIA OU DO ARQUIVO (se for a primeira vez)
+            idx_key = f"{nome_tema}_{numero_linea}_{ideia_numero}"
+            if 'indices_ypo' in st.session_state and idx_key in st.session_state.indices_ypo:
+                itimos_atual = st.session_state.indices_ypo[idx_key]
+            else:
+                itimos_atual = int(alinhas[6])
+                tabs = array_itimos[0].count('$')
             if tabs > 0:
                 array_itimos = array_itimos[1 : len(array_itimos)]
 
