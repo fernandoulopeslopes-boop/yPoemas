@@ -48,7 +48,6 @@ One more test...
 """
 
 import os
-##$ import io
 import re
 import time
 import random
@@ -163,7 +162,6 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-
 # Initialize SessionState
 
 if "lang" not in st.session_state:
@@ -214,7 +212,10 @@ if "auto" not in st.session_state:
     st.session_state.auto = False
 if "rand" not in st.session_state:
     st.session_state.rand = False
-
+    
+# Inicializa a memória de índices se ela ainda não existir
+if 'indices_ypo' not in st.session_state:
+    st.session_state.indices_ypo = {}
 
 ### eof: settings
 ### bof: tools
