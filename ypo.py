@@ -932,14 +932,17 @@ def page_ypoemas():
         st.session_state.take -= 1
         if st.session_state.take < 0:
             st.session_state.take = maxy_ypoemas
+            st.rerun()
 
     if rand:
         st.session_state.take = random.randrange(0, maxy_ypoemas)
+        st.rerun()
 
     if nest:
         st.session_state.take += 1
         if st.session_state.take > maxy_ypoemas:
             st.session_state.take = 0
+            st.rerun()
 
     if not st.session_state.draw:
         options = list(range(len(temas_list)))
