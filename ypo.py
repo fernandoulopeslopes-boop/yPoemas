@@ -718,7 +718,7 @@ def talk(text):
     
     # Mapeamento de vozes neurais de alta qualidade
     voices = {
-        "pt": "pt-BR-AntonioNeural", 
+        "pt": "pt-BR-FranciscaNeural",
         "en": "en-US-GuyNeural",
         "es": "es-ES-AlvaroNeural",
         "fr": "fr-FR-RemyNeural",
