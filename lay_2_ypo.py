@@ -428,77 +428,37 @@ def abre(nome_do_tema):
 
     return lista
 
-
-@st.cache(allow_output_mutation=True)
+@st.cache_data # Mudança de @st.cache para @st.cache_data
 def load_babel():
     lista = []
-    with open(os.path.join("./base/babel.txt"), "r") as babel:
+    # Adicionado encoding="utf-8" para evitar erros no Linux do Railway
+    with open(os.path.join("./base/babel.txt"), "r", encoding="utf-8") as babel:
         for line in babel:
             lista.append(line)
     return lista
 
-
-def novo_babel(swap_pala):
-    """
-    :param swap_pala: quantas palavras por linhas no poema: 0 = rand; n = n-1 palavras
-    :return: poema aleatório
-    """
-
-    lista_silabas = load_babel()
-    sinais_ini = [".", ",", ":", "!", "?", "...", " "]
-    sinais_end = [".", "!", "?", "..."]
-
-    min_versos = 5
-    max_versos = 15
-    qtd_versos = random.randrange(min_versos, max_versos)
-
-    sinal = "."
-    novo_poema = []
-    for nQtdLin in range(1, qtd_versos):
-        novo_babel = ""
-        if swap_pala == 0:
-            qtd_palas = random.randrange(3, 7)
-        else:
-            qtd_palas = swap_pala
-
-        for nova_frase in range(1, qtd_palas):
-            nova_pala = ""
-            qtd_silabas = random.randrange(2, 4)
-            for palavra in range(1, qtd_silabas):
-                njump = random.randrange(0, len(lista_silabas))
-                nova_silaba = str(lista_silabas[njump])
-                nova_pala += nova_silaba.strip()
-            nova = nova_pala.replace("aa", "a")
-            nova = nova.replace("ee", "e")
-            nova = nova.replace("ii", "i")
-            nova = nova.replace("uu", "u")
-            novo_babel += nova.strip() + " "
-            novo_babel.strip()
-
-        if nQtdLin == 1:
-            njump = random.randrange(0, len(sinais_ini))
-            sinal = sinais_ini[njump]
-            novo_poema.append("")
-            novo_poema.append(novo_babel.strip() + sinal)
-        else:
-            nany = random.randrange(0, 99)
-            if nany <= 50:
-                njump = random.randrange(0, len(sinais_ini))
-                sinal = sinais_ini[njump]
-                novo_babel = novo_babel.rstrip() + sinal
-            novo_poema.append(novo_babel.strip())
-            if nany <= 50:  # put some ","
-                if "," != sinal:
-                    novo_poema.append("")
-
-    last = novo_poema[-1]
-    njump = random.randrange(0, len(sinais_end))
-    sinal = sinais_end[njump]
-
-    if len(last) > 1 and not last[-1] in sinais_ini:
-        if "," == last or ":" == last:
-            novo_poema[-1] += sinal
-        else:
-            novo_poema[-1] += "."
+    if len(lista_errata) > 0:
+        st.warning(
+            "Algo deu errado com o tema "
+            + nome_tema.upper()
+            + ". Se puder, entre em contato com o '[autor](mailto:lopes.fernando@hotmail.com)'"
+        )
+    else:
+        # Tenta salvar a nova posição (sequencial) no arquivo
+        try:
+            with open(
+                os.path.join("./data/" + nome_tema + ".ypo"), "w", encoding="utf-8"
+            ) as file:
+                for linha in lista_header:
+                    file.write(linha)
+                for linha in lista_change:
+                    file.write(linha)
+                for linha in lista_finais:
+                    file.write(linha)
+            # file.close() não é necessário usando 'with'
+        except Exception as e:
+            # Se o Railway não permitir escrever, ele apenas ignora e não trava o app
+            pass 
 
     return novo_poema
+    
