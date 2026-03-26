@@ -84,7 +84,7 @@ if have_internet():
     try:
         from deep_translator import GoogleTranslator
     except ImportError:
-        st.warning("Google Translator não encontrado no ambiente.")
+        st.warning("Google Translator não encontrado no ambiente...")
     
     try:
         import edge_tts
