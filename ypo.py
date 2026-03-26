@@ -48,13 +48,14 @@ One more test...
 """
 
 import os
-##$ import io
 import re
 import time
 import random
 import base64
 import socket
 import streamlit as st
+import edge_tts
+import asyncio
 
 from extra_streamlit_components import TabBar as stx
 from datetime import datetime
@@ -292,7 +293,7 @@ def show_icons():  # https://api.whatsapp.com/
         )
 
 
-@st.cache(allow_output_mutation=True)
+@st.cache_data(show_spinner=False)
 def load_help_tips():
     help_list = []
     with open(os.path.join("./base/helpers.txt"), encoding="utf-8") as file:
@@ -363,6 +364,7 @@ def natural_keys(text):
 ### bof: update themes readings
 
 
+@st.cache_data(show_spinner=False)
 def update_visy():  # count one more visitor
     with open(os.path.join("./temp/visitors.txt"), "r", encoding="utf-8") as visitors:
         tots = int(visitors.read())
@@ -375,6 +377,7 @@ def update_visy():  # count one more visitor
     visitors.close()
 
 
+@st.cache_data(show_spinner=False)
 def load_readings():
     readers_list = []
     with open(os.path.join("./temp/read_list.txt"), encoding="utf-8") as reader:
@@ -452,7 +455,7 @@ def list_readings():
 ### bof: loaders
 
 
-# @st.cache(allow_output_mutation=True)
+@st.cache_data(show_spinner=False)
 def load_md_file(file):  # Open files for about's
     try:
         with open(os.path.join("./md_files/" + file), encoding="utf-8") as file_to_open:
@@ -467,7 +470,7 @@ def load_md_file(file):  # Open files for about's
     return file_text
 
 
-# @st.cache(allow_output_mutation=True)
+@st.cache_data(show_spinner=False)
 def load_eureka(part_of_word):
     lexico_list = []
     with open(os.path.join("./base/lexico_pt.txt"), encoding="utf-8") as lista:
@@ -481,7 +484,7 @@ def load_eureka(part_of_word):
     return lexico_list
 
 
-# @st.cache(suppress_st_warning=True, allow_output_mutation=True)
+@st.cache(suppress_st_warning=True, allow_output_mutation=True)
 def load_temas(book):  # List of themes inside a Book
     book_list = []
     with open(
@@ -494,7 +497,7 @@ def load_temas(book):  # List of themes inside a Book
     return book_list
 
 
-# @st.cache(allow_output_mutation=True)
+@st.cache_data(show_spinner=False)
 def load_info(nome_tema):
     with open(os.path.join("./base/" + "info.txt"), "r", encoding="utf-8") as file:
         result = "nonono"
@@ -527,7 +530,7 @@ def load_info(nome_tema):
         return result
 
 
-# @st.cache(allow_output_mutation=True)
+@st.cache_data(show_spinner=False)
 def load_index():  # Load indexes numbers for all themes
     index_list = []
     with open(os.path.join("./md_files/ABOUT_INDEX.md"), encoding="utf-8") as lista:
@@ -537,6 +540,7 @@ def load_index():  # Load indexes numbers for all themes
     return index_list
 
 
+@st.cache_data(show_spinner=False)
 def load_lypo():  # Load last yPoema & replace '\n' with '<br>' for translator returned text
     lypo_text = ""
     lypo_user = "LYPO_" + IPAddres
@@ -548,6 +552,7 @@ def load_lypo():  # Load last yPoema & replace '\n' with '<br>' for translator r
     return lypo_text
 
 
+@st.cache_data(show_spinner=False)
 def load_typo():  # Load translated yPoema & clean translator returned bugs in text
     typo_text = ""
     typo_user = "TYPO_" + IPAddres
@@ -614,6 +619,7 @@ def load_poema(nome_tema, seed_eureka):  # generate new yPoema
     novo_ypoema = ""
     lypo_user = "LYPO_" + IPAddres
 
+    @st.cache_data(show_spinner=False)
     with open(os.path.join("./temp/" + lypo_user), "w", encoding="utf-8") as save_lypo:
         save_lypo.write(
             nome_tema
@@ -632,7 +638,7 @@ def load_poema(nome_tema, seed_eureka):  # generate new yPoema
 
     return novo_ypoema
 
-
+@st.cache_data(show_spinner=False)
 def load_images():
     images_list = []
     with open(os.path.join("./base/images.txt"), encoding="utf-8") as lista:
@@ -703,24 +709,38 @@ def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
             unsafe_allow_html=True,
         )
 
+def talk(text):
+    # Limpeza para a voz não ler tags
+    text_clean = text.replace("<br>", " ").replace("< br>", "").replace("<br >", "").replace("<br/>", " ")
+    
+    # Mapeamento de vozes neurais de alta qualidade
+    voices = {
+        "pt": "pt-BR-AntonioNeural", 
+        "en": "en-US-GuyNeural",
+        "es": "es-ES-AlvaroNeural",
+        "fr": "fr-FR-RemyNeural",
+        "it": "it-IT-DiegoNeural"
+    }
+    selected_voice = voices.get(st.session_state.lang, "pt-BR-AntonioNeural")
 
-def talk(text):  # text to speech( in session_state.lang )
-    text = text.replace("<br>", "\n")
-    text = text.replace("< br>", "")
-    text = text.replace("<br >", "")
+    async def generate_audio():
+        communicate = edge_tts.Communicate(text_clean, selected_voice)
+        audio_bytes = b""
+        async for chunk in communicate.stream():
+            if chunk["type"] == "audio":
+                audio_bytes += chunk["data"]
+        return audio_bytes
 
-    tts = gTTS(text=text, lang=st.session_state.lang, slow=False)
-    nany_file = random.randint(1, 20000000)
-    file_name = os.path.join("./temp/" + "audio" + str(nany_file) + ".mp3")
-    tts.save(file_name)
-    audio_file = open(file_name, "rb")
-    audio_byts = audio_file.read()
-    st.audio(audio_byts, format="audio/ogg")
-    audio_file.close()
-    os.remove(file_name)
-
-
-def show_video(pagina):  # vídeo-tutorial da página
+    try:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        audio_output = loop.run_until_complete(generate_audio())
+        st.audio(audio_output, format="audio/mp3")
+    except Exception as e:
+        st.error(f"Erro na voz neural: {e}")
+        
+    
+    def show_video(pagina):  # vídeo-tutorial da página
     st.sidebar.info(load_md_file("INFO_VYDE.md"))
     video_name = os.path.join("./base/" + "video_" + pagina + ".webm")
     video_file = open(video_name, "rb")
