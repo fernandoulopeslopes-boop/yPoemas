@@ -743,7 +743,7 @@ def talk(text):
         st.error(f"Erro na voz neural: {e}")
         
     
-    def show_video(pagina):  # vídeo-tutorial da página
+def show_video(pagina):  # vídeo-tutorial da página
     st.sidebar.info(load_md_file("INFO_VYDE.md"))
     video_name = os.path.join("./base/" + "video_" + pagina + ".webm")
     video_file = open(video_name, "rb")
