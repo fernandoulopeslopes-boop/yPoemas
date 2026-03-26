@@ -1,5 +1,7 @@
 r"""
 
+º¤ø,¸¸,ø¤º°`°º¤ø,¸¸,ø¤º°`°ºº¤ø,¸¸,ø¤º°`°º¤ø,¸¸,ø¤º°`°ºº¤ø,¸¸,ø¤º°`°º¤ø,¸¸,ø¤º°
+
 yPoemas is an app that randomly collects words and phrases
 from specific databases and organizes them
 in different new poems or poetic texts.
@@ -30,6 +32,7 @@ youtub: https://youtu.be/uL6T3roTtAs
 google: https://console.cloud.google.com/welcome?project=ypoemas&cloudshell=false
 prosas: https://prosas.com.br/dashboards/my-proposals
 bairro: https://www.superbairro.com.br/joseense-cria-maquina-de-produzir-poemas-2/
+repositório: https://github.com/fernandoulopeslopes-boop/machina.git
 
 para novos temas:
 - incluir novo_tema em \ypo\base\ativos.txt
@@ -44,11 +47,10 @@ LYPO == Last YPOema created from curr_ypoema
 TYPO == Translated YPOema from LYPO
 POLY == Poliglot Idiom == Changed on Catalán
 
-One more test...
 """
 
+
 import os
-##$ import io
 import re
 import time
 import random
@@ -60,165 +62,7 @@ from extra_streamlit_components import TabBar as stx
 from datetime import datetime
 from lay_2_ypo import gera_poema
 
-### bof: settings
-
-st.set_page_config(
-    page_title="a máquina de fazer Poesia - yPoemas",
-    page_icon=":star:",
-    layout="centered",
-    initial_sidebar_state="auto",
-)
-
-
-def have_internet(host="8.8.8.8", port=53, timeout=3):
-    try:
-        socket.setdefaulttimeout(timeout)
-        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
-        return True
-    except socket.error as ex:
-        return False
-
-
-if have_internet():
-    try:
-        from deep_translator import GoogleTranslator
-    except ImportError as ex:
-        st.warning(translate("Google Translator não conectado"))
-    try:
-        from gtts import gTTS
-    except ImportError as ex:
-        st.warning(translate("Google TTS não conectado"))
-else:
-    st.warning("Internet não conectada. Traduções não disponíveis no momento.")
-
-
-# the User IPAddres for LYPO, TYPO
-hostname = socket.gethostname()
-IPAddres = socket.gethostbyname(hostname)
-
-
-# hide Streamlit Menu and Footer
-st.markdown(
-    """ <style>
-    /*#MainMenu {visibility: hidden;}*/
-    footer {visibility: hidden;}
-    </style> """,
-    unsafe_allow_html=True,
-)
-
-
-# change padding between components
-st.markdown(
-    f""" <style>
-    .reportview-container .main .block-container{{
-        padding-top: {0}rem;
-        padding-right: {0}rem;
-        padding-left: {0}rem;
-        padding-bottom: {0}rem;
-    }} </style> """,
-    unsafe_allow_html=True,
-)
-
-
-# change sidebar width
-st.markdown(
-    """ 
-    <style>
-    [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
-        width: 310px;
-    }
-    </style> """,
-    unsafe_allow_html=True,
-)
-
-
-# load_poema settings
-st.markdown(
-    """
-    <style>
-    mark {
-      background-color: powderblue;
-      color: black;
-    }
-    .container {
-        display: flex;
-        /* justify-content: center; */
-    }
-
-    .header {
-        text-align:center;
-    }
-    .logo-text {
-        font-weight: 600;
-        font-size: 18px;
-        font-family: 'IBM Plex Sans';
-        color: #000000;
-        padding-top: 0px;
-        padding-left: 15px;
-    }
-    .logo-img {
-        float:right;
-    }
-    </style> """,
-    unsafe_allow_html=True,
-)
-
-
-# Initialize SessionState
-
-if "lang" not in st.session_state:
-    st.session_state.lang = "pt"
-if "last_lang" not in st.session_state:
-    st.session_state.last_lang = "pt"
-
-if "book" not in st.session_state:  #  index for books_list
-    st.session_state.book = "livro vivo"
-if "take" not in st.session_state:  #  index for selected tema in books_list
-    st.session_state.take = 0
-if "mini" not in st.session_state:  #  index for selected tema in page_mini
-    st.session_state.mini = 0
-if "tema" not in st.session_state:  #  selected tema for all pages
-    st.session_state.tema = "Fatos"
-
-if "off_book" not in st.session_state:  #  index for off_books_list
-    st.session_state.off_book = 0
-if "off_take" not in st.session_state:  #  index for selected book in off_books_list
-    st.session_state.off_take = 0
-
-if "eureka" not in st.session_state:  #  index for random tema in page_eureka
-    st.session_state.eureka = 0
-
-if "poly_lang" not in st.session_state:
-    st.session_state.poly_lang = "ca"
-if "poly_name" not in st.session_state:
-    st.session_state.poly_name = "català"
-if "poly_take" not in st.session_state:
-    st.session_state.poly_take = 12
-if "poly_file" not in st.session_state:
-    st.session_state.poly_file = "poly_pt.txt"
-
-if "visy" not in st.session_state:
-    st.session_state.visy = True
-if "nany_visy" not in st.session_state:
-    st.session_state.nany_visy = 0
-
-if "draw" not in st.session_state:
-    st.session_state.draw = False
-if "talk" not in st.session_state:
-    st.session_state.talk = False
-if "vydo" not in st.session_state:
-    st.session_state.vydo = False
-if "arts" not in st.session_state:
-    st.session_state.arts = []
-if "auto" not in st.session_state:
-    st.session_state.auto = False
-if "rand" not in st.session_state:
-    st.session_state.rand = False
-
-
-### eof: settings
 ### bof: tools
-
 
 def translate(input_text):
     if st.session_state.lang == "pt":  # don't need translations here
@@ -292,9 +136,10 @@ def show_icons():  # https://api.whatsapp.com/
         )
 
 
-@st.cache(allow_output_mutation=True)
+@st.cache_data(show_spinner=False)
 def load_help_tips():
     help_list = []
+    @st.cache_data(show_spinner=False)
     with open(os.path.join("./base/helpers.txt"), encoding="utf-8") as file:
         for line in file:
             help_list.append(line)
@@ -362,21 +207,23 @@ def natural_keys(text):
 ### eof: tools
 ### bof: update themes readings
 
-
+@st.cache_data(show_spinner=False)
 def update_visy():  # count one more visitor
+    @st.cache_data(show_spinner=False)
     with open(os.path.join("./temp/visitors.txt"), "r", encoding="utf-8") as visitors:
         tots = int(visitors.read())
         tots = tots + 1
         st.session_state.nany_visy = tots
-
+    @st.cache_data(show_spinner=False)
     with open(os.path.join("./temp/visitors.txt"), "w", encoding="utf-8") as visitors:
         visitors.write(str(tots))
 
     visitors.close()
 
-
+@st.cache_data(show_spinner=False)
 def load_readings():
     readers_list = []
+    @st.cache_data(show_spinner=False)
     with open(os.path.join("./temp/read_list.txt"), encoding="utf-8") as reader:
         for line in reader:
             readers_list.append(line)
@@ -384,7 +231,7 @@ def load_readings():
 
     return readers_list
 
-
+@st.cache_data(show_spinner=False)
 def update_readings(tema):
     read_changes = []
     readings = load_readings()
@@ -398,6 +245,7 @@ def update_readings(tema):
         else:
             read_changes.append(line)
 
+    @st.cache_data(show_spinner=False)
     with open(
         os.path.join("./temp/read_list.txt"), "w", encoding="utf-8"
     ) as new_reader:
@@ -452,7 +300,7 @@ def list_readings():
 ### bof: loaders
 
 
-# @st.cache(allow_output_mutation=True)
+@st.cache_data(show_spinner=False)
 def load_md_file(file):  # Open files for about's
     try:
         with open(os.path.join("./md_files/" + file), encoding="utf-8") as file_to_open:
@@ -467,7 +315,7 @@ def load_md_file(file):  # Open files for about's
     return file_text
 
 
-# @st.cache(allow_output_mutation=True)
+@st.cache_data(show_spinner=False)
 def load_eureka(part_of_word):
     lexico_list = []
     with open(os.path.join("./base/lexico_pt.txt"), encoding="utf-8") as lista:
@@ -481,7 +329,7 @@ def load_eureka(part_of_word):
     return lexico_list
 
 
-# @st.cache(suppress_st_warning=True, allow_output_mutation=True)
+@st.cache_data(show_spinner=False)
 def load_temas(book):  # List of themes inside a Book
     book_list = []
     with open(
@@ -494,7 +342,7 @@ def load_temas(book):  # List of themes inside a Book
     return book_list
 
 
-# @st.cache(allow_output_mutation=True)
+ @st.cache_data(show_spinner=False)
 def load_info(nome_tema):
     with open(os.path.join("./base/" + "info.txt"), "r", encoding="utf-8") as file:
         result = "nonono"
@@ -527,7 +375,7 @@ def load_info(nome_tema):
         return result
 
 
-# @st.cache(allow_output_mutation=True)
+@st.cache_data(show_spinner=False)
 def load_index():  # Load indexes numbers for all themes
     index_list = []
     with open(os.path.join("./md_files/ABOUT_INDEX.md"), encoding="utf-8") as lista:
@@ -547,7 +395,7 @@ def load_lypo():  # Load last yPoema & replace '\n' with '<br>' for translator r
 
     return lypo_text
 
-
+@st.cache_data(show_spinner=False)
 def load_typo():  # Load translated yPoema & clean translator returned bugs in text
     typo_text = ""
     typo_user = "TYPO_" + IPAddres
@@ -584,7 +432,7 @@ def load_all_offs():
 
     return all_books_off
 
-
+@st.cache_data(show_spinner=False)
 def load_off_book(book):  # Load selected off_book
     book_full = []
     full_name = os.path.join("./off_machina/", book) + ".Pip"
@@ -608,12 +456,14 @@ def load_book_pages(book):  # Load Book pages for off_book
 
     return book_pages
 
-
+@st.cache_data(show_spinner=False)
 def load_poema(nome_tema, seed_eureka):  # generate new yPoema
     script = gera_poema(nome_tema, seed_eureka)
     novo_ypoema = ""
     lypo_user = "LYPO_" + IPAddres
 
+    st.session_state.indices[nome_tema][id_linha] = novo_indice
+    
     with open(os.path.join("./temp/" + lypo_user), "w", encoding="utf-8") as save_lypo:
         save_lypo.write(
             nome_tema
@@ -632,7 +482,7 @@ def load_poema(nome_tema, seed_eureka):  # generate new yPoema
 
     return novo_ypoema
 
-
+@st.cache_data(show_spinner=False)
 def load_images():
     images_list = []
     with open(os.path.join("./base/images.txt"), encoding="utf-8") as lista:
@@ -703,22 +553,45 @@ def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
             unsafe_allow_html=True,
         )
 
+# --- NOVO MOTOR DE VOZ (EDGE TTS) ---
+import asyncio
+import edge_tts
+import os
 
-def talk(text):  # text to speech( in session_state.lang )
-    text = text.replace("<br>", "\n")
-    text = text.replace("< br>", "")
-    text = text.replace("<br >", "")
+def talk(texto)
 
-    tts = gTTS(text=text, lang=st.session_state.lang, slow=False)
-    nany_file = random.randint(1, 20000000)
-    file_name = os.path.join("./temp/" + "audio" + str(nany_file) + ".mp3")
-    tts.save(file_name)
-    audio_file = open(file_name, "rb")
-    audio_byts = audio_file.read()
-    st.audio(audio_byts, format="audio/ogg")
-    audio_file.close()
-    os.remove(file_name)
+    with st.spinner("Preparando voz neural..."):
+        asyncio.run(gerar_audio_neural(texto))
+        st.audio("poema_audio.mp3")
 
+    return caminho_audio
+
+async def gerar_audio_neural(texto):
+    """Gera áudio usando as vozes neurais da Microsoft."""
+    
+    texto = texto.replace("<br>", "\n")
+    texto = texto.replace("< br>", "")
+    texto = texto.replace("<br >", "")
+
+    idioma = st.session_state.lang
+    do case
+        case idioma =="PT"
+            voz_selecionada = "pt-BR-AntonioNeural"
+        case idioma =="EN"
+            voz_selecionada = "en-US-GuyNeural"
+        case idioma =="ES"
+            voz_selecionada = "es-ES-AlvaroNeural"
+        case idioma =="IT"
+            voz_selecionada = "it-IT-DiegoNeural"
+        case idioma =="FR"
+            voz_selecionada = "fr-FR-HenriNeural"
+    endcase
+
+    caminho_audio = "poema_audio.mp3"
+    # Cria a comunicação com o servidor do Edge
+    communicate = edge_tts.Communicate(texto, voz_selecionada)
+    await communicate.save(caminho_audio)
+    
 
 def show_video(pagina):  # vídeo-tutorial da página
     st.sidebar.info(load_md_file("INFO_VYDE.md"))
@@ -763,7 +636,6 @@ if st.session_state.visy:  # check visitor once; rand initial temas
 
 
 st.session_state.last_lang = st.session_state.lang
-
 
 def page_mini():
     temas_list = load_temas("todos os temas")
@@ -820,6 +692,7 @@ def page_mini():
         if st.session_state.lang != "pt":  # translate if idioma <> pt
             curr_ypoema = translate(curr_ypoema)
             typo_user = "TYPO_" + IPAddres
+            @st.cache_data(show_spinner=False)
             with open(
                 os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
             ) as save_typo:
@@ -860,6 +733,7 @@ def page_mini():
                 if st.session_state.lang != "pt":  # translate if idioma <> pt
                     curr_ypoema = translate(curr_ypoema)
                     typo_user = "TYPO_" + IPAddres
+                    @st.cache_data(show_spinner=False)
                     with open(
                         os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
                     ) as save_typo:
@@ -968,6 +842,7 @@ def page_ypoemas():
             if st.session_state.lang != "pt":  # translate if idioma <> pt
                 curr_ypoema = translate(curr_ypoema)
                 typo_user = "TYPO_" + IPAddres
+                @st.cache_data(show_spinner=False)
                 with open(
                     os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
                 ) as save_typo:
@@ -1095,6 +970,7 @@ def page_eureka():
             if st.session_state.lang != "pt":  # translate if idioma <> pt
                 curr_ypoema = translate(curr_ypoema)
                 typo_user = "TYPO_" + IPAddres
+                @st.cache_data(show_spinner=False)
                 with open(
                     os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
                 ) as save_typo:
@@ -1342,6 +1218,7 @@ def page_polys():  # available languages
         poly_list = []
         poly_pais = []
         poly_ling = []
+        @st.cache_data(show_spinner=False)
         with open(
             os.path.join("./base/" + st.session_state.poly_file), encoding="utf-8"
         ) as poly:
