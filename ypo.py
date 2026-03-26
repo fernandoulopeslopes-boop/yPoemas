@@ -617,12 +617,12 @@ def load_book_pages(book):  # Load Book pages for off_book
     return book_pages
 
 
+@st.cache_data(show_spinner=False)
 def load_poema(nome_tema, seed_eureka):  # generate new yPoema
     script = gera_poema(nome_tema, seed_eureka)
     novo_ypoema = ""
     lypo_user = "LYPO_" + IPAddres
 
-    @st.cache_data(show_spinner=False)
     with open(os.path.join("./temp/" + lypo_user), "w", encoding="utf-8") as save_lypo:
         save_lypo.write(
             nome_tema
