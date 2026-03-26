@@ -429,7 +429,7 @@ def abre(nome_do_tema):
     return lista
 
 
-@st.cache(allow_output_mutation=True)
+@st.cash_data(Allowmutation=true)
 def load_babel():
     lista = []
     with open(os.path.join("./base/babel.txt"), "r") as babel:
