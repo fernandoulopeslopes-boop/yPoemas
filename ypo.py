@@ -83,16 +83,19 @@ def have_internet(host="8.8.8.8", port=53, timeout=3):
 if have_internet():
     try:
         from deep_translator import GoogleTranslator
-    except ImportError as ex:
-        st.warning(translate("Google Translator não conectado"))
+    except ImportError:
+        st.warning("Google Translator não encontrado no ambiente.")
+    
     try:
-        from gtts import gTTS
-    except ImportError as ex:
-        st.warning(translate("Google TTS não conectado"))
+        import edge_tts
+        import asyncio
+        # O gTTS não é mais estritamente necessário se usarmos o Edge, 
+        # mas se quiser mantê-lo como "plano B", pode deixar aqui.
+    except ImportError:
+        st.warning("Motor de voz neural (edge-tts) não conectado.")
 else:
-    st.warning("Internet não conectada. Traduções não disponíveis no momento.")
-
-
+    st.warning("Internet não conectada. Traduções e Vozes Neurais indisponíveis.")
+    
 # the User IPAddres for LYPO, TYPO
 hostname = socket.gethostname()
 IPAddres = socket.gethostbyname(hostname)
