@@ -1,5 +1,6 @@
 edge-tts
 setuptools
+deep_translator
 matplotlib
 streamlit
 extra-streamlit-components
