@@ -815,7 +815,7 @@ def page_mini():
             curr_ypoema = load_lypo()  # changes in lang, keep LYPO
         else:
             curr_ypoema = load_poema(st.session_state.tema, "")
-            curr_ypoema = load_lypo()
+            *curr_ypoema = load_lypo()
 
         if st.session_state.lang != "pt":  # translate if idioma <> pt
             curr_ypoema = translate(curr_ypoema)
@@ -855,7 +855,7 @@ def page_mini():
                     curr_ypoema = load_lypo()  # changes in lang, keep LYPO
                 else:
                     curr_ypoema = load_poema(st.session_state.tema, "")
-                    curr_ypoema = load_lypo()
+                    * curr_ypoema = load_lypo()
 
                 if st.session_state.lang != "pt":  # translate if idioma <> pt
                     curr_ypoema = translate(curr_ypoema)
@@ -963,7 +963,7 @@ def page_ypoemas():
                 curr_ypoema = load_lypo()  # changes in lang, keep LYPO
             else:
                 curr_ypoema = load_poema(st.session_state.tema, "")
-                curr_ypoema = load_lypo()
+                * curr_ypoema = load_lypo()
 
             if st.session_state.lang != "pt":  # translate if idioma <> pt
                 curr_ypoema = translate(curr_ypoema)
