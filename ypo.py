@@ -618,8 +618,8 @@ def load_poema(nome_tema, seed_eureka):  # generate new yPoema
     novo_ypoema = ""
     lypo_user = "LYPO_" + IPAddres
     frufru = f"**{nome_tema}**\n\n{nome_tema}"
-    novo_ypoema += frufru
-    save_lypo.write(frufru)
+    novo_ypoema += frufru + '\n'
+    save_lypo.write(frufru + '\n')
 
     with open(os.path.join("./temp/" + lypo_user), "w", encoding="utf-8") as save_lypo:
         for line in script:
