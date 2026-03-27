@@ -616,7 +616,6 @@ def load_poema(nome_tema, seed_eureka):  # generate new yPoema
     novo_ypoema = ""
     lypo_user = "LYPO_" + IPAddres
 
-    
 #    frufru = "* " + nome_tema + " *" + "<br>"
 #    novo_ypoema += f"<h3 style='text-align: center;'>* {frufru} *</h3>\n\n" + unsafe_allow_html=True
 
