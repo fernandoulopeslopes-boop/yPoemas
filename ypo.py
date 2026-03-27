@@ -307,6 +307,7 @@ def load_help_tips():
 
 # --- SEPARAÇÃO ---
 
+
 def load_help(idiom):
     returns = []
     if idiom in "_pt_es_it_fr_en":
