@@ -38,7 +38,7 @@ def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo y
     look_for_seed = False
 
     # Rastro de migalhas para o Eureka
-    st.toast(f"Escritor acionado! Nome usado {nome_tema} | Nome Esperado: {st.session_state.tema}")
+    st.toast(f"Nome usado {nome_tema} | Nome Esperado: {st.session_state.tema}")
     
     # ... resto do código ...
     if seed_eureka != "":
