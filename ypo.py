@@ -269,7 +269,6 @@ def load_help_tips():
 
 # --- SEPARAÇÃO ---
 
-
 def load_help(idiom):
     returns = []
     if idiom in "_pt_es_it_fr_en":
@@ -583,9 +582,6 @@ def load_poema(nome_tema, seed_eureka):  # generate new yPoema
     novo_ypoema = ""
     lypo_user = "LYPO_" + IPAddres
 
-#    frufru = "* " + nome_tema + " *" + "<br>"
-#    novo_ypoema += f"<h3 style='text-align: center;'>* {frufru} *</h3>\n\n" + unsafe_allow_html=True
-
     frufru = f"<div style='text-align: center; font-size: 32px; margin-bottom: 20px;'><strong>* {nome_tema} *</strong></div>"
     st.markdown(frufru, unsafe_allow_html=True)    
 
@@ -653,10 +649,8 @@ def load_arts(nome_tema):
 
     return logo
 
-
 ### eof: loaders
 ### bof: functions
-
         
 def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
     if LOGO_IMAGE == None:
