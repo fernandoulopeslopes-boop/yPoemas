@@ -642,20 +642,21 @@ return novo_ypoema
 @st.cache_data(show_spinner=False)
 def load_images():
     images_list = []
-    # Usar o path.join com vírgula é mais seguro no Linux do Railway
     caminho = os.path.join("base", "images.txt") 
     
     with open(caminho, encoding="utf-8") as lista:
         for line in lista:
-            # .strip() remove espaços e o \n (pular linha) do final
             images_list.append(line.strip()) 
             
-    # O RETURN DEVE FICAR AQUI (Alinhado com o 'with')
-    return
-    
-    images_listdef load_arts(nome_tema):  # Select image for arts
+    return images_list # <-- Agora retornando a lista corretamente!
+
+# --- LINHA DE SEPARAÇÃO ---
+
+def load_arts(nome_tema):
+    # Select image for arts
     path = "./images/machina/"
     path_list = load_images()
+    
     for line in path_list:
         if line.startswith(nome_tema):
             this_line = line.strip("\n")
@@ -663,7 +664,9 @@ def load_images():
             if nome_tema == part_line[0]:
                 path = "./images/" + part_line[2] + "/"
                 break
-
+    # Importante: você provavelmente vai querer dar um 'return path' aqui no final!
+    return path
+    
     arts_list = []
     for file in os.listdir(path):
         if file.endswith(".jpg"):
