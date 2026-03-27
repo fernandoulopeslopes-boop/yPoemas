@@ -620,7 +620,7 @@ def load_poema(nome_tema, seed_eureka):  # generate new yPoema
     # Usamos o st.markdown com HTML para forçar o centro
     frufru = "* {nome_tema} * + \n"
     
-    novo_ypoema += st.markdown(frufru, unsafe_allow_html=True)
+    novo_ypoema += frufru
     
     with open(os.path.join("./temp/" + lypo_user), "w", encoding="utf-8") as save_lypo:
         save_lypo.write(frufru + '\n')
