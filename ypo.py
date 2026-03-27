@@ -246,16 +246,18 @@ def translate(input_text):
 
 
 def pick_lang():  # define idioma
-    btn_pt, btn_es, btn_it, btn_fr, btn_en, btn_xy = st.sidebar.columns(
-        [1.1, 1.13, 1.04, 1.04, 1.17, 1.25]
-    )
-    btn_pt = btn_pt.button("pt", key=1, help="Português")
-    btn_es = btn_es.button("es", key=2, help="Español")
-    btn_it = btn_it.button("it", key=3, help="Italiano")
-    btn_fr = btn_fr.button("fr", key=4, help="Français")
-    btn_en = btn_en.button("en", key=5, help="English")
-    btn_xy = btn_xy.button("⚒️", key=6, help=st.session_state.poly_name)
+    # Criamos 6 colunas de tamanho idêntico para alinhar perfeitamente
+    cols = st.sidebar.columns(6)
+    
+    # Atribuímos cada botão à sua coluna com largura total (container width)
+    btn_pt = cols[0].button("pt", key=1, help="Português", use_container_width=True)
+    btn_es = cols[1].button("es", key=2, help="Español", use_container_width=True)
+    btn_it = cols[2].button("it", key=3, help="Italiano", use_container_width=True)
+    btn_fr = cols[3].button("fr", key=4, help="Français", use_container_width=True)
+    btn_en = cols[4].button("en", key=5, help="English", use_container_width=True)
+    btn_xy = cols[5].button("⚒️", key=6, help=st.session_state.poly_name, use_container_width=True)
 
+    # Lógica de seleção
     if btn_pt:
         st.session_state.lang = "pt"
         st.session_state.poly_file = "poly_pt.txt"
@@ -275,11 +277,9 @@ def pick_lang():  # define idioma
         st.session_state.last_lang = st.session_state.lang
         st.session_state.lang = st.session_state.poly_lang
 
+    # Feedback de mudança de idioma
     if st.session_state.lang != st.session_state.last_lang:
-        st.success(translate("idioma atual") + " ➪ " + st.session_state.lang)
-
-
-def show_icons():  # https://api.whatsapp.com/
+        st.success(translate("idioma atual") + " ➪ " + st.session_state.lang)def show_icons():  # https://api.whatsapp.com/
     with st.sidebar:
         st.sidebar.markdown(
             f"""
@@ -291,9 +291,8 @@ def show_icons():  # https://api.whatsapp.com/
             </nav>
             """,
             unsafe_allow_html=True,
-        )
 
-
+            
 @st.cache_data(show_spinner=False)
 def load_help_tips():
     help_list = []
