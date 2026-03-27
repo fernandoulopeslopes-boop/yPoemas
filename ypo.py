@@ -1476,7 +1476,15 @@ def main():
     st.sidebar.state = True
 
 def pick_lang():
-    # 1. Dados dos idiomas
+    # 1. Garante que as variáveis de estado existam
+    if 'lang' not in st.session_state:
+        st.session_state.lang = 'pt'
+    if 'last_lang' not in st.session_state:
+        st.session_state.last_lang = 'pt'
+    if 'poly_name' not in st.session_state:
+        st.session_state.poly_name = "Poliglota"
+
+    # 2. Mapeamento Simples
     langs_info = {
         "Português": {"lang": "pt", "file": "poly_pt.txt"},
         "Español": {"lang": "es", "file": "poly_es.txt"},
@@ -1488,26 +1496,27 @@ def pick_lang():
     
     lista_nomes = list(langs_info.keys())
     
-    # 2. Índice atual
+    # 3. Encontra o índice do idioma atual para o Selectbox não resetar
     try:
-        indice_atual = [v["lang"] for v in langs_info.values()].index(st.session_state.get('lang', 'pt'))
+        indice_atual = [v["lang"] for v in langs_info.values()].index(st.session_state.lang)
     except:
         indice_atual = 0
 
-    # 3. O Selectbox (Apenas UMA linha, sem colunas/botões!)
+    # 4. O componente visual (Selectbox substitui os botões antigos)
     escolha_nome = st.sidebar.selectbox("Idioma / Language", options=lista_nomes, index=indice_atual)
     
-    # 4. Lógica de troca
+    # 5. Lógica de troca (Executa apenas se mudar a seleção)
     info = langs_info[escolha_nome]
-    if info["lang"] != st.session_state.get('lang', ''):
-        st.session_state.last_lang = st.session_state.get('lang', 'pt')
+    if info["lang"] != st.session_state.lang:
+        st.session_state.last_lang = st.session_state.lang
         st.session_state.lang = info["lang"]
         st.session_state.poly_file = info["file"]
-        st.rerun() # O rerun interrompe e recomeça, evitando o loop!
+        st.rerun()
 
 # --- FIM DA FUNÇÃO ---
 
-# Fora da função, na última linha do arquivo (sem espaços na esquerda):
-pick_lang()
-if __name__ == "__main__":
-    main()
+# CHAMADA DA FUNÇÃO (Fora do def, sem espaços na esquerda)
+pick_lang()if __name__ == "__main__":
+
+main()
+
