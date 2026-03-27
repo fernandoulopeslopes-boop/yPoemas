@@ -1519,7 +1519,7 @@ def main():
         st.image(magy)
 
     show_icons()
-    $ st.sidebar.state = True
+    st.sidebar.state = True
 
 
 if __name__ == "__main__":
