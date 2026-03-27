@@ -619,7 +619,9 @@ def load_poema(nome_tema, seed_eureka):  # generate new yPoema
     lypo_user = "LYPO_" + IPAddres
 
     frufru = "* " + nome_tema + " *" + "<br>"
-    novo_ypoema += frufru
+    
+    novo_ypoema += f"<h3 style='text-align: center;'>* {frufru} *</h3>\n\n"
+#    novo_ypoema += frufru
     
     with open(os.path.join("./temp/" + lypo_user), "w", encoding="utf-8") as save_lypo:
         save_lypo.write(frufru)
