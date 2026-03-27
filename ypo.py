@@ -589,7 +589,6 @@ def load_all_offs():
         "quase_que_eu_Poesia",
         "segredo_público",
     ]
-
     return all_books_off
 
 
@@ -603,7 +602,6 @@ def load_off_book(book):  # Load selected off_book
 
     return book_full
 
-
 def load_book_pages(book):  # Load Book pages for off_book
     book_pages = []
     for line in book:
@@ -615,8 +613,6 @@ def load_book_pages(book):  # Load Book pages for off_book
             book_pages.append(pipe_line[1])
 
     return book_pages
-
-#    with open(f"poemas/{nome_tema}.ypo", "r") as f:
 
 def load_poema(nome_tema, seed_eureka):  # generate new yPoema
     script = gera_poema(nome_tema, seed_eureka)
@@ -641,7 +637,7 @@ def load_poema(nome_tema, seed_eureka):  # generate new yPoema
 
     save_lypo.close()  # save last generated in LYPO
 
-    return novo_ypoema
+return novo_ypoema
 
 @st.cache_data(show_spinner=False)
 def load_images():
@@ -944,7 +940,7 @@ def page_ypoemas():
         st.session_state.take += 1
         if st.session_state.take > maxy_ypoemas:
             st.session_state.take = 0
-            st.rerun()
+            # st.rerun()
 
     if not st.session_state.draw:
         options = list(range(len(temas_list)))
@@ -987,21 +983,18 @@ def page_ypoemas():
 
         ypoemas_expander = st.expander(what_book, expanded=True)
         with ypoemas_expander:
-            if st.session_state.lang != st.session_state.last_lang:
+            if st.session_state.lang != st.session_state.last_lang
                 curr_ypoema = load_lypo()  # changes in lang, keep LYPO
             else:
-                curr_ypoema = load_poema(str(st.session_state.tema), ""
-#                curr_ypoema = load_poema(st.session_state.tema, "")
-#                curr_ypoema = load_lypo()
+                curr_ypoema = load_poema(str(st.session_state.tema), "")
 
             if st.session_state.lang != "pt":  # translate if idioma <> pt
                 curr_ypoema = translate(curr_ypoema)
                 typo_user = "TYPO_" + IPAddres
-                with open(
-                    os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
-                ) as save_typo:
+                with open(os.path.join("./temp/" + typo_user), "w", encoding="utf-8") as save_typo
                     save_typo.write(curr_ypoema)
                     save_typo.close()
+                    
                 curr_ypoema = load_typo()  # to normalize line breaks in text
 
             update_readings(st.session_state.tema)
