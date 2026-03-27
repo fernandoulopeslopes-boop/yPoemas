@@ -20,16 +20,16 @@ Não vivo no meu tempo.
 AlfaBetaAção == C:\WINDOWS\new.ini
 config.toml  == C:\Users\dkvece\.streamlit
 
-share : https://share.streamlit.io/
-deploy: https://share.streamlit.io/nandoulopes/ypoemas/main/ypo.py
-runnin: https://nandoulopes-ypoemas-ypo-gf4z3l.streamlitapp.com/
-config: chrome://settings/content/siteDetails?site=https%3A%2F%2Fauth.streamlit.io
-github: https://github.com/NandouLopes/yPoemas
-instag: https://www.instagram.com/maquina_de_fazer_ypoemas/
-youtub: https://youtu.be/uL6T3roTtAs
-google: https://console.cloud.google.com/welcome?project=ypoemas&cloudshell=false
-prosas: https://prosas.com.br/dashboards/my-proposals
-bairro: https://www.superbairro.com.br/joseense-cria-maquina-de-produzir-poemas-2/
+https:\\ypoemas-production.up.railway.app\share : https:\\share.streamlit.io\
+deploy: https:\\share.streamlit.io\nandoulopes\ypoemas\main\ypo.py
+runnin: https:\\nandoulopes-ypoemas-ypo-gf4z3l.streamlitapp.com\
+config: chrome:\\settings\content\siteDetails?site=https%3A%2F%2Fauth.streamlit.io
+github: https:\\github.com\NandouLopes\yPoemas
+instag: https:\\www.instagram.com\maquina_de_fazer_ypoemas\
+youtub: https:\\youtu.be\uL6T3roTtAs
+google: https:\\console.cloud.google.com\welcome?project=ypoemas&cloudshell=false
+prosas: https:\\prosas.com.br\dashboards\my-proposals
+bairro: https:\\www.superbairro.com.br\joseense-cria-maquina-de-produzir-poemas-2\
 
 para novos temas:
 - incluir novo_tema em \ypo\base\ativos.txt
