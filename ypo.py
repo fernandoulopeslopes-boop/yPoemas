@@ -591,7 +591,6 @@ def load_all_offs():
     ]
     return all_books_off
 
-
 def load_off_book(book):  # Load selected off_book
     book_full = []
     full_name = os.path.join("./off_machina/", book) + ".Pip"
@@ -619,8 +618,6 @@ def load_poema(nome_tema, seed_eureka):  # generate new yPoema
     novo_ypoema = ""
     lypo_user = "LYPO_" + IPAddres
 
-    st.write(f"Debug Interno: {nome_tema}")
-    
     with open(os.path.join("./temp/" + lypo_user), "w", encoding="utf-8") as save_lypo:
         save_lypo.write(
             nome_tema
