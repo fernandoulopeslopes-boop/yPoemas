@@ -22,7 +22,9 @@ def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo y
     ToDo:
        obs: the search for a seed acctualy only works in portuguese. Try to translate your search_seed into this language.
     """
-
+    
+    msgAlert(' New --> ' + nome_tema + ' --> ' + st.session_state.tema )
+    
     lista_header = []
     lista_linhas = []
     lista_finais = []
