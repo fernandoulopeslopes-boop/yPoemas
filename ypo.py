@@ -1516,7 +1516,8 @@ def pick_lang():
 # --- FIM DA FUNÇÃO ---
 
 # CHAMADA DA FUNÇÃO (Fora do def, sem espaços na esquerda)
-pick_lang()if __name__ == "__main__":
+pick_lang()
 
-main()
+if __name__ == "__main__":
+    main()
 
