@@ -645,8 +645,7 @@ def load_images():
     with open(os.path.join("./base/images.txt"), encoding="utf-8") as lista:
         for line in lista:
             images_list.append(line)
-            
-    return images_list
+        return images_list
 
 
 def load_arts(nome_tema):  # Select image for arts
