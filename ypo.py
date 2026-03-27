@@ -275,7 +275,7 @@ def pick_lang():  # define idioma
     elif btn_xy:
         st.session_state.last_lang = st.session_state.lang
         st.session_state.lang = st.session_state.poly_lang
-    
+        
     pick_lang()
     
     # Feedback de mudança de idioma
