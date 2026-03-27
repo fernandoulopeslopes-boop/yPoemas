@@ -296,6 +296,7 @@ def show_icons():  # links de contato
             unsafe_allow_html=True
         ) # <-- O PARÊNTESE QUE FALTAVA ESTÁ AQUI!
 
+
 def load_help_tips():
     help_list = []
     caminho_help = os.path.join("base", "helpers.txt")
