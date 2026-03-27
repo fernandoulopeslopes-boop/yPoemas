@@ -646,7 +646,7 @@ def load_images():
         for line in lista:
             images_list.append(line)
 
-    return images_list
+return images_list
 
 
 def load_arts(nome_tema):  # Select image for arts
