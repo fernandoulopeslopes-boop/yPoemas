@@ -57,8 +57,6 @@ import streamlit as st
 import edge_tts
 import asyncio
 
-st.write("--- TESTE DE VERSÃO: 16:15 ---")
-         
 from extra_streamlit_components import TabBar as stx
 from datetime import datetime
 from lay_2_ypo import gera_poema
