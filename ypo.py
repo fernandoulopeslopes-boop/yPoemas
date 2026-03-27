@@ -243,38 +243,83 @@ def translate(input_text):
         return translate("Arquivo muito grande para ser traduzido.")
 
 
-def pick_lang():  # define idioma
-    btn_pt, btn_es, btn_it, btn_fr, btn_en, btn_xy = st.sidebar.columns(
-        [1.1, 1.13, 1.04, 1.04, 1.17, 1.25]
+def pick_lang():  # define idioma via selectbox (focado nos 5 idiomas)
+    # 1. Dicionário com os nomes que o usuário vê e os dados que o sistema usa
+    langs_info = {
+        "Português": {"lang": "pt", "file": "poly_pt.txt"},
+        "Español": {"lang": "es", "file": "poly_es.txt"},
+        "Italiano": {"lang": "it", "file": "poly_it.txt"},
+        "Français": {"lang": "fr", "file": "poly_fr.txt"},
+        "English": {"lang": "en", "file": "poly_en.txt"},
+        st.session_state.poly_name: {"lang": st.session_state.poly_lang, "file": st.session_state.poly_file}
+    }
+
+    lista_nomes = list(langs_info.keys())
+
+    # 2. Encontrar o índice atual para o menu não "pular" ao recarregar
+    try:
+        indice_atual = [v["lang"] for v in langs_info.values()].index(st.session_state.lang)
+    except ValueError:
+        indice_atual = 0
+
+    # 3. O Selectbox na Sidebar (Ocupa apenas 1 linha!)
+    escolha_nome = st.sidebar.selectbox(
+        "Selecione o Idioma:",
+        options=lista_nomes,
+        index=indice_atual
     )
-    btn_pt = btn_pt.button("pt", key=1, help="Português")
-    btn_es = btn_es.button("es", key=2, help="Español")
-    btn_it = btn_it.button("it", key=3, help="Italiano")
-    btn_fr = btn_fr.button("fr", key=4, help="Français")
-    btn_en = btn_en.button("en", key=5, help="English")
-    btn_xy = btn_xy.button("⚒️", key=6, help=st.session_state.poly_name)
 
-    if btn_pt:
-        st.session_state.lang = "pt"
-        st.session_state.poly_file = "poly_pt.txt"
-    elif btn_es:
-        st.session_state.lang = "es"
-        st.session_state.poly_file = "poly_es.txt"
-    elif btn_it:
-        st.session_state.lang = "it"
-        st.session_state.poly_file = "poly_it.txt"
-    elif btn_fr:
-        st.session_state.lang = "fr"
-        st.session_state.poly_file = "poly_fr.txt"
-    elif btn_en:
-        st.session_state.lang = "en"
-        st.session_state.poly_file = "poly_en.txt"
-    elif btn_xy:
+    # 4. Lógica de atualização
+    info_selecionada = langs_info[escolha_nome]
+    
+    if info_selecionada["lang"] != st.session_state.lang:
         st.session_state.last_lang = st.session_state.lang
-        st.session_state.lang = st.session_state.poly_lang
+        st.session_state.lang = info_selecionada["lang"]
+        st.session_state.poly_file = info_selecionada["file"]
+        
+        # Feedback rápido e atualização da página
+        st.sidebar.success(f"✓ {st.session_state.lang}")
+        st.rerun()
+        
+    pick_lang()
+    draw_check_buttons()
 
-    if st.session_state.lang != st.session_state.last_lang:
-        st.success(translate("idioma atual") + " ➪ " + st.session_state.lang)
+    if chosen_id == "1":
+        st.sidebar.info(load_md_file("INFO_MINI.md"))
+        magy = "img_mini.jpg"
+        page_mini()
+    elif chosen_id == "2":
+        st.sidebar.info(load_md_file("INFO_YPOEMAS.md"))
+        magy = "img_ypoemas.jpg"
+        page_ypoemas()
+    elif chosen_id == "3":
+        st.sidebar.info(load_md_file("INFO_EUREKA.md"))
+        magy = "img_eureka.jpg"
+        page_eureka()
+    elif chosen_id == "4":
+        st.sidebar.info(load_md_file("INFO_OFF-MACHINA.md"))
+        magy = "img_off-machina.jpg"
+        page_off_machina()
+    elif chosen_id == "5":
+        st.sidebar.info(load_md_file("INFO_BOOKS.md"))
+        magy = "img_books.jpg"
+        page_books()
+    elif chosen_id == "6":
+        st.sidebar.info(load_md_file("INFO_POLY.md"))
+        magy = "img_poly.jpg"
+        page_polys()
+    elif chosen_id == "7":
+        st.sidebar.info(load_md_file("INFO_ABOUT.md"))
+        magy = "img_about.jpg"
+        page_abouts()
+        ##$ page_docs()
+
+    with st.sidebar:
+        st.image(magy)
+
+    show_icons()
+    ##$ st.sidebar.state = True
+
 
 
 def show_icons():  # https://api.whatsapp.com/
@@ -1451,46 +1496,6 @@ def main():
         ],
         default=2,
     )
-
-    pick_lang()
-    draw_check_buttons()
-
-    if chosen_id == "1":
-        st.sidebar.info(load_md_file("INFO_MINI.md"))
-        magy = "img_mini.jpg"
-        page_mini()
-    elif chosen_id == "2":
-        st.sidebar.info(load_md_file("INFO_YPOEMAS.md"))
-        magy = "img_ypoemas.jpg"
-        page_ypoemas()
-    elif chosen_id == "3":
-        st.sidebar.info(load_md_file("INFO_EUREKA.md"))
-        magy = "img_eureka.jpg"
-        page_eureka()
-    elif chosen_id == "4":
-        st.sidebar.info(load_md_file("INFO_OFF-MACHINA.md"))
-        magy = "img_off-machina.jpg"
-        page_off_machina()
-    elif chosen_id == "5":
-        st.sidebar.info(load_md_file("INFO_BOOKS.md"))
-        magy = "img_books.jpg"
-        page_books()
-    elif chosen_id == "6":
-        st.sidebar.info(load_md_file("INFO_POLY.md"))
-        magy = "img_poly.jpg"
-        page_polys()
-    elif chosen_id == "7":
-        st.sidebar.info(load_md_file("INFO_ABOUT.md"))
-        magy = "img_about.jpg"
-        page_abouts()
-        ##$ page_docs()
-
-    with st.sidebar:
-        st.image(magy)
-
-    show_icons()
-    ##$ st.sidebar.state = True
-
 
 if __name__ == "__main__":
     main()
