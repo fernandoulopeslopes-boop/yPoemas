@@ -665,7 +665,7 @@ def load_arts(nome_tema):
                 path = "./images/" + part_line[2] + "/"
                 break
     # Importante: você provavelmente vai querer dar um 'return path' aqui no final!
-    return path
+    # return path
     
     arts_list = []
     for file in os.listdir(path):
