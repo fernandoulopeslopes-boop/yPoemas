@@ -83,11 +83,11 @@ if have_internet():
     try:
         from deep_translator import GoogleTranslator
     except ImportError as ex:
-        st.warning(translate("Google Translator não conectado"))
+        st.warning(translate("Google Translator não conectado"), st.session_state.lang)
     try:
         from gtts import gTTS
     except ImportError as ex:
-        st.warning(translate("Google TTS não conectado"))
+        st.warning(translate("Google TTS não conectado", st.session_state.lang))
 else:
     st.warning("Internet não conectada. Traduções não disponíveis no momento.")
 
@@ -219,29 +219,26 @@ if "rand" not in st.session_state:
 ### eof: settings
 ### bof: tools
 
-
-def translate(input_text):
-    if st.session_state.lang == "pt":  # don't need translations here
+def translate(input_text, target_lang): # Adicione o target_lang aqui
+    if target_lang == "pt": 
         return input_text
 
     if not have_internet():
-        st.session_state.lang = "pt"
         return input_text
 
     try:
+        # Usamos o target_lang que veio do argumento
         output_text = GoogleTranslator(
-            source="pt", target=st.session_state.lang
-        ).translate(text=input_text)
+            source="pt", target=target_lang
+        ).translate(text=input_text, st.session_state.lang)
 
-        output_text = output_text.replace("<br>>", "<br>")
-        output_text = output_text.replace("< br>", "<br>")
-        output_text = output_text.replace("<br >", "<br>")
-        output_text = output_text.replace("<br ", "<br>")
-        output_text = output_text.replace(" br>", "<br>")
+        # Limpeza das tags HTML (seu código original)
+        for tag in ["<br>>", "< br>", "<br >", "<br ", " br>"]:
+            output_text = output_text.replace(tag, "<br>")
         return output_text
-    except:
-        return translate("Arquivo muito grande para ser traduzido.")
-
+    except Exception as e:
+        return f"Erro na tradução: {str(e)}" # Evite recursividade aqui para não travar
+        
 
 def pick_lang():  # define idioma
     btn_pt, btn_es, btn_it, btn_fr, btn_en, btn_xy = st.sidebar.columns(
@@ -274,7 +271,7 @@ def pick_lang():  # define idioma
         st.session_state.lang = st.session_state.poly_lang
 
     if st.session_state.lang != st.session_state.last_lang:
-        st.success(translate("idioma atual") + " ➪ " + st.session_state.lang)
+        st.success(translate("idioma atual", st.session_state.lang) + " ➪ " + st.session_state.lang)
 
 
 def show_icons():  # https://api.whatsapp.com/
@@ -313,14 +310,14 @@ def load_help(idiom):
                 text = pipe_line[2]
                 returns.append(text)
     else:
-        returns.append(translate("anterior"))
-        returns.append(translate("escolhe tema ao acaso"))
-        returns.append(translate("próximo"))
-        returns.append(translate("mais lidos..."))
-        returns.append(translate("gera novo yPoema"))
-        returns.append(translate("imagem"))
-        returns.append(translate("áudio"))
-        returns.append(translate("vídeo"))
+        returns.append(translate("anterior"), st.session_state.lang)
+        returns.append(translate("escolhe tema ao acaso"), st.session_state.lang)
+        returns.append(translate("próximo"), st.session_state.lang)
+        returns.append(translate("mais lidos..."), st.session_state.lang)
+        returns.append(translate("gera novo yPoema"), st.session_state.lang)
+        returns.append(translate("imagem"), st.session_state.lang)
+        returns.append(translate("áudio"), st.session_state.lang)
+        returns.append(translate("vídeo"), st.session_state.lang)
 
     return returns
 
@@ -459,9 +456,9 @@ def load_md_file(file):  # Open files for about's
             file_text = file_to_open.read()
 
         if not "rol_" in file.lower():  # do not translate theme
-            file_text = translate(file_text)
+            file_text = translate(file_text, st.session_state.lang)
     except:
-        file_text = translate("ooops... arquivo ( " + file + " ) não pode ser aberto.")
+        file_text = translate("ooops... arquivo ( " + file + " ) não pode ser aberto.", st.session_state.lang)
         st.session_state.lang = "pt"
 
     return file_text
@@ -757,7 +754,7 @@ if st.session_state.visy:  # check visitor once; rand initial temas
     maxy_mini = len(temas_list)
     st.session_state.mini = random.randrange(0, maxy_mini)
 
-    st.success(translate("bem vindo à **máquina de fazer Poesia...**"))
+    st.success(translate("bem vindo à **máquina de fazer Poesia...**"), st.session_state.lang)
     st.session_state.draw = True
     st.session_state.visy = False
 
@@ -784,7 +781,7 @@ def page_mini():
         st.session_state.talk = False
         st.session_state.vydo = False
         with st.sidebar:
-            wait_time = st.slider(translate("tempo de exibição (em segundos): "), 5, 60)
+            wait_time = st.slider(translate("tempo de exibição (em segundos): ", st.session_state.lang), 5, 60)
 
     if rand:
         st.session_state.rand = True
@@ -818,7 +815,7 @@ def page_mini():
             curr_ypoema = load_lypo()
 
         if st.session_state.lang != "pt":  # translate if idioma <> pt
-            curr_ypoema = translate(curr_ypoema)
+            curr_ypoema = translate(curr_ypoema, st.session_state.lang)
             typo_user = "TYPO_" + IPAddres
             with open(
                 os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
@@ -858,7 +855,7 @@ def page_mini():
                     curr_ypoema = load_lypo()
 
                 if st.session_state.lang != "pt":  # translate if idioma <> pt
-                    curr_ypoema = translate(curr_ypoema)
+                    curr_ypoema = translate(curr_ypoema, st.session_state.lang)
                     typo_user = "TYPO_" + IPAddres
                     with open(
                         os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
@@ -920,7 +917,7 @@ def page_ypoemas():
 
     if not st.session_state.draw:
         options = list(range(len(temas_list)))
-        sobrios = "↓  " + translate("lista de Temas")
+        sobrios = "↓  " + translate("lista de Temas", )
         opt_take = st.selectbox(
             sobrios,
             options,
@@ -966,7 +963,7 @@ def page_ypoemas():
                 curr_ypoema = load_lypo()
 
             if st.session_state.lang != "pt":  # translate if idioma <> pt
-                curr_ypoema = translate(curr_ypoema)
+                curr_ypoema = translate(curr_ypoema, st.session_state.lang)
                 typo_user = "TYPO_" + IPAddres
                 with open(
                     os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
@@ -986,7 +983,7 @@ def page_ypoemas():
             if manu:
                 LOGO_TEXTO = load_info(st.session_state.tema)
                 if st.session_state.lang != "pt":  # translate if idioma <> pt
-                    LOGO_TEXTO = translate(LOGO_TEXTO)
+                    LOGO_TEXTO = translate(LOGO_TEXTO, st.session_state.lang)
 
                 LOGO_IMAGE = (
                     "./images/matrix/" + st.session_state.tema.capitalize() + ".jpg"
@@ -1008,7 +1005,7 @@ def page_eureka():
 
     with seed:
         find_what = st.text_input(
-            label=translate("digite algo para buscar..."),
+            label=translate("digite algo para buscar...", st.session_state.lang),
         )
 
     with more:
@@ -1024,7 +1021,7 @@ def page_eureka():
         st.subheader(load_md_file("MANUAL_EUREKA.md"))
 
     if len(find_what) < 3:
-        st.warning(translate("digite pelo menos 3 letras..."))
+        st.warning(translate("digite pelo menos 3 letras...", st.session_state.lang))
     else:
         seed_list = []
         soma_tema = []
@@ -1048,10 +1045,8 @@ def page_eureka():
 
         if len(seed_list) == 0:
             st.warning(
-                translate(
-                    'nenhuma ocorrência das letras " '
-                    + find_what
-                    + ' " foi encontrada...'
+                soso := 'nenhuma ocorrência das letras " ' + find_what + ' " foi encontrada...'
+                translate( soso, st.session_state.lang)
                 )
             )
         elif len(seed_list) >= 1:
@@ -1063,7 +1058,7 @@ def page_eureka():
 
             info_find += find_what
             if len(soma_tema) > 1:
-                info_find += translate('" em ' + str(len(soma_tema)) + " temas")
+                info_find += translate('" em ' + str(len(soma_tema)) + " temas", st.session_state.lang)
 
             if rand:
                 st.session_state.eureka = random.randrange(0, len(seed_list))
@@ -1093,7 +1088,7 @@ def page_eureka():
                 curr_ypoema = load_lypo()
 
             if st.session_state.lang != "pt":  # translate if idioma <> pt
-                curr_ypoema = translate(curr_ypoema)
+                curr_ypoema = translate(curr_ypoema, st.session_state.lang)
                 typo_user = "TYPO_" + IPAddres
                 with open(
                     os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
@@ -1126,7 +1121,7 @@ def page_eureka():
                 lnew = False
                 LOGO_TEXTO = load_info(seed_tema)
                 if st.session_state.lang != "pt":  # translate if idioma <> pt
-                    LOGO_TEXTO = translate(LOGO_TEXTO)
+                    LOGO_TEXTO = translate(LOGO_TEXTO, st.session_state.lang)
 
                 LOGO_IMAGE = "./images/matrix/" + seed_tema.capitalize() + ".jpg"
                 write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
@@ -1134,7 +1129,7 @@ def page_eureka():
         else:
             st.warning(
                 translate(
-                    "nenhum verbete encontrado com essas letras ---> " + find_what
+                    "nenhum verbete encontrado com essas letras ---> " + find_what, st.session_state.lang
                 )
             )
 
@@ -1142,7 +1137,7 @@ def page_eureka():
 def page_off_machina():  # available off_machina_books
     off_books_list = load_all_offs()
     options = list(range(len(off_books_list)))
-    sobrios = "↓  " + translate("lista de Livros")
+    sobrios = "↓  " + translate("lista de Livros", st.session_state.lang)
     opt_off_book = st.selectbox(
         sobrios,
         options,
@@ -1192,7 +1187,7 @@ def page_off_machina():  # available off_machina_books
 
     if not st.session_state.draw:
         options = list(range(len(off_book_pagys)))
-        sobrios = "↓  " + translate("lista de Títulos")
+        sobrios = "↓  " + translate("lista de Títulos", st.session_state.lang)
         opt_off_take = st.selectbox(
             sobrios,
             options,
@@ -1268,7 +1263,7 @@ def page_off_machina():  # available off_machina_books
                     )  # finally... write it
             else:
                 if st.session_state.lang != "pt":
-                    off_book_text = translate(off_book_text)
+                    off_book_text = translate(off_book_text, st.session_state.lang)
 
                 LOGO_TEXTO = off_book_text
                 LOGO_IMAGE = None
@@ -1301,7 +1296,7 @@ def page_books():  # available books
         ]
 
         options = list(range(len(books_list)))
-        sobrios = "↓  " + translate("lista de Livros")
+        sobrios = "↓  " + translate("lista de Livros", st.session_state.lang)
         opt_book = st.selectbox(
             sobrios,
             options,
@@ -1349,7 +1344,7 @@ def page_polys():  # available languages
                 poly_list.append(line)
                 this_line = line.strip("\n")
                 part_line = this_line.partition(" : ")
-                poly_pais.append(translate(part_line[0]))
+                poly_pais.append(translate(part_line[0]), st.session_state.lang)
                 poly_ling.append(part_line[2])
         poly.close()
 
@@ -1375,7 +1370,7 @@ def page_polys():  # available languages
     if doit:
         poly_pais = poly_pais[opt_poly]
         poly_ling = poly_ling[opt_poly]
-        st.session_state.poly_name = translate(poly_pais)
+        st.session_state.poly_name = translate(poly_pais, st.session_state.lang)
         st.session_state.poly_lang = poly_ling
         st.session_state.poly_take = opt_poly
 
@@ -1406,7 +1401,7 @@ def page_abouts():
 
 
     options = list(range(len(abouts_list)))
-    sobrios = "↓  " + translate("sobre")
+    sobrios = "↓  " + translate("sobre", st.session_state.lang)
     opt_abouts = st.selectbox(
         sobrios,
         options,
