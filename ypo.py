@@ -1475,78 +1475,39 @@ def main():
 
     st.sidebar.state = True
 
-def pick_lang():  # define idioma
-    # Criamos 6 colunas de tamanho idêntico para alinhar perfeitamente
-    cols = st.sidebar.columns(6)
+def pick_lang():
+    # 1. Dados dos idiomas
+    langs_info = {
+        "Português": {"lang": "pt", "file": "poly_pt.txt"},
+        "Español": {"lang": "es", "file": "poly_es.txt"},
+        "Italiano": {"lang": "it", "file": "poly_it.txt"},
+        "Français": {"lang": "fr", "file": "poly_fr.txt"},
+        "English": {"lang": "en", "file": "poly_en.txt"},
+        st.session_state.poly_name: {"lang": st.session_state.poly_lang, "file": st.session_state.poly_file}
+    }
     
-    # Atribuímos cada botão à sua coluna com largura total (container width)
-    btn_pt = cols[0].button("pt", key=1, help="Português", use_container_width=True)
-    btn_es = cols[1].button("es", key=2, help="Español", use_container_width=True)
-    btn_it = cols[2].button("it", key=3, help="Italiano", use_container_width=True)
-    btn_fr = cols[3].button("fr", key=4, help="Français", use_container_width=True)
-    btn_en = cols[4].button("en", key=5, help="English", use_container_width=True)
-    btn_xy = cols[5].button("⚒️", key=6, help=st.session_state.poly_name, use_container_width=True)
-
-    # Lógica de seleção
-    if btn_pt:
-        st.session_state.lang = "pt"
-        st.session_state.poly_file = "poly_pt.txt"
-    elif btn_es:
-        st.session_state.lang = "es"
-        st.session_state.poly_file = "poly_es.txt"
-    elif btn_it:
-        st.session_state.lang = "it"
-        st.session_state.poly_file = "poly_it.txt"
-    elif btn_fr:
-        st.session_state.lang = "fr"
-        st.session_state.poly_file = "poly_fr.txt"
-    elif btn_en:
-        st.session_state.lang = "en"
-        st.session_state.poly_file = "poly_en.txt"
-    elif btn_xy:
-        st.session_state.last_lang = st.session_state.lang
-        st.session_state.lang = st.session_state.poly_lang
-        
-    pick_lang()
+    lista_nomes = list(langs_info.keys())
     
-    # Feedback de mudança de idioma
-    if st.session_state.lang != st.session_state.last_lang:
-       st.success(translate("idioma atual") + " ➪ " + st.session_state.lang)
+    # 2. Índice atual
+    try:
+        indice_atual = [v["lang"] for v in langs_info.values()].index(st.session_state.get('lang', 'pt'))
+    except:
+        indice_atual = 0
 
-    # Lógica de seleção
-    if btn_pt:
-        st.session_state.lang = "pt"
-        st.session_state.poly_file = "poly_pt.txt"
-    elif btn_es:
-        st.session_state.lang = "es"
-        st.session_state.poly_file = "poly_es.txt"
-    elif btn_it:
-        st.session_state.lang = "it"
-        st.session_state.poly_file = "poly_it.txt"
-    elif btn_fr:
-        st.session_state.lang = "fr"
-        st.session_state.poly_file = "poly_fr.txt"
-    elif btn_en:
-        st.session_state.lang = "en"
-        st.session_state.poly_file = "poly_en.txt"
-    elif btn_xy:
-        st.session_state.last_lang = st.session_state.lang
-        st.session_state.lang = st.session_state.poly_lang
+    # 3. O Selectbox (Apenas UMA linha, sem colunas/botões!)
+    escolha_nome = st.sidebar.selectbox("Idioma / Language", options=lista_nomes, index=indice_atual)
+    
+    # 4. Lógica de troca
+    info = langs_info[escolha_nome]
+    if info["lang"] != st.session_state.get('lang', ''):
+        st.session_state.last_lang = st.session_state.get('lang', 'pt')
+        st.session_state.lang = info["lang"]
+        st.session_state.poly_file = info["file"]
+        st.rerun() # O rerun interrompe e recomeça, evitando o loop!
 
-    # Feedback de mudança de idioma
-    if st.session_state.lang != st.session_state.last_lang:
-       st.success(translate("idioma atual") + " ➪ " + st.session_state.lang)
+# --- FIM DA FUNÇÃO ---
 
-if 'lang' not in st.session_state:
-    st.session_state.lang = 'pt'
-
-# AGORA SIM, CHAME A FUNÇÃO
+# Fora da função, na última linha do arquivo (sem espaços na esquerda):
 pick_lang()
-
-# E as outras que você já tinha
-show_icons()
-load_help_tips()
-
-
 if __name__ == "__main__":
     main()
