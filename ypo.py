@@ -275,7 +275,9 @@ def pick_lang():  # define idioma
     elif btn_xy:
         st.session_state.last_lang = st.session_state.lang
         st.session_state.lang = st.session_state.poly_lang
-
+    
+    pick_lang()
+    
     # Feedback de mudança de idioma
     if st.session_state.lang != st.session_state.last_lang:
        st.success(translate("idioma atual") + " ➪ " + st.session_state.lang)
@@ -1505,7 +1507,6 @@ def main():
     )
 
    
-    pick_lang()
     draw_check_buttons()
 
     if chosen_id == "1":
