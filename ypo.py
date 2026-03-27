@@ -618,7 +618,7 @@ def load_poema(nome_tema, seed_eureka):  # generate new yPoema
     novo_ypoema = ""
     lypo_user = "LYPO_" + IPAddres
     frufru = f"**{nome_tema}**\n\n{nome_tema}" + '\n'
-    novo_ypoema += frufru
+    novo_ypoema += frufru + '\n'
 
     
     with open(os.path.join("./temp/" + lypo_user), "w", encoding="utf-8") as save_lypo:
