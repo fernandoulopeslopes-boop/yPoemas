@@ -295,7 +295,6 @@ def show_icons():  # https://api.whatsapp.com/
             unsafe_allow_html=True,
 
             
-@st.cache_data(show_spinner=False)
 def load_help_tips():
     help_list = []
     with open(os.path.join("./base/helpers.txt"), encoding="utf-8") as file:
