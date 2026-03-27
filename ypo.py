@@ -1,10 +1,3 @@
-
-# Garanta que a lógica seja esta:
-if st.session_state.lang != "pt":
-    # Se mudou o tema (opt_take), carregue o NOVO poema antes de traduzir
-    # Não use o load_lypo() se o tema acabou de mudar!
-    poema_base = load_poema(str(temas_list[opt_take]), "") 
-    curr_ypoema = translate(poema_base)
 r"""
 
 yPoemas is an app that randomly collects words and phrases
