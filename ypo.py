@@ -1,4 +1,4 @@
-r"""
+"""
 
 yPoemas is an app that randomly collects words and phrases
 from specific databases and organizes them
