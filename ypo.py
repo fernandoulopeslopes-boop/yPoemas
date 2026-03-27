@@ -623,7 +623,7 @@ def load_poema(nome_tema, seed_eureka):  # generate new yPoema
     novo_ypoema = ""
     lypo_user = "LYPO_" + IPAddres
 
-    st.write(f"DEBUG INTERNO: {nome_tema}")
+    st.write(f"Debug Interno: {nome_tema}")
     
     with open(os.path.join("./temp/" + lypo_user), "w", encoding="utf-8") as save_lypo:
         save_lypo.write(
