@@ -649,7 +649,6 @@ def load_images():
             
     return images_list # <-- Agora retornando a lista corretamente!
 
-# --- LINHA DE SEPARAÇÃO ---
 
 def load_arts(nome_tema):
     # Select image for arts
