@@ -303,17 +303,22 @@ def load_help_tips():
     with open(caminho_help, "r", encoding="utf-8") as file:
         for line in file:
             help_list.append(line.strip())
-    # O 'with' já fecha o arquivo, não precisa de file.close()
-    return help_listdef load_help(idiom):
+    return help_list
+
+# --- SEPARAÇÃO ---
+
+def load_help(idiom):
     returns = []
     if idiom in "_pt_es_it_fr_en":
         helpers = load_help_tips()
         for line in helpers:
             pipe_line = line.split("|")
-            if pipe_line[1].startswith(idiom + "_"):
+            # Verifica se a linha tem o formato esperado antes de acessar o índice
+            if len(pipe_line) > 2 and pipe_line[1].startswith(idiom + "_"):
                 text = pipe_line[2]
                 returns.append(text)
     else:
+        # Se o idioma não for um dos fixos, usa a tradução automática
         returns.append(translate("anterior"))
         returns.append(translate("escolhe tema ao acaso"))
         returns.append(translate("próximo"))
@@ -324,7 +329,7 @@ def load_help_tips():
         returns.append(translate("vídeo"))
 
     return returns
-
+    
 
 def draw_check_buttons():
     draw_text, talk_text, vyde_text = st.sidebar.columns([3.8, 3.2, 3])
