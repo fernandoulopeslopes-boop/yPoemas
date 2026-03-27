@@ -1482,6 +1482,7 @@ def main():
         default=2,
     )
 
+   
     pick_lang()
     draw_check_buttons()
 
