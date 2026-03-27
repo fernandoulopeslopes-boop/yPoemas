@@ -293,7 +293,7 @@ def show_icons():  # https://api.whatsapp.com/
             <a href='https://web.whatsapp.com/send?phone=+5512991368181' target='_blank'>whatsapp</a>
             </nav>
             """,
-            unsafe_allow_html=True,
+            unsafe_allow_html=True
 
             
 def load_help_tips():
