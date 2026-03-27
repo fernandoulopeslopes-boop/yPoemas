@@ -616,6 +616,7 @@ def load_book_pages(book):  # Load Book pages for off_book
 
     return book_pages
 
+    with open(f"poemas/{nome_tema}.ypo", "r") as f:
 
 def load_poema(nome_tema, seed_eureka):  # generate new yPoema
     script = gera_poema(nome_tema, seed_eureka)
@@ -989,8 +990,9 @@ def page_ypoemas():
             if st.session_state.lang != st.session_state.last_lang:
                 curr_ypoema = load_lypo()  # changes in lang, keep LYPO
             else:
-                curr_ypoema = load_poema(st.session_state.tema, "")
-                curr_ypoema = load_lypo()
+                curr_ypoema = load_poema(str(st.session_state.tema), ""
+#                curr_ypoema = load_poema(st.session_state.tema, "")
+#                curr_ypoema = load_lypo()
 
             if st.session_state.lang != "pt":  # translate if idioma <> pt
                 curr_ypoema = translate(curr_ypoema)
