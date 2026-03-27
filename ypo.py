@@ -620,9 +620,9 @@ def load_poema(nome_tema, seed_eureka):  # generate new yPoema
 
     with open(os.path.join("./temp/" + lypo_user), "w", encoding="utf-8") as save_lypo:
         save_lypo.write(
-            nome_tema
-        )  # include title of yPoema in first line for translations
-        save_lypo.write("\n")
+            # nome_tema
+            nome_tema = f"**{nome_tema}**\n\n{nome_tema}"
+#        save_lypo.write("\n")
 
         for line in script:
             if line == "\n":
