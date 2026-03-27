@@ -102,8 +102,7 @@ IPAddres = socket.gethostbyname(hostname)
 
 
 # hide Streamlit Menu and Footer
-st.markdown(
-    """ <style>
+st.markdown( """ <style>
     /*#MainMenu {visibility: hidden;}*/
     footer {visibility: hidden;}
     </style> """,
