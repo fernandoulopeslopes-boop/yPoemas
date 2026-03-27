@@ -618,8 +618,7 @@ def load_poema(nome_tema, seed_eureka):  # generate new yPoema
     novo_ypoema = ""
     lypo_user = "LYPO_" + IPAddres
     # Usamos o st.markdown com HTML para forçar o centro
-    frufru = f"<div style='text-align: center;'><strong>* {nome_tema} *</strong></div>\n\n"
-
+    frufru = "* {nome_tema} * + \n"
     
     novo_ypoema += st.markdown(frufru, unsafe_allow_html=True)
     
