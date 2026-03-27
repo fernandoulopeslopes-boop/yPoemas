@@ -616,7 +616,7 @@ def load_book_pages(book):  # Load Book pages for off_book
 
     return book_pages
 
-    with open(f"poemas/{nome_tema}.ypo", "r") as f:
+#    with open(f"poemas/{nome_tema}.ypo", "r") as f:
 
 def load_poema(nome_tema, seed_eureka):  # generate new yPoema
     script = gera_poema(nome_tema, seed_eureka)
