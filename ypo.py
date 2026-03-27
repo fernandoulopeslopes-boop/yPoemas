@@ -983,7 +983,7 @@ def page_ypoemas():
 
         ypoemas_expander = st.expander(what_book, expanded=True)
         with ypoemas_expander:
-            if st.session_state.lang != st.session_state.last_lang
+            if st.session_state.lang != st.session_state.last_lang:
                 curr_ypoema = load_lypo()  # changes in lang, keep LYPO
             else:
                 curr_ypoema = load_poema(str(st.session_state.tema), "")
@@ -991,7 +991,7 @@ def page_ypoemas():
             if st.session_state.lang != "pt":  # translate if idioma <> pt
                 curr_ypoema = translate(curr_ypoema)
                 typo_user = "TYPO_" + IPAddres
-                with open(os.path.join("./temp/" + typo_user), "w", encoding="utf-8") as save_typo
+                with open(os.path.join("./temp/" + typo_user), "w", encoding="utf-8") as save_typo:
                     save_typo.write(curr_ypoema)
                     save_typo.close()
                     
