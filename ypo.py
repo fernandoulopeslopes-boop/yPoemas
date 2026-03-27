@@ -617,7 +617,7 @@ def load_poema(nome_tema, seed_eureka):  # generate new yPoema
     script = gera_poema(nome_tema, seed_eureka)
     novo_ypoema = ""
     lypo_user = "LYPO_" + IPAddres
-    frufru = f"**{nome_tema}**\n\" + "<br>"
+    frufru = f"* {nome_tema} *\n\" + "<br>"
     novo_ypoema += frufru + "<br>"
 
     
