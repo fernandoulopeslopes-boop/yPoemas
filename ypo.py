@@ -621,6 +621,7 @@ def load_poema(nome_tema, seed_eureka):  # generate new yPoema
     frufru = "* " + nome_tema + " *" + "<br>"
     
     novo_ypoema += f"<h3 style='text-align: center;'>* {frufru} *</h3>\n\n"
+    st.MarkDown( novo_ypoema )
 #    novo_ypoema += frufru
     
 # O uso de '<strong>' e '*' garante o destaque visual do seu "frufru"
