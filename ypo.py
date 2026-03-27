@@ -620,9 +620,8 @@ def load_poema(nome_tema, seed_eureka):  # generate new yPoema
 #    frufru = "* " + nome_tema + " *" + "<br>"
 #    novo_ypoema += f"<h3 style='text-align: center;'>* {frufru} *</h3>\n\n" + unsafe_allow_html=True
 
-    frufru = f"<div style='text-align: center; margin-bottom: 20px;'><strong>* {nome_tema} *</strong></div>"
-    
-    st.markdown(frufru, unsafe_allow_html=True)
+    frufru = f"<div style='text-align: center; font-size: 24px; margin-bottom: 20px;'><strong>* {nome_tema} *</strong></div>"
+    st.markdown(frufru, unsafe_allow_html=True)    
 
     with open(os.path.join("./temp/" + lypo_user), "w", encoding="utf-8") as save_lypo:
         save_lypo.write(frufru)
