@@ -625,6 +625,7 @@ def load_poema(nome_tema, seed_eureka):  # generate new yPoema
         for line in script:
             if line == "\n":
                 save_lypo.write("\n")
+                novo_ypoema += frufru
                 novo_ypoema += "<br>"
             else:
                 save_lypo.write(line + "\n")
