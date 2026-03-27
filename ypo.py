@@ -279,7 +279,9 @@ def pick_lang():  # define idioma
 
     # Feedback de mudança de idioma
     if st.session_state.lang != st.session_state.last_lang:
-        st.success(translate("idioma atual") + " ➪ " + st.session_state.lang)def show_icons():  # https://api.whatsapp.com/
+        st.success(translate("idioma atual") + " ➪ " + st.session_state.lang)
+        
+def show_icons():  # https://api.whatsapp.com/
     with st.sidebar:
         st.sidebar.markdown(
             f"""
