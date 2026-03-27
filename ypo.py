@@ -617,7 +617,6 @@ def load_book_pages(book):  # Load Book pages for off_book
     return book_pages
 
 
-@st.cache_data(show_spinner=False)
 def load_poema(nome_tema, seed_eureka):  # generate new yPoema
     script = gera_poema(nome_tema, seed_eureka)
     novo_ypoema = ""
