@@ -1,3 +1,10 @@
+
+# Garanta que a lógica seja esta:
+if st.session_state.lang != "pt":
+    # Se mudou o tema (opt_take), carregue o NOVO poema antes de traduzir
+    # Não use o load_lypo() se o tema acabou de mudar!
+    poema_base = load_poema(str(temas_list[opt_take]), "") 
+    curr_ypoema = translate(poema_base)
 r"""
 
 yPoemas is an app that randomly collects words and phrases
@@ -802,7 +809,13 @@ def page_mini():
             curr_ypoema = load_lypo()
 
         if st.session_state.lang != "pt":  # translate if idioma <> pt
-            curr_ypoema = translate(curr_ypoema)
+
+            # Se mudou o tema (opt_take), carregue o NOVO poema antes de traduzir
+            # Não use o load_lypo() se o tema acabou de mudar!
+            poema_base = load_poema(str(temas_list[opt_take]), "") 
+            curr_ypoema = translate(poema_base)
+    
+            # curr_ypoema = translate(curr_ypoema)
             typo_user = "TYPO_" + IPAddres
             with open(
                 os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
