@@ -623,6 +623,9 @@ def load_poema(nome_tema, seed_eureka):  # generate new yPoema
     novo_ypoema += f"<h3 style='text-align: center;'>* {frufru} *</h3>\n\n"
 #    novo_ypoema += frufru
     
+# O uso de '<strong>' e '*' garante o destaque visual do seu "frufru"
+    frufru = f"<div style='text-align: center; margin-bottom: 20px;'><strong>* {nome_tema} *</strong></div>"
+
     with open(os.path.join("./temp/" + lypo_user), "w", encoding="utf-8") as save_lypo:
         save_lypo.write(frufru)
         for line in script:
