@@ -995,7 +995,7 @@ def page_ypoemas():
                     save_typo.write(curr_ypoema)
                     save_typo.close()
                     
-                curr_ypoema = load_typo()  # to normalize line breaks in text
+            curr_ypoema = load_typo()  # to normalize line breaks in text
 
             update_readings(st.session_state.tema)
             LOGO_TEXTO = curr_ypoema
