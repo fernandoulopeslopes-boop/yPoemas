@@ -617,12 +617,11 @@ def load_poema(nome_tema, seed_eureka):  # generate new yPoema
     script = gera_poema(nome_tema, seed_eureka)
     novo_ypoema = ""
     lypo_user = "LYPO_" + IPAddres
+    frufru = f"**{nome_tema}**\n\n{nome_tema}"
+    novo_ypoema += frufru
+    save_lypo.write(frufru)
 
     with open(os.path.join("./temp/" + lypo_user), "w", encoding="utf-8") as save_lypo:
-        frufru = f"**{nome_tema}**\n\n{nome_tema}"
-        save_lypo.write(frufru)
-        novo_ypoema += frufru
-
         for line in script:
             if line == "\n":
                 save_lypo.write("\n")
