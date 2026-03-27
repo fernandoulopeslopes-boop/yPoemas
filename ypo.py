@@ -636,8 +636,7 @@ def load_poema(nome_tema, seed_eureka):  # generate new yPoema
                 novo_ypoema += line + "<br>"
 
     save_lypo.close()  # save last generated in LYPO
-
-return novo_ypoema
+    return novo_ypoema
 
 @st.cache_data(show_spinner=False)
 def load_images():
