@@ -918,6 +918,8 @@ def page_ypoemas():
         if st.session_state.take > maxy_ypoemas:
             st.session_state.take = 0
 
+    st.rerun()
+
     if not st.session_state.draw:
         options = list(range(len(temas_list)))
         sobrios = "↓  " + translate("lista de Temas")
@@ -929,8 +931,13 @@ def page_ypoemas():
             key="opt_take",
         )
 
+        # 2. SE o tema mudar, limpamos a memória do poema antigo
+        if 'curr_ypoema' in st.session_state:
+            del st.session_state['curr_ypoema']
+    
         if opt_take != st.session_state.take:
             st.session_state.take = opt_take
+            st.session_state.tema = temas_list[opt_take]
 
     st.session_state.tema = temas_list[st.session_state.take]
 
