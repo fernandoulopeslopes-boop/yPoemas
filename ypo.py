@@ -243,39 +243,45 @@ def translate(input_text):
         return translate("Arquivo muito grande para ser traduzido.")
 
 
-def pick_lang():  # define idioma
-    btn_pt, btn_es, btn_it, btn_fr, btn_en, btn_xy = st.sidebar.columns(
-        [1.1, 1.13, 1.04, 1.04, 1.17, 1.25]
-    )
-    btn_pt = btn_pt.button("pt", key=1, help="Português")
-    btn_es = btn_es.button("es", key=2, help="Español")
-    btn_it = btn_it.button("it", key=3, help="Italiano")
-    btn_fr = btn_fr.button("fr", key=4, help="Français")
-    btn_en = btn_en.button("en", key=5, help="English")
-    btn_xy = btn_xy.button("⚒️", key=6, help=st.session_state.poly_name)
+def pick_lang():
+    # 1. Definição dos dados (Certifique-se que os arquivos estão certos!)
+    langs_info = {
+        "Português": {"lang": "pt", "file": "poly_pt.txt"},
+        "Español": {"lang": "es", "file": "poly_es.txt"},
+        "Italiano": {"lang": "it", "file": "poly_it.txt"},
+        "Français": {"lang": "fr", "file": "poly_fr.txt"},
+        "English": {"lang": "en", "file": "poly_en.txt"},
+        st.session_state.poly_name: {"lang": st.session_state.poly_lang, "file": st.session_state.poly_file}
+    }
+    
+    lista_nomes = list(langs_info.keys())
+    
+    # 2. Acha o índice atual para o selectbox não "pular" sozinho
+    try:
+        indice_atual = [v["lang"] for v in langs_info.values()].index(st.session_state.lang)
+    except:
+        indice_atual = 0
 
-    if btn_pt:
-        st.session_state.lang = "pt"
-        st.session_state.poly_file = "poly_pt.txt"
-    elif btn_es:
-        st.session_state.lang = "es"
-        st.session_state.poly_file = "poly_es.txt"
-    elif btn_it:
-        st.session_state.lang = "it"
-        st.session_state.poly_file = "poly_it.txt"
-    elif btn_fr:
-        st.session_state.lang = "fr"
-        st.session_state.poly_file = "poly_fr.txt"
-    elif btn_en:
-        st.session_state.lang = "en"
-        st.session_state.poly_file = "poly_en.txt"
-    elif btn_xy:
+    # 3. O Selectbox de Idiomas
+    escolha_nome = st.sidebar.selectbox("Idioma / Language", options=lista_nomes, index=indice_atual)
+    
+    # 4. A LIMPEZA DE SINCRONIA:
+    info_nova = langs_info[escolha_nome]
+    
+    if info_nova["lang"] != st.session_state.lang:
+        # Mudamos o idioma na memória
         st.session_state.last_lang = st.session_state.lang
-        st.session_state.lang = st.session_state.poly_lang
-
-    if st.session_state.lang != st.session_state.last_lang:
-        st.success(translate("idioma atual") + " ➪ " + st.session_state.lang)
-
+        st.session_state.lang = info_nova["lang"]
+        st.session_state.poly_file = info_nova["file"]
+        
+        # --- LIMPEZA CRÍTICA ---
+        # Apagamos o poema traduzido antigo para o tradutor ler o NOVO 'st.session_state.lang'
+        if 'curr_ypoema' in st.session_state:
+            del st.session_state['curr_ypoema']
+        
+        # Forçamos o recarregamento imediato
+        st.rerun()
+        
 
 def show_icons():  # https://api.whatsapp.com/
     with st.sidebar:
