@@ -244,7 +244,6 @@ def translate(input_text):
         return translate("Arquivo muito grande para ser traduzido.")
 
 
-
 def pick_lang():  # define idioma
     # Criamos 6 colunas de tamanho idêntico para alinhar perfeitamente
     cols = st.sidebar.columns(6)
@@ -256,6 +255,30 @@ def pick_lang():  # define idioma
     btn_fr = cols[3].button("fr", key=4, help="Français", use_container_width=True)
     btn_en = cols[4].button("en", key=5, help="English", use_container_width=True)
     btn_xy = cols[5].button("⚒️", key=6, help=st.session_state.poly_name, use_container_width=True)
+
+    # Lógica de seleção
+    if btn_pt:
+        st.session_state.lang = "pt"
+        st.session_state.poly_file = "poly_pt.txt"
+    elif btn_es:
+        st.session_state.lang = "es"
+        st.session_state.poly_file = "poly_es.txt"
+    elif btn_it:
+        st.session_state.lang = "it"
+        st.session_state.poly_file = "poly_it.txt"
+    elif btn_fr:
+        st.session_state.lang = "fr"
+        st.session_state.poly_file = "poly_fr.txt"
+    elif btn_en:
+        st.session_state.lang = "en"
+        st.session_state.poly_file = "poly_en.txt"
+    elif btn_xy:
+        st.session_state.last_lang = st.session_state.lang
+        st.session_state.lang = st.session_state.poly_lang
+
+    # Feedback de mudança de idioma
+    if st.session_state.lang != st.session_state.last_lang:
+       st.success(translate("idioma atual") + " ➪ " + st.session_state.lang)
 
     # Lógica de seleção
     if btn_pt:
