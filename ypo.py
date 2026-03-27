@@ -642,12 +642,18 @@ return novo_ypoema
 @st.cache_data(show_spinner=False)
 def load_images():
     images_list = []
-    with open(os.path.join("./base/images.txt"), encoding="utf-8") as lista:
+    # Usar o path.join com vírgula é mais seguro no Linux do Railway
+    caminho = os.path.join("base", "images.txt") 
+    
+    with open(caminho, encoding="utf-8") as lista:
         for line in lista:
-            images_list.append(line)
-        return images_list
-        
-def load_arts(nome_tema):  # Select image for arts
+            # .strip() remove espaços e o \n (pular linha) do final
+            images_list.append(line.strip()) 
+            
+    # O RETURN DEVE FICAR AQUI (Alinhado com o 'with')
+    return
+    
+    images_listdef load_arts(nome_tema):  # Select image for arts
     path = "./images/machina/"
     path_list = load_images()
     for line in path_list:
