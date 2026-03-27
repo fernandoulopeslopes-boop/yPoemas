@@ -70,7 +70,6 @@ st.set_page_config(
     initial_sidebar_state="auto",
 )
 
-
 def have_internet(host="8.8.8.8", port=53, timeout=3):
     try:
         socket.setdefaulttimeout(timeout)
