@@ -617,13 +617,12 @@ def load_poema(nome_tema, seed_eureka):  # generate new yPoema
     script = gera_poema(nome_tema, seed_eureka)
     novo_ypoema = ""
     lypo_user = "LYPO_" + IPAddres
-    # Usamos o st.markdown com HTML para forçar o centro
+
     frufru = "* {nome_tema} * + \n"
-    
     novo_ypoema += frufru
     
     with open(os.path.join("./temp/" + lypo_user), "w", encoding="utf-8") as save_lypo:
-        save_lypo.write(frufru + '\n')
+        save_lypo.write(frufru)
         for line in script:
             if line == "\n":
                 save_lypo.write("\n")
