@@ -245,6 +245,7 @@ def translate(input_text):
         return translate("Arquivo muito grande para ser traduzido.")
 
 
+
 def pick_lang():  # define idioma
     # Criamos 6 colunas de tamanho idêntico para alinhar perfeitamente
     cols = st.sidebar.columns(6)
