@@ -282,31 +282,28 @@ def pick_lang():  # define idioma
        st.success(translate("idioma atual") + " ➪ " + st.session_state.lang)
 
 
-def show_icons():  # https://api.whatsapp.com/
+def show_icons():  # links de contato
     with st.sidebar:
-        st.sidebar.markdown(
+        st.markdown(
             f"""
-            <nav>
+            <nav style='text-align: center;'>
             <a href='https://www.facebook.com/nandoulopes' target='_blank'>• facebook</a> |
             <a href='mailto:lopes.fernando@hotmail.com' target='_blank'>e-mail</a> |
             <a href='https://www.instagram.com/fernando.lopes.942/' target='_blank'>instagram</a> |
             <a href='https://web.whatsapp.com/send?phone=+5512991368181' target='_blank'>whatsapp</a>
             </nav>
             """,
-            unsafe_allow_html=True,
+            unsafe_allow_html=True
+        ) # <-- O PARÊNTESE QUE FALTAVA ESTÁ AQUI!
 
-            
 def load_help_tips():
     help_list = []
-    with open(os.path.join("./base/helpers.txt"), encoding="utf-8") as file:
+    caminho_help = os.path.join("base", "helpers.txt")
+    with open(caminho_help, "r", encoding="utf-8") as file:
         for line in file:
-            help_list.append(line)
-    file.close()
-
-    return help_list
-
-
-def load_help(idiom):
+            help_list.append(line.strip())
+    # O 'with' já fecha o arquivo, não precisa de file.close()
+    return help_listdef load_help(idiom):
     returns = []
     if idiom in "_pt_es_it_fr_en":
         helpers = load_help_tips()
