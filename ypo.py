@@ -440,6 +440,7 @@ def load_md_file(file):  # Open files for about's
 
 
 @st.cache_data(show_spinner=False)
+
 def load_eureka(part_of_word):
     lexico_list = []
     with open(os.path.join("./base/lexico_pt.txt"), encoding="utf-8") as lista:
@@ -999,6 +1000,31 @@ import streamlit as st
 from lay_2_ypo import gera_poema  # Importando sua função com o 'return'
 
 def page_eureka():
+    st.title("Machina de Fazer Poesia")
+    
+    # Usando a lista de temas que você já tinha no código original
+    # (Certifique-se de que 'lista_temas' esteja acessível aqui)
+    seed_tema = st.selectbox("Escolha o Horizonte Temático:", lista_temas, key="sb_eureka_estavel")
+    
+    this_seed = st.text_input("Semente da Sorte:", "42", key="ti_eureka_estavel")
+
+    if st.button("Gerar Poema", key="btn_eureka_estavel"):
+        # Chama a função que agora retorna a string (Ufa!)
+        poema_vivo = gera_poema(seed_tema, this_seed)
+        
+        # Exibição padrão do Streamlit (Simples e direta)
+        st.text(poema_vivo) 
+        
+        st.markdown("---")
+        
+        st.download_button(
+            label="Baixar Poema",
+            data=poema_vivo,
+            file_name=f"{seed_tema}.txt",
+            key="dl_eureka_estavel"
+        )
+        
+def page_euruka():
     # --- FAXINA VISUAL (Mata o Retângulo Azul e Bordas) ---
     st.markdown("""
         <style>
