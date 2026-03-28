@@ -1109,28 +1109,43 @@ def page_eureka():
                 update_readings("video_eureka")
                 st.session_state.vydo = False
 
+# --- ÁREA DE EXIBIÇÃO EUREKA (PURIFICADA) ---
             if lnew:
-                eureka_expander = st.expander("", expanded=True)
-                with eureka_expander:
-                    LOGO_TEXTO = curr_ypoema
-                    LOGO_IMAGE = None
+                # Criamos um container para garantir que nada "vaze"
+                with st.container():
+                    # 1. TÍTULO ÚNICO (Sem st.header/st.subheader nativo)
+                    st.markdown(f"""
+                        <div style="text-align: center; margin-top: 30px;">
+                            <h1 style="color: #4B3621; font-family: serif; border-bottom: 1px solid #8B4513; display: inline-block; padding-bottom: 5px;">
+                                * {seed_tema.upper()} *
+                            </h1>
+                        </div>
+                    """, unsafe_allow_html=True)
+
+                    # 2. O CORPO DO POEMA (Injetado direto no HTML para evitar a tira azul)
+                    # Note: substituímos \n por <br> para manter a forma poética
+                    poema_html = curr_ypoema.replace('\n', '<br>')
+                    
+                    st.markdown(f"""
+                        <div style="font-family: 'Courier New', Courier, monospace; 
+                                    padding: 30px; 
+                                    background-color: transparent; 
+                                    color: #2c3e50; 
+                                    font-size: 1.2em; 
+                                    line-height: 1.6; 
+                                    text-align: center;">
+                            {poema_html}
+                        </div>
+                    """, unsafe_allow_html=True)
+
+                    # 3. IMAGEM (Se ativa, sem bordas de alerta)
                     if st.session_state.draw:
-                        LOGO_IMAGE = load_arts(seed_tema)
+                        img_path = load_arts(seed_tema)
+                        if img_path:
+                            st.image(img_path, use_column_width=True)
 
-                    write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
-                    update_readings(seed_tema)
-
-                if st.session_state.talk:
-                    talk(curr_ypoema)
-            if manu:
-                lnew = False
-                LOGO_TEXTO = load_info(seed_tema)
-                if st.session_state.lang != "pt":  # translate if idioma <> pt
-                    LOGO_TEXTO = translate(LOGO_TEXTO)
-
-                LOGO_IMAGE = "./images/matrix/" + seed_tema.capitalize() + ".jpg"
-                write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
-
+                # Atualiza leituras
+                update_readings(seed_tema)
         else:
             st.warning(
                 translate(
