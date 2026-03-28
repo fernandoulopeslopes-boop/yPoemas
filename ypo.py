@@ -82,6 +82,10 @@ from lay_2_ypo import gera_poema
 
 ### bof: settings
 
+# Inicialização Global - O alicerce da Torre
+LOGO_TEXTO = ""
+LOGO_IMAGE = None
+
 st.set_page_config(
     page_title="a máquina de fazer Poesia - yPoemas",
     page_icon=":star:",
@@ -908,6 +912,7 @@ def page_mini():
 
 
 def page_ypoemas():
+    global LOGO_TEXTO, LOGO_IMAGE # <--- ESSA LINHA É A CHAVE
     temas_list = load_temas(st.session_state.book)
     maxy_ypoemas = len(temas_list) - 1
     if (
@@ -970,7 +975,8 @@ def page_ypoemas():
     if LOGO_TEXTO:
         write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
     else:
-        st.write("Aguardando o sopro da Machina...")    
+        st.write("Aguardando o sopro da Machina...")   
+        
     if manu:
         st.subheader(load_md_file("MANUAL_YPOEMAS.md"))
 
