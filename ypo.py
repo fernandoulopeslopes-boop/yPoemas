@@ -1000,28 +1000,33 @@ def page_ypoemas():
 
 
 def page_eureka():
+    # 1. CSS de Purificação (Força o fundo a ser transparente e remove bordas)
+    st.markdown("""
+        <style>
+        .stAlert { background-color: transparent !important; border: none !important; }
+        div[data-testid="stExpander"] { border: none !important; box-shadow: none !important; }
+        div.stMarkdown { background: transparent !important; }
+        </style>
+    """, unsafe_allow_html=True)
+
     help_tips = load_help(st.session_state.lang)
     help_rand = help_tips[1]
     help_more = help_tips[4]
 
-    seed, more, rand, manu, occurrences = st.columns([2.5, 1.5, 1.5, 0.7, 4])
+    # Interface de Busca - Alinhada
+    seed, more_btn, rand_btn, manu_btn, occurrences = st.columns([2.5, 1.5, 1.5, 0.7, 4])
 
     with seed:
-        find_what = st.text_input(
-            label=translate("digite algo para buscar..."),
-        )
+        find_what = st.text_input(label=translate("digite algo para buscar..."), key="eureka_search")
 
-    with more:
-        more = more.button("✚", help=help_more)
+    # Botoeira Técnica
+    do_more = more_btn.button("✚", help=help_more)
+    do_rand = rand_btn.button("✻", help=help_rand)
+    do_manu = manu_btn.button("?", help="help !!!")
 
-    with rand:
-        rand = rand.button("✻", help=help_rand)
-
-    with manu:
-        manu = manu.button("?", help="help !!!")
-
-    if manu:
-        st.subheader(load_md_file("MANUAL_EUREKA.md"))
+    if do_manu:
+        st.markdown(f"### {translate('Manual Eureka')}")
+        st.markdown(load_md_file("MANUAL_EUREKA.md"))
 
     if len(find_what) < 3:
         st.warning(translate("digite pelo menos 3 letras..."))
@@ -1032,112 +1037,97 @@ def page_eureka():
         eureka_list = load_eureka(find_what)
         for line in eureka_list:
             this_line = line.strip("\n")
-            part_line = this_line.partition(" : ")
-            palas = part_line[0]
-            fonte = part_line[2]
-            seed_tema = fonte[0:-5]
-            if (palas is None) or (fonte is None):
-                continue
-            else:
+            if " : " in this_line:
+                palas, _, fonte = this_line.partition(" : ")
+                seed_tema = fonte[0:-5]
                 seed_list.append(palas + " ➪ " + fonte)
-                if not seed_tema in soma_tema:
+                if seed_tema not in soma_tema:
                     soma_tema.append(seed_tema)
 
-        if (not more) and (not manu):
+        if not do_more and not do_manu:
             st.session_state.eureka = 0
 
         if len(seed_list) == 0:
-            st.warning(
-                translate(
-                    'nenhuma ocorrência das letras " '
-                    + find_what
-                    + ' " foi encontrada...'
-                )
-            )
-        elif len(seed_list) >= 1:
+            st.warning(translate(f'nenhuma ocorrência de "{find_what}" encontrada...'))
+        else:
             seed_list.sort()
-            if len(seed_list) == 1:
-                info_find = translate('ocorrência de "')
-            else:
-                info_find = translate('ocorrências de "')
-
+            info_find = translate('ocorrência de "') if len(seed_list) == 1 else translate('ocorrências de "')
             info_find += find_what
             if len(soma_tema) > 1:
-                info_find += translate('" em ' + str(len(soma_tema)) + " temas")
+                info_find += translate(f'" em {len(soma_tema)} temas')
 
-            if rand:
+            if do_rand:
                 st.session_state.eureka = random.randrange(0, len(seed_list))
 
             with occurrences:
                 options = list(range(len(seed_list)))
                 opt_ocur = st.selectbox(
-                    "↓  " + str(len(seed_list)) + " " + info_find,
+                    f"↓ {len(seed_list)} {info_find}",
                     options,
                     index=st.session_state.eureka,
                     format_func=lambda y: seed_list[y],
-                    key="opt_ocur",
+                    key="opt_ocur_select"
                 )
 
             st.session_state.eureka = opt_ocur
             this_seed = seed_list[st.session_state.eureka]
-            part_line = this_seed.partition(" ➪ ")
-            nome_tema = part_line[2]
+            _, _, nome_tema = this_seed.partition(" ➪ ")
             seed_tema = nome_tema[0:-5]
-
             st.session_state.tema = seed_tema
 
+            # Carga do Poema (Lógica de Linguagem)
             if st.session_state.lang != st.session_state.last_lang:
-                curr_ypoema = load_lypo()  # changes in lang, keep LYPO
+                curr_ypoema = load_lypo()
             else:
                 curr_ypoema = load_poema(seed_tema, this_seed)
-                curr_ypoema = load_lypo()
+                curr_ypoema = load_lypo() 
 
-            if st.session_state.lang != "pt":  # translate if idioma <> pt
+            if st.session_state.lang != "pt":
                 curr_ypoema = translate(curr_ypoema)
-                typo_user = "TYPO_" + IPAddres
-                with open(
-                    os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
-                ) as save_typo:
-                    save_typo.write(curr_ypoema)
-                    save_typo.close()
-                curr_ypoema = load_typo()  # to normalize line breaks in text
 
-            lnew = True
-            if st.session_state.vydo:
-                lnew = False
-                show_video("eureka")
-                update_readings("video_eureka")
-                st.session_state.vydo = False
+            # --- ÁREA DE EXIBIÇÃO EUREKA (SEM RETÂNGULO AZUL) ---
+            st.markdown("---")
+            
+            # 1. Título do Tema (Centralizado e Elegante)
+            st.markdown(f"""
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h2 style="color: #4B3621; font-family: 'Times New Roman', serif; letter-spacing: 3px;">
+                        * {seed_tema.upper()} *
+                    </h2>
+                </div>
+            """, unsafe_allow_html=True)
 
-            if lnew:
-                eureka_expander = st.expander("", expanded=True)
-                with eureka_expander:
-                    LOGO_TEXTO = curr_ypoema
-                    LOGO_IMAGE = None
-                    if st.session_state.draw:
-                        LOGO_IMAGE = load_arts(seed_tema)
+            # 2. O Poema (Renderizado em Markdown Puro, ignorando write_ypoema)
+            poema_formatado = curr_ypoema.replace('\n', '<br>')
+            st.markdown(f"""
+                <div style="font-family: 'Courier New', Courier, monospace; 
+                            text-align: center; font-size: 1.25em; 
+                            line-height: 1.6; color: #2c3e50; 
+                            padding: 20px; background: transparent;">
+                    {poema_formatado}
+                </div>
+            """, unsafe_allow_html=True)
 
-                    write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
-                    update_readings(seed_tema)
+            # 3. Imagem (Se ativa, sem moldura de alerta)
+            if st.session_state.draw:
+                img_path = load_arts(seed_tema)
+                if img_path:
+                    st.image(img_path, use_column_width=True)
 
-                if st.session_state.talk:
-                    talk(curr_ypoema)
-            if manu:
-                lnew = False
-                LOGO_TEXTO = load_info(seed_tema)
-                if st.session_state.lang != "pt":  # translate if idioma <> pt
-                    LOGO_TEXTO = translate(LOGO_TEXTO)
+            # Atualiza métricas
+            update_readings(seed_tema)
 
-                LOGO_IMAGE = "./images/matrix/" + seed_tema.capitalize() + ".jpg"
-                write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
-
-        else:
-            st.warning(
-                translate(
-                    "nenhum verbete encontrado com essas letras ---> " + find_what
-                )
+            # Download Clandestino
+            st.download_button(
+                label="📥 Baixar Despacho",
+                data=curr_ypoema,
+                file_name=f"eureka_{seed_tema}.txt",
+                mime="text/plain"
             )
 
+            if st.session_state.talk:
+                talk(curr_ypoema)
+                
 
 def page_off_machina():  # available off_machina_books
     off_books_list = load_all_offs()
