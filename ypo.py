@@ -66,6 +66,11 @@ BASE_PATH = os.path.dirname(os.path.abspath(__file__))
 # Importante: No GitHub, a pasta deve ser 'base' (minúscula)
 my_way = os.path.join(BASE_PATH, "base", "lexico_pt.txt")
 
+# 2. OS RAMAIS (Caminhos para as pastas)
+# Certifique-se de que no GitHub as pastas 'base' e 'data' existam (em minúsculo)
+path_base = os.path.join(BASE_PATH, "base")
+path_data = os.path.join(BASE_PATH, "data")
+
 import edge_tts
 import asyncio
 
