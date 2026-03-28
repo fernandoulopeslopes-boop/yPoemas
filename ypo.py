@@ -1072,6 +1072,7 @@ def page_eureka():
             file_name=f"{seed_tema}.txt",
             key="dl_eureka_limpo"
         )        
+        
 def page_euruka():
     # --- FAXINA VISUAL (Mata o Retângulo Azul e Bordas) ---
     st.markdown("""
@@ -1121,11 +1122,6 @@ def page_euruka():
             file_name=f"poema_{seed_tema.lower()}.txt",
             mime="text/plain"
         )
-
-# Execução da página
-if __name__ == "__main__":
-    page_eureka()
-    
 
 def page_off_machina():  # available off_machina_books
     off_books_list = load_all_offs()
