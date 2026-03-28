@@ -962,6 +962,15 @@ def page_ypoemas():
     st.session_state.tema = temas_list[st.session_state.take]
 
     lnew = True
+    LOGO_TEXTO = ""
+    LOGO_IMAGE = None
+
+    # --- 2. A CHECAGEM SEGURA ---
+    # Agora a linha 680 não vai mais quebrar, pois LOGO_TEXTO existe (mesmo que vazia)
+    if LOGO_TEXTO:
+        write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
+    else:
+        st.write("Aguardando o sopro da Machina...")    
     if manu:
         st.subheader(load_md_file("MANUAL_YPOEMAS.md"))
 
@@ -986,6 +995,10 @@ def page_ypoemas():
 
         ypoemas_expander = st.expander(what_book, expanded=True)
         with ypoemas_expander:
+            LOGO_TEXTO = curr_ypoema 
+            if st.session_state.draw:
+                LOGO_IMAGE = load_arts(st.session_state.tema)
+
             if st.session_state.lang != st.session_state.last_lang:
                 curr_ypoema = load_lypo()  # changes in lang, keep LYPO
             else:
