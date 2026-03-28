@@ -943,8 +943,9 @@ def page_ypoemas():
         show_video("ypoemas")
         update_readings("video_ypoemas")
         st.session_state.vydo = False
-
-    if lnew:
+        
+    what_book = ""
+    if lnew_Ypo:
         what_book = (
             "⚫  "
             + st.session_state.lang
