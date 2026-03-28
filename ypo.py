@@ -884,6 +884,18 @@ def page_mini():
 
 
 def page_ypoemas():
+
+    # --- 1. INICIALIZAÇÃO DE FLAGS (O Painel de Controle) ---
+    lnew_ypo = True
+    lnew_img = False
+    lnew_vydo = False
+    
+    # --- 2. INICIALIZAÇÃO DE RÓTULOS E SAÍDAS (Evita UnboundLocalError) ---
+    what_book = "yPoemas" # Nome padrão caso o código não chegue na definição real
+    curr_ypoema = ""
+    LOGO_TEXTO = ""
+    LOGO_IMAGE = None
+    
     temas_list = load_temas(st.session_state.book)
     maxy_ypoemas = len(temas_list) - 1
     if (
@@ -945,17 +957,14 @@ def page_ypoemas():
         st.session_state.vydo = False
 
     if lnew:
-        what_book = (
-            "⚫  "
-            + st.session_state.lang
-            + " ( "
-            + st.session_state.book
-            + " ) ( "
-            + str(st.session_state.take + 1)
-            + " / "
-            + str(len(temas_list))
-            + " )"
-        )
+        try:
+           what_book = (
+               "⚫ " + str(st.session_state.lang) + 
+               " ( " + str(st.session_state.book) + " ) " +
+               "( " + str(st.session_state.take + 1) + " / " + str(len(off_book_pagys)) + " )"
+              )
+        except:
+           what_book = "yPoemas - A Machina" 
 
         ypoemas_expander = st.expander(what_book, expanded=True)
         with ypoemas_expander:
@@ -1224,16 +1233,16 @@ def page_off_machina():  # available off_machina_books
         st.session_state.vydo = False
 
     if lnew:
-        what_book = (
-            "⚫  "
-            + st.session_state.lang
-            + " ( "
-            + str(st.session_state.off_take + 1)
-            + "/"
-            + str(len(off_book_pagys))
-            + " )"
-        )
 
+        try:
+           what_book = (
+               "⚫ " + str(st.session_state.lang) + 
+               " ( " + str(st.session_state.book) + " ) " +
+               "( " + str(st.session_state.take + 1) + " / " + str(len(off_book_pagys)) + " )"
+              )
+       except:
+           what_book = "yPoemas - A Machina"
+        
         off_machina_expander = st.expander(what_book, True)
         with off_machina_expander:
             off_book_text = ""
