@@ -944,6 +944,7 @@ def page_ypoemas():
         update_readings("video_ypoemas")
         st.session_state.vydo = False
 
+    what_book = ""
     if lnew:
         what_book = (
             "⚫  "
