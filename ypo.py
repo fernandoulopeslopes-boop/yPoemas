@@ -672,7 +672,17 @@ def load_arts(nome_tema):
 
 ### eof: loaders
 ### bof: functions
-        
+
+# --- TESTE DE EMERGÊNCIA (O BYPASS) ---
+
+st.write("--- DEBUG DA MACHINA ---")
+st.write(f"Tema Atual: {st.session_state.tema}")
+if LOGO_TEXTO:
+    st.info(f"O Texto existe! Tamanho: {len(LOGO_TEXTO)} caracteres.")
+    st.code(LOGO_TEXTO) # O st.code força uma moldura cinza, impossível de ficar invisível
+else:
+    st.error("O LOGO_TEXTO chegou vazio na entrega final!")
+    
 def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
     if LOGO_IMAGE == None:
         st.markdown(
