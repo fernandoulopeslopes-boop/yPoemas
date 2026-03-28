@@ -1000,6 +1000,119 @@ def page_ypoemas():
 
 
 def page_eureka():
+    # 1. Configuração de Estilo Samizdát (Limpeza de "fantasmas" do Streamlit)
+    st.markdown("""
+        <style>
+        .stAlert { background-color: transparent !important; border: none !important; }
+        div[data-testid="stExpander"] { border: none !important; box-shadow: none !important; }
+        </style>
+    """, unsafe_allow_html=True)
+
+    help_tips = load_help(st.session_state.lang)
+    help_rand = help_tips[1]
+    help_more = help_tips[4]
+
+    # Layout de busca e controles
+    seed_col, more_col, rand_col, manu_col, occur_col = st.columns([2.5, 1.5, 1.5, 0.7, 4])
+
+    with seed_col:
+        find_what = st.text_input(label=translate("digite algo para buscar..."), key="eureka_input")
+
+    do_more = more_col.button("✚", help=help_more)
+    do_rand = rand_col.button("✻", help=help_rand)
+    do_manu = manu_col.button("?", help="Manual Eureka")
+
+    if do_manu:
+        st.markdown(load_md_file("MANUAL_EUREKA.md"))
+
+    if len(find_what) < 3:
+        st.warning(translate("digite pelo menos 3 letras..."))
+    else:
+        eureka_list = load_eureka(find_what)
+        seed_list = []
+        for line in eureka_list:
+            this_line = line.strip("\n")
+            if " : " in this_line:
+                palas, _, fonte = this_line.partition(" : ")
+                seed_list.append(palas + " ➪ " + fonte)
+
+        if not seed_list:
+            st.warning(translate("nenhuma ocorrência encontrada..."))
+        else:
+            seed_list.sort()
+            
+            if do_rand:
+                st.session_state.eureka = random.randrange(0, len(seed_list))
+
+            with occur_col:
+                opt_ocur = st.selectbox(
+                    f"↓ {len(seed_list)} " + translate("ocorrências"),
+                    range(len(seed_list)),
+                    index=st.session_state.eureka,
+                    format_func=lambda y: seed_list[y],
+                    key="eureka_select"
+                )
+            
+            st.session_state.eureka = opt_ocur
+            this_seed = seed_list[st.session_state.eureka]
+            _, _, nome_tema = this_seed.partition(" ➪ ")
+            seed_tema = nome_tema[0:-5]
+
+            # --- O NASCIMENTO DO POEMA (ALMA LEVE - SEM DISCO) ---
+            # Certifique-se que gera_poema no seu lay_2_ypo.py termina com: return "\n".join(script)
+            poema_vivo = gera_poema(seed_tema, this_seed)
+
+            # Tradução instantânea na variável
+            if st.session_state.lang != "pt":
+                poema_vivo = translate(poema_vivo)
+                # Limpeza de ruído de tradução
+                poema_vivo = poema_vivo.replace("<br>>", "\n").replace("< br>", "\n").replace("<br", "\n")
+
+            # --- RENDERIZAÇÃO FINAL (SEM RETÂNGULO AZUL) ---
+            st.markdown("---")
+            palco_eureka = st.empty()
+            
+            with palco_eureka.container():
+                # Título
+                st.markdown(f"<h2 style='text-align:center; color:#4B3621; font-family:serif;'>* {seed_tema.upper()} *</h2>", unsafe_allow_html=True)
+                
+                # Corpo do Poema em HTML puro (O segredo da leveza)
+                corpo_html = poema_vivo.replace('\n', '<br>')
+                st.markdown(f"""
+                    <div style="font-family:'Courier New', Courier, monospace; 
+                                text-align:center; font-size:1.3em; 
+                                line-height:1.7; color:#2c3e50; padding:20px; border:none;">
+                        {corpo_html}
+                    </div>
+                """, unsafe_allow_html=True)
+
+                # Arte Clandestina
+                if st.session_state.draw:
+                    img_path = load_arts(seed_tema)
+                    if img_path:
+                        st.image(img_path, use_column_width=True)
+
+            # --- FERRAMENTAS ---
+            col_down, col_info = st.columns([1, 1])
+            with col_down:
+                st.download_button(
+                    label="📥 Baixar Poema", 
+                    data=poema_vivo, 
+                    file_name=f"eureka_{seed_tema}.txt",
+                    key="btn_dl_eureka"
+                )
+            
+            if do_more:
+                st.info(load_info(seed_tema))
+
+            # Funções de suporte
+            update_readings(seed_tema)
+            if st.session_state.talk:
+                talk(poema_vivo)
+                
+
+
+def page_eureka():
     help_tips = load_help(st.session_state.lang)
     help_rand = help_tips[1]
     help_more = help_tips[4]
