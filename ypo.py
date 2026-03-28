@@ -54,6 +54,8 @@ import random
 import base64
 import socket
 import streamlit as st
+st.cache_data.clear() # Limpa a memória de 4 anos atrás
+
 import edge_tts
 import asyncio
 
