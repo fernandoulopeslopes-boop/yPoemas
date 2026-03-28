@@ -53,8 +53,18 @@ import time
 import random
 import base64
 import socket
+
 import streamlit as st
+
 st.cache_data.clear() # Limpa a memória de 4 anos atrás
+
+# --- MAPEAMENTO DE TERRITÓRIO (Infraestrutura) ---
+# BASE_PATH: Descobre a pasta raiz do projeto no servidor Linux
+BASE_PATH = os.path.dirname(os.path.abspath(__file__))
+
+# my_way: O caminho absoluto e seguro para o seu léxico
+# Importante: No GitHub, a pasta deve ser 'base' (minúscula)
+my_way = os.path.join(BASE_PATH, "base", "lexico_pt.txt")
 
 import edge_tts
 import asyncio
