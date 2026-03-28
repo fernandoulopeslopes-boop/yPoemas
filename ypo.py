@@ -58,18 +58,20 @@ import streamlit as st
 
 st.cache_data.clear() # Limpa a memória de 4 anos atrás
 
-# --- MAPEAMENTO DE TERRITÓRIO (Infraestrutura) ---
-# BASE_PATH: Descobre a pasta raiz do projeto no servidor Linux
-BASE_PATH = os.path.dirname(os.path.abspath(__file__))
+import os
+import streamlit as st
 
-# my_way: O caminho absoluto e seguro para o seu léxico
-# Importante: No GitHub, a pasta deve ser 'base' (minúscula)
-my_way = os.path.join(BASE_PATH, "base", "lexico_pt.txt")
+# --- O TRILHO DEFINITIVO ---
+# Pega a pasta onde o ypo.py está morando agora
+this_folder = os.path.dirname(__file__)
 
+# Define o caminho para a pasta data que você acabou de me mostrar
 # 2. OS RAMAIS (Caminhos para as pastas)
-# Certifique-se de que no GitHub as pastas 'base' e 'data' existam (em minúsculo)
-path_base = os.path.join(BASE_PATH, "base")
-path_data = os.path.join(BASE_PATH, "data")
+path_data = os.path.join(this_folder, "data")
+path_base = os.path.join(this_folder, "base")
+
+# my_way: O caminho absoluto e seguro para o léxico
+my_way = os.path.join(path_base, "lexico_pt.txt") # Ou o nome correto do seu léxico
 
 import edge_tts
 import asyncio
