@@ -916,7 +916,6 @@ def page_ypoemas():
     curr_ypoema = "" 
     LOGO_TEXTO = ""
     LOGO_IMAGE = None
-    
     temas_list = load_temas(st.session_state.book)
     maxy_ypoemas = len(temas_list) - 1
     if (
