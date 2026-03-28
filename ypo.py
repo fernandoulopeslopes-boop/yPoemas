@@ -1014,6 +1014,27 @@ def page_ypoemas():
 import streamlit as st
 from lay_2_ypo import gera_poema  # Importando sua função com o 'return'
 
+# --- ENGRENAGENS DE BUSCA (A Ferramenta) ---
+def load_eureka(part_of_word):
+    """
+    Usa o 'my_way' para filtrar sementes no léxico.
+    """
+    lexico_list = []
+    
+    # O trilho my_way que definimos no topo do arquivo
+    if os.path.exists(my_way):
+        try:
+            with open(my_way, "r", encoding="utf-8") as lista:
+                for line in lista:
+                    this_line = line.strip("\n")
+                    # Filtra apenas o que o usuário digitou (part_of_word)
+                    if part_of_word.lower() in this_line.lower():
+                        lexico_list.append(this_line)
+        except Exception as e:
+            st.error(f"Erro ao ler o DNA da Machina: {e}")
+            
+    return lexico_list
+
 def page_eureka():
     # Título simples, sem emojis ou termos complexos
     st.title("Gerador de Poemas")
