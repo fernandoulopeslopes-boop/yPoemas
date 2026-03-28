@@ -47,8 +47,6 @@ POLY == Poliglot Idiom == Changed on Catalán
 One more test...
 """
 
-import os
-##$ import io
 import re
 import time
 import random
@@ -56,6 +54,15 @@ import base64
 import socket
 import streamlit as st
 
+import os
+# Caminho do arquivo que está guardando o fantasma
+lypo_path = os.path.join("./temp/", lypo_user)
+if os.path.exists(lypo_path):
+    try:
+        os.remove(lypo_path) # Deleta o arquivo físico para forçar um novo
+    except:
+        pass
+        
 from extra_streamlit_components import TabBar as stx
 from datetime import datetime
 from lay_2_ypo import gera_poema
