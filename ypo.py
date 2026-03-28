@@ -913,6 +913,44 @@ def page_mini():
 
 
 def page_ypoemas():
+
+    # --- 1. O ALICERCE DE CONTROLE ---
+    lnew_ypo = True    # Controla a geração/exibição do texto (.ypo)
+    lnew_img = False   # Controla se a arte (load_arts) deve aparecer
+    lnew_vydo = False  # Controla a exibição do vídeo
+    
+    # Inicialização das saídas
+    LOGO_TEXTO = ""
+    LOGO_IMAGE = None
+
+    # --- 2. A LÓGICA DE INTERRUPÇÃO (Sensores) ---
+    # Se o usuário clicou para ver o vídeo
+    if st.session_state.vydo:
+        lnew_vydo = True
+        lnew_ypo = False # O vídeo "toma" o palco do texto
+        
+    # Se o modo de desenho estiver ativo
+    if st.session_state.draw:
+        lnew_img = True
+
+    # Bloco de Poesia (Expander)
+    if lnew_ypo:
+        with st.expander(what_book, expanded=True):
+            curr_ypoema = load_poema(str(st.session_state.tema), "")
+            LOGO_TEXTO = curr_ypoema
+            
+            # Bloco de Imagem (Só carrega se a flag de imagem permitir)
+            if lnew_img:
+                LOGO_IMAGE = load_arts(st.session_state.tema)
+
+    # --- 4. A ENTREGA FINAL ---
+    if LOGO_TEXTO:
+        write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
+    elif not :
+        st.write("Aguardando o sopro da Machina...")
+        
+
+    
     lNew = True
     curr_ypoema = "" 
     LOGO_TEXTO = ""
@@ -978,11 +1016,12 @@ def page_ypoemas():
         st.subheader(load_md_file("MANUAL_YPOEMAS.md"))
 
     if st.session_state.vydo:
-        lnew = False
+        lnew_vydo = True
+        lnew_ypo = False # O vídeo "toma" o palco do texto
         show_video("ypoemas")
         update_readings("video_ypoemas")
         st.session_state.vydo = False
-
+   
     if lnew:
         with ypoemas_expander:
             # 2. Tente carregar o poema
