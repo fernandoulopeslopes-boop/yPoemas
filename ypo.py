@@ -801,22 +801,25 @@ def page_mini():
             curr_ypoema = load_poema(st.session_state.tema, "")
             curr_ypoema = load_lypo()
 
-        if st.session_state.lang != "pt":  # translate if idioma <> pt
-
-            # Se mudou o tema (opt_take), carregue o NOVO poema antes de traduzir
-            # Não use o load_lypo() se o tema acabou de mudar!
+        if st.session_state.lang != "pt":
+            # 1. Carrega o original em PT
             poema_base = load_poema(str(temas_list[opt_take]), "") 
+            
+            # 2. Traduz (certifique-se de passar o idioma se mudamos a função)
             curr_ypoema = translate(poema_base)
-    
-            # curr_ypoema = translate(curr_ypoema)
+            
+            # 3. NORMALIZAÇÃO (O que o load_typo fazia, fazemos aqui na RAM)
+            # Se o load_typo apenas trocava \n por <br>, faça aqui:
+            curr_ypoema = curr_ypoema.replace("\n", "<br>")
+            
+            # 4. Grava o backup se quiser, mas NÃO use ele para a exibição agora
             typo_user = "TYPO_" + IPAddres
-            with open(
-                os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
-            ) as save_typo:
+            with open(os.path.join("./temp/" + typo_user), "w", encoding="utf-8") as save_typo:
                 save_typo.write(curr_ypoema)
-                save_typo.close()
-            curr_ypoema = load_typo()  # to normalize line breaks in text
-
+            
+            # REGRAS DE OURO: 
+            # NÃO chame curr_ypoema = load_typo() aqui! 
+            # O poema já está na variável curr_ypoema.
         update_readings(st.session_state.tema)
         LOGO_TEXTO = curr_ypoema
         LOGO_IMAGE = None
