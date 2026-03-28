@@ -83,6 +83,7 @@ from lay_2_ypo import gera_poema
 ### bof: settings
 
 # Inicialização Global - O alicerce da Torre
+global LOGO_TEXTO, LOGO_IMAGE
 LOGO_TEXTO = ""
 LOGO_IMAGE = None
 
