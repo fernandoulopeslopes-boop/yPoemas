@@ -220,29 +220,27 @@ if "rand" not in st.session_state:
 ### bof: tools
 
 
-def translate(input_text):
-    if st.session_state.lang == "pt":  # don't need translations here
+def translate(input_text, lang_to_use): # Forçamos a passagem do idioma aqui
+    if lang_to_use == "pt":
         return input_text
 
     if not have_internet():
-        st.session_state.lang = "pt"
         return input_text
 
     try:
-        output_text = GoogleTranslator(
-            source="pt", target=st.session_state.lang
-        ).translate(text=input_text)
+        # IMPORTANTE: Usamos o 'lang_to_use' que vem do argumento, não da sessão global
+        translator = GoogleTranslator(source="pt", target=lang_to_use)
+        output_text = translator.translate(text=input_text)
 
-        output_text = output_text.replace("<br>>", "<br>")
-        output_text = output_text.replace("< br>", "<br>")
-        output_text = output_text.replace("<br >", "<br>")
-        output_text = output_text.replace("<br ", "<br>")
-        output_text = output_text.replace(" br>", "<br>")
+        # Limpeza das tags (seu código original)
+        for tag in ["<br>>", "< br>", "<br >", "<br ", " br>"]:
+            output_text = output_text.replace(tag, "<br>")
+            
         return output_text
-    except:
-        return translate("Arquivo muito grande para ser traduzido.")
-
-
+    except Exception as e:
+        # Se falhar, volta ao original para não travar a 'Machina'
+        return input_text
+        
 def pick_lang():  # define idioma
     btn_pt, btn_es, btn_it, btn_fr, btn_en, btn_xy = st.sidebar.columns(
         [1.1, 1.13, 1.04, 1.04, 1.17, 1.25]
@@ -815,7 +813,6 @@ def page_mini():
             curr_ypoema = load_lypo()  # changes in lang, keep LYPO
         else:
             curr_ypoema = load_poema(st.session_state.tema, "")
-            curr_ypoema = load_lypo()
 
         if st.session_state.lang != "pt":  # translate if idioma <> pt
             curr_ypoema = translate(curr_ypoema)
