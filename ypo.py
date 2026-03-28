@@ -1000,30 +1000,42 @@ import streamlit as st
 from lay_2_ypo import gera_poema  # Importando sua função com o 'return'
 
 def page_eureka():
-    st.title("Machina de Fazer Poesia")
-    
-    # Usando a lista de temas que você já tinha no código original
-    # (Certifique-se de que 'lista_temas' esteja acessível aqui)
-    seed_tema = st.selectbox("Escolha o Horizonte Temático:", lista_temas, key="sb_eureka_estavel")
-    
-    this_seed = st.text_input("Semente da Sorte:", "42", key="ti_eureka_estavel")
+    # Título simples, sem emojis ou termos complexos
+    st.title("Gerador de Poemas")
+    st.write("---")
 
-    if st.button("Gerar Poema", key="btn_eureka_estavel"):
-        # Chama a função que agora retorna a string (Ufa!)
+    # 1. Seletor de Tema
+    # Usei uma KEY nova para garantir que ele resete o estado anterior
+    seed_tema = st.selectbox(
+        "Selecione o Tema:", 
+        lista_temas, 
+        key="sb_eureka_limpo"
+    )
+    
+    # 2. Input de Semente
+    this_seed = st.text_input(
+        "Semente (Número):", 
+        "42", 
+        key="ti_eureka_limpo"
+    )
+
+    # 3. Botão de Ação (Nome Simples: 'Criar Poema')
+    if st.button("Criar Poema", key="btn_eureka_limpo"):
+        # Chama a função que retorna a string
         poema_vivo = gera_poema(seed_tema, this_seed)
         
-        # Exibição padrão do Streamlit (Simples e direta)
-        st.text(poema_vivo) 
+        # Exibição padrão do Streamlit (Fundo cinza claro, letra monoespaçada)
+        st.text_area("Poema Gerado:", value=poema_vivo, height=400)
         
-        st.markdown("---")
+        st.write("---")
         
+        # 4. Download
         st.download_button(
-            label="Baixar Poema",
+            label="Baixar Arquivo TXT",
             data=poema_vivo,
             file_name=f"{seed_tema}.txt",
-            key="dl_eureka_estavel"
-        )
-        
+            key="dl_eureka_limpo"
+        )        
 def page_euruka():
     # --- FAXINA VISUAL (Mata o Retângulo Azul e Bordas) ---
     st.markdown("""
