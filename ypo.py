@@ -234,7 +234,8 @@ if "auto" not in st.session_state:
     st.session_state.auto = False
 if "rand" not in st.session_state:
     st.session_state.rand = False
-
+if "poema_atual" not in st.session_state:
+    st.session_state.poema_atual = ""
 
 ### eof: settings
 ### bof: tools
@@ -1175,6 +1176,8 @@ def page_off_machina():  # available off_machina_books
 
     if st.session_state.off_take > maxy_off_machina:  # just in case...
         st.session_state.off_take = 0
+
+    st.Rerun()
 
     if not st.session_state.draw:
         options = list(range(len(off_book_pagys)))
