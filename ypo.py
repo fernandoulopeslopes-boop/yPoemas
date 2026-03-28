@@ -913,7 +913,10 @@ def page_mini():
 
 
 def page_ypoemas():
-    global LOGO_TEXTO, LOGO_IMAGE # <--- ESSA LINHA É A CHAVE
+    curr_ypoema = "" 
+    LOGO_TEXTO = ""
+    LOGO_IMAGE = None
+    
     temas_list = load_temas(st.session_state.book)
     maxy_ypoemas = len(temas_list) - 1
     if (
@@ -949,7 +952,6 @@ def page_ypoemas():
         st.session_state.take += 1
         if st.session_state.take > maxy_ypoemas:
             st.session_state.take = 0
-            # st.rerun()
 
     if not st.session_state.draw:
         options = list(range(len(temas_list)))
@@ -967,12 +969,6 @@ def page_ypoemas():
 
     st.session_state.tema = temas_list[st.session_state.take]
 
-    lnew = True
-    LOGO_TEXTO = ""
-    LOGO_IMAGE = None
-
-    # --- 2. A CHECAGEM SEGURA ---
-    # Agora a linha 680 não vai mais quebrar, pois LOGO_TEXTO existe (mesmo que vazia)
     if LOGO_TEXTO:
         write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
     else:
@@ -986,6 +982,23 @@ def page_ypoemas():
         show_video("ypoemas")
         update_readings("video_ypoemas")
         st.session_state.vydo = False
+
+    if lnew:
+        with ypoemas_expander:
+            # 2. Tente carregar o poema
+            try:
+                if st.session_state.lang != st.session_state.last_lang:
+                    curr_ypoema = load_lypo()
+                else:
+                    curr_ypoema = load_poema(str(st.session_state.tema), "")
+            except Exception as e:
+                curr_ypoema = f"Erro ao carregar tema {st.session_state.tema}: {e}"
+
+            # 3. Se ainda estiver vazio após o load, dê um susto na Machina
+            if not curr_ypoema:
+                curr_ypoema = "A página está em branco, aguardando o sopro..."
+                LOGO_TEXTO = curr_ypoema
+            
 
     if lnew:
         what_book = (
