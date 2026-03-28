@@ -946,7 +946,7 @@ def page_ypoemas():
     # --- 4. A ENTREGA FINAL ---
     if LOGO_TEXTO:
         write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
-    else:
+    elif not lnew_vydo:
         st.write("Aguardando o sopro da Machina...")
         
     curr_ypoema = "" 
