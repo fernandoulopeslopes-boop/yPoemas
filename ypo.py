@@ -949,9 +949,6 @@ def page_ypoemas():
     elif not :
         st.write("Aguardando o sopro da Machina...")
         
-
-    
-    lNew = True
     curr_ypoema = "" 
     LOGO_TEXTO = ""
     LOGO_IMAGE = None
@@ -1022,7 +1019,7 @@ def page_ypoemas():
         update_readings("video_ypoemas")
         st.session_state.vydo = False
    
-    if lnew:
+    if lnew_ypo:
         with ypoemas_expander:
             # 2. Tente carregar o poema
             try:
@@ -1039,7 +1036,7 @@ def page_ypoemas():
                 LOGO_TEXTO = curr_ypoema
             
 
-    if lnew:
+    if lnew_ypo:
         what_book = (
             "⚫  "
             + st.session_state.lang
