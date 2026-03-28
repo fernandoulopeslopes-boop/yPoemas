@@ -7,23 +7,22 @@ from random import randrange
 
 # new deploy test
 
-def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo yPoema
-    """
-    :param = script, tema
-         numero_linea = '01'  # linha
-         ideia_numero = '01'  # ideia
-         fonte_itimos = nome_tema + '_' + numero_linea + ideia_numero # fonte dos itimos. Pode haver re-uso !!!
-         se_randomico = 'F'   # se_random
-         total_itimos = N     # qtd_itimos
-         itimos_atual = 1     # itimos_atual
-         array_itimos = []    # array com todos os itimos da ideia na linha
-    return: novo_poema
+def gera_poema(nome_tema, seed_eureka):
+    # ... (Sua lógica de processamento de linhas, ideias e itimos) ...
+    
+    script_poema = [] # Array que guardará os versos selecionados
+    
+    # Exemplo do loop de construção:
+    # for cada_linha in range(total_linhas):
+    #     verso = sortear_itimo(array_itimos, seed_eureka)
+    #     script_poema.append(verso)
 
-    ToDo:
-       obs: the search for a seed acctualy only works in portuguese. Try to translate your search_seed into this language.
-    """
-
-    lista_header = []
+    # --- A GRANDE MUDANÇA: O RETORNO DA ALMA ---
+    # Em vez de salvar 'script_poema' em um arquivo .ypo ou .lypo
+    # Transformamos a lista em uma string única com quebras de linha
+    novo_poema = "\n".join(script_poema)
+    
+    return novo_poema # <--- Crucial: devolve a string para a memória RAM    lista_header = []
     lista_linhas = []
     lista_finais = []
     lista_change = []
