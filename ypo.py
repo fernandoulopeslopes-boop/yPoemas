@@ -1109,28 +1109,45 @@ def page_eureka():
                 update_readings("video_eureka")
                 st.session_state.vydo = False
 
-            if lnew:
-                eureka_expander = st.expander("", expanded=True)
-                with eureka_expander:
-                    LOGO_TEXTO = curr_ypoema
-                    LOGO_IMAGE = None
-                    if st.session_state.draw:
-                        LOGO_IMAGE = load_arts(seed_tema)
+# --- SUBSTITUIÇÃO DA write_ypoema PARA MATAR O RETÂNGULO AZUL ---
 
-                    write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
-                    update_readings(seed_tema)
+if lnew:
+    display_container = st.container()
+    
+    with display_container:
+        # 1. TÍTULO DO TEMA (Substituindo o cabeçalho azul)
+        st.markdown(f"""
+            <div style="text-align: center; margin-bottom: 20px;">
+                <h2 style="color: #4B3621; border-bottom: 2px solid #8B4513; display: inline-block; padding: 0 20px;">
+                    {seed_tema.upper()}
+                </h2>
+            </div>
+        """, unsafe_allow_html=True)
 
-                if st.session_state.talk:
-                    talk(curr_ypoema)
-            if manu:
-                lnew = False
-                LOGO_TEXTO = load_info(seed_tema)
-                if st.session_state.lang != "pt":  # translate if idioma <> pt
-                    LOGO_TEXTO = translate(LOGO_TEXTO)
+        # 2. O CORPO DO POEMA (Sem st.info, sem st.success)
+        if st.session_state.get('selo_abnp_ativo', True):
+            # Se o selo estiver ativo, usamos nossa moldura de 1899
+            from Lay_2_ypo import exibir_selo_garantia, carregar_dados_abnp
+            dic = carregar_dados_abnp()
+            texto_para_download = exibir_selo_garantia(curr_ypoema, dic)
+        else:
+            # Texto Puro e Elegante
+            st.markdown(f"""
+                <div style="font-family: 'Times New Roman', serif; font-size: 1.3em; 
+                            line-height: 1.6; color: #2c3e50; text-align: center; 
+                            padding: 30px; background: transparent;">
+                    {curr_ypoema.replace('\n', '<br>')}
+                </div>
+            """, unsafe_allow_html=True)
+            texto_para_download = curr_ypoema
 
-                LOGO_IMAGE = "./images/matrix/" + seed_tema.capitalize() + ".jpg"
-                write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
+        # 3. IMAGEM (Se houver)
+        if st.session_state.draw:
+            img = load_arts(seed_tema)
+            if img:
+                st.image(img, use_column_width=True)
 
+    update_readings(seed_tema)
         else:
             st.warning(
                 translate(
