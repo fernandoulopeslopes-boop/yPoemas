@@ -945,18 +945,16 @@ def page_ypoemas():
         st.session_state.vydo = False
 
     if lnew:
-        what_book = (
-            "⚫  "
-            + st.session_state.lang
-            + " ( "
-            + st.session_state.book
-            + " ) ( "
-            + str(st.session_state.take + 1)
-            + " / "
-            + str(len(temas_list))
-            + " )"
-        )
 
+        try:
+           what_book = (
+               "⚫ " + str(st.session_state.lang) + 
+               " ( " + str(st.session_state.book) + " ) " +
+               "( " + str(st.session_state.take + 1) + " / " + str(len(off_book_pagys)) + " )"
+              )
+       except:
+           what_book = "yPoemas - A Machina"        
+        
         ypoemas_expander = st.expander(what_book, expanded=True)
         with ypoemas_expander:
             if st.session_state.lang != st.session_state.last_lang:
