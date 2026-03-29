@@ -763,16 +763,17 @@ def page_mini():
     temas_list = load_temas("todos os temas")
     maxy_mini = len(temas_list)
 
-    if st.session_state.mini > maxy_mini:  # just in case
+    if st.session_state.mini >= maxy_mini: 
         st.session_state.mini = 0
 
-    foo1, more, rand, auto, foo2 = st.columns([4, 1, 1, 1, 4])
+    foo1, more_col, rand_col, auto_col, foo2 = st.columns([4, 1, 1, 1, 4])
 
     help_tips = load_help(st.session_state.lang)
     help_rand = help_tips[1]
     help_more = help_tips[4]
-    rand = rand.button("✻", help=help_rand)
-    st.session_state.auto = auto.checkbox("auto")
+    
+    btn_rand = rand_col.button("✻", help=help_rand)
+    st.session_state.auto = auto_col.checkbox("auto")
 
     if st.session_state.auto:
         st.session_state.talk = False
@@ -780,7 +781,7 @@ def page_mini():
         with st.sidebar:
             wait_time = st.slider(translate("tempo de exibição (em segundos): "), 5, 60)
 
-    if rand:
+    if btn_rand:
         st.session_state.rand = True
         st.session_state.mini = random.randrange(0, maxy_mini)
     else:
@@ -788,102 +789,60 @@ def page_mini():
 
     st.session_state.tema = temas_list[st.session_state.mini]
     analise = say_number(st.session_state.tema)
-    more = more.button("✚", help=help_more + " • " + analise)
+    btn_more = more_col.button("✚", help=help_more + " • " + analise)
 
-    if more:
+    if btn_more:
         st.session_state.rand = False
 
-    lnew = True
-    if st.session_state.vydo:
-        lnew = False
-        show_video("mini")
-        update_readings("video_mini")
-        st.session_state.vydo = False
+    # --- LÓGICA DE GERAÇÃO DO POEMA ---
+    # Só carregamos se for novo ou se mudou o idioma
+    if st.session_state.lang != st.session_state.last_lang:
+        curr_ypoema = load_poema(st.session_state.tema, "")
+    else:
+        curr_ypoema = load_poema(st.session_state.tema, "")
 
-    if lnew or st.session_state.auto:
-        if st.session_state.rand:
+    # Tradução se necessário
+    if st.session_state.lang != "pt":
+        curr_ypoema = translate(curr_ypoema)
+
+    # --- NORMALIZAÇÃO DAS QUEBRAS DE LINHA (A solução do osso duro!) ---
+    if curr_ypoema:
+        linhas = [l.strip() for l in curr_ypoema.split('\n')]
+        LOGO_TEXTO = "  \n".join(linhas) # Dois espaços para o Markdown
+    else:
+        LOGO_TEXTO = "Gerando versos..."
+
+    # --- ARTE / IMAGEM ---
+    LOGO_IMAGE = None
+    if st.session_state.draw:
+        LOGO_IMAGE = load_arts(st.session_state.tema)
+
+    # --- EXIBIÇÃO ---
+    mini_place_holder = st.empty()
+    
+    if not st.session_state.auto:
+        with mini_place_holder:
+            write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
+        if st.session_state.talk:
+            talk(curr_ypoema)
+    else:
+        # Loop do Modo Auto (Simplificado)
+        while st.session_state.auto:
             st.session_state.mini = random.randrange(0, maxy_mini)
             st.session_state.tema = temas_list[st.session_state.mini]
-
-        if st.session_state.lang != st.session_state.last_lang:
-            curr_ypoema = load_lypo()  # changes in lang, keep LYPO
-        else:
-            curr_ypoema = load_poema(st.session_state.tema, "")
-            curr_ypoema = load_lypo()
-
-        if st.session_state.lang != "pt":  # translate if idioma <> pt
-            curr_ypoema = translate(curr_ypoema)
-            typo_user = "TYPO_" + IPAddres
-            with open(
-                os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
-            ) as save_typo:
-                save_typo.write(curr_ypoema)
-                save_typo.close()
-            curr_ypoema = load_typo()  # to normalize line breaks in text
-
-        update_readings(st.session_state.tema)
-        
-        # 1. Definimos um valor padrão para evitar o erro de 'None'
-        if st.session_state.curr_ypoema is not None:
-            # Se houver texto, limpamos as quebras de linha
-            LOGO_TEXTO = st.session_state.curr_ypoema.replace("\n", "  \n")
-        else:
-            # Se estiver vazio, damos um aviso amigável ou geramos um novo
-            LOGO_TEXTO = "Aguardando versos da ABNP..."
-            # Opcional: Forçar a geração se estiver vazio
-            st.session_state.curr_ypoema = load_poema(str(st.session_state.tema), "")
-
-        LOGO_IMAGE = None
-        if st.session_state.draw:
-            LOGO_IMAGE = load_arts(st.session_state.tema)
-
-        mini_place_holder = st.empty()
-        mini_place_holder.empty()
-        st.write("")
-
-        if st.session_state.auto == False:
+            
+            p_auto = load_poema(st.session_state.tema, "")
+            if st.session_state.lang != "pt":
+                p_auto = translate(p_auto)
+            
+            texto_auto = "  \n".join([l.strip() for l in p_auto.split('\n')])
+            img_auto = load_arts(st.session_state.tema) if st.session_state.draw else None
+            
             with mini_place_holder:
-                write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
-
-            if st.session_state.talk:
-                talk(curr_ypoema)
-        else:
-            while st.session_state.auto:
-                if st.session_state.rand:
-                    st.session_state.mini = random.randrange(0, maxy_mini)
-                    st.session_state.tema = temas_list[st.session_state.mini]
-
-                if st.session_state.lang != st.session_state.last_lang:
-                    curr_ypoema = load_lypo()  # changes in lang, keep LYPO
-                else:
-                    curr_ypoema = load_poema(st.session_state.tema, "")
-                    curr_ypoema = load_lypo()
-
-                if st.session_state.lang != "pt":  # translate if idioma <> pt
-                    curr_ypoema = translate(curr_ypoema)
-                    typo_user = "TYPO_" + IPAddres
-                    with open(
-                        os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
-                    ) as save_typo:
-                        save_typo.write(curr_ypoema)
-                        save_typo.close()
-                    curr_ypoema = load_typo()  # to normalize line breaks in text
-
-                update_readings(st.session_state.tema)
-                LOGO_TEXTO = curr_ypoema
-                LOGO_IMAGE = None
-
-                if st.session_state.draw:
-                    LOGO_IMAGE = load_arts(st.session_state.tema)
-
-                with mini_place_holder:
-                    mini_place_holder.empty()
-                    write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
-                    secs = wait_time
-                    while secs >= 0:
-                        time.sleep(1)
-                        secs -= 1
-        
+                write_ypoema(texto_auto, img_auto)
+            
+            time.sleep(wait_time)
+            st.rerun() # Para atualizar o tema na próxima rodada        
 def page_ypoemas():
     temas_list = load_temas(st.session_state.book)
     maxy_ypoemas = len(temas_list) - 1
