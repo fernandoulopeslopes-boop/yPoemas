@@ -935,6 +935,16 @@ def page_ypoemas():
 
     # Bloco de Poesia (Expander)
     if lnew_ypo:
+
+       try:
+          what_book = (
+          "⚫ " + str(st.session_state.lang) + 
+          " ( " + str(st.session_state.book) + " ) " +
+          "( " + str(st.session_state.take + 1) + " / " + str(len(temas_list)) + " )"
+          )
+       except:
+          what_book = "yPoemas - A Machina"
+        
         with st.expander(what_book, expanded=True):
             curr_ypoema = load_poema(str(st.session_state.tema), "")
             LOGO_TEXTO = curr_ypoema
