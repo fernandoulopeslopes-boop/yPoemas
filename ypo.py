@@ -139,7 +139,6 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-
 # change padding between components
 st.markdown(
     f""" <style>
@@ -174,7 +173,7 @@ st.markdown(
 st.markdown(
     """
     <style>
-    .logo-text {
+        .logo-text {
         font-weight: 600;
         font-size: 18px;
         font-family: 'IBM Plex Sans', sans-serif;
@@ -182,15 +181,18 @@ st.markdown(
         padding-left: 15px;
         text-align: left;
         display: block;
-        line-height: 1.5;
-        white-space: pre-wrap !important; /* FORÇA A QUEBRA DE LINHA */
+        line-height: 1.6;
+        white-space: pre-wrap !important; /* A chave para os versos */
     }
     .logo-img {
         float: right;
         max-width: 300px;
+        margin-left: 15px;
     }
-
     </style>
+    """,
+    unsafe_allow_html=True,
+)    </style>
     """,
     unsafe_allow_html=True,
     )
@@ -982,8 +984,7 @@ def page_ypoemas():
             # --- A SOLUÇÃO PARA A QUEBRA DE LINHA ---
             # O segredo: '  \n' (DOIS ESPAÇOS antes da barra) força o Markdown a quebrar a linha
             linhas_limpas = [l.strip() for l in curr_ypoema.split('\n')]
-            LOGO_TEXTO = "  \n".join(linhas_limpas) 
-            # ----------------------------------------
+            # -------------------------------------------
 
             # 2. IMAGEM
             LOGO_IMAGE = load_arts(st.session_state.tema) if st.session_state.draw else None
