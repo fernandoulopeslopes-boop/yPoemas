@@ -662,26 +662,30 @@ def load_arts(nome_tema):  # Select image for arts
 ### bof: functions
 
         
-def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
-    if LOGO_IMAGE == None:
-        st.markdown(
-            f"""
-            <div class='container'>
-                <p class='logo-text'>{LOGO_TEXTO}</p>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):
+    # Garante que o texto nunca seja None para o Markdown
+    texto_final = LOGO_TEXTO if LOGO_TEXTO else "Gerando versos..."
+    
+    if LOGO_IMAGE is None or not os.path.exists(LOGO_IMAGE):
+        # Saída apenas texto se a imagem falhar ou não existir
+        st.markdown(f"<div class='container'><p class='logo-text'>{texto_final}</p></div>", unsafe_allow_html=True)
     else:
-        st.markdown(
-            f"""
-            <div class='container'>
-                <img class='logo-img' src='data:image/jpg;base64,{base64.b64encode(open(LOGO_IMAGE, 'rb').read()).decode()}'>
-                <p class='logo-text'>{LOGO_TEXTO}</p>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+        try:
+            with open(LOGO_IMAGE, "rb") as img_file:
+                img_b64 = base64.b64encode(img_file.read()).decode()
+            st.markdown(
+                f"""
+                <div class='container'>
+                    <img class='logo-img' src='data:image/jpg;base64,{img_b64}'>
+                    <p class='logo-text'>{texto_final}</p>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+        except Exception:
+            # Fallback total: se até o base64 der erro, mostra só o texto
+            st.markdown(f"<p class='logo-text'>{texto_final}</p>", unsafe_allow_html=True)
+
 
 def talk(text):
     # Limpeza para a voz não ler tags
@@ -908,39 +912,43 @@ def page_ypoemas():
         update_readings("video_ypoemas")
         st.session_state.vydo = False
 
+
     if lnew:
         what_book = f"⚫ {st.session_state.lang} ( {st.session_state.book} ) ( {st.session_state.take + 1} / {len(temas_list)} )"
 
         with st.expander(what_book, expanded=True):
             # 1. MOTOR DE TEXTO (Geração e Tradução)
             if st.session_state.lang != st.session_state.last_lang:
-                curr_ypoema = translate(st.session_state.curr_ypoema)
+                raw_text = translate(st.session_state.curr_ypoema)
             else:
-                curr_ypoema = load_poema(str(st.session_state.tema), "")
-                st.session_state.curr_ypoema = curr_ypoema
+                raw_text = load_poema(str(st.session_state.tema), "")
+                st.session_state.curr_ypoema = raw_text
 
             update_readings(st.session_state.tema)
 
-            # --- A SOLUÇÃO PARA A QUEBRA DE LINHA ---
-            # O segredo: '  \n' (DOIS ESPAÇOS antes da barra) força o Markdown a quebrar a linha
-            linhas_limpas = [l.strip() for l in curr_ypoema.split('\n')]
-            # -------------------------------------------
+            # 2. FORMATAÇÃO (O segredo das quebras de linha)
+            if raw_text:
+                # Limpa espaços e garante os dois espaços no fim para o Markdown
+                linhas_limpas = [l.strip() for l in raw_text.split('\n')]
+                texto_formatado = "  \n".join(linhas_limpas)
+            else:
+                texto_formatado = "Gerando versos..."
 
-            # 2. IMAGEM
-            LOGO_IMAGE = load_arts(st.session_state.tema) if st.session_state.draw else None
+            # 3. IMAGEM
+            imagem_carregada = load_arts(st.session_state.tema) if st.session_state.draw else None
 
-            # 3. ÚNICA SAÍDA (A "Janela Única")
-            # Certifique-se de que não há OUTRO write_ypoema abaixo desta linha!
-            write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
+            # 4. SAÍDA PARA A PRENSA (Onde dava o erro na linha 975)
+            # Agora os nomes batem: texto_formatado e imagem_carregada
+            write_ypoema(texto_formatado, imagem_carregada)
 
-            # 4. EXTRAS (Voz e Info)
+            # 5. EXTRAS (Voz e Informações Técnicas)
             if st.session_state.talk:
-                talk(curr_ypoema)
+                talk(raw_text)
             
             if manu:
                 info_txt = load_info(st.session_state.tema)
                 st.info(translate(info_txt) if st.session_state.lang != "pt" else info_txt)
-
+                
     # 🛑 CRITICAL: Apague qualquer linha que sobrou abaixo deste bloco até o final da def page_ypoemas()
     # === ATENÇÃO: APAGUE QUALQUER LINHA QUE ESTEJA ABAIXO DISSO ATÉ O FIM DA FUNÇÃO ===
     # --- FIM DA FUNÇÃO (Certifique-se que não há nada escrito aqui embaixo!) ---
@@ -1055,6 +1063,9 @@ def page_eureka():
                 update_readings("video_eureka")
                 st.session_state.vydo = False
 
+
+            
+            
             if lnew:
                 eureka_expander = st.expander("", expanded=True)
                 with eureka_expander:
