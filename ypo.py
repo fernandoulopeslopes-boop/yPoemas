@@ -914,6 +914,23 @@ def page_mini():
 
 def page_ypoemas():
 
+    aaa
+    lnew_ypo = True
+    LOGO_TEXTO = ""
+    LOGO_IMAGE = None
+    
+    # --- 2. FORMATAÇÃO DO TEMA (O padrão: Tema_comum) ---
+    tema_formatado = str(st.session_state.tema).capitalize()
+    
+    # Rótulo do Expander
+    what_book = f"⚫ {st.session_state.lang} | {tema_formatado}"
+
+    # --- 4. ENTREGA FINAL (O Palco) ---
+    if LOGO_TEXTO:
+        write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
+    else:
+        st.write("Aguardando o sopro da Machina...")
+    
     # --- 1. O ALICERCE DE CONTROLE ---
     lnew_ypo = True    # Controla a geração/exibição do texto (.ypo)
     lnew_img = False   # Controla se a arte (load_arts) deve aparecer
@@ -935,6 +952,26 @@ def page_ypoemas():
 
     # Bloco de Poesia (Expander)
     if lnew_ypo:
+
+    # --- 3. CONSTRUÇÃO E CARGA ---
+    if lnew_ypo:
+        # Criamos e entramos no expander em um só sopro
+        with st.expander(what_book, expanded=True):
+            try:
+                # Chamamos a carga com o nome formatado corretamente
+                curr_ypoema = load_poema(tema_formatado, "")
+                
+                if curr_ypoema:
+                    LOGO_TEXTO = curr_ypoema
+                else:
+                    LOGO_TEXTO = f"A Machina não encontrou o arquivo: data/{tema_formatado}.ypo"
+            except Exception as e:
+            LOGO_TEXTO = f"Erro na engrenagem: {e}"
+
+            # Carga da Arte
+        if st.session_state.draw:
+            LOGO_IMAGE = load_arts(tema_formatado)
+        
         with st.expander(what_book, expanded=True):
             # --- RASTREADOR DE CAMINHOS ---
             nome_arquivo = f"{st.session_state.tema}.ypo"
