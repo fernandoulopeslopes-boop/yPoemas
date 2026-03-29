@@ -174,6 +174,11 @@ if "lang" not in st.session_state:
 if "last_lang" not in st.session_state:
     st.session_state.last_lang = "pt"
 
+if "curr_ypoema" not in st.session_state:
+    st.session_state.curr_ypoema = ""      # O Original (Matriz)
+if "trad_ypoema" not in st.session_state:
+    st.session_state.trad_ypoema = ""      # O Traduzido (Reserva)
+    
 if "book" not in st.session_state:  #  index for books_list
     st.session_state.book = "livro vivo"
 if "take" not in st.session_state:  #  index for selected tema in books_list
@@ -542,42 +547,6 @@ def load_index():  # Load indexes numbers for all themes
     return index_list
 
 
-@st.cache_data(show_spinner=False)
-def load_lypo():  # Load last yPoema & replace '\n' with '<br>' for translator returned text
-    lypo_text = ""
-    lypo_user = "LYPO_" + IPAddres
-    with open(os.path.join("./temp/" + lypo_user), encoding="utf-8") as script:
-        for line in script:
-            line = line.strip()
-            lypo_text += line + "<br>"
-
-    return lypo_text
-
-
-@st.cache_data(show_spinner=False)
-def load_typo():  # Load translated yPoema & clean translator returned bugs in text
-    typo_text = ""
-    typo_user = "TYPO_" + IPAddres
-    with open(os.path.join("./temp/" + typo_user), encoding="utf-8") as script:
-        for line in script:  # just 1 line
-            line = line.strip()
-            if " >" in line:
-                line = line.replace(" >", "\n")
-            elif "< " in line:
-                line = line.replace("< ", "\n")
-            elif " br " in line:
-                line = line.replace(" br", "\n")
-            elif "br " in line:
-                line = line.replace("br ", "\n")
-            elif " br" in line:
-                line = line.replace(" br", "\n")
-            line = line.replace("< <", ">")
-            line = line.replace("> >", ">")
-            typo_text += line + "<br>"
-
-    return typo_text
-
-
 def load_all_offs():
     all_books_off = [
         "a_torre_de_papel",
@@ -619,23 +588,6 @@ def load_poema(nome_tema, seed_eureka):  # generate new yPoema
     lypo_user = "LYPO_" + IPAddres
 
     st.write(f"Debug Interno: {nome_tema}")
-    
-    with open(os.path.join("./temp/" + lypo_user), "w", encoding="utf-8") as save_lypo:
-        save_lypo.write(
-            nome_tema
-        )  # include title of yPoema in first line for translations
-        save_lypo.write("\n")
-
-        for line in script:
-            if line == "\n":
-                save_lypo.write("\n")
-                novo_ypoema += "<br>"
-            else:
-                save_lypo.write(line + "\n")
-                novo_ypoema += line + "<br>"
-
-    save_lypo.close()  # save last generated in LYPO
-    return novo_ypoema
 
 @st.cache_data(show_spinner=False)
 def load_images():
@@ -981,28 +933,34 @@ def page_ypoemas():
 
         ypoemas_expander = st.expander(what_book, expanded=True)
         with ypoemas_expander:
+            # Se o usuário mudou o idioma, traduzimos o poema que já está na memória
             if st.session_state.lang != st.session_state.last_lang:
-                curr_ypoema = load_lypo()
+                if st.session_state.curr_ypoema:
+                    st.session_state.curr_ypoema = translate(st.session_state.curr_ypoema)
+            
+            # Se o usuário navegou (Próximo/Anterior/Random), geramos um NOVO
             else:
-                curr_ypoema = load_poema(str(st.session_state.tema), "")
-
-            if st.session_state.lang != "pt":  # translate if idioma <> pt
-                curr_ypoema = translate(curr_ypoema)
-                typo_user = "TYPO_" + IPAddres
-                with open(os.path.join("./temp/" + typo_user), "w", encoding="utf-8") as save_typo:
-                    save_typo.write(curr_ypoema)
-                    save_typo.close()
-                    
-                curr_ypoema = load_typo()  # to normalize line breaks in text
+                novo_poema = load_poema(str(st.session_state.tema), "")
+                
+                # Se não for PT, já traduzimos antes de guardar na memória
+                if st.session_state.lang != "pt":
+                    novo_poema = translate(novo_poema)
+                
+                # Guardamos no novo tanque digital
+                st.session_state.curr_ypoema = novo_poema
 
             update_readings(st.session_state.tema)
-            LOGO_TEXTO = curr_ypoema
+
+            # EXIBIÇÃO: Usamos o conteúdo da memória, formatado para Markdown
+            LOGO_TEXTO = st.session_state.curr_ypoema.replace("\n", "  \n")
+            
+            # Mantemos a lógica da imagem se o 'draw' estiver ligado
             LOGO_IMAGE = None
             if st.session_state.draw:
                 LOGO_IMAGE = load_arts(st.session_state.tema)
 
             write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
-
+            
             if manu:
                 LOGO_TEXTO = load_info(st.session_state.tema)
                 if st.session_state.lang != "pt":  # translate if idioma <> pt
