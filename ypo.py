@@ -1258,8 +1258,7 @@ def page_off_machina():  # available off_machina_books
             + " )"
         )
 
-        off_machina_expander = st.expander(what_book, True)
-        with off_machina_expander:
+        with st.expander(what_book, expanded=True):
             off_book_text = ""
             pipe_line = this_off_book[st.session_state.off_take].split("|")
             if "@ " in pipe_line[1]:
@@ -1352,7 +1351,7 @@ def page_books():  # available books
             st.write(list_book[:-2] + " ▶ " + str(int(len(temas_list))) + " páginas")
 
             books_expander = st.expander("", True)
-            with books_expander:
+            with st.expander("Livros da Machina", expanded=True):
                 st.subheader(load_md_file("MANUAL_BOOKS.md"))
 
             if doit:
@@ -1407,8 +1406,7 @@ def page_polys():  # available languages
         st.session_state.lang = st.session_state.poly_lang
 
     if lnew:
-        poly_expander = st.expander("", True)
-        with poly_expander:
+        with st.expander("Idiomas disponíveis", expanded=True):
             st.subheader(load_md_file("MANUAL_POLY.md"))
 
 
@@ -1447,8 +1445,7 @@ def page_abouts():
 
     if lnew:
         choice = abouts_list[opt_abouts].upper()
-        about_expander = st.expander("", True)
-        with about_expander:
+        with st.expander("Sobre a Machina", expanded=True):
             if choice == "MACHINA":
                 st.subheader(load_md_file("ABOUT_MACHINA_A.md"))
                 LOGO_TEXTO = load_info(st.session_state.tema)
