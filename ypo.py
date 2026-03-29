@@ -167,32 +167,28 @@ st.markdown(
 
 # load_poema settings
 # Substitua o bloco inteiro por este para garantir que o Python não se perca:
+
 st.markdown(
     """
     <style>
-    mark {
-      background-color: powderblue;
-      color: black;
-    }
-    .container {
-        display: flex;
-    }
-    .header {
-        text-align: center;
-    }
     .logo-text {
         font-weight: 600;
         font-size: 18px;
-        font-family: 'IBM Plex Sans';
+        font-family: 'IBM Plex Sans', sans-serif;
         color: #000000;
-        padding-top: 0px;
-        .logo-text {
-        padding-left: 15px;
-        white-space: pre-wrap; /* MANTÉM AS QUEBRAS, MAS SEM O BLOCO DE CÓDIGO */
-        text-align: left;      /* FORÇA ALINHAMENTO À ESQUERDA */
-        } padding-left: 15px;
-        
+        padding: 10px 0 10px 15px;
+        white-space: pre-wrap !important; /* ESTA LINHA É A CHAVE */
+        text-align: left;
+        display: block;
     }
+    .logo-img {
+        float: right;
+        max-width: 300px;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
     .logo-img {
         float: right;
     }
@@ -966,62 +962,42 @@ def page_ypoemas():
         st.session_state.vydo = False
 
     if lnew:
-        what_book = (
-            "⚫  "
-            + st.session_state.lang
-            + " ( "
-            + st.session_state.book
-            + " ) ( "
-            + str(st.session_state.take + 1)
-            + " / "
-            + str(len(temas_list))
-            + " )"
-        )
+        what_book = f"⚫ {st.session_state.lang} ( {st.session_state.book} ) ( {st.session_state.take + 1} / {len(temas_list)} )"
 
-        ypoemas_expander = st.expander(what_book, expanded=True)
-        with ypoemas_expander:
-            # 1. MOTOR DE GERAÇÃO / TRADUÇÃO
+        with st.expander(what_book, expanded=True):
+            # 1. MOTOR DE TEXTO (Geração e Tradução)
             if st.session_state.lang != st.session_state.last_lang:
-                # Se mudou o idioma, traduz o que já está na memória
                 curr_ypoema = translate(st.session_state.curr_ypoema)
             else:
-                # Se é tema novo, gera do zero
                 curr_ypoema = load_poema(str(st.session_state.tema), "")
                 st.session_state.curr_ypoema = curr_ypoema
 
             update_readings(st.session_state.tema)
 
-            # 2. A PRENSA (LIMPEZA TOTAL)
-            if curr_ypoema:
-                linhas = [l.strip() for l in curr_ypoema.split("\n") if l.strip()]
-                LOGO_TEXTO = "  \n".join(linhas)
-            else:
-                LOGO_TEXTO = "..."
+            # --- A SOLUÇÃO PARA A QUEBRA DE LINHA ---
+            # O segredo: '  \n' (DOIS ESPAÇOS antes da barra) força o Markdown a quebrar a linha
+            linhas_limpas = [l.strip() for l in curr_ypoema.split('\n')]
+            LOGO_TEXTO = "  \n".join(linhas_limpas) 
+            # ----------------------------------------
 
-            # 3. IMAGEM
-            LOGO_IMAGE = None
-            if st.session_state.draw:
-                LOGO_IMAGE = load_arts(st.session_state.tema)
+            # 2. IMAGEM
+            LOGO_IMAGE = load_arts(st.session_state.tema) if st.session_state.draw else None
 
-            # --- ÚNICA SAÍDA DE TEXTO E IMAGEM ---
+            # 3. ÚNICA SAÍDA (A "Janela Única")
+            # Certifique-se de que não há OUTRO write_ypoema abaixo desta linha!
             write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
-            # -------------------------------------
 
-            # 4. MANUAL / INFO (DENTRO DO EXPANDER)
-            if manu:
-                info_dados = load_info(st.session_state.tema)
-                if st.session_state.lang != "pt":
-                    info_dados = translate(info_dados)
-                st.info(info_dados) 
-
-            # 5. VOZ (DENTRO DO EXPANDER)
+            # 4. EXTRAS (Voz e Info)
             if st.session_state.talk:
                 talk(curr_ypoema)
+            
+            if manu:
+                info_txt = load_info(st.session_state.tema)
+                st.info(translate(info_txt) if st.session_state.lang != "pt" else info_txt)
 
+    # 🛑 CRITICAL: Apague qualquer linha que sobrou abaixo deste bloco até o final da def page_ypoemas()
+    # === ATENÇÃO: APAGUE QUALQUER LINHA QUE ESTEJA ABAIXO DISSO ATÉ O FIM DA FUNÇÃO ===
     # --- FIM DA FUNÇÃO (Certifique-se que não há nada escrito aqui embaixo!) ---
-        if st.session_state.talk:
-            talk(curr_ypoema)
-
 
 def page_eureka():
     help_tips = load_help(st.session_state.lang)
