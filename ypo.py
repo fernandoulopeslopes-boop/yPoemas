@@ -1,3 +1,10 @@
+# 1. Forçamos o título (Ocupa a largura toda, mata as 3 colunas aqui)
+st.title(f"Tema: {tema.title()}") 
+
+# 2. Mostramos o "Sopro" (O poema em si)
+# O .replace("\n", "  \n") garante que o verso não grude no outro
+st.markdown(poema_gerado.replace("\n", "  \n"), unsafe_allow_html=True)
+
 r"""
 
 yPoemas is an app that randomly collects words and phrases
@@ -124,13 +131,18 @@ hostname = socket.gethostname()
 IPAddres = socket.gethostbyname(hostname)
 
 # hide Streamlit Menu and Footer
+
 st.markdown( """ <style>
-    /*#MainMenu {visibility: hidden;}*/
-    footer {visibility: hidden;}
-    </style> """,
+    MainMenu {visibility: hidden;},
     unsafe_allow_html=True,
 )
 
+#st.markdown( """ <style>
+#    /*#MainMenu {visibility: hidden;}*/
+#    footer {visibility: hidden;}
+#    </style> """,
+#    unsafe_allow_html=True,
+#)
 
 # change padding between components
 st.markdown(
