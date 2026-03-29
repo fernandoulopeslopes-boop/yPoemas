@@ -935,12 +935,15 @@ if lnew:
             # 4. EXTRAS
             if st.session_state.talk:
                 talk(raw_text)
-            
+
             if manu:
                 info_txt = load_info(st.session_state.tema)
-                st.info(translate(info_txt) if st.session_state.lang != "pt" else info_txt)    
-                help_tips = load_help(st.session_state.lang)
+                # O st.info precisa fechar o parêntese no final da instrução
+                st.info(translate(info_txt) if st.session_state.lang != "pt" else info_txt)
                 
+            # help_tips deve estar alinhado com o "if manu" ou conforme o fluxo da função
+            help_tips = load_help(st.session_state.lang)
+              
     help_rand = help_tips[1]
     help_more = help_tips[4]
 
