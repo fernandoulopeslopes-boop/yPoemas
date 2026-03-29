@@ -911,7 +911,6 @@ def page_mini():
                         time.sleep(1)
                         secs -= 1
 
-
 def page_ypoemas():
     lnew_ypo = True
     LOGO_TEXTO = ""
