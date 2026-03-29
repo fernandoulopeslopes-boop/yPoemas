@@ -960,42 +960,51 @@ def page_ypoemas():
     except:
         what_book = "yPoemas - A Machina"
 
-# --- 2. BLOCO DE CONSTRUÇÃO ---
+    
+# --- 1. PREPARAÇÃO (Fora de qualquer 'if') ---
+    LOGO_TEXTO = ""
+    LOGO_IMAGE = None
+    tema_formatado = str(st.session_state.tema).capitalize().strip()
+    
+    # Rótulo seguro
+    try:
+        what_book = f"⚫ {st.session_state.lang} ( {st.session_state.book} )"
+    except:
+        what_book = "yPoemas - A Machina"
+
+    # --- 2. O BLOCO DE CONSTRUÇÃO ---
     if lnew_ypo:
-        # Criamos e entramos no expander único
+        # CRIAMOS O EXPANDER DIRETAMENTE (Isso mata o UnboundLocalError)
         with st.expander(what_book, expanded=True):
             
-            # 2a. Preparação do Caminho
-            tema_formatado = str(st.session_state.tema).capitalize()
-            nome_arquivo = f"{tema_formatado}.ypo"
-            caminho_tentado = os.path.join("data", nome_arquivo)
+            caminho_arquivo = os.path.join("data", f"{tema_formatado}.ypo")
             
-            # 2b. Verificação e Carga do Poema
-            if os.path.exists(caminho_tentado):
+            if os.path.exists(caminho_arquivo):
                 try:
-                    curr_ypoema = load_poema(tema_formatado, "")
-                    if curr_ypoema:
-                        LOGO_TEXTO = curr_ypoema
+                    # TENTATIVA DE LEITURA DIRETA (Para testar se a load_poema falha)
+                    with open(caminho_arquivo, "r", encoding="utf-8", errors="ignore") as f:
+                        conteudo = f.read()
+                    
+                    if conteudo.strip():
+                        LOGO_TEXTO = conteudo
                     else:
-                        LOGO_TEXTO = f"A Machina leu o arquivo, mas ele está vazio: {caminho_tentado}"
+                        # Se chegar aqui, o arquivo físico no GitHub está realmente sem texto
+                        LOGO_TEXTO = f"⚠️ O arquivo '{caminho_arquivo}' existe mas está sem conteúdo."
                 except Exception as e:
-                    LOGO_TEXTO = f"Erro na engrenagem ao ler {nome_arquivo}: {e}"
+                    LOGO_TEXTO = f"💥 Erro ao abrir arquivo: {e}"
             else:
-                # O Rastreador entra em cena se o arquivo não existir
-                dir_atual = os.getcwd()
-                arquivos_na_data = os.listdir("data") if os.path.exists("data") else "Pasta 'data' não encontrada!"
-                LOGO_TEXTO = (
-                    f"❌ ERRO DE LOCALIZAÇÃO\n"
-                    f"Arquivo: {nome_arquivo}\n"
-                    f"Caminho: {caminho_tentado}\n"
-                    f"Arquivos na 'data': {arquivos_na_data}"
-                )
+                LOGO_TEXTO = f"❌ Arquivo não encontrado: {caminho_arquivo}"
 
-            # 2c. Carga da Arte (dentro do mesmo expander)
+            # CARGA DA ARTE
             if st.session_state.draw:
                 LOGO_IMAGE = load_arts(tema_formatado)
-            elif lnew_img: # Suporte para a sua nova flag
-                LOGO_IMAGE = load_arts(st.session_state.tema)    
+
+    # --- 3. ENTREGA FINAL (Fora do expander para garantir visibilidade) ---
+    if LOGO_TEXTO:
+        write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
+    else:
+        st.write("Aguardando o sopro da Machina...")
+
     
     # --- 4. A ENTREGA FINAL ---
     if LOGO_TEXTO:
