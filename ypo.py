@@ -990,7 +990,7 @@ def page_ypoemas():
             if st.session_state.lang != "pt":  # translate if idioma <> pt
                 curr_ypoema = translate(curr_ypoema)
                 typo_user = "TYPO_" + IPAddres
-                with open(os.path.join("./temp/" + typo_user), "w", encoding="utf-8") as save_typo
+                with open(os.path.join("./temp/" + typo_user), "w", encoding="utf-8") as save_typo)
                     save_typo.write(curr_ypoema)
                     save_typo.close()
                     
