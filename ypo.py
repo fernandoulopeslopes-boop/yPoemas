@@ -848,21 +848,16 @@ def page_mini():
             time.sleep(wait_time)
             st.rerun() # Para atualizar o tema na próxima rodada
 
-
 def page_ypoemas():
     temas_list = load_temas(st.session_state.book)
     maxy_ypoemas = len(temas_list) - 1
-    if (
-        st.session_state.take > maxy_ypoemas or st.session_state.take < 0
-    ):  # just in case
+    if (st.session_state.take > maxy_ypoemas or st.session_state.take < 0):
         st.session_state.take = 0
 
     foo1, more, last, rand, nest, manu, foo2 = st.columns([3, 1, 1, 1, 1, 1, 3])
 
     help_tips = load_help(st.session_state.lang)
-    help_last = help_tips[0]
-    help_rand = help_tips[1]
-    help_nest = help_tips[2]
+    help_last, help_rand, help_nest = help_tips[0], help_tips[1], help_tips[2]
     help_more = help_tips[4]
 
     more = more.button("✚", help=help_more)
@@ -873,8 +868,7 @@ def page_ypoemas():
 
     if last:
         st.session_state.take -= 1
-        if st.session_state.take < 0:
-            st.session_state.take = maxy_ypoemas
+        if st.session_state.take < 0: st.session_state.take = maxy_ypoemas
         st.rerun()
 
     if rand:
@@ -883,28 +877,19 @@ def page_ypoemas():
 
     if nest:
         st.session_state.take += 1
-        if st.session_state.take > maxy_ypoemas:
-            st.session_state.take = 0
+        if st.session_state.take > maxy_ypoemas: st.session_state.take = 0
         st.rerun()
 
     if not st.session_state.draw:
         options = list(range(len(temas_list)))
-        sobrios = "↓  " + translate("lista de Temas")
-        opt_take = st.selectbox(
-            sobrios,
-            options,
-            index=st.session_state.take,
-            format_func=lambda z: temas_list[z],
-            key="opt_take",
-        )
-
+        opt_take = st.selectbox("↓ " + translate("lista de Temas"), options, index=st.session_state.take, format_func=lambda z: temas_list[z])
         if opt_take != st.session_state.take:
             st.session_state.take = opt_take
             st.rerun()
 
     st.session_state.tema = temas_list[st.session_state.take]
-
     lnew = True
+
     if manu:
         st.subheader(load_md_file("MANUAL_YPOEMAS.md"))
 
@@ -914,29 +899,11 @@ def page_ypoemas():
         update_readings("video_ypoemas")
         st.session_state.vydo = False
 
-
     if lnew:
         what_book = f"⚫ {st.session_state.lang} ( {st.session_state.book} ) ( {st.session_state.take + 1} / {len(temas_list)} )"
-        # 2. FORMATAÇÃO ANTI-ZIGUEZAGUE (Garante fontes iguais)
-        if raw_text:
-            linhas_formatadas = []
-            for l in raw_text.split('\n'):
-                # .lstrip() remove espaços no INÍCIO que o Markdown confunde com "código"
-                linha_limpa = l.lstrip().strip() 
-                    
-                if not linha_limpa:
-                    # Linha de respiro entre estrofes
-                    linhas_formatadas.append("&nbsp;") 
-                else:
-                    linhas_formatadas.append(linha_limpa)
-                
-                texto_formatado = "  \n".join(linhas_formatadas)
-        else:
-            texto_formatado = "Gerando versos..."
-        # --- ATÉ AQUI ---
         
         with st.expander(what_book, expanded=True):
-            # 1. MOTOR DE TEXTO (Geração e Tradução)
+            # 1. MOTOR DE TEXTO
             if st.session_state.lang != st.session_state.last_lang:
                 raw_text = translate(st.session_state.curr_ypoema)
             else:
@@ -945,34 +912,30 @@ def page_ypoemas():
 
             update_readings(st.session_state.tema)
 
-            # 2. FORMATAÇÃO (O segredo das quebras de linha)
+            # 2. FORMATAÇÃO ANTI-ZIGUEZAGUE (HTML Puro para fontes iguais)
             if raw_text:
-                # Limpa espaços e garante os dois espaços no fim para o Markdown
-                linhas_limpas = [l.strip() for l in raw_text.split('\n')]
-                texto_formatado = "  \n".join(linhas_limpas)
+                linhas_formatadas = []
+                for l in raw_text.split('\n'):
+                    linha_limpa = l.lstrip().strip()
+                    if not linha_limpa:
+                        linhas_formatadas.append("&nbsp;")
+                    else:
+                        linhas_formatadas.append(linha_limpa)
+                texto_formatado = "<br>".join(linhas_formatadas)
             else:
                 texto_formatado = "Gerando versos..."
 
-            # 3. IMAGEM
+            # 3. IMAGEM E SAÍDA
             imagem_carregada = load_arts(st.session_state.tema) if st.session_state.draw else None
-
-            # 4. SAÍDA PARA A PRENSA (Onde dava o erro na linha 975)
-            # Agora os nomes batem: texto_formatado e imagem_carregada
             write_ypoema(texto_formatado, imagem_carregada)
 
-            # 5. EXTRAS (Voz e Informações Técnicas)
+            # 4. EXTRAS
             if st.session_state.talk:
                 talk(raw_text)
             
             if manu:
                 info_txt = load_info(st.session_state.tema)
-                st.info(translate(info_txt) if st.session_state.lang != "pt" else info_txt)
-                
-    # 🛑 CRITICAL: Apague qualquer linha que sobrou abaixo deste bloco até o final da def page_ypoemas()
-    # === ATENÇÃO: APAGUE QUALQUER LINHA QUE ESTEJA ABAIXO DISSO ATÉ O FIM DA FUNÇÃO ===
-    # --- FIM DA FUNÇÃO (Certifique-se que não há nada escrito aqui embaixo!) ---
-
-def page_eureka():
+                st.info(translate(info_txt) if st.session_state.lang != "pt" else info_txt)def page_eureka():
     help_tips = load_help(st.session_state.lang)
     help_rand = help_tips[1]
     help_more = help_tips[4]
