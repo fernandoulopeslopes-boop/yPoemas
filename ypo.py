@@ -951,55 +951,51 @@ def page_ypoemas():
         lnew_img = True
 
     # --- 3. CONSTRUÇÃO E CARGA ---
-    if lnew_ypo:
-        # Criamos e entramos no expander em um só sopro
-        with st.expander(what_book, expanded=True):
-            try:
-                # Chamamos a carga com o nome formatado corretamente
-                curr_ypoema = load_poema(tema_formatado, "")
-                
-                if curr_ypoema:
-                    LOGO_TEXTO = curr_ypoema
-                else:
-                    LOGO_TEXTO = f"A Machina não encontrou o arquivo: data/{tema_formatado}.ypo"
-            except Exception as e:
-            LOGO_TEXTO = f"Erro na engrenagem: {e}"
+# --- 1. PREPARAÇÃO DOS RÓTULOS (Sempre antes do uso) ---
+    try:
+        what_book = (
+            "⚫ " + str(st.session_state.lang) + 
+            " ( " + str(st.session_state.book) + " ) " +
+            "( " + str(st.session_state.take + 1) + " / " + str(len(temas_list)) + " )"
+        )
+    except:
+        what_book = "yPoemas - A Machina"
 
-            # Carga da Arte
-        if st.session_state.draw:
-            LOGO_IMAGE = load_arts(tema_formatado)
-        
+    # --- 2. BLOCO DE CONSTRUÇÃO ---
+    if lnew_ypo:
+        # Criamos e entramos no expander
         with st.expander(what_book, expanded=True):
-            # --- RASTREADOR DE CAMINHOS ---
-            nome_arquivo = f"{st.session_state.tema}.ypo"
+            # --- RASTREADOR DE CAMINHOS E CARGA ---
+            tema_formatado = str(st.session_state.tema).capitalize()
+            nome_arquivo = f"{tema_formatado}.ypo"
             caminho_tentado = os.path.join("data", nome_arquivo)
             
-            # Verificação Real de Existência
+            # Verificação Real de Existência no Disco
             if os.path.exists(caminho_tentado):
-                curr_ypoema = load_poema(str(st.session_state.tema), "")
+                try:
+                    curr_ypoema = load_poema(tema_formatado, "")
+                    if curr_ypoema:
+                        LOGO_TEXTO = curr_ypoema
+                    else:
+                        LOGO_TEXTO = f"A Machina leu o arquivo, mas ele está vazio: {caminho_tentado}"
+                except Exception as e:
+                    LOGO_TEXTO = f"Erro na engrenagem ao ler {nome_arquivo}: {e}"
             else:
-                # Se cair aqui, o Python nos dirá ONDE ele procurou
+                # O Rastreador entra em cena se o arquivo não existir
                 diretorio_atual = os.getcwd()
                 arquivos_na_data = os.listdir("data") if os.path.exists("data") else "Pasta 'data' não encontrada!"
                 
-                curr_ypoema = (
+                LOGO_TEXTO = (
                     f"❌ ERRO DE LOCALIZAÇÃO\n"
                     f"Arquivo buscado: {nome_arquivo}\n"
-                    f"Diretório atual no Servidor: {diretorio_atual}\n"
-                    f"Arquivos vistos na pasta 'data': {arquivos_na_data}"
+                    f"Caminho tentado: {caminho_tentado}\n"
+                    f"Diretório atual: {diretorio_atual}\n"
+                    f"Arquivos na 'data': {arquivos_na_data}"
                 )
 
-            LOGO_TEXTO = curr_ypoema
-       try:
-          what_book = (
-          "⚫ " + str(st.session_state.lang) + 
-          " ( " + str(st.session_state.book) + " ) " +
-          "( " + str(st.session_state.take + 1) + " / " + str(len(temas_list)) + " )"
-          )
-       except:
-          what_book = "yPoemas - A Machina"
-        
-       with st.expander(what_book, expanded=True):
+            # Carga da Arte (dentro do expander)
+            if st.session_state.draw:
+                LOGO_IMAGE = load_arts(tema_formatado)       with st.expander(what_book, expanded=True):
             curr_ypoema = load_poema(str(st.session_state.tema), "")
             LOGO_TEXTO = curr_ypoema
             
