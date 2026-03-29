@@ -166,12 +166,14 @@ st.markdown(
 
 
 # load_poema settings
-# Substitua o bloco inteiro por este para garantir que o Python não se perca:
-
 st.markdown(
     """
     <style>
     
+# --- BLOCO CSS CORRIGIDO E SELADO ---
+st.markdown(
+    """
+    <style>
     .logo-text {
         font-weight: 600;
         font-size: 18px;
@@ -180,16 +182,18 @@ st.markdown(
         padding-left: 15px;
         text-align: left;
         display: block;
-        line-height: 1.5; /* Dá o espaço entre os versos */
+        line-height: 1.5;
+        white-space: pre-wrap !important; /* FORÇA A QUEBRA DE LINHA */
     }
     .logo-img {
         float: right;
         max-width: 300px;
     }
+
     </style>
     """,
     unsafe_allow_html=True,
-)
+    )
     .logo-img {
         float: right;
     }
