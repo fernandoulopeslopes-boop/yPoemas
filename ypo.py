@@ -950,9 +950,6 @@ def page_ypoemas():
     if st.session_state.draw:
         lnew_img = True
 
-    # Bloco de Poesia (Expander)
-    if lnew_ypo:
-
     # --- 3. CONSTRUÇÃO E CARGA ---
     if lnew_ypo:
         # Criamos e entramos no expander em um só sopro
