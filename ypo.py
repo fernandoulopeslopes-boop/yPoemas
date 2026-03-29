@@ -936,6 +936,13 @@ if lnew:
             if st.session_state.talk:
                 talk(raw_text)
 
+            # Estas linhas devem estar EXATAMENTE alinhadas com o "if manu" acima
+            help_tips = load_help(st.session_state.lang)
+            help_last = help_tips[0]
+            help_rand = help_tips[1]
+            help_nest = help_tips[2]
+            help_more = help_tips[4]
+            
             if manu:
                 info_txt = load_info(st.session_state.tema)
                 # Tudo em uma linha só para blindar a sintaxe
