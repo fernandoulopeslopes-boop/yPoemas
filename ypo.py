@@ -1029,6 +1029,28 @@ def page_ypoemas():
         st.session_state.vydo = False
    
     if lnew_ypo:
+        with st.expander(what_book, expanded=True):
+            # --- RASTREADOR DE CAMINHOS ---
+            nome_arquivo = f"{st.session_state.tema}.ypo"
+            caminho_tentado = os.path.join("data", nome_arquivo)
+            
+            # Verificação Real de Existência
+            if os.path.exists(caminho_tentado):
+                curr_ypoema = load_poema(str(st.session_state.tema), "")
+            else:
+                # Se cair aqui, o Python nos dirá ONDE ele procurou
+                diretorio_atual = os.getcwd()
+                arquivos_na_data = os.listdir("data") if os.path.exists("data") else "Pasta 'data' não encontrada!"
+                
+                curr_ypoema = (
+                    f"❌ ERRO DE LOCALIZAÇÃO\n"
+                    f"Arquivo buscado: {nome_arquivo}\n"
+                    f"Diretório atual no Servidor: {diretorio_atual}\n"
+                    f"Arquivos vistos na pasta 'data': {arquivos_na_data}"
+                )
+
+            LOGO_TEXTO = curr_ypoema
+            
         with ypoemas_expander:
             # 2. Tente carregar o poema
             try:
