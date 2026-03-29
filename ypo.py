@@ -913,8 +913,6 @@ def page_mini():
 
 
 def page_ypoemas():
-
-    aaa
     lnew_ypo = True
     LOGO_TEXTO = ""
     LOGO_IMAGE = None
