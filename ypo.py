@@ -931,7 +931,7 @@ def page_ypoemas():
                     linhas_formatadas.append(linha_limpa)
                 
                 texto_formatado = "  \n".join(linhas_formatadas)
-         else:
+        else:
             texto_formatado = "Gerando versos..."
         # --- ATÉ AQUI ---
         
