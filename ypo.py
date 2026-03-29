@@ -860,24 +860,30 @@ def page_ypoemas():
     help_last, help_rand, help_nest = help_tips[0], help_tips[1], help_tips[2]
     help_more = help_tips[4]
 
-    more = more.button("✚", help=help_more)
-    last = last.button("◀", help=help_last)
-    rand = rand.button("✻", help=help_rand)
-    nest = nest.button("▶", help=help_nest)
-    manu_btn = manu.button("?", help="help !!!")
+# Botões com IDs únicos para a página Ypoemas
+    more_btn = more.button("✚", help=help_more, key="btn_more_ypo")
+    last_btn = last.button("◀", help=help_last, key="btn_last_ypo")
+    rand_btn = rand.button("✻", help=help_rand, key="btn_rand_ypo")
+    nest_btn = nest.button("▶", help=help_nest, key="btn_nest_ypo")
+    manu_btn = manu.button("?", help="help !!!", key="btn_manu_ypo")
 
+    # Agora ajuste os "ifs" logo abaixo para usar os novos nomes:
     if last:
         st.session_state.take -= 1
         if st.session_state.take < 0: st.session_state.take = maxy_ypoemas
         st.rerun()
 
-    if rand:
+    if rand_btn:
         st.session_state.take = random.randrange(0, maxy_ypoemas)
         st.rerun()
 
-    if nest:
+    if nest_btn:
         st.session_state.take += 1
         if st.session_state.take > maxy_ypoemas: st.session_state.take = 0
+        st.rerun()
+
+    if rand_btn:
+        st.session_state.take = random.randrange(0, maxy_ypoemas)
         st.rerun()
 
     if not st.session_state.draw:
