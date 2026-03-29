@@ -938,7 +938,7 @@ if lnew:
 
             if manu:
                 info_txt = load_info(st.session_state.tema)
-                # O st.info precisa fechar o parêntese no final da instrução
+                # Tudo em uma linha só para blindar a sintaxe
                 st.info(translate(info_txt) if st.session_state.lang != "pt" else info_txt)
                 
             # help_tips deve estar alinhado com o "if manu" ou conforme o fluxo da função
