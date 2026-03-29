@@ -799,9 +799,18 @@ def page_mini():
             curr_ypoema = load_typo()  # to normalize line breaks in text
 
         update_readings(st.session_state.tema)
-        LOGO_TEXTO = curr_ypoema
-        LOGO_IMAGE = None
+        
+        # 1. Definimos um valor padrão para evitar o erro de 'None'
+        if st.session_state.curr_ypoema is not None:
+            # Se houver texto, limpamos as quebras de linha
+            LOGO_TEXTO = st.session_state.curr_ypoema.replace("\n", "  \n")
+        else:
+            # Se estiver vazio, damos um aviso amigável ou geramos um novo
+            LOGO_TEXTO = "Aguardando versos da ABNP..."
+            # Opcional: Forçar a geração se estiver vazio
+            st.session_state.curr_ypoema = load_poema(str(st.session_state.tema), "")
 
+        LOGO_IMAGE = None
         if st.session_state.draw:
             LOGO_IMAGE = load_arts(st.session_state.tema)
 
