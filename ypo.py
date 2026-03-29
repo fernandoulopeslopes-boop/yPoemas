@@ -975,7 +975,35 @@ def page_ypoemas():
 
         ypoemas_expander = st.expander(what_book, expanded=True)
         with ypoemas_expander:
-            # 1. GERAÇÃO/CARREGAMENTO
+            # 1. GERAÇÃO / CARREGAMENTO (Sincronizado)
+            if st.session_state.lang != st.session_state.last_lang:
+                curr_ypoema = st.session_state.curr_ypoema 
+            else:
+                curr_ypoema = load_poema(str(st.session_state.tema), "")
+                st.session_state.curr_ypoema = curr_ypoema
+
+            # 2. TRADUÇÃO
+            if st.session_state.lang != "pt":
+                curr_ypoema = translate(curr_ypoema)
+
+            update_readings(st.session_state.tema)
+
+            # --- A PRENSA DE ALTA PRESSÃO (Ajuste aqui!) ---
+            if curr_ypoema:
+                # Remove espaços de cada linha E remove linhas vazias extras
+                linhas = [l.strip() for l in curr_ypoema.split("\n") if l.strip()]
+                # O segredo: '  \n' no final força quebra de linha sem virar bloco de código
+                LOGO_TEXTO = "  \n".join(linhas)
+            else:
+                LOGO_TEXTO = "..."
+
+            LOGO_IMAGE = None
+            if st.session_state.draw:
+                LOGO_IMAGE = load_arts(st.session_state.tema)
+
+            # Exibe o texto limpo
+            write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
+            # -----------------------------------------------            # 1. GERAÇÃO/CARREGAMENTO
             if st.session_state.lang != st.session_state.last_lang:
                 curr_ypoema = st.session_state.curr_ypoema # Usa o que já está na memória
             else:
