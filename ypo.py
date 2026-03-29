@@ -1011,11 +1011,11 @@ def page_ypoemas():
     if lnew_ypo:
         # Título dinâmico do expander
         what_book = f"⚫ {st.session_state.lang} ( {st.session_state.book} ) ( {st.session_state.take + 1} / {len(temas_list)} )"
-        
+
         with st.expander(what_book, expanded=True):
             try:
-                # O Garimpo: Usando sua função original de ourives
-                poema_bruto = gera_poema(tema_nome.capitalize(), "")                
+                tema_limpo = tema_nome.strip().capitalize()
+                poema_bruto = gera_poema(tema_limpo, "")
                 # Se retornar lista, une com quebras de linha
                 LOGO_TEXTO = "\n".join(poema_bruto) if isinstance(poema_bruto, list) else poema_bruto
                 
