@@ -976,6 +976,31 @@ def page_ypoemas():
 
         ypoemas_expander = st.expander(what_book, expanded=True)
         with ypoemas_expander:
+
+# --- DENTRO DA page_ypoemas() ---
+
+with ypoemas_expander:
+    # 1. SEGURANÇA: Se o tanque estiver vazio, gera agora (Evita o erro de antes)
+    if not st.session_state.curr_ypoema:
+        st.session_state.curr_ypoema = load_poema(str(st.session_state.tema), "")
+
+        # 2. DEFINIÇÃO DA FONTE: Se não for PT, usa a tradução (se existir)
+        texto_para_exibir = st.session_state.curr_ypoema
+        if st.session_state.lang != "pt" and st.session_state.trad_ypoema:
+            texto_para_exibir = st.session_state.trad_ypoema
+
+        # 3. A LIMPEZA (Onde resolvemos as colunas fantasmas)
+        if texto_para_exibir:
+            # Removemos tabulações e excesso de espaços que criam o "efeito coluna"
+            import re
+            texto_limpo = texto_para_exibir.replace("\t", " ")
+            texto_limpo = re.sub(' +', ' ', texto_limpo) 
+        
+            # Formatamos para o Markdown (espaço duplo + \n)
+            LOGO_TEXTO = texto_limpo.replace("\n", "  \n")
+        else:
+            LOGO_TEXTO = "Aguardando sinal da ABNP..."
+
             # Se o usuário mudou o idioma, traduzimos o poema que já está na memória
             if st.session_state.lang != st.session_state.last_lang:
                 if st.session_state.curr_ypoema:
