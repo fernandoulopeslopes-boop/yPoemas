@@ -169,7 +169,7 @@ st.markdown(
     """
     <style>
     
-# --- BLOCO CSS CORRIGIDO E SELADO ---
+# --- BLOCO CSS 100% LIMPO E SELADO ---
 st.markdown(
     """
     <style>
@@ -182,22 +182,12 @@ st.markdown(
         text-align: left;
         display: block;
         line-height: 1.6;
-        white-space: pre-wrap !important; /* A chave para os versos */
-        }
+        white-space: pre-wrap !important; 
+    }
     .logo-img {
         float: right;
         max-width: 300px;
         margin-left: 15px;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)    </style>
-    """,
-    unsafe_allow_html=True,
-    )
-    .logo-img {
-        float: right;
     }
     </style>
     """,
