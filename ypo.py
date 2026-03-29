@@ -917,26 +917,25 @@ def page_ypoemas():
 
     if lnew:
         what_book = f"⚫ {st.session_state.lang} ( {st.session_state.book} ) ( {st.session_state.take + 1} / {len(temas_list)} )"
-
-            # 2. FORMATAÇÃO ANTI-ZIGUEZAGUE (Garante fontes iguais)
-            if raw_text:
-                linhas_formatadas = []
-                for l in raw_text.split('\n'):
-                    # .lstrip() remove espaços no INÍCIO que o Markdown confunde com "código"
-                    linha_limpa = l.lstrip().strip() 
+        # 2. FORMATAÇÃO ANTI-ZIGUEZAGUE (Garante fontes iguais)
+        if raw_text:
+            linhas_formatadas = []
+            for l in raw_text.split('\n'):
+                # .lstrip() remove espaços no INÍCIO que o Markdown confunde com "código"
+                linha_limpa = l.lstrip().strip() 
                     
-                    if not linha_limpa:
-                        # Linha de respiro entre estrofes
-                        linhas_formatadas.append("&nbsp;") 
-                    else:
-                        linhas_formatadas.append(linha_limpa)
+                if not linha_limpa:
+                    # Linha de respiro entre estrofes
+                    linhas_formatadas.append("&nbsp;") 
+                else:
+                    linhas_formatadas.append(linha_limpa)
                 
                 texto_formatado = "  \n".join(linhas_formatadas)
-            else:
-                texto_formatado = "Gerando versos..."
-            # --- ATÉ AQUI ---       
-        with st.expander(what_book, expanded=True):
+         else:
+            texto_formatado = "Gerando versos..."
+        # --- ATÉ AQUI ---
         
+        with st.expander(what_book, expanded=True):
             # 1. MOTOR DE TEXTO (Geração e Tradução)
             if st.session_state.lang != st.session_state.last_lang:
                 raw_text = translate(st.session_state.curr_ypoema)
