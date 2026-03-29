@@ -613,11 +613,16 @@ def load_book_pages(book):  # Load Book pages for off_book
 
 def load_poema(nome_tema, seed_eureka):  # generate new yPoema
     script = gera_poema(nome_tema, seed_eureka)
-    novo_ypoema = ""
-    lypo_user = "LYPO_" + IPAddres
+    
+    # 1. Transformamos a lista de versos em um texto único com quebras de linha
+    novo_ypoema = "\n".join(script)
+    
+    # 2. Debug para o Comandante ver que o combustível está saindo
+    # st.write(f"Debug Interno: {nome_tema} - Gerado com Sucesso!") 
 
-    st.write(f"Debug Interno: {nome_tema}")
-
+    # 3. A PEÇA CHAVE: Retornar o texto para a memória (st.session_state)
+    return novo_ypoema
+    
 @st.cache_data(show_spinner=False)
 def load_images():
     images_list = []
