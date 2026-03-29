@@ -959,270 +959,96 @@ def page_mini():
                         secs -= 1
 
 def page_ypoemas():
-    lnew_ypo = True
-    LOGO_TEXTO = ""
-    LOGO_IMAGE = None
-    
-    # --- 2. FORMATAÇÃO DO TEMA (O padrão: Tema_comum) ---
-    tema_formatado = str(st.session_state.tema).capitalize()
-    
-    # Rótulo do Expander
-    what_book = f"⚫ {st.session_state.lang} | {tema_formatado}"
-
-    # --- 4. ENTREGA FINAL (O Palco) ---
-    if LOGO_TEXTO:
-        write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
-    else:
-        st.write("Aguardando o sopro da Machina...")
-    
-    # --- 1. O ALICERCE DE CONTROLE ---
-    lnew_ypo = True    # Controla a geração/exibição do texto (.ypo)
-    lnew_img = False   # Controla se a arte (load_arts) deve aparecer
-    lnew_vydo = False  # Controla a exibição do vídeo
-    
-    # Inicialização das saídas
-    LOGO_TEXTO = ""
-    LOGO_IMAGE = None
-
-    # --- 2. A LÓGICA DE INTERRUPÇÃO (Sensores) ---
-    # Se o usuário clicou para ver o vídeo
-    if st.session_state.vydo:
-        lnew_vydo = True
-        lnew_ypo = False # O vídeo "toma" o palco do texto
-        
-    # Se o modo de desenho estiver ativo
-    if st.session_state.draw:
-        lnew_img = True
-
-    # --- 3. CONSTRUÇÃO E CARGA ---
-# --- 1. PREPARAÇÃO DOS RÓTULOS (Sempre antes do uso) ---
-    try:
-        what_book = (
-            "⚫ " + str(st.session_state.lang) + 
-            " ( " + str(st.session_state.book) + " ) " +
-            "( " + str(st.session_state.take + 1) + " / " + str(len(temas_list)) + " )"
-        )
-    except:
-        what_book = "yPoemas - A Machina"
-
-    
-# --- 1. PREPARAÇÃO (Fora de qualquer 'if') ---
-    LOGO_TEXTO = ""
-    LOGO_IMAGE = None
-    tema_formatado = str(st.session_state.tema).capitalize().strip()
-    
-    # Rótulo seguro
-    try:
-        what_book = f"⚫ {st.session_state.lang} ( {st.session_state.book} )"
-    except:
-        what_book = "yPoemas - A Machina"
-
-    # --- 2. O BLOCO DE CONSTRUÇÃO ---
-    if lnew_ypo:
-        # CRIAMOS O EXPANDER DIRETAMENTE (Isso mata o UnboundLocalError)
-        with st.expander(what_book, expanded=True):
-            
-            caminho_arquivo = os.path.join("data", f"{tema_formatado}.ypo")
-            
-            if os.path.exists(caminho_arquivo):
-                try:
-                    # TENTATIVA DE LEITURA DIRETA (Para testar se a load_poema falha)
-                    with open(caminho_arquivo, "r", encoding="utf-8", errors="ignore") as f:
-                        conteudo = f.read()
-                    
-                    if conteudo.strip():
-                        LOGO_TEXTO = conteudo
-                    else:
-                        # Se chegar aqui, o arquivo físico no GitHub está realmente sem texto
-                        LOGO_TEXTO = f"⚠️ O arquivo '{caminho_arquivo}' existe mas está sem conteúdo."
-                except Exception as e:
-                    LOGO_TEXTO = f"💥 Erro ao abrir arquivo: {e}"
-            else:
-                LOGO_TEXTO = f"❌ Arquivo não encontrado: {caminho_arquivo}"
-
-            # CARGA DA ARTE
-            if st.session_state.draw:
-                LOGO_IMAGE = load_arts(tema_formatado)
-
-    # --- 3. ENTREGA FINAL (Fora do expander para garantir visibilidade) ---
-    if LOGO_TEXTO:
-        write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
-    else:
-        st.write("Aguardando o sopro da Machina...")
-
-    
-    # --- 4. A ENTREGA FINAL ---
-    if LOGO_TEXTO:
-        write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
-    elif not lnew_vydo:
-        st.write("Aguardando o sopro da Machina...")
-        
-    curr_ypoema = "" 
-    LOGO_TEXTO = ""
-    LOGO_IMAGE = None
+    # --- 1. CONFIGURAÇÃO E ESTADO ---
     temas_list = load_temas(st.session_state.book)
     maxy_ypoemas = len(temas_list) - 1
-    if (
-        st.session_state.take > maxy_ypoemas or st.session_state.take < 0
-    ):  # just in case
+    
+    # Proteção de índice
+    if st.session_state.take > maxy_ypoemas or st.session_state.take < 0:
         st.session_state.take = 0
-
+    
+    st.session_state.tema = temas_list[st.session_state.take]
+    tema_nome = st.session_state.tema
+    
+    # --- 2. INTERFACE (BOTÕES E SELEÇÃO) ---
     foo1, more, last, rand, nest, manu, foo2 = st.columns([3, 1, 1, 1, 1, 1, 3])
-
+    
     help_tips = load_help(st.session_state.lang)
-    help_last = help_tips[0]
-    help_rand = help_tips[1]
-    help_nest = help_tips[2]
-    help_more = help_tips[4]
+    more = more.button("✚", help=help_tips[4])
+    last = last.button("◀", help=help_tips[0])
+    rand = rand.button("✻", help=help_tips[1])
+    nest = nest.button("▶", help=help_tips[2])
+    manu = manu.button("?", help="Ajuda/Manual")
 
-    more = more.button("✚", help=help_more)
-    last = last.button("◀", help=help_last)
-    rand = rand.button("✻", help=help_rand)
-    nest = nest.button("▶", help=help_nest)
-    manu = manu.button("?", help="help !!!")
-
+    # Lógica de Navegação
     if last:
-        st.session_state.take -= 1
-        if st.session_state.take < 0:
-            st.session_state.take = maxy_ypoemas
-            st.rerun()
-
+        st.session_state.take = maxy_ypoemas if st.session_state.take <= 0 else st.session_state.take - 1
+        st.rerun()
     if rand:
-        st.session_state.take = random.randrange(0, maxy_ypoemas)
+        st.session_state.take = random.randrange(0, maxy_ypoemas + 1)
+        st.rerun()
+    if nest:
+        st.session_state.take = 0 if st.session_state.take >= maxy_ypoemas else st.session_state.take + 1
         st.rerun()
 
-    if nest:
-        st.session_state.take += 1
-        if st.session_state.take > maxy_ypoemas:
-            st.session_state.take = 0
-
+    # Seletor de Temas (Selectbox)
     if not st.session_state.draw:
-        options = list(range(len(temas_list)))
-        sobrios = "↓  " + translate("lista de Temas")
+        sobrios = "↓ " + translate("lista de Temas")
         opt_take = st.selectbox(
-            sobrios,
-            options,
+            sobrios, range(len(temas_list)),
             index=st.session_state.take,
-            format_func=lambda z: temas_list[z],
-            key="opt_take",
+            format_func=lambda z: temas_list[z]
         )
-
         if opt_take != st.session_state.take:
             st.session_state.take = opt_take
+            st.rerun()
 
-    st.session_state.tema = temas_list[st.session_state.take]
+    # --- 3. O PALCO DA POESIA ---
+    lnew_ypo = not st.session_state.vydo
+    LOGO_TEXTO = ""
+    LOGO_IMAGE = None
 
-    if LOGO_TEXTO:
-        write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
-    else:
-        st.write("Aguardando o sopro da Machina...")   
+    if lnew_ypo:
+        # Título dinâmico do expander
+        what_book = f"⚫ {st.session_state.lang} ( {st.session_state.book} ) ( {st.session_state.take + 1} / {len(temas_list)} )"
         
+        with st.expander(what_book, expanded=True):
+            try:
+                # O Garimpo: Usando sua função original de ourives
+                poema_bruto = gera_poema(tema_nome, "")
+                
+                # Se retornar lista, une com quebras de linha
+                LOGO_TEXTO = "\n".join(poema_bruto) if isinstance(poema_bruto, list) else poema_bruto
+                
+                # Tradução se necessário
+                if st.session_state.lang != "pt" and LOGO_TEXTO:
+                    LOGO_TEXTO = translate(LOGO_TEXTO)
+                
+                # Carga da Arte
+                if st.session_state.draw:
+                    LOGO_IMAGE = load_arts(tema_nome)
+                
+                # Exibição Final no Palco
+                if LOGO_TEXTO:
+                    write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
+                    update_readings(tema_nome)
+                else:
+                    st.write("Aguardando o sopro da Machina...")
+
+            except Exception as e:
+                st.error(f"Erro na engrenagem: {e}")
+
+    # --- 4. FUNÇÕES ESPECIAIS (Vídeo / Manual / Voz) ---
+    if st.session_state.vydo:
+        show_video("ypoemas")
+        update_readings("video_ypoemas")
+        st.session_state.vydo = False # Reseta o estado após exibir
+
     if manu:
         st.subheader(load_md_file("MANUAL_YPOEMAS.md"))
 
-    if st.session_state.vydo:
-        lnew_vydo = True
-        lnew_ypo = False # O vídeo "toma" o palco do texto
-        show_video("ypoemas")
-        update_readings("video_ypoemas")
-        st.session_state.vydo = False
-   
-    if lnew_ypo:
-        with st.expander(what_book, expanded=True):
-            # --- RASTREADOR DE CAMINHOS ---
-            nome_arquivo = f"{st.session_state.tema}.ypo"
-            caminho_tentado = os.path.join("data", nome_arquivo)
-            
-            # Verificação Real de Existência
-            if os.path.exists(caminho_tentado):
-                curr_ypoema = load_poema(str(st.session_state.tema), "")
-            else:
-                # Se cair aqui, o Python nos dirá ONDE ele procurou
-                diretorio_atual = os.getcwd()
-                arquivos_na_data = os.listdir("data") if os.path.exists("data") else "Pasta 'data' não encontrada!"
-                
-                curr_ypoema = (
-                    f"❌ ERRO DE LOCALIZAÇÃO\n"
-                    f"Arquivo buscado: {nome_arquivo}\n"
-                    f"Diretório atual no Servidor: {diretorio_atual}\n"
-                    f"Arquivos vistos na pasta 'data': {arquivos_na_data}"
-                )
-
-            LOGO_TEXTO = curr_ypoema
-            
-        with ypoemas_expander:
-            # 2. Tente carregar o poema
-            try:
-                if st.session_state.lang != st.session_state.last_lang:
-                    curr_ypoema = load_lypo()
-                else:
-                    curr_ypoema = load_poema(str(st.session_state.tema), "")
-            except Exception as e:
-                curr_ypoema = f"Erro ao carregar tema {st.session_state.tema}: {e}"
-
-            # 3. Se ainda estiver vazio após o load, dê um susto na Machina
-            if not curr_ypoema:
-                curr_ypoema = "A página está em branco, aguardando o sopro..."
-                LOGO_TEXTO = curr_ypoema
-            
-
-    if lnew_ypo:
-        what_book = (
-            "⚫  "
-            + st.session_state.lang
-            + " ( "
-            + st.session_state.book
-            + " ) ( "
-            + str(st.session_state.take + 1)
-            + " / "
-            + str(len(temas_list))
-            + " )"
-        )
-
-        ypoemas_expander = st.expander(what_book, expanded=True)
-        with ypoemas_expander:
-            LOGO_TEXTO = curr_ypoema 
-            if st.session_state.draw:
-                LOGO_IMAGE = load_arts(st.session_state.tema)
-
-            if st.session_state.lang != st.session_state.last_lang:
-                curr_ypoema = load_lypo()  # changes in lang, keep LYPO
-            else:
-                curr_ypoema = load_poema(str(st.session_state.tema), "")
-
-            if st.session_state.lang != "pt":  # translate if idioma <> pt
-                curr_ypoema = translate(curr_ypoema)
-                typo_user = "TYPO_" + IPAddres
-                with open(os.path.join("./temp/" + typo_user), "w", encoding="utf-8") as save_typo:
-                    save_typo.write(curr_ypoema)
-                    save_typo.close()
-                    
-                curr_ypoema = load_typo()  # to normalize line breaks in text
-
-            update_readings(st.session_state.tema)
-            LOGO_TEXTO = curr_ypoema
-            LOGO_IMAGE = None
-            if st.session_state.draw:
-                LOGO_IMAGE = load_arts(st.session_state.tema)
-
-            write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
-
-            if manu:
-                LOGO_TEXTO = load_info(st.session_state.tema)
-                if st.session_state.lang != "pt":  # translate if idioma <> pt
-                    LOGO_TEXTO = translate(LOGO_TEXTO)
-
-                LOGO_IMAGE = (
-                    "./images/matrix/" + st.session_state.tema.capitalize() + ".jpg"
-                )
-                write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
-
-        if st.session_state.talk:
-            talk(curr_ypoema)
-
-        # st.markdown(get_binary_file_downloader_html('./temp/'+'LYPO_' + IPAddres, '➪ '+st.session_state.tema), unsafe_allow_html=True)
-
-
+    if st.session_state.talk and LOGO_TEXTO:
+        talk(LOGO_TEXTO)
 import streamlit as st
 from lay_2_ypo import gera_poema  # Importando sua função com o 'return'
 
