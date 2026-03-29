@@ -581,6 +581,7 @@ def load_all_offs():
     ]
     return all_books_off
 
+
 def load_off_book(book):  # Load selected off_book
     book_full = []
     full_name = os.path.join("./off_machina/", book) + ".Pip"
@@ -603,26 +604,27 @@ def load_book_pages(book):  # Load Book pages for off_book
 
     return book_pages
 
-def load_poema(nome_tema, seed_eureka):  # generate new yPoema
-    script = gera_poema(nome_tema, seed_eureka)
-    novo_ypoema = ""
-    lypo_user = "LYPO_" + IPAddres
-
-    frufru = f"<div style='text-align: center; font-size: 32px; margin-bottom: 20px;'><strong>* {nome_tema} *</strong></div>"
-    st.markdown(frufru, unsafe_allow_html=True)    
-
-    with open(os.path.join("./temp/" + lypo_user), "w", encoding="utf-8") as save_lypo:
-        save_lypo.write(frufru)
-        for line in script:
-            if line == "\n":
-                save_lypo.write("\n")
-                novo_ypoema += "<br>"
-            else:
-                save_lypo.write(line + "\n")
-                novo_ypoema += line + "<br>"
-
-    save_lypo.close()  # save last generated in LYPO
-    return novo_ypoema
+def load_poema(tema, subtema=""):
+    # 1. Construção do Caminho (Case Sensitive para Linux/Streamlit)
+    tema_limpo = str(tema).capitalize().strip()
+    caminho = os.path.join("data", f"{tema_limpo}.ypo")
+    
+    try:
+        # 2. Abertura com Encoding Seguro (UTF-8 é vital para poesia)
+        if os.path.exists(caminho):
+            with open(caminho, "r", encoding="utf-8", errors="ignore") as f:
+                conteudo = f.read()
+                
+                # 3. O Ponto de Falha: Verifique se o conteúdo subiu
+                if conteudo.strip():
+                    return conteudo
+                else:
+                    return "⚠️ O arquivo existe, mas a leitura retornou vácuo."
+        else:
+            return f"❌ Arquivo não encontrado no disco: {caminho}"
+            
+    except Exception as e:
+        return f"💥 Colapso na lida do arquivo: {str(e)}"
 
 @st.cache_data(show_spinner=False)
 def load_images():
