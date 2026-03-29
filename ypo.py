@@ -183,7 +183,7 @@ st.markdown(
         display: block;
         line-height: 1.6;
         white-space: pre-wrap !important; /* A chave para os versos */
-    }
+        }
     .logo-img {
         float: right;
         max-width: 300px;
