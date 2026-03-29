@@ -608,6 +608,51 @@ def load_poema(tema, subtema=""):
     # 1. Construção do Caminho (Case Sensitive para Linux/Streamlit)
     tema_limpo = str(tema).capitalize().strip()
     caminho = os.path.join("data", f"{tema_limpo}.ypo")
+
+
+# --- 1. PREPARAÇÃO (Fora de qualquer 'if') ---
+    LOGO_TEXTO = ""
+    LOGO_IMAGE = None
+    tema_formatado = str(st.session_state.tema).capitalize().strip()
+    
+    # Rótulo seguro
+    try:
+        what_book = f"⚫ {st.session_state.lang} ( {st.session_state.book} )"
+    except:
+        what_book = "yPoemas - A Machina"
+
+    # --- 2. O BLOCO DE CONSTRUÇÃO ---
+    if lnew_ypo:
+        # CRIAMOS O EXPANDER DIRETAMENTE (Isso mata o UnboundLocalError)
+        with st.expander(what_book, expanded=True):
+            
+            caminho_arquivo = os.path.join("data", f"{tema_formatado}.ypo")
+            
+            if os.path.exists(caminho_arquivo):
+                try:
+                    # TENTATIVA DE LEITURA DIRETA (Para testar se a load_poema falha)
+                    with open(caminho_arquivo, "r", encoding="utf-8", errors="ignore") as f:
+                        conteudo = f.read()
+                    
+                    if conteudo.strip():
+                        LOGO_TEXTO = conteudo
+                    else:
+                        # Se chegar aqui, o arquivo físico no GitHub está realmente sem texto
+                        LOGO_TEXTO = f"⚠️ O arquivo '{caminho_arquivo}' existe mas está sem conteúdo."
+                except Exception as e:
+                    LOGO_TEXTO = f"💥 Erro ao abrir arquivo: {e}"
+            else:
+                LOGO_TEXTO = f"❌ Arquivo não encontrado: {caminho_arquivo}"
+
+            # CARGA DA ARTE
+            if st.session_state.draw:
+                LOGO_IMAGE = load_arts(tema_formatado)
+
+    # --- 3. ENTREGA FINAL (Fora do expander para garantir visibilidade) ---
+    if LOGO_TEXTO:
+        write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
+    else:
+        st.write("Aguardando o sopro da Machina...")    
     
     try:
         # 2. Abertura com Encoding Seguro (UTF-8 é vital para poesia)
