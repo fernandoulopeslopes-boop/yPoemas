@@ -980,64 +980,45 @@ def page_ypoemas():
 
         ypoemas_expander = st.expander(what_book, expanded=True)
         with ypoemas_expander:
-            # 1. GERAÇÃO / CARREGAMENTO (Sincronizado)
+            # 1. MOTOR DE GERAÇÃO / TRADUÇÃO
             if st.session_state.lang != st.session_state.last_lang:
-                curr_ypoema = st.session_state.curr_ypoema 
+                # Se mudou o idioma, traduz o que já está na memória
+                curr_ypoema = translate(st.session_state.curr_ypoema)
             else:
+                # Se é tema novo, gera do zero
                 curr_ypoema = load_poema(str(st.session_state.tema), "")
                 st.session_state.curr_ypoema = curr_ypoema
 
-            # 2. TRADUÇÃO
-            if st.session_state.lang != "pt":
-                curr_ypoema = translate(curr_ypoema)
-
             update_readings(st.session_state.tema)
 
-            # --- A PRENSA DE ALTA PRESSÃO (Ajuste aqui!) ---
+            # 2. A PRENSA (LIMPEZA TOTAL)
             if curr_ypoema:
-                # Remove espaços de cada linha E remove linhas vazias extras
                 linhas = [l.strip() for l in curr_ypoema.split("\n") if l.strip()]
-                # O segredo: '  \n' no final força quebra de linha sem virar bloco de código
                 LOGO_TEXTO = "  \n".join(linhas)
             else:
                 LOGO_TEXTO = "..."
 
+            # 3. IMAGEM
             LOGO_IMAGE = None
             if st.session_state.draw:
                 LOGO_IMAGE = load_arts(st.session_state.tema)
 
-            # Exibe o texto limpo
+            # --- ÚNICA SAÍDA DE TEXTO E IMAGEM ---
             write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
-            # -----------------------------------------------            # 1. GERAÇÃO/CARREGAMENTO
-            if st.session_state.lang != st.session_state.last_lang:
-                curr_ypoema = st.session_state.curr_ypoema # Usa o que já está na memória
-            else:
-                curr_ypoema = load_poema(str(st.session_state.tema), "")
-                st.session_state.curr_ypoema = curr_ypoema # Guarda para mudanças de idioma
+            # -------------------------------------
 
-            # 2. TRADUÇÃO
-            if st.session_state.lang != "pt":
-                curr_ypoema = translate(curr_ypoema)
-                typo_user = "TYPO_" + IPAddres
-                with open(os.path.join("./temp/" + typo_user), "w", encoding="utf-8") as save_typo:
-                    save_typo.write(curr_ypoema)
-                # O curr_ypoema aqui já está traduzido e pronto
+            # 4. MANUAL / INFO (DENTRO DO EXPANDER)
+            if manu:
+                info_dados = load_info(st.session_state.tema)
+                if st.session_state.lang != "pt":
+                    info_dados = translate(info_dados)
+                st.info(info_dados) 
 
-            update_readings(st.session_state.tema)
+            # 5. VOZ (DENTRO DO EXPANDER)
+            if st.session_state.talk:
+                talk(curr_ypoema)
 
-            # 3. A PRENSA (LIMPEZA DE COLUNAS)
-            if curr_ypoema:
-                linhas = [l.strip() for l in curr_ypoema.split("\n")]
-                LOGO_TEXTO = "  \n".join(linhas)
-            else:
-                LOGO_TEXTO = "..."
-
-            LOGO_IMAGE = None
-            if st.session_state.draw:
-                LOGO_IMAGE = load_arts(st.session_state.tema)
-
-            write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
-
+    # --- FIM DA FUNÇÃO (Certifique-se que não há nada escrito aqui embaixo!) ---
         if st.session_state.talk:
             talk(curr_ypoema)
 
