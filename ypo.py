@@ -1013,7 +1013,8 @@ def page_ypoemas():
 
         if st.session_state.talk:
             talk(curr_ypoema)
-            
+
+
 def page_eureka():
     help_tips = load_help(st.session_state.lang)
     help_rand = help_tips[1]
