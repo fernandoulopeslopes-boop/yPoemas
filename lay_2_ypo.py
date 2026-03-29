@@ -22,7 +22,7 @@ def gera_poema(nome_tema, seed_eureka):
     # Transformamos a lista em uma string única com quebras de linha
     novo_poema = "\n".join(script_poema)
     
-    return novo_poema # <--- Crucial: devolve a string para a memória RAM    lista_header = []
+    lista_header = []
     lista_linhas = []
     lista_finais = []
     lista_change = []
