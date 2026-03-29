@@ -961,16 +961,17 @@ def page_ypoemas():
     except:
         what_book = "yPoemas - A Machina"
 
-    # --- 2. BLOCO DE CONSTRUÇÃO ---
+# --- 2. BLOCO DE CONSTRUÇÃO ---
     if lnew_ypo:
-        # Criamos e entramos no expander
+        # Criamos e entramos no expander único
         with st.expander(what_book, expanded=True):
-            # --- RASTREADOR DE CAMINHOS E CARGA ---
+            
+            # 2a. Preparação do Caminho
             tema_formatado = str(st.session_state.tema).capitalize()
             nome_arquivo = f"{tema_formatado}.ypo"
             caminho_tentado = os.path.join("data", nome_arquivo)
             
-            # Verificação Real de Existência no Disco
+            # 2b. Verificação e Carga do Poema
             if os.path.exists(caminho_tentado):
                 try:
                     curr_ypoema = load_poema(tema_formatado, "")
@@ -982,27 +983,21 @@ def page_ypoemas():
                     LOGO_TEXTO = f"Erro na engrenagem ao ler {nome_arquivo}: {e}"
             else:
                 # O Rastreador entra em cena se o arquivo não existir
-                diretorio_atual = os.getcwd()
+                dir_atual = os.getcwd()
                 arquivos_na_data = os.listdir("data") if os.path.exists("data") else "Pasta 'data' não encontrada!"
-                
                 LOGO_TEXTO = (
                     f"❌ ERRO DE LOCALIZAÇÃO\n"
-                    f"Arquivo buscado: {nome_arquivo}\n"
-                    f"Caminho tentado: {caminho_tentado}\n"
-                    f"Diretório atual: {diretorio_atual}\n"
+                    f"Arquivo: {nome_arquivo}\n"
+                    f"Caminho: {caminho_tentado}\n"
                     f"Arquivos na 'data': {arquivos_na_data}"
                 )
 
-            # Carga da Arte (dentro do expander)
+            # 2c. Carga da Arte (dentro do mesmo expander)
             if st.session_state.draw:
-                LOGO_IMAGE = load_arts(tema_formatado)       with st.expander(what_book, expanded=True):
-            curr_ypoema = load_poema(str(st.session_state.tema), "")
-            LOGO_TEXTO = curr_ypoema
-            
-            # Bloco de Imagem (Só carrega se a flag de imagem permitir)
-            if lnew_img:
-                LOGO_IMAGE = load_arts(st.session_state.tema)
-
+                LOGO_IMAGE = load_arts(tema_formatado)
+            elif lnew_img: # Suporte para a sua nova flag
+                LOGO_IMAGE = load_arts(st.session_state.tema)    
+                
     # --- 4. A ENTREGA FINAL ---
     if LOGO_TEXTO:
         write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
