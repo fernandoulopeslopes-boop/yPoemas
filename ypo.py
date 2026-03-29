@@ -952,7 +952,13 @@ def page_ypoemas():
             update_readings(st.session_state.tema)
 
             # EXIBIÇÃO: Usamos o conteúdo da memória, formatado para Markdown
-            LOGO_TEXTO = st.session_state.curr_ypoema.replace("\n", "  \n")
+            # Em vez de apenas dar o replace direto, fazemos um check-up:
+            if st.session_state.curr_ypoema:
+                # Se tem texto, aplicamos a formatação
+                LOGO_TEXTO = st.session_state.curr_ypoema.replace("\n", "  \n")
+            else:
+                # Se estiver vazio (None), damos um valor padrão para não quebrar a tela
+                LOGO_TEXTO = "Processando versos para a Editora Samizdát..."
             
             # Mantemos a lógica da imagem se o 'draw' estiver ligado
             LOGO_IMAGE = None
@@ -1376,7 +1382,7 @@ def page_abouts():
         "traduttore",
         "bibliografia",
         "imagens",
-        "samizdát",
+        "dát",
         "notes",
         "license",
         "index",
