@@ -648,7 +648,7 @@ def load_poema(tema, subtema=""):
     except Exception as e:
         return f"💥 Erro no processamento do garimpo: {e}"
         
-    # --- 3. ENTREGA FINAL (Fora do expander para garantir visibilidade) ---
+    # --- 3. ENTREGA FINAL (Fora do  para garantir visibilidade) ---
     if LOGO_TEXTO:
         write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
     else:
@@ -1015,8 +1015,7 @@ def page_ypoemas():
         with st.expander(what_book, expanded=True):
             try:
                 # O Garimpo: Usando sua função original de ourives
-                poema_bruto = gera_poema(tema_nome, "")
-                
+                poema_bruto = gera_poema(tema_nome.capitalize(), "")                
                 # Se retornar lista, une com quebras de linha
                 LOGO_TEXTO = "\n".join(poema_bruto) if isinstance(poema_bruto, list) else poema_bruto
                 
@@ -1350,7 +1349,6 @@ def page_books():  # available books
                 list_book += line.strip() + ", "
             st.write(list_book[:-2] + " ▶ " + str(int(len(temas_list))) + " páginas")
 
-            books_expander = st.expander("", True)
             with st.expander("Livros da Machina", expanded=True):
                 st.subheader(load_md_file("MANUAL_BOOKS.md"))
 
