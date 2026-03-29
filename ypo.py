@@ -605,49 +605,49 @@ def load_book_pages(book):  # Load Book pages for off_book
     return book_pages
 
 def load_poema(tema, subtema=""):
-    # 1. Construção do Caminho (Case Sensitive para Linux/Streamlit)
-    tema_limpo = str(tema).capitalize().strip()
-    caminho = os.path.join("data", f"{tema_limpo}.ypo")
-
-
-# --- 1. PREPARAÇÃO (Fora de qualquer 'if') ---
-    LOGO_TEXTO = ""
-    LOGO_IMAGE = None
-    tema_formatado = str(st.session_state.tema).capitalize().strip()
+    tema_formatado = str(tema).capitalize().strip()
+    caminho = os.path.join("data", f"{tema_formatado}.ypo")
     
-    # Rótulo seguro
+    if not os.path.exists(caminho):
+        return f"❌ Arquivo não encontrado: {caminho}"
+
     try:
-        what_book = f"⚫ {st.session_state.lang} ( {st.session_state.book} )"
-    except:
-        what_book = "yPoemas - A Machina"
-
-    # --- 2. O BLOCO DE CONSTRUÇÃO ---
-    if lnew_ypo:
-        # CRIAMOS O EXPANDER DIRETAMENTE (Isso mata o UnboundLocalError)
-        with st.expander(what_book, expanded=True):
+        with open(caminho, "r", encoding="utf-8", errors="ignore") as f:
+            linhas = f.readlines()
+        
+        poema_gerado = []
+        
+        for linha in linhas:
+            linha = linha.strip()
+            # 1. Ignora comentários e metadados históricos
+            if linha.startswith("*-") or not linha:
+                continue
             
-            caminho_arquivo = os.path.join("data", f"{tema_formatado}.ypo")
+            # 2. O Garimpo das colunas |01|03|...|Opções|
+            partes = linha.split("|")
             
-            if os.path.exists(caminho_arquivo):
-                try:
-                    # TENTATIVA DE LEITURA DIRETA (Para testar se a load_poema falha)
-                    with open(caminho_arquivo, "r", encoding="utf-8", errors="ignore") as f:
-                        conteudo = f.read()
-                    
-                    if conteudo.strip():
-                        LOGO_TEXTO = conteudo
-                    else:
-                        # Se chegar aqui, o arquivo físico no GitHub está realmente sem texto
-                        LOGO_TEXTO = f"⚠️ O arquivo '{caminho_arquivo}' existe mas está sem conteúdo."
-                except Exception as e:
-                    LOGO_TEXTO = f"💥 Erro ao abrir arquivo: {e}"
+            if len(partes) >= 7:
+                # O texto das opções costuma vir após a 6ª barra
+                # Exemplo: |01|03|Fatos_0103|F|20|3|OpçãoA|OpçãoB|...
+                opcoes_brutas = partes[6:] 
+                # Limpamos espaços e barras vazias
+                opcoes = [opt.strip() for opt in opcoes_brutas if opt.strip()]
+                
+                if opcoes:
+                    # O Sopro da Sorte: A Machina escolhe uma peça
+                    poema_gerado.append(random.choice(opcoes))
             else:
-                LOGO_TEXTO = f"❌ Arquivo não encontrado: {caminho_arquivo}"
+                # Se for uma linha sem o padrão de matriz, limpa as barras e usa o texto
+                texto_limpo = linha.replace("|", "").strip()
+                if texto_limpo:
+                    poema_gerado.append(texto_limpo)
 
-            # CARGA DA ARTE
-            if st.session_state.draw:
-                LOGO_IMAGE = load_arts(tema_formatado)
+        # Une as peças com um espaço ou quebra de linha
+        return " ".join(poema_gerado)
 
+    except Exception as e:
+        return f"💥 Erro no processamento do garimpo: {e}"
+        
     # --- 3. ENTREGA FINAL (Fora do expander para garantir visibilidade) ---
     if LOGO_TEXTO:
         write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
