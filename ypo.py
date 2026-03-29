@@ -171,15 +171,16 @@ st.markdown(
 st.markdown(
     """
     <style>
+    
     .logo-text {
         font-weight: 600;
         font-size: 18px;
         font-family: 'IBM Plex Sans', sans-serif;
         color: #000000;
-        padding: 10px 0 10px 15px;
-        white-space: pre-wrap !important; /* ESTA LINHA É A CHAVE */
+        padding-left: 15px;
         text-align: left;
         display: block;
+        line-height: 1.5; /* Dá o espaço entre os versos */
     }
     .logo-img {
         float: right;
