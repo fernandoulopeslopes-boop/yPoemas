@@ -983,7 +983,7 @@ def page_ypoemas():
         ypoemas_expander = st.expander(what_book, expanded=True)
         with ypoemas_expander:
             if st.session_state.lang != st.session_state.last_lang
-                curr_ypoema = load_lypo()  # changes in lang, keep LYPO
+                curr_ypoema = load_lypo()
             else:
                 curr_ypoema = load_poema(str(st.session_state.tema), "")
 
