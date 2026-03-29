@@ -164,31 +164,28 @@ st.markdown(
 
 # load_poema settings
 # --- INÍCIO DO BLOCO REPARADO ---
-st.markdown(
-    """
-    <style>
-    .logo-text {
-        font-weight: 600;
-        font-size: 18px;
-        font-family: 'IBM Plex Sans', sans-serif;
-        color: #000000;
-        padding-left: 15px;
-        text-align: left;
-        display: block;
-        line-height: 1.6;
-        white-space: pre-wrap !important; 
-    }
-    .logo-img {
-        float: right;
-        max-width: 300px;
-        margin-left: 15px;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-# --- FIM DO BLOCO REPARADO ---
-# Initialize SessionState
+# --- COPIE EXATAMENTE DAQUI ---
+st.markdown("""
+<style>
+.logo-text {
+    font-weight: 600;
+    font-size: 18px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    color: #000000;
+    padding-left: 15px;
+    text-align: left;
+    display: block;
+    line-height: 1.6;
+    white-space: pre-wrap !important;
+}
+.logo-img {
+    float: right;
+    max-width: 300px;
+    margin-left: 15px;
+}
+</style>
+""", unsafe_allow_html=True)
+# --- ATÉ AQUI ---# Initialize SessionState
 
 if "lang" not in st.session_state:
     st.session_state.lang = "pt"
