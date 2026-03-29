@@ -899,11 +899,11 @@ def page_ypoemas():
         update_readings("video_ypoemas")
         st.session_state.vydo = False
 
-    if lnew:
+if lnew:
         what_book = f"⚫ {st.session_state.lang} ( {st.session_state.book} ) ( {st.session_state.take + 1} / {len(temas_list)} )"
         
         with st.expander(what_book, expanded=True):
-            # 1. MOTOR DE TEXTO
+            # 1. MOTOR DE TEXTO (Precisa vir PRIMEIRO)
             if st.session_state.lang != st.session_state.last_lang:
                 raw_text = translate(st.session_state.curr_ypoema)
             else:
@@ -912,21 +912,24 @@ def page_ypoemas():
 
             update_readings(st.session_state.tema)
 
-            # 2. FORMATAÇÃO ANTI-ZIGUEZAGUE (HTML Puro para fontes iguais)
+            # 2. FORMATAÇÃO (Agora o raw_text já existe!)
             if raw_text:
                 linhas_formatadas = []
                 for l in raw_text.split('\n'):
                     linha_limpa = l.lstrip().strip()
                     if not linha_limpa:
-                        linhas_formatadas.append("&nbsp;")
+                        linhas_formatadas.append("&nbsp;") # Mantém o respiro da estrofe
                     else:
                         linhas_formatadas.append(linha_limpa)
+                # Unificamos com <br> para o HTML não inventar fontes diferentes
                 texto_formatado = "<br>".join(linhas_formatadas)
             else:
                 texto_formatado = "Gerando versos..."
 
             # 3. IMAGEM E SAÍDA
             imagem_carregada = load_arts(st.session_state.tema) if st.session_state.draw else None
+            
+            # Chamada da prensa com os nomes certos
             write_ypoema(texto_formatado, imagem_carregada)
 
             # 4. EXTRAS
@@ -935,8 +938,8 @@ def page_ypoemas():
             
             if manu:
                 info_txt = load_info(st.session_state.tema)
-                st.info(translate(info_txt) if st.session_state.lang != "pt" else info_txt)def page_eureka():
-    help_tips = load_help(st.session_state.lang)
+                st.info(translate(info_txt) if st.session_state.lang != "pt" else info_txt)    help_tips = load_help(st.session_state.lang)
+                
     help_rand = help_tips[1]
     help_more = help_tips[4]
 
@@ -1044,9 +1047,6 @@ def page_ypoemas():
                 show_video("eureka")
                 update_readings("video_eureka")
                 st.session_state.vydo = False
-
-
-            
             
             if lnew:
                 eureka_expander = st.expander("", expanded=True)
