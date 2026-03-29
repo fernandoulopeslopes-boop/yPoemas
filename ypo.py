@@ -485,10 +485,10 @@ def load_temas(book):  # List of themes inside a Book
     ) as file:
         for line in file:
             line = line.replace(" ", "")
-            book_list.append(line.strip("\n"))
+            # O PULO DO GATO: .lower() garante que 'Anjos' vire 'anjos'
+            book_list.append(line.strip("\n").lower()) 
 
     return book_list
-
 
 @st.cache_data(show_spinner=False)
 def load_info(nome_tema):
