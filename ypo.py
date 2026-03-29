@@ -63,6 +63,35 @@ from lay_2_ypo import gera_poema
 
 ### bof: settings
 
+def main():
+    if "book_list" not in st.session_state:
+        import os
+        import random
+        
+        # 1. Carrega o Rol Vivo
+        book_list = []
+        caminho_rol = "./base/rol_livro vivo.txt"
+        
+        if os.path.exists(caminho_rol):
+            with open(caminho_rol, "r", encoding="utf-8") as file:
+                for line in file:
+                    tema_limpo = line.replace(" ", "").strip()
+                    if tema_limpo:
+                        book_list.append(tema_limpo)
+            st.session_state.book_list = book_list
+        else:
+            # Caso o arquivo não seja encontrado
+            st.session_state.book_list = ["Astros", "Anjos", "Mar"]
+
+        # 2. Define o Tema Inicial Aleatório
+        if "tema" not in st.session_state:
+            st.session_state.tema = random.choice(st.session_state.book_list)
+
+        # 3. Enche o tanque com o primeiro yPoema
+        if "curr_ypoema" not in st.session_state:
+            st.session_state.curr_ypoema = load_poema(st.session_state.tema, "")
+            st.session_state.trad_ypoema = "" # Tanque de tradução limpo
+
 st.set_page_config(
     page_title="a máquina de fazer Poesia - yPoemas",
     page_icon=":star:",
