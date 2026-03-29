@@ -734,7 +734,7 @@ if LOGO_TEXTO:
     st.code(LOGO_TEXTO) # O st.code força uma moldura cinza, impossível de ficar invisível
 else:
     st.error("O LOGO_TEXTO chegou vazio na entrega final!")
-    
+
 def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
     if LOGO_IMAGE == None:
         st.markdown(
