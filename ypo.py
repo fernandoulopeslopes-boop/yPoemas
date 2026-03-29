@@ -186,7 +186,12 @@ st.markdown(
         font-family: 'IBM Plex Sans';
         color: #000000;
         padding-top: 0px;
+        .logo-text {
         padding-left: 15px;
+        white-space: pre-wrap; /* MANTÉM AS QUEBRAS, MAS SEM O BLOCO DE CÓDIGO */
+        text-align: left;      /* FORÇA ALINHAMENTO À ESQUERDA */
+        } padding-left: 15px;
+        
     }
     .logo-img {
         float: right;
