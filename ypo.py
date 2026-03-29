@@ -944,7 +944,7 @@ def page_ypoemas():
        except:
           what_book = "yPoemas - A Machina"
         
-       with st.expander(what_book, expanded=True)
+       with st.expander(what_book, expanded=True):
             curr_ypoema = load_poema(str(st.session_state.tema), "")
             LOGO_TEXTO = curr_ypoema
             
