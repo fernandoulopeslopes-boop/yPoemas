@@ -173,7 +173,7 @@ st.markdown(
 st.markdown(
     """
     <style>
-        .logo-text {
+        logo-text {
         font-weight: 600;
         font-size: 18px;
         font-family: 'IBM Plex Sans', sans-serif;
