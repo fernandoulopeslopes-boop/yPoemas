@@ -935,7 +935,7 @@ def page_ypoemas():
             else:
                 texto_formatado = "Gerando versos..."
             # --- ATÉ AQUI ---       
-       with st.expander(what_book, expanded=True):
+        with st.expander(what_book, expanded=True):
         
             # 1. MOTOR DE TEXTO (Geração e Tradução)
             if st.session_state.lang != st.session_state.last_lang:
