@@ -997,7 +997,7 @@ def page_ypoemas():
                 LOGO_IMAGE = load_arts(tema_formatado)
             elif lnew_img: # Suporte para a sua nova flag
                 LOGO_IMAGE = load_arts(st.session_state.tema)    
-                
+    
     # --- 4. A ENTREGA FINAL ---
     if LOGO_TEXTO:
         write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
