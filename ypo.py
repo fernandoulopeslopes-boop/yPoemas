@@ -858,7 +858,6 @@ def page_mini():
 
             if st.session_state.talk:
                 talk(curr_ypoema)
-
         else:
             while st.session_state.auto:
                 if st.session_state.rand:
@@ -895,8 +894,7 @@ def page_mini():
                     while secs >= 0:
                         time.sleep(1)
                         secs -= 1
-
-
+        
 def page_ypoemas():
     temas_list = load_temas(st.session_state.book)
     maxy_ypoemas = len(temas_list) - 1
@@ -923,7 +921,7 @@ def page_ypoemas():
         st.session_state.take -= 1
         if st.session_state.take < 0:
             st.session_state.take = maxy_ypoemas
-            st.rerun()
+        st.rerun()
 
     if rand:
         st.session_state.take = random.randrange(0, maxy_ypoemas)
@@ -933,7 +931,7 @@ def page_ypoemas():
         st.session_state.take += 1
         if st.session_state.take > maxy_ypoemas:
             st.session_state.take = 0
-            # st.rerun()
+        st.rerun()
 
     if not st.session_state.draw:
         options = list(range(len(temas_list)))
@@ -948,6 +946,7 @@ def page_ypoemas():
 
         if opt_take != st.session_state.take:
             st.session_state.take = opt_take
+            st.rerun()
 
     st.session_state.tema = temas_list[st.session_state.take]
 
@@ -976,81 +975,45 @@ def page_ypoemas():
 
         ypoemas_expander = st.expander(what_book, expanded=True)
         with ypoemas_expander:
-
-# --- DENTRO DA page_ypoemas() ---
-
-with ypoemas_expander:
-    # 1. SEGURANÇA: Se o tanque estiver vazio, gera agora (Evita o erro de antes)
-    if not st.session_state.curr_ypoema:
-        st.session_state.curr_ypoema = load_poema(str(st.session_state.tema), "")
-
-        # 2. DEFINIÇÃO DA FONTE: Se não for PT, usa a tradução (se existir)
-        texto_para_exibir = st.session_state.curr_ypoema
-        if st.session_state.lang != "pt" and st.session_state.trad_ypoema:
-            texto_para_exibir = st.session_state.trad_ypoema
-
-        # 3. A LIMPEZA (Onde resolvemos as colunas fantasmas)
-        if texto_para_exibir:
-            # Removemos tabulações e excesso de espaços que criam o "efeito coluna"
-            import re
-            texto_limpo = texto_para_exibir.replace("\t", " ")
-            texto_limpo = re.sub(' +', ' ', texto_limpo) 
-        
-            # Formatamos para o Markdown (espaço duplo + \n)
-            LOGO_TEXTO = texto_limpo.replace("\n", "  \n")
-        else:
-            LOGO_TEXTO = "Aguardando sinal da ABNP..."
-
-            # Se o usuário mudou o idioma, traduzimos o poema que já está na memória
+            # 1. GERAÇÃO/CARREGAMENTO
             if st.session_state.lang != st.session_state.last_lang:
-                if st.session_state.curr_ypoema:
-                    st.session_state.curr_ypoema = translate(st.session_state.curr_ypoema)
-            
-            # Se o usuário navegou (Próximo/Anterior/Random), geramos um NOVO
+                curr_ypoema = st.session_state.curr_ypoema # Usa o que já está na memória
             else:
-                novo_poema = load_poema(str(st.session_state.tema), "")
-                
-                # Se não for PT, já traduzimos antes de guardar na memória
-                if st.session_state.lang != "pt":
-                    novo_poema = translate(novo_poema)
-                
-                # Guardamos no novo tanque digital
-                st.session_state.curr_ypoema = novo_poema
+                curr_ypoema = load_poema(str(st.session_state.tema), "")
+                st.session_state.curr_ypoema = curr_ypoema # Guarda para mudanças de idioma
+
+            # 2. TRADUÇÃO
+            if st.session_state.lang != "pt":
+                curr_ypoema = translate(curr_ypoema)
+                typo_user = "TYPO_" + IPAddres
+                with open(os.path.join("./temp/" + typo_user), "w", encoding="utf-8") as save_typo:
+                    save_typo.write(curr_ypoema)
+                # O curr_ypoema aqui já está traduzido e pronto
 
             update_readings(st.session_state.tema)
 
-            # EXIBIÇÃO: Usamos o conteúdo da memória, formatado para Markdown
-            # Em vez de apenas dar o replace direto, fazemos um check-up:
-            if st.session_state.curr_ypoema:
-                # Se tem texto, aplicamos a formatação
-                LOGO_TEXTO = st.session_state.curr_ypoema.replace("\n", "  \n")
+            # 3. A PRENSA (LIMPEZA DE COLUNAS)
+            if curr_ypoema:
+                linhas = [l.strip() for l in curr_ypoema.split("\n")]
+                LOGO_TEXTO = "  \n".join(linhas)
             else:
-                # Se estiver vazio (None), damos um valor padrão para não quebrar a tela
-                LOGO_TEXTO = "Processando versos para a Editora Samizdát..."
-            
-            # Mantemos a lógica da imagem se o 'draw' estiver ligado
+                LOGO_TEXTO = "..."
+
             LOGO_IMAGE = None
             if st.session_state.draw:
                 LOGO_IMAGE = load_arts(st.session_state.tema)
 
             write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
-            
-            if manu:
-                LOGO_TEXTO = load_info(st.session_state.tema)
-                if st.session_state.lang != "pt":  # translate if idioma <> pt
-                    LOGO_TEXTO = translate(LOGO_TEXTO)
 
-                LOGO_IMAGE = (
-                    "./images/matrix/" + st.session_state.tema.capitalize() + ".jpg"
-                )
-                write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
+            if manu:
+                INFO_MD = load_info(st.session_state.tema)
+                if st.session_state.lang != "pt":
+                    INFO_MD = translate(INFO_MD)
+                st.info(INFO_MD)
 
         if st.session_state.talk:
             talk(curr_ypoema)
-
-        # st.markdown(get_binary_file_downloader_html('./temp/'+'LYPO_' + IPAddres, '➪ '+st.session_state.tema), unsafe_allow_html=True)
-
-
+            
 def page_eureka():
     help_tips = load_help(st.session_state.lang)
     help_rand = help_tips[1]
@@ -1488,7 +1451,6 @@ def page_abouts():
 
 
 ### eof: pages
-
 
 def main():
     chosen_id = stx.tab_bar(
