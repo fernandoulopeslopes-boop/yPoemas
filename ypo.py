@@ -137,6 +137,7 @@ st.markdown(
 
 
 # load_poema settings
+# Substitua o bloco inteiro por este para garantir que o Python não se perca:
 st.markdown(
     """
     <style>
@@ -146,11 +147,9 @@ st.markdown(
     }
     .container {
         display: flex;
-        /* justify-content: center; */
     }
-
     .header {
-        text-align:center;
+        text-align: center;
     }
     .logo-text {
         font-weight: 600;
@@ -161,12 +160,12 @@ st.markdown(
         padding-left: 15px;
     }
     .logo-img {
-        float:right;
+        float: right;
     }
-    </style> """,
+    </style>
+    """,
     unsafe_allow_html=True,
 )
-
 
 # Initialize SessionState
 
