@@ -151,7 +151,6 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-
 # change sidebar width
 st.markdown(
     """ 
@@ -163,13 +162,8 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-
 # load_poema settings
-st.markdown(
-    """
-    <style>
-    
-# --- BLOCO CSS 100% LIMPO E SELADO ---
+# --- INÍCIO DO BLOCO REPARADO ---
 st.markdown(
     """
     <style>
@@ -193,7 +187,7 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-
+# --- FIM DO BLOCO REPARADO ---
 # Initialize SessionState
 
 if "lang" not in st.session_state:
