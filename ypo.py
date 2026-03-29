@@ -1038,12 +1038,6 @@ def page_ypoemas():
 
             write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
 
-            if manu:
-                INFO_MD = load_info(st.session_state.tema)
-                if st.session_state.lang != "pt":
-                    INFO_MD = translate(INFO_MD)
-                st.info(INFO_MD)
-
         if st.session_state.talk:
             talk(curr_ypoema)
 
