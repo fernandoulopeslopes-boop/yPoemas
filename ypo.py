@@ -678,7 +678,7 @@ def load_book_pages(book):  # Load Book pages for off_book
     return book_pages
 
 def load_poema(nome_tema, seed_eureka):  # generate new yPoema
-    script = gera_poema(nome_tema, seed_eureka)
+    script = load_poema(nome_tema, seed_eureka)
     
     # 1. Transformamos a lista de versos em um texto único com quebras de linha
     novo_ypoema = "\n".join(script)
