@@ -1228,7 +1228,7 @@ def page_off_machina():  # available off_machina_books
 
                 LOGO_TEXTO = off_book_text
                 LOGO_IMAGE = None
-                if st.session_state.draw = 'Y':
+                if st.session_state.draw == 'Y':
                     LOGO_IMAGE = load_arts(off_book_name)
 
                 write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
