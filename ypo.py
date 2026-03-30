@@ -980,7 +980,7 @@ def page_ypoemas():
         lnew = False
         show_video("ypoemas")
         update_readings("video_ypoemas")
-        st.session_state.video = 'N'
+        st.session_state.vydo = 'N'
 
     if lnew:
         what_book = f"⚫ {st.session_state.lang} ( {st.session_state.book} ) ( {st.session_state.take + 1} / {len(temas_list)} )"
@@ -1184,7 +1184,7 @@ def page_off_machina():  # available off_machina_books
             unsafe_allow_html=True,
         )
 
-    if st.session_state.video == 'Y':
+    if st.session_state.vydo == 'Y':
         lnew = False
         show_video("off-machina")
         update_readings("video_off-machina")
