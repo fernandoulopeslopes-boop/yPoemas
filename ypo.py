@@ -211,7 +211,7 @@ if "off_book" not in st.session_state:  #  index for off_books_list
 if "off_take" not in st.session_state:  #  index for selected book in off_books_list
     st.session_state.off_take = 0
 
-if "eureka" not in st.session_state:  #  index for random tema in page_eureka
+if "eureka" not in st.session_state:  #  index for random tema in 
     st.session_state.eureka = 0
 
 if "poly_lang" not in st.session_state:
@@ -941,96 +941,92 @@ def page_ypoemas():
 
 # --- FIM DA YPOEMAS / INÍCIO DA EUREKA ---
 
+import streamlit as st
+import re
+
 def page_eureka():
-    # Carregamento de dicas e configurações
+    # 1. SETUP DE DICAS E COLUNAS (Layout Original)
     help_tips = load_help(st.session_state.lang)
-    
-    # Layout de topo: Busca e Botões de Controle
-    col_seed, col_more, col_rand, col_manu = st.columns([2.5, 1.5, 1.5, 0.7])
-    
-    with col_seed:
+    seed_col, more_col, rand_col, manu_col, occurrences_col = st.columns([2.5, 1.5, 1.5, 0.7, 4])
+
+    with seed_col:
         find_what = st.text_input(label=translate("digite algo para buscar..."), label_visibility="collapsed")
 
-    # Botões originais com seus ícones e funções
-    with col_more: more = st.button("✚", help=help_tips[4])
-    with col_rand: rand = st.button("✻", help=help_tips[1])
-    with col_manu: manu = st.button("?", help="help !!!")
-
-    if manu:
-        st.subheader(load_md_file("MANUAL_EUREKA.md"))
-        return # Para a execução aqui se o manual estiver aberto
+    with more_col: more = st.button("✚", help=help_tips[4])
+    with rand_col: rand = st.button("✻", help=help_tips[1])
+    with manu_col: manu = st.button("?", help="help !!!")
 
     if len(find_what) < 3:
         st.warning(translate("digite pelo menos 3 letras..."))
-    else:
-        # Busca otimizada no léxico (41.291 verbetes)
-        eureka_list = load_eureka(find_what) # Supondo que esta função lê seu lexico.pt
-        seed_list = []
-        soma_tema = []
+        return
 
-        for line in eureka_list:
-            part_line = line.strip().partition(" : ")
-            palas = part_line[0]
-            fonte = part_line[2]
-            if palas and fonte:
-                # Criamos a string de exibição com o sublinhado na busca
-                # Usamos HTML <u> para destacar a semente
-                raiz_destaque = re.sub(f"({find_what})", r"<u>\1</u>", palas, flags=re.IGNORECASE)
-                seed_list.append(f"{palas} ➪ {fonte}")
-                
-                tema_nome = fonte[0:-5]
-                if tema_nome not in soma_tema:
-                    soma_tema.append(tema_nome)
+    # 2. MOTOR DE BUSCA E PROCESSAMENTO
+    eureka_list = load_eureka(find_what)
+    seed_list = []
+    soma_tema = []
 
-        if len(seed_list) == 0:
-            st.warning(translate(f'nenhuma ocorrência de "{find_what}" encontrada...'))
-        else:
-            seed_list.sort()
+    for line in eureka_list:
+        part_line = line.strip().partition(" : ")
+        palas, fonte = part_line[0], part_line[2]
+        if palas and fonte:
+            seed_list.append(f"{palas} ➪ {fonte}")
+            tema_nome = fonte[0:-5]
+            if tema_nome not in soma_tema:
+                soma_tema.append(tema_nome)
+
+    if not seed_list:
+        st.warning(translate(f'nenhuma ocorrência de "{find_what}" encontrada...'))
+        return
+
+    seed_list.sort()
+    if rand:
+        st.session_state.eureka = random.randrange(0, len(seed_list))
+
+    # 3. SELETOR DE OCORRÊNCIAS (Topo Direito)
+    with occurrences_col:
+        info_find = f"{len(seed_list)} ocorrências de '{find_what}' em {len(soma_tema)} temas"
+        opt_ocur = st.selectbox(
+            "↓ " + translate(info_find),
+            range(len(seed_list)),
+            index=st.session_state.eureka if st.session_state.eureka < len(seed_list) else 0,
+            format_func=lambda y: seed_list[y],
+            key="opt_ocur"
+        )
+        st.session_state.eureka = opt_ocur
+
+    # 4. CARGA DO TEXTO
+    this_seed = seed_list[st.session_state.eureka]
+    seed_tema = this_seed.partition(" ➪ ")[2][0:-5]
+    st.session_state.tema = seed_tema
+    
+    # Carrega o poema bruto (PT)
+    curr_ypoema = load_poema(seed_tema, this_seed)
+
+    # 5. APRESENTAÇÃO CORRIGIDA (O Ponto da Crítica)
+    # Título do yPoema no topo esquerdo da área de texto
+    st.write(f"### {this_seed}") 
+    
+    # Expander para Hide/Show (com a setinha à direita)
+    with st.expander("", expanded=True):
+        # Tradução e Normalização de Fonte (Bloco Único)
+        if st.session_state.lang != "pt":
+            curr_ypoema = translate(curr_ypoema) # Aqui gera o TYPO
+        
+        # APLICANDO O UNDERLINE (HTML puro para garantir o destaque)
+        # Substituímos a semente por ela mesma dentro de <u></u>
+        # Usamos flags=re.IGNORECASE para pegar "Amor" e "amor"
+        texto_final = re.sub(f"({re.escape(find_what)})", r"<u>\1</u>", curr_ypoema, flags=re.IGNORECASE)
+
+        # Exibição com fonte única (definida no write_ypoema ou markdown direto)
+        # O unsafe_allow_html=True é essencial para o <u> funcionar
+        st.markdown(f'<div style="font-family: monospace; font-size: 1.1em;">{texto_final}</div>', unsafe_allow_html=True)
+        
+        # Arte e Voz
+        if st.session_state.draw:
+            st.image(load_arts(seed_tema))
+        if st.session_state.talk:
+            talk(curr_ypoema)
             
-            # Controle de Sorteio (Random)
-            if rand:
-                st.session_state.eureka = random.randrange(0, len(seed_list))
-
-            # Exibição do Título e Seletor (A área de ocorrências)
-            info_find = f"{len(seed_list)} ocorrências de '{find_what}' em {len(soma_tema)} temas"
-            
-            # O Selectbox original que você usava, agora integrado
-            opt_ocur = st.selectbox(
-                "↓ " + translate(info_find),
-                range(len(seed_list)),
-                index=st.session_state.eureka if st.session_state.eureka < len(seed_list) else 0,
-                format_func=lambda y: seed_list[y], # Aqui você verá a seta ➪
-                key="opt_ocur"
-            )
-            st.session_state.eureka = opt_ocur
-
-            # --- PROCESSAMENTO DO POEMA ---
-            this_seed = seed_list[st.session_state.eureka]
-            part_line = this_seed.partition(" ➪ ")
-            nome_tema_completo = part_line[2]
-            seed_tema = nome_tema_completo[0:-5]
-            st.session_state.tema = seed_tema
-
-            # Lógica de carga de texto (LYPO/TYPO)
-            if st.session_state.lang != st.session_state.last_lang:
-                curr_ypoema = load_lypo()
-            else:
-                curr_ypoema = load_poema(seed_tema, this_seed)
-                # O load_poema gera o novo LYPO internamente
-
-            # --- APRESENTAÇÃO FINAL (O Hide/Show com Expander) ---
-            with st.expander(f"yPoema: {this_seed}", expanded=True):
-                # Tradução se necessário
-                if st.session_state.lang != "pt":
-                    curr_ypoema = translate(curr_ypoema)
-                    salvar_typo(curr_ypoema) # Função para gerenciar o TYPO_IP
-                
-                logo_image = load_arts(seed_tema) if st.session_state.draw else None
-                write_ypoema(curr_ypoema, logo_image)
-                
-                if st.session_state.talk:
-                    talk(curr_ypoema)
-
 # --- FIM DA EUREKA --- INÍCIO DA OFF_MACHINA
 
 def page_off_machina():  # available off_machina_books
