@@ -116,7 +116,6 @@ def load_help_system(lang):
 # =================================================================        
 
 # --- TRATAMENTO DE ÁUDIO E MULTIMÍDIA ---
-import pygame           # Para o controle fino de áudio (Mixer)
 import edge_tts         # Para vozes neurais de alta qualidade
 import asyncio          # Necessário para rodar o edge-tts (que é assíncrono)
 
