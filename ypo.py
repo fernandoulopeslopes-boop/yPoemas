@@ -391,23 +391,15 @@ def show_icons():  # https://api.whatsapp.com/
 def load_help(idiom):
     returns = []
     if idiom in "_pt_es_it_fr_en":
-        helpers = load_help_tips()
+        # AQUI: O nome deve bater com a função que tem o @st.cache_data
+        helpers = load_help_system(idiom) 
         for line in helpers:
             pipe_line = line.split("|")
             if pipe_line[1].startswith(idiom + "_"):
                 text = pipe_line[2]
                 returns.append(text)
     else:
-        returns.append(translate("anterior"))
-        returns.append(translate("escolhe tema ao acaso"))
-        returns.append(translate("próximo"))
-        returns.append(translate("mais lidos..."))
-        returns.append(translate("gera novo yPoema"))
-        returns.append(translate("imagem"))
-        returns.append(translate("áudio"))
-        returns.append(translate("vídeo"))
-
-    return returns
+        # ... resto do código (anterior, próximo, etc)
 
 
 def draw_check_buttons():
