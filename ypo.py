@@ -68,23 +68,20 @@ st.set_page_config(
 )
 
 # 2. INICIALIZAÇÃO DO ESTADO (PROTEÇÃO CONTRA "BAD MESSAGE FORMAT")
-if 'initialized' not in st.session_state:
-    # Estados de Identidade
-    st.session_state.lang = 'pt'
-    st.session_state.last_lang = 'pt'
-    st.session_state.tema = 'lazer'
-    
-    # Estados de Navegação
-    st.session_state.eureka = 0
-    st.session_state.show_eureka = True
 
-    # Estados de Percepção (Toggle Switches)
-    st.session_state = False
-    st.session_state.draw = True
-    st.session_state.vydo = False
-    
-    # Trava de Segurança
-    st.session_state.initialized = True
+# --- INICIALIZAÇÃO DE SEGURANÇA (Versão Anti-Crash) ---
+# Em vez de 'if not in', usamos o .get() que é imune ao erro de iterabilidade
+if not st.session_state.get('initialized', False):
+    st.session_state['lang'] = 'pt'
+    st.session_state['last_lang'] = 'pt'
+    st.session_state['tema'] = 'lazer'
+    st.session_state['eureka'] = 0
+    st.session_state['show_eureka'] = True
+    st.session_state['talk'] = False
+    st.session_state['draw'] = True
+    st.session_state['vydo'] = False
+    st.session_state['initialized'] = True
+
 
 # 3. CARREGAMENTO DO LÉXICO (41.291 VERBETES EM CACHE)
 @st.cache_resource
