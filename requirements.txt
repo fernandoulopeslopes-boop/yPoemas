@@ -1,8 +1,10 @@
-edge-tts
-setuptools
-deep_translator
-matplotlib
-streamlit
-extra-streamlit-components
-protobuf
-altair <5
+streamlit==1.32.0
+pandas==2.2.1
+numpy==1.26.4
+deep-translator==1.11.4
+gTTS==2.5.1
+pygame==2.5.2
+Pillow==10.2.0
+requests==2.31.0
+python-dotenv==1.0.1
+setuptools==69.1.1
