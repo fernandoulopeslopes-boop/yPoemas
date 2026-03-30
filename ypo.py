@@ -77,7 +77,7 @@ if 'initialized' not in st.session_state:
     # Estados de Navegação
     st.session_state.eureka = 0
     st.session_state.show_eureka = True
-    
+
     # Estados de Percepção (Toggle Switches)
     st.session_state = False
     st.session_state.draw = True
