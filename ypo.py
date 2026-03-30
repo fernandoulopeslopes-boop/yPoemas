@@ -79,7 +79,7 @@ if 'initialized' not in st.session_state:
     st.session_state.show_eureka = True
     
     # Estados de Percepção (Toggle Switches)
-    st.session_state.talk = False
+    st.session_state. = False
     st.session_state.draw = True
     st.session_state.vydo = False
     
@@ -111,6 +111,24 @@ def load_help_system(lang):
     return help_list
     pass
 
+def talk(texto):
+    if not texto or not st.session_state.talk:
+        return
+    try:
+        tts = gTTS(text=texto, lang=st.session_state.lang)
+        # Usamos a pasta temp que você já tem no GitHub
+        temp_path = os.path.join("temp", "voice.mp3")
+        tts.save(temp_path)
+        
+        with open(temp_path, "rb") as f:
+            data = f.read()
+            b64 = base64.b64encode(data).decode()
+            
+        audio_html = f'<audio autoplay="true"><source src="data:audio/mp3;base64,{b64}" type="audio/mp3"></audio>'
+        st.markdown(audio_html, unsafe_allow_html=True)
+    except Exception as e:
+        st.error(f"Erro na voz: {e}")
+        
 # =================================================================
 # 🛠️ FIM DO BLOCO OBRIGATÓRIO - O CÓDIGO SEGUE ABAIXO
 # =================================================================        
@@ -160,11 +178,6 @@ def main():
             st.session_state.curr_ypoema = load_poema(st.session_state.tema, "")
             st.session_state.trad_ypoema = "" # Tanque de tradução limpo
 
-st.set_page_config(
-    page_title="a máquina de fazer Poesia - yPoemas",
-    page_icon=":star:",
-    layout="centered",
-    initial_sidebar_state="auto",
 )
 
 
@@ -298,8 +311,8 @@ if "nany_visy" not in st.session_state:
 
 if "draw" not in st.session_state:
     st.session_state.draw = False
-if "talk" not in st.session_state:
-    st.session_state.talk = False
+if "" not in st.session_state:
+    st.session_state. = False
 if "vydo" not in st.session_state:
     st.session_state.vydo = False
 if "arts" not in st.session_state:
@@ -409,10 +422,10 @@ def load_help(idiom):
 
 
 def draw_check_buttons():
-    draw_text, talk_text, vyde_text = st.sidebar.columns([3.8, 3.2, 3])
+    draw_text, _text, vyde_text = st.sidebar.columns([3.8, 3.2, 3])
     help_tips = load_help(st.session_state.lang)
     help_draw = help_tips[5]
-    help_talk = help_tips[6]
+    help_ = help_tips[6]
     help_vyde = help_tips[7]
     st.session_state.draw = draw_text.checkbox(
         help_draw, st.session_state.draw, key="draw_machina"
