@@ -1186,8 +1186,8 @@ def page_off_machina():  # available off_machina_books
 
     if st.session_state.vydo == 'Y':
         lnew = False
-        show_video("off-machina")
-        update_readings("video_off-machina")
+        show_("off-machina")
+        update_readings("_off-machina")
         st.session_state.vydo = 'N'
 
     if lnew:
@@ -1283,8 +1283,8 @@ def page_books():  # available books
         lnew = True
         if st.session_state.vydo == 'Y':
             lnew = False
-            show_video("books")
-            update_readings("video_books")
+            show_("books")
+            update_readings("_books")
             st.session_state.vydo = 'N'
 
         if lnew:
@@ -1335,7 +1335,7 @@ def page_polys():  # available languages
     lnew = True
     if st.session_state.vydo == 'Y':
         lnew = False
-        show_video("poly")
+        show_("poly")
         update_readings("video_poly")
         st.session_state.vydo = 'N'
 
