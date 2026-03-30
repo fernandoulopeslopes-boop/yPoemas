@@ -400,6 +400,7 @@ def load_help(idiom):
                 returns.append(text)
     else:
         # ... resto do código (anterior, próximo, etc)
+        pass
 
 def draw_check_buttons():
     # 1. Cria as colunas na sidebar
