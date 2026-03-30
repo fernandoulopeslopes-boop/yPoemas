@@ -387,11 +387,10 @@ def show_icons():  # https://api.whatsapp.com/
             unsafe_allow_html=True,
         )
 
-
 def load_help(idiom):
     returns = []
     if idiom in "_pt_es_it_fr_en":
-        # AQUI: O nome deve bater com a função que tem o @st.cache_data
+        # Garanta que o nome da função abaixo seja o mesmo da sua def @st.cache_data
         helpers = load_help_system(idiom) 
         for line in helpers:
             pipe_line = line.split("|")
@@ -399,8 +398,18 @@ def load_help(idiom):
                 text = pipe_line[2]
                 returns.append(text)
     else:
-        pass
-        # ... resto do código (anterior, próximo, etc)
+        # BLINDAGEM PARA CATALÀ / POLY: 8 itens obrigatórios
+        returns.append(translate("Anterior"))            # [0]
+        returns.append(translate("Aleatório"))           # [1]
+        returns.append(translate("Próximo"))             # [2]
+        returns.append(translate("Mais lidos"))          # [3]
+        returns.append(translate("Gerar novo yPoema"))   # [4]
+        returns.append(translate("Imagem"))              # [5]
+        returns.append(translate("Voz"))                 # [6]
+        returns.append(translate("Vídeo"))               # [7]
+    
+    return returns
+
 
 def draw_check_buttons():
     # 1. Cria as colunas na sidebar
