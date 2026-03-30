@@ -411,22 +411,29 @@ def load_help(idiom):
 
 
 def draw_check_buttons():
-    draw_text, _text, vyde_text = st.sidebar.columns([3.8, 3.2, 3])
+    # 1. Cria as colunas na sidebar
+    draw_col, talk_col, vyde_col = st.sidebar.columns([3.8, 3.2, 3])
+    
+    # 2. Carrega as dicas de ajuda (ajustado para bater com a ordem da lista)
     help_tips = load_help(st.session_state.lang)
     help_draw = help_tips[5]
-    help_ = help_tips[6]
+    help_talk = help_tips[6]
     help_vyde = help_tips[7]
-    st.session_state.draw = draw_text.checkbox(
-        help_draw, st.session_state.draw, key="draw_machina"
-    )
-    st.session_state.talk = checkbox(
-        help_talk, st.session_state.talk, key="talk_machina"
-    )
-#    st.session_state.video = vyde_text.checkbox(
-#        help_vyde, st.session_state.video, key="vyde_machina"
-#    )
 
+    # --- O DRIBLE: CHECKBOX DE DESENHO (DRAW) ---
+    # Lemos se na memória está 'Y' para marcar a caixa
+    res_draw = draw_col.checkbox(help_draw, value=(st.session_state.draw == 'Y'), key="draw_machina")
+    # Convertemos o resultado do clique de volta para 'Y' ou 'N'
+    st.session_state.draw = 'Y' if res_draw else 'N'
 
+    # --- O DRIBLE: CHECKBOX DE VOZ (TALK) ---
+    res_talk = talk_col.checkbox(help_talk, value=(st.session_state.talk == 'Y'), key="talk_machina")
+    st.session_state.talk = 'Y' if res_talk else 'N'
+
+    # --- O DRIBLE: CHECKBOX DE VÍDEO (VYDO) ---
+    res_vyde = vyde_col.checkbox(help_vyde, value=(st.session_state.vydo == 'Y'), key="vyde_machina")
+    st.session_state.vydo = 'Y' if res_vyde else 'N'
+    
 def get_binary_file_downloader_html(bin_file, file_label="File"):
     with open(bin_file, "rb") as f:
         data = f.read()
