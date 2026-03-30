@@ -44,29 +44,98 @@ LYPO == Last YPOema created from curr_ypoema
 TYPO == Translated YPOema from LYPO
 POLY == Poliglot Idiom == Changed on Catalán
 
-One more test...
 """
-
+# =================================================================
+# 🚀 BLOCO DE IGNIÇÃO: MACHINA DE FAZER POESIA (ABNP)
+# =================================================================
+import streamlit as st
 import os
 import re
-import time
 import random
-import base64
-import socket
-import streamlit as st
-import edge_tts
-import asyncio
-
-from extra_streamlit_components import TabBar as stx
+import time
 from datetime import datetime
-from lay_2_ypo import gera_poema
+from PIL import Image
+from deep_translator import GoogleTranslator
+from gtts import gTTS
+import base64
 
-### bof: settings
+# 1. CONFIGURAÇÃO DE INTERFACE (DEVE SER O PRIMEIRO COMANDO ST)
+st.set_page_config(
+    page_title="Machina de fazer Poesia",
+    page_icon="📜",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+# 2. INICIALIZAÇÃO DO ESTADO (PROTEÇÃO CONTRA "BAD MESSAGE FORMAT")
+if 'initialized' not in st.session_state:
+    # Estados de Identidade
+    st.session_state.lang = 'pt'
+    st.session_state.last_lang = 'pt'
+    st.session_state.tema = 'lazer'
+    
+    # Estados de Navegação
+    st.session_state.eureka = 0
+    st.session_state.show_eureka = True
+    
+    # Estados de Percepção (Toggle Switches)
+    st.session_state.talk = False
+    st.session_state.draw = True
+    st.session_state.vydo = False
+    
+    # Trava de Segurança
+    st.session_state.initialized = True
+
+# 3. CARREGAMENTO DO LÉXICO (41.291 VERBETES EM CACHE)
+@st.cache_resource
+def load_eureka_database():
+    caminho_lexico = os.path.join("base", "lexico.pt")
+    if os.path.exists(caminho_lexico):
+        try:
+            with open(caminho_lexico, "r", encoding="utf-8") as f:
+                # Carrega e limpa, ignorando linhas vazias
+                return [linha.strip() for linha in f if " : " in linha]
+        except Exception:
+            return []
+    return []
+
+# 4. CARREGAMENTO DE TRADUÇÕES E AJUDA (CACHE DE DADOS)
+@st.cache_data
+def load_help_system(lang):
+    help_list = []
+    with open(os.path.join("./base/helpers.txt"), encoding="utf-8") as file:
+        for line in file:
+            help_list.append(line)
+    file.close()
+
+    return help_list
+    pass
+
+# =================================================================
+# 🛠️ FIM DO BLOCO OBRIGATÓRIO - O CÓDIGO SEGUE ABAIXO
+# =================================================================        
+
+# --- TRATAMENTO DE ÁUDIO E MULTIMÍDIA ---
+import pygame           # Para o controle fino de áudio (Mixer)
+import edge_tts         # Para vozes neurais de alta qualidade
+import asyncio          # Necessário para rodar o edge-tts (que é assíncrono)
+
+# --- COMUNICAÇÃO E SISTEMA ---
+import requests         # Para buscar dados externos ou APIs
+import json             # Para manipular arquivos de configuração ou Rols
+import glob             # Para localizar arquivos de imagem/poema nas pastas
+import shutil           # Para limpeza de arquivos temporários na pasta /temp/
+
+# --- GRÁFICOS E COMPONENTES DE INTERFACE ---
+import matplotlib.pyplot as plt # Se for usar visualização de dados do léxico
+import extra_streamlit_components as stx # Para os componentes extras (seletor de abas, etc.)
+from PIL import Image, ImageDraw, ImageFont # Para manipulação avançada de artes
+
+# --- GESTÃO DE REDE (IP) ---
+import socket           # Útil para gerar o ID temporário (IPAddres) que você usa
 
 def main():
     if "book_list" not in st.session_state:
-        import os
-        import random
         
         # 1. Carrega o Rol Vivo
         book_list = []
@@ -81,7 +150,7 @@ def main():
             st.session_state.book_list = book_list
         else:
             # Caso o arquivo não seja encontrado
-            st.session_state.book_list = ["Astros", "Anjos", "Mar"]
+            st.session_state.book_list = ["Fatos", "Saudades", "Oficio"]
 
         # 2. Define o Tema Inicial Aleatório
         if "tema" not in st.session_state:
@@ -316,17 +385,6 @@ def show_icons():  # https://api.whatsapp.com/
             """,
             unsafe_allow_html=True,
         )
-
-
-@st.cache_data(show_spinner=False)
-def load_help_tips():
-    help_list = []
-    with open(os.path.join("./base/helpers.txt"), encoding="utf-8") as file:
-        for line in file:
-            help_list.append(line)
-    file.close()
-
-    return help_list
 
 
 def load_help(idiom):
