@@ -79,7 +79,7 @@ if 'initialized' not in st.session_state:
     st.session_state.show_eureka = True
     
     # Estados de Percepção (Toggle Switches)
-    st.session_state. = False
+    st.session_state = False
     st.session_state.draw = True
     st.session_state.vydo = False
     
