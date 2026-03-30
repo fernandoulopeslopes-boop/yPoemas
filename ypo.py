@@ -178,8 +178,6 @@ def main():
             st.session_state.curr_ypoema = load_poema(st.session_state.tema, "")
             st.session_state.trad_ypoema = "" # Tanque de tradução limpo
 
-)
-
 
 def have_internet(host="8.8.8.8", port=53, timeout=3):
     try:
