@@ -67,6 +67,17 @@ import os
 
 # 1. Deve ser o primeiro comando Streamlit!
 # 2. Verificação de Segurança (Blindada contra AttributeErrors)
+# --- INICIALIZAÇÃO BLINDADA ---
+# Verificamos se o session_state é um dicionário ANTES de procurar chaves
+if not isinstance(st.session_state, dict) or "initialized" not in st.session_state:
+    # Se o sistema bugar e virar booleano, esse bloco força o reset para dicionário
+    st.session_state.lang = 'pt'
+    st.session_state.tema = 'Fatos'
+    st.session_state.talk = 'N'
+    st.session_state.vydo = 'N'
+    st.session_state.draw = 'Y'
+
+    st.session_state.initialized = 'Y'
 if "initialized" not in st.session_state:
     # Identidade e Idioma
     st.session_state.lang = 'pt'
@@ -332,8 +343,6 @@ if "draw" not in st.session_state:
     st.session_state.draw = None
 if "" not in st.session_state:
     st.session_state = False
-if "vydo" not in st.session_state:
-    st.session_state.vydo = False
 if "arts" not in st.session_state:
     st.session_state.arts = []
 if "auto" not in st.session_state:
