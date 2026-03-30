@@ -59,6 +59,32 @@ from deep_translator import GoogleTranslator
 from gtts import gTTS
 import base64
 
+# =================================================================
+# 🚀 IGNIÇÃO FINAL: MACHINA DE FAZER POESIA (PADRÃO 3.11)
+# =================================================================
+import streamlit as st
+import os
+
+# 1. Deve ser o primeiro comando Streamlit!
+st.set_page_config(page_title="a Machina de fazer Poesia", layout="wide")
+
+# 2. Verificação de Segurança (Blindada contra AttributeErrors)
+if "initialized" not in st.session_state:
+    # Identidade e Idioma
+    st.session_state.lang = 'pt'
+    st.session_state.last_lang = 'pt'
+    st.session_state.tema = 'Fatos'
+    
+    # Interface (Usando Strings 'Y'/'N' para segurança total)
+    st.session_state.eureka = 0
+    st.session_state.show_eureka = 'Y' 
+    st.session_state.talk = 'N'
+    st.session_state.draw = 'Y'
+    st.session_state.vydo = 'N'
+    
+    # Trava de Segurança
+    st.session_state.initialized = 'Y'
+
 # 1. CONFIGURAÇÃO DE INTERFACE (DEVE SER O PRIMEIRO COMANDO ST)
 st.set_page_config(
     page_title="Machina de fazer Poesia",
