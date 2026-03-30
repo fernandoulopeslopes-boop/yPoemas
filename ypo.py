@@ -401,7 +401,6 @@ def load_help(idiom):
     else:
         # ... resto do código (anterior, próximo, etc)
 
-
 def draw_check_buttons():
     # 1. Cria as colunas na sidebar
     draw_col, talk_col, vyde_col = st.sidebar.columns([3.8, 3.2, 3])
