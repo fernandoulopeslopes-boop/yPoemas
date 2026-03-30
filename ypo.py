@@ -308,7 +308,7 @@ if "nany_visy" not in st.session_state:
     st.session_state.nany_visy = 0
 
 if "draw" not in st.session_state:
-    st.session_state.draw = False
+    st.session_state.draw = None
 if "" not in st.session_state:
     st.session_state = False
 if "vydo" not in st.session_state:
