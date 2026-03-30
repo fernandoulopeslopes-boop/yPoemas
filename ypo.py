@@ -422,9 +422,9 @@ def draw_check_buttons():
     st.session_state.talk = checkbox(
         help_talk, st.session_state.talk, key="talk_machina"
     )
-    st.session_state.video = vyde_text.checkbox(
-        help_vyde, st.session_state.video, key="vyde_machina"
-    )
+#    st.session_state.video = vyde_text.checkbox(
+#        help_vyde, st.session_state.video, key="vyde_machina"
+#    )
 
 
 def get_binary_file_downloader_html(bin_file, file_label="File"):
@@ -958,7 +958,7 @@ def page_ypoemas():
     if manu_btn:
         st.subheader(load_md_file("MANUAL_YPOEMAS.md"))
 
-    if st.session_state.video:
+    if st.session_state.video = 'Y':
         lnew = False
         show_video("ypoemas")
         update_readings("video_ypoemas")
