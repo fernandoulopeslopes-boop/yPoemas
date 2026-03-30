@@ -3,8 +3,8 @@ extra-streamlit-components
 deep-translator==1.11.4
 edge-tts
 gTTS==2.5.1
-setuptools==69.1.1
+setuptools
 matplotlib
-Pillow==10.2.0
-protobuf==4.25.3
+Pillow
+protobuf
 altair<5
