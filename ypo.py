@@ -1,5 +1,7 @@
 r"""
 
+º¤ø,¸¸,ø¤º°`°º¤ø,¸¸,ø¤º°`°ºº¤ø,¸¸,ø¤º°`°º¤ø,¸¸,ø¤º°`°ºº¤ø,¸¸,ø¤º°`°º¤ø,¸¸,ø¤º°
+
 yPoemas is an app that randomly collects words and phrases
 from specific databases and organizes them
 in different new poems or poetic texts.
@@ -65,57 +67,33 @@ import base64
 import streamlit as st
 import os
 
-# 1. Deve ser o primeiro comando Streamlit!
-# 2. Verificação de Segurança (Blindada contra AttributeErrors)
-# --- INICIALIZAÇÃO BLINDADA ---
-# Verificamos se o session_state é um dicionário ANTES de procurar chaves
-if not isinstance(st.session_state, dict) or "initialized" not in st.session_state:
-    # Se o sistema bugar e virar booleano, esse bloco força o reset para dicionário
-    st.session_state.lang = 'pt'
-    st.session_state.tema = 'Fatos'
-    st.session_state.talk = 'N'
-    st.session_state.vydo = 'N'
-    st.session_state.draw = 'Y'
+# --INICIALIZAÇÃO BLINDADA ---
+#   Verificamos se o session_state é um dicionário ANTES de procurar chaves
+#   Se o sistema bugar e virar booleano, esse bloco força o reset para dicionário
+#   Reconstrói a base com o novo padrão 'Y' / 'N'
 
-    st.session_state.initialized = 'Y'
-if "initialized" not in st.session_state:
+if not isinstance(st.session_state, dict) or "initialized" not in st.session_state:
     # Identidade e Idioma
     st.session_state.lang = 'pt'
     st.session_state.last_lang = 'pt'
     st.session_state.tema = 'Fatos'
-    
     # Interface (Usando Strings 'Y'/'N' para segurança total)
-    st.session_state.eureka = 0
-    st.session_state.show_eureka = 'Y' 
     st.session_state.talk = 'N'
-    st.session_state.draw = 'Y'
     st.session_state.vydo = 'N'
-    
+    st.session_state.draw = 'Y'
+    st.session_state.show_eureka = 'Y'
+    st.session_state['eureka'] = 0
     # Trava de Segurança
     st.session_state.initialized = 'Y'
 
+
 # 1. CONFIGURAÇÃO DE INTERFACE (DEVE SER O PRIMEIRO COMANDO ST)
-st.set_page_config(
-    page_title="Machina de fazer Poesia",
-    page_icon="📜",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
-
-# 2. INICIALIZAÇÃO DO ESTADO (PROTEÇÃO CONTRA "BAD MESSAGE FORMAT")
-
-# --- INICIALIZAÇÃO DE SEGURANÇA (Versão Anti-Crash) ---
-# Em vez de 'if not in', usamos o .get() que é imune ao erro de iterabilidade
-if not st.session_state.get('initialized', False):
-    st.session_state['lang'] = 'pt'
-    st.session_state['last_lang'] = 'pt'
-    st.session_state['tema'] = 'lazer'
-    st.session_state['eureka'] = 0
-    st.session_state['show_eureka'] = True
-    st.session_state['talk'] = False
-    st.session_state['draw'] = True
-    st.session_state['vydo'] = False
-    st.session_state['initialized'] = True
+    st.set_page_config(
+        page_title="a Machina de fazer Poesia",
+        page_icon="📜",
+        layout="wide",
+        initial_sidebar_state="expanded"
+        )
 
 
 # 3. CARREGAMENTO DO LÉXICO (41.291 VERBETES EM CACHE)
@@ -131,6 +109,7 @@ def load_eureka_database():
             return []
     return []
 
+
 # 4. CARREGAMENTO DE TRADUÇÕES E AJUDA (CACHE DE DADOS)
 @st.cache_data
 def load_help_system(lang):
@@ -143,27 +122,13 @@ def load_help_system(lang):
     return help_list
     pass
 
-def talk(texto):
-    if not texto or not st.session_state.talk:
-        return
-    try:
-        tts = gTTS(text=texto, lang=st.session_state.lang)
-        # Usamos a pasta temp que você já tem no GitHub
-        temp_path = os.path.join("temp", "voice.mp3")
-        tts.save(temp_path)
-        
-        with open(temp_path, "rb") as f:
-            data = f.read()
-            b64 = base64.b64encode(data).decode()
-            
-        audio_html = f'<audio autoplay="true"><source src="data:audio/mp3;base64,{b64}" type="audio/mp3"></audio>'
-        st.markdown(audio_html, unsafe_allow_html=True)
-    except Exception as e:
-        st.error(f"Erro na voz: {e}")
-        
+talk = (st.session_state.talk == 'Y')
+
+
 # =================================================================
 # 🛠️ FIM DO BLOCO OBRIGATÓRIO - O CÓDIGO SEGUE ABAIXO
 # =================================================================        
+
 
 # --- TRATAMENTO DE ÁUDIO E MULTIMÍDIA ---
 import edge_tts         # Para vozes neurais de alta qualidade
@@ -273,9 +238,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# load_poema settings
-# --- INÍCIO DO BLOCO REPARADO ---
-# --- COPIE EXATAMENTE DAQUI ---
+
 st.markdown("""
 <style>
 .logo-text {
@@ -296,7 +259,7 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
-# --- ATÉ AQUI ---# Initialize SessionState
+
 
 if "lang" not in st.session_state:
     st.session_state.lang = "pt"
@@ -333,16 +296,14 @@ if "poly_take" not in st.session_state:
     st.session_state.poly_take = 12
 if "poly_file" not in st.session_state:
     st.session_state.poly_file = "poly_pt.txt"
-
 if "visy" not in st.session_state:
     st.session_state.visy = True
 if "nany_visy" not in st.session_state:
     st.session_state.nany_visy = 0
-
 if "draw" not in st.session_state:
-    st.session_state.draw = None
-if "" not in st.session_state:
-    st.session_state = False
+    st.session_state.draw = 'Y'
+if "talk" not in st.session_state:
+    st.session_state_talk = 'N'
 if "arts" not in st.session_state:
     st.session_state.arts = []
 if "auto" not in st.session_state:
@@ -458,11 +419,11 @@ def draw_check_buttons():
     st.session_state.draw = draw_text.checkbox(
         help_draw, st.session_state.draw, key="draw_machina"
     )
-    st.session_state.talk = talk_text.checkbox(
+    st.session_state.talk = checkbox(
         help_talk, st.session_state.talk, key="talk_machina"
     )
-    st.session_state.vydo = vyde_text.checkbox(
-        help_vyde, st.session_state.vydo, key="vyde_machina"
+    st.session_state.video = vyde_text.checkbox(
+        help_vyde, st.session_state.video, key="vyde_machina"
     )
 
 
@@ -785,7 +746,7 @@ def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):
             st.markdown(f"<p class='logo-text'>{texto_final}</p>", unsafe_allow_html=True)
 
 
-def talk(text):
+def talk_fala(text):
     # Limpeza para a voz não ler tags
     text_clean = text.replace("<br>", " ").replace("< br>", "").replace("<br >", "").replace("<br/>", " ")
     
@@ -878,8 +839,8 @@ def page_mini():
     st.session_state.auto = auto_col.checkbox("auto")
 
     if st.session_state.auto:
-        st.session_state.talk = False
-        st.session_state.vydo = False
+        st.session_state.talk = 'N'
+        st.session_state.video = 'N'
         with st.sidebar:
             wait_time = st.slider(translate("tempo de exibição (em segundos): "), 5, 60)
 
@@ -926,7 +887,7 @@ def page_mini():
         with mini_place_holder:
             write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
         if st.session_state.talk:
-            talk(curr_ypoema)
+            talk_fala(curr_ypoema)
     else:
         # Loop do Modo Auto (Simplificado)
         while st.session_state.auto:
@@ -997,11 +958,11 @@ def page_ypoemas():
     if manu_btn:
         st.subheader(load_md_file("MANUAL_YPOEMAS.md"))
 
-    if st.session_state.vydo:
+    if st.session_state.video:
         lnew = False
         show_video("ypoemas")
         update_readings("video_ypoemas")
-        st.session_state.vydo = False
+        st.session_state.video = 'N'
 
     if lnew:
         what_book = f"⚫ {st.session_state.lang} ( {st.session_state.book} ) ( {st.session_state.take + 1} / {len(temas_list)} )"
@@ -1031,7 +992,7 @@ def page_ypoemas():
             write_ypoema(texto_formatado, imagem_carregada)
 
             if st.session_state.talk:
-                talk(raw_text)
+                talk_fala(raw_text)
             
             if manu_btn:
                 info_txt = load_info(st.session_state.tema)
@@ -1123,7 +1084,7 @@ def page_eureka():
         if st.session_state.draw:
             st.image(load_arts(seed_tema))
         if st.session_state.talk:
-            talk(curr_ypoema)
+            talk_fala(curr_ypoema)
             
 # --- FIM DA EUREKA --- INÍCIO DA OFF_MACHINA
 
@@ -1205,11 +1166,11 @@ def page_off_machina():  # available off_machina_books
             unsafe_allow_html=True,
         )
 
-    if st.session_state.vydo:
+    if st.session_state.video = 'Y':
         lnew = False
         show_video("off-machina")
         update_readings("video_off-machina")
-        st.session_state.vydo = False
+        st.session_state.vydo = 'N'
 
     if lnew:
         what_book = (
@@ -1260,14 +1221,14 @@ def page_off_machina():  # available off_machina_books
 
                 LOGO_TEXTO = off_book_text
                 LOGO_IMAGE = None
-                if st.session_state.draw:
+                if st.session_state.draw = 'Y':
                     LOGO_IMAGE = load_arts(off_book_name)
 
                 write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
                 update_readings(off_book_name)
 
         if st.session_state.talk:
-            talk(off_book_text)
+            talk_fala(off_book_text)
 
 
 def page_books():  # available books
@@ -1302,11 +1263,11 @@ def page_books():  # available books
             doit = st.button("✔", help="confirm ?")
 
         lnew = True
-        if st.session_state.vydo:
+        if st.session_state.vydo = 'Y':
             lnew = False
             show_video("books")
             update_readings("video_books")
-            st.session_state.vydo = False
+            st.session_state.vydo = 'N'
 
         if lnew:
             list_book = ""
@@ -1354,11 +1315,11 @@ def page_polys():  # available languages
         doit = st.button("✔", help="confirm ?")
 
     lnew = True
-    if st.session_state.vydo:
+    if st.session_state.vydo = 'Y':
         lnew = False
         show_video("poly")
         update_readings("video_poly")
-        st.session_state.vydo = False
+        st.session_state.vydo = 'N'
 
     if doit:
         poly_pais = poly_pais[opt_poly]
@@ -1403,11 +1364,11 @@ def page_abouts():
     )
 
     lnew = True
-    if st.session_state.vydo:
+    if st.session_state.vydo = 'Y':
         lnew = False
         show_video("about")
         update_readings("video_about")
-        st.session_state.vydo = False
+        st.session_state.vydo = 'N'
 
     if lnew:
         choice = abouts_list[opt_abouts].upper()
