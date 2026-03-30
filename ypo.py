@@ -1166,8 +1166,7 @@ def page_off_machina():  # available off_machina_books
             unsafe_allow_html=True,
         )
 
-
-    if st.session_state.video = 'Y':
+    if st.session_state.video == 'Y':
         lnew = False
         show_video("off-machina")
         update_readings("video_off-machina")
