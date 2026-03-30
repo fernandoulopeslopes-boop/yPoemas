@@ -1270,7 +1270,7 @@ def page_books():  # available books
             doit = st.button("✔", help="confirm ?")
 
         lnew = True
-        if st.session_state.vydo = 'Y':
+        if st.session_state.vydo == 'Y':
             lnew = False
             show_video("books")
             update_readings("video_books")
@@ -1322,7 +1322,7 @@ def page_polys():  # available languages
         doit = st.button("✔", help="confirm ?")
 
     lnew = True
-    if st.session_state.vydo = 'Y':
+    if st.session_state.vydo == 'Y':
         lnew = False
         show_video("poly")
         update_readings("video_poly")
@@ -1371,7 +1371,7 @@ def page_abouts():
     )
 
     lnew = True
-    if st.session_state.vydo = 'Y':
+    if st.session_state.vydo == 'Y':
         lnew = False
         show_video("about")
         update_readings("video_about")
