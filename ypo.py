@@ -43,7 +43,7 @@ para novos temas:
 VISY == New Visitor
 NANY_VISY == Number of Visitors
 LYPO == Last YPOema created from curr_ypoema
-TYPO == Translated YPOema from LYPO
+TYPO == d YPOema from LYPO
 POLY == Poliglot Idiom == Changed on Catalán
 
 """
@@ -315,30 +315,40 @@ if "rand" not in st.session_state:
 ### eof: settings
 ### bof: tools
 
+def translate(text):
+    """
+    Remodelada por Sirius & Nando: 
+    Traduz a partir do PT e limpa resíduos de tags HTML.
+    """
+    # 1. Identifica o alvo (garante minúsculas para o GoogleTranslator)
+    target_lang = st.session_state.lang.lower()
 
-def translate(input_text):
-    if st.session_state.lang == "pt":  # don't need translations here
-        return input_text
+    # 2. ESCUDO: Se for PT, não gasta processamento nem API
+    if target_lang == "pt":
+        return text
 
-    if not have_internet():
-        st.session_state.lang = "pt"
-        return input_text
-
+    # 3. DISPARO DA TRADUÇÃO
     try:
-        output_text = GoogleTranslator(
-            source="pt", target=st.session_state.lang
-        ).translate(text=str(input_text))
+        from deep_translator import GoogleTranslator
+        # Traduz sempre a partir da matriz em Português
+        translated_text = GoogleTranslator(source='pt', target=target_lang).translate(text)
+        
+        # 4. POLIMENTO (Limpeza de tags <br> deformadas)
+        # Remove espaços e caracteres extras que o tradutor insere nas quebras
+        translated_text = translated_text.replace("<br>>", "<br>")
+        translated_text = translated_text.replace("< br>", "<br>")
+        translated_text = translated_text.replace("<br >", "<br>")
+        translated_text = translated_text.replace("<br ", "<br>")
+        translated_text = translated_text.replace(" br>", "<br>")
+        translated_text = translated_text.replace("<BR>", "<br>") # Padroniza minúsculas
+        
+        return translated_text
 
-        output_text = output_text.replace("<br>>", "<br>")
-        output_text = output_text.replace("< br>", "<br>")
-        output_text = output_text.replace("<br >", "<br>")
-        output_text = output_text.replace("<br ", "<br>")
-        output_text = output_text.replace(" br>", "<br>")
-        return output_text
-    except:
-        return translate("Arquivo muito grande para ser traduzido.")
-
-
+    except Exception as e:
+        # Se a Estação de Sirius ou o Google falharem, a Machina não para.
+        # Retornamos o texto original para manter o app vivo.
+        return text
+        
 def pick_lang():  # define idioma
     btn_pt, btn_es, btn_it, btn_fr, btn_en, btn_xy = st.sidebar.columns(
         [1.1, 1.13, 1.04, 1.04, 1.17, 1.25]
