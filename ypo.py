@@ -327,7 +327,7 @@ def translate(input_text):
     try:
         output_text = GoogleTranslator(
             source="pt", target=st.session_state.lang
-        ).translate(text=input_text)
+        ).translate(text=str(input_text))
 
         output_text = output_text.replace("<br>>", "<br>")
         output_text = output_text.replace("< br>", "<br>")
@@ -847,7 +847,7 @@ def page_mini():
 
     if st.session_state.auto:
         st.session_state.talk = 'N'
-        st.session_state.video = 'N'
+        st.session_state.vydo = 'N'
         with st.sidebar:
             wait_time = st.slider(translate("tempo de exibição (em segundos): "), 5, 60)
 
@@ -965,7 +965,7 @@ def page_ypoemas():
     if manu_btn:
         st.subheader(load_md_file("MANUAL_YPOEMAS.md"))
 
-    if st.session_state.video = 'Y':
+    if st.session_state.vydo == 'Y':
         lnew = False
         show_video("ypoemas")
         update_readings("video_ypoemas")
