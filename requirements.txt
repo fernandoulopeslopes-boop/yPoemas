@@ -8,3 +8,4 @@ matplotlib
 Pillow==10.2.0
 protobuf==4.25.3
 altair<5
+pygame==2.5.2
