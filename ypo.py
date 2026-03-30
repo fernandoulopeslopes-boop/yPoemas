@@ -399,8 +399,8 @@ def load_help(idiom):
                 text = pipe_line[2]
                 returns.append(text)
     else:
-        # ... resto do código (anterior, próximo, etc)
         pass
+        # ... resto do código (anterior, próximo, etc)
 
 def draw_check_buttons():
     # 1. Cria as colunas na sidebar
