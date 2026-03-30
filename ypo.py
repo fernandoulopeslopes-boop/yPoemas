@@ -66,8 +66,6 @@ import streamlit as st
 import os
 
 # 1. Deve ser o primeiro comando Streamlit!
-st.set_page_config(page_title="a Machina de fazer Poesia", layout="wide")
-
 # 2. Verificação de Segurança (Blindada contra AttributeErrors)
 if "initialized" not in st.session_state:
     # Identidade e Idioma
