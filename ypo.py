@@ -14,12 +14,11 @@ except ImportError:
 # 2. A LENTE (EXIBIÇÃO) 
 
 def write_ypoema(TITULO, TEXTO_RAW):
-    # 1. Tratamento da Origem: Se for lista (do gera_poema), vira Texto
+    # 1. Se for lista, vira texto agora
     if isinstance(TEXTO_RAW, list):
         TEXTO_RAW = "\n".join(TEXTO_RAW).strip()
     
-    # 2. Definição do Estilo Blindado (CSS)
-    # Usamos aspas triplas normais para as chaves { } não confundirem o Python
+    # 2. CSS Puro (Sem f-string para não dar erro de chaves)
     estilo = """
     <style>
         .p-title { 
@@ -27,7 +26,7 @@ def write_ypoema(TITULO, TEXTO_RAW):
             font-weight: 800 !important; 
             color: #111 !important; 
             display: block !important;
-            margin-bottom: 20px !important;
+            margin-bottom: 15px !important;
             font-family: sans-serif;
         }
         .p-content { 
@@ -41,6 +40,12 @@ def write_ypoema(TITULO, TEXTO_RAW):
         }
     </style>
     """
+    
+    # 3. Conteúdo (Aqui usamos f-string apenas para as variáveis)
+    corpo = f'<div class="p-title">{TITULO}</div><div class="p-content">{TEXTO_RAW}</div>'
+    
+    # 4. A Entrega Final (Soma das strings)
+    st.markdown(estilo + corpo, unsafe_allow_html=True)
     
     # 3. Montagem do HTML com as variáveis
     corpo_html = f'<div class="p-title">{TITULO}</div><div class="p-content">{TEXTO_RAW}</div>'
