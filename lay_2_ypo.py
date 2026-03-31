@@ -249,7 +249,11 @@ def gera_poema(nome_tema, seed_eureka):
                 file.write(linha)
 
         file.close()
-        poema_final = novo_poema.strip()
+
+        texto_unido = "\n".join(novo_poema)
+        # 2. Agora sim, limpamos os espaços sobrando no início e no fim
+        poema_final = texto_unido.strip()
+        # 3. Retornamos o resultado para o app
     return novo_poema
 
 
