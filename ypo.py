@@ -1,27 +1,21 @@
 # =================================================================
-# 🚀 MACHINA DE FAZER POESIA (ABNP) - Versão Estruturada
+# 🚀 MACHINA DE FAZER POESIA (ABNP) - Versão 2.0 (Estruturada)
 # =================================================================
-"""
-yPoemas is an app that randomly collects words and phrases...
-[Epitaph] Passei boa parte da minha vida escrevendo a "machina".
-"""
-
 import streamlit as st
 import os
-import re
 import random
-import time
 import socket
 import base64
-import asyncio
-from datetime import datetime
 from PIL import Image
 
-# --- MOTORES EXTERNOS ---
-from lay_2_ypo import gera_poema
+# --- MOTORES EXTERNOS (Certifique-se que lay_2_ypo.py está na mesma pasta) ---
+try:
+    from lay_2_ypo import gera_poema
+except ImportError:
+    def gera_poema(tema, seed=""): return ["Erro: motor lay_2_ypo não encontrado."]
 
 # =================================================================
-# 1. LENTE: CONFIGURAÇÃO E FOCO (Obrigatório ser o 1º comando st)
+# 1. LENTE: CONFIGURAÇÃO E VISUAL (CSS)
 # =================================================================
 st.set_page_config(
     page_title="a Machina de fazer Poesia",
@@ -30,78 +24,59 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Consolidação do Visual (Lente)
 st.markdown("""
     <style>
+    /* Limpeza e Layout */
     footer {visibility: hidden;}
-    .reportview-container .main .block-container { padding: 0rem; }
     [data-testid='stSidebar'] > div:first-child { width: 310px; }
-    .logo-text {
-        font-weight: 600; font-size: 18px; font-family: 'IBM Plex Sans', sans-serif;
-        color: #000000; padding-left: 15px; text-align: left;
-        display: block; line-height: 1.6; white-space: pre-wrap !important;
+    
+    /* Estilo dos Botões de Navegação */
+    .stButton>button {
+        width: 100%;
+        border-radius: 8px;
+        height: 3em;
+        background-color: #f0f2f6;
+        border: 1px solid #d1d5db;
+        color: #374151;
+        font-weight: bold;
+        transition: all 0.3s ease;
     }
-    .logo-img { float: right; max-width: 300px; margin-left: 15px; }
+    .stButton>button:hover {
+        border-color: #ff4b4b;
+        color: #ff4b4b;
+        background-color: #ffffff;
+        box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+    }
+
+    /* Texto e Imagem do Poema */
+    .logo-text {
+        font-weight: 600; font-size: 19px; font-family: 'IBM Plex Sans', sans-serif;
+        color: #1a1a1a; padding-left: 15px; text-align: left;
+        display: block; line-height: 1.7; white-space: pre-wrap !important;
+    }
+    .logo-img { 
+        float: right; max-width: 350px; margin-left: 20px; 
+        border-radius: 10px; box-shadow: 2px 2px 15px rgba(0,0,0,0.1);
+    }
     </style>
 """, unsafe_allow_html=True)
 
 # =================================================================
-# 2. PAIOL: INICIALIZAÇÃO DO ESTADO (A Memória da Machina)
+# 2. PAIOL: INICIALIZAÇÃO E CARREGADORES (CACHE)
 # =================================================================
 if "initialized" not in st.session_state:
-    # Identidade e Localização
     st.session_state.lang = 'pt'
-    st.session_state.last_lang = 'pt'
     st.session_state.tema = 'Fatos'
+    st.session_state.book = "livro vivo"
+    st.session_state.take = 0
+    st.session_state.draw = 'Y'
     try:
         st.session_state.user_id = socket.gethostbyname(socket.gethostname())
     except:
-        st.session_state.user_id = "local_user"
-    
-    # Interface (Padrão 'Y'/'N' para segurança)
-    st.session_state.talk = 'N'
-    st.session_state.vydo = 'N'
-    st.session_state.draw = 'Y'
-    st.session_state.auto = False
-    st.session_state.visy = True
-    
-    # Navegação e Livros
-    st.session_state.book = "livro vivo"
-    st.session_state.take = 0
-    st.session_state.mini = 0
-    st.session_state.curr_ypoema = ""
-    st.session_state.trad_ypoema = ""
-    st.session_state.book_list = []
-    st.session_state.arts = []
-    
-    # Trava de Segurança
+        st.session_state.user_id = "user_88"
     st.session_state.initialized = True
 
-# =================================================================
-# 3. PAIOL: CARREGADORES (CACHE)
-# =================================================================
-
-@st.cache_resource
-def load_eureka_database():
-    caminho_lexico = os.path.join("base", "lexico.pt")
-    if os.path.exists(caminho_lexico):
-        try:
-            with open(caminho_lexico, "r", encoding="utf-8") as f:
-                return [linha.strip() for linha in f if " : " in linha]
-        except: return []
-    return []
-
 @st.cache_data
-def load_help_system(lang):
-    help_list = []
-    caminho = os.path.join("base", "helpers.txt")
-    if os.path.exists(caminho):
-        with open(caminho, encoding="utf-8") as file:
-            for line in file:
-                help_list.append(line)
-    return help_list
-
-@st.cache_data(show_spinner=False)
 def load_temas(book):
     book_list = []
     caminho = os.path.join("base", "rol_" + book + ".txt")
@@ -110,42 +85,30 @@ def load_temas(book):
             for line in file:
                 tema_limpo = line.replace(" ", "").strip()
                 if tema_limpo: book_list.append(tema_limpo)
-    return book_list
+    return book_list if book_list else ["Fatos"]
 
 # =================================================================
-# 4. MOTOR: LÓGICA DE GERAÇÃO E TRADUÇÃO
+# 3. MOTOR: GERAÇÃO E TRADUÇÃO
 # =================================================================
-
-def load_poema(nome_tema, seed_eureka=""):
-    script = gera_poema(nome_tema, seed_eureka)
-    # Salva no disco (LYPO) para manter a compatibilidade com sua versão anterior
-    lypo_user = 'LYPO_' + st.session_state.user_id
-    caminho_temp = os.path.join('temp', lypo_user)
-    
-    novo_ypoema = ""
-    with open(caminho_temp, 'w', encoding='utf-8') as save_lypo:
-        save_lypo.write(nome_tema + '\n')
-        for line in script:
-            save_lypo.write(line + '\n')
-            novo_ypoema += (line if line != '\n' else '') + '<br>'
-    
-    return novo_ypoema
+def load_poema(nome_tema):
+    script = gera_poema(nome_tema)
+    # Formatação para o Markdown (troca quebras por <br>)
+    return "<br>".join([line.strip() for line in script if line.strip()])
 
 def translate(text):
     if st.session_state.lang == "pt": return text
     try:
         from deep_translator import GoogleTranslator
-        translated = GoogleTranslator(source='pt', target=st.session_state.lang).translate(text)
-        # Limpeza de tags HTML deformadas
-        for tag in ["<br>>", "< br>", "<br >", "<br ", " br>", "<BR>"]:
-            translated = translated.replace(tag, "<br>")
-        return translated
+        return GoogleTranslator(source='pt', target=st.session_state.lang).translate(text)
     except: return text
 
-# =================================================================
-# 5. SALAS: INTERFACE E NAVEGAÇÃO
-# =================================================================
+def load_arts(nome_tema):
+    # Fallback para imagem padrão se a pasta não existir
+    return "images/machina/logo_ypoemas.jpg"
 
+# =================================================================
+# 4. EXPOSIÇÃO: FUNÇÃO DE ESCRITA
+# =================================================================
 def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):
     if LOGO_IMAGE and os.path.exists(LOGO_IMAGE):
         with open(LOGO_IMAGE, "rb") as img_file:
@@ -159,84 +122,63 @@ def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):
     else:
         st.markdown(f"<p class='logo-text'>{LOGO_TEXTO}</p>", unsafe_allow_html=True)
 
+# =================================================================
+# 5. SALAS: INTERFACE MODULAR
+# =================================================================
+
+
+# =================================================================
+# 5. SALAS: INTERFACE MINIMALISTA
+# =================================================================
+
 def page_mini():
-    temas_list = load_temas("todos os temas")
-    if not temas_list: return
-    
-    # Navegação superior
-    col1, more_col, rand_col, auto_col, col2 = st.columns([4, 1, 1, 1, 4])
-    
-    if rand_col.button("✻"):
-        st.session_state.mini = random.randrange(len(temas_list))
-    
-    st.session_state.auto = auto_col.checkbox("auto", value=st.session_state.auto)
-    st.session_state.tema = temas_list[st.session_state.mini % len(temas_list)]
-    
-    # Gerar Poema
-    curr_ypoema = load_poema(st.session_state.tema)
-    if st.session_state.lang != "pt":
-        curr_ypoema = translate(curr_ypoema)
-    
-    # Formatação para Markdown
-    LOGO_TEXTO = "  \n".join([l.strip() for l in curr_ypoema.split('<br>')])
-    LOGO_IMAGE = load_arts(st.session_state.tema) if st.session_state.draw == 'Y' else None
-    
-    write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
-
-# --- AUXILIARES ---
-def load_arts(nome_tema):
-    # Simplificação da sua lógica de busca de imagem
-    path = "./images/machina/logo_ypoemas.jpg" # Fallback
-    # (Aqui manteríamos sua lógica de sorteio de imagens da pasta images.txt)
-    return path
-
-# =================================================================
-# 6. METAS: EXECUÇÃO PRINCIPAL
-# =================================================================
-def main():
-    # Sidebar: Idiomas e Ferramentas
-    with st.sidebar:
-        st.title("yPoemas")
-        # Aqui entram as suas funções pick_lang() e draw_check_buttons()
-        st.write(f"Idioma: {st.session_state.lang}")
-        st.write(f"ID: {st.session_state.user_id}")
-
-    # Roteamento de Salas
-    page_mini()
-
+    # Apenas o essencial: O motor e o verso
+    exibir_conteudo()
 
 def page_ypoemas():
-    # 1. PAIOL: Carrega os temas do livro atual
-    temas_list = load_temas(st.session_state.book)
-    if not temas_list: return
+    # Sala com o controle de sorteio manual
+    col1, b_rand, col2 = st.columns([4, 2, 4])
     
-    maxy = len(temas_list) - 1
-    
-    # 2. LENTE: Colunas de Navegação (Simetria de 5 botões)
-    col1, btn_back, btn_rand, btn_next, btn_more, col2 = st.columns([3, 1, 1, 1, 1, 3])
-    
-    # Lógica dos Botões
-    if btn_back.button("◀"):
-        st.session_state.take = (st.session_state.take - 1) % len(temas_list)
-    if btn_rand.button("✻"):
+    if b_rand.button("✻ SORTEAR NOVO", help="Gera uma variação aleatória"):
+        temas_list = load_temas(st.session_state.book)
         st.session_state.take = random.randrange(len(temas_list))
-    if btn_next.button("▶"):
-        st.session_state.take = (st.session_state.take + 1) % len(temas_list)
+        st.rerun()
     
-    # Define o tema baseado no índice 'take'
-    st.session_state.tema = temas_list[st.session_state.take]
-    
-    # 3. MOTOR: Gera e Exibe
-    curr_ypoema = load_poema(st.session_state.tema)
-    if st.session_state.lang != "pt":
-        curr_ypoema = translate(curr_ypoema)
-        
-    LOGO_TEXTO = "  \n".join([l.strip() for l in curr_ypoema.split('<br>')])
-    LOGO_IMAGE = load_arts(st.session_state.tema) if st.session_state.draw == 'Y' else None
-    
-    write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
+    temas_list = load_temas(st.session_state.book)
+    st.session_state.tema = temas_list[st.session_state.take % len(temas_list)]
+    exibir_conteudo()
 
+def exibir_conteudo():
+    # O coração visual: Poema + Imagem
+    poema_raw = load_poema(st.session_state.tema)
+    if st.session_state.lang != "pt":
+        poema_raw = translate(poema_raw)
+    
+    texto_final = "  \n".join(poema_raw.split('<br>'))
+    img_final = load_arts(st.session_state.tema) if st.session_state.draw == 'Y' else None
+    write_ypoema(texto_final, img_final)
+
+# =================================================================
+# 6. METAS: EXECUÇÃO PRINCIPAL (RADIO E LOGICA)
+# =================================================================
+def main():
+    with st.sidebar:
+        st.title("yPoemas")
+        
+        # O Rádio: O único seletor de destino
+        sala = st.radio("Selecione o modo:", ["Leitura (Mini)", "Exploração (Rand)"])
+        
+        st.divider()
+        # Seletor de Idioma simples no Paiol
+        st.session_state.lang = st.selectbox("Traduzir para:", ["pt", "en", "es", "fr", "it"])
+        st.write(f"ID: {st.session_state.user_id}")
+
+    # Roteamento baseado no Rádio
+    if sala == "Leitura (Mini)":
+        page_mini()
+    else:
+        page_ypoemas()
 
 if __name__ == "__main__":
     main()
-
+    
