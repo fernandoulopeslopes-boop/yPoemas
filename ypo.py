@@ -13,21 +13,33 @@ except ImportError:
 
 # 2. A LENTE (EXIBIÇÃO) 
 
+import streamlit.components.v1 as components
+
 def write_ypoema(TITULO, TEXTO_RAW):
     # 1. Se for lista, cola
     if isinstance(TEXTO_RAW, list):
         TEXTO_RAW = "\n".join(TEXTO_RAW).strip()
     
-    # 2. O HTML formatado em uma única string, sem espaços extras entre as tags
-    conteudo = f"""<style>
-    .p-title {{ font-size: 42px !important; font-weight: 800; color: #111; display: block; margin-bottom: 10px; font-family: sans-serif; }}
-    .p-content {{ font-size: 34px !important; font-weight: 500; color: #333; line-height: 1.4; white-space: pre-wrap; display: block; font-family: sans-serif; }}
+    # 2. O HTML e CSS num bloco de texto bruto (sem f-string no estilo)
+    # Usamos o <pre> para garantir que sua endentação e espaços fiquem intactos
+    html_layout = f"""
+    <style>
+        .p-title {{ 
+            font-size: 38px; font-weight: 800; color: #111; 
+            margin-bottom: 15px; font-family: sans-serif; 
+        }}
+        .p-content {{ 
+            font-size: 30px; font-weight: 500; color: #333; 
+            line-height: 1.4; font-family: sans-serif;
+            white-space: pre-wrap;
+        }}
     </style>
     <div class="p-title">{TITULO}</div>
-    <div class="p-content">{TEXTO_RAW}</div>"""
+    <div class="p-content">{TEXTO_RAW}</div>
+    """
     
-    # 3. Força a barra com o markdown
-    st.markdown(conteudo, unsafe_allow_html=True)
+    # 3. Injeta o HTML num frame isolado (altura de 500px para caber o poema)
+    components.html(html_layout, height=600, scrolling=True)
     
 # 3. PAIOL E UTILITÁRIOS
 if "initialized" not in st.session_state:
