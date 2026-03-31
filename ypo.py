@@ -108,9 +108,9 @@ def page_ypoemas():
 
     with col_painel:
         st.subheader("🎛️ Painel")
-        st.selectbox("Traduzir para:", ["Português", "English", "Español"], key="set_lang")
-        st.info("💡 Escolha o idioma ou ative a voz ao lado.")
-        # AJUSTE DE COMPATIBILIDADE: use_column_width para versões antigas
+        # Removido o seletor de idiomas conforme pedido
+        st.info("💡 Painel de controle da obra.")
+        # Ajustado para 'use_column_width' para evitar o erro de versão
         st.image("https://via.placeholder.com/200x100?text=LOGO+TEMA", use_column_width=True)
 
     with col_palco:
