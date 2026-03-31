@@ -17,33 +17,7 @@ def translate(texto): # Placeholder para não dar erro
     return texto 
 
 # 2. A LENTE (EXIBIÇÃO) - ÚNICA E DEFINITIVA
-def write_ypoema(TITULO, TEXTO_RAW):
-    # O segredo é envolver tudo em um único st.markdown
-    st.markdown(f"""
-        <style>
-        .poem-title {{
-            font-family: 'IBM Plex Sans', sans-serif;
-            font-size: 42px !important;
-            font-weight: 800;
-            color: #222;
-            margin-bottom: 30px;
-            border-bottom: 3px solid #f0f0f0;
-            padding-bottom: 10px;
-        }}
-        .poem-content {{
-            font-family: 'IBM Plex Sans', sans-serif;
-            font-weight: 600;
-            font-size: 36px !important;
-            line-height: 1.6;
-            color: #000;
-            white-space: pre-wrap !important;
-        }}
-        </style>
-        
-        <div class='poem-title'>{TITULO}</div>
-        <div class='poem-content'>{TEXTO_RAW}</div>
-    """, unsafe_allow_html=True)
-    
+def write_ypoema    
 # 3. PAIOL E UTILITÁRIOS
 if "initialized" not in st.session_state:
     st.session_state.lang, st.session_state.tema, st.session_state.take = 'pt', 'Fatos', 0
