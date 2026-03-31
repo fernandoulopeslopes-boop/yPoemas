@@ -93,53 +93,53 @@ def page_ypoemas():
     idx = st.session_state.take % len(temas_list)
     st.session_state.tema = temas_list[idx]
 
-    # --- 4.1 MENU DE TOPO (JANELA MUNDO) ---
-    # De volta para o topo da página, como você pediu
+    # --- 4.1 MENU DE TOPO (CENTRALIZADO) ---
     with st.container():
-        m1, m2, m3, m4, m5, m_vazio = st.columns([0.6, 0.6, 0.6, 0.6, 1.2, 5])
-        with m1: st.button("🌐", key="top_lang", help="Idiomas")
-        with m2: st.button("🔊", key="top_talk", help="Voz")
-        with m3: st.button("🎬", key="top_video", help="Vídeo")
-        with m4: st.button("🖼️", key="top_img", help="Galeria")
-        with m5: st.selectbox("Lang", ["PT", "EN", "ES"], label_visibility="collapsed", key="top_sel_lang")
+        # m_v1 e m_v2 criam margens nas pontas para centralizar o meio
+        m_v1, m1, m2, m3, m4, m5, m_v2 = st.columns([3, 0.5, 0.5, 0.5, 0.5, 1.2, 3])
+        with m1: st.button("🌐", key="top_lang")
+        with m2: st.button("🔊", key="top_talk")
+        with m3: st.button("🎬", key="top_video")
+        with m4: st.button("🖼️", key="top_img")
+        with m5: st.selectbox("L", ["PT", "EN", "ES"], label_visibility="collapsed", key="top_sel_lang")
         st.divider()
 
-    # --- 4.2 LAYOUT: PAINEL ESQUERDO | PALCO CENTRAL ---
+    # --- 4.2 LAYOUT PRINCIPAL ---
     col_painel, col_palco = st.columns([1.2, 4])
 
     with col_painel:
-        # Espaço para o LOGO
+        # Logo na esquerda
         st.image("https://via.placeholder.com/200x100?text=LOGO+TEMA", use_column_width=True)
-
-    with col_palco:
-        # --- NAVEGAÇÃO INTERNA ---
-        # Aumentei o peso de c2 para 2.4 (3x o anterior de 0.8)
-        c1, more, last, rand, nest, manu, c2, c_vazio = st.columns([0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 2.4, 1.5])
         
-        with more: 
+        # NAVEGAÇÃO MOVIDA PARA O PAINEL (Para não flutuar sobre o texto)
+        st.write("---")
+        n1, n2, n3, n4 = st.columns(4)
+        with n1: 
             if st.button("✚", key="btn_more"): st.rerun()
-        with last: 
+        with n2: 
             if st.button("◀", key="btn_last"):
                 st.session_state.take = (st.session_state.take - 1) % len(temas_list); st.rerun()
-        with rand: 
+        with n3: 
             if st.button("✻", key="btn_rand"):
                 st.session_state.take = random.randrange(len(temas_list)); st.rerun()
-        with nest: 
+        with n4: 
             if st.button("▶", key="btn_next"):
                 st.session_state.take = (st.session_state.take + 1) % len(temas_list); st.rerun()
-        with manu:
-            with st.popover("?", help="Info"):
-                st.write(f"**Matriz:** {st.session_state.tema}")
-        with c2:
-            # Seletor com largura corrigida
-            escolha = st.selectbox("Seletor", options=temas_list, index=idx, label_visibility="collapsed", key="sel_master")
-            if escolha != st.session_state.tema:
-                st.session_state.take = temas_list.index(escolha); st.rerun()
+        
+        # SELEÇÃO DE TEMAS (ALINHADA À DIREITA DENTRO DO PAINEL OU ABAIXO)
+        st.write("Temas:")
+        escolha = st.selectbox("Seletor", options=temas_list, index=idx, label_visibility="collapsed", key="sel_master")
+        if escolha != st.session_state.tema:
+            st.session_state.take = temas_list.index(escolha); st.rerun()
 
+    with col_palco:
         # --- EXIBIÇÃO DA OBRA ---
+        # TAREFA: Limpeza de linhas duplicadas (strip e join controlado)
         poema_raw = load_poema(st.session_state.tema)
+        
+        # URL de teste para a Imagem
         url_teste = "https://images.unsplash.com/photo-1454117096348-e4abbeae002c?w=500"
-        write_ypoema(st.session_state.tema, poema_raw, URL_IMAGEM=url_teste)
+        write_ypoema(st.session_state.tema, poema_raw, URL_IMAGEM=url_teste)        
         
 # ==========================================
 # 5º ANDAR: O MOTOR (MAIN)
