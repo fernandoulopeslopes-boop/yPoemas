@@ -126,6 +126,27 @@ def load_help_system(lang):
 
 talk = (st.session_state.talk == 'Y')
 
+def load_poema(nome_tema, seed_eureka):  # generate new yPoema
+    script = load_poema(nome_tema, seed_eureka)
+    novo_ypoema = ''
+    lypo_user = 'LYPO_' + IPAddres
+
+    with open(os.path.join('./temp/' + lypo_user), 'w', encoding='utf-8') as save_lypo:
+        save_lypo.write(
+            nome_tema
+        )  # include title of yPoema in first line for translations
+        save_lypo.write('\n')
+
+        for line in script:
+            if line == '\n':
+                save_lypo.write('\n')
+                novo_ypoema += '<br>'
+            else:
+                save_lypo.write(line + '\n')
+                novo_ypoema += line + '<br>'
+
+    save_lypo.close()  # save a copy of last generated in LYPO
+    return novo_ypoema
 
 # =================================================================
 # 🛠️ FIM DO BLOCO OBRIGATÓRIO - O CÓDIGO SEGUE ABAIXO
@@ -174,7 +195,7 @@ def main():
 
         # 3. Enche o tanque com o primeiro yPoema
         if "curr_ypoema" not in st.session_state:
-            st.session_state.curr_ypoema = gera_poema(st.session_state.tema, "")
+            st.session_state.curr_ypoema = load_poema(st.session_state.tema, "")
             st.session_state.trad_ypoema = "" # Tanque de tradução limpo
 
 
@@ -679,7 +700,8 @@ def load_book_pages(book):  # Load Book pages for off_book
 
     return book_pages
 
-    script = gera_poema(nome_tema, "")
+    script = load_poema(nome_tema, "")
+    
     
     # 1. Transformamos a lista de versos em um texto único com quebras de linha
     novo_ypoema = "\n".join(script)
@@ -879,9 +901,9 @@ def page_mini():
     # --- LÓGICA DE GERAÇÃO DO POEMA ---
     # Só carregamos se for novo ou se mudou o idioma
     if st.session_state.lang != st.session_state.last_lang:
-        curr_ypoema = gera_poema(st.session_state.tema, "")
+        curr_ypoema = load_poema(st.session_state.tema, "")
     else:
-        curr_ypoema = gera_poema(st.session_state.tema, "")
+        curr_ypoema = load_poema(st.session_state.tema, "")
 
     # Tradução se necessário
     if st.session_state.lang != "pt":
@@ -913,7 +935,7 @@ def page_mini():
             st.session_state.mini = random.randrange(0, maxy_mini)
             st.session_state.tema = temas_list[st.session_state.mini]
             
-            p_auto = gera_poema(st.session_state.tema, "")
+            p_auto = load_poema(st.session_state.tema, "")
             if st.session_state.lang != "pt":
                 p_auto = translate(p_auto)
             
@@ -990,7 +1012,7 @@ def page_ypoemas():
             if st.session_state.lang != st.session_state.last_lang:
                 raw_text = translate(st.session_state.curr_ypoema)
             else:
-                raw_text = gera_poema(str(st.session_state.tema), "")
+                raw_text = load_poema(str(st.session_state.tema), "")
                 st.session_state.curr_ypoema = raw_text
 
             update_readings(st.session_state.tema)
@@ -1078,7 +1100,7 @@ def page_eureka():
     st.session_state.tema = seed_tema
     
     # Carrega o poema bruto (PT)
-    curr_ypoema = gera_poema(seed_tema, this_seed)
+    curr_ypoema = load_poema(seed_tema, this_seed)
 
     # 5. APRESENTAÇÃO CORRIGIDA (O Ponto da Crítica)
     # Título do yPoema no topo esquerdo da área de texto
@@ -1211,7 +1233,7 @@ def page_off_machina():  # available off_machina_books
                     off_book_text = load_lypo()  # changes in lang, keep LYPO
                 else:
                     nome_tema = pipe_line[1].replace("@ ", "")
-                    off_book_text = gera_poema(nome_tema, "")  # no seed_eureka
+                    off_book_text = load_poema(nome_tema, "")  # no seed_eureka
                     off_book_text = "<br>" + load_lypo()
             else:
                 for text in pipe_line:
