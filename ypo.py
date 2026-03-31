@@ -93,17 +93,28 @@ def page_ypoemas():
     idx = st.session_state.take % len(temas_list)
     st.session_state.tema = temas_list[idx]
 
-    # --- 4.1 LAYOUT: PAINEL ESQUERDO | PALCO CENTRAL ---
+    # --- 4.1 MENU DE TOPO (JANELA MUNDO) ---
+    # De volta para o topo da página, como você pediu
+    with st.container():
+        m1, m2, m3, m4, m5, m_vazio = st.columns([0.6, 0.6, 0.6, 0.6, 1.2, 5])
+        with m1: st.button("🌐", key="top_lang", help="Idiomas")
+        with m2: st.button("🔊", key="top_talk", help="Voz")
+        with m3: st.button("🎬", key="top_video", help="Vídeo")
+        with m4: st.button("🖼️", key="top_img", help="Galeria")
+        with m5: st.selectbox("Lang", ["PT", "EN", "ES"], label_visibility="collapsed", key="top_sel_lang")
+        st.divider()
+
+    # --- 4.2 LAYOUT: PAINEL ESQUERDO | PALCO CENTRAL ---
     col_painel, col_palco = st.columns([1.2, 4])
 
     with col_painel:
-        # Espaço reservado apenas para o LOGO da página/tema atual
+        # Espaço para o LOGO
         st.image("https://via.placeholder.com/200x100?text=LOGO+TEMA", use_column_width=True)
 
     with col_palco:
-        # --- NAVEGAÇÃO INTERNA (SETAS E SELETOR) ---
-        # c2 reduzido para 0.8 para encurtar o dropdown pela metade
-        c1, more, last, rand, nest, manu, c2, c_vazio = st.columns([0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.8, 2.5])
+        # --- NAVEGAÇÃO INTERNA ---
+        # Aumentei o peso de c2 para 2.4 (3x o anterior de 0.8)
+        c1, more, last, rand, nest, manu, c2, c_vazio = st.columns([0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 2.4, 1.5])
         
         with more: 
             if st.button("✚", key="btn_more"): st.rerun()
@@ -120,15 +131,11 @@ def page_ypoemas():
             with st.popover("?", help="Info"):
                 st.write(f"**Matriz:** {st.session_state.tema}")
         with c2:
-            # Dropdown agora com metade da largura anterior
+            # Seletor com largura corrigida
             escolha = st.selectbox("Seletor", options=temas_list, index=idx, label_visibility="collapsed", key="sel_master")
             if escolha != st.session_state.tema:
                 st.session_state.take = temas_list.index(escolha); st.rerun()
 
-        # --- EXIBIÇÃO DA OBRA ---
-        poema_raw = load_poema(st.session_state.tema)
-        url_teste = "https://images.unsplash.com/photo-1454117096348-e4abbeae002c?w=500"
-        write_ypoema(st.session_state.tema, poema_raw, URL_IMAGEM=url_teste)
         # --- EXIBIÇÃO DA OBRA ---
         poema_raw = load_poema(st.session_state.tema)
         url_teste = "https://images.unsplash.com/photo-1454117096348-e4abbeae002c?w=500"
@@ -141,7 +148,8 @@ def main():
     with st.sidebar:
         st.title("yPoemas")
         sala = st.radio("Navegar:", ["Exploração", "Sobre"])
-    
+        # Removi os botões e idiomas daqui, pois agora estão no topo da página
+
     if sala == "Exploração":
         page_ypoemas()
     else:
@@ -149,4 +157,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
+
