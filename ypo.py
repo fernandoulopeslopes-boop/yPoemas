@@ -14,34 +14,20 @@ except ImportError:
 # 2. A LENTE (EXIBIÇÃO) 
 
 def write_ypoema(TITULO, TEXTO_RAW):
-    # 1. Se for lista, vira texto
+    # 1. Se for lista, cola
     if isinstance(TEXTO_RAW, list):
         TEXTO_RAW = "\n".join(TEXTO_RAW).strip()
     
-    # 2. HTML e CSS juntos em um bloco só, sem firulas
-    html_final = f"""
-    <style>
-        .p-title {{ font-size: 42px !important; font-weight: 800; color: #111; display: block; margin-bottom: 10px; font-family: sans-serif; }}
-        .p-content {{ font-size: 34px !important; font-weight: 500; color: #333; line-height: 1.4; white-space: pre-wrap; display: block; font-family: sans-serif; }}
+    # 2. O HTML formatado em uma única string, sem espaços extras entre as tags
+    conteudo = f"""<style>
+    .p-title {{ font-size: 42px !important; font-weight: 800; color: #111; display: block; margin-bottom: 10px; font-family: sans-serif; }}
+    .p-content {{ font-size: 34px !important; font-weight: 500; color: #333; line-height: 1.4; white-space: pre-wrap; display: block; font-family: sans-serif; }}
     </style>
     <div class="p-title">{TITULO}</div>
-    <div class="p-content">{TEXTO_RAW}</div>
-    """
+    <div class="p-content">{TEXTO_RAW}</div>"""
     
-    # 3. O comando 'st.html' é o novo padrão para injetar código direto
-    st.html(html_final)
-    
-    # 3. Conteúdo (Aqui usamos f-string apenas para as variáveis)
-    corpo = f'<div class="p-title">{TITULO}</div><div class="p-content">{TEXTO_RAW}</div>'
-    
-    # 4. A Entrega Final (Soma das strings)
-    st.markdown(estilo + corpo, unsafe_allow_html=True)
-    
-    # 3. Montagem do HTML com as variáveis
-    corpo_html = f'<div class="p-title">{TITULO}</div><div class="p-content">{TEXTO_RAW}</div>'
-    
-    # 4. Execução Final (A soma do Estilo + Corpo)
-    st.markdown(estilo + corpo_html, unsafe_allow_html=True)
+    # 3. Força a barra com o markdown
+    st.markdown(conteudo, unsafe_allow_html=True)
     
 # 3. PAIOL E UTILITÁRIOS
 if "initialized" not in st.session_state:
