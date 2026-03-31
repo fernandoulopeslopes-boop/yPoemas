@@ -67,7 +67,7 @@ import base64
 import streamlit as st
 import os
 
-from lay_2_ipo import gera_poema
+from lay_2_ypo import gera_poema
 
 # --INICIALIZAÇÃO BLINDADA ---
 #   Verificamos se o session_state é um dicionário ANTES de procurar chaves
