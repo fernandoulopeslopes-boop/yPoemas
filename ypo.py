@@ -204,5 +204,39 @@ def main():
     # Roteamento de Salas
     page_mini()
 
+
+def page_ypoemas():
+    # 1. PAIOL: Carrega os temas do livro atual
+    temas_list = load_temas(st.session_state.book)
+    if not temas_list: return
+    
+    maxy = len(temas_list) - 1
+    
+    # 2. LENTE: Colunas de Navegação (Simetria de 5 botões)
+    col1, btn_back, btn_rand, btn_next, btn_more, col2 = st.columns([3, 1, 1, 1, 1, 3])
+    
+    # Lógica dos Botões
+    if btn_back.button("◀"):
+        st.session_state.take = (st.session_state.take - 1) % len(temas_list)
+    if btn_rand.button("✻"):
+        st.session_state.take = random.randrange(len(temas_list))
+    if btn_next.button("▶"):
+        st.session_state.take = (st.session_state.take + 1) % len(temas_list)
+    
+    # Define o tema baseado no índice 'take'
+    st.session_state.tema = temas_list[st.session_state.take]
+    
+    # 3. MOTOR: Gera e Exibe
+    curr_ypoema = load_poema(st.session_state.tema)
+    if st.session_state.lang != "pt":
+        curr_ypoema = translate(curr_ypoema)
+        
+    LOGO_TEXTO = "  \n".join([l.strip() for l in curr_ypoema.split('<br>')])
+    LOGO_IMAGE = load_arts(st.session_state.tema) if st.session_state.draw == 'Y' else None
+    
+    write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
+
+
 if __name__ == "__main__":
     main()
+
