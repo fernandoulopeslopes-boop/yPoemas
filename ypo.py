@@ -14,21 +14,33 @@ except ImportError:
 # 2. A LENTE (EXIBIÇÃO) 
 
 def write_ypoema(TITULO, TEXTO_RAW):
-    # Estilo injetado diretamente para não ter erro
-    estilo = f"""
+    # Definimos o estilo e o conteúdo em um único bloco de texto
+    html_final = f"""
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;800&display=swap');
-        .poem-box {{ font-family: 'IBM Plex Sans', sans-serif; color: #111; padding: 20px; }}
-        .p-title {{ font-size: 42px !important; font-weight: 800; text-transform: uppercase; margin-bottom: 20px; border-bottom: 2px solid #eee; }}
-        .p-content {{ font-size: 32px !important; font-weight: 600; line-height: 1.4; white-space: pre-wrap; }}
+        /* Forçamos a fonte e o tamanho com !important */
+        .p-title {{
+            font-family: 'Helvetica', sans-serif;
+            font-size: 42px !important;
+            font-weight: 800;
+            color: #111;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            line-height: 1.2;
+        }}
+        .p-content {{
+            font-family: 'Helvetica', sans-serif;
+            font-size: 34px !important;
+            font-weight: 500;
+            line-height: 1.5;
+            color: #333;
+            white-space: pre-wrap; /* Mantém as quebras de linha do poema */
+        }}
     </style>
-    <div class='poem-box'>
-        <div class='p-title'>{TITULO}</div>
-        <div class='p-content'>{TEXTO_RAW}</div>
-    </div>
+    <div class="p-title">{TITULO}</div>
+    <div class="p-content">{TEXTO_RAW}</div>
     """
-    st.markdown(estilo, unsafe_allow_html=True)
-
+    st.markdown(html_final, unsafe_allow_html=True)
+    
 # 3. PAIOL E UTILITÁRIOS
 if "initialized" not in st.session_state:
     st.session_state.lang, st.session_state.tema, st.session_state.take = 'pt', 'Fatos', 0
