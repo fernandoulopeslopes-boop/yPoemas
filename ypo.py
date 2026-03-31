@@ -14,32 +14,36 @@ except ImportError:
 # 2. A LENTE (EXIBIÇÃO) 
 
 def write_ypoema(TITULO, TEXTO_RAW):
-    # Definimos o estilo e o conteúdo em um único bloco de texto
-    html_final = f"""
+    # Criamos o bloco de estilo separadamente para o Python não se confundir
+    estilo = f"""
     <style>
-        /* Forçamos a fonte e o tamanho com !important */
         .p-title {{
-            font-family: 'Helvetica', sans-serif;
+            font-family: sans-serif;
             font-size: 42px !important;
             font-weight: 800;
             color: #111;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             text-transform: uppercase;
-            line-height: 1.2;
         }}
         .p-content {{
-            font-family: 'Helvetica', sans-serif;
+            font-family: sans-serif;
             font-size: 34px !important;
             font-weight: 500;
             line-height: 1.5;
             color: #333;
-            white-space: pre-wrap; /* Mantém as quebras de linha do poema */
+            white-space: pre-wrap;
         }}
     </style>
+    """
+    
+    # Criamos o HTML das divs separadamente
+    corpo_html = f"""
     <div class="p-title">{TITULO}</div>
     <div class="p-content">{TEXTO_RAW}</div>
     """
-    st.markdown(html_final, unsafe_allow_html=True)    
+    
+    # Juntamos tudo e entregamos ao Streamlit com a "permissão" ativada
+    st.markdown(estilo + corpo_html, unsafe_allow_html=True)    
 # 3. PAIOL E UTILITÁRIOS
 if "initialized" not in st.session_state:
     st.session_state.lang, st.session_state.tema, st.session_state.take = 'pt', 'Fatos', 0
