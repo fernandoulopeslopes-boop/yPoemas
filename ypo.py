@@ -156,18 +156,34 @@ def page_mini():
     exibir_conteudo()
 
 def page_ypoemas():
-    # Sala com o controle de sorteio manual
-    col1, b_rand, col2 = st.columns([4, 2, 4])
+    # 1. PAIOL: Pega a lista de temas do livro selecionado
+    temas_list = load_temas(st.session_state.book)
+    if not temas_list: return
+
+    # 2. LENTE: Painel de Controle (Centralizado)
+    # Criamos 5 colunas para os botões ficarem simétricos
+    c1, btn_back, btn_rand, btn_next, btn_voice, c2 = st.columns([2, 1, 1, 1, 1, 2])
     
-    if b_rand.button("✻ SORTEAR NOVO", help="Gera uma variação aleatória"):
-        temas_list = load_temas(st.session_state.book)
+    if btn_back.button("◀", help="Tema Anterior"):
+        st.session_state.take = (st.session_state.take - 1) % len(temas_list)
+        st.rerun()
+        
+    if btn_rand.button("✻", help="Sortear Tema"):
         st.session_state.take = random.randrange(len(temas_list))
         st.rerun()
+        
+    if btn_next.button("▶", help="Próximo Tema"):
+        st.session_state.take = (st.session_state.take + 1) % len(temas_list)
+        st.rerun()
+
+    # O Botão de Voz (Farol) - Preparado para o gTTS
+    if btn_voice.button("🔊", help="Ouvir Poema"):
+        st.info("Preparando a voz da Machina...")
+        # Aqui chamaremos a função de áudio no próximo passo
     
-    temas_list = load_temas(st.session_state.book)
+    # 3. MOTOR: Define o tema e exibe
     st.session_state.tema = temas_list[st.session_state.take % len(temas_list)]
     exibir_conteudo()
-
 def exibir_conteudo():
     # 1. Busca o Poema
     poema_raw = load_poema(st.session_state.tema)
