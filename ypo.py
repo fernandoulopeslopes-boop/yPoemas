@@ -127,7 +127,7 @@ def load_help_system(lang):
 talk = (st.session_state.talk == 'Y')
 
 def load_poema(nome_tema, seed_eureka):  # generate new yPoema
-    script = load_poema(nome_tema, seed_eureka)
+    script = gera_poema(nome_tema, seed_eureka)
     novo_ypoema = ''
     lypo_user = 'LYPO_' + IPAddres
 
