@@ -250,7 +250,6 @@ def gera_poema(nome_tema, seed_eureka):
 
         file.close()
         poema_final = novo_poema.strip()
-        print(poema_final)
     return novo_poema
 
 
