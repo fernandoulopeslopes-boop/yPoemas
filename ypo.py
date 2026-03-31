@@ -14,27 +14,19 @@ except ImportError:
 # 2. A LENTE (EXIBIÇÃO) 
 
 def write_ypoema(TITULO, TEXTO_RAW):
-    # Criamos o bloco de estilo separadamente para o Python não se confundir
-    estilo = f"""
+    # 1. Definimos o Estilo (CSS) como uma string simples, sem f-string
+    estilo = """
     <style>
-        .p-title {{
-            font-family: sans-serif;
-            font-size: 42px !important;
-            font-weight: 800;
-            color: #111;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-        }}
-        .p-content {{
-            font-family: sans-serif;
-            font-size: 34px !important;
-            font-weight: 500;
-            line-height: 1.5;
-            color: #333;
-            white-space: pre-wrap;
-        }}
+        .p-title { font-size: 42px !important; font-weight: 800; color: #111; text-transform: uppercase; margin-bottom: 20px; }
+        .p-content { font-size: 34px !important; font-weight: 500; color: #333; white-space: pre-wrap; line-height: 1.4; }
     </style>
     """
+    
+    # 2. Montamos o corpo do HTML usando o formato .format() que é mais estável para HTML
+    corpo_html = '<div class="p-title">{}</div><div class="p-content">{}</div>'.format(TITULO, TEXTO_RAW)
+    
+    # 3. Entregamos para o Streamlit
+    st.markdown(estilo + corpo_html, unsafe_allow_html=True)
     
     # Criamos o HTML das divs separadamente
     corpo_html = f"""
@@ -44,6 +36,7 @@ def write_ypoema(TITULO, TEXTO_RAW):
     
     # Juntamos tudo e entregamos ao Streamlit com a "permissão" ativada
     st.markdown(estilo + corpo_html, unsafe_allow_html=True)    
+    
 # 3. PAIOL E UTILITÁRIOS
 if "initialized" not in st.session_state:
     st.session_state.lang, st.session_state.tema, st.session_state.take = 'pt', 'Fatos', 0
