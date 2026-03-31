@@ -87,6 +87,24 @@ def load_temas(book):
     return book_list if book_list else ["Fatos"]
 
 # =================================================================
+# 2.5 TRADUTOR: O SOPRO POLIGLOTA
+# =================================================================
+
+def translate(texto):
+    # Se o idioma for Português, não faz nada
+    if st.session_state.lang == "pt":
+        return texto
+    
+    try:
+        from deep_translator import GoogleTranslator
+        # Traduz do Português para o idioma selecionado no Sidebar
+        traduzido = GoogleTranslator(source='pt', target=st.session_state.lang).translate(texto)
+        return traduzido
+    except Exception as e:
+        # Se a tradução falhar, mantém o original para não travar a Machina
+        return texto
+
+# =================================================================
 # 3. UTILIDADES: O PAIOL DA MACHINA
 # =================================================================
 
