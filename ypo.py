@@ -192,62 +192,44 @@ def write_ypoema(TITULO, TEXTO_RAW):
 # 5. SALA: YPOEMAS (CONTROLE COMPLETO)
 # =================================================================
 
-def page_ypoemas():
-    # 1. Carga de Dados
-    temas_list = load_temas(st.session_state.book)
-    
-    # 2. SEQUÊNCIA DE BOTÕES (A Nova Ordem)
-    # Ajustei as colunas para os 5 botões ficarem alinhados ao centro
-    c1, more, last, rand, nest, manu, c2 = st.columns([2, 0.5, 0.5, 0.5, 0.5, 0.5, 2])
-    
-    # Botão 1: ✚ (Nova Variação)
-    if more.button("✚", help="Nova Variação", key="btn_more_ypo"):
-        st.rerun()
+def write_ypoema(TITULO, TEXTO_RAW):
+    # CSS para dar peso ao título e liberdade aos versos
+    st.markdown(f"""
+        <style>
+        .block-container {{
+            padding: 3rem 5rem !important;
+            max-width: 100% !important;
+        }}
         
-    # Botão 2: ◀ (Anterior)
-    if last.button("◀", help="Anterior", key="btn_last_ypo"):
-        st.session_state.take = (st.session_state.take - 1) % len(temas_list)
-        st.rerun()
-        
-    # Botão 3: ✻ (Aleatório)
-    if rand.button("✻", help="Sorteio", key="btn_rand_ypo"):
-        st.session_state.take = random.randrange(len(temas_list))
-        st.rerun()
-        
-    # Botão 4: ▶ (Próximo)
-    if nest.button("▶", help="Próximo", key="btn_nest_ypo"):
-        st.session_state.take = (st.session_state.take + 1) % len(temas_list)
-        st.rerun()
-        
-    # Botão 5: ? (Manual/Help)
-    # Aqui embutimos a Matriz do Tema dentro do Popover de Ajuda
-    with manu:
-        with st.popover("?", help="Help !!!"):
-            st.markdown(f"### Matriz: {st.session_state.tema}")
-            img_matrix = load_arts(st.session_state.tema)
-            if img_matrix:
-                st.image(img_matrix, use_container_width=True)
-            else:
-                st.caption("Gráfico geométrico não localizado.")
-            st.divider()
-            st.info("A contemporaneidade remete a Aldus Manutius. Use os controles acima para navegar pela Machina.")
+        /* TÍTULO: Agora realmente grande e visível */
+        .poem-title {{
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: 42px !important; /* Tamanho de destaque */
+            font-weight: 800;
+            color: #222;
+            margin-bottom: 50px;
+            letter-spacing: 2px;
+            border-bottom: 3px solid #f0f0f0;
+            padding-bottom: 10px;
+            display: block;
+        }}
 
-    # 3. LOGICA DE EXIBIÇÃO
-    st.session_state.tema = temas_list[st.session_state.take % len(temas_list)]
-    poema_raw = load_poema(st.session_state.tema)
-    
-    # Tradução
-    if st.session_state.lang != "pt":
-        poema_raw = translate(poema_raw)
-    
-    # Título do Tema (Sutil)
-    st.markdown(f"<p style='text-align:center; color:#999; letter-spacing:5px; font-size:14px; margin-top:30px;'>{st.session_state.tema.upper()}</p>", unsafe_allow_html=True)
-    
-    # Formatação do Poema (32px via CSS do write_ypoema)
-    texto_formatado = "".join([f"<p>{v.strip()}</p>" for v in poema_raw.split('<br>') if v.strip()])
-    
-    # Renderiza o Card de Poesia
-    write_ypoema(texto_formatado, None)
+        /* CORPO DO POEMA: Respeita Minúsculas e Espaços */
+        .poem-content {{
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-weight: 600;
+            font-size: 36px !important; 
+            line-height: 1.6;
+            color: #000;
+            /* pre-wrap mantém as quebras de linha e espaços em branco */
+            white-space: pre-wrap !important; 
+            text-transform: none !important; /* GARANTE QUE NÃO FIQUE TUDO EM MAIÚSCULO */
+        }}
+        </style>
+        
+        <div class='poem-title'>{TITULO}</div>
+        <div class='poem-content'>{TEXTO_RAW}</div>
+    """, unsafe_allow_html=True)
     
 # =================================================================
 # 6. METAS: EXECUÇÃO
