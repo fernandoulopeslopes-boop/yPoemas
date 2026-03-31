@@ -3,7 +3,7 @@ import os
 import random
 import streamlit.components.v1 as components
 
-# 1. CONFIGURAÇÃO (Deve ser a primeira linha de Streamlit)
+# 1. CONFIGURAÇÃO
 st.set_page_config(page_title="a Machina de fazer Poesia", layout="wide")
 
 # --- MOTORES EXTERNOS ---
@@ -14,7 +14,6 @@ except ImportError:
 
 # 2. A LENTE (EXIBIÇÃO) 
 def write_ypoema(TITULO, TEXTO_RAW):
-    # Por enquanto mantemos a versão simples, focando na navegação
     if isinstance(TEXTO_RAW, list):
         TEXTO_RAW = "\n".join(TEXTO_RAW).strip()
     
@@ -57,10 +56,11 @@ def load_poema(nome_tema):
 def page_ypoemas():
     temas_list = load_temas(st.session_state.book)
     
-    # Sincroniza o tema atual com o índice 'take'
-    st.session_state.tema = temas_list[st.session_state.take % len(temas_list)]
+    # Proteção para o índice não estourar
+    idx = st.session_state.take % len(temas_list)
+    st.session_state.tema = temas_list[idx]
     
-    # --- BOTOES E SELETOR (Tarefas 1 e 3) ---
+    # BOTOES E SELETOR (Tarefas 1 e 3)
     c1, more, last, rand, nest, manu, c2 = st.columns([1, 0.5, 0.5, 0.5, 0.5, 0.5, 3])
     
     if more.button("✚", key="btn_more"): st.rerun()
@@ -78,25 +78,23 @@ def page_ypoemas():
         st.rerun()
     
     with manu:
-        # TAREFA 3: Help limpo (apenas a info interna)
-        with st.popover("?", help="Info da Matrix"):
+        with st.popover("?", help="Info"):
             st.write(f"**Matriz: {st.session_state.tema}**")
 
     with c2:
-        # TAREFA 1: Dropdown sincronizado
+        # Usamos o 'idx' já calculado para evitar erros de sincronia
         escolha = st.selectbox(
-            "Seletor de Temas", 
+            "Temas", 
             options=temas_list, 
-            index=st.session_state.take % len(temas_list),
+            index=idx,
             label_visibility="collapsed"
         )
         if escolha != st.session_state.tema:
             st.session_state.take = temas_list.index(escolha)
             st.rerun()
 
-    # --- EXIBIÇÃO (Tarefa 2) ---
+    # EXIBIÇÃO (Tarefa 2)
     poema_raw = load_poema(st.session_state.tema)
-    # TAREFA 2: Sem .upper(), respeitando a grafia original
     write_ypoema(st.session_state.tema, poema_raw)
 
 # 5. O MOTOR (MAIN)
@@ -112,4 +110,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
