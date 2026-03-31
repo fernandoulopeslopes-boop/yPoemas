@@ -39,8 +39,7 @@ def write_ypoema(TITULO, TEXTO_RAW):
     <div class="p-title">{TITULO}</div>
     <div class="p-content">{TEXTO_RAW}</div>
     """
-    st.markdown(html_final, unsafe_allow_html=True)
-    
+    st.markdown(html_final, unsafe_allow_html=True)    
 # 3. PAIOL E UTILITÁRIOS
 if "initialized" not in st.session_state:
     st.session_state.lang, st.session_state.tema, st.session_state.take = 'pt', 'Fatos', 0
