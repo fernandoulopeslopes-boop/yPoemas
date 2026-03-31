@@ -243,10 +243,10 @@ def main():
         st.session_state.lang = st.selectbox("Idioma:", ["pt", "en", "es", "fr", "it"])
         st.session_state.draw = 'Y' # Ativado para testarmos
 
-    #if sala == "Exploração (Rand)":
+    if sala == "Exploração (Rand)":
         page_ypoemas()
-    #else:
-    #   st.info("Sala Sobre a Machina")
+    else:
+       st.info("Sala Sobre a Machina")
 
 if __name__ == "__main__":
     main()
