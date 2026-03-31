@@ -88,6 +88,7 @@ def load_poema(nome_tema):
 # ==========================================
 # 4º ANDAR: A SALA (YPOEMAS)
 # ==========================================
+# 4º ANDAR: A SALA (YPOEMAS)
 def page_ypoemas():
     temas_list = load_temas(st.session_state.book)
     idx = st.session_state.take % len(temas_list)
@@ -109,8 +110,8 @@ def page_ypoemas():
         st.subheader("🎛️ Painel")
         st.selectbox("Traduzir para:", ["Português", "English", "Español"], key="set_lang")
         st.info("💡 Escolha o idioma ou ative a voz ao lado.")
-        # Espaço para o Logo futuro
-        st.image("https://via.placeholder.com/200x100?text=LOGO+TEMA", use_container_width=True)
+        # AJUSTE DE COMPATIBILIDADE: use_column_width para versões antigas
+        st.image("https://via.placeholder.com/200x100?text=LOGO+TEMA", use_column_width=True)
 
     with col_palco:
         # --- NAVEGAÇÃO INTERNA ---
@@ -137,10 +138,9 @@ def page_ypoemas():
 
         # --- EXIBIÇÃO DA OBRA ---
         poema_raw = load_poema(st.session_state.tema)
-        # URL de teste para a Imagem (Tarefa 4)
         url_teste = "https://images.unsplash.com/photo-1454117096348-e4abbeae002c?w=500"
         write_ypoema(st.session_state.tema, poema_raw, URL_IMAGEM=url_teste)
-
+        
 # ==========================================
 # 5º ANDAR: O MOTOR (MAIN)
 # ==========================================
