@@ -160,36 +160,64 @@ def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):
 # =================================================================
 
 def page_ypoemas():
+    # 1. Carrega a lista de temas do livro selecionado
     temas_list = load_temas(st.session_state.book)
-    c1, b_back, b_rand, b_plus, b_next, b_voice, c2 = st.columns([2, 1, 1, 1, 1, 1, 2])
     
-    if b_back.button("◀"):
+    # 2. Barra de Navegação Superior (Com o botão +)
+    # Aumentei o espaçamento para os botões ficarem bem distribuídos
+    c1, b_back, b_rand, b_plus, b_next, b_voice, c2 = st.columns([2, 0.6, 0.6, 0.6, 0.6, 0.6, 2])
+    
+    if b_back.button("◀", help="Anterior"):
         st.session_state.take = (st.session_state.take - 1) % len(temas_list)
         st.rerun()
-    if b_rand.button("✻"):
+    if b_rand.button("✻", help="Aleatório"):
         st.session_state.take = random.randrange(len(temas_list))
         st.rerun()
-    if b_plus.button("+"): # REPETE O TEMA (NOVA VARIAÇÃO)
-        st.rerun()
-    if b_next.button("▶"):
+    if b_plus.button("+", help="Nova Variação (Mesmo Tema)"):
+        st.rerun() # Dispara o motor lay_2_ypo novamente para o mesmo tema
+    if b_next.button("▶", help="Próximo"):
         st.session_state.take = (st.session_state.take + 1) % len(temas_list)
         st.rerun()
     
+    # 3. Define o Tema Atual e busca o Poema
     st.session_state.tema = temas_list[st.session_state.take % len(temas_list)]
     poema_raw = load_poema(st.session_state.tema)
-    if st.session_state.lang != "pt": poema_raw = translate(poema_raw)
     
-    if b_voice.button("🔊"):
-        audio = falar_poema(poema_raw, st.session_state.lang)
-        if audio: st.audio(audio, format='audio/mp3', autoplay=True)
+    # Tradução (se não for português)
+    if st.session_state.lang != "pt":
+        poema_raw = translate(poema_raw)
+    
+    # 4. ÁREA DE EXIBIÇÃO: CABEÇALHO E HELP (MATRIX)
+    # Criamos uma linha fina para o título e o ícone de informação
+    col_vazia, col_titulo, col_info, col_vazia2 = st.columns([1, 4, 1, 1])
+    
+    with col_titulo:
+        # Título do tema centralizado e elegante
+        st.markdown(f"<p style='text-align:center; color:#999; letter-spacing:5px; font-size:14px; margin-top:20px;'>{st.session_state.tema.upper()}</p>", unsafe_allow_html=True)
+    
+    with col_info:
+        # O HELP (MATRIX) - Abre uma janela flutuante com o gráfico 3D
+        with st.popover("ℹ️", help="Matriz do Tema"):
+            st.write(f"**Análise Matrix: {st.session_state.tema}**")
+            img_matrix = load_arts(st.session_state.tema)
+            if img_matrix:
+                # Mostra o gráfico X, Y, Z da pasta matrix
+                st.image(img_matrix, use_container_width=True, caption="Gráfico Geométrico 3D")
+            else:
+                st.caption("Gráfico de matriz não disponível para este tema.")
 
-    st.markdown(f"<p style='text-align:center; color:#999; letter-spacing:4px; font-size:14px;'>{st.session_state.tema.upper()}</p>", unsafe_allow_html=True)
+    # 5. RENDERIZAÇÃO DO POEMA (TEXTO 32px)
+    # Formata as quebras de linha <br> em parágrafos <p> para o CSS
     texto_formatado = "".join([f"<p>{v.strip()}</p>" for v in poema_raw.split('<br>') if v.strip()])
     
-    # Busca a Arte e exibe
-    img = load_arts(st.session_state.tema)
-    write_ypoema(texto_formatado, img)
+    # Chamamos a função de escrita (sem imagem no card principal, pois a arte está no Help)
+    write_ypoema(texto_formatado, None)
 
+    # 6. BOTÃO DE VOZ (Opcional, abaixo do card para não poluir)
+    if b_voice.button("🔊", help="Ouvir Poema"):
+        audio = falar_poema(poema_raw, st.session_state.lang)
+        if audio:
+            st.audio(audio, format='audio/mp3', autoplay=True)
 # =================================================================
 # 6. METAS: EXECUÇÃO
 # =================================================================
