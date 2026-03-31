@@ -14,33 +14,39 @@ except ImportError:
 # 2. A LENTE (EXIBIÇÃO) 
 
 def write_ypoema(TITULO, TEXTO_RAW):
-    # Se o texto chegar como lista, colamos aqui para o CSS abraçar tudo
+    # 1. Tratamento da Origem: Se for lista (do gera_poema), vira Texto
     if isinstance(TEXTO_RAW, list):
         TEXTO_RAW = "\n".join(TEXTO_RAW).strip()
-
-    st.markdown(f'''
-        <style>
-            /* 1. O Título Soberano */
-            .p-title {{ 
-                font-size: 42px !important; 
-                font-weight: 800 !important; 
-                color: #111 !important; 
-                display: block !important;
-                margin-bottom: 20px !important;
-            }}
-            /* 2. O Corpo do Poema: O Segredo está no 'pre' */
-            .p-content {{ 
-                font-size: 34px !important; 
-                font-weight: 500 !important; 
-                color: #333 !important; 
-                line-height: 1.4 !important;
-                white-space: pre !important;  /* MANTÉM SUA ENDENTAÇÃO ORIGINAL */
-                display: block !important;
-            }}
-        </style>
-        <span class="p-title">{TITULO}</span>
-        <span class="p-content">{TEXTO_RAW}</span>
-    ''', unsafe_allow_html=True)
+    
+    # 2. Definição do Estilo Blindado (CSS)
+    # Usamos aspas triplas normais para as chaves { } não confundirem o Python
+    estilo = """
+    <style>
+        .p-title { 
+            font-size: 42px !important; 
+            font-weight: 800 !important; 
+            color: #111 !important; 
+            display: block !important;
+            margin-bottom: 20px !important;
+            font-family: sans-serif;
+        }
+        .p-content { 
+            font-size: 34px !important; 
+            font-weight: 500 !important; 
+            color: #333 !important; 
+            line-height: 1.4 !important;
+            white-space: pre-wrap !important; 
+            display: block !important;
+            font-family: sans-serif;
+        }
+    </style>
+    """
+    
+    # 3. Montagem do HTML com as variáveis
+    corpo_html = f'<div class="p-title">{TITULO}</div><div class="p-content">{TEXTO_RAW}</div>'
+    
+    # 4. Execução Final (A soma do Estilo + Corpo)
+    st.markdown(estilo + corpo_html, unsafe_allow_html=True)
     
 # 3. PAIOL E UTILITÁRIOS
 if "initialized" not in st.session_state:
