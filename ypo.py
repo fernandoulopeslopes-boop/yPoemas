@@ -14,21 +14,22 @@ except ImportError:
 # 2. A LENTE (EXIBIÇÃO) 
 
 def write_ypoema(TITULO, TEXTO_RAW):
-    # 1. Injetamos o estilo UMA VEZ (usando f-string blindada)
-    st.markdown("""
+    # 1. Injetamos o estilo usando aspas simples externas para não conflitar com o CSS
+    st.markdown('''
         <style>
             .p-title { font-size: 42px !important; font-weight: 800; color: #111; text-transform: uppercase; margin-bottom: 20px; font-family: sans-serif; }
             .p-content { font-size: 34px !important; font-weight: 500; color: #333; white-space: pre-wrap; line-height: 1.4; font-family: sans-serif; }
         </style>
-    """, unsafe_allow_html=True)
+    ''', unsafe_allow_html=True)
     
-    # 2. Criamos o HTML do título e do conteúdo separadamente para não vazar
-    html_titulo = f'<div class="p-title">{TITULO}</div>'
-    html_corpo = f'<div class="p-content">{TEXTO_RAW}</div>'
+    # 2. Usamos f-strings com aspas simples triplas para proteger o conteúdo do poema
+    html_final = f'''
+        <div class="p-title">{TITULO}</div>
+        <div class="p-content">{TEXTO_RAW}</div>
+    '''
     
-    # 3. Usamos o comando mais forte do Streamlit para renderizar
-    st.markdown(html_titulo, unsafe_allow_html=True)
-    st.markdown(html_corpo, unsafe_allow_html=True)
+    # 3. O comando de execução
+    st.markdown(html_final, unsafe_allow_html=True)
     
 # 3. PAIOL E UTILITÁRIOS
 if "initialized" not in st.session_state:
