@@ -85,9 +85,6 @@ def load_poema(nome_tema):
     if isinstance(script, list): return "\n".join([str(l) for l in script if l])
     return str(script)
 
-# ==========================================
-# 4º ANDAR: A SALA (YPOEMAS)
-# ==========================================
 # 4º ANDAR: A SALA (YPOEMAS)
 def page_ypoemas():
     temas_list = load_temas(st.session_state.book)
@@ -110,11 +107,12 @@ def page_ypoemas():
         st.subheader("🎛️ Painel")
         # Removido o seletor de idiomas conforme pedido
         st.info("💡 Painel de controle da obra.")
-        # Ajustado para 'use_column_width' para evitar o erro de versão
+        
+        # CORREÇÃO CRÍTICA: 'use_column_width' em vez de 'use_container_width'
         st.image("https://via.placeholder.com/200x100?text=LOGO+TEMA", use_column_width=True)
 
     with col_palco:
-        # --- NAVEGAÇÃO INTERNA ---
+        # --- NAVEGAÇÃO INTERNA (SETAS E SELETOR) ---
         c1, more, last, rand, nest, manu, c2 = st.columns([0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 3])
         
         with more: 
