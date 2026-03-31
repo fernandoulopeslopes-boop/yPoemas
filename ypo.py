@@ -172,7 +172,7 @@ def main():
 
         # 3. Enche o tanque com o primeiro yPoema
         if "curr_ypoema" not in st.session_state:
-            st.session_state.curr_ypoema = load_poema(st.session_state.tema, "")
+            st.session_state.curr_ypoema = gera_poema(st.session_state.tema, "")
             st.session_state.trad_ypoema = "" # Tanque de tradução limpo
 
 
@@ -878,9 +878,9 @@ def page_mini():
     # --- LÓGICA DE GERAÇÃO DO POEMA ---
     # Só carregamos se for novo ou se mudou o idioma
     if st.session_state.lang != st.session_state.last_lang:
-        curr_ypoema = load_poema(st.session_state.tema, "")
+        curr_ypoema = gera_poema(st.session_state.tema, "")
     else:
-        curr_ypoema = load_poema(st.session_state.tema, "")
+        curr_ypoema = gera_poema(st.session_state.tema, "")
 
     # Tradução se necessário
     if st.session_state.lang != "pt":
@@ -912,7 +912,7 @@ def page_mini():
             st.session_state.mini = random.randrange(0, maxy_mini)
             st.session_state.tema = temas_list[st.session_state.mini]
             
-            p_auto = load_poema(st.session_state.tema, "")
+            p_auto = gera_poema(st.session_state.tema, "")
             if st.session_state.lang != "pt":
                 p_auto = translate(p_auto)
             
@@ -989,7 +989,7 @@ def page_ypoemas():
             if st.session_state.lang != st.session_state.last_lang:
                 raw_text = translate(st.session_state.curr_ypoema)
             else:
-                raw_text = load_poema(str(st.session_state.tema), "")
+                raw_text = gera_poema(str(st.session_state.tema), "")
                 st.session_state.curr_ypoema = raw_text
 
             update_readings(st.session_state.tema)
@@ -1077,7 +1077,7 @@ def page_eureka():
     st.session_state.tema = seed_tema
     
     # Carrega o poema bruto (PT)
-    curr_ypoema = load_poema(seed_tema, this_seed)
+    curr_ypoema = gera_poema(seed_tema, this_seed)
 
     # 5. APRESENTAÇÃO CORRIGIDA (O Ponto da Crítica)
     # Título do yPoema no topo esquerdo da área de texto
@@ -1210,7 +1210,7 @@ def page_off_machina():  # available off_machina_books
                     off_book_text = load_lypo()  # changes in lang, keep LYPO
                 else:
                     nome_tema = pipe_line[1].replace("@ ", "")
-                    off_book_text = load_poema(nome_tema, "")  # no seed_eureka
+                    off_book_text = gera_poema(nome_tema, "")  # no seed_eureka
                     off_book_text = "<br>" + load_lypo()
             else:
                 for text in pipe_line:
