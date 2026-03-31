@@ -85,7 +85,9 @@ def load_poema(nome_tema):
     if isinstance(script, list): return "\n".join([str(l) for l in script if l])
     return str(script)
 
-# 4º ANDAR: A SALA (YPOEMAS)
+# ==========================================
+# 4º ANDAR: O PAIOL (CARGA DE DADOS)
+# ==========================================
 def page_ypoemas():
     temas_list = load_temas(st.session_state.book)
     idx = st.session_state.take % len(temas_list)
@@ -104,11 +106,7 @@ def page_ypoemas():
     col_painel, col_palco = st.columns([1.2, 4])
 
     with col_painel:
-        st.subheader("🎛️ Painel")
-        # Removido o seletor de idiomas conforme pedido
-        st.info("💡 Painel de controle da obra.")
-        
-        # CORREÇÃO CRÍTICA: 'use_column_width' em vez de 'use_container_width'
+        # TAREFA: Painel limpo, apenas com o Logo (usando o comando compatível)
         st.image("https://via.placeholder.com/200x100?text=LOGO+TEMA", use_column_width=True)
 
     with col_palco:
