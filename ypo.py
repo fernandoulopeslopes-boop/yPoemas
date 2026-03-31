@@ -58,15 +58,10 @@ def load_poema(nome_tema):
     script = gera_poema(nome_tema, "")
     if isinstance(script, list): return "\n".join([str(l) for l in script if l])
     return str(script)
-
-# 4. A SALA (YPOEMAS) - Definida ANTES do main()
-def page_ypoemas():
-    temas_list = load_temas(st.session_state.book)
-    st.session_state.tema = temas_list[st.session_state.take % len(temas_list)]
+#   BOTOES - Ajuste das proporções das colunas
+    c1, more, last, rand, nest, manu, c2 = st.columns([1, 0.5, 0.5, 0.5, 0.5, 0.5, 3])
     
-    # BOTOES
-    c1, more, last, rand, nest, manu, c2 = st.columns([2, 0.5, 0.5, 0.5, 0.5, 0.5, 2])
-    
+    # 63. Lógica dos botões
     if more.button("✚", key="btn_more"): st.rerun()
     if last.button("◀", key="btn_last"):
         st.session_state.take = (st.session_state.take - 1) % len(temas_list)
@@ -78,6 +73,23 @@ def page_ypoemas():
         st.session_state.take = (st.session_state.take + 1) % len(temas_list)
         st.rerun()
     
+    with manu:
+        # TAREFA 3: Limpeza do Help (tiramos o texto "Help !!!")
+        with st.popover("?", help="Info"):
+            st.write(f"**Matriz: {st.session_state.tema}**")
+
+    # TAREFA 1: O Dropdown na coluna c2 (Linha 77)
+    with c2:
+        escolha = st.selectbox(
+            "Temas", 
+            options=temas_list, 
+            index=st.session_state.take % len(temas_list),
+            label_visibility="collapsed"
+        )
+        if escolha != st.session_state.tema:
+            st.session_state.take = temas_list.index(escolha)
+            st.rerun()
+            
     with manu:
         with st.popover("?", help="Help !!!"):
             st.write(f"**Matriz: {st.session_state.tema}**")
