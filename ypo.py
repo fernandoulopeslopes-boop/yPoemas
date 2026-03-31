@@ -14,32 +14,22 @@ except ImportError:
 # 2. A LENTE (EXIBIÇÃO) 
 
 def write_ypoema(TITULO, TEXTO_RAW):
-    # 1. Se for lista, vira texto agora
+    # 1. Se for lista, vira texto
     if isinstance(TEXTO_RAW, list):
         TEXTO_RAW = "\n".join(TEXTO_RAW).strip()
     
-    # 2. CSS Puro (Sem f-string para não dar erro de chaves)
-    estilo = """
+    # 2. HTML e CSS juntos em um bloco só, sem firulas
+    html_final = f"""
     <style>
-        .p-title { 
-            font-size: 42px !important; 
-            font-weight: 800 !important; 
-            color: #111 !important; 
-            display: block !important;
-            margin-bottom: 15px !important;
-            font-family: sans-serif;
-        }
-        .p-content { 
-            font-size: 34px !important; 
-            font-weight: 500 !important; 
-            color: #333 !important; 
-            line-height: 1.4 !important;
-            white-space: pre-wrap !important; 
-            display: block !important;
-            font-family: sans-serif;
-        }
+        .p-title {{ font-size: 42px !important; font-weight: 800; color: #111; display: block; margin-bottom: 10px; font-family: sans-serif; }}
+        .p-content {{ font-size: 34px !important; font-weight: 500; color: #333; line-height: 1.4; white-space: pre-wrap; display: block; font-family: sans-serif; }}
     </style>
+    <div class="p-title">{TITULO}</div>
+    <div class="p-content">{TEXTO_RAW}</div>
     """
+    
+    # 3. O comando 'st.html' é o novo padrão para injetar código direto
+    st.html(html_final)
     
     # 3. Conteúdo (Aqui usamos f-string apenas para as variáveis)
     corpo = f'<div class="p-title">{TITULO}</div><div class="p-content">{TEXTO_RAW}</div>'
