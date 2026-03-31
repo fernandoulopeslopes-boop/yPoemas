@@ -143,36 +143,51 @@ def falar_poema(texto, lang):
 # 4. LENTE: RENDERIZAÇÃO (TEXTO GRANDE + IMAGEM)
 # =================================================================
 
-def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):
-    st.markdown("""
-        <style>
-        .poem-card {
-            background: white; padding: 40px; border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #f0f0f0;
-            display: flex; gap: 40px; align-items: flex-start; margin-top: 10px;
-        }
-        .logo-text { 
-            font-family: 'Georgia', serif; font-size: 28px; /* FONTE GRANDE */
-            line-height: 1.6; color: #1a1a1a; flex: 1.5; 
-        }
-        .logo-img { flex: 1; max-width: 350px; border-radius: 10px; }
-        @media (max-width: 768px) { .poem-card { flex-direction: column; } }
-        </style>
-    """, unsafe_allow_html=True)
-
-    img_html = ""
-    if LOGO_IMAGE:
-        with open(LOGO_IMAGE, "rb") as f:
-            img_b64 = base64.b64encode(f.read()).decode()
-        img_html = f"<img class='logo-img' src='data:image/jpg;base64,{img_b64}'>"
-
+def write_ypoema(TITULO, TEXTO_RAW):
+    # CSS focado em preservar a estrutura do Soneto e aumentar a letra
     st.markdown(f"""
-        <div class='poem-card'>
-            <div class='logo-text'>{LOGO_TEXTO}</div>
-            {img_html}
-        </div>
-    """, unsafe_allow_html=True)
+        <style>
+        /* 1. Expansão da tela */
+        .block-container {{
+            padding: 2rem 5rem !important;
+            max-width: 100% !important;
+        }}
+        
+        /* 2. O Container do Poema */
+        .poem-box {{
+            font-family: 'IBM Plex Sans', sans-serif;
+            background-color: transparent;
+            text-align: left;
+            width: 100%;
+        }}
 
+        /* 3. O Título (Destaque) */
+        .poem-title {{
+            font-size: 34px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 40px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }}
+
+        /* 4. O Texto (Preservando Espaços e Quebras) */
+        .poem-content {{
+            font-weight: 600;
+            font-size: 32px !important; /* LETRA GRANDE PARA MONITOR */
+            line-height: 1.5;
+            color: #000;
+            /* O SEGREDO: pre-line respeita as quebras de linha do seu texto Python */
+            white-space: pre-line !important; 
+            display: block;
+        }}
+        </style>
+        
+        <div class='poem-box'>
+            <div class='poem-title'>{TITULO}</div>
+            <div class='poem-content'>{TEXTO_RAW}</div>
+        </div>
+    """, unsafe_allow_html=True)        
 # =================================================================
 # 5. SALA: YPOEMAS (CONTROLE COMPLETO)
 # =================================================================
