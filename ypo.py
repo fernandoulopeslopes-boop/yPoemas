@@ -53,50 +53,53 @@ def load_poema(nome_tema):
     return str(script)
 
 # 4. A SALA (YPOEMAS)
+# 4. A SALA (YPOEMAS)
 def page_ypoemas():
     temas_list = load_temas(st.session_state.book)
-    
-    # Proteção para o índice não estourar
     idx = st.session_state.take % len(temas_list)
     st.session_state.tema = temas_list[idx]
     
-    # BOTOES E SELETOR (Tarefas 1 e 3)
-    c1, more, last, rand, nest, manu, c2 = st.columns([1, 0.5, 0.5, 0.5, 0.5, 0.5, 3])
+    # --- LINHA 1: NAVEGAÇÃO DO MOTOR ---
+    # c1 e c2 dão o "frame" para as setas e o dropdown
+    c1, more, last, rand, nest, manu, c2 = st.columns([0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 3])
     
-    if more.button("✚", key="btn_more"): st.rerun()
-    
-    if last.button("◀", key="btn_last"):
-        st.session_state.take = (st.session_state.take - 1) % len(temas_list)
-        st.rerun()
-        
-    if rand.button("✻", key="btn_rand"):
-        st.session_state.take = random.randrange(len(temas_list))
-        st.rerun()
-        
-    if nest.button("▶", key="btn_next"):
-        st.session_state.take = (st.session_state.take + 1) % len(temas_list)
-        st.rerun()
-    
+    with more: 
+        if st.button("✚", key="btn_more"): st.rerun()
+    with last: 
+        if st.button("◀", key="btn_last"):
+            st.session_state.take = (st.session_state.take - 1) % len(temas_list); st.rerun()
+    with rand: 
+        if st.button("✻", key="btn_rand"):
+            st.session_state.take = random.randrange(len(temas_list)); st.rerun()
+    with nest: 
+        if st.button("▶", key="btn_next"):
+            st.session_state.take = (st.session_state.take + 1) % len(temas_list); st.rerun()
     with manu:
         with st.popover("?", help="Info"):
             st.write(f"**Matriz: {st.session_state.tema}**")
-
     with c2:
-        # Usamos o 'idx' já calculado para evitar erros de sincronia
-        escolha = st.selectbox(
-            "Temas", 
-            options=temas_list, 
-            index=idx,
-            label_visibility="collapsed"
-        )
+        escolha = st.selectbox("Temas", options=temas_list, index=idx, label_visibility="collapsed")
         if escolha != st.session_state.tema:
-            st.session_state.take = temas_list.index(escolha)
-            st.rerun()
+            st.session_state.take = temas_list.index(escolha); st.rerun()
 
-    # EXIBIÇÃO (Tarefa 2)
+    # --- LINHA 2: PAINEL MULTIMÍDIA (A Janela para o Mundo) ---
+    # Colunas bem estreitas (0.4) para os ícones ficarem "ombro a ombro"
+    m1, m2, m3, m4, m_vazio = st.columns([0.4, 0.4, 0.4, 0.4, 6])
+    
+    with m1: st.button("🌐", help="Traduzir (Idiomas)")
+    with m2: st.button("🔊", help="Talk (Voz da Machina)")
+    with m3: st.button("🎬", help="Vídeo / Movimento")
+    with m4: st.button("🖼️", help="Galeria de Imagens")
+
+    st.divider() # Linha de horizonte entre o controle e a obra
+
+    # --- EXIBIÇÃO ---
+    # Mantemos a URL de teste para ajustar o visual da Tarefa 4 (Imagem à direita)
+    url_teste = "https://images.unsplash.com/photo-1454117096348-e4abbeae002c?w=500"
+    
     poema_raw = load_poema(st.session_state.tema)
-    write_ypoema(st.session_state.tema, poema_raw)
-
+    write_ypoema(st.session_state.tema, poema_raw, URL_IMAGEM=url_teste)
+    
 # 5. O MOTOR (MAIN)
 def main():
     with st.sidebar:
