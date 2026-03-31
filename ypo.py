@@ -91,10 +91,21 @@ def load_temas(book):
 # 3. MOTOR: GERAÇÃO E TRADUÇÃO
 # =================================================================
 def load_poema(nome_tema):
-    script = gera_poema(nome_tema)
-    # Formatação para o Markdown (troca quebras por <br>)
-    return "<br>".join([line.strip() for line in script if line.strip()])
-
+    try:
+        # AGORA COM OS 2 PARÂMETROS: (Tema, Semente)
+        # semente="" garante que ele retorne apenas o ypoema
+        semente_eureka = "" 
+        
+        script = gera_poema(nome_tema, semente_eureka)
+        
+        if not script or not isinstance(script, list):
+            return "A Machina está processando... <br> (Aguardando resposta do lexico)"
+            
+        return "<br>".join([str(line).strip() for line in script if str(line).strip()])
+    
+    except Exception as e:
+        return f"Erro de Sincronia no Motor: {str(e)} <br> Tema: {nome_tema}"
+        
 def translate(text):
     if st.session_state.lang == "pt": return text
     try:
