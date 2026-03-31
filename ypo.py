@@ -14,21 +14,22 @@ except ImportError:
 # 2. A LENTE (EXIBIÇÃO) 
 
 def write_ypoema(TITULO, TEXTO_RAW):
-    # 1. Injetamos o estilo usando aspas simples externas para não conflitar com o CSS
+    # 1. Estilo Blindado (CSS)
     st.markdown('''
         <style>
-            .p-title { font-size: 42px !important; font-weight: 800; color: #111; text-transform: uppercase; margin-bottom: 20px; font-family: sans-serif; }
-            .p-content { font-size: 34px !important; font-weight: 500; color: #333; white-space: pre-wrap; line-height: 1.4; font-family: sans-serif; }
+            .p-title { font-size: 42px !important; font-weight: 800; color: #111; text-transform: uppercase; margin-bottom: 30px; display: block; }
+            .p-content { font-size: 34px !important; font-weight: 500; color: #333; line-height: 1.5; display: block; white-space: pre-line; }
         </style>
     ''', unsafe_allow_html=True)
     
-    # 2. Usamos f-strings com aspas simples triplas para proteger o conteúdo do poema
+    # 2. Limpeza das quebras de linha para o HTML não "vazar"
+    # O 'pre-line' no CSS acima cuidará de manter os "Enter" do seu poema
     html_final = f'''
         <div class="p-title">{TITULO}</div>
         <div class="p-content">{TEXTO_RAW}</div>
     '''
     
-    # 3. O comando de execução
+    # 3. Entrega final
     st.markdown(html_final, unsafe_allow_html=True)
     
 # 3. PAIOL E UTILITÁRIOS
