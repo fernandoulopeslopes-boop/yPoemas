@@ -178,64 +178,62 @@ def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):
 # =================================================================
 
 def page_ypoemas():
-    # 1. Carrega a lista de temas do livro selecionado
+    # 1. Carga de Dados
     temas_list = load_temas(st.session_state.book)
     
-    # 2. Barra de Navegação Superior (Com o botão +)
-    # Aumentei o espaçamento para os botões ficarem bem distribuídos
-    c1, b_back, b_rand, b_plus, b_next, b_voice, c2 = st.columns([2, 0.6, 0.6, 0.6, 0.6, 0.6, 2])
+    # 2. SEQUÊNCIA DE BOTÕES (A Nova Ordem)
+    # Ajustei as colunas para os 5 botões ficarem alinhados ao centro
+    c1, more, last, rand, nest, manu, c2 = st.columns([2, 0.5, 0.5, 0.5, 0.5, 0.5, 2])
     
-    if b_back.button("◀", help="Anterior"):
+    # Botão 1: ✚ (Nova Variação)
+    if more.button("✚", help="Nova Variação", key="btn_more_ypo"):
+        st.rerun()
+        
+    # Botão 2: ◀ (Anterior)
+    if last.button("◀", help="Anterior", key="btn_last_ypo"):
         st.session_state.take = (st.session_state.take - 1) % len(temas_list)
         st.rerun()
-    if b_rand.button("✻", help="Aleatório"):
+        
+    # Botão 3: ✻ (Aleatório)
+    if rand.button("✻", help="Sorteio", key="btn_rand_ypo"):
         st.session_state.take = random.randrange(len(temas_list))
         st.rerun()
-    if b_plus.button("+", help="Nova Variação (Mesmo Tema)"):
-        st.rerun() # Dispara o motor lay_2_ypo novamente para o mesmo tema
-    if b_next.button("▶", help="Próximo"):
+        
+    # Botão 4: ▶ (Próximo)
+    if nest.button("▶", help="Próximo", key="btn_nest_ypo"):
         st.session_state.take = (st.session_state.take + 1) % len(temas_list)
         st.rerun()
-    
-    # 3. Define o Tema Atual e busca o Poema
+        
+    # Botão 5: ? (Manual/Help)
+    # Aqui embutimos a Matriz do Tema dentro do Popover de Ajuda
+    with manu:
+        with st.popover("?", help="Help !!!"):
+            st.markdown(f"### Matriz: {st.session_state.tema}")
+            img_matrix = load_arts(st.session_state.tema)
+            if img_matrix:
+                st.image(img_matrix, use_container_width=True)
+            else:
+                st.caption("Gráfico geométrico não localizado.")
+            st.divider()
+            st.info("A contemporaneidade remete a Aldus Manutius. Use os controles acima para navegar pela Machina.")
+
+    # 3. LOGICA DE EXIBIÇÃO
     st.session_state.tema = temas_list[st.session_state.take % len(temas_list)]
     poema_raw = load_poema(st.session_state.tema)
     
-    # Tradução (se não for português)
+    # Tradução
     if st.session_state.lang != "pt":
         poema_raw = translate(poema_raw)
     
-    # 4. ÁREA DE EXIBIÇÃO: CABEÇALHO E HELP (MATRIX)
-    # Criamos uma linha fina para o título e o ícone de informação
-    col_vazia, col_titulo, col_info, col_vazia2 = st.columns([1, 4, 1, 1])
+    # Título do Tema (Sutil)
+    st.markdown(f"<p style='text-align:center; color:#999; letter-spacing:5px; font-size:14px; margin-top:30px;'>{st.session_state.tema.upper()}</p>", unsafe_allow_html=True)
     
-    with col_titulo:
-        # Título do tema centralizado e elegante
-        st.markdown(f"<p style='text-align:center; color:#999; letter-spacing:5px; font-size:14px; margin-top:20px;'>{st.session_state.tema.upper()}</p>", unsafe_allow_html=True)
-    
-    with col_info:
-        # O HELP (MATRIX) - Abre uma janela flutuante com o gráfico 3D
-        with st.popover("ℹ️", help="Matriz do Tema"):
-            st.write(f"**Análise Matrix: {st.session_state.tema}**")
-            img_matrix = load_arts(st.session_state.tema)
-            if img_matrix:
-                # Mostra o gráfico X, Y, Z da pasta matrix
-                st.image(img_matrix, use_container_width=True, caption="Gráfico Geométrico 3D")
-            else:
-                st.caption("Gráfico de matriz não disponível para este tema.")
-
-    # 5. RENDERIZAÇÃO DO POEMA (TEXTO 32px)
-    # Formata as quebras de linha <br> em parágrafos <p> para o CSS
+    # Formatação do Poema (32px via CSS do write_ypoema)
     texto_formatado = "".join([f"<p>{v.strip()}</p>" for v in poema_raw.split('<br>') if v.strip()])
     
-    # Chamamos a função de escrita (sem imagem no card principal, pois a arte está no Help)
+    # Renderiza o Card de Poesia
     write_ypoema(texto_formatado, None)
-
-    # 6. BOTÃO DE VOZ (Opcional, abaixo do card para não poluir)
-    if b_voice.button("🔊", help="Ouvir Poema"):
-        audio = falar_poema(poema_raw, st.session_state.lang)
-        if audio:
-            st.audio(audio, format='audio/mp3', autoplay=True)
+    
 # =================================================================
 # 6. METAS: EXECUÇÃO
 # =================================================================
