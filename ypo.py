@@ -14,18 +14,8 @@ except ImportError:
 # 2. A LENTE (EXIBIÇÃO) 
 
 def write_ypoema(TITULO, TEXTO_RAW):
-    # Montamos o HTML em uma variável limpa
-    display_html = f"""
-    <style>
-        .poem-title {{ font-family: 'IBM Plex Sans', sans-serif; font-size: 42px !important; font-weight: 800; color: #222; margin-bottom: 30px; border-bottom: 3px solid #f0f0f0; padding-bottom: 10px; text-transform: uppercase; }}
-        .poem-content {{ font-family: 'IBM Plex Sans', sans-serif; font-weight: 600; font-size: 36px !important; line-height: 1.6; color: #000; white-space: pre-wrap !important; }}
-    </style>
-    <div class='poem-title'>{TITULO}</div>
-    <div class='poem-content'>{TEXTO_RAW}</div>
-    """
-    
-    # Entregamos sem intermediários
-    st.markdown(display_html, unsafe_allow_html=True)
+    conteudo = f"<div class='poem-title'>{TITULO}</div><div class='poem-content'>{TEXTO_RAW}</div>"
+    st.markdown(conteudo, unsafe_allow_html=True)
 
 # 3. PAIOL E UTILITÁRIOS
 if "initialized" not in st.session_state:
