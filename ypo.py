@@ -67,6 +67,8 @@ import base64
 import streamlit as st
 import os
 
+from lay_2_ipo import gera_poema
+
 # --INICIALIZAÇÃO BLINDADA ---
 #   Verificamos se o session_state é um dicionário ANTES de procurar chaves
 #   Se o sistema bugar e virar booleano, esse bloco força o reset para dicionário
@@ -677,8 +679,7 @@ def load_book_pages(book):  # Load Book pages for off_book
 
     return book_pages
 
-def gera_poema(nome_tema, seed_eureka):  # generate new yPoema
-    script = load_poema(nome_tema, seed_eureka)
+    script = gera_poema(nome_tema, seed_eureka):  # generate new yPoema
     
     # 1. Transformamos a lista de versos em um texto único com quebras de linha
     novo_ypoema = "\n".join(script)
