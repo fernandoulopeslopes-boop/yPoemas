@@ -16,14 +16,13 @@ except ImportError:
 def translate(texto): # Placeholder para não dar erro
     return texto 
 
-# 2. A LENTE (EXIBIÇÃO) - ÚNICA E DEFINITIVA
-def write_ypoema    
 # 3. PAIOL E UTILITÁRIOS
 if "initialized" not in st.session_state:
     st.session_state.lang, st.session_state.tema, st.session_state.take = 'pt', 'Fatos', 0
     st.session_state.book, st.session_state.initialized = "livro vivo", True
 
 @st.cache_data(show_spinner=False)
+
 def load_temas(book):
     caminho = os.path.join("base", f"rol_{book}.txt")
     if os.path.exists(caminho):
@@ -40,7 +39,6 @@ def load_arts(nome_tema): # Placeholder para o Help/Matrix
     return None
 
 # 4. A SALA (YPOEMAS)
-# 2. A LENTE (EXIBIÇÃO) - ÚNICA E DEFINITIVA
 def write_ypoema(TITULO, TEXTO_RAW):
     # O segredo para as etiquetas sumirem é o unsafe_allow_html=True no final
     st.markdown(f"""
