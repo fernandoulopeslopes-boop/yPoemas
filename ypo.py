@@ -93,25 +93,17 @@ def page_ypoemas():
     idx = st.session_state.take % len(temas_list)
     st.session_state.tema = temas_list[idx]
 
-    # --- 4.1 MENU DE TOPO (JANELA MUNDO) ---
-    with st.container():
-        m1, m2, m3, m4, m_vazio = st.columns([0.5, 0.5, 0.5, 0.5, 6])
-        with m1: st.button("🌐", key="m_lang", help="Idiomas")
-        with m2: st.button("🔊", key="m_talk", help="Voz")
-        with m3: st.button("🎬", key="m_video", help="Vídeo")
-        with m4: st.button("🖼️", key="m_img", help="Galeria")
-        st.divider()
-
-    # --- 4.2 LAYOUT: PAINEL ESQUERDO | PALCO CENTRAL ---
+    # --- 4.1 LAYOUT: PAINEL ESQUERDO | PALCO CENTRAL ---
     col_painel, col_palco = st.columns([1.2, 4])
 
     with col_painel:
-        # TAREFA: Painel limpo, apenas com o Logo (usando o comando compatível)
+        # Espaço reservado apenas para o LOGO da página/tema atual
         st.image("https://via.placeholder.com/200x100?text=LOGO+TEMA", use_column_width=True)
 
     with col_palco:
         # --- NAVEGAÇÃO INTERNA (SETAS E SELETOR) ---
-        c1, more, last, rand, nest, manu, c2 = st.columns([0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 3])
+        # c2 reduzido para 0.8 para encurtar o dropdown pela metade
+        c1, more, last, rand, nest, manu, c2, c_vazio = st.columns([0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.8, 2.5])
         
         with more: 
             if st.button("✚", key="btn_more"): st.rerun()
@@ -128,10 +120,15 @@ def page_ypoemas():
             with st.popover("?", help="Info"):
                 st.write(f"**Matriz:** {st.session_state.tema}")
         with c2:
+            # Dropdown agora com metade da largura anterior
             escolha = st.selectbox("Seletor", options=temas_list, index=idx, label_visibility="collapsed", key="sel_master")
             if escolha != st.session_state.tema:
                 st.session_state.take = temas_list.index(escolha); st.rerun()
 
+        # --- EXIBIÇÃO DA OBRA ---
+        poema_raw = load_poema(st.session_state.tema)
+        url_teste = "https://images.unsplash.com/photo-1454117096348-e4abbeae002c?w=500"
+        write_ypoema(st.session_state.tema, poema_raw, URL_IMAGEM=url_teste)
         # --- EXIBIÇÃO DA OBRA ---
         poema_raw = load_poema(st.session_state.tema)
         url_teste = "https://images.unsplash.com/photo-1454117096348-e4abbeae002c?w=500"
