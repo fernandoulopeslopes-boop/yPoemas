@@ -3,38 +3,71 @@ import os
 import random
 import streamlit.components.v1 as components
 
-# 1. CONFIGURAÇÃO
+# ==========================================
+# 1º ANDAR: CONFIGURAÇÃO E MOTORES
+# ==========================================
 st.set_page_config(page_title="a Machina de fazer Poesia", layout="wide")
 
-# --- MOTORES EXTERNOS ---
 try:
     from lay_2_ypo import gera_poema
 except ImportError:
     def gera_poema(tema, seed=""): return ["Erro: motor lay_2_ypo não encontrado."]
 
-# 2. A LENTE (EXIBIÇÃO) 
-def write_ypoema(TITULO, TEXTO_RAW):
+# ==========================================
+# 2º ANDAR: A LENTE (EXIBIÇÃO HTML/CSS)
+# ==========================================
+def write_ypoema(TITULO, TEXTO_RAW, URL_IMAGEM=None):
     if isinstance(TEXTO_RAW, list):
-        TEXTO_RAW = "\n".join(TEXTO_RAW).strip()
+        # TAREFA 5: Garante a separação original das estrofes (\n\n)
+        TEXTO_RAW = "\n".join([str(l) for l in TEXTO_RAW]).strip()
     
+    # TAREFA 4: Layout Flexbox (Texto à esquerda, Imagem à direita)
     html_layout = f"""
     <style>
+        .p-main-container {{
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 35px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }}
+        .p-text-area {{
+            flex: 2;
+            min-width: 65%;
+        }}
+        .p-img-area {{
+            flex: 1;
+            text-align: right;
+        }}
         .p-title {{ 
-            font-size: 38px; font-weight: 800; color: #111; 
-            margin-bottom: 15px; font-family: sans-serif; 
+            font-size: 40px; font-weight: 800; color: #111; 
+            margin-bottom: 20px; 
         }}
         .p-content {{ 
-            font-size: 30px; font-weight: 500; color: #333; 
-            line-height: 1.4; font-family: sans-serif;
-            white-space: pre-wrap;
+            font-size: 32px; font-weight: 500; color: #333; 
+            line-height: 1.5;
+            white-space: pre-wrap; /* PRESERVA ESTROFES */
+        }}
+        img {{
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 3px 3px 15px rgba(0,0,0,0.1);
         }}
     </style>
-    <div class="p-title">{TITULO}</div>
-    <div class="p-content">{TEXTO_RAW}</div>
+    <div class="p-main-container">
+        <div class="p-text-area">
+            <div class="p-title">{TITULO}</div>
+            <div class="p-content">{TEXTO_RAW}</div>
+        </div>
+        {"<div class='p-img-area'><img src='" + URL_IMAGEM + "'></div>" if URL_IMAGEM else ""}
+    </div>
     """
-    components.html(html_layout, height=600, scrolling=True)
+    components.html(html_layout, height=1200, scrolling=True)
 
-# 3. PAIOL E UTILITÁRIOS
+# ==========================================
+# 3º ANDAR: O PAIOL (CARGA DE DADOS)
+# ==========================================
 if "initialized" not in st.session_state:
     st.session_state.lang, st.session_state.tema, st.session_state.take = 'pt', 'Fatos', 0
     st.session_state.book, st.session_state.initialized = "livro vivo", True
@@ -52,55 +85,65 @@ def load_poema(nome_tema):
     if isinstance(script, list): return "\n".join([str(l) for l in script if l])
     return str(script)
 
-# 4. A SALA (YPOEMAS)
-# 4. A SALA (YPOEMAS)
+# ==========================================
+# 4º ANDAR: A SALA (YPOEMAS)
+# ==========================================
 def page_ypoemas():
     temas_list = load_temas(st.session_state.book)
     idx = st.session_state.take % len(temas_list)
     st.session_state.tema = temas_list[idx]
-    
-    # --- LINHA 1: NAVEGAÇÃO DO MOTOR ---
-    # c1 e c2 dão o "frame" para as setas e o dropdown
-    c1, more, last, rand, nest, manu, c2 = st.columns([0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 3])
-    
-    with more: 
-        if st.button("✚", key="btn_more"): st.rerun()
-    with last: 
-        if st.button("◀", key="btn_last"):
-            st.session_state.take = (st.session_state.take - 1) % len(temas_list); st.rerun()
-    with rand: 
-        if st.button("✻", key="btn_rand"):
-            st.session_state.take = random.randrange(len(temas_list)); st.rerun()
-    with nest: 
-        if st.button("▶", key="btn_next"):
-            st.session_state.take = (st.session_state.take + 1) % len(temas_list); st.rerun()
-    with manu:
-        with st.popover("?", help="Info"):
-            st.write(f"**Matriz: {st.session_state.tema}**")
-    with c2:
-        escolha = st.selectbox("Temas", options=temas_list, index=idx, label_visibility="collapsed")
-        if escolha != st.session_state.tema:
-            st.session_state.take = temas_list.index(escolha); st.rerun()
 
-    # --- LINHA 2: PAINEL MULTIMÍDIA (A Janela para o Mundo) ---
-    # Colunas bem estreitas (0.4) para os ícones ficarem "ombro a ombro"
-    m1, m2, m3, m4, m_vazio = st.columns([0.4, 0.4, 0.4, 0.4, 6])
-    
-    with m1: st.button("🌐", help="Traduzir (Idiomas)")
-    with m2: st.button("🔊", help="Talk (Voz da Machina)")
-    with m3: st.button("🎬", help="Vídeo / Movimento")
-    with m4: st.button("🖼️", help="Galeria de Imagens")
+    # --- 4.1 MENU DE TOPO (JANELA MUNDO) ---
+    with st.container():
+        m1, m2, m3, m4, m_vazio = st.columns([0.5, 0.5, 0.5, 0.5, 6])
+        with m1: st.button("🌐", key="m_lang", help="Idiomas")
+        with m2: st.button("🔊", key="m_talk", help="Voz")
+        with m3: st.button("🎬", key="m_video", help="Vídeo")
+        with m4: st.button("🖼️", key="m_img", help="Galeria")
+        st.divider()
 
-    st.divider() # Linha de horizonte entre o controle e a obra
+    # --- 4.2 LAYOUT: PAINEL ESQUERDO | PALCO CENTRAL ---
+    col_painel, col_palco = st.columns([1.2, 4])
 
-    # --- EXIBIÇÃO ---
-    # Mantemos a URL de teste para ajustar o visual da Tarefa 4 (Imagem à direita)
-    url_teste = "https://images.unsplash.com/photo-1454117096348-e4abbeae002c?w=500"
-    
-    poema_raw = load_poema(st.session_state.tema)
-    write_ypoema(st.session_state.tema, poema_raw, URL_IMAGEM=url_teste)
-    
-# 5. O MOTOR (MAIN)
+    with col_painel:
+        st.subheader("🎛️ Painel")
+        st.selectbox("Traduzir para:", ["Português", "English", "Español"], key="set_lang")
+        st.info("💡 Escolha o idioma ou ative a voz ao lado.")
+        # Espaço para o Logo futuro
+        st.image("https://via.placeholder.com/200x100?text=LOGO+TEMA", use_container_width=True)
+
+    with col_palco:
+        # --- NAVEGAÇÃO INTERNA ---
+        c1, more, last, rand, nest, manu, c2 = st.columns([0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 3])
+        
+        with more: 
+            if st.button("✚", key="btn_more"): st.rerun()
+        with last: 
+            if st.button("◀", key="btn_last"):
+                st.session_state.take = (st.session_state.take - 1) % len(temas_list); st.rerun()
+        with rand: 
+            if st.button("✻", key="btn_rand"):
+                st.session_state.take = random.randrange(len(temas_list)); st.rerun()
+        with nest: 
+            if st.button("▶", key="btn_next"):
+                st.session_state.take = (st.session_state.take + 1) % len(temas_list); st.rerun()
+        with manu:
+            with st.popover("?", help="Info"):
+                st.write(f"**Matriz:** {st.session_state.tema}")
+        with c2:
+            escolha = st.selectbox("Seletor", options=temas_list, index=idx, label_visibility="collapsed", key="sel_master")
+            if escolha != st.session_state.tema:
+                st.session_state.take = temas_list.index(escolha); st.rerun()
+
+        # --- EXIBIÇÃO DA OBRA ---
+        poema_raw = load_poema(st.session_state.tema)
+        # URL de teste para a Imagem (Tarefa 4)
+        url_teste = "https://images.unsplash.com/photo-1454117096348-e4abbeae002c?w=500"
+        write_ypoema(st.session_state.tema, poema_raw, URL_IMAGEM=url_teste)
+
+# ==========================================
+# 5º ANDAR: O MOTOR (MAIN)
+# ==========================================
 def main():
     with st.sidebar:
         st.title("yPoemas")
@@ -113,3 +156,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
