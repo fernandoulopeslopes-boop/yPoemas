@@ -12,10 +12,11 @@ except ImportError:
     def gera_poema(tema, seed=""): return ["Erro: motor lay_2_ypo não encontrado."]
 
 # 2. A LENTE (EXIBIÇÃO) 
+
 def write_ypoema(TITULO, TEXTO_RAW):
+    # O comando st.markdown PRECISA do parâmetro no final
     st.markdown(f"""
         <style>
-        .block-container {{ padding: 2rem 5rem !important; max-width: 100% !important; }}
         .poem-title {{
             font-family: 'IBM Plex Sans', sans-serif;
             font-size: 42px !important;
@@ -33,13 +34,13 @@ def write_ypoema(TITULO, TEXTO_RAW):
             line-height: 1.6;
             color: #000;
             white-space: pre-wrap !important;
-            text-transform: none !important;
         }}
         </style>
+        
         <div class='poem-title'>{TITULO}</div>
         <div class='poem-content'>{TEXTO_RAW}</div>
-    """, unsafe_allow_html=True)
-
+    """, unsafe_allow_html=True)  # <-- ESSA LINHA É O SEGREDO
+    
 # 3. PAIOL E UTILITÁRIOS
 if "initialized" not in st.session_state:
     st.session_state.lang, st.session_state.tema, st.session_state.take = 'pt', 'Fatos', 0
