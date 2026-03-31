@@ -114,8 +114,18 @@ def translate(text):
     except: return text
 
 def load_arts(nome_tema):
-    # Fallback para imagem padrão se a pasta não existir
-    return "images/machina/logo_ypoemas.jpg"
+    # Caminho padrão das suas artes
+    pasta_artes = "images/machina"
+    
+    # Tenta encontrar uma imagem com o nome do tema (ex: Fatos.jpg)
+    foto_tema = os.path.join(pasta_artes, f"{nome_tema}.jpg")
+    
+    if os.path.exists(foto_tema):
+        return foto_tema
+    
+    # Se não houver arte específica, usa o logo padrão
+    fallback = os.path.join(pasta_artes, "logo_ypoemas.jpg")
+    return fallback if os.path.exists(fallback) else None
 
 # =================================================================
 # 4. EXPOSIÇÃO: FUNÇÃO DE ESCRITA
