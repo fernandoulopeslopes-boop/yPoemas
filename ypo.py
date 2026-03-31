@@ -170,15 +170,22 @@ def page_ypoemas():
     exibir_conteudo()
 
 def exibir_conteudo():
-    # O coração visual: Poema + Imagem
+    # 1. Busca o Poema
     poema_raw = load_poema(st.session_state.tema)
     if st.session_state.lang != "pt":
         poema_raw = translate(poema_raw)
     
-    texto_final = "  \n".join(poema_raw.split('<br>'))
-    img_final = load_arts(st.session_state.tema) if st.session_state.draw == 'Y' else None
+    # 2. Formata o Texto (Markdown precisa de 2 espaços no fim para quebrar linha)
+    texto_final = "  \n".join([line.strip() for line in poema_raw.split('<br>')])
+    
+    # 3. Busca a Arte (Se st.session_state.draw for 'Y')
+    img_final = None
+    if st.session_state.draw == 'Y':
+        img_final = load_arts(st.session_state.tema)
+    
+    # 4. Envia para a Lente (Markdown + HTML)
     write_ypoema(texto_final, img_final)
-
+    
 # =================================================================
 # 6. METAS: EXECUÇÃO PRINCIPAL (RADIO E LOGICA)
 # =================================================================
