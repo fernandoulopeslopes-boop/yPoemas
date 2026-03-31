@@ -26,37 +26,36 @@ st.set_page_config(
 
 st.markdown("""
     <style>
-    /* Limpeza e Layout */
-    footer {visibility: hidden;}
-    [data-testid='stSidebar'] > div:first-child { width: 310px; }
+    /* 1. Reset e Fundo */
+    .main { background-color: #fcfcfc; }
     
-    /* Estilo dos Botões de Navegação */
-    .stButton>button {
-        width: 100%;
-        border-radius: 8px;
-        height: 3em;
-        background-color: #f0f2f6;
-        border: 1px solid #d1d5db;
-        color: #374151;
-        font-weight: bold;
-        transition: all 0.3s ease;
-    }
-    .stButton>button:hover {
-        border-color: #ff4b4b;
-        color: #ff4b4b;
-        background-color: #ffffff;
-        box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+    /* 2. O Cartão da Poesia (State of the Art) */
+    .poem-card {
+        background: white;
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        border: 1px solid #f0f0f0;
+        margin-top: 20px;
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
     }
 
-    /* Texto e Imagem do Poema */
+    /* 3. Tipografia Refinada */
     .logo-text {
-        font-weight: 600; font-size: 19px; font-family: 'IBM Plex Sans', sans-serif;
-        color: #1a1a1a; padding-left: 15px; text-align: left;
-        display: block; line-height: 1.7; white-space: pre-wrap !important;
+        font-family: 'Georgia', serif;
+        font-size: 22px;
+        color: #2c3e50;
+        line-height: 1.8;
+        flex: 1;
+        padding-right: 20px;
     }
+
     .logo-img { 
-        float: right; max-width: 350px; margin-left: 20px; 
-        border-radius: 10px; box-shadow: 2px 2px 15px rgba(0,0,0,0.1);
+        max-width: 300px; 
+        border-radius: 8px;
+        filter: sepia(20%); /* Toque artístico */
     }
     </style>
 """, unsafe_allow_html=True)
