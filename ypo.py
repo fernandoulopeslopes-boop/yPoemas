@@ -40,30 +40,76 @@ def load_arts(nome_tema): # Placeholder para o Help/Matrix
     return None
 
 # 4. A SALA (YPOEMAS)
-def page_ypoemas():
-    temas_list = load_temas(st.session_state.book)
+# 2. A LENTE (EXIBIÇÃO) - ÚNICA E DEFINITIVA
+def write_ypoema(TITULO, TEXTO_RAW):
+    # O segredo para as etiquetas sumirem é o unsafe_allow_html=True no final
+    st.markdown(f"""
+        <style>
+        /* Ajuste de margens da página */
+        .block-container {{ 
+            padding: 2rem 5rem !important; 
+            max-width: 100% !important; 
+        }}
+        
+        /* Estilo do Título (42px) */
+        .poem-title {{
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: 42px !important;
+            font-weight: 800;
+            color: #222;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #f0f0f0;
+            padding-bottom: 10px;
+            text-transform: uppercase;
+        }}
+        
+        /* Estilo do Corpo (36px) */
+        .poem-content {{
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-weight: 600;
+            font-size: 36px !important;
+            line-height: 1.6;
+            color: #000;
+            white-space: pre-wrap !important; /* Mantém o respiro das linhas */
+            text-transform: none !important;  /* Respeita as minúsculas */
+        }}
+        </style>
+        
+        <div class='poem-title'>{TITULO}</div>
+        <div class='poem-content'>{TEXTO_RAW}</div>
+    """, unsafe_allow_html=True)
     
-    # SEQUÊNCIA DE BOTÕES: ✚, ◀, ✻, ▶, ?
-    c1, more, last, rand, nest, manu, c2 = st.columns([2, 0.5, 0.5, 0.5, 0.5, 0.5, 2])
+# --- FINAL DA FUNÇÃO PAGE_YPOEMAS ---
     
-    if more.button("✚", key="btn_more_ypo"): st.rerun()
-    if last.button("◀", key="btn_last_ypo"):
-        st.session_state.take = (st.session_state.take - 1) % len(temas_list)
-        st.rerun()
-    if rand.button("✻", key="btn_rand_ypo"):
-        st.session_state.take = random.randrange(len(temas_list))
-        st.rerun()
-    if nest.button("▶", key="btn_nest_ypo"):
-        st.session_state.take = (st.session_state.take + 1) % len(temas_list)
-        st.rerun()
-    with manu:
-        with st.popover("?", help="Help !!!"):
-            st.write(f"**Matriz: {st.session_state.tema}**")
-            st.info("A contemporaneidade remete a Aldus Manutius.")
+    # 1. Preparação do Título e do Texto
+    titulo_limpo = st.session_state.tema.upper()
+    corpo_poema = poema_raw
 
-    st.session_state.tema = temas_list[st.session_state.take % len(temas_list)]
-    poema_raw = load_poema(st.session_state.tema)
-    write_ypoema(st.session_state.tema.upper(), poema_raw)
+    # 2. O ÚNICO comando que deve imprimir o poema na tela:
+    st.markdown(f"""
+        <style>
+        .poem-title {{
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: 42px !important;
+            font-weight: 800;
+            color: #222;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #f0f0f0;
+            padding-bottom: 10px;
+        }}
+        .poem-content {{
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-weight: 600;
+            font-size: 36px !important;
+            line-height: 1.6;
+            color: #000;
+            white-space: pre-wrap !important;
+        }}
+        </style>
+        
+        <div class='poem-title'>{titulo_limpo}</div>
+        <div class='poem-content'>{corpo_poema}</div>
+    """, unsafe_allow_html=True)
 
 # 5. O MOTOR (MAIN)
 def main():
