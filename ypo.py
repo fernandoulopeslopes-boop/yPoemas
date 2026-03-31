@@ -2,24 +2,20 @@ import streamlit as st
 import os
 import random
 
-# 1. CONFIGURAÇÃO INICIAL (DEVE SER A PRIMEIRA LINHA)
-st.set_page_config(page_title="a Machina de fazer Poesia", layout="wide", initial_sidebar_state="expanded")
+# 1. CONFIGURAÇÃO (Deve ser a primeira linha de Streamlit)
+st.set_page_config(page_title="a Machina de fazer Poesia", layout="wide")
 
-# --- MOTORES EXTERNOS (Importe seus módulos reais aqui) ---
+# --- MOTORES EXTERNOS ---
 try:
     from lay_2_ypo import gera_poema
 except ImportError:
     def gera_poema(tema, seed=""): return ["Erro: motor lay_2_ypo não encontrado."]
 
-# 2. A LENTE (EXIBIÇÃO) - ÚNICA E DEFINITIVA (LINHA 20 CORRIGIDA)
+# 2. A LENTE (EXIBIÇÃO) 
 def write_ypoema(TITULO, TEXTO_RAW):
-    # O segredo para as etiquetas sumirem é o unsafe_allow_html=True no final
     st.markdown(f"""
         <style>
-        .block-container {{ 
-            padding: 2rem 5rem !important; 
-            max-width: 100% !important; 
-        }}
+        .block-container {{ padding: 2rem 5rem !important; max-width: 100% !important; }}
         .poem-title {{
             font-family: 'IBM Plex Sans', sans-serif;
             font-size: 42px !important;
@@ -36,8 +32,8 @@ def write_ypoema(TITULO, TEXTO_RAW):
             font-size: 36px !important;
             line-height: 1.6;
             color: #000;
-            white-space: pre-wrap !important; /* Respeita as linhas em branco */
-            text-transform: none !important;  /* Mantém as minúsculas */
+            white-space: pre-wrap !important;
+            text-transform: none !important;
         }}
         </style>
         <div class='poem-title'>{TITULO}</div>
@@ -59,15 +55,15 @@ def load_temas(book):
 
 def load_poema(nome_tema):
     script = gera_poema(nome_tema, "")
-    if isinstance(script, list): 
-        return "\n".join([str(l) for l in script if l])
+    if isinstance(script, list): return "\n".join([str(l) for l in script if l])
     return str(script)
 
-# 4. A SALA (YPOEMAS)
+# 4. A SALA (YPOEMAS) - Definida ANTES do main()
 def page_ypoemas():
     temas_list = load_temas(st.session_state.book)
+    st.session_state.tema = temas_list[st.session_state.take % len(temas_list)]
     
-    # BOTOES NA ORDEM: ✚, ◀, ✻, ▶, ?
+    # BOTOES
     c1, more, last, rand, nest, manu, c2 = st.columns([2, 0.5, 0.5, 0.5, 0.5, 0.5, 2])
     
     if more.button("✚", key="btn_more"): st.rerun()
@@ -80,18 +76,15 @@ def page_ypoemas():
     if nest.button("▶", key="btn_next"):
         st.session_state.take = (st.session_state.take + 1) % len(temas_list)
         st.rerun()
+    
     with manu:
         with st.popover("?", help="Help !!!"):
             st.write(f"**Matriz: {st.session_state.tema}**")
-            st.info("A contemporaneidade remete a Aldus Manutius.")
 
-    st.session_state.tema = temas_list[st.session_state.take % len(temas_list)]
     poema_raw = load_poema(st.session_state.tema)
-    
-    # CHAMA A LENTE (Aqui o PREFÁCIL brilha e as etiquetas somem)
     write_ypoema(st.session_state.tema.upper(), poema_raw)
 
-# 5. O MOTOR (MAIN)
+# 5. O MOTOR (MAIN) - No final do arquivo
 def main():
     with st.sidebar:
         st.title("yPoemas")
@@ -104,4 +97,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
