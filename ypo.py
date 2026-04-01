@@ -56,7 +56,7 @@ if 'lang' not in st.session_state: st.session_state.lang = "pt"
 # =================================================================
 # 5º SETOR: FAROL E NAVEGAÇÃO (TAB BAR ORIGINAL)
 # =================================================================
-# O servidor agora usará o 'stx' que você colocou no requirements.txt
+# O servidor agora usará o 'stx' instalado via requirements.txt
 chosen_id = stx.tab_bar(data=[
     stx.TabBarItemData(id="1", title="mini", description=""),
     stx.TabBarItemData(id="2", title="yPoemas", description=""),
@@ -83,7 +83,7 @@ c_id.code(f"SALA: {sala_atual.upper()} | ID: {st.session_state.take}")
 # 3º SETOR: PALCO (A CARA DA TELA)
 # =================================================================
 st.divider()
-msg_final = f"PRÉDIO NO PRUMO\nSALA: {sala_atual.upper()}\nIDIOMA: {st.session_state.lang.upper()}\n\n[O layout está conforme o planejado?]"
+msg_final = f"PRÉDIO NO PRUMO\nSALA: {sala_atual.upper()}\nIDIOMA: {st.session_state.lang.upper()}\n\n[Layout estabilizado: Sidebar 310px | Palco Wide]"
 st.markdown(f'<div class="poesia-viva">{msg_final}</div>', unsafe_allow_html=True)
 
 # =================================================================
