@@ -29,172 +29,158 @@ if have_internet():
     try:
         from deep_translator import GoogleTranslator
     except ImportError:
-        st.warning("Google Translator não conectado")
+        pass
     try:
         from gtts import gTTS
     except ImportError:
-        st.warning("Google TTS não conectado")
+        pass
 else:
-    st.warning("Internet não conectada. Traduções não disponíveis no momento.")
+    st.warning("Internet não conectada. Traduções/Áudio desativados.")
 
-# Identificação do IP para LYPO e TYPO
+# Identificação
 hostname = socket.gethostname()
 IPAddres = socket.gethostbyname(hostname)
 
-# Ocultar Menu e Footer do Streamlit
+# CSS e Layout Original
 st.markdown(
     """ <style>
     footer {visibility: hidden;}
-    </style> """,
-    unsafe_allow_html=True,
-)
-
-# Ajuste de Padding (Espaçamento)
-st.markdown(
-    """ <style>
     .reportview-container .main .block-container{
-        padding-top: 0rem;
-        padding-right: 0rem;
-        padding-left: 0rem;
-        padding-bottom: 0rem;
-    } </style> """,
-    unsafe_allow_html=True,
-)
-
-# Largura da Sidebar
-st.markdown(
-    """ 
-    <style>
+        padding-top: 0rem; padding-right: 0rem;
+        padding-left: 0rem; padding-bottom: 0rem;
+    }
     [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
         width: 310px;
     }
-    </style> """,
-    unsafe_allow_html=True,
-)
-
-# Estilos de Layout (Defs para st.markdown)
-st.markdown(
-    """
-    <style>
-    mark {
-      background-color: powderblue;
-      color: black;
-    }
-    .container {
-        display: flex;
-    }
+    mark { background-color: powderblue; color: black; }
+    .container { display: flex; }
     .logo-text {
-        font-weight: 600;
-        font-size: 18px;
-        font-family: 'IBM Plex Sans';
-        color: #000000;
-        padding-top: 0px;
-        padding-left: 15px;
+        font-weight: 600; font-size: 18px;
+        font-family: 'IBM Plex Sans'; color: #000000;
+        padding-top: 0px; padding-left: 15px;
     }
-    .logo-img {
-        float:right;
-        max-width: 150px;
-    }
+    .logo-img { float:right; }
     </style> """,
     unsafe_allow_html=True,
 )
 
-# Inicialização do SessionState
-states = {
-    "lang": "pt", "last_lang": "pt", "book": "livro vivo", 
-    "take": 0, "mini": 0, "tema": "Fatos", "off_book": 0, 
-    "off_take": 0, "eureka": 0, "poly_lang": "ca", 
-    "poly_name": "català", "poly_take": 12, "poly_file": "poly_pt.txt",
-    "visy": True, "nany_visy": 0, "draw": False, "talk": False, 
-    "vydo": False, "arts": [], "auto": False, "rand": False
-}
+# Inicialização do SessionState (Seu padrão)
+keys = [
+    ("lang", "pt"), ("last_lang", "pt"), ("book", "livro vivo"),
+    ("take", 0), ("mini", 0), ("tema", "Fatos"), ("off_book", 0),
+    ("off_take", 0), ("eureka", 0), ("poly_lang", "ca"),
+    ("poly_name", "català"), ("poly_take", 12), ("poly_file", "poly_pt.txt"),
+    ("visy", True), ("nany_visy", 0), ("draw", False), ("talk", False),
+    ("vydo", False), ("arts", []), ("auto", False), ("rand", False)
+]
+for k, v in keys:
+    if k not in st.session_state:
+        st.session_state[k] = v
 
-for key, value in states.items():
-    if key not in st.session_state:
-        st.session_state[key] = value
-
-### eof: settings
 ### bof: tools
 
 def translate(input_text):
     if st.session_state.lang == "pt" or not have_internet():
         return input_text
     try:
-        output_text = GoogleTranslator(source="pt", target=st.session_state.lang).translate(text=input_text)
-        return output_text.replace("<br>>", "<br>").replace("< br>", "<br>")
+        return GoogleTranslator(source="pt", target=st.session_state.lang).translate(text=input_text)
     except:
-        return "Erro na tradução."
+        return input_text
 
 def pick_lang():
     cols = st.sidebar.columns([1, 1, 1, 1, 1, 1])
-    langs = [("pt", 1), ("es", 2), ("it", 3), ("fr", 4), ("en", 5), ("⚒️", 6)]
-    for i, (label, key) in enumerate(langs):
-        if cols[i].button(label, key=key):
-            st.session_state.lang = label if label != "⚒️" else st.session_state.poly_lang
+    opts = [("pt", 1), ("es", 2), ("it", 3), ("fr", 4), ("en", 5), ("⚒️", 6)]
+    for i, (lab, k) in enumerate(opts):
+        if cols[i].button(lab, key=k):
+            st.session_state.lang = lab if lab != "⚒️" else st.session_state.poly_lang
 
 def draw_check_buttons():
-    c1, c2, c3 = st.sidebar.columns([1, 1, 1])
+    c1, c2, c3 = st.sidebar.columns([3.8, 3.2, 3])
     st.session_state.draw = c1.checkbox("imagem", st.session_state.draw)
     st.session_state.talk = c2.checkbox("áudio", st.session_state.talk)
     st.session_state.vydo = c3.checkbox("vídeo", st.session_state.vydo)
 
-### bof: loaders (Lógica de arquivos)
+### bof: stats & readings (Sua lógica de contadores)
 
-def load_lypo():
-    lypo_user = f"LYPO_{IPAddres}"
+def update_visy():
     try:
-        with open(f"./temp/{lypo_user}", encoding="utf-8") as f:
-            return "<br>".join([line.strip() for line in f])
-    except:
-        return ""
+        with open("./temp/visitors.txt", "r+") as f:
+            tots = int(f.read()) + 1
+            f.seek(0)
+            f.write(str(tots))
+            st.session_state.nany_visy = tots
+    except: pass
+
+def update_readings(tema):
+    try:
+        lines = []
+        with open("./temp/read_list.txt", "r", encoding="utf-8") as f:
+            lines = f.readlines()
+        with open("./temp/read_list.txt", "w", encoding="utf-8") as f:
+            for line in lines:
+                parts = line.split("|")
+                if len(parts) > 2 and parts[1] == tema:
+                    f.write(f"|{tema}|{int(parts[2])+1}|\n")
+                else: f.write(line)
+    except: pass
+
+### bof: loaders
+
+def load_temas(book):
+    try:
+        with open(f"./base/rol_{book}.txt", "r", encoding="utf-8") as f:
+            return [line.strip() for line in f if line.strip()]
+    except: return ["Fatos"]
 
 def load_poema(nome_tema, seed_eureka):
     script = gera_poema(nome_tema, seed_eureka)
     lypo_user = f"LYPO_{IPAddres}"
-    novo_ypoema = ""
+    novo = ""
     with open(f"./temp/{lypo_user}", "w", encoding="utf-8") as f:
         f.write(nome_tema + "\n")
         for line in script:
             f.write(line + "\n")
-            novo_ypoema += line + "<br>"
-    return novo_ypoema
+            novo += line + "<br>"
+    update_readings(nome_tema)
+    return novo
 
-### bof: functions
-
-def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):
-    if LOGO_IMAGE is None:
-        st.markdown(f"<div class='container'><p class='logo-text'>{LOGO_TEXTO}</p></div>", unsafe_allow_html=True)
+def write_ypoema(texto, img_path):
+    if img_path and os.path.exists(img_path):
+        with open(img_path, "rb") as f:
+            data = base64.b64encode(f.read()).decode()
+        st.markdown(f"<div class='container'><img class='logo-img' src='data:image/jpg;base64,{data}'><p class='logo-text'>{texto}</p></div>", unsafe_allow_html=True)
     else:
-        with open(LOGO_IMAGE, "rb") as f:
-            img_data = base64.b64encode(f.read()).decode()
-        st.markdown(
-            f"<div class='container'><img class='logo-img' src='data:image/jpg;base64,{img_data}'><p class='logo-text'>{LOGO_TEXTO}</p></div>",
-            unsafe_allow_html=True
-        )
+        st.markdown(f"<div class='container'><p class='logo-text'>{texto}</p></div>", unsafe_allow_html=True)
 
-def talk(text):
-    if have_internet() and st.session_state.talk:
-        clean_text = text.replace("<br>", "\n")
-        tts = gTTS(text=clean_text, lang=st.session_state.lang)
-        tts.save("./temp/speech.mp3")
-        st.audio("./temp/speech.mp3")
-
-### Interface e Navegação
+### Main Interface
 
 pick_lang()
 draw_check_buttons()
 
-# Substituição da TabBar por Selectbox (Evita erro de pacote)
-pagina = st.sidebar.selectbox("Machina Menu", ["Mini", "yPoemas", "Eureka"])
+# Navegação (Substituindo o TabBar problemático por Selectbox)
+menu = st.sidebar.selectbox("Machina Menu", ["Mini", "yPoemas", "Eureka"])
 
-if pagina == "Mini":
+if menu == "Mini":
     st.subheader("LYPO - Mini Machina")
+    
+    if st.session_state.rand:
+        temas = load_temas(st.session_state.book)
+        st.session_state.tema = random.choice(temas)
+        
     if st.button("Gerar Novo"):
         poema = load_poema(st.session_state.tema, "")
-        write_ypoema(poema, None)
-        talk(poema)
-elif pagina == "yPoemas":
-    st.write("Módulo yPoemas Ativo")
-    # Insira aqui a lógica da page_ypoemas()
+        txt_tradu = translate(poema)
+        write_ypoema(txt_tradu, None)
+        if st.session_state.talk:
+            clean = txt_tradu.replace("<br>", "\n")
+            tts = gTTS(text=clean, lang=st.session_state.lang)
+            tts.save("./temp/speech.mp3")
+            st.audio("./temp/speech.mp3")
+
+elif menu == "yPoemas":
+    st.write("### Módulo yPoemas")
+    # Aqui entra sua lógica de carrossel de temas
+    
 else:
-    st.write("Módulo Eureka Ativo")
+    st.write("### Módulo Eureka")
+    # Aqui entra sua lógica de busca por sementes
