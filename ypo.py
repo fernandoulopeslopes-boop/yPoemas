@@ -5,38 +5,34 @@ import streamlit.components.v1 as components
 import extra_streamlit_components as stx
 
 # ==========================================
-# 1º ANDAR: CONFIGURAÇÃO EM WIDE (PARA DOMAR SIDEBAR)
+# 1º ANDAR: CONFIGURAÇÃO E CSS (O RIGOR DOS 310PX)
 # ==========================================
 st.set_page_config(
     page_title="a máquina de fazer Poesia - yPoemas",
     page_icon=":star:",
-    layout="wide", 
+    layout="wide", # Usamos wide para travar a sidebar, mas centralizamos o conteúdo via CSS
     initial_sidebar_state="auto",
 )
 
 st.markdown(
     """ 
     <style> 
-    /* 1. TRAVA A SIDEBAR EM 310PX (SEM NEGOCIAÇÃO) */
+    /* Força a largura da Sidebar conforme seu layout original */
+    [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
+        width: 310px !important;
+    }
     [data-testid="stSidebar"] {
         min-width: 310px !important;
         max-width: 310px !important;
     }
 
-    /* 2. CENTRALIZA O CONTEÚDO (SIMULA O LAYOUT CENTERED) */
+    /* Centraliza o palco da poesia para manter a estética centered */
     [data-testid="stAppViewBlockContainer"] {
         max-width: 900px !important;
         margin: 0 auto !important;
-        padding-top: 2rem !important;
     }
 
-    /* 3. AJUSTES GERAIS */
     .stButton>button { width: 100%; border-radius: 4px; }
-    
-    /* Remove espaços inúteis no topo */
-    .main .block-container {
-        padding-top: 1rem !important;
-    }
     </style> """,
     unsafe_allow_html=True,
 )
@@ -52,10 +48,13 @@ def load_md_file(file):
     return ""
 
 # ==========================================
-# 2º ANDAR: COMPONENTES DE INTERFACE
+# 2º ANDAR: COMPONENTES DA SIDEBAR (SEU LAYOUT)
 # ==========================================
 def draw_check_buttons():
+    # Organiza os botões de check em colunas na sidebar conforme seu trecho
     draw_col, talk_col, vyde_col = st.sidebar.columns([3.8, 3.2, 3])
+    
+    # Usando os emojis como labels compactas para o seu layout enxuto
     st.session_state.draw = draw_col.checkbox("🖼️", value=st.session_state.get('draw', False), key="draw_machina")
     st.session_state.talk = talk_col.checkbox("🔊", value=st.session_state.get('talk', False), key="talk_machina")
     st.session_state.video = vyde_col.checkbox("🎬", value=st.session_state.get('video', False), key="vyde_machina")
@@ -67,50 +66,41 @@ def pick_lang():
 # 3º ANDAR: AS SALAS (PÁGINAS)
 # ==========================================
 def page_ypoemas():
-    path = os.path.join("base", f"rol_{st.session_state.book}.txt")
-    lista = ["Fatos", "Tempo", "Anjos"]
-    if os.path.exists(path):
-        with open(path, "r", encoding="utf-8") as f:
-            lista = [l.strip() for l in f if l.strip()]
+    # Lógica de Temas (Farol)
+    if 'take' not in st.session_state: st.session_state.take = 0
     
-    idx = st.session_state.take % len(lista)
-    st.session_state.tema = lista[idx]
-
-    # Farol de Navegação
-    n1, n2, n3, n4, n_help = st.columns([1, 1, 1, 1, 1])
-    if n1.button("✚", help="Variação"): st.session_state.take = random.randint(0, 9999); st.rerun()
-    if n2.button("◀", help="Anterior"): st.session_state.take -= 1; st.rerun()
-    if n3.button("✻", help="Sorteio"): st.session_state.take = random.randint(0, 9999); st.rerun()
-    if n4.button("▶", help="Próximo"): st.session_state.take += 1; st.rerun()
-    with n_help:
+    col_f1, col_f2, col_f3, col_f4, col_f5 = st.columns([1,1,1,1,1])
+    if col_f1.button("✚"): st.session_state.take = random.randint(0, 9999); st.rerun()
+    if col_f2.button("◀"): st.session_state.take -= 1; st.rerun()
+    if col_f3.button("✻"): st.session_state.take = random.randint(0, 9999); st.rerun()
+    if col_f4.button("▶"): st.session_state.take += 1; st.rerun()
+    with col_f5:
         with st.popover("?"): st.write("Matriz: Préfacil")
-
+    
     st.divider()
-    
-    poema = gera_poema(st.session_state.tema, str(st.session_state.take))
-    
-    st.write(f"### {st.session_state.tema}")
-    if isinstance(poema, list):
-        for linha in poema: st.write(linha)
-    else:
-        st.write(poema)
+    poema = gera_poema("Fatos", str(st.session_state.take))
+    st.write(f"### Poema N. {st.session_state.take}")
+    st.write(poema)
 
-def page_mini(): st.title("Mini-Mundos")
-def page_eureka(): st.title("Eureka")
-def page_off_machina(): st.title("Off-Machina")
-def page_books(): st.title("Biblioteca")
-def page_polys(): st.title("Poly-Gens")
-def page_abouts(): st.title("Sobre")
+# Mocks para as outras salas
+def page_mini(): st.write("### Sala Mini-Mundos")
+def page_eureka(): st.write("### Sala Eureka")
+def page_off_machina(): st.write("### Sala Off-Machina")
+def page_books(): st.write("### Sala Books")
+def page_polys(): st.write("### Sala Poly-Gens")
+def page_abouts(): st.write("### Sobre")
 
 # ==========================================
-# 4º ANDAR: O MOTOR (MAIN)
+# 4º ANDAR: O MOTOR (ROTEAMENTO ORIGINAL)
 # ==========================================
 def main():
-    if 'take' not in st.session_state: st.session_state.take = 0
-    if 'book' not in st.session_state: st.session_state.book = "livro vivo"
+    # Inicialização de estados
     if 'lang' not in st.session_state: st.session_state.lang = "Português"
+    if 'draw' not in st.session_state: st.session_state.draw = False
+    if 'talk' not in st.session_state: st.session_state.talk = False
+    if 'video' not in st.session_state: st.session_state.video = False
 
-    # Tab Bar Horizontal
+    # MENU TAB BAR (O CORAÇÃO DA NAVEGAÇÃO)
     chosen_id = stx.tab_bar(
         data=[
             stx.TabBarItemData(id="1", title="mini", description=""),
@@ -124,10 +114,12 @@ def main():
         default="2",
     )
 
+    # Executa componentes da Sidebar
     pick_lang()
     draw_check_buttons()
 
-    magy = "img_ypoemas.jpg"
+    # Roteamento conforme sua lógica de IDs
+    magy = "img_ypoemas.jpg" # Default
 
     if chosen_id == "1":
         st.sidebar.info(load_md_file("INFO_MINI.md"))
@@ -151,7 +143,9 @@ def main():
         st.sidebar.info(load_md_file("INFO_ABOUT.md"))
         magy = "img_about.jpg"; page_abouts()
 
+    # Imagem da Sidebar no final, conforme seu script
     with st.sidebar:
+        st.write("---")
         st.image(magy, use_column_width=True)
 
 if __name__ == "__main__":
