@@ -5,7 +5,7 @@ import streamlit.components.v1 as components
 import extra_streamlit_components as stx
 
 # ==========================================
-# 1º ANDAR: CONFIGURAÇÃO E CSS ORIGINAL
+# 1º ANDAR: CONFIGURAÇÃO E CSS "MARRETA"
 # ==========================================
 st.set_page_config(
     page_title="a máquina de fazer Poesia - yPoemas",
@@ -14,13 +14,29 @@ st.set_page_config(
     initial_sidebar_state="auto",
 )
 
+# CSS AGRESSIVO: Forçando a sidebar a 310px e impedindo a expansão no layout centered
 st.markdown(
     """ 
     <style> 
-    [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
-        width: 310px;
+    /* 1. Trava a largura da Sidebar no nível da estrutura */
+    section[data-testid="stSidebar"] {
+        width: 310px !important;
     }
+    
+    /* 2. Ajusta o container principal para não ser 'comido' pela sidebar */
+    section.main .block-container {
+        max-width: 850px !important;
+        padding-left: 2rem !important;
+        padding-right: 2rem !important;
+    }
+
+    /* 3. Estilo dos botões e checkboxes */
     .stButton>button { width: 100%; border-radius: 4px; }
+    
+    /* Remove o padding excessivo do topo no layout centered */
+    .main .block-container {
+        padding-top: 1.5rem !important;
+    }
     </style> """,
     unsafe_allow_html=True,
 )
@@ -51,7 +67,6 @@ def pick_lang():
 # 3º ANDAR: AS SALAS (PÁGINAS)
 # ==========================================
 def page_ypoemas():
-    # Lógica de temas
     path = os.path.join("base", f"rol_{st.session_state.book}.txt")
     lista = ["Fatos", "Tempo", "Anjos"]
     if os.path.exists(path):
@@ -61,18 +76,17 @@ def page_ypoemas():
     idx = st.session_state.take % len(lista)
     st.session_state.tema = lista[idx]
 
-    # Farol
+    # Farol de Navegação (Menu de Botões)
     n1, n2, n3, n4, n_help = st.columns([1, 1, 1, 1, 1])
-    if n1.button("✚"): st.session_state.take = random.randint(0, 9999); st.rerun()
-    if n2.button("◀"): st.session_state.take -= 1; st.rerun()
-    if n3.button("✻"): st.session_state.take = random.randint(0, 9999); st.rerun()
-    if n4.button("▶"): st.session_state.take += 1; st.rerun()
+    if n1.button("✚", help="Mais variação"): st.session_state.take = random.randint(0, 9999); st.rerun()
+    if n2.button("◀", help="Anterior"): st.session_state.take -= 1; st.rerun()
+    if n3.button("✻", help="Aleatório"): st.session_state.take = random.randint(0, 9999); st.rerun()
+    if n4.button("▶", help="Próximo"): st.session_state.take += 1; st.rerun()
     with n_help:
         with st.popover("?"): st.write("Matriz: Préfacil")
 
     st.divider()
     
-    # CORREÇÃO DO BUG: Voltando para 2 argumentos conforme o motor atual exige
     poema = gera_poema(st.session_state.tema, str(st.session_state.take))
     
     st.write(f"### {st.session_state.tema}")
