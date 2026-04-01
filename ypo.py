@@ -5,7 +5,11 @@ import extra_stylable_components as stx
 # =================================================================
 # 1º SETOR: LENTE (DNA VISUAL E PRUMO DA SIDEBAR)
 # =================================================================
-st.set_page_config(page_title="yPoemas - Estrutura Final", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(
+    page_title="yPoemas - A Machina", 
+    layout="wide", 
+    initial_sidebar_state="expanded"
+)
 
 st.markdown("""
     <style>
@@ -54,9 +58,8 @@ if 'take' not in st.session_state: st.session_state.take = random.randint(1000, 
 if 'lang' not in st.session_state: st.session_state.lang = "pt"
 
 # =================================================================
-# 5º SETOR: FAROL E NAVEGAÇÃO (TAB BAR ORIGINAL)
+# 5º SETOR: FAROL E NAVEGAÇÃO (TAB BAR)
 # =================================================================
-# O servidor agora usará o 'stx' instalado via requirements.txt
 chosen_id = stx.tab_bar(data=[
     stx.TabBarItemData(id="1", title="mini", description=""),
     stx.TabBarItemData(id="2", title="yPoemas", description=""),
@@ -80,10 +83,10 @@ if c4.button("▶", key="nxt"): st.session_state.take += 1; st.rerun()
 c_id.code(f"SALA: {sala_atual.upper()} | ID: {st.session_state.take}")
 
 # =================================================================
-# 3º SETOR: PALCO (A CARA DA TELA)
+# 3º SETOR: PALCO (EXIBIÇÃO)
 # =================================================================
 st.divider()
-msg_final = f"PRÉDIO NO PRUMO\nSALA: {sala_atual.upper()}\nIDIOMA: {st.session_state.lang.upper()}\n\n[Layout estabilizado: Sidebar 310px | Palco Wide]"
+msg_final = f"PRÉDIO CONSOLIDADO\nSALA: {sala_atual.upper()}\nIDIOMA: {st.session_state.lang.upper()}\n\n[Layout estabilizado: Sidebar 310px | Palco Wide]"
 st.markdown(f'<div class="poesia-viva">{msg_final}</div>', unsafe_allow_html=True)
 
 # =================================================================
@@ -103,7 +106,7 @@ with st.sidebar:
     if b6.button("⚒️", key="l_xy"): st.session_state.lang = "poly"; st.rerun()
     
     st.divider()
-    st.checkbox("🖼️ Arte")
-    st.checkbox("🔊 Voz")
+    st.checkbox("🖼️ Arte", key="chk_arte")
+    st.checkbox("🔊 Voz", key="chk_voz")
     st.divider()
     st.info(f"Monitorando: {sala_atual}")
