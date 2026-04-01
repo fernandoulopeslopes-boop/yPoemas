@@ -8,6 +8,7 @@ import streamlit as st
 from datetime import datetime
 from lay_2_ypo import gera_poema
 
+
 ### bof: settings
 
 st.set_page_config(
