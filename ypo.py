@@ -1,62 +1,200 @@
-import streamlit as st
+import os
+import re
+import time
 import random
-import extra_stylable_components as stx
+import base64
+import socket
+import streamlit as st
+from datetime import datetime
+from lay_2_ypo import gera_poema
 
-# 1. CONFIGURAÇÃO DE LENTE (SEM SUBPROCESS!)
-st.set_page_config(page_title="yPoemas v2", layout="wide", initial_sidebar_state="expanded")
+### bof: settings
 
-st.markdown("""
+st.set_page_config(
+    page_title="a máquina de fazer Poesia - yPoemas",
+    page_icon=":star:",
+    layout="centered",
+    initial_sidebar_state="auto",
+)
+
+def have_internet(host="8.8.8.8", port=53, timeout=3):
+    try:
+        socket.setdefaulttimeout(timeout)
+        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
+        return True
+    except socket.error:
+        return False
+
+if have_internet():
+    try:
+        from deep_translator import GoogleTranslator
+    except ImportError:
+        st.warning("Google Translator não conectado")
+    try:
+        from gtts import gTTS
+    except ImportError:
+        st.warning("Google TTS não conectado")
+else:
+    st.warning("Internet não conectada. Traduções não disponíveis no momento.")
+
+# Identificação do IP para LYPO e TYPO
+hostname = socket.gethostname()
+IPAddres = socket.gethostbyname(hostname)
+
+# Ocultar Menu e Footer do Streamlit
+st.markdown(
+    """ <style>
+    footer {visibility: hidden;}
+    </style> """,
+    unsafe_allow_html=True,
+)
+
+# Ajuste de Padding (Espaçamento)
+st.markdown(
+    """ <style>
+    .reportview-container .main .block-container{
+        padding-top: 0rem;
+        padding-right: 0rem;
+        padding-left: 0rem;
+        padding-bottom: 0rem;
+    } </style> """,
+    unsafe_allow_html=True,
+)
+
+# Largura da Sidebar
+st.markdown(
+    """ 
     <style>
-    [data-testid="stSidebar"] { min-width: 310px !important; max-width: 310px !important; }
-    [data-testid="stAppViewBlockContainer"] { max-width: 100% !important; padding: 1rem 2rem !important; }
-    footer {visibility: hidden;} #MainMenu {visibility: hidden;} header {visibility: hidden;}
-    .poesia-viva {
-        font-family: 'Georgia', serif !important;
-        font-size: 32px !important; 
-        line-height: 1.6 !important;
-        padding: 40px;
-        background-color: #fdfdfd;
-        border-radius: 8px;
-        border: 1px solid #eee;
+    [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
+        width: 310px;
     }
-    </style>
-""", unsafe_allow_html=True)
+    </style> """,
+    unsafe_allow_html=True,
+)
 
-# 2. ESTADOS
-if 'take' not in st.session_state: st.session_state.take = random.randint(1000, 9999)
-if 'lang' not in st.session_state: st.session_state.lang = "pt"
+# Estilos de Layout (Defs para st.markdown)
+st.markdown(
+    """
+    <style>
+    mark {
+      background-color: powderblue;
+      color: black;
+    }
+    .container {
+        display: flex;
+    }
+    .logo-text {
+        font-weight: 600;
+        font-size: 18px;
+        font-family: 'IBM Plex Sans';
+        color: #000000;
+        padding-top: 0px;
+        padding-left: 15px;
+    }
+    .logo-img {
+        float:right;
+        max-width: 150px;
+    }
+    </style> """,
+    unsafe_allow_html=True,
+)
 
-# 3. NAVEGAÇÃO (TABS)
-chosen_id = stx.tab_bar(data=[
-    stx.TabBarItemData(id="1", title="mini", description=""),
-    stx.TabBarItemData(id="2", title="yPoemas", description=""),
-    stx.TabBarItemData(id="3", title="eureka", description=""),
-    stx.TabBarItemData(id="4", title="off-machina", description=""),
-    stx.TabBarItemData(id="5", title="books", description=""),
-    stx.TabBarItemData(id="6", title="poly", description=""),
-    stx.TabBarItemData(id="7", title="about", description=""),
-], default="2")
+# Inicialização do SessionState
+states = {
+    "lang": "pt", "last_lang": "pt", "book": "livro vivo", 
+    "take": 0, "mini": 0, "tema": "Fatos", "off_book": 0, 
+    "off_take": 0, "eureka": 0, "poly_lang": "ca", 
+    "poly_name": "català", "poly_take": 12, "poly_file": "poly_pt.txt",
+    "visy": True, "nany_visy": 0, "draw": False, "talk": False, 
+    "vydo": False, "arts": [], "auto": False, "rand": False
+}
 
-mapa = {"1":"mini", "2":"yPoemas", "3":"eureka", "4":"off-machina", "5":"books", "6":"poly", "7":"about"}
-sala = mapa.get(chosen_id, "yPoemas")
+for key, value in states.items():
+    if key not in st.session_state:
+        st.session_state[key] = value
 
-# 4. PALCO
-st.write("")
-c1, c2, c3, c4, c_id = st.columns([1, 1, 1, 1, 2])
-if c1.button("✚"): st.session_state.take = random.randint(1000, 9999); st.rerun()
-if c2.button("◀"): st.session_state.take -= 1; st.rerun()
-if c3.button("✻"): st.session_state.take = random.randint(1000, 9999); st.rerun()
-if c4.button("▶"): st.session_state.take += 1; st.rerun()
-c_id.code(f"SALA: {sala.upper()} | ID: {st.session_state.take}")
+### eof: settings
+### bof: tools
 
-st.divider()
-st.markdown(f'<div class="poesia-viva">SALA: {sala.upper()}\n[Se você vê este texto, o erro da linha 10 sumiu!]</div>', unsafe_allow_html=True)
+def translate(input_text):
+    if st.session_state.lang == "pt" or not have_internet():
+        return input_text
+    try:
+        output_text = GoogleTranslator(source="pt", target=st.session_state.lang).translate(text=input_text)
+        return output_text.replace("<br>>", "<br>").replace("< br>", "<br>")
+    except:
+        return "Erro na tradução."
 
-# 5. SIDEBAR
-with st.sidebar:
-    st.title("A Machina")
-    st.divider()
-    st.write("🌍 **IDIOMA**")
-    col1, col2 = st.columns(2)
-    if col1.button("pt"): st.session_state.lang = "pt"; st.rerun()
-    if col2.button("es"): st.session_state.lang = "es"; st.rerun()
+def pick_lang():
+    cols = st.sidebar.columns([1, 1, 1, 1, 1, 1])
+    langs = [("pt", 1), ("es", 2), ("it", 3), ("fr", 4), ("en", 5), ("⚒️", 6)]
+    for i, (label, key) in enumerate(langs):
+        if cols[i].button(label, key=key):
+            st.session_state.lang = label if label != "⚒️" else st.session_state.poly_lang
+
+def draw_check_buttons():
+    c1, c2, c3 = st.sidebar.columns([1, 1, 1])
+    st.session_state.draw = c1.checkbox("imagem", st.session_state.draw)
+    st.session_state.talk = c2.checkbox("áudio", st.session_state.talk)
+    st.session_state.vydo = c3.checkbox("vídeo", st.session_state.vydo)
+
+### bof: loaders (Lógica de arquivos)
+
+def load_lypo():
+    lypo_user = f"LYPO_{IPAddres}"
+    try:
+        with open(f"./temp/{lypo_user}", encoding="utf-8") as f:
+            return "<br>".join([line.strip() for line in f])
+    except:
+        return ""
+
+def load_poema(nome_tema, seed_eureka):
+    script = gera_poema(nome_tema, seed_eureka)
+    lypo_user = f"LYPO_{IPAddres}"
+    novo_ypoema = ""
+    with open(f"./temp/{lypo_user}", "w", encoding="utf-8") as f:
+        f.write(nome_tema + "\n")
+        for line in script:
+            f.write(line + "\n")
+            novo_ypoema += line + "<br>"
+    return novo_ypoema
+
+### bof: functions
+
+def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):
+    if LOGO_IMAGE is None:
+        st.markdown(f"<div class='container'><p class='logo-text'>{LOGO_TEXTO}</p></div>", unsafe_allow_html=True)
+    else:
+        with open(LOGO_IMAGE, "rb") as f:
+            img_data = base64.b64encode(f.read()).decode()
+        st.markdown(
+            f"<div class='container'><img class='logo-img' src='data:image/jpg;base64,{img_data}'><p class='logo-text'>{LOGO_TEXTO}</p></div>",
+            unsafe_allow_html=True
+        )
+
+def talk(text):
+    if have_internet() and st.session_state.talk:
+        clean_text = text.replace("<br>", "\n")
+        tts = gTTS(text=clean_text, lang=st.session_state.lang)
+        tts.save("./temp/speech.mp3")
+        st.audio("./temp/speech.mp3")
+
+### Interface e Navegação
+
+pick_lang()
+draw_check_buttons()
+
+# Substituição da TabBar por Selectbox (Evita erro de pacote)
+pagina = st.sidebar.selectbox("Machina Menu", ["Mini", "yPoemas", "Eureka"])
+
+if pagina == "Mini":
+    st.subheader("LYPO - Mini Machina")
+    if st.button("Gerar Novo"):
+        poema = load_poema(st.session_state.tema, "")
+        write_ypoema(poema, None)
+        talk(poema)
+elif pagina == "yPoemas":
+    st.write("Módulo yPoemas Ativo")
+    # Insira aqui a lógica da page_ypoemas()
+else:
+    st.write("Módulo Eureka Ativo")
