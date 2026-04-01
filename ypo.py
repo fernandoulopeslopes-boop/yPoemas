@@ -108,7 +108,7 @@ def page_ypoemas():
         st.info(f"Matriz: {st.session_state.tema}")
 
     with c_obra:
-        poema = gera_poema(st.session_state.tema)
+        poema = gera_poema(st.session_state.tema, '')
         url_teste = "https://images.unsplash.com/photo-1454117096348-e4abbeae002c?w=500"
         write_ypoema(st.session_state.tema, poema, URL_IMAGEM=url_teste)
 
