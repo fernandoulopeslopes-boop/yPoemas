@@ -40,25 +40,26 @@ if have_internet():
 hostname = socket.gethostname()
 IPAddres = socket.gethostbyname(hostname)
 
-# CSS e Identidade Visual (Estilo Original Preservado e Refinado)
+# CSS REFINADO: Foco no Poema e na Elegância Bizantina
 st.markdown(
     """ <style>
     footer {visibility: hidden;}
     .reportview-container .main .block-container{
-        padding-top: 0rem; padding-right: 0rem;
-        padding-left: 0rem; padding-bottom: 0rem;
+        padding-top: 2rem; 
     }
-    [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
-        width: 310px;
-    }
-    mark { background-color: powderblue; color: black; }
-    .container { display: flex; }
+    /* Estilo do Texto do Poema */
     .logo-text {
-        font-weight: 600; font-size: 18px;
-        font-family: 'IBM Plex Sans'; color: #000000;
-        padding-top: 0px; padding-left: 15px;
+        font-weight: 400; font-size: 22px;
+        font-family: 'IBM Plex Sans', sans-serif; 
+        color: #1a1a1a;
+        line-height: 1.6;
+        padding: 25px;
+        border-left: 3px solid #f0f2f6;
+        background-color: #fafafa;
     }
-    .logo-img { float:right; max-width: 150px; }
+    .logo-img { float:right; max-width: 150px; opacity: 0.8; }
+    /* Ajuste da Sidebar */
+    [data-testid="stSidebar"] { background-color: #f8f9fb; }
     </style> """,
     unsafe_allow_html=True,
 )
@@ -92,39 +93,37 @@ def talk(text):
             clean_text = text.replace("<br>", " ").replace("\n", " ")
             tts = gTTS(text=clean_text, lang=st.session_state.lang)
             if not os.path.exists("./temp"): os.makedirs("./temp")
-            tts.save("./temp/speech.mp3")
-            st.audio("./temp/speech.mp3")
+            path = "./temp/speech.mp3"
+            tts.save(path)
+            st.audio(path)
         except:
             pass
 
 def pick_lang():
-    cols = st.sidebar.columns([1, 1, 1, 1, 1, 1])
+    st.sidebar.write("🌐 Idioma")
+    cols = st.sidebar.columns(6)
     opts = [("pt", 1), ("es", 2), ("it", 3), ("fr", 4), ("en", 5), ("⚒️", 6)]
     for i, (lab, k) in enumerate(opts):
-        if cols[i].button(lab, key=f"btn_lang_{k}"):
+        if cols[i].button(lab, key=f"btn_l_{k}"):
             st.session_state.lang = lab if lab != "⚒️" else st.session_state.poly_lang
 
 def draw_check_buttons():
-    c1, c2, c3 = st.sidebar.columns([1, 1, 1])
-    st.session_state.draw = c1.checkbox("imagem", st.session_state.draw)
-    st.session_state.talk = c2.checkbox("áudio", st.session_state.talk)
-    st.session_state.vydo = c3.checkbox("vídeo", st.session_state.vydo)
-
-### bof: loaders
+    st.sidebar.write("⚙️ Engrenagens")
+    c1, c2, c3 = st.sidebar.columns(3)
+    st.session_state.draw = c1.checkbox("🖼️", st.session_state.draw, help="Imagem")
+    st.session_state.talk = c2.checkbox("🎙️", st.session_state.talk, help="Áudio")
+    st.session_state.vydo = c3.checkbox("🎬", st.session_state.vydo, help="Vídeo")
 
 def load_temas(book):
     try:
         with open(f"./base/rol_{book}.txt", "r", encoding="utf-8") as f:
             return [line.strip() for line in f if line.strip()]
     except:
-        return ["Fatos", "Anjos", "Tempo", "Manifesto", "Direito"]
+        return ["Fatos", "Anjos", "Tempo", "Manifesto", "Submundo"]
 
 def load_poema(nome_tema, seed_eureka):
-    # Blindagem absoluta contra SyntaxError de partição
     seed_limpa = str(seed_eureka) if seed_eureka is not None else ""
-    
     script = gera_poema(nome_tema, seed_limpa)
-    
     lypo_user = f"LYPO_{IPAddres}"
     novo = ""
     if not os.path.exists("./temp"): os.makedirs("./temp")
@@ -143,65 +142,62 @@ def write_ypoema(texto, img_path=None):
     else:
         st.markdown(f"<div class='container'><p class='logo-text'>{texto}</p></div>", unsafe_allow_html=True)
 
-### Lógica de Navegação e Layout Original
+### LAYOUT PRINCIPAL: TABS (Abas)
 
 pick_lang()
 draw_check_buttons()
 
-# Machina Menu - O seletor de páginas
-menu = st.sidebar.selectbox("Machina Menu", ["Mini", "yPoemas", "Eureka"])
+# Título da Máquina no topo
+st.title("a máquina de fazer Poesia")
 
-if menu == "Mini":
-    st.subheader("LYPO - Mini Machina")
-    
-    # Sorteio automático se 'rand' estiver ativo
+# Criação das Abas Originais
+tab_mini, tab_gallery, tab_eureka = st.tabs(["📟 Mini", "📚 yPoemas", "🔍 Eureka"])
+
+with tab_mini:
+    st.markdown("### LYPO Mini")
     if st.session_state.rand:
         temas_list = load_temas(st.session_state.book)
         st.session_state.tema = random.choice(temas_list)
     
-    if st.button("Gerar Novo"):
-        with st.spinner("Remexendo falácias..."):
+    if st.button("Acionar Engrenagem", key="mini_gen"):
+        with st.spinner("Gerando verso..."):
             poema = load_poema(st.session_state.tema, "")
             final = translate(poema)
             write_ypoema(final)
-            if st.session_state.talk:
-                talk(final)
+            if st.session_state.talk: talk(final)
 
-elif menu == "yPoemas":
-    st.subheader("📚 Galeria yPoemas")
+with tab_gallery:
+    st.markdown("### Galeria de Temas")
     temas_g = load_temas(st.session_state.book)
-    tema_sel = st.selectbox("Escolha uma trilha da terrinha:", temas_g)
+    col_t1, col_t2 = st.columns([3, 1])
+    tema_sel = col_t1.selectbox("Selecione a trilha:", temas_g, label_visibility="collapsed")
     
-    if st.button("Explorar Tema"):
-        with st.spinner(f"Garimpando {tema_sel}..."):
+    if col_t2.button("Explorar", key="gal_gen"):
+        with st.spinner("Processando..."):
             st.session_state.tema = tema_sel
             poema = load_poema(tema_sel, "")
             final = translate(poema)
             write_ypoema(final)
-            if st.session_state.talk:
-                talk(final)
+            if st.session_state.talk: talk(final)
 
-elif menu == "Eureka":
-    st.subheader("🔍 Módulo Eureka")
-    
-    with st.sidebar:
-        st.markdown("---")
-        eureka_val = st.text_input("Seed/Chave:", value=str(st.session_state.eureka))
-        if st.button("Fixar Chave"):
-            st.session_state.eureka = eureka_val
-            st.success("Sentença Prolatada!")
+with tab_eureka:
+    st.markdown("### Busca de Sementes")
+    c_e1, c_e2 = st.columns([3, 1])
+    eureka_val = c_e1.text_input("Seed/Chave:", value=str(st.session_state.eureka))
+    if c_e2.button("Fixar", key="fix_seed"):
+        st.session_state.eureka = eureka_val
+        st.success("Fixada")
 
     temas_e = load_temas(st.session_state.book)
-    tema_e = st.selectbox("Garimpar sementes em:", temas_e)
+    tema_e = st.selectbox("Garimpar em:", temas_e, key="eureka_sel")
 
-    if st.button("Executar Eureka"):
-        with st.spinner("Buscando perguntas na paz fingida..."):
+    if st.button("Executar Busca Eureka", key="eur_gen"):
+        with st.spinner("Buscando..."):
             poema = load_poema(tema_e, st.session_state.eureka)
             final = translate(poema)
             write_ypoema(final)
-            if st.session_state.talk:
-                talk(final)
+            if st.session_state.talk: talk(final)
 
-# Footer de Identificação
+# Sidebar Footer
 st.sidebar.markdown("---")
-st.sidebar.caption(f"📍 Host: {hostname} | Versão: 238-Stable")
+st.sidebar.caption(f"📍 {hostname} | v.238-Stable")
