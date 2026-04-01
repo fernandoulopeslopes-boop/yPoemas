@@ -25,7 +25,7 @@ def have_internet(host="8.8.8.8", port=53, timeout=3):
     except socket.error:
         return False
 
-# Carregamento condicional de bibliotecas pesadas
+# Carregamento de bibliotecas para tradução e áudio
 if have_internet():
     try:
         from deep_translator import GoogleTranslator
@@ -35,14 +35,12 @@ if have_internet():
         from gtts import gTTS
     except ImportError:
         pass
-else:
-    st.warning("Internet não conectada. Traduções e Áudio limitados.")
 
 # Identificação de ambiente
 hostname = socket.gethostname()
 IPAddres = socket.gethostbyname(hostname)
 
-# CSS Customizado (Mantendo sua identidade visual)
+# CSS e Identidade Visual (Estilo Original Preservado)
 st.markdown(
     """ <style>
     footer {visibility: hidden;}
@@ -65,7 +63,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# Inicialização do SessionState (Seus controles originais)
+# Inicialização do SessionState
 keys = [
     ("lang", "pt"), ("last_lang", "pt"), ("book", "livro vivo"),
     ("take", 0), ("mini", 0), ("tema", "Fatos"), ("off_book", 0),
@@ -97,13 +95,13 @@ def talk(text):
             tts.save("./temp/speech.mp3")
             st.audio("./temp/speech.mp3")
         except:
-            st.error("Erro ao gerar áudio.")
+            pass
 
 def pick_lang():
     cols = st.sidebar.columns([1, 1, 1, 1, 1, 1])
     opts = [("pt", 1), ("es", 2), ("it", 3), ("fr", 4), ("en", 5), ("⚒️", 6)]
     for i, (lab, k) in enumerate(opts):
-        if cols[i].button(lab, key=f"lang_{k}"):
+        if cols[i].button(lab, key=f"btn_lang_{k}"):
             st.session_state.lang = lab if lab != "⚒️" else st.session_state.poly_lang
 
 def draw_check_buttons():
@@ -112,14 +110,15 @@ def draw_check_buttons():
     st.session_state.talk = c2.checkbox("áudio", st.session_state.talk)
     st.session_state.vydo = c3.checkbox("vídeo", st.session_state.vydo)
 
-### bof: loaders & logic
+### bof: loaders
 
 def load_temas(book):
     try:
+        # Tenta carregar da pasta base seguindo seu padrão de nomenclatura
         with open(f"./base/rol_{book}.txt", "r", encoding="utf-8") as f:
             return [line.strip() for line in f if line.strip()]
     except:
-        return ["Fatos"]
+        return ["Fatos", "Anjos", "Tempo", "Beaba"]
 
 def load_poema(nome_tema, seed_eureka):
     script = gera_poema(nome_tema, seed_eureka)
@@ -141,61 +140,64 @@ def write_ypoema(texto, img_path=None):
     else:
         st.markdown(f"<div class='container'><p class='logo-text'>{texto}</p></div>", unsafe_allow_html=True)
 
-### Main Interface logic
+### Lógica de Navegação Principal
 
-# Sidebar Controls
 pick_lang()
 draw_check_buttons()
 
-# Navegação Unificada (Substitui o TabBar problemático)
+# Menu de Navegação via Selectbox (Estável)
 menu = st.sidebar.selectbox("Machina Menu", ["Mini", "yPoemas", "Eureka"])
 
 if menu == "Mini":
     st.subheader("LYPO - Mini Machina")
     
     if st.session_state.rand:
-        temas = load_temas(st.session_state.book)
-        st.session_state.tema = random.choice(temas)
+        temas_list = load_temas(st.session_state.book)
+        st.session_state.tema = random.choice(temas_list)
     
     if st.button("Gerar Novo"):
         with st.spinner("Engrenagens girando..."):
             poema = load_poema(st.session_state.tema, "")
-            texto_final = translate(poema)
-            write_ypoema(texto_final)
+            final = translate(poema)
+            write_ypoema(final)
             if st.session_state.talk:
-                talk(texto_final)
+                talk(final)
 
 elif menu == "yPoemas":
     st.subheader("📚 Galeria yPoemas")
-    temas_galeria = load_temas(st.session_state.book)
-    tema_selecionado = st.selectbox("Selecione o tema da trilha:", temas_galeria)
+    temas_g = load_temas(st.session_state.book)
+    tema_sel = st.selectbox("Selecione o tema da trilha:", temas_g)
     
     if st.button("Explorar Tema"):
-        st.session_state.tema = tema_selecionado
-        poema = load_poema(tema_selecionado, "")
-        texto_final = translate(poema)
-        write_ypoema(texto_final)
+        with st.spinner(f"Extraindo rimas de {tema_sel}..."):
+            st.session_state.tema = tema_sel
+            poema = load_poema(tema_sel, "")
+            final = translate(poema)
+            write_ypoema(final)
+            if st.session_state.talk:
+                talk(final)
 
 elif menu == "Eureka":
-    st.subheader("🔍 Módulo Eureka - Busca por Sementes")
+    st.subheader("🔍 Módulo Eureka")
     
     with st.sidebar:
         st.markdown("---")
-        eureka_input = st.text_input("Seed/Chave:", value=str(st.session_state.eureka))
+        eureka_val = st.text_input("Seed/Chave:", value=str(st.session_state.eureka))
         if st.button("Fixar Chave"):
-            st.session_state.eureka = eureka_input
-            st.success(f"Chave {eureka_input} fixada!")
+            st.session_state.eureka = eureka_val
+            st.success("Chave Fixada!")
 
-    temas_eureka = load_temas(st.session_state.book)
-    tema_eureka = st.selectbox("Tema para Garimpo:", temas_eureka)
+    temas_e = load_temas(st.session_state.book)
+    tema_e = st.selectbox("Garimpar em:", temas_e)
 
     if st.button("Executar Eureka"):
-        poema_eureka = load_poema(tema_eureka, st.session_state.eureka)
-        texto_final = translate(poema_eureka)
-        write_ypoema(texto_final)
-        if st.session_state.talk:
-            talk(texto_final)
+        with st.spinner("Buscando semente exata..."):
+            poema = load_poema(tema_e, st.session_state.eureka)
+            final = translate(poema)
+            write_ypoema(final)
+            if st.session_state.talk:
+                talk(final)
 
-# Footer Informativo
+# Rodapé de Status
 st.sidebar.markdown("---")
-st.sidebar.info(f"📍 Host: {hostname} | Versão: 238-Stable")
+st.sidebar.caption(f"📍 Host: {hostname} | Versão: 238-Stable")
