@@ -40,7 +40,7 @@ if have_internet():
 hostname = socket.gethostname()
 IPAddres = socket.gethostbyname(hostname)
 
-# CSS e Identidade Visual (Estilo Original Preservado)
+# CSS e Identidade Visual (Estilo Original Preservado e Refinado)
 st.markdown(
     """ <style>
     footer {visibility: hidden;}
@@ -117,12 +117,10 @@ def load_temas(book):
         with open(f"./base/rol_{book}.txt", "r", encoding="utf-8") as f:
             return [line.strip() for line in f if line.strip()]
     except:
-        return ["Fatos", "Anjos", "Tempo", "Beaba", "Manifesto"]
+        return ["Fatos", "Anjos", "Tempo", "Manifesto", "Direito"]
 
 def load_poema(nome_tema, seed_eureka):
-    # BLINDAGEM ANTI-SYNTAX ERROR: 
-    # Forçamos seed_eureka a ser string ANTES de ir para o lay_2_ypo
-    # Se for None ou 0, vira "" ou "0", permitindo o .partition() funcionar.
+    # Blindagem absoluta contra SyntaxError de partição
     seed_limpa = str(seed_eureka) if seed_eureka is not None else ""
     
     script = gera_poema(nome_tema, seed_limpa)
@@ -145,23 +143,24 @@ def write_ypoema(texto, img_path=None):
     else:
         st.markdown(f"<div class='container'><p class='logo-text'>{texto}</p></div>", unsafe_allow_html=True)
 
-### Lógica de Navegação Principal
+### Lógica de Navegação e Layout Original
 
 pick_lang()
 draw_check_buttons()
 
+# Machina Menu - O seletor de páginas
 menu = st.sidebar.selectbox("Machina Menu", ["Mini", "yPoemas", "Eureka"])
 
 if menu == "Mini":
     st.subheader("LYPO - Mini Machina")
     
+    # Sorteio automático se 'rand' estiver ativo
     if st.session_state.rand:
         temas_list = load_temas(st.session_state.book)
         st.session_state.tema = random.choice(temas_list)
     
     if st.button("Gerar Novo"):
-        with st.spinner("Desafiando as regras..."):
-            # Passamos string vazia para o Mini
+        with st.spinner("Remexendo falácias..."):
             poema = load_poema(st.session_state.tema, "")
             final = translate(poema)
             write_ypoema(final)
@@ -171,12 +170,11 @@ if menu == "Mini":
 elif menu == "yPoemas":
     st.subheader("📚 Galeria yPoemas")
     temas_g = load_temas(st.session_state.book)
-    tema_sel = st.selectbox("Selecione o tema da trilha:", temas_g)
+    tema_sel = st.selectbox("Escolha uma trilha da terrinha:", temas_g)
     
     if st.button("Explorar Tema"):
-        with st.spinner(f"Processando {tema_sel}..."):
+        with st.spinner(f"Garimpando {tema_sel}..."):
             st.session_state.tema = tema_sel
-            # Passamos string vazia para a Galeria
             poema = load_poema(tema_sel, "")
             final = translate(poema)
             write_ypoema(final)
@@ -188,24 +186,22 @@ elif menu == "Eureka":
     
     with st.sidebar:
         st.markdown("---")
-        # Campo de entrada tratado como String
         eureka_val = st.text_input("Seed/Chave:", value=str(st.session_state.eureka))
         if st.button("Fixar Chave"):
             st.session_state.eureka = eureka_val
             st.success("Sentença Prolatada!")
 
     temas_e = load_temas(st.session_state.book)
-    tema_e = st.selectbox("Garimpar em:", temas_e)
+    tema_e = st.selectbox("Garimpar sementes em:", temas_e)
 
     if st.button("Executar Eureka"):
-        with st.spinner("Buscando a semente sem lei..."):
-            # Aqui é onde o erro acontecia. Agora a load_poema blinda o valor.
+        with st.spinner("Buscando perguntas na paz fingida..."):
             poema = load_poema(tema_e, st.session_state.eureka)
             final = translate(poema)
             write_ypoema(final)
             if st.session_state.talk:
                 talk(final)
 
-# Rodapé de Status
+# Footer de Identificação
 st.sidebar.markdown("---")
 st.sidebar.caption(f"📍 Host: {hostname} | Versão: 238-Stable")
