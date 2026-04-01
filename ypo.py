@@ -120,7 +120,10 @@ def load_temas(book):
         return ["Fatos", "Anjos", "Tempo", "Beaba", "Manifesto"]
 
 def load_poema(nome_tema, seed_eureka):
-    script = gera_poema(nome_tema, seed_eureka)
+    # Garantimos que a seed seja String para evitar o erro de 'partition' no lay_2_ypo
+    seed_str = str(seed_eureka)
+    script = gera_poema(nome_tema, seed_str)
+    
     lypo_user = f"LYPO_{IPAddres}"
     novo = ""
     if not os.path.exists("./temp"): os.makedirs("./temp")
@@ -144,7 +147,6 @@ def write_ypoema(texto, img_path=None):
 pick_lang()
 draw_check_buttons()
 
-# Menu de Navegação via Selectbox (Estável)
 menu = st.sidebar.selectbox("Machina Menu", ["Mini", "yPoemas", "Eureka"])
 
 if menu == "Mini":
@@ -181,6 +183,7 @@ elif menu == "Eureka":
     
     with st.sidebar:
         st.markdown("---")
+        # Forçamos a entrada a ser tratada como string no text_input
         eureka_val = st.text_input("Seed/Chave:", value=str(st.session_state.eureka))
         if st.button("Fixar Chave"):
             st.session_state.eureka = eureka_val
