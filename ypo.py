@@ -5,37 +5,37 @@ import streamlit.components.v1 as components
 import extra_streamlit_components as stx
 
 # ==========================================
-# 1º ANDAR: CONFIGURAÇÃO E CSS "MARRETA"
+# 1º ANDAR: CONFIGURAÇÃO EM WIDE (PARA DOMAR SIDEBAR)
 # ==========================================
 st.set_page_config(
     page_title="a máquina de fazer Poesia - yPoemas",
     page_icon=":star:",
-    layout="centered",
+    layout="wide", 
     initial_sidebar_state="auto",
 )
 
-# CSS AGRESSIVO: Forçando a sidebar a 310px e impedindo a expansão no layout centered
 st.markdown(
     """ 
     <style> 
-    /* 1. Trava a largura da Sidebar no nível da estrutura */
-    section[data-testid="stSidebar"] {
-        width: 310px !important;
-    }
-    
-    /* 2. Ajusta o container principal para não ser 'comido' pela sidebar */
-    section.main .block-container {
-        max-width: 850px !important;
-        padding-left: 2rem !important;
-        padding-right: 2rem !important;
+    /* 1. TRAVA A SIDEBAR EM 310PX (SEM NEGOCIAÇÃO) */
+    [data-testid="stSidebar"] {
+        min-width: 310px !important;
+        max-width: 310px !important;
     }
 
-    /* 3. Estilo dos botões e checkboxes */
+    /* 2. CENTRALIZA O CONTEÚDO (SIMULA O LAYOUT CENTERED) */
+    [data-testid="stAppViewBlockContainer"] {
+        max-width: 900px !important;
+        margin: 0 auto !important;
+        padding-top: 2rem !important;
+    }
+
+    /* 3. AJUSTES GERAIS */
     .stButton>button { width: 100%; border-radius: 4px; }
     
-    /* Remove o padding excessivo do topo no layout centered */
+    /* Remove espaços inúteis no topo */
     .main .block-container {
-        padding-top: 1.5rem !important;
+        padding-top: 1rem !important;
     }
     </style> """,
     unsafe_allow_html=True,
@@ -76,11 +76,11 @@ def page_ypoemas():
     idx = st.session_state.take % len(lista)
     st.session_state.tema = lista[idx]
 
-    # Farol de Navegação (Menu de Botões)
+    # Farol de Navegação
     n1, n2, n3, n4, n_help = st.columns([1, 1, 1, 1, 1])
-    if n1.button("✚", help="Mais variação"): st.session_state.take = random.randint(0, 9999); st.rerun()
+    if n1.button("✚", help="Variação"): st.session_state.take = random.randint(0, 9999); st.rerun()
     if n2.button("◀", help="Anterior"): st.session_state.take -= 1; st.rerun()
-    if n3.button("✻", help="Aleatório"): st.session_state.take = random.randint(0, 9999); st.rerun()
+    if n3.button("✻", help="Sorteio"): st.session_state.take = random.randint(0, 9999); st.rerun()
     if n4.button("▶", help="Próximo"): st.session_state.take += 1; st.rerun()
     with n_help:
         with st.popover("?"): st.write("Matriz: Préfacil")
