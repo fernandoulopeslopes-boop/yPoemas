@@ -4,7 +4,7 @@ import random
 import streamlit.components.v1 as components
 
 # ==========================================
-# 1º ANDAR: CONFIGURAÇÃO EM WIDE (A VERSÃO QUE DEU CERTO)
+# 1º ANDAR: CONFIGURAÇÃO WIDE (SIDEBAR TRAVADA)
 # ==========================================
 st.set_page_config(
     page_title="a máquina de fazer Poesia - yPoemas",
@@ -22,17 +22,21 @@ st.markdown(
         max-width: 310px !important;
     }
 
-    /* Centraliza o conteúdo no meio da tela wide */
+    /* Centraliza o palco para a poesia não espalhar */
     [data-testid="stAppViewBlockContainer"] {
-        max-width: 900px !important;
+        max-width: 850px !important;
         margin: 0 auto !important;
-        padding-top: 2rem !important;
     }
 
-    .stButton>button { width: 100%; border-radius: 4px; }
+    .stButton>button { width: 100%; border-radius: 4px; height: 3em; }
     
-    .main .block-container {
-        padding-top: 1rem !important;
+    /* Estética do texto poético */
+    .poema-container {
+        font-family: 'Crimson Pro', serif;
+        font-size: 24px;
+        line-height: 1.4;
+        color: #222;
+        white-space: pre-wrap;
     }
     </style> """,
     unsafe_allow_html=True,
@@ -42,11 +46,6 @@ try:
     from lay_2_ypo import gera_poema
 except:
     def gera_poema(t, s=""): return ["Motor em manutenção..."]
-
-def load_md_file(file):
-    if os.path.exists(file):
-        with open(file, "r", encoding="utf-8") as f: return f.read()
-    return ""
 
 # ==========================================
 # 2º ANDAR: COMPONENTES DE INTERFACE
@@ -64,8 +63,9 @@ def pick_lang():
 # 3º ANDAR: AS SALAS (PÁGINAS)
 # ==========================================
 def page_ypoemas():
+    # Lógica de Temas
+    lista = ["Fatos", "Tempo", "Anjos"] # Fallback
     path = os.path.join("base", f"rol_{st.session_state.book}.txt")
-    lista = ["Fatos", "Tempo", "Anjos"]
     if os.path.exists(path):
         with open(path, "r", encoding="utf-8") as f:
             lista = [l.strip() for l in f if l.strip()]
@@ -75,38 +75,44 @@ def page_ypoemas():
 
     # Farol de Navegação
     n1, n2, n3, n4, n_help = st.columns([1, 1, 1, 1, 1])
-    if n1.button("✚"): st.session_state.take = random.randint(0, 9999); st.rerun()
+    if n1.button("✚"): st.session_state.take = random.randint(0, 99999); st.rerun()
     if n2.button("◀"): st.session_state.take -= 1; st.rerun()
-    if n3.button("✻"): st.session_state.take = random.randint(0, 9999); st.rerun()
+    if n3.button("✻"): st.session_state.take = random.randint(0, 99999); st.rerun()
     if n4.button("▶"): st.session_state.take += 1; st.rerun()
     with n_help:
         with st.popover("?"): st.write("Matriz: Préfacil")
 
     st.divider()
     
-    poema = gera_poema(st.session_state.tema, str(st.session_state.take))
+    # Chama o motor
+    poema_raw = gera_poema(st.session_state.tema, str(st.session_state.take))
     
+    # --- LIMPEZA DE SAÍDA (CORREÇÃO DO BUG DO DICIONÁRIO) ---
     st.write(f"### {st.session_state.tema}")
-    if isinstance(poema, list):
-        for linha in poema: st.write(linha)
+    
+    texto_limpo = ""
+    if isinstance(poema_raw, dict):
+        texto_limpo = "\n".join([str(v) for v in poema_raw.values()])
+    elif isinstance(poema_raw, list):
+        texto_limpo = "\n".join([str(p) for p in poema_raw])
     else:
-        st.write(poema)
+        texto_limpo = str(poema_raw)
+    
+    st.markdown(f'<div class="poema-container">{texto_limpo}</div>', unsafe_allow_html=True)
 
-def page_mini(): st.title("Mini-Mundos")
-def page_eureka(): st.title("Eureka")
-def page_off_machina(): st.title("Off-Machina")
-def page_books(): st.title("Biblioteca")
-def page_polys(): st.title("Poly-Gens")
-def page_abouts(): st.title("Sobre")
+# Mocks para as outras salas
+def simple_page(nome):
+    st.title(nome)
+    st.write("Em calibração poética...")
 
 # ==========================================
 # 4º ANDAR: O MOTOR (MAIN)
 # ==========================================
 def main():
-    if 'take' not in st.session_state: st.session_state.take = 0
-    if 'book' not in st.session_state: st.session_state.book = "livro vivo"
-    if 'lang' not in st.session_state: st.session_state.lang = "Português"
-    if 'sala' not in st.session_state: st.session_state.sala = "yPoemas"
+    # Inicialização
+    states = {'take': 0, 'book': "livro vivo", 'lang': "Português", 'sala': "yPoemas"}
+    for k, v in states.items():
+        if k not in st.session_state: st.session_state[k] = v
 
     mapa_artes = {
         "mini": "img_mini.jpg",
@@ -118,16 +124,16 @@ def main():
         "sobre": "img_about.jpg"
     }
 
-    # MENU DE BOTÕES (O QUE FUNCIONA)
+    # Menu Horizontal de Botões
     salas = list(mapa_artes.keys())
     cols_menu = st.columns(len(salas))
     for i, nome_sala in enumerate(salas):
-        if cols_menu[i].button(nome_sala, key=f"btn_{nome_sala}"):
+        if cols_menu[i].button(nome_sala.upper(), key=f"btn_{nome_sala}"):
             st.session_state.sala = nome_sala
             st.rerun()
     st.write("---")
 
-    # SIDEBAR
+    # Sidebar
     pick_lang()
     draw_check_buttons()
     
@@ -137,21 +143,12 @@ def main():
         if os.path.exists(img_path):
             st.image(img_path, use_column_width=True)
 
-    # ROTEAMENTO
+    # Roteamento
     if st.session_state.sala == "yPoemas":
         page_ypoemas()
-    elif st.session_state.sala == "mini":
-        page_mini()
-    elif st.session_state.sala == "eureka":
-        page_eureka()
-    elif st.session_state.sala == "off-machina":
-        page_off_machina()
-    elif st.session_state.sala == "books":
-        page_books()
-    elif st.session_state.sala == "poly":
-        page_polys()
-    elif st.session_state.sala == "sobre":
-        page_abouts()
+    else:
+        simple_page(st.session_state.sala)
 
 if __name__ == "__main__":
     main()
+    
