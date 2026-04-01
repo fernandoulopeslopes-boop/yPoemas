@@ -1,11 +1,5 @@
 streamlit==1.32.0
-extra-streamlit-components
 extra-stylable-components
-deep-translator
-edge-tts
-gTTS
 setuptools
-matplotlib
-Pillow
-protobuf
 altair
+Pillow
