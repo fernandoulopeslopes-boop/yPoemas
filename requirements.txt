@@ -1,5 +1,6 @@
 streamlit==1.32.0
 extra-streamlit-components
+extra-stylable-components
 deep-translator==1.11.4
 edge-tts
 gTTS==2.5.1
