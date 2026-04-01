@@ -114,11 +114,10 @@ def draw_check_buttons():
 
 def load_temas(book):
     try:
-        # Tenta carregar da pasta base seguindo seu padrão de nomenclatura
         with open(f"./base/rol_{book}.txt", "r", encoding="utf-8") as f:
             return [line.strip() for line in f if line.strip()]
     except:
-        return ["Fatos", "Anjos", "Tempo", "Beaba"]
+        return ["Fatos", "Anjos", "Tempo", "Beaba", "Manifesto"]
 
 def load_poema(nome_tema, seed_eureka):
     script = gera_poema(nome_tema, seed_eureka)
@@ -156,7 +155,7 @@ if menu == "Mini":
         st.session_state.tema = random.choice(temas_list)
     
     if st.button("Gerar Novo"):
-        with st.spinner("Engrenagens girando..."):
+        with st.spinner("Desafiando as regras..."):
             poema = load_poema(st.session_state.tema, "")
             final = translate(poema)
             write_ypoema(final)
@@ -169,7 +168,7 @@ elif menu == "yPoemas":
     tema_sel = st.selectbox("Selecione o tema da trilha:", temas_g)
     
     if st.button("Explorar Tema"):
-        with st.spinner(f"Extraindo rimas de {tema_sel}..."):
+        with st.spinner(f"Processando {tema_sel}..."):
             st.session_state.tema = tema_sel
             poema = load_poema(tema_sel, "")
             final = translate(poema)
@@ -185,13 +184,13 @@ elif menu == "Eureka":
         eureka_val = st.text_input("Seed/Chave:", value=str(st.session_state.eureka))
         if st.button("Fixar Chave"):
             st.session_state.eureka = eureka_val
-            st.success("Chave Fixada!")
+            st.success("Sentença Prolatada!")
 
     temas_e = load_temas(st.session_state.book)
     tema_e = st.selectbox("Garimpar em:", temas_e)
 
     if st.button("Executar Eureka"):
-        with st.spinner("Buscando semente exata..."):
+        with st.spinner("Buscando a semente sem lei..."):
             poema = load_poema(tema_e, st.session_state.eureka)
             final = translate(poema)
             write_ypoema(final)
