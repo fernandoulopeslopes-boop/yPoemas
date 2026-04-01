@@ -8,7 +8,6 @@ import streamlit as st
 from datetime import datetime
 from lay_2_ypo import gera_poema
 
-
 ### bof: settings
 
 st.set_page_config(
@@ -41,26 +40,82 @@ if have_internet():
 hostname = socket.gethostname()
 IPAddres = socket.gethostbyname(hostname)
 
-# CSS REFINADO: Foco no Poema e na Elegância Bizantina
+# CSS AVANÇADO: O Retorno da Estética Machina
 st.markdown(
     """ <style>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400&family=IBM+Plex+Sans:wght@300;600&display=swap');
+
     footer {visibility: hidden;}
+    
+    /* Container Principal */
     .reportview-container .main .block-container{
-        padding-top: 2rem; 
+        padding-top: 1rem;
     }
-    /* Estilo do Texto do Poema */
+
+    /* O Poema: Papiro Digital */
+    .poema-container {
+        background-color: #fdfdfd;
+        border: 1px solid #e0e0e0;
+        padding: 40px;
+        border-radius: 2px;
+        box-shadow: 10px 10px 0px #eeeeee;
+        margin-top: 20px;
+        min-height: 200px;
+    }
+
     .logo-text {
-        font-weight: 400; font-size: 22px;
-        font-family: 'IBM Plex Sans', sans-serif; 
-        color: #1a1a1a;
-        line-height: 1.6;
-        padding: 25px;
-        border-left: 3px solid #f0f2f6;
-        background-color: #fafafa;
+        font-family: 'IBM Plex Sans', sans-serif;
+        font-weight: 300;
+        font-size: 24px;
+        color: #2c2c2c;
+        line-height: 1.5;
+        text-align: left;
     }
-    .logo-img { float:right; max-width: 150px; opacity: 0.8; }
-    /* Ajuste da Sidebar */
-    [data-testid="stSidebar"] { background-color: #f8f9fb; }
+
+    .logo-img { 
+        float: right; 
+        max-width: 120px; 
+        filter: grayscale(100%); 
+        opacity: 0.7;
+        margin-left: 20px;
+    }
+
+    /* Estilização das Abas */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 10px;
+    }
+
+    .stTabs [data-baseweb="tab"] {
+        height: 50px;
+        white-space: pre-wrap;
+        background-color: #f8f9fb;
+        border-radius: 4px 4px 0px 0px;
+        gap: 1px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+
+    .stTabs [aria-selected="true"] {
+        background-color: #eeeeee !important;
+        font-weight: 600;
+    }
+    
+    /* Botões Rústicos */
+    .stButton>button {
+        width: 100%;
+        border-radius: 2px;
+        border: 1px solid #000;
+        background-color: transparent;
+        color: #000;
+        font-family: 'IBM Plex Mono', monospace;
+        transition: 0.3s;
+    }
+    
+    .stButton>button:hover {
+        background-color: #000;
+        color: #fff;
+    }
+
     </style> """,
     unsafe_allow_html=True,
 )
@@ -101,26 +156,26 @@ def talk(text):
             pass
 
 def pick_lang():
-    st.sidebar.write("🌐 Idioma")
-    cols = st.sidebar.columns(6)
-    opts = [("pt", 1), ("es", 2), ("it", 3), ("fr", 4), ("en", 5), ("⚒️", 6)]
-    for i, (lab, k) in enumerate(opts):
-        if cols[i].button(lab, key=f"btn_l_{k}"):
-            st.session_state.lang = lab if lab != "⚒️" else st.session_state.poly_lang
+    st.sidebar.markdown("### 🌐 Dialetos")
+    cols = st.sidebar.columns(3)
+    opts = [("pt", 0), ("es", 1), ("it", 2), ("fr", 3), ("en", 4), ("ca", 5)]
+    for i, (lab, idx) in enumerate(opts):
+        col_idx = i % 3
+        if cols[col_idx].button(lab, key=f"l_{idx}"):
+            st.session_state.lang = lab
 
 def draw_check_buttons():
-    st.sidebar.write("⚙️ Engrenagens")
-    c1, c2, c3 = st.sidebar.columns(3)
-    st.session_state.draw = c1.checkbox("🖼️", st.session_state.draw, help="Imagem")
-    st.session_state.talk = c2.checkbox("🎙️", st.session_state.talk, help="Áudio")
-    st.session_state.vydo = c3.checkbox("🎬", st.session_state.vydo, help="Vídeo")
+    st.sidebar.markdown("### ⚙️ Sensores")
+    c1, c2 = st.sidebar.columns(2)
+    st.session_state.draw = c1.checkbox("Imagens", st.session_state.draw)
+    st.session_state.talk = c2.checkbox("Voz", st.session_state.talk)
 
 def load_temas(book):
     try:
         with open(f"./base/rol_{book}.txt", "r", encoding="utf-8") as f:
             return [line.strip() for line in f if line.strip()]
     except:
-        return ["Fatos", "Anjos", "Tempo", "Manifesto", "Submundo"]
+        return ["Fatos", "Anjos", "Tempo", "Manifesto", "Direito"]
 
 def load_poema(nome_tema, seed_eureka):
     seed_limpa = str(seed_eureka) if seed_eureka is not None else ""
@@ -136,69 +191,70 @@ def load_poema(nome_tema, seed_eureka):
     return novo
 
 def write_ypoema(texto, img_path=None):
+    # O layout do poema agora usa a classe poema-container definida no CSS
     if img_path and os.path.exists(img_path):
         with open(img_path, "rb") as f:
             data = base64.b64encode(f.read()).decode()
-        st.markdown(f"<div class='container'><img class='logo-img' src='data:image/jpg;base64,{data}'><p class='logo-text'>{texto}</p></div>", unsafe_allow_html=True)
+        st.markdown(f"""<div class='poema-container'>
+            <img class='logo-img' src='data:image/jpg;base64,{data}'>
+            <p class='logo-text'>{texto}</p>
+            </div>""", unsafe_allow_html=True)
     else:
-        st.markdown(f"<div class='container'><p class='logo-text'>{texto}</p></div>", unsafe_allow_html=True)
+        st.markdown(f"""<div class='poema-container'>
+            <p class='logo-text'>{texto}</p>
+            </div>""", unsafe_allow_html=True)
 
-### LAYOUT PRINCIPAL: TABS (Abas)
+### NAVEGAÇÃO POR ABAS (ESTÉTICA ORIGINAL)
 
 pick_lang()
 draw_check_buttons()
 
-# Título da Máquina no topo
 st.title("a máquina de fazer Poesia")
+st.markdown("---")
 
-# Criação das Abas Originais
-tab_mini, tab_gallery, tab_eureka = st.tabs(["📟 Mini", "📚 yPoemas", "🔍 Eureka"])
+tab1, tab2, tab3 = st.tabs(["[ MINI ]", "[ yPOEMAS ]", "[ EUREKA ]"])
 
-with tab_mini:
-    st.markdown("### LYPO Mini")
-    if st.session_state.rand:
-        temas_list = load_temas(st.session_state.book)
-        st.session_state.tema = random.choice(temas_list)
+with tab1:
+    col_m1, col_m2 = st.columns([3, 1])
+    temas_mini = load_temas(st.session_state.book)
+    tema_mini = col_m1.selectbox("Tema do Dia", temas_mini, label_visibility="collapsed")
     
-    if st.button("Acionar Engrenagem", key="mini_gen"):
-        with st.spinner("Gerando verso..."):
-            poema = load_poema(st.session_state.tema, "")
+    if col_m2.button("GERAR", key="btn_mini"):
+        with st.spinner("Girando engrenagens..."):
+            poema = load_poema(tema_mini, "")
             final = translate(poema)
             write_ypoema(final)
             if st.session_state.talk: talk(final)
 
-with tab_gallery:
-    st.markdown("### Galeria de Temas")
+with tab2:
     temas_g = load_temas(st.session_state.book)
-    col_t1, col_t2 = st.columns([3, 1])
-    tema_sel = col_t1.selectbox("Selecione a trilha:", temas_g, label_visibility="collapsed")
+    tema_gal = st.selectbox("Selecione a trilha bizantina:", temas_g)
     
-    if col_t2.button("Explorar", key="gal_gen"):
-        with st.spinner("Processando..."):
-            st.session_state.tema = tema_sel
-            poema = load_poema(tema_sel, "")
+    if st.button("EXPLORAR TRILHA", key="btn_gal"):
+        with st.spinner("Garimpando versos..."):
+            st.session_state.tema = tema_gal
+            poema = load_poema(tema_gal, "")
             final = translate(poema)
             write_ypoema(final)
             if st.session_state.talk: talk(final)
 
-with tab_eureka:
-    st.markdown("### Busca de Sementes")
-    c_e1, c_e2 = st.columns([3, 1])
-    eureka_val = c_e1.text_input("Seed/Chave:", value=str(st.session_state.eureka))
-    if c_e2.button("Fixar", key="fix_seed"):
-        st.session_state.eureka = eureka_val
-        st.success("Fixada")
+with tab3:
+    col_e1, col_e2 = st.columns([2, 1])
+    eureka_input = col_e1.text_input("Inserir Semente (Seed):", value=str(st.session_state.eureka))
+    if col_e2.button("FIXAR", key="btn_fix"):
+        st.session_state.eureka = eureka_input
+    
+    temas_eureka = load_temas(st.session_state.book)
+    tema_eureka = st.selectbox("Tema para Garimpo:", temas_eureka, key="sel_eureka")
 
-    temas_e = load_temas(st.session_state.book)
-    tema_e = st.selectbox("Garimpar em:", temas_e, key="eureka_sel")
-
-    if st.button("Executar Busca Eureka", key="eur_gen"):
-        with st.spinner("Buscando..."):
-            poema = load_poema(tema_e, st.session_state.eureka)
+    if st.button("EXECUTAR EUREKA", key="btn_eureka"):
+        with st.spinner("Recuperando do submundo..."):
+            poema = load_poema(tema_eureka, st.session_state.eureka)
             final = translate(poema)
             write_ypoema(final)
             if st.session_state.talk: talk(final)
 
 # Sidebar Footer
 st.sidebar.markdown("---")
-st.sidebar.caption(f"📍 {hostname} | v.238-Stable")
+st.sidebar.caption(f"Host: {hostname}")
+st.sidebar.caption(f"Status: Trial 238-Stable")
