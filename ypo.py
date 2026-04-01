@@ -76,13 +76,14 @@ def page_ypoemas():
     v1, n1, n2, n3, n4, n_help, n_lista, v2 = st.columns([1.5, 0.4, 0.4, 0.4, 0.4, 0.5, 3.5, 1.5])
     
     with n1: 
-        if st.button("✚", key="f_more", help="Variação da Matriz"): st.rerun()
+        if st.button("✚", key="f_more", help="Variação da Matriz"): 
+            st.session_state.take = random.randint(0, 99999); st.rerun()
     with n2: 
         if st.button("◀", key="f_back", help="Tema Anterior"):
             st.session_state.take -= 1; st.rerun()
     with n3: 
         if st.button("✻", key="f_rand", help="Sorteio Aleatório"):
-            st.session_state.take = random.randint(0, 1000); st.rerun()
+            st.session_state.take = random.randint(0, 99999); st.rerun()
     with n4: 
         if st.button("▶", key="f_next", help="Próximo Tema"):
             st.session_state.take += 1; st.rerun()
@@ -108,7 +109,8 @@ def page_ypoemas():
         st.info(f"Matriz: {st.session_state.tema}")
 
     with c_obra:
-        poema = gera_poema(st.session_state.tema, '')
+        # CORREÇÃO: Passando o tema e a semente (take) para o motor
+        poema = gera_poema(st.session_state.tema, st.session_state.take)
         url_teste = "https://images.unsplash.com/photo-1454117096348-e4abbeae002c?w=500"
         write_ypoema(st.session_state.tema, poema, URL_IMAGEM=url_teste)
 
@@ -119,7 +121,6 @@ def main():
     with st.sidebar:
         st.title("yPoemas")
         
-        # Mapeamento de Artes para cada Sala
         mapa_artes = {
             "Exploração": "img_ypoemas.jpg",
             "Sobre": "img_about.jpg",
@@ -132,11 +133,10 @@ def main():
         
         sala = st.radio("Ambiente:", list(mapa_artes.keys()))
         
-        # Exibe a arte correspondente na Sidebar
         st.write("---")
         img_path = mapa_artes.get(sala)
         if os.path.exists(img_path):
-            st.image(img_path, use_container_width=True)
+            st.image(img_path, use_column_width=True)
         
         st.write("---")
         st.subheader("🌐 Variáveis Globais")
@@ -146,7 +146,6 @@ def main():
         st.checkbox("🖼️ Galeria", key="g_draw")
         st.button("📋 Info", key="g_info")
 
-    # Gatilho de Páginas
     if sala == "Exploração":
         page_ypoemas()
     else:
