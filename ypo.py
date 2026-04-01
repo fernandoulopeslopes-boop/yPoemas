@@ -184,3 +184,5 @@ elif menu == "yPoemas":
 else:
     st.write("### Módulo Eureka")
     # Aqui entra sua lógica de busca por sementes
+
+
