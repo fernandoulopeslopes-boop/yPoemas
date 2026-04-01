@@ -1,133 +1,106 @@
 import streamlit as st
-import os
-import random
+import os, random
+import extra_stylable_components as stx 
 
 # =================================================================
-# 1º SETOR: LENTE (SUSTENTAÇÃO VISUAL)
+# 1º SETOR: LENTE (CONFIGURAÇÃO VISUAL)
 # =================================================================
-def configurar_lente():
-    st.set_page_config(page_title="yPoemas", layout="wide", initial_sidebar_state="expanded")
-    st.markdown(""" 
-        <style> 
-        [data-testid="stSidebar"] { min-width: 310px !important; max-width: 310px !important; }
-        [data-testid="stAppViewBlockContainer"] { max-width: 900px !important; margin: 0 auto !important; }
-        .poesia-viva {
-            font-family: 'Georgia', serif !important;
-            font-size: 32px !important; 
-            line-height: 1.6 !important;
-            white-space: pre-wrap;
-            padding: 40px;
-            background-color: #fdfdfd;
-            border-radius: 8px;
-            border: 1px solid #eee;
-        }
-        /* SCROLL HORIZONTAL DAS SALAS */
-        div[data-testid="stHorizontalBlock"] {
-            overflow-x: auto !important;
-            flex-wrap: nowrap !important;
-            display: flex !important;
-            gap: 10px !important;
-        }
-        div[data-testid="stHorizontalBlock"] > div {
-            min-width: 150px !important;
-            flex: 0 0 auto !important;
-        }
-        .stButton>button { width: 100%; height: 3.5em; font-weight: 700; text-transform: uppercase; }
-        </style> 
-    """, unsafe_allow_html=True)
+st.set_page_config(page_title="yPoemas - Layout Demo", layout="wide", initial_sidebar_state="expanded")
 
-# =================================================================
-# 2º SETOR: PAIOL (SUPRIMENTO E MEMÓRIA)
-# =================================================================
-def carregar_paiol():
-    if 'take' not in st.session_state: st.session_state.take = random.randint(1000, 9999)
-    if 'sala' not in st.session_state: st.session_state.sala = "yPoemas"
+st.markdown("""
+    <style>
+    /* Esconde o lixo visual */
+    footer {visibility: hidden;}
+    #MainMenu {visibility: hidden;}
     
-    try:
-        from lay_2_ypo import gera_poema
-        return gera_poema
-    except Exception as e:
-        st.error(f"Erro no Paiol: {e}")
-        return lambda t, s: [f"Motor em ajuste... {s}"]
-
-# CALLBACKS DE COMANDO
-def cmd_mudar_take(valor):
-    if valor == "random": st.session_state.take = random.randint(1000, 9999)
-    else: st.session_state.take += valor
-
-def cmd_mudar_sala(nova_sala):
-    st.session_state.sala = nova_sala
-
-# =================================================================
-# 3º SETOR: MOTOR (A PROPULSÃO)
-# =================================================================
-def processar_motor(func_gera):
-    def limpar_texto(bruto):
-        if isinstance(bruto, dict): return "\n".join([str(v) for v in bruto.values()])
-        if isinstance(bruto, list): return "\n".join([str(p) for p in bruto])
-        return str(bruto)
+    /* Ajuste de largura da Sidebar conforme seu original */
+    [data-testid='stSidebar'][aria-expanded='true'] > div:first-child { width: 310px; }
     
-    conteudo = func_gera("Fatos", str(st.session_state.take))
-    return limpar_texto(conteudo)
-
-# =================================================================
-# 4º SETOR: SALAS (EXPOSIÇÃO MODULAR)
-# =================================================================
-MAPA_ARTES = {
-    "mini": "img_mini.jpg", "yPoemas": "img_ypoemas.jpg", "eureka": "img_eureka.jpg",
-    "off-machina": "img_off-machina.jpg", "books": "img_books.jpg", 
-    "poly": "img_poly.jpg", "sobre": "img_about.jpg"
-}
-
-def exibir_palco(texto):
-    if st.session_state.sala == "yPoemas":
-        st.markdown(f'<div class="poesia-viva">{texto}</div>', unsafe_allow_html=True)
-    else:
-        st.subheader(f"SALA: {st.session_state.sala.upper()}")
-        st.info("Fluxo de dados em processamento.")
-
-# =================================================================
-# 5º SETOR: FAROL (SINAL SENSORIAL)
-# =================================================================
-def disparar_farol():
-    st.write("### 🧭 FAROL")
-    c1, c2, c3, c4, c_id = st.columns([1, 1, 1, 1, 2])
-    c1.button("✚", on_click=cmd_mudar_take, args=("random",))
-    c2.button("◀", on_click=cmd_mudar_take, args=(-1,))
-    c3.button("✻", on_click=cmd_mudar_take, args=("random",))
-    c4.button("▶", on_click=cmd_mudar_take, args=(1,))
-    c_id.code(f"ID ATIVO: {st.session_state.take}")
+    /* Padding Zero para ocupar a tela toda */
+    .block-container { padding-top: 0rem; padding-right: 1rem; padding-left: 1rem; padding-bottom: 0rem; }
     
-    st.write("---")
-    salas = list(MAPA_ARTES.keys())
-    cols = st.columns(len(salas))
-    for i, s in enumerate(salas):
-        cols[i].button(s.upper(), key=f"n_{s}", on_click=cmd_mudar_sala, args=(s,))
+    /* O Palco do Poema */
+    .poesia-viva {
+        font-family: 'Georgia', serif !important;
+        font-size: 32px !important; 
+        line-height: 1.6 !important;
+        color: #1a1a1a !important;
+        white-space: pre-wrap;
+        padding: 40px;
+        background-color: #fdfdfd;
+        border-radius: 8px;
+        border: 1px solid #eee;
+        margin-top: 20px;
+    }
+    mark { background-color: powderblue; color: black; }
+    </style>
+""", unsafe_allow_html=True)
 
 # =================================================================
-# 6º SETOR: METAS (O ENVIO FINAL)
+# 2º SETOR: PAIOL (ESTADOS DE TESTE)
 # =================================================================
-def despacho_final():
-    with st.sidebar:
-        st.title("A Machina")
-        st.selectbox("Idioma", ["Português", "English"], key="lang")
-        st.divider()
-        st.checkbox("🖼️ Arte", key="draw_machina")
-        st.checkbox("🔊 Voz", key="talk_machina")
-        st.divider()
-        img = MAPA_ARTES.get(st.session_state.sala, "img_ypoemas.jpg")
-        if os.path.exists(img): st.image(img, use_column_width=True)
+if 'take' not in st.session_state: st.session_state.take = random.randint(1000, 9999)
+if 'lang' not in st.session_state: st.session_state.lang = "pt"
+if 'last_lang' not in st.session_state: st.session_state.last_lang = "pt"
 
-# --- FUNÇÃO PRINCIPAL (O ARRANQUE) ---
-def main():
-    configurar_lente()
-    gera_poema_func = carregar_paiol()
-    disparar_farol()
+# Função Genérica de Teste (Simulador de Motor)
+def motor_teste(tema, id_semente, idioma):
+    return f"TESTE - CLICK EM ---> {tema.upper()}\nID: {id_semente}\nIDIOMA: {idioma.upper()}\n\n[O poema aparecerá aqui com 32px]"
+
+# =================================================================
+# 5º SETOR: FAROL E NAVEGAÇÃO (TABS)
+# =================================================================
+# Barra de Abas Superior
+chosen_id = stx.tab_bar(data=[
+    stx.TabBarItemData(id="1", title="mini", description=""),
+    stx.TabBarItemData(id="2", title="yPoemas", description=""),
+    stx.TabBarItemData(id="3", title="eureka", description=""),
+    stx.TabBarItemData(id="4", title="off-machina", description=""),
+    stx.TabBarItemData(id="5", title="books", description=""),
+    stx.TabBarItemData(id="6", title="poly", description=""),
+    stx.TabBarItemData(id="7", title="about", description=""),
+], default="2")
+
+mapa_tabs = {"1":"mini", "2":"yPoemas", "3":"eureka", "4":"off-machina", "5":"books", "6":"poly", "7":"about"}
+sala_atual = mapa_tabs.get(chosen_id, "yPoemas")
+
+# Controles de ID (Farol)
+st.write("")
+c1, c2, c3, c4, c_id = st.columns([1, 1, 1, 1, 2])
+if c1.button("✚", key="add"): st.session_state.take = random.randint(1000, 9999); st.rerun()
+if c2.button("◀", key="prev"): st.session_state.take -= 1; st.rerun()
+if c3.button("✻", key="rand"): st.session_state.take = random.randint(1000, 9999); st.rerun()
+if c4.button("▶", key="next"): st.session_state.take += 1; st.rerun()
+c_id.code(f"SALA: {sala_atual.upper()} | ID: {st.session_state.take}")
+
+# =================================================================
+# 3º SETOR: PALCO (EXIBIÇÃO)
+# =================================================================
+st.divider()
+conteudo = motor_teste(sala_atual, st.session_state.take, st.session_state.lang)
+st.markdown(f'<div class="poesia-viva">{conteudo}</div>', unsafe_allow_html=True)
+
+# =================================================================
+# 6º SETOR: METAS (SIDEBAR)
+# =================================================================
+with st.sidebar:
+    st.title("A Machina")
     st.divider()
-    texto_final = processar_motor(gera_poema_func)
-    exibir_palco(texto_final)
-    despacho_final()
-
-if __name__ == "__main__":
-    main()
-  
+    
+    # Seletor de Idiomas (Layout Original)
+    st.write("🌍 **IDIOMA**")
+    btn_pt, btn_es, btn_it, btn_fr, btn_en, btn_xy = st.columns([1.1, 1.13, 1.04, 1.04, 1.17, 1.25])
+    if btn_pt.button("pt"): st.session_state.lang = "pt"; st.rerun()
+    if btn_es.button("es"): st.session_state.lang = "es"; st.rerun()
+    if btn_it.button("it"): st.session_state.lang = "it"; st.rerun()
+    if btn_fr.button("fr"): st.session_state.lang = "fr"; st.rerun()
+    if btn_en.button("en"): st.session_state.lang = "en"; st.rerun()
+    if btn_xy.button("⚒️"): st.session_state.lang = "poly"; st.rerun()
+    
+    st.divider()
+    st.checkbox("🖼️ Arte", key="check_arte")
+    st.checkbox("🔊 Voz", key="check_voz")
+    st.divider()
+    
+    # Placeholder de Imagem
+    st.warning(f"Espaço para: img_{sala_atual}.jpg")
