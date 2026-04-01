@@ -120,9 +120,12 @@ def load_temas(book):
         return ["Fatos", "Anjos", "Tempo", "Beaba", "Manifesto"]
 
 def load_poema(nome_tema, seed_eureka):
-    # Garantimos que a seed seja String para evitar o erro de 'partition' no lay_2_ypo
-    seed_str = str(seed_eureka)
-    script = gera_poema(nome_tema, seed_str)
+    # BLINDAGEM ANTI-SYNTAX ERROR: 
+    # Forçamos seed_eureka a ser string ANTES de ir para o lay_2_ypo
+    # Se for None ou 0, vira "" ou "0", permitindo o .partition() funcionar.
+    seed_limpa = str(seed_eureka) if seed_eureka is not None else ""
+    
+    script = gera_poema(nome_tema, seed_limpa)
     
     lypo_user = f"LYPO_{IPAddres}"
     novo = ""
@@ -158,6 +161,7 @@ if menu == "Mini":
     
     if st.button("Gerar Novo"):
         with st.spinner("Desafiando as regras..."):
+            # Passamos string vazia para o Mini
             poema = load_poema(st.session_state.tema, "")
             final = translate(poema)
             write_ypoema(final)
@@ -172,6 +176,7 @@ elif menu == "yPoemas":
     if st.button("Explorar Tema"):
         with st.spinner(f"Processando {tema_sel}..."):
             st.session_state.tema = tema_sel
+            # Passamos string vazia para a Galeria
             poema = load_poema(tema_sel, "")
             final = translate(poema)
             write_ypoema(final)
@@ -183,7 +188,7 @@ elif menu == "Eureka":
     
     with st.sidebar:
         st.markdown("---")
-        # Forçamos a entrada a ser tratada como string no text_input
+        # Campo de entrada tratado como String
         eureka_val = st.text_input("Seed/Chave:", value=str(st.session_state.eureka))
         if st.button("Fixar Chave"):
             st.session_state.eureka = eureka_val
@@ -194,6 +199,7 @@ elif menu == "Eureka":
 
     if st.button("Executar Eureka"):
         with st.spinner("Buscando a semente sem lei..."):
+            # Aqui é onde o erro acontecia. Agora a load_poema blinda o valor.
             poema = load_poema(tema_e, st.session_state.eureka)
             final = translate(poema)
             write_ypoema(final)
