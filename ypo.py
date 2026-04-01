@@ -9,7 +9,7 @@ import streamlit.components.v1 as components
 st.set_page_config(page_title="a Machina de fazer Poesia", layout="wide")
 
 # CSS para garantir que o conteúdo não cole no topo da tela
-st.markdown("<style>.block-container {padding-top: 1rem;}</style>", unsafe_allow_stdio=True)
+st.markdown("<style>.block-container {padding-top: 1rem;}</style>", unsafe_allow_html=True)
 
 try:
     from lay_2_ypo import gera_poema
