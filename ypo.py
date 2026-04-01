@@ -56,7 +56,7 @@ if 'lang' not in st.session_state: st.session_state.lang = "pt"
 # =================================================================
 # 5º SETOR: FAROL E NAVEGAÇÃO (TAB BAR ORIGINAL)
 # =================================================================
-# Agora o servidor vai encontrar o 'stx' instalado via requirements.txt
+# O servidor agora usará o 'stx' que você colocou no requirements.txt
 chosen_id = stx.tab_bar(data=[
     stx.TabBarItemData(id="1", title="mini", description=""),
     stx.TabBarItemData(id="2", title="yPoemas", description=""),
