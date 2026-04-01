@@ -1,29 +1,21 @@
 import streamlit as st
-import os, random, subprocess, sys
-
-# =================================================================
-# 0º SETOR: INFRAESTRUTURA (AUTO-INSTALAÇÃO)
-# =================================================================
-try:
-    import extra_stylable_components as stx
-except ImportError:
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "extra-stylable-components"])
-    import extra_stylable_components as stx
+import os, random
+import extra_stylable_components as stx
 
 # =================================================================
 # 1º SETOR: LENTE (DNA VISUAL E PRUMO DA SIDEBAR)
 # =================================================================
-st.set_page_config(page_title="yPoemas - Layout Consolidado", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="yPoemas - Estrutura Final", layout="wide", initial_sidebar_state="expanded")
 
 st.markdown("""
     <style>
-    /* FORÇA A SIDEBAR A FICAR NO CANTO (310px) */
+    /* TRAVA A SIDEBAR EM 310px PARA NÃO INVADIR O PALCO */
     [data-testid="stSidebar"] {
         min-width: 310px !important;
         max-width: 310px !important;
     }
 
-    /* FORÇA O PALCO A OCUPAR O RESTANTE DA TELA */
+    /* GARANTE QUE O CONTEÚDO PRINCIPAL USE O RESTO DA TELA */
     [data-testid="stAppViewBlockContainer"] {
         max-width: 100% !important;
         padding-top: 1rem !important;
@@ -33,12 +25,12 @@ st.markdown("""
         margin: 0 !important;
     }
 
-    /* LIMPEZA DE INTERFACE */
+    /* LIMPEZA GERAL DE INTERFACE */
     footer {visibility: hidden;}
     #MainMenu {visibility: hidden;}
     header {visibility: hidden;}
 
-    /* ESTILO DO POEMA (32px Georgia) */
+    /* ESTILO DO POEMA (32px GEORGIA) */
     .poesia-viva {
         font-family: 'Georgia', serif !important;
         font-size: 32px !important; 
@@ -60,12 +52,11 @@ st.markdown("""
 # =================================================================
 if 'take' not in st.session_state: st.session_state.take = random.randint(1000, 9999)
 if 'lang' not in st.session_state: st.session_state.lang = "pt"
-if 'last_lang' not in st.session_state: st.session_state.last_lang = "pt"
 
 # =================================================================
-# 5º SETOR: FAROL E NAVEGAÇÃO (TABS)
+# 5º SETOR: FAROL E NAVEGAÇÃO (TAB BAR ORIGINAL)
 # =================================================================
-# Barra de Abas Superior (Original do Projeto)
+# Agora o servidor vai encontrar o 'stx' instalado via requirements.txt
 chosen_id = stx.tab_bar(data=[
     stx.TabBarItemData(id="1", title="mini", description=""),
     stx.TabBarItemData(id="2", title="yPoemas", description=""),
@@ -79,44 +70,40 @@ chosen_id = stx.tab_bar(data=[
 mapa_tabs = {"1":"mini", "2":"yPoemas", "3":"eureka", "4":"off-machina", "5":"books", "6":"poly", "7":"about"}
 sala_atual = mapa_tabs.get(chosen_id, "yPoemas")
 
-# Controles de ID (Semente Temporal)
+# CONTROLES DE ID (SEMENTE TEMPORAL)
 st.write("")
 c1, c2, c3, c4, c_id = st.columns([1, 1, 1, 1, 2])
-if c1.button("✚", key="btn_new"): st.session_state.take = random.randint(1000, 9999); st.rerun()
-if c2.button("◀", key="btn_prev"): st.session_state.take -= 1; st.rerun()
-if c3.button("✻", key="btn_rand"): st.session_state.take = random.randint(1000, 9999); st.rerun()
-if c4.button("▶", key="btn_next"): st.session_state.take += 1; st.rerun()
+if c1.button("✚", key="new"): st.session_state.take = random.randint(1000, 9999); st.rerun()
+if c2.button("◀", key="prev"): st.session_state.take -= 1; st.rerun()
+if c3.button("✻", key="rnd"): st.session_state.take = random.randint(1000, 9999); st.rerun()
+if c4.button("▶", key="nxt"): st.session_state.take += 1; st.rerun()
 c_id.code(f"SALA: {sala_atual.upper()} | ID: {st.session_state.take}")
 
 # =================================================================
-# 3º SETOR: PALCO (EXIBIÇÃO DO TRABALHO)
+# 3º SETOR: PALCO (A CARA DA TELA)
 # =================================================================
 st.divider()
-msg_teste = f"A MACHINA ESTÁ DE PÉ\nSALA: {sala_atual.upper()}\nIDIOMA: {st.session_state.lang.upper()}\n\n[O prédio está no prumo? Sidebar à esquerda, Palco ao centro.]"
-st.markdown(f'<div class="poesia-viva">{msg_teste}</div>', unsafe_allow_html=True)
+msg_final = f"PRÉDIO NO PRUMO\nSALA: {sala_atual.upper()}\nIDIOMA: {st.session_state.lang.upper()}\n\n[O layout está conforme o planejado?]"
+st.markdown(f'<div class="poesia-viva">{msg_final}</div>', unsafe_allow_html=True)
 
 # =================================================================
-# 6º SETOR: METAS (SIDEBAR)
+# 6º SETOR: SIDEBAR (REVESTIMENTO)
 # =================================================================
 with st.sidebar:
     st.title("A Machina")
     st.divider()
     
-    # Seletor de Idiomas (Colunas Originais)
     st.write("🌍 **IDIOMA**")
     b1, b2, b3, b4, b5, b6 = st.columns([1.1, 1.13, 1.04, 1.04, 1.17, 1.25])
-    if b1.button("pt", key="p_pt"): st.session_state.lang = "pt"; st.rerun()
-    if b2.button("es", key="p_es"): st.session_state.lang = "es"; st.rerun()
-    if b3.button("it", key="p_it"): st.session_state.lang = "it"; st.rerun()
-    if b4.button("fr", key="p_fr"): st.session_state.lang = "fr"; st.rerun()
-    if b5.button("en", key="p_en"): st.session_state.lang = "en"; st.rerun()
-    if b6.button("⚒️", key="p_xy"): st.session_state.lang = "poly"; st.rerun()
+    if b1.button("pt", key="l_pt"): st.session_state.lang = "pt"; st.rerun()
+    if b2.button("es", key="l_es"): st.session_state.lang = "es"; st.rerun()
+    if b3.button("it", key="l_it"): st.session_state.lang = "it"; st.rerun()
+    if b4.button("fr", key="l_fr"): st.session_state.lang = "fr"; st.rerun()
+    if b5.button("en", key="l_en"): st.session_state.lang = "en"; st.rerun()
+    if b6.button("⚒️", key="l_xy"): st.session_state.lang = "poly"; st.rerun()
     
     st.divider()
-    st.checkbox("🖼️ Arte", key="chk_arte")
-    st.checkbox("🔊 Voz", key="chk_voz")
+    st.checkbox("🖼️ Arte")
+    st.checkbox("🔊 Voz")
     st.divider()
-    
-    # Placeholder Visual
-    st.info(f"Câmera na sala: {sala_atual}")
-    st.caption(f"Arquivo esperado: img_{sala_atual}.jpg")
+    st.info(f"Monitorando: {sala_atual}")
