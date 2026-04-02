@@ -39,7 +39,7 @@ st.markdown('''
     </style>
 ''', unsafe_allow_html=True)
 
-# --- 2. ESTADOS DE MEMÓRIA (SINCRONIA COM MOTOR) ---
+# --- 2. ESTADOS DE MEMÓRIA ---
 if 'lang' not in st.session_state: st.session_state.lang = 'pt'
 if "poly_lang" not in st.session_state: st.session_state.poly_lang = "ca"
 if "poly_name" not in st.session_state: st.session_state.poly_name = "català"
@@ -62,7 +62,7 @@ with st.sidebar:
             st.session_state.lang = l
             st.rerun()
     
-    # O SEXTO BOTÃO: Dinâmico conforme st.session_state.poly_name (st.session_state.poly_lang)
+    # Sexto botão dinâmico
     label_sexto = f"{st.session_state.poly_name} ({st.session_state.poly_lang})"
     if cols[5].button(label_sexto):
         st.session_state.lang = st.session_state.poly_lang
@@ -80,7 +80,6 @@ with st.sidebar:
     st.markdown('<div style="margin-top: 50px; font-family: serif; font-style: italic;">Edição: Samizdàt</div>', unsafe_allow_html=True)
 
 # --- 4. O PALCO ---
-# CORREÇÃO CRÍTICA: O f-string agora preserva o nome exato do volume (ex: rol_livro vivo.txt)
 path_base = f'./base/rol_{st.session_state.book}.txt'
 
 if os.path.exists(path_base):
