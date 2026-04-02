@@ -57,21 +57,19 @@ with st.sidebar:
     langs_fixos = ["pt", "es", "it", "fr", "en"]
     cols = st.columns(6)
     
-    # Botões de idiomas fixos
     for i, l in enumerate(langs_fixos):
         if cols[i].button(l): 
             st.session_state.lang = l
             st.rerun()
     
-    # O SEXTO BOTÃO: Dinâmico (ca)
     label_sexto = f"{st.session_state.poly_name} ({st.session_state.poly_lang})"
     if cols[5].button(label_sexto):
         st.session_state.lang = st.session_state.poly_lang
         st.rerun()
 
     st.divider()
-    # Apenas exibição do volume atual, sem seletor
-    st.write(f"### 📖 Volume: {st.session_state.book.upper()}")
+    st.write(f"### 📖 Volume")
+    st.info(st.session_state.book.upper())
 
     st.divider()
     st.write("### 🎬 Modos")
@@ -81,7 +79,7 @@ with st.sidebar:
 
     st.markdown('<div style="margin-top: 50px; font-family: serif; font-style: italic;">Edição: Samizdàt</div>', unsafe_allow_html=True)
 
-# --- 4. O PALCO ---
+# --- 4. O PALCO: NAVEGAÇÃO ---
 path_base = f'./base/rol_{st.session_state.book}.txt'
 
 if os.path.exists(path_base):
@@ -105,20 +103,13 @@ if os.path.exists(path_base):
                                           index=st.session_state.take, 
                                           format_func=lambda x: temas[x])
 
-    # --- 5. PRODUÇÃO ---
+    # --- 5. PRODUÇÃO: CONTEÚDO LIMPO ---
     tema_atual = temas[st.session_state.take]
     poema = gera_poema(tema_atual, "") 
     
     st.divider()
-    
-    header_col1, header_col2 = st.columns([0.8, 0.2])
-    with header_col1:
-        if 'poly_name' in st.session_state:
-            st.subheader(st.session_state.poly_name)
-    with header_col2:
-        if 'poly_lang' in st.session_state:
-            st.write(f"*{st.session_state.poly_lang}*")
 
+    # Preparação da Imagem
     img_path = f"./images/machina/{tema_atual}.jpg"
     img_html = ""
     if st.session_state.draw and os.path.exists(img_path):
@@ -126,11 +117,13 @@ if os.path.exists(path_base):
             img_encoded = base64.b64encode(f.read()).decode()
         img_html = f'<img class="poema-img" src="data:image/jpg;base64,{img_encoded}">'
 
+    # Renderização direta do poema sem lixo de debug/idioma no topo
     st.markdown(f'''
         <div class="poema-container">
             {img_html}
             <div class="poema-texto">{"<br>".join(poema)}</div>
         </div>
     ''', unsafe_allow_html=True)
+
 else:
     st.error(f"Arquivo não encontrado: {path_base}")
