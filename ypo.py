@@ -944,6 +944,7 @@ def page_ypoemas():
         update_readings("video_ypoemas")
         st.session_state.vydo = False
 
+    
     if lnew:
         what_book = (
             "⚫  "
@@ -962,7 +963,7 @@ def page_ypoemas():
             if st.session_state.lang != st.session_state.last_lang:
                 curr_ypoema = load_lypo()  # changes in lang, keep LYPO
             else:
-                curr_ypoema = load_poema(st.session_state.tema, "")
+                curr_ypoema = lFoad_poema(st.session_state.tema, "")
                 curr_ypoema = load_lypo()
 
             if st.session_state.lang != "pt":  # translate if idioma <> pt
