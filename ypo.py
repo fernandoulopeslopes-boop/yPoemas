@@ -5,90 +5,66 @@ import base64
 import streamlit as st
 from lay_2_ypo import gera_poema 
 
-# --- 1. CONFIGURAÇÃO VISUAL (SAMIZDÀT) ---
+# --- 1. CONFIGURAÇÃO (SEM MARGENS LATERAIS NO PALCO) ---
 st.set_page_config(page_title='yPoemas | Samizdàt', layout='wide', initial_sidebar_state='expanded')
 
+# CSS FORÇADO (!important em tudo para garantir que mude)
 st.markdown('''
     <style>
     header, footer {visibility: hidden;}
-    [data-testid="stSidebar"] { min-width: 320px !important; max-width: 320px !important; }
     
-    /* BOTÕES DE NAVEGAÇÃO: Símbolos Visíveis e Bordas Marcadas */
+    /* BOTÕES COM ÍCONES VISÍVEIS E BORDAS FORTES */
     .stButton>button { 
-        width: 100%; 
-        height: 3.2em; 
+        width: 100% !important; 
+        height: 3.5em !important; 
         font-weight: 900 !important; 
-        font-size: 26px !important;
-        font-family: 'Courier New', Courier, monospace;
-        border-radius: 4px; 
-        border: 2px solid #222 !important; 
-        background-color: #ffffff !important;
+        font-size: 28px !important; /* Aumentado para ver o símbolo */
         color: #000000 !important;
-        transition: 0.3s;
-    }
-    .stButton>button:hover { background-color: #f0f0f0 !important; border-color: #555 !important; }
-    
-    /* PALCO SAGRADO: Centralização e Fluidez */
-    .palco-wrapper {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        width: 100%;
-        padding: 10px 0 60px 0;
-        text-align: center;
+        background-color: #ffffff !important;
+        border: 3px solid #000000 !important;
+        border-radius: 8px !important;
     }
 
-    .palco-conteudo {
-        max-width: 850px;
-        width: 90%;
-    }
-
-    .ypo-titulo {
-        font-family: 'IBM Plex Sans', sans-serif;
-        font-size: 18px;
-        font-weight: 400;
-        font-style: italic;
+    /* TÍTULO DO YPOEMA */
+    .titulo-ypoema {
+        font-family: 'serif';
+        font-size: 20px;
+        letter-spacing: 5px;
         color: #888;
-        margin-bottom: 40px;
+        text-align: center;
         text-transform: uppercase;
-        letter-spacing: 3px;
+        margin-bottom: 50px;
+        width: 100%;
     }
-    
-    .poema-texto-final { 
-        font-weight: 600; 
-        font-size: 32px; 
-        font-family: 'IBM Plex Sans', sans-serif; 
-        line-height: 1.7; 
+
+    /* TEXTO DO POEMA: GRANDE E LIMPO */
+    .texto-poema {
+        font-family: 'IBM Plex Sans', sans-serif;
+        font-size: 32px;
+        line-height: 1.6;
+        font-weight: 600;
         color: #111;
         white-space: pre-wrap;
-        margin-top: 30px;
-        text-align: left; /* Alinhamento clássico do verso */
-        display: inline-block; 
-    }
-    
-    .poema-img-palco { 
-        max-width: 100%; 
-        height: auto;
-        border-radius: 2px; 
-        box-shadow: 0px 15px 50px rgba(0,0,0,0.1);
-        margin: 0 auto 20px auto;
+        text-align: left;
         display: block;
+        margin: 40px auto;
+        max-width: 800px;
     }
 
-    /* Player de áudio centralizado e discreto */
-    .stAudio {
-        max-width: 500px;
-        margin: 40px auto;
+    /* IMAGEM CENTRALIZADA */
+    .img-centro {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        max-width: 600px;
+        box-shadow: 0px 10px 30px rgba(0,0,0,0.1);
     }
     </style>
 ''', unsafe_allow_html=True)
 
-# --- 2. ESTADOS E CARREGAMENTO ---
-if 'lang' not in st.session_state: st.session_state.lang = 'pt'
-if 'book' not in st.session_state: st.session_state.book = 'livro vivo'
+# --- 2. MEMÓRIA E BASE ---
 if 'take' not in st.session_state: st.session_state.take = 0
-for m in ['draw', 'audio']:
-    if m not in st.session_state: st.session_state[m] = True
+if 'book' not in st.session_state: st.session_state.book = 'livro vivo'
 
 path_base = f'./base/rol_{st.session_state.book}.txt'
 temas = []
@@ -96,73 +72,56 @@ if os.path.exists(path_base):
     with open(path_base, 'r', encoding='utf-8') as f:
         temas = [l.strip() for l in f if l.strip() and not l.startswith('[source')]
 
-# --- 3. SIDEBAR (CONFIGURAÇÕES GLOBAIS) ---
+# --- 3. SIDEBAR ---
 with st.sidebar:
     st.image('logo_ypo.png')
-    st.write(f"### 📖 {st.session_state.book.upper()}")
     if temas:
-        st.session_state.take = st.selectbox("Localizar Tema:", range(len(temas)), 
+        st.session_state.take = st.selectbox("Escolha o Tema", range(len(temas)), 
                                               index=st.session_state.take, 
                                               format_func=lambda x: temas[x])
     st.divider()
-    st.session_state.draw = st.checkbox("Exibir Imagem", st.session_state.draw)
-    st.session_state.audio = st.checkbox("Habilitar Áudio", st.session_state.audio)
-    st.markdown('<div style="margin-top: 60px; font-style: italic; opacity: 0.5;">Edição: Samizdàt</div>', unsafe_allow_html=True)
+    draw_on = st.checkbox("Exibir Imagem", value=True)
+    audio_on = st.checkbox("Habilitar Áudio", value=True)
 
-# --- 4. O PALCO (AÇÃO E EXIBIÇÃO) ---
+# --- 4. O PALCO ---
 if temas:
-    # COMANDOS SUPERIORES (Navegação com Identificação de Dicas)
-    _, c_nav, _ = st.columns([0.1, 0.8, 0.1])
-    with c_nav:
-        btn = st.columns(5)
-        if btn[0].button("+", help="Gerar outra variação deste tema"): st.rerun()
-        if btn[1].button("<", help="Voltar para o tema anterior"):
-            st.session_state.take = (st.session_state.take - 1) % len(temas); st.rerun()
-        if btn[2].button("*", help="Sortear um tema aleatório"):
-            st.session_state.take = random.randint(0, len(temas)-1); st.rerun()
-        if btn[3].button(">", help="Avançar para o próximo tema"):
-            st.session_state.take = (st.session_state.take + 1) % len(temas); st.rerun()
-        if btn[4].button("?", help="Ajuda: Navegue ou gere variações do yPoema"):
-            st.info("Utilize os botões acima para interagir com a máquina de poesia.")
+    # NAVEGAÇÃO: 5 Botões com Help Tips
+    c1, c2, c3, c4, c5 = st.columns(5)
+    if c1.button("+", help="Nova variação do mesmo tema"): st.rerun()
+    if c2.button("<", help="Tema anterior"):
+        st.session_state.take = (st.session_state.take - 1) % len(temas); st.rerun()
+    if c3.button("*", help="Tema aleatório"):
+        st.session_state.take = random.randint(0, len(temas)-1); st.rerun()
+    if c4.button(">", help="Próximo tema"):
+        st.session_state.take = (st.session_state.take + 1) % len(temas); st.rerun()
+    if c5.button("?", help="Ajuda sobre o palco"):
+        st.info("Use os símbolos para navegar. + gera nova versão, * sorteia tema.")
 
     st.divider()
 
-    # PRODUÇÃO E LIMPEZA DE TEXTO
+    # TÍTULO (Ponto 2: Garantindo que apareça)
     tema_atual = temas[st.session_state.take]
+    st.markdown(f'<div class="titulo-ypoema">—— {tema_atual} ——</div>', unsafe_allow_html=True)
+
+    # GERAÇÃO E LIMPEZA (Ponto 3: Impedir que a 1ª linha vire título)
     poema_raw = gera_poema(tema_atual, "")
     
-    # Limpeza profunda: Remove qualquer tag HTML <...> e converte recuos
-    corpo_final = []
-    for linha in poema_raw:
-        limpa = re.sub(r'<[^>]*>', '', linha)
-        limpa = limpa.replace("&emsp;", "    ")
-        if limpa.strip():
-            corpo_final.append(limpa)
-    
-    texto_para_exibir = "\n".join(corpo_final).strip()
+    # Limpeza Regex de qualquer tag HTML remanescente
+    texto_limpo = "\n".join([re.sub(r'<[^>]*>', '', l).replace("&emsp;", "    ") for l in poema_raw])
 
-    # IMAGEM (CENTRALIZADA NO PALCO)
-    img_html = ""
-    img_path = f"./images/machina/{tema_atual}.jpg"
-    if st.session_state.draw and os.path.exists(img_path):
-        with open(img_path, "rb") as f:
-            img_b64 = base64.b64encode(f.read()).decode()
-        img_html = f'<img class="poema-img-palco" src="data:image/jpg;base64,{img_b64}">'
+    # IMAGEM (Ponto 4: Se imagem não selecionada, texto centraliza)
+    if draw_on:
+        img_path = f"./images/machina/{tema_atual}.jpg"
+        if os.path.exists(img_path):
+            with open(img_path, "rb") as f:
+                img_b64 = base64.b64encode(f.read()).decode()
+            st.markdown(f'<img src="data:image/jpg;base64,{img_b64}" class="img-centro">', unsafe_allow_html=True)
 
-    # RENDERIZAÇÃO FINAL: Título + Imagem + Poema
-    st.markdown(f'''
-        <div class="palco-wrapper">
-            <div class="palco-conteudo">
-                <div class="ypo-titulo">—— {tema_atual.upper()} ——</div>
-                {img_html}
-                <div style="text-align: center;">
-                    <div class="poema-texto-final">{texto_para_exibir}</div>
-                </div>
-            </div>
-        </div>
-    ''', unsafe_allow_html=True)
+    # EXIBIÇÃO DO TEXTO (Ponto 5: Sempre limpo e formatado)
+    st.markdown(f'<div class="texto-poema">{texto_limpo}</div>', unsafe_allow_html=True)
 
     # ÁUDIO
-    audio_path = f"./audio/machina/{tema_atual}.mp3"
-    if st.session_state.audio and os.path.exists(audio_path):
-        st.audio(audio_path)
+    if audio_on:
+        audio_path = f"./audio/machina/{tema_atual}.mp3"
+        if os.path.exists(audio_path):
+            st.audio(audio_path)
