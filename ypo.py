@@ -2,7 +2,7 @@ import os
 import random
 import base64
 import streamlit as st
-from lay_2_ypo import gera_poema
+from lay_2_ypo import gera_poema 
 
 # --- 1. CONFIGURAÇÃO VISUAL (SAMIZDÀT) ---
 st.set_page_config(page_title='yPoemas | Samizdàt', layout='wide', initial_sidebar_state='expanded')
@@ -12,7 +12,6 @@ st.markdown('''
     header, footer {visibility: hidden;}
     [data-testid="stSidebar"] { min-width: 320px !important; max-width: 320px !important; }
     
-    /* Botões de Comando do Palco */
     .stButton>button { 
         width: 100%; 
         height: 2.8em; 
@@ -41,7 +40,7 @@ st.markdown('''
         line-height: 1.8; 
         color: #000; 
         flex: 1;
-        white-space: pre-wrap; /* Preserva as quebras de linha reais */
+        white-space: pre-wrap; /* Essencial para respeitar os Enters do Python */
     }
     
     .poema-img { 
@@ -69,10 +68,9 @@ if os.path.exists(path_base):
     with open(path_base, 'r', encoding='utf-8') as f:
         temas = [l.strip() for l in f if l.strip() and not l.startswith('[source')]
 
-# --- 4. SIDEBAR: CONFIGURAÇÕES GLOBAIS ---
+# --- 4. SIDEBAR ---
 with st.sidebar:
     st.image('logo_ypo.png')
-    
     st.write("### 🌍 Idioma")
     langs_fixos = ["pt", "es", "it", "fr", "en"]
     cols_lang = st.columns(6)
@@ -88,7 +86,6 @@ with st.sidebar:
 
     st.divider()
     st.write(f"### 📖 {st.session_state.book.upper()}")
-    
     if temas:
         st.session_state.take = st.selectbox("↓ Localizar Tema", range(len(temas)), 
                                               index=st.session_state.take, 
@@ -99,12 +96,11 @@ with st.sidebar:
     st.session_state.draw = st.checkbox("Imagem (Draw)", st.session_state.draw)
     st.session_state.audio = st.checkbox("Áudio", st.session_state.audio)
     st.session_state.video = st.checkbox("Vídeo", st.session_state.video)
-
     st.markdown('<div style="margin-top: 40px; font-family: serif; font-style: italic; opacity: 0.6;">Edição: Samizdàt</div>', unsafe_allow_html=True)
 
-# --- 5. O PALCO (COMANDOS E CONTEÚDO) ---
+# --- 5. O PALCO ---
 if temas:
-    # --- BARRA DE NAVEGAÇÃO ---
+    # Navegação Superior
     _, nav_container, _ = st.columns([0.2, 0.6, 0.2])
     with nav_container:
         btn_cols = st.columns(5)
@@ -121,13 +117,25 @@ if temas:
         if btn_cols[4].button("?", key="cmd_help"):
             st.toast("Navegação: + (Variação), < (Anterior), * (Sorte), > (Próximo)")
 
-    # --- GERAÇÃO ---
+    # GERAÇÃO E FILTRAGEM RIGOROSA
     tema_atual = temas[st.session_state.take]
     poema_raw = gera_poema(tema_atual, "") 
     
-    # LIMPEZA: Removemos as tags <br> literais e unimos com quebras de linha reais (\n)
-    poema_limpo = "\n".join([v.replace("<br>", "").replace("&emsp;", "    ") for v in poema_raw])
+    # Lista de termos a serem varridos para garantir o palco limpo
+    sujeira = ["<div", "</div>", "class=", "poema-texto", "<br>", ">", "content="]
     
+    linhas_limpas = []
+    for linha in poema_raw:
+        l = linha
+        for termo in sujeira:
+            l = l.replace(termo, "")
+        l = l.replace("&emsp;", "    ") # Converte recuo HTML em espaços
+        if l.strip() or l == "": # Mantém linhas em branco, mas remove o "lixo"
+            linhas_limpas.append(l)
+
+    poema_final = "\n".join(linhas_limpas).strip()
+    
+    # Imagem
     img_html = ""
     img_path = f"./images/machina/{tema_atual}.jpg"
     if st.session_state.draw and os.path.exists(img_path):
@@ -135,16 +143,14 @@ if temas:
             img_encoded = base64.b64encode(f.read()).decode()
         img_html = f'<img class="poema-img" src="data:image/jpg;base64,{img_encoded}">'
 
-    # RENDERIZAÇÃO: Usamos st.write/markdown para o texto limpo dentro do container HTML
-    # Mas para garantir a estética, injetamos o texto via f-string preservando os espaços
+    # Renderização Final
     st.markdown(f'''
         <div class="poema-container">
             {img_html}
-            <div class="poema-texto-render">{poema_limpo}</div>
+            <div class="poema-texto-render">{poema_final}</div>
         </div>
     ''', unsafe_allow_html=True)
 
     audio_path = f"./audio/machina/{tema_atual}.mp3"
     if st.session_state.audio and os.path.exists(audio_path):
         st.audio(audio_path)
-        
