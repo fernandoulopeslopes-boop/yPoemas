@@ -57,19 +57,20 @@ with st.sidebar:
     langs_fixos = ["pt", "es", "it", "fr", "en"]
     cols = st.columns(6)
     
+    # Botões de idiomas fixos
     for i, l in enumerate(langs_fixos):
         if cols[i].button(l): 
             st.session_state.lang = l
             st.rerun()
     
-    # Sexto botão dinâmico conforme o motor
+    # O SEXTO BOTÃO: Dinâmico (ca)
     label_sexto = f"{st.session_state.poly_name} ({st.session_state.poly_lang})"
     if cols[5].button(label_sexto):
         st.session_state.lang = st.session_state.poly_lang
         st.rerun()
 
     st.divider()
-    # Apenas exibição, sem seletor de acesso
+    # Apenas exibição do volume atual, sem seletor
     st.write(f"### 📖 Volume: {st.session_state.book.upper()}")
 
     st.divider()
