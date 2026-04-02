@@ -62,13 +62,14 @@ with st.sidebar:
             st.session_state.lang = l
             st.rerun()
     
-    # Sexto botão dinâmico
+    # Sexto botão dinâmico conforme o motor
     label_sexto = f"{st.session_state.poly_name} ({st.session_state.poly_lang})"
     if cols[5].button(label_sexto):
         st.session_state.lang = st.session_state.poly_lang
         st.rerun()
 
     st.divider()
+    # Apenas exibição, sem seletor de acesso
     st.write(f"### 📖 Volume: {st.session_state.book.upper()}")
 
     st.divider()
