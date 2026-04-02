@@ -189,9 +189,9 @@ if "eureka" not in st.session_state:  #  index for random tema in page_eureka
     st.session_state.eureka = 0
 
 if "poly_lang" not in st.session_state:
-    st.session_state.poly_lang = "ca"
+    st.session_state.poly_lang = "es"
 if "poly_name" not in st.session_state:
-    st.session_state.poly_name = "català"
+    st.session_state.poly_name = "español"
 if "poly_take" not in st.session_state:
     st.session_state.poly_take = 12
 if "poly_file" not in st.session_state:
