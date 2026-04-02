@@ -57,13 +57,12 @@ with st.sidebar:
     langs_fixos = ["pt", "es", "it", "fr", "en"]
     cols = st.columns(6)
     
-    # Botões de idiomas fixos
     for i, l in enumerate(langs_fixos):
         if cols[i].button(l): 
             st.session_state.lang = l
             st.rerun()
     
-    # O SEXTO BOTÃO: Dinâmico conforme st.session_state.poly_name (st.session_state.poly_lang)
+    # O SEXTO BOTÃO: Dinâmico conforme poly_name (poly_lang)
     label_sexto = f"{st.session_state.poly_name} ({st.session_state.poly_lang})"
     if cols[5].button(label_sexto):
         st.session_state.lang = st.session_state.poly_lang
@@ -71,26 +70,9 @@ with st.sidebar:
 
     st.divider()
 
-    st.write("### 📖 Volumes")
-    biblioteca = {
-        'Ensaios': 'ensaios', 'Jocosos': 'jocosos', 'Livro Vivo': 'livro vivo',
-        'Metalinguagem': 'metalinguagem', 'Outros Autores': 'outros autores',
-        'Poemas': 'poemas', 'Signos (F)': 'signos_fem', 'Signos (M)': 'signos_mas',
-        'Sociais': 'sociais', 'Temas Mini': 'temas_mini', 
-        'Todos os Signos': 'todos os signos', 'Todos os Temas': 'todos os temas',
-        'Variações': 'variações'
-    }
-    
-    nomes_amigaveis = list(biblioteca.keys())
-    slugs = list(biblioteca.values())
-    
-    idx_atual = slugs.index(st.session_state.book) if st.session_state.book in slugs else 2
-    escolha = st.radio("Selecione o Livro:", nomes_amigaveis, index=idx_atual)
-    
-    if st.session_state.book != biblioteca[escolha]:
-        st.session_state.book = biblioteca[escolha]
-        st.session_state.take = 0
-        st.rerun()
+    # O erro estava aqui. Agora usamos st.session_state.book de forma literal.
+    # Se você quiser trocar de livro, basta alterar o valor padrão lá em cima.
+    st.write(f"### 📖 Volume: {st.session_state.book.title()}")
 
     st.divider()
     st.write("### 🎬 Modos")
@@ -101,6 +83,7 @@ with st.sidebar:
     st.markdown('<div style="margin-top: 50px; font-family: serif; font-style: italic;">Edição: Samizdàt</div>', unsafe_allow_html=True)
 
 # --- 4. O PALCO ---
+# Caminho respeitando exatamente o nome do arquivo enviado (ex: rol_livro vivo.txt)
 path_base = f'./base/rol_{st.session_state.book}.txt'
 
 if os.path.exists(path_base):
@@ -152,4 +135,4 @@ if os.path.exists(path_base):
         </div>
     ''', unsafe_allow_html=True)
 else:
-    st.error(f"Arquivo {path_base} não encontrado.")
+    st.error(f"Arquivo não encontrado: {path_base}")
