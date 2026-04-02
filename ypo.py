@@ -5,85 +5,67 @@ import streamlit as st
 import extra_streamlit_components as stx
 from lay_2_ypo import gera_poema 
 
-# --- 1. CONFIGURAÇÃO E RESET VISUAL (O "EXTERMINADOR" DE QUINTAL) ---
+# --- 1. ESTÉTICA DE COMBATE (YPO_OLD) ---
 st.set_page_config(
     page_title='a Máquina de fazer Poesia - yPoemas',
     page_icon=':star:',
     layout='centered',
-    initial_sidebar_state='auto',
+    initial_sidebar_state='expanded',
 )
 
-# ESTA É A PARTE QUE O STREAMLIT ESTAVA IGNORANDO:
+# CSS para matar o "layout padrão" e forçar a identidade da Machina
 st.markdown('''
     <style>
-    /* 1. Mata o fundo padrão e margens excessivas */
+    header {visibility: hidden;}
+    footer {visibility: hidden;}
     .main { background-color: #ffffff; }
-    .reportview-container .main .block-container { padding: 0rem !important; }
-    
-    /* 2. Força a Sidebar a ter a largura do YPO_OLD (310px) e não metade da tela */
-    [data-testid="stSidebar"] { width: 310px !important; min-width: 310px !important; }
-    
-    /* 3. Estética dos textos e imagens (O abraço do texto na imagem) */
+    [data-testid="stSidebar"] { min-width: 310px !important; max-width: 310px !important; }
+    .block-container { padding-top: 1rem !important; max-width: 800px !important; }
     mark { background-color: lightblue; color: black; }
     .container { display: flex; align-items: flex-start; }
     .logo-text {
-        font-weight: 600;
-        font-size: 18px;
-        font-family: 'IBM Plex Sans', sans-serif;
-        color: #000000;
-        padding-left: 15px;
-        line-height: 1.4;
+        font-weight: 600; font-size: 19px; font-family: 'IBM Plex Sans', sans-serif;
+        color: #000000; padding-left: 20px; line-height: 1.5;
     }
-    .logo-img { float: right; max-width: 45%; margin-left: 20px; }
-    
-    /* Remove o header inútil do Streamlit */
-    header {visibility: hidden;}
-    footer {visibility: hidden;}
+    .logo-img { float: right; max-width: 400px; margin-left: 20px; }
     </style>
 ''', unsafe_allow_html=True)
 
-# --- 2. SESSION STATE (COMPLETO) ---
-if 'lang' not in st.session_state: st.session_state.lang = 'pt'
-if 'last_lang' not in st.session_state: st.session_state.last_lang = 'pt'
-if 'poly_lang' not in st.session_state: st.session_state.poly_lang = 'la'
-if 'book' not in st.session_state: st.session_state.book = 'livro_vivo'
+# --- 2. ESTADOS ---
 if 'take' not in st.session_state: st.session_state.take = 0
+if 'book' not in st.session_state: st.session_state.book = 'livro_vivo'
 if 'draw' not in st.session_state: st.session_state.draw = True
-if 'talk' not in st.session_state: st.session_state.talk = False
+if 'lang' not in st.session_state: st.session_state.lang = 'pt'
 
-# --- 3. SIDEBAR (A MARCA DA MACHINA) ---
+# --- 3. SIDEBAR (MARCA E INFO) ---
 def sidebar_machina():
     with st.sidebar:
-        # Idiomas - Colunas com proporção exata do OLD
+        # Grade de Idiomas
         c1, c2, c3, c4, c5, c6 = st.columns([1.1, 1.13, 1.04, 1.04, 1.17, 1.25])
         if c1.button("pt"): st.session_state.lang = 'pt'
         if c2.button("es"): st.session_state.lang = 'es'
         if c3.button("it"): st.session_state.lang = 'it'
         if c4.button("fr"): st.session_state.lang = 'fr'
         if c5.button("en"): st.session_state.lang = 'en'
-        if c6.button("⚒️"):
-            st.session_state.last_lang = st.session_state.lang
-            st.session_state.lang = st.session_state.poly_lang
-        
-        # Checkboxes (draw e talk)
-        col_draw, col_talk = st.columns([1, 1])
-        st.session_state.draw = col_draw.checkbox("imagem", st.session_state.draw)
-        st.session_state.talk = col_talk.checkbox("áudio", st.session_state.talk)
+        if c6.button("⚒️"): st.session_state.lang = 'la'
+
+        cd, ct = st.columns([1, 1])
+        st.session_state.draw = cd.checkbox("imagem", st.session_state.draw)
         
         st.image('logo_ypo.png')
         st.info("INFO_MINI: a máquina em estado de sorteio.")
 
-# --- 4. FUNÇÕES DE OUTPUT ---
+# --- 4. OUTPUT HTML ---
 def write_ypoema(text, img_path):
     if img_path and os.path.exists(img_path):
         with open(img_path, "rb") as f:
             b64 = base64.b64encode(f.read()).decode()
-        html = f'''<div class="container"><img class="logo-img" src="data:image/jpg;base64,{b64}"><p class="logo-text">{text}</p></div>'''
+        html = f'<div class="container"><img class="logo-img" src="data:image/jpg;base64,{b64}"><p class="logo-text">{text}</p></div>'
     else:
         html = f'<div class="container"><p class="logo-text">{text}</p></div>'
     st.markdown(html, unsafe_allow_html=True)
 
-# --- 5. PÁGINA PRINCIPAL ---
+# --- 5. O PALCO (INDIVIDUAL E INDEPENDENTE) ---
 def page_ypoemas():
     path = f'./base/rol_{st.session_state.book}.txt'
     if os.path.exists(path):
@@ -91,28 +73,40 @@ def page_ypoemas():
             temas = [line.strip() for line in f if line.strip()]
     else:
         temas = ["Fatos"]
-
-    # Navegação (Grid Centralizado)
-    _, m1, m2, m3, m4, m5, _ = st.columns([2, 1, 1, 1, 1, 1, 2])
-    if m2.button("◀"): st.session_state.take = (st.session_state.take - 1) % len(temas)
-    if m3.button("✻"): st.session_state.take = random.randint(0, len(temas)-1)
-    if m4.button("▶"): st.session_state.take = (st.session_state.take + 1) % len(temas)
     
-    # Seletor de Temas
-    idx = st.selectbox("↓ Lista de Temas", range(len(temas)), index=st.session_state.take, format_func=lambda x: temas[x])
-    st.session_state.take = idx
-    tema_atual = temas[idx]
+    max_idx = len(temas) - 1
 
-    # Geração
+    # BOTOES DE NAVEGAÇÃO DO PALCO
+    col1, b_prev, b_rand, b_next, col5 = st.columns([3, 1, 1, 1, 3])
+    
+    if b_prev.button("◀"):
+        st.session_state.take = max_idx if st.session_state.take <= 0 else st.session_state.take - 1
+        
+    if b_rand.button("✻"):
+        st.session_state.take = random.randint(0, max_idx)
+        
+    if b_next.button("▶"):
+        st.session_state.take = 0 if st.session_state.take >= max_idx else st.session_state.take + 1
+
+    # SELECT BOX (Apenas para escolha direta, sem travar os botões)
+    st.session_state.take = st.selectbox(
+        "↓ Lista de Temas", 
+        range(len(temas)), 
+        index=st.session_state.take, 
+        format_func=lambda x: temas[x]
+    )
+
+    tema_atual = temas[st.session_state.take]
+
+    # Geração do Poema
     poema = gera_poema(tema_atual, "")
-    texto_final = "<br>".join(poema)
     
-    # Busca de Imagem
+    # Imagem (Busca direta)
     img_path = f"./images/machina/{tema_atual}.jpg"
     logo_img = img_path if st.session_state.draw and os.path.exists(img_path) else None
-    
+
     st.divider()
-    write_ypoema(texto_final, logo_img)
+    write_ypoema("<br>".join(poema), logo_img)
 
 # --- 6. MAIN ---
 def main():
@@ -123,10 +117,8 @@ def main():
         stx.TabBarItemData(id="a", title="about", description=""),
     ], default="y")
 
-    if tab == "y":
+    if str(tab) == "y":
         page_ypoemas()
-    else:
-        st.write("Samizdát Digital v2.0")
 
 if __name__ == '__main__':
     main()
