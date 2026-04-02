@@ -2,7 +2,7 @@ import os
 import random
 import base64
 import streamlit as st
-from lay_2_ypo import gera_poema 
+from lay_2_ypo import gera_poema
 
 # --- 1. CONFIGURAÇÃO VISUAL (SAMIZDÀT) ---
 st.set_page_config(page_title='yPoemas | Samizdàt', layout='wide', initial_sidebar_state='expanded')
