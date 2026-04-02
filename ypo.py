@@ -11,7 +11,19 @@ st.markdown('''
     <style>
     header, footer {visibility: hidden;}
     [data-testid="stSidebar"] { min-width: 320px !important; max-width: 320px !important; }
-    .stButton>button { width: 100%; height: 2.2em; font-weight: 600; border-radius: 2px; }
+    
+    /* Botões de Navegação do Palco */
+    .stButton>button { 
+        width: 100%; 
+        height: 3em; 
+        font-weight: 700; 
+        font-size: 18px;
+        border-radius: 2px;
+        border: 1px solid #ddd;
+        background-color: #fff;
+        color: #333;
+    }
+    .stButton>button:hover { border-color: #000; color: #000; }
     
     /* Palco Sagrado */
     .poema-container { 
@@ -19,7 +31,7 @@ st.markdown('''
         flex-direction: row; 
         align-items: flex-start; 
         gap: 60px; 
-        padding: 40px 10% 20px 10%;
+        padding: 40px 5% 20px 5%;
     }
     
     .poema-texto { 
@@ -36,8 +48,6 @@ st.markdown('''
         border-radius: 2px; 
         box-shadow: 0px 0px 30px rgba(0,0,0,0.03); 
     }
-
-    .stAudio { max-width: 400px; margin-left: 10%; padding-top: 20px; }
     </style>
 ''', unsafe_allow_html=True)
 
@@ -51,7 +61,14 @@ if 'take' not in st.session_state: st.session_state.take = 0
 for mode in ['draw', 'video', 'audio']:
     if mode not in st.session_state: st.session_state[mode] = (mode == 'draw')
 
-# --- 3. SIDEBAR: CONFIGURAÇÕES GLOBAIS ---
+# --- 3. CARREGAMENTO DA BASE (BACKEND) ---
+path_base = f'./base/rol_{st.session_state.book}.txt'
+temas = []
+if os.path.exists(path_base):
+    with open(path_base, 'r', encoding='utf-8') as f:
+        temas = [l.strip() for l in f if l.strip() and not l.startswith('[source')]
+
+# --- 4. SIDEBAR: CONFIGURAÇÕES GLOBAIS ---
 with st.sidebar:
     st.image('logo_ypo.png')
     
@@ -59,26 +76,18 @@ with st.sidebar:
     langs_fixos = ["pt", "es", "it", "fr", "en"]
     cols_lang = st.columns(6)
     for i, l in enumerate(langs_fixos):
-        if cols_lang[i].button(l): 
+        if cols_lang[i].button(l, key=f"btn_{l}"): 
             st.session_state.lang = l
             st.rerun()
     
     label_sexto = f"{st.session_state.poly_name} ({st.session_state.poly_lang})"
-    if cols_lang[5].button(label_sexto):
+    if cols_lang[5].button(label_sexto, key="btn_poly"):
         st.session_state.lang = st.session_state.poly_lang
         st.rerun()
 
     st.divider()
     st.write(f"### 📖 {st.session_state.book.upper()}")
     
-    # Carregamento da base para lógica de navegação
-    path_base = f'./base/rol_{st.session_state.book}.txt'
-    temas = []
-    if os.path.exists(path_base):
-        with open(path_base, 'r', encoding='utf-8') as f:
-            temas = [l.strip() for l in f if l.strip() and not l.startswith('[source')]
-    
-    # Busca por lista permanece na sidebar para não "sujar" o palco
     if temas:
         st.session_state.take = st.selectbox("↓ Localizar Tema", range(len(temas)), 
                                               index=st.session_state.take, 
@@ -92,34 +101,31 @@ with st.sidebar:
 
     st.markdown('<div style="margin-top: 40px; font-family: serif; font-style: italic; opacity: 0.6;">Edição: Samizdàt</div>', unsafe_allow_html=True)
 
-# --- 4. O PALCO (PRODUÇÃO E NAVEGAÇÃO) ---
+# --- 5. O PALCO (NAVEGAÇÃO E CONTEÚDO) ---
 if temas:
-    # --- LINHA DE COMANDO DO PALCO ---
-    c1, c2, c3, c4, c5 = st.columns([1, 1, 1, 1, 1])
-    
-    if c1.button("+"): # Mais do mesmo tema (gera novo poema do mesmo take)
-        st.rerun()
-        
-    if c2.button("<"): # Tema anterior
-        st.session_state.take = (st.session_state.take - 1) % len(temas)
-        st.rerun()
-        
-    if c3.button("*"): # Tema aleatório
-        st.session_state.take = random.randint(0, len(temas)-1)
-        st.rerun()
-        
-    if c4.button(">"): # Próximo tema
-        st.session_state.take = (st.session_state.take + 1) % len(temas)
-        st.rerun()
-        
-    if c5.button("?"): # Help sobre o palco
-        st.toast("Comandos: + (Variação), < (Anterior), * (Sorte), > (Próximo), ? (Ajuda)")
+    # --- BARRA DE COMANDO DO PALCO ---
+    # Usando colunas menores e centralizadas para garantir visibilidade
+    _, c_nav, _ = st.columns([0.1, 0.8, 0.1])
+    with c_nav:
+        nav_cols = st.columns(5)
+        if nav_cols[0].button("+", help="Variação"):
+            st.rerun()
+        if nav_cols[1].button("<", help="Anterior"):
+            st.session_state.take = (st.session_state.take - 1) % len(temas)
+            st.rerun()
+        if nav_cols[2].button("*", help="Aleatório"):
+            st.session_state.take = random.randint(0, len(temas)-1)
+            st.rerun()
+        if nav_cols[3].button(">", help="Próximo"):
+            st.session_state.take = (st.session_state.take + 1) % len(temas)
+            st.rerun()
+        if nav_cols[4].button("?", help="Ajuda"):
+            st.info("Comandos: + (Variação), < (Anterior), * (Aleatório), > (Próximo), ? (Ajuda)")
 
-    # --- GERAÇÃO DO CONTEÚDO ---
+    # --- PRODUÇÃO ---
     tema_atual = temas[st.session_state.take]
     poema = gera_poema(tema_atual, "") 
     
-    # Processamento de Imagem
     img_html = ""
     img_path = f"./images/machina/{tema_atual}.jpg"
     if st.session_state.draw and os.path.exists(img_path):
@@ -127,7 +133,6 @@ if temas:
             img_encoded = base64.b64encode(f.read()).decode()
         img_html = f'<img class="poema-img" src="data:image/jpg;base64,{img_encoded}">'
 
-    # RENDERIZAÇÃO
     st.markdown(f'''
         <div class="poema-container">
             {img_html}
@@ -135,9 +140,8 @@ if temas:
         </div>
     ''', unsafe_allow_html=True)
 
-    # ÁUDIO
     audio_path = f"./audio/machina/{tema_atual}.mp3"
     if st.session_state.audio and os.path.exists(audio_path):
         st.audio(audio_path)
 else:
-    st.error(f"Base de dados não encontrada em: {path_base}")
+    st.error(f"Não foi possível carregar os temas de: {path_base}")
