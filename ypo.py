@@ -63,7 +63,7 @@ st.markdown(
 # --- INITIALIZE SESSION STATE ---
 if 'lang' not in st.session_state: st.session_state.lang = 'pt'
 if 'poly_lang' not in st.session_state: st.session_state.poly_lang = 'ca'
-if 'tema' not in st.session_state: st.session_state.tema = 'Fatos'
+if 'tema' not in st.session_state: st.session_state.tema = 'Olhares'
 if 'poema_atual' not in st.session_state: st.session_state.poema_atual = ""
 if 'draw' not in st.session_state: st.session_state.draw = False
 if 'talk' not in st.session_state: st.session_state.talk = False
