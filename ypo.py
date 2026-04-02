@@ -4,22 +4,15 @@ import base64
 import streamlit as st
 from lay_2_ypo import gera_poema 
 
-# --- 1. CONFIGURAÇÃO VISUAL (LAYOUT WIDE) ---
-st.set_page_config(page_title='yPoemas', layout='wide', initial_sidebar_state='expanded')
+# --- 1. CONFIGURAÇÃO VISUAL (SAMIZDÀT) ---
+st.set_page_config(page_title='yPoemas | Samizdàt', layout='wide', initial_sidebar_state='expanded')
 
 st.markdown('''
     <style>
     header, footer {visibility: hidden;}
-    
-    /* Sidebar com largura controlada */
-    [data-testid="stSidebar"] { 
-        min-width: 280px !important; 
-        max-width: 280px !important; 
-    }
-    
+    [data-testid="stSidebar"] { min-width: 280px !important; max-width: 280px !important; }
     .stButton>button { width: 100%; height: 2.2em; font-weight: 600; }
     
-    /* PALCO: Organização da Arte e Versos */
     .poema-container { 
         display: flex; 
         flex-direction: row; 
@@ -46,79 +39,105 @@ st.markdown('''
     </style>
 ''', unsafe_allow_html=True)
 
-# --- 2. ESTADOS DE MEMÓRIA (INICIALIZAÇÃO) ---
+# --- 2. ESTADOS DE MEMÓRIA (SINCRONIA COM MOTOR) ---
 if 'lang' not in st.session_state: st.session_state.lang = 'pt'
-if 'book' not in st.session_state: st.session_state.book = 'livro_vivo'
-if 'draw' not in st.session_state: st.session_state.draw = True
-if 'video' not in st.session_state: st.session_state.video = False
-if 'audio' not in st.session_state: st.session_state.audio = False
+if "poly_lang" not in st.session_state: st.session_state.poly_lang = "ca"
+if "poly_name" not in st.session_state: st.session_state.poly_name = "català"
+if 'book' not in st.session_state: st.session_state.book = 'livro vivo'
 if 'take' not in st.session_state: st.session_state.take = 0
+
+for mode in ['draw', 'video', 'audio']:
+    if mode not in st.session_state: st.session_state[mode] = (mode == 'draw')
 
 # --- 3. SIDEBAR: COMANDOS ---
 with st.sidebar:
     st.image('logo_ypo.png')
     
-    # IDIOMAS: O clique apenas envia a chave para o seu motor
     st.write("### 🌍 Idioma")
-    c1, c2, c3, c4, c5, c6 = st.columns(6)
-    if c1.button("pt"): st.session_state.lang = 'pt'; st.rerun()
-    if c2.button("es"): st.session_state.lang = 'es'; st.rerun()
-    if c3.button("it"): st.session_state.lang = 'it'; st.rerun()
-    if c4.button("fr"): st.session_state.lang = 'fr'; st.rerun()
-    if c5.button("en"): st.session_state.lang = 'en'; st.rerun()
-    if c6.button("la"): st.session_state.lang = 'la'; st.rerun()
+    langs_fixos = ["pt", "es", "it", "fr", "en"]
+    cols = st.columns(6)
+    
+    # Botões de idiomas fixos
+    for i, l in enumerate(langs_fixos):
+        if cols[i].button(l): 
+            st.session_state.lang = l
+            st.rerun()
+    
+    # O SEXTO BOTÃO: Dinâmico conforme st.session_state.poly_name (st.session_state.poly_lang)
+    label_sexto = f"{st.session_state.poly_name} ({st.session_state.poly_lang})"
+    if cols[5].button(label_sexto):
+        st.session_state.lang = st.session_state.poly_lang
+        st.rerun()
 
     st.divider()
 
+    st.write("### 📖 Volumes")
+    biblioteca = {
+        'Ensaios': 'ensaios', 'Jocosos': 'jocosos', 'Livro Vivo': 'livro vivo',
+        'Metalinguagem': 'metalinguagem', 'Outros Autores': 'outros autores',
+        'Poemas': 'poemas', 'Signos (F)': 'signos_fem', 'Signos (M)': 'signos_mas',
+        'Sociais': 'sociais', 'Temas Mini': 'temas_mini', 
+        'Todos os Signos': 'todos os signos', 'Todos os Temas': 'todos os temas',
+        'Variações': 'variações'
+    }
+    
+    nomes_amigaveis = list(biblioteca.keys())
+    slugs = list(biblioteca.values())
+    
+    idx_atual = slugs.index(st.session_state.book) if st.session_state.book in slugs else 2
+    escolha = st.radio("Selecione o Livro:", nomes_amigaveis, index=idx_atual)
+    
+    if st.session_state.book != biblioteca[escolha]:
+        st.session_state.book = biblioteca[escolha]
+        st.session_state.take = 0
+        st.rerun()
+
+    st.divider()
     st.write("### 🎬 Modos")
     st.session_state.draw = st.checkbox("Imagem (Draw)", st.session_state.draw)
     st.session_state.video = st.checkbox("Vídeo", st.session_state.video)
     st.session_state.audio = st.checkbox("Áudio", st.session_state.audio)
 
-# --- 4. O PALCO (CARREGAMENTO E NAVEGAÇÃO) ---
+    st.markdown('<div style="margin-top: 50px; font-family: serif; font-style: italic;">Edição: Samizdàt</div>', unsafe_allow_html=True)
+
+# --- 4. O PALCO ---
 path_base = f'./base/rol_{st.session_state.book}.txt'
 
 if os.path.exists(path_base):
     with open(path_base, 'r', encoding='utf-8') as f:
-        temas = [l.strip() for l in f if l.strip()]
+        temas = [l.strip() for l in f if l.strip() and not l.startswith('[source')]
     
-    # Validação do índice
-    if st.session_state.take >= len(temas):
-        st.session_state.take = 0
+    if st.session_state.take >= len(temas): st.session_state.take = 0
 
-    max_idx = len(temas) - 1
-
-    # Navegação
-    col_nav1, col_nav2, col_nav3 = st.columns([1, 1, 1])
-    if col_nav1.button("◀ Tema"):
-        st.session_state.take = max_idx if st.session_state.take <= 0 else st.session_state.take - 1
+    c_nav1, c_nav2, c_nav3 = st.columns([1, 1, 1])
+    if c_nav1.button("◀ Tema"):
+        st.session_state.take = (st.session_state.take - 1) % len(temas)
         st.rerun()
-    if col_nav2.button("✻ Aleatório"):
-        st.session_state.take = random.randint(0, max_idx)
+    if c_nav2.button("✻ Aleatório"):
+        st.session_state.take = random.randint(0, len(temas)-1)
         st.rerun()
-    if col_nav3.button("Tema ▶"):
-        st.session_state.take = 0 if st.session_state.take >= max_idx else st.session_state.take + 1
+    if c_nav3.button("Tema ▶"):
+        st.session_state.take = (st.session_state.take + 1) % len(temas)
         st.rerun()
 
-    # Seletor de Tema
     st.session_state.take = st.selectbox("↓ Localizar Tema", range(len(temas)), 
                                           index=st.session_state.take, 
                                           format_func=lambda x: temas[x])
 
-    # --- 5. PRODUÇÃO (INTEGRAÇÃO POLY_NAME / POLY_LANG) ---
+    # --- 5. PRODUÇÃO ---
     tema_atual = temas[st.session_state.take]
-    
-    # O motor gera_poema é quem define poly_name e poly_lang internamente
     poema = gera_poema(tema_atual, "") 
-    texto_corpo = "<br>".join(poema)
-
+    
     st.divider()
+    
+    header_col1, header_col2 = st.columns([0.8, 0.2])
+    with header_col1:
+        if 'poly_name' in st.session_state:
+            st.subheader(st.session_state.poly_name)
+    with header_col2:
+        if 'poly_lang' in st.session_state:
+            st.write(f"*{st.session_state.poly_lang}*")
 
-    # Exibição do Nome do Poema (usando o poly_name definido no motor)
-    if 'poly_name' in st.session_state:
-        st.subheader(st.session_state.poly_name)
-
-    # Lógica da Imagem
     img_path = f"./images/machina/{tema_atual}.jpg"
     img_html = ""
     if st.session_state.draw and os.path.exists(img_path):
@@ -126,14 +145,11 @@ if os.path.exists(path_base):
             img_encoded = base64.b64encode(f.read()).decode()
         img_html = f'<img class="poema-img" src="data:image/jpg;base64,{img_encoded}">'
 
-    # Renderização Final
     st.markdown(f'''
         <div class="poema-container">
             {img_html}
-            <div class="poema-texto">{texto_corpo}</div>
+            <div class="poema-texto">{"<br>".join(poema)}</div>
         </div>
     ''', unsafe_allow_html=True)
-
 else:
     st.error(f"Arquivo {path_base} não encontrado.")
-    st.stop()
