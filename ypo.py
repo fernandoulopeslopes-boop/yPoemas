@@ -62,17 +62,14 @@ with st.sidebar:
             st.session_state.lang = l
             st.rerun()
     
-    # O SEXTO BOTÃO: Dinâmico conforme poly_name (poly_lang)
+    # O SEXTO BOTÃO: Dinâmico conforme st.session_state.poly_name (st.session_state.poly_lang)
     label_sexto = f"{st.session_state.poly_name} ({st.session_state.poly_lang})"
     if cols[5].button(label_sexto):
         st.session_state.lang = st.session_state.poly_lang
         st.rerun()
 
     st.divider()
-
-    # O erro estava aqui. Agora usamos st.session_state.book de forma literal.
-    # Se você quiser trocar de livro, basta alterar o valor padrão lá em cima.
-    st.write(f"### 📖 Volume: {st.session_state.book.title()}")
+    st.write(f"### 📖 Volume: {st.session_state.book.upper()}")
 
     st.divider()
     st.write("### 🎬 Modos")
@@ -83,7 +80,7 @@ with st.sidebar:
     st.markdown('<div style="margin-top: 50px; font-family: serif; font-style: italic;">Edição: Samizdàt</div>', unsafe_allow_html=True)
 
 # --- 4. O PALCO ---
-# Caminho respeitando exatamente o nome do arquivo enviado (ex: rol_livro vivo.txt)
+# CORREÇÃO CRÍTICA: O f-string agora preserva o nome exato do volume (ex: rol_livro vivo.txt)
 path_base = f'./base/rol_{st.session_state.book}.txt'
 
 if os.path.exists(path_base):
