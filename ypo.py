@@ -1,4 +1,5 @@
 import os
+import re
 import random
 import base64
 import streamlit as st
@@ -12,25 +13,22 @@ st.markdown('''
     header, footer {visibility: hidden;}
     [data-testid="stSidebar"] { min-width: 320px !important; max-width: 320px !important; }
     
+    /* Botões de Comando */
     .stButton>button { 
-        width: 100%; 
-        height: 2.8em; 
-        font-weight: 700; 
-        font-size: 20px;
-        border-radius: 4px;
-        border: 1px solid #e0e0e0;
-        background-color: #f9f9f9;
-        color: #333;
+        width: 100%; height: 2.8em; font-weight: 700; font-size: 20px;
+        border-radius: 4px; border: 1px solid #e0e0e0; background-color: #f9f9f9;
     }
-    .stButton>button:hover { border-color: #000; background-color: #fff; color: #000; }
     
-    /* Palco Sagrado */
+    /* O PALCO SAGRADO - SEM COLUNAS INTERNAS */
+    .poema-wrapper {
+        padding: 40px 10%;
+    }
+    
     .poema-container { 
         display: flex; 
         flex-direction: row; 
         align-items: flex-start; 
-        gap: 60px; 
-        padding: 40px 5% 20px 5%;
+        gap: 60px;
     }
     
     .poema-texto-render { 
@@ -38,9 +36,9 @@ st.markdown('''
         font-size: 28px; 
         font-family: 'IBM Plex Sans', sans-serif; 
         line-height: 1.8; 
-        color: #000; 
+        color: #000;
+        white-space: pre-wrap;
         flex: 1;
-        white-space: pre-wrap; /* Essencial para respeitar os Enters do Python */
     }
     
     .poema-img { 
@@ -51,106 +49,77 @@ st.markdown('''
     </style>
 ''', unsafe_allow_html=True)
 
-# --- 2. ESTADOS DE MEMÓRIA ---
+# --- 2. ESTADOS E BASE ---
 if 'lang' not in st.session_state: st.session_state.lang = 'pt'
-if "poly_lang" not in st.session_state: st.session_state.poly_lang = "ca"
-if "poly_name" not in st.session_state: st.session_state.poly_name = "català"
 if 'book' not in st.session_state: st.session_state.book = 'livro vivo'
 if 'take' not in st.session_state: st.session_state.take = 0
+for m in ['draw', 'audio']: 
+    if m not in st.session_state: st.session_state[m] = True
 
-for mode in ['draw', 'video', 'audio']:
-    if mode not in st.session_state: st.session_state[mode] = (mode == 'draw')
-
-# --- 3. CARREGAMENTO DA BASE ---
 path_base = f'./base/rol_{st.session_state.book}.txt'
 temas = []
 if os.path.exists(path_base):
     with open(path_base, 'r', encoding='utf-8') as f:
         temas = [l.strip() for l in f if l.strip() and not l.startswith('[source')]
 
-# --- 4. SIDEBAR ---
+# --- 3. SIDEBAR ---
 with st.sidebar:
     st.image('logo_ypo.png')
-    st.write("### 🌍 Idioma")
-    langs_fixos = ["pt", "es", "it", "fr", "en"]
-    cols_lang = st.columns(6)
-    for i, l in enumerate(langs_fixos):
-        if cols_lang[i].button(l, key=f"side_{l}"): 
-            st.session_state.lang = l
-            st.rerun()
-    
-    label_sexto = f"{st.session_state.poly_name} ({st.session_state.poly_lang})"
-    if cols_lang[5].button(label_sexto, key="side_poly"):
-        st.session_state.lang = st.session_state.poly_lang
-        st.rerun()
-
-    st.divider()
     st.write(f"### 📖 {st.session_state.book.upper()}")
     if temas:
         st.session_state.take = st.selectbox("↓ Localizar Tema", range(len(temas)), 
                                               index=st.session_state.take, 
                                               format_func=lambda x: temas[x])
-
     st.divider()
-    st.write("### 🎬 Modos")
     st.session_state.draw = st.checkbox("Imagem (Draw)", st.session_state.draw)
     st.session_state.audio = st.checkbox("Áudio", st.session_state.audio)
-    st.session_state.video = st.checkbox("Vídeo", st.session_state.video)
-    st.markdown('<div style="margin-top: 40px; font-family: serif; font-style: italic; opacity: 0.6;">Edição: Samizdàt</div>', unsafe_allow_html=True)
+    st.markdown('<div style="margin-top: 40px; font-style: italic; opacity: 0.6;">Edição: Samizdàt</div>', unsafe_allow_html=True)
 
-# --- 5. O PALCO ---
+# --- 4. O PALCO ---
 if temas:
-    # Navegação Superior
+    # Comandos superiores
     _, nav_container, _ = st.columns([0.2, 0.6, 0.2])
     with nav_container:
         btn_cols = st.columns(5)
-        if btn_cols[0].button("+", key="cmd_plus"): st.rerun()
-        if btn_cols[1].button("<", key="cmd_prev"):
-            st.session_state.take = (st.session_state.take - 1) % len(temas)
-            st.rerun()
-        if btn_cols[2].button("*", key="cmd_rnd"):
-            st.session_state.take = random.randint(0, len(temas)-1)
-            st.rerun()
-        if btn_cols[3].button(">", key="cmd_next"):
-            st.session_state.take = (st.session_state.take + 1) % len(temas)
-            st.rerun()
-        if btn_cols[4].button("?", key="cmd_help"):
-            st.toast("Navegação: + (Variação), < (Anterior), * (Sorte), > (Próximo)")
+        if btn_cols[0].button("+"): st.rerun()
+        if btn_cols[1].button("<"):
+            st.session_state.take = (st.session_state.take - 1) % len(temas); st.rerun()
+        if btn_cols[2].button("*"):
+            st.session_state.take = random.randint(0, len(temas)-1); st.rerun()
+        if btn_cols[3].button(">"):
+            st.session_state.take = (st.session_state.take + 1) % len(temas); st.rerun()
+        if btn_cols[4].button("?"): st.toast("Navegação Ativa")
 
-    # GERAÇÃO E FILTRAGEM RIGOROSA
+    # Geração e Limpeza Profunda
     tema_atual = temas[st.session_state.take]
-    poema_raw = gera_poema(tema_atual, "") 
+    poema_raw = gera_poema(tema_atual, "")
     
-    # Lista de termos a serem varridos para garantir o palco limpo
-    sujeira = ["<div", "</div>", "class=", "poema-texto", "<br>", ">", "content="]
-    
-    linhas_limpas = []
-    for linha in poema_raw:
-        l = linha
-        for termo in sujeira:
-            l = l.replace(termo, "")
-        l = l.replace("&emsp;", "    ") # Converte recuo HTML em espaços
-        if l.strip() or l == "": # Mantém linhas em branco, mas remove o "lixo"
-            linhas_limpas.append(l)
+    # Transforma a lista em uma string única para limpar tudo de uma vez
+    texto_sujo = "\n".join(poema_raw)
+    # Remove qualquer tag HTML <...>
+    texto_limpo = re.sub(r'<[^>]*>', '', texto_sujo)
+    # Trata recuos e espaços
+    texto_limpo = texto_limpo.replace("&emsp;", "    ").strip()
 
-    poema_final = "\n".join(linhas_limpas).strip()
-    
     # Imagem
     img_html = ""
     img_path = f"./images/machina/{tema_atual}.jpg"
     if st.session_state.draw and os.path.exists(img_path):
         with open(img_path, "rb") as f:
-            img_encoded = base64.b64encode(f.read()).decode()
-        img_html = f'<img class="poema-img" src="data:image/jpg;base64,{img_encoded}">'
+            img_b64 = base64.b64encode(f.read()).decode()
+        img_html = f'<img class="poema-img" src="data:image/jpg;base64,{img_b64}">'
 
-    # Renderização Final
+    # Renderização em Bloco Único (Palco)
     st.markdown(f'''
-        <div class="poema-container">
-            {img_html}
-            <div class="poema-texto-render">{poema_final}</div>
+        <div class="poema-wrapper">
+            <div class="poema-container">
+                {img_html}
+                <div class="poema-texto-render">{texto_limpo}</div>
+            </div>
         </div>
     ''', unsafe_allow_html=True)
 
+    # Áudio Discreto
     audio_path = f"./audio/machina/{tema_atual}.mp3"
     if st.session_state.audio and os.path.exists(audio_path):
         st.audio(audio_path)
