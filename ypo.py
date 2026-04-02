@@ -9,7 +9,7 @@ import streamlit as st
 import extra_streamlit_components as stx
 from datetime import datetime
 
-# O MOTOR DE GERAÇÃO (BILHÕES DE COMBINAÇÕES)
+# O MOTOR DE GERAÇÃO NONE_LHÕES DE COMBINAÇÕES)
 from lay_2_ypo import gera_poema
 
 ### bof: settings
