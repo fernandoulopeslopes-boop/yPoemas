@@ -43,6 +43,7 @@ with st.sidebar:
         st.rerun()
 
     st.divider()
+
     
     # Controles de Mídia (Audio/Vídeo/Draw)
     st.write("🎬 **Modos de Saída**")
