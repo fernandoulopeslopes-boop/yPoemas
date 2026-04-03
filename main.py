@@ -60,7 +60,7 @@ st.markdown(
     [data-testid="column"] { flex: 0 0 auto !important; width: 115px !important; }
     
     div.stButton > button {
-        width: 112px !important; 
+        width: 116px !important; 
         border-radius: 12px; 
         height: 3.2em;
         background-color: #ffffff; 
