@@ -16,23 +16,23 @@ if "page" not in st.session_state: st.session_state.page = "mini"
 if "poly_lang" not in st.session_state: st.session_state.poly_lang = "ca"
 if "poly_name" not in st.session_state: st.session_state.poly_name = "català"
 
-# Dicionário de Help Tips (Traduções para o Tooltip)
+# Dicionário de Help Tips (Tooltips puros)
 help_tips = {
     "Português": ["voz (talk)", "arte (draw)", "vídeo (video)"],
     "English": ["voice (talk)", "art (draw)", "video (video)"],
     "Français": ["voix (talk)", "art (draw)", "vidéo (video)"],
-    "Español": ["voz (talk)", "arte (draw)", "vídeo (video)"],
+    "Español": ["voz (talk)", "arte (draw)", "video (video)"],
     "Italiano": ["voce (talk)", "arte (draw)", "video (video)"],
     st.session_state.poly_name: ["veu (talk)", "art (draw)", "vídeo (video)"]
 }
 
-# Regra 0: Look & Feel
+# Regra 0: Look & Feel (Ajuste Fino de CSS)
 st.markdown(
     """ <style>
     footer {visibility: hidden;}
     .main .block-container { max-width: 95% !important; padding-top: 1.5rem; margin: 0 auto; }
     
-    /* Blindagem */
+    /* Blindagem contra elementos de imagem */
     [data-testid="stImage"] button, [data-testid="stElementToolbar"] { display: none !important; }
     [data-testid="stImage"] img { pointer-events: none; }
 
@@ -48,9 +48,12 @@ st.markdown(
     }
     div.stButton > button:hover { border-color: powderblue; color: powderblue; }
 
-    /* Estilo para os Checkboxes minimalistas na Sidebar */
+    /* CSS MÁGICO: Esconde o label do checkbox para sobrarem apenas as 3 caixas */
+    [data-testid="stSidebar"] [data-testid="stCheckbox"] p {
+        display: none !important;
+    }
     [data-testid="stSidebar"] [data-testid="stCheckbox"] {
-        margin-bottom: -15px;
+        margin-left: 10px;
     }
 
     .sidebar-header {
@@ -58,7 +61,7 @@ st.markdown(
         font-size: 0.85rem;
         font-weight: 600;
         color: #999;
-        margin-top: 20px;
+        margin-top: 25px;
         margin-bottom: 8px;
         text-transform: lowercase;
     }
@@ -80,7 +83,7 @@ for i in range(6):
 
 st.markdown("---")
 
-### bof: sidebar (O Cockpit Silencioso)
+### bof: sidebar
 
 mapeamento_artes = {
     "mini": "img_mini.jpg", "ypoemas": "img_ypoemas.jpg", "eureka": "img_eureka.jpg",
@@ -97,19 +100,18 @@ st.sidebar.markdown("<br>", unsafe_allow_html=True)
 lista_idiomas = ["Português", "English", "Français", "Español", "Italiano", st.session_state.poly_name]
 sel_idioma = st.sidebar.selectbox("idioma", lista_idiomas, key="sel_lang", label_visibility="collapsed")
 
-# Pegar a lista de dicas conforme o idioma
 tips = help_tips.get(sel_idioma, help_tips["Português"])
 
-# 2. Recursos (Apenas Checkboxes Puros em uma linha)
+# 2. Recursos (Agora sim: 3 quadrados puros)
 st.sidebar.markdown("<br>", unsafe_allow_html=True)
 col1, col2, col3 = st.sidebar.columns(3)
 
 with col1:
-    st.session_state.audio_on = st.checkbox("", value=True, help=tips[0], key="chk_v")
+    st.session_state.audio_on = st.sidebar.checkbox("v", value=True, help=tips[0], key="chk_v")
 with col2:
-    st.session_state.draw_on = st.checkbox("", value=True, help=tips[1], key="chk_a")
+    st.session_state.draw_on = st.sidebar.checkbox("a", value=True, help=tips[1], key="chk_a")
 with col3:
-    st.session_state.video_on = st.checkbox("", value=False, help=tips[2], key="chk_vi")
+    st.session_state.video_on = st.sidebar.checkbox("vi", value=False, help=tips[2], key="chk_vi")
 
 # 3. Contato
 st.sidebar.markdown("<div class='sidebar-header'>contato</div>", unsafe_allow_html=True)
@@ -127,7 +129,7 @@ st.sidebar.caption(f"Phenix Machina | {st.session_state.page}")
 
 if st.session_state.page == "mini":
     st.subheader("ツ mini")
-    st.write(f"Interface purificada. Idioma: {sel_idioma}")
+    st.write(f"Cockpit calibrado. Tooltips ativos em: **{sel_idioma}**.")
 else:
     st.subheader(f"ツ {st.session_state.page}")
 
