@@ -35,23 +35,24 @@ if have_internet():
     except ImportError:
         pass
 
-# Regra 0: Look & Feel (Botões Compactos e Centralizados)
+# Regra 0: Look & Feel (Expansão do Contêiner e Palco)
 st.markdown(
     """ <style>
     footer {visibility: hidden;}
     
-    /* Centraliza e limita a largura da barra de navegação */
-    .nav-container {
-        display: flex;
-        justify-content: center;
-        margin-bottom: 20px;
+    /* Expansão do contêiner principal para 95% da tela */
+    .main .block-container {
+        max-width: 95% !important;
+        padding-top: 1.5rem;
+        padding-right: 1rem;
+        padding-left: 1rem;
     }
     
     [data-testid="stSidebar"] { width: 260px !important; }
     
-    /* Botões com largura fixa menor para simetria total */
+    /* Botões Simétricos com largura fixa e respiro lateral */
     div.stButton > button {
-        width: 110px !important; 
+        width: 140px !important; 
         border-radius: 12px;
         height: 3.2em;
         background-color: #f8f9fa;
@@ -61,18 +62,18 @@ st.markdown(
         font-weight: 500;
         font-size: 13px;
         white-space: nowrap;
-        margin: 0 auto;
     }
     
     div.stButton > button:hover {
         border-color: powderblue;
         color: powderblue;
         background-color: white;
-        box-shadow: 0px 4px 6px rgba(0,0,0,0.05);
+        box-shadow: 0px 4px 8px rgba(0,0,0,0.05);
     }
 
+    /* Espaçamento entre colunas de navegação */
     [data-testid="column"] {
-        padding: 0 4px !important;
+        padding: 0 15px !important;
         display: flex;
         justify-content: center;
     }
@@ -97,6 +98,7 @@ mapeamento_artes = {
     "sobre": "img_about.jpg"
 }
 
+# Arte na sidebar sincronizada
 arte_atual = mapeamento_artes.get(st.session_state.page)
 if arte_atual and os.path.exists(arte_atual):
     st.sidebar.image(arte_atual, use_container_width=True)
@@ -106,10 +108,10 @@ st.sidebar.selectbox("Idioma", ["Português", "English", "Français"], key="sel_
 st.sidebar.checkbox("Talk (Voz)", value=True)
 st.sidebar.checkbox("Draw (Desenho)", value=True)
 
-### bof: navigation (Botões Compactos no Topo)
+### bof: navigation (Palco Expandido)
 
-# Criamos um container centralizado para os botões
-_, center_col, _ = st.columns([1, 4, 1]) # Colunas laterais vazias para "espremer" o centro
+# Centralização da barra de botões com margens menores nas pontas
+_, center_col, _ = st.columns([0.2, 9.6, 0.2]) 
 
 with center_col:
     nav_cols = st.columns(6)
@@ -128,33 +130,33 @@ with center_col:
 
 st.markdown("---")
 
-### bof: pages (Abaixo dos Botões)
+### bof: pages
 
 def page_mini():
     st.subheader("ツ mini")
-    st.info("O palco está pronto para a mini-poesia.")
+    st.info("O palco expandido está pronto para a mini-poesia.")
 
 def page_ypoemas():
     st.subheader("ツ ypoemas")
-    st.write("Aguardando as definições da máquina.")
+    st.write("Conteúdo da página ypoemas com largura total disponível.")
 
 def page_eureka():
     st.subheader("ツ eureka")
-    st.write("Laboratório de descobertas.")
+    st.write("Conteúdo da página eureka.")
 
 def page_off_machina():
     st.subheader("ツ off-machina")
-    st.write("Galeria de livros impressos.")
+    st.write("Conteúdo da página off-machina.")
 
 def page_comments():
     st.subheader("ツ comments")
-    st.write("Notas e interações.")
+    st.write("Conteúdo da página comments.")
 
 def page_sobre():
     st.subheader("ツ sobre")
-    st.write("A jornada da Machina.")
+    st.write("Conteúdo da página sobre.")
 
-# Router de exibição centralizada
+# Router
 if st.session_state.page == "mini":
     page_mini()
 elif st.session_state.page == "ypoemas":
