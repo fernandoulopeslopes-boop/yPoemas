@@ -35,27 +35,33 @@ if have_internet():
     except ImportError:
         pass
 
-# Regra 0: Look & Feel (Simetria Absoluta e Palco Central)
+# Regra 0: Look & Feel (Botões Compactos e Centralizados)
 st.markdown(
     """ <style>
     footer {visibility: hidden;}
-    .reportview-container .main .block-container{ padding-top: 1rem; }
+    
+    /* Centraliza e limita a largura da barra de navegação */
+    .nav-container {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
     
     [data-testid="stSidebar"] { width: 260px !important; }
     
-    /* Forçar botões com largura idêntica e cantos arredondados */
+    /* Botões com largura fixa menor para simetria total */
     div.stButton > button {
-        width: 100% !important;
-        min-width: 120px; /* Garante base mínima */
+        width: 110px !important; 
         border-radius: 12px;
-        height: 3.5em;
+        height: 3.2em;
         background-color: #f8f9fa;
         border: 1px solid #d1d5db;
         transition: all 0.3s ease-in-out;
         font-family: 'IBM Plex Sans';
         font-weight: 500;
-        font-size: 14px;
+        font-size: 13px;
         white-space: nowrap;
+        margin: 0 auto;
     }
     
     div.stButton > button:hover {
@@ -65,9 +71,10 @@ st.markdown(
         box-shadow: 0px 4px 6px rgba(0,0,0,0.05);
     }
 
-    /* Remove espaçamentos extras entre colunas para manter a linha compacta */
     [data-testid="column"] {
-        padding: 0 2px !important;
+        padding: 0 4px !important;
+        display: flex;
+        justify-content: center;
     }
 
     mark { background-color: powderblue; color: black; }
@@ -75,7 +82,6 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# Estado da página (MANDALA)
 if "page" not in st.session_state: st.session_state.page = "mini"
 
 ### bof: sidebar (Configurações)
@@ -87,7 +93,7 @@ mapeamento_artes = {
     "ypoemas": "img_ypoemas.jpg",
     "eureka": "img_eureka.jpg",
     "off-machina": "img_off-machina.jpg",
-    "comments": "img_poly.jpg", # Usando a poly para comments conforme lista anterior
+    "comments": "img_poly.jpg",
     "sobre": "img_about.jpg"
 }
 
@@ -100,53 +106,55 @@ st.sidebar.selectbox("Idioma", ["Português", "English", "Français"], key="sel_
 st.sidebar.checkbox("Talk (Voz)", value=True)
 st.sidebar.checkbox("Draw (Desenho)", value=True)
 
-### bof: navigation (Botões de Tamanho Idêntico)
+### bof: navigation (Botões Compactos no Topo)
 
-# Criamos 6 colunas iguais para as 6 páginas
-cols = st.columns(6)
+# Criamos um container centralizado para os botões
+_, center_col, _ = st.columns([1, 4, 1]) # Colunas laterais vazias para "espremer" o centro
 
-with cols[0]:
-    if st.button("ツ mini"): st.session_state.page = "mini"
-with cols[1]:
-    if st.button("ypoemas"): st.session_state.page = "ypoemas"
-with cols[2]:
-    if st.button("eureka"): st.session_state.page = "eureka"
-with cols[3]:
-    if st.button("off-machina"): st.session_state.page = "off-machina"
-with cols[4]:
-    if st.button("comments"): st.session_state.page = "comments"
-with cols[5]:
-    if st.button("sobre"): st.session_state.page = "sobre"
+with center_col:
+    nav_cols = st.columns(6)
+    with nav_cols[0]:
+        if st.button("ツ mini"): st.session_state.page = "mini"
+    with nav_cols[1]:
+        if st.button("ypoemas"): st.session_state.page = "ypoemas"
+    with nav_cols[2]:
+        if st.button("eureka"): st.session_state.page = "eureka"
+    with nav_cols[3]:
+        if st.button("off-machina"): st.session_state.page = "off-machina"
+    with nav_cols[4]:
+        if st.button("comments"): st.session_state.page = "comments"
+    with nav_cols[5]:
+        if st.button("sobre"): st.session_state.page = "sobre"
 
 st.markdown("---")
 
-### bof: pages
+### bof: pages (Abaixo dos Botões)
 
 def page_mini():
     st.subheader("ツ mini")
-    st.write("Aprovada !!!")
+    st.info("O palco está pronto para a mini-poesia.")
 
 def page_ypoemas():
     st.subheader("ツ ypoemas")
-    st.write("Em estudo...")
+    st.write("Aguardando as definições da máquina.")
 
 def page_eureka():
     st.subheader("ツ eureka")
-    st.write("Em estudo...")
+    st.write("Laboratório de descobertas.")
 
 def page_off_machina():
     st.subheader("ツ off-machina")
-    st.info("Cópias digitais de livros impressos.")
+    st.write("Galeria de livros impressos.")
 
 def page_comments():
     st.subheader("ツ comments")
-    st.write("Espaço para interações e notas.")
+    st.write("Notas e interações.")
 
 def page_sobre():
     st.subheader("ツ sobre")
-    st.write("História da Machina.")
+    st.write("A jornada da Machina.")
 
-# Router
+# Router de exibição centralizada
 if st.session_state.page == "mini":
     page_mini()
 elif st.session_state.page == "ypoemas":
