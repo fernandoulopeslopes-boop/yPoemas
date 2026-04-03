@@ -48,7 +48,7 @@ st.markdown(
         background-color: #fafafa; 
     }
     
-    /* Navegação - Botões em 116px */
+    /* Navegação - Botões em 111px */
     [data-testid="stHorizontalBlock"] { 
         display: flex !important; 
         flex-wrap: nowrap !important; 
@@ -61,7 +61,7 @@ st.markdown(
     }
     
     div.stButton > button {
-        width: 116px !important; 
+        width: 111px !important; 
         border-radius: 12px; 
         height: 3.2em;
         background-color: #ffffff; 
