@@ -32,7 +32,7 @@ help_dict = {
     st.session_state.poly_name: "tria com ha d'actuar la màquina"
 }
 
-# Regra 0: Look & Feel (Ajuste Final de Espaçamento)
+# Regra 0: Look & Feel (Sidebar 240px | Botões 116px)
 st.markdown(
     """ <style>
     footer {visibility: hidden;}
@@ -42,22 +42,26 @@ st.markdown(
     [data-testid="stImage"] button, [data-testid="stElementToolbar"] { display: none !important; }
     [data-testid="stImage"] img { pointer-events: none; }
 
-    /* Estilo da Sidebar */
-    [data-testid="stSidebar"] { width: 280px !important; background-color: #fafafa; }
+    /* Sidebar mais estreita (240px) */
+    [data-testid="stSidebar"] { 
+        width: 240px !important; 
+        min-width: 240px !important;
+        background-color: #fafafa; 
+    }
     
     .sidebar-header {
         font-family: 'IBM Plex Sans', sans-serif;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         font-weight: 600;
-        color: #888;
+        color: #999;
         margin-top: 15px;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
         text-transform: lowercase;
     }
 
-    /* Navegação - Ajuste para 112px (O Equilíbrio) */
+    /* Navegação - Ajuste para 116px */
     [data-testid="stHorizontalBlock"] { display: flex !important; flex-wrap: nowrap !important; gap: 8px !important; }
-    [data-testid="column"] { flex: 0 0 auto !important; width: 115px !important; }
+    [data-testid="column"] { flex: 0 0 auto !important; width: 119px !important; }
     
     div.stButton > button {
         width: 116px !important; 
@@ -72,7 +76,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-### bof: navigation (Trilho de 112px)
+### bof: navigation (Trilho de 116px)
 
 nav_cols = st.columns(6)
 paginas = ["mini", "ypoemas", "eureka", "off-machina", "comments", "sobre"]
@@ -86,7 +90,7 @@ for i in range(6):
 
 st.markdown("---")
 
-### bof: sidebar (O Cockpit "Mudo" e Elegante)
+### bof: sidebar (Cockpit Esguio)
 
 mapeamento_artes = {
     "mini": "img_mini.jpg",
@@ -103,7 +107,7 @@ if arte_atual and os.path.exists(arte_atual):
 
 st.sidebar.markdown("<br>", unsafe_allow_html=True)
 
-# 1. Idiomas (Puro e direto)
+# 1. Idiomas (Direto)
 lista_idiomas = ["Português", "English", "Français", "Español", "Italiano", st.session_state.poly_name]
 sel_idioma = st.sidebar.selectbox(
     "idioma_selector",
@@ -112,13 +116,13 @@ sel_idioma = st.sidebar.selectbox(
     label_visibility="collapsed"
 )
 
-# 2. Recursos (Sem cabeçalho, apenas a funcionalidade com Help Tip)
+# 2. Recursos com Help Tip Dinâmico
 current_help = help_dict.get(sel_idioma, help_dict["Português"])
 
 st.session_state.audio_on = st.sidebar.checkbox("🎙️ voz (talk)", value=True, help=current_help)
 st.session_state.draw_on = st.sidebar.checkbox("🎨 arte (draw)", value=True, help=current_help)
 
-# 3. Conexões (Único cabeçalho mantido para separar o social)
+# 3. Conexões
 st.sidebar.markdown("<div class='sidebar-header'>conexões</div>", unsafe_allow_html=True)
 st.sidebar.markdown("""
 <div style="display: flex; gap: 15px; font-size: 18px; padding-left: 5px;">
@@ -135,7 +139,7 @@ st.sidebar.caption(f"Phenix Machina | {st.session_state.page}")
 
 if st.session_state.page == "mini":
     st.subheader("ツ mini")
-    st.write(f"O cockpit está silencioso e funcional.")
+    st.write("A Fênix está mais esguia e focada.")
 else:
     st.subheader(f"ツ {st.session_state.page}")
-    st.write("Aguardando montagem...")
+    st.write("Palco pronto.")
