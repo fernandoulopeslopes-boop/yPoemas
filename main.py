@@ -38,14 +38,18 @@ if have_internet():
 hostname = socket.gethostname()
 IPAddres = socket.gethostbyname(hostname)
 
-# Regra 0: Look & Feel (Ajuste Sidebar 260px)
+# Regra 0: Look & Feel (Ajuste Sidebar 260px com Seletor Reforçado)
 st.markdown(
     """ <style>
     footer {visibility: hidden;}
     .reportview-container .main .block-container{ padding: 0rem; }
     
-    [data-testid='stSidebar'][aria-expanded='true'] > div:first-child { 
-        width: 260px; 
+    /* Forçando a largura da Sidebar e do container interno */
+    [data-testid="stSidebar"] {
+        width: 260px !important;
+    }
+    [data-testid="stSidebar"] > div:first-child {
+        width: 260px !important;
     }
     
     mark { background-color: powderblue; color: black; }
@@ -69,7 +73,6 @@ menu_opcoes = ["mini", "ypoemas", "eureka", "biblioteca", "oficina", "sobre"]
 pagina_selecionada = st.sidebar.selectbox("MANDALA / Menu Principal", menu_opcoes)
 
 # Exibição da Arte na Barra Lateral (Regra 0 - Design)
-# Nota: Certifique-se de que as imagens existam na pasta ./images/
 artes_paginas = {
     "mini": "./images/mini.jpg",
     "ypoemas": "./images/ypoemas.jpg",
