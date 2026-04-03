@@ -35,12 +35,11 @@ if have_internet():
     except ImportError:
         pass
 
-# Regra 0: Look & Feel (Expansão do Contêiner e Palco)
+# Regra 0: Look & Feel (Botões a 85% da largura anterior)
 st.markdown(
     """ <style>
     footer {visibility: hidden;}
     
-    /* Expansão do contêiner principal para 95% da tela */
     .main .block-container {
         max-width: 95% !important;
         padding-top: 1.5rem;
@@ -50,9 +49,9 @@ st.markdown(
     
     [data-testid="stSidebar"] { width: 260px !important; }
     
-    /* Botões Simétricos com largura fixa e respiro lateral */
+    /* Botões compactos: 120px (85% de 140px) */
     div.stButton > button {
-        width: 140px !important; 
+        width: 120px !important; 
         border-radius: 12px;
         height: 3.2em;
         background-color: #f8f9fa;
@@ -71,9 +70,8 @@ st.markdown(
         box-shadow: 0px 4px 8px rgba(0,0,0,0.05);
     }
 
-    /* Espaçamento entre colunas de navegação */
     [data-testid="column"] {
-        padding: 0 15px !important;
+        padding: 0 10px !important;
         display: flex;
         justify-content: center;
     }
@@ -98,7 +96,6 @@ mapeamento_artes = {
     "sobre": "img_about.jpg"
 }
 
-# Arte na sidebar sincronizada
 arte_atual = mapeamento_artes.get(st.session_state.page)
 if arte_atual and os.path.exists(arte_atual):
     st.sidebar.image(arte_atual, use_container_width=True)
@@ -108,10 +105,9 @@ st.sidebar.selectbox("Idioma", ["Português", "English", "Français"], key="sel_
 st.sidebar.checkbox("Talk (Voz)", value=True)
 st.sidebar.checkbox("Draw (Desenho)", value=True)
 
-### bof: navigation (Palco Expandido)
+### bof: navigation (Compacta e Simétrica)
 
-# Centralização da barra de botões com margens menores nas pontas
-_, center_col, _ = st.columns([0.2, 9.6, 0.2]) 
+_, center_col, _ = st.columns([0.5, 9, 0.5]) 
 
 with center_col:
     nav_cols = st.columns(6)
@@ -134,11 +130,11 @@ st.markdown("---")
 
 def page_mini():
     st.subheader("ツ mini")
-    st.info("O palco expandido está pronto para a mini-poesia.")
+    st.info("Palco otimizado com botões compactos.")
 
 def page_ypoemas():
     st.subheader("ツ ypoemas")
-    st.write("Conteúdo da página ypoemas com largura total disponível.")
+    st.write("Conteúdo da página ypoemas.")
 
 def page_eureka():
     st.subheader("ツ eureka")
