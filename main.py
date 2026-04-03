@@ -17,10 +17,9 @@ st.set_page_config(
     initial_sidebar_state="auto",
 )
 
-if "page" not in st.session_state: 
-    st.session_state.page = "mini"
+if "page" not in st.session_state: st.session_state.page = "mini"
 
-# Regra 0: Look & Feel (Trilho de Scroll do yPo)
+# Regra 0: Look & Feel (Foco Total e Remoção do Full Screen)
 st.markdown(
     """ <style>
     footer {visibility: hidden;}
@@ -29,52 +28,57 @@ st.markdown(
         padding-top: 1.5rem;
     }
     
-    /* Configuração do Trilho de Navegação */
+    /* REMOVER BOTÃO FULL SCREEN DAS IMAGENS */
+    button[title="View fullscreen"] {
+        display: none !important;
+    }
+    
+    /* Ajuste fino da Sidebar */
+    [data-testid="stSidebar"] { 
+        width: 280px !important; 
+        background-color: #fafafa;
+    }
+    
+    .sidebar-title {
+        font-family: 'IBM Plex Sans', sans-serif;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #444;
+        margin-top: 10px;
+        margin-bottom: 5px;
+    }
+
+    /* Navegação Horizontal */
     [data-testid="stHorizontalBlock"] {
         display: flex !important;
         flex-wrap: nowrap !important;
-        overflow-x: auto !important;
-        gap: 10px !important;
-        padding-bottom: 25px !important;
+        gap: 12px !important;
     }
 
-    /* Trava de largura para os botões */
     [data-testid="column"] {
         flex: 0 0 auto !important;
         width: 125px !important;
     }
 
-    /* Estilo dos Botões */
     div.stButton > button {
         width: 120px !important; 
         border-radius: 12px;
         height: 3.2em;
-        background-color: #f8f9fa;
+        background-color: #ffffff;
         border: 1px solid #d1d5db;
-        font-family: 'IBM Plex Sans';
         font-size: 13px;
-        white-space: nowrap;
+        transition: 0.2s;
     }
     
     div.stButton > button:hover {
         border-color: powderblue;
         color: powderblue;
-        background-color: white;
-    }
-
-    /* Barra de scroll */
-    [data-testid="stHorizontalBlock"]::-webkit-scrollbar {
-        height: 6px;
-    }
-    [data-testid="stHorizontalBlock"]::-webkit-scrollbar-thumb {
-        background: powderblue;
-        border-radius: 10px;
     }
     </style> """,
     unsafe_allow_html=True,
 )
 
-### bof: navigation (O Trilho)
+### bof: navigation
 
 nav_cols = st.columns(6)
 paginas = ["mini", "ypoemas", "eureka", "off-machina", "comments", "sobre"]
@@ -88,10 +92,9 @@ for i in range(6):
 
 st.markdown("---")
 
-### bof: sidebar (Bastidores)
+### bof: sidebar (Painel Limpo)
 
-st.sidebar.title("Configurações")
-
+# Imagem sem o botão de expandir
 mapeamento_artes = {
     "mini": "img_mini.jpg",
     "ypoemas": "img_ypoemas.jpg",
@@ -105,42 +108,32 @@ arte_atual = mapeamento_artes.get(st.session_state.page)
 if arte_atual and os.path.exists(arte_atual):
     st.sidebar.image(arte_atual, use_container_width=True)
 
+st.sidebar.markdown("<div class='sidebar-title'>⚙️ Configurações</div>", unsafe_allow_html=True)
+
+# Controles de Idioma e Modos
+with st.sidebar.expander("🌍 Idioma e Tradução", expanded=True):
+    st.selectbox(
+        "Selecione o idioma:",
+        ["Português", "English", "Français", "Español", "Italiano"],
+        key="sel_lang"
+    )
+
+with st.sidebar.expander("🛠️ Modo de Execução", expanded=True):
+    st.session_state.audio_on = st.checkbox("🎙️ Talk (Voz/Áudio)", value=True)
+    st.session_state.draw_on = st.checkbox("🎨 Draw (Visual/Arte)", value=True)
+
 st.sidebar.markdown("---")
-st.sidebar.selectbox("Idioma", ["Português", "English", "Français"], key="sel_lang")
-st.sidebar.checkbox("Talk (Áudio)", value=True)
-st.sidebar.checkbox("Draw (Imagem)", value=True)
+st.sidebar.caption(f"Fênix Machina | Status: Online")
 
 ### bof: pages
 
 def page_mini():
     st.subheader("ツ mini")
-    st.info("Trilho de botões com rolagem lateral ativo.")
+    st.write("A imagem lateral agora está 'fixa' e limpa, sem o botão de expandir.")
 
-def page_ypoemas():
-    st.subheader("ツ ypoemas")
-
-def page_eureka():
-    st.subheader("ツ eureka")
-
-def page_off_machina():
-    st.subheader("ツ off-machina")
-
-def page_comments():
-    st.subheader("ツ comments")
-
-def page_sobre():
-    st.subheader("ツ sobre")
-
-# Router
+# Router simplificado para verificação
 if st.session_state.page == "mini":
     page_mini()
-elif st.session_state.page == "ypoemas":
-    page_ypoemas()
-elif st.session_state.page == "eureka":
-    page_eureka()
-elif st.session_state.page == "off-machina":
-    page_off_machina()
-elif st.session_state.page == "comments":
-    page_comments()
-elif st.session_state.page == "sobre":
-    page_sobre()
+else:
+    st.subheader(f"ツ {st.session_state.page}")
+    st.write("Palco pronto para montagem.")
