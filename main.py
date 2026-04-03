@@ -7,9 +7,8 @@ import socket
 import streamlit as st
 from datetime import datetime
 from lay_2_ypo import gera_poema
-import extra_stylable_components as stx
 
-# 1. CONFIGURAÇÃO (Respeitando a Regra 0)
+# 1. CONFIGURAÇÃO (Foco total no Selo de Garantia)
 st.set_page_config(page_title="a máquina de fazer Poesia", layout="wide", initial_sidebar_state="expanded")
 
 st.markdown("""
@@ -27,37 +26,31 @@ st.markdown("""
         border: 1px solid #eee;
         color: #1a1a1a;
     }
+    /* Estilização para simular abas se desejar usar radio horizontal */
+    div.row-widget.stRadio > div{flex-direction:row;}
     </style>
 """, unsafe_allow_html=True)
 
-# 2. ESTADOS & FERRAMENTAS
+# 2. ESTADOS
 if 'take' not in st.session_state: st.session_state.take = random.randint(1000, 9999)
 if 'lang' not in st.session_state: st.session_state.lang = "pt"
 if 'tema' not in st.session_state: st.session_state.tema = "Fatos"
 
 def carregar_poesia_real(tema, id_seed):
-    # Chama a sua engine original
-    script = gera_poema(tema, id_seed)
-    # Transforma a lista do script em HTML com quebras de linha
-    return "<br>".join([line.strip() for line in script if line.strip() != ""])
+    try:
+        script = gera_poema(tema, id_seed)
+        return "<br>".join([line.strip() for line in script if line.strip() != ""])
+    except:
+        return "Erro ao carregar poesia da engine."
 
-# 3. NAVEGAÇÃO (TABS - Ordem Original)
-chosen_id = stx.tab_bar(data=[
-    stx.TabBarItemData(id="1", title="mini", description=""),
-    stx.TabBarItemData(id="2", title="yPoemas", description=""),
-    stx.TabBarItemData(id="3", title="eureka", description=""),
-    stx.TabBarItemData(id="4", title="oficina", description=""),
-    stx.TabBarItemData(id="5", title="biblioteca", description=""),
-    stx.TabBarItemData(id="6", title="poly", description=""),
-    stx.TabBarItemData(id="7", title="sobre", description=""),
-], default="2")
+# 3. NAVEGAÇÃO (Nativa e Segura)
+# Substituindo a biblioteca que falhou por um rádio horizontal no topo
+menu_opcoes = ["mini", "yPoemas", "eureka", "oficina", "biblioteca", "poly", "sobre"]
+sala = st.radio("", menu_opcoes, index=1, horizontal=True)
 
-mapa = {"1":"mini", "2":"yPoemas", "3":"eureka", "4":"oficina", "5":"biblioteca", "6":"poly", "7":"sobre"}
-sala = mapa.get(chosen_id, "yPoemas")
-
-# 4. PALCO (Controles)
+# 4. PALCO
 st.write("")
-c1, c2, c3, c4, c_id = st.columns([1, 1, 1, 1, 4])
+c1, c2, c3, c4, c_id = st.columns([0.5, 0.5, 0.5, 0.5, 4])
 if c1.button("✚"): 
     st.session_state.take = random.randint(1000, 9999)
     st.rerun()
@@ -75,7 +68,6 @@ c_id.code(f"SALA: {sala.upper()} | ID: {st.session_state.take} | TEMA: {st.sessi
 
 st.divider()
 
-# EXIBIÇÃO DA POESIA
 if sala == "yPoemas":
     conteudo = carregar_poesia_real(st.session_state.tema, st.session_state.take)
     st.markdown(f'<div class="poesia-viva">{conteudo}</div>', unsafe_allow_html=True)
@@ -93,6 +85,5 @@ with st.sidebar:
     if col3.button("en"): st.session_state.lang = "en"; st.rerun()
     
     st.divider()
-    # Seletor de Tema (Exemplo para a Sala yPoemas)
     st.session_state.tema = st.selectbox("Escolha o Tema", ["Fatos", "Amor", "Tempo", "Espaço"])
-
+    
