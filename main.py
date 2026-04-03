@@ -20,7 +20,7 @@ st.set_page_config(
 if "page" not in st.session_state: 
     st.session_state.page = "mini"
 
-# Regra 0: Look & Feel (O Motor de Scroll Horizontal do yPo)
+# Regra 0: Look & Feel (Trilho de Scroll do yPo)
 st.markdown(
     """ <style>
     footer {visibility: hidden;}
@@ -28,29 +28,23 @@ st.markdown(
         max-width: 98% !important;
         padding-top: 1.5rem;
     }
-    [data-testid="stSidebar"] { width: 260px !important; }
     
-    /* FORÇAR O SCROLL HORIZONTAL (Reforçado) */
-    /* Alvo: O container de colunas do Streamlit */
-    div[data-testid="stHorizontalBlock"] {
+    /* Configuração do Trilho de Navegação */
+    [data-testid="stHorizontalBlock"] {
         display: flex !important;
-        flex-direction: row !important;
         flex-wrap: nowrap !important;
         overflow-x: auto !important;
-        overflow-y: hidden !important;
         gap: 10px !important;
-        padding-bottom: 15px !important;
-        justify-content: flex-start !important;
+        padding-bottom: 25px !important;
     }
 
-    /* Garantir que as colunas não encolham (Don't Shrink) */
-    div[data-testid="column"] {
+    /* Trava de largura para os botões */
+    [data-testid="column"] {
         flex: 0 0 auto !important;
-        min-width: 125px !important;
         width: 125px !important;
     }
 
-    /* Estilo dos Botões (120px para caber no min-width de 125px da coluna) */
+    /* Estilo dos Botões */
     div.stButton > button {
         width: 120px !important; 
         border-radius: 12px;
@@ -58,7 +52,6 @@ st.markdown(
         background-color: #f8f9fa;
         border: 1px solid #d1d5db;
         font-family: 'IBM Plex Sans';
-        font-weight: 500;
         font-size: 13px;
         white-space: nowrap;
     }
@@ -69,29 +62,26 @@ st.markdown(
         background-color: white;
     }
 
-    /* Barra de scroll discreta */
-    div[data-testid="stHorizontalBlock"]::-webkit-scrollbar {
+    /* Barra de scroll */
+    [data-testid="stHorizontalBlock"]::-webkit-scrollbar {
         height: 6px;
     }
-    div[data-testid="stHorizontalBlock"]::-webkit-scrollbar-thumb {
-        background: #e0e0e0;
+    [data-testid="stHorizontalBlock"]::-webkit-scrollbar-thumb {
+        background: powderblue;
         border-radius: 10px;
     }
     </style> """,
     unsafe_allow_html=True,
 )
 
-### bof: navigation (Trilho de Scroll)
+### bof: navigation (O Trilho)
 
-# Usamos um container simples. O CSS acima cuidará de alinhar as colunas dentro dele.
 nav_cols = st.columns(6)
-
 paginas = ["mini", "ypoemas", "eureka", "off-machina", "comments", "sobre"]
 labels = ["ツ mini", "ypoemas", "eureka", "off-machina", "comments", "sobre"]
 
 for i in range(6):
     with nav_cols[i]:
-        # key única para evitar conflitos no rerun
         if st.button(labels[i], key=f"btn_nav_{paginas[i]}"):
             st.session_state.page = paginas[i]
             st.rerun()
@@ -111,7 +101,6 @@ mapeamento_artes = {
     "sobre": "img_about.jpg"
 }
 
-# Arte instantânea na sidebar
 arte_atual = mapeamento_artes.get(st.session_state.page)
 if arte_atual and os.path.exists(arte_atual):
     st.sidebar.image(arte_atual, use_container_width=True)
@@ -125,7 +114,7 @@ st.sidebar.checkbox("Draw (Imagem)", value=True)
 
 def page_mini():
     st.subheader("ツ mini")
-    st.info("Role para os lados nos botões se o espaço encurtar. Estilo yPo restaurado.")
+    st.info("Trilho de botões com rolagem lateral ativo.")
 
 def page_ypoemas():
     st.subheader("ツ ypoemas")
