@@ -95,3 +95,4 @@ with st.sidebar:
     st.divider()
     # Seletor de Tema (Exemplo para a Sala yPoemas)
     st.session_state.tema = st.selectbox("Escolha o Tema", ["Fatos", "Amor", "Tempo", "Espaço"])
+
