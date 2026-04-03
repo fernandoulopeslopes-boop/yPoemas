@@ -14,26 +14,16 @@ st.set_page_config(
 if "page" not in st.session_state: st.session_state.page = "mini"
 if "poly_name" not in st.session_state: st.session_state.poly_name = "català"
 
-# Tooltips (Help via HTML Title)
-tips = {
-    "Português": ["voz (talk)", "arte (draw)", "vídeo (video)"],
-    "English": ["voice (talk)", "art (draw)", "video (video)"],
-    "Français": ["voix (talk)", "art (draw)", "vidéo (video)"],
-    "Español": ["voz (talk)", "arte (draw)", "video (video)"],
-    "Italiano": ["voce (talk)", "arte (draw)", "video (video)"],
-    st.session_state.poly_name: ["veu (talk)", "art (draw)", "vídeo (video)"]
-}
-
-# Regra 0: Look & Feel (A Blindagem Definitiva)
+# Regra 0: Look & Feel (A Blindagem Estética)
 st.markdown(
     """ <style>
     footer {visibility: hidden;}
     .main .block-container { max-width: 95% !important; padding-top: 1.5rem; margin: 0 auto; }
     
-    /* Sidebar Fixa */
+    /* SIDEBAR: Largura e Fundo */
     [data-testid="stSidebar"] { width: 240px !important; min-width: 240px !important; background-color: #fafafa; }
     
-    /* Navegação Superior 111px */
+    /* NAVEGAÇÃO SUPERIOR: Botões de 111px */
     [data-testid="stHorizontalBlock"] { display: flex !important; flex-wrap: nowrap !important; gap: 8px !important; }
     [data-testid="column"] { flex: 0 0 auto !important; width: 115px !important; }
     div.stButton > button {
@@ -41,43 +31,48 @@ st.markdown(
         background-color: #ffffff; border: 1px solid #d1d5db; font-size: 11px;
     }
 
-    /* MATADOR DE INTERROGAÇÕES E LABELS */
+    /* LIMPEZA DE LABELS E HELPS */
     [data-testid="stSidebar"] [data-testid="stWidgetLabel"], 
     [data-testid="stSidebar"] button[title="View help"] { 
         display: none !important; 
     }
 
-    /* CONTAINER DOS RECURSOS: Centralização Real */
-    .recursos-wrapper {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 20px;
-        width: 100%;
-        padding: 10px 0;
+    /* CENTRALIZAÇÃO DOS CHECKBOXES (Os Cookies) */
+    /* Este seletor ataca o container interno das colunas na sidebar */
+    [data-testid="stSidebarContent"] [data-testid="stHorizontalBlock"] {
+        justify-content: center !important;
+        gap: 20px !important;
+        margin-top: 10px !important;
     }
 
-    /* Força o checkbox a ser apenas o quadrado */
-    [data-testid="stSidebar"] .stCheckbox {
-        margin: 0 !important;
-        padding: 0 !important;
-        width: fit-content !important;
+    /* Estilo do Poema na Página Mini */
+    .poema-box {
+        font-family: 'IBM Plex Serif', serif;
+        font-size: 1.3rem;
+        font-style: italic;
+        line-height: 1.8;
+        color: #2c3e50;
+        padding: 40px;
+        background-color: #ffffff;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        margin: 20px 0;
+        border-left: 3px solid #eee;
     }
 
     .sidebar-header {
         font-family: 'IBM Plex Sans', sans-serif;
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: #999;
-        margin-top: 25px;
+        font-size: 0.8rem;
+        color: #aaa;
         text-transform: lowercase;
         text-align: center;
+        margin-top: 30px;
     }
     </style> """,
     unsafe_allow_html=True,
 )
 
-### bof: navigation
+### bof: navigation (O Trilho)
 
 nav_cols = st.columns(6)
 paginas = ["mini", "ypoemas", "eureka", "off-machina", "comments", "sobre"]
@@ -91,7 +86,7 @@ for i in range(6):
 
 st.markdown("---")
 
-### bof: sidebar
+### bof: sidebar (O Cockpit)
 
 # Artes
 mapeamento_artes = {
@@ -105,37 +100,23 @@ if arte_atual and os.path.exists(arte_atual):
 # 1. Idioma
 lista_idiomas = ["Português", "English", "Français", "Español", "Italiano", st.session_state.poly_name]
 sel_idioma = st.sidebar.selectbox("idioma", lista_idiomas, key="sel_lang", label_visibility="collapsed")
-t = tips.get(sel_idioma, tips["Português"])
 
+# 2. Recursos (Centralizados e Equidistantes)
 st.sidebar.markdown("<br>", unsafe_allow_html=True)
-
-# 2. Recursos (O Cockpit Purificado)
-# Usamos um container div para agrupar e centralizar
-st.sidebar.markdown('<div class="recursos-wrapper">', unsafe_allow_html=True)
-
-# Criamos 3 colunas dentro da sidebar para os checkboxes
+# Usamos colunas 1:1:1 para garantir a equidistância interna, 
+# e o CSS [justify-content: center] cuida da centralização na largura total.
 c1, c2, c3 = st.sidebar.columns([1, 1, 1])
-
 with c1:
-    # O 'title' no markdown flutuante cria o help do navegador
-    st.markdown(f'<div title="{t[0]}">', unsafe_allow_html=True)
     st.session_state.audio_on = st.checkbox("v", value=True, key="chk_v", label_visibility="collapsed")
-    st.markdown('</div>', unsafe_allow_html=True)
 with c2:
-    st.markdown(f'<div title="{t[1]}">', unsafe_allow_html=True)
     st.session_state.draw_on = st.checkbox("a", value=True, key="chk_a", label_visibility="collapsed")
-    st.markdown('</div>', unsafe_allow_html=True)
 with c3:
-    st.markdown(f'<div title="{t[2]}">', unsafe_allow_html=True)
     st.session_state.video_on = st.checkbox("vi", value=False, key="chk_vi", label_visibility="collapsed")
-    st.markdown('</div>', unsafe_allow_html=True)
-
-st.sidebar.markdown('</div>', unsafe_allow_html=True)
 
 # 3. Contato
 st.sidebar.markdown("<div class='sidebar-header'>contato</div>", unsafe_allow_html=True)
 st.sidebar.markdown("""
-<div style="text-align: center; display: flex; flex-direction: column; gap: 8px; font-family: 'IBM Plex Sans', sans-serif; font-size: 0.9rem;">
+<div style="text-align: center; display: flex; flex-direction: column; gap: 8px; font-family: 'IBM Plex Sans', sans-serif; font-size: 0.9rem; margin-top:10px;">
     <a href="#" style="text-decoration: none; color: #444;">📸 instagram</a>
     <a href="#" style="text-decoration: none; color: #444;">✉️ email</a>
 </div>
@@ -144,10 +125,34 @@ st.sidebar.markdown("""
 st.sidebar.markdown("---")
 st.sidebar.caption(f"Phenix Machina | {st.session_state.page}")
 
-### bof: pages
+### bof: pages (O Palco)
 
 if st.session_state.page == "mini":
-    st.subheader("ツ mini")
-    st.write("Interface calibrada. O minimalismo exige precisão.")
-else:
-    st.subheader(f"ツ {st.session_state.page}")
+    # Layout da Página Mini: Equilíbrio entre branco e texto
+    st.markdown("## ツ mini-maquina")
+    st.caption(f"idioma atual: {sel_idioma}")
+    
+    col_p1, col_p2 = st.columns([3, 1])
+    
+    with col_p1:
+        # Placeholder do Poema
+        st.markdown("""
+        <div class="poema-box">
+            o silêncio da máquina<br>
+            ecoalha no papel digital<br>
+            breve como um clique.
+        </div>
+        """, unsafe_allow_html=True)
+        
+        if st.button("gerar novo verso", type="primary"):
+            st.toast("A Phenix está processando seus arquivos...")
+
+    with col_p2:
+        st.markdown("---")
+        st.write("### log")
+        st.caption("v.2026.04")
+
+elif st.session_state.page == "ypoemas":
+    st.subheader("ツ ypoemas")
+
+st.write("")
