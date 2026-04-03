@@ -1,5 +1,6 @@
 import os
 import streamlit as st
+import random
 
 ### bof: settings
 
@@ -14,16 +15,25 @@ st.set_page_config(
 if "page" not in st.session_state: st.session_state.page = "mini"
 if "poly_name" not in st.session_state: st.session_state.poly_name = "català"
 
-# Regra 0: Look & Feel (A Blindagem Estética)
+# Regra 0: Look & Feel (A BLINDAGEM TOTAL DO PALCO)
 st.markdown(
     """ <style>
     footer {visibility: hidden;}
-    .main .block-container { max-width: 95% !important; padding-top: 1.5rem; margin: 0 auto; }
-    
-    /* SIDEBAR: Largura e Fundo */
+
+    /* EXPANSÃO DO PALCO: Ocupa 100% da tela quando a sidebar recolhe */
+    .main .block-container { 
+        max-width: 98% !important; 
+        padding-top: 1.5rem !important; 
+        padding-left: 2rem !important; 
+        padding-right: 2rem !important; 
+        margin: 0 auto !important;
+    }
+    [data-testid="stMainViewContainer"] { width: 100% !important; }
+
+    /* SIDEBAR: Largura Fixa e Estética */
     [data-testid="stSidebar"] { width: 240px !important; min-width: 240px !important; background-color: #fafafa; }
     
-    /* NAVEGAÇÃO SUPERIOR: Botões de 111px */
+    /* NAVEGAÇÃO: Botões de 111px */
     [data-testid="stHorizontalBlock"] { display: flex !important; flex-wrap: nowrap !important; gap: 8px !important; }
     [data-testid="column"] { flex: 0 0 auto !important; width: 115px !important; }
     div.stButton > button {
@@ -31,48 +41,50 @@ st.markdown(
         background-color: #ffffff; border: 1px solid #d1d5db; font-size: 11px;
     }
 
-    /* LIMPEZA DE LABELS E HELPS */
+    /* MATADOR DE INTERROGAÇÕES E LABELS */
     [data-testid="stSidebar"] [data-testid="stWidgetLabel"], 
     [data-testid="stSidebar"] button[title="View help"] { 
         display: none !important; 
     }
 
-    /* CENTRALIZAÇÃO DOS CHECKBOXES (Os Cookies) */
-    /* Este seletor ataca o container interno das colunas na sidebar */
+    /* CENTRALIZAÇÃO DOS COOKIES NA SIDEBAR */
     [data-testid="stSidebarContent"] [data-testid="stHorizontalBlock"] {
         justify-content: center !important;
-        gap: 20px !important;
-        margin-top: 10px !important;
+        gap: 15px !important;
     }
 
-    /* Estilo do Poema na Página Mini */
+    /* ESTILO DO POEMA (PÁGINA MINI) */
     .poema-box {
         font-family: 'IBM Plex Serif', serif;
-        font-size: 1.3rem;
-        font-style: italic;
-        line-height: 1.8;
+        font-size: 1.6rem;
+        line-height: 2;
         color: #2c3e50;
-        padding: 40px;
+        padding: 60px;
         background-color: #ffffff;
-        border-radius: 15px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-        margin: 20px 0;
-        border-left: 3px solid #eee;
-    }
-
-    .sidebar-header {
-        font-family: 'IBM Plex Sans', sans-serif;
-        font-size: 0.8rem;
-        color: #aaa;
-        text-transform: lowercase;
+        border-radius: 20px;
         text-align: center;
-        margin-top: 30px;
+        border: 1px solid #f0f0f0;
+        margin: 40px auto;
+        max-width: 800px;
     }
     </style> """,
     unsafe_allow_html=True,
 )
 
-### bof: navigation (O Trilho)
+### bof: logic (Mini-Māchina)
+
+def get_mini_verse():
+    # Simulação rápida para o palco não ficar vazio
+    versos = [
+        "o silêncio da máquina",
+        "ecoando no papel digital",
+        "breve como um clique",
+        "algoritmos de outono",
+        "a poesia é um erro de sistema"
+    ]
+    return "<br>".join(random.sample(versos, 3))
+
+### bof: navigation
 
 nav_cols = st.columns(6)
 paginas = ["mini", "ypoemas", "eureka", "off-machina", "comments", "sobre"]
@@ -86,7 +98,7 @@ for i in range(6):
 
 st.markdown("---")
 
-### bof: sidebar (O Cockpit)
+### bof: sidebar
 
 # Artes
 mapeamento_artes = {
@@ -101,22 +113,17 @@ if arte_atual and os.path.exists(arte_atual):
 lista_idiomas = ["Português", "English", "Français", "Español", "Italiano", st.session_state.poly_name]
 sel_idioma = st.sidebar.selectbox("idioma", lista_idiomas, key="sel_lang", label_visibility="collapsed")
 
-# 2. Recursos (Centralizados e Equidistantes)
+# 2. Recursos (Os Cookies)
 st.sidebar.markdown("<br>", unsafe_allow_html=True)
-# Usamos colunas 1:1:1 para garantir a equidistância interna, 
-# e o CSS [justify-content: center] cuida da centralização na largura total.
 c1, c2, c3 = st.sidebar.columns([1, 1, 1])
-with c1:
-    st.session_state.audio_on = st.checkbox("v", value=True, key="chk_v", label_visibility="collapsed")
-with c2:
-    st.session_state.draw_on = st.checkbox("a", value=True, key="chk_a", label_visibility="collapsed")
-with c3:
-    st.session_state.video_on = st.checkbox("vi", value=False, key="chk_vi", label_visibility="collapsed")
+with c1: st.session_state.audio_on = st.checkbox("v", value=True, key="chk_v", label_visibility="collapsed")
+with c2: st.session_state.draw_on = st.checkbox("a", value=True, key="chk_a", label_visibility="collapsed")
+with c3: st.session_state.video_on = st.checkbox("vi", value=False, key="chk_vi", label_visibility="collapsed")
 
 # 3. Contato
-st.sidebar.markdown("<div class='sidebar-header'>contato</div>", unsafe_allow_html=True)
+st.sidebar.markdown("<p style='text-align:center; color:#999; font-size:0.8rem; margin-top:20px;'>contato</p>", unsafe_allow_html=True)
 st.sidebar.markdown("""
-<div style="text-align: center; display: flex; flex-direction: column; gap: 8px; font-family: 'IBM Plex Sans', sans-serif; font-size: 0.9rem; margin-top:10px;">
+<div style="text-align: center; display: flex; flex-direction: column; gap: 8px; font-family: 'IBM Plex Sans', sans-serif; font-size: 0.9rem;">
     <a href="#" style="text-decoration: none; color: #444;">📸 instagram</a>
     <a href="#" style="text-decoration: none; color: #444;">✉️ email</a>
 </div>
@@ -125,34 +132,19 @@ st.sidebar.markdown("""
 st.sidebar.markdown("---")
 st.sidebar.caption(f"Phenix Machina | {st.session_state.page}")
 
-### bof: pages (O Palco)
+### bof: pages
 
 if st.session_state.page == "mini":
-    # Layout da Página Mini: Equilíbrio entre branco e texto
-    st.markdown("## ツ mini-maquina")
-    st.caption(f"idioma atual: {sel_idioma}")
+    st.markdown("<h2 style='text-align: center;'>ツ mini-māchina</h2>", unsafe_allow_html=True)
     
-    col_p1, col_p2 = st.columns([3, 1])
+    # O Poema
+    st.markdown(f'<div class="poema-box">{get_mini_verse()}</div>', unsafe_allow_html=True)
     
-    with col_p1:
-        # Placeholder do Poema
-        st.markdown("""
-        <div class="poema-box">
-            o silêncio da máquina<br>
-            ecoalha no papel digital<br>
-            breve como um clique.
-        </div>
-        """, unsafe_allow_html=True)
-        
-        if st.button("gerar novo verso", type="primary"):
-            st.toast("A Phenix está processando seus arquivos...")
-
-    with col_p2:
-        st.markdown("---")
-        st.write("### log")
-        st.caption("v.2026.04")
+    # Botão de Geração Centralizado
+    _, col_btn, _ = st.columns([1, 0.4, 1])
+    with col_btn:
+        if st.button("novo sopro", use_container_width=True):
+            st.rerun()
 
 elif st.session_state.page == "ypoemas":
     st.subheader("ツ ypoemas")
-
-st.write("")
