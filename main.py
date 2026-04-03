@@ -32,7 +32,7 @@ help_dict = {
     st.session_state.poly_name: "tria com ha d'actuar la màquina"
 }
 
-# Regra 0: Look & Feel (Sidebar 240px | Botões 116px)
+# Regra 0: Look & Feel (Sidebar 240px | Botões 111px)
 st.markdown(
     """ <style>
     footer {visibility: hidden;}
@@ -59,12 +59,12 @@ st.markdown(
         text-transform: lowercase;
     }
 
-    /* Navegação - Ajuste para 116px */
+    /* Navegação - Ajuste para 111px */
     [data-testid="stHorizontalBlock"] { display: flex !important; flex-wrap: nowrap !important; gap: 8px !important; }
     [data-testid="column"] { flex: 0 0 auto !important; width: 119px !important; }
     
     div.stButton > button {
-        width: 116px !important; 
+        width: 111px !important; 
         border-radius: 12px; 
         height: 3.2em;
         background-color: #ffffff; 
@@ -76,7 +76,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-### bof: navigation (Trilho de 116px)
+### bof: navigation (Trilho de 111px)
 
 nav_cols = st.columns(6)
 paginas = ["mini", "ypoemas", "eureka", "off-machina", "comments", "sobre"]
