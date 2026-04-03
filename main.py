@@ -32,13 +32,13 @@ help_dict = {
     st.session_state.poly_name: "tria com ha d'actuar la màquina"
 }
 
-# Regra 0: Look & Feel (Ajuste de 112px)
+# Regra 0: Look & Feel (Ajuste Final de Espaçamento)
 st.markdown(
     """ <style>
     footer {visibility: hidden;}
     .main .block-container { max-width: 98% !important; padding-top: 1.5rem; }
     
-    /* Blindagem e Limpeza */
+    /* Blindagem contra Fullscreen e Toolbar */
     [data-testid="stImage"] button, [data-testid="stElementToolbar"] { display: none !important; }
     [data-testid="stImage"] img { pointer-events: none; }
 
@@ -51,7 +51,7 @@ st.markdown(
         font-weight: 600;
         color: #888;
         margin-top: 15px;
-        margin-bottom: 5px;
+        margin-bottom: 10px;
         text-transform: lowercase;
     }
 
@@ -65,14 +65,14 @@ st.markdown(
         height: 3.2em;
         background-color: #ffffff; 
         border: 1px solid #d1d5db; 
-        font-size: 12px; /* Redução leve na fonte para ajudar no encaixe */
+        font-size: 12px;
     }
     div.stButton > button:hover { border-color: powderblue; color: powderblue; }
     </style> """,
     unsafe_allow_html=True,
 )
 
-### bof: navigation (O Trilho de 112px)
+### bof: navigation (Trilho de 112px)
 
 nav_cols = st.columns(6)
 paginas = ["mini", "ypoemas", "eureka", "off-machina", "comments", "sobre"]
@@ -86,7 +86,7 @@ for i in range(6):
 
 st.markdown("---")
 
-### bof: sidebar (O Cockpit Limpo)
+### bof: sidebar (O Cockpit "Mudo" e Elegante)
 
 mapeamento_artes = {
     "mini": "img_mini.jpg",
@@ -101,7 +101,9 @@ arte_atual = mapeamento_artes.get(st.session_state.page)
 if arte_atual and os.path.exists(arte_atual):
     st.sidebar.image(arte_atual, use_container_width=True)
 
-# 1. Idiomas (Sem título, apenas o seletor)
+st.sidebar.markdown("<br>", unsafe_allow_html=True)
+
+# 1. Idiomas (Puro e direto)
 lista_idiomas = ["Português", "English", "Français", "Español", "Italiano", st.session_state.poly_name]
 sel_idioma = st.sidebar.selectbox(
     "idioma_selector",
@@ -110,14 +112,13 @@ sel_idioma = st.sidebar.selectbox(
     label_visibility="collapsed"
 )
 
-# 2. Recursos (Com Help Tip dinâmico)
+# 2. Recursos (Sem cabeçalho, apenas a funcionalidade com Help Tip)
 current_help = help_dict.get(sel_idioma, help_dict["Português"])
 
-st.sidebar.markdown("<div class='sidebar-header'>recursos</div>", unsafe_allow_html=True)
 st.session_state.audio_on = st.sidebar.checkbox("🎙️ voz (talk)", value=True, help=current_help)
 st.session_state.draw_on = st.sidebar.checkbox("🎨 arte (draw)", value=True, help=current_help)
 
-# 3. Conexões
+# 3. Conexões (Único cabeçalho mantido para separar o social)
 st.sidebar.markdown("<div class='sidebar-header'>conexões</div>", unsafe_allow_html=True)
 st.sidebar.markdown("""
 <div style="display: flex; gap: 15px; font-size: 18px; padding-left: 5px;">
@@ -134,7 +135,7 @@ st.sidebar.caption(f"Phenix Machina | {st.session_state.page}")
 
 if st.session_state.page == "mini":
     st.subheader("ツ mini")
-    st.write(f"Cockpit configurado. {current_help.capitalize()}.")
+    st.write(f"O cockpit está silencioso e funcional.")
 else:
     st.subheader(f"ツ {st.session_state.page}")
-    st.write("Cenário em espera.")
+    st.write("Aguardando montagem...")
