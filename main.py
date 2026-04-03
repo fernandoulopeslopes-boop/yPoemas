@@ -19,7 +19,7 @@ st.set_page_config(
 
 if "page" not in st.session_state: st.session_state.page = "mini"
 
-# Regra 0: Look & Feel (Foco Total e Remoção do Full Screen)
+# Regra 0: Look & Feel (Extermínio do Fullscreen e Limpeza Total)
 st.markdown(
     """ <style>
     footer {visibility: hidden;}
@@ -28,12 +28,20 @@ st.markdown(
         padding-top: 1.5rem;
     }
     
-    /* REMOVER BOTÃO FULL SCREEN DAS IMAGENS */
+    /* BLOQUEIO TOTAL DO BOTÃO FULLSCREEN E INTERAÇÕES NA IMAGEM */
+    [data-testid="stImage"] button, 
+    [data-testid="stElementToolbar"],
+    .st-emotion-cache-15z78ca button,
     button[title="View fullscreen"] {
         display: none !important;
     }
     
-    /* Ajuste fino da Sidebar */
+    /* Impede que a imagem mude o cursor ou pareça clicável */
+    [data-testid="stImage"] img {
+        pointer-events: none;
+    }
+
+    /* Ajuste da Sidebar */
     [data-testid="stSidebar"] { 
         width: 280px !important; 
         background-color: #fafafa;
@@ -48,7 +56,7 @@ st.markdown(
         margin-bottom: 5px;
     }
 
-    /* Navegação Horizontal */
+    /* Navegação */
     [data-testid="stHorizontalBlock"] {
         display: flex !important;
         flex-wrap: nowrap !important;
@@ -67,7 +75,6 @@ st.markdown(
         background-color: #ffffff;
         border: 1px solid #d1d5db;
         font-size: 13px;
-        transition: 0.2s;
     }
     
     div.stButton > button:hover {
@@ -92,9 +99,8 @@ for i in range(6):
 
 st.markdown("---")
 
-### bof: sidebar (Painel Limpo)
+### bof: sidebar (Painel 100% Estático)
 
-# Imagem sem o botão de expandir
 mapeamento_artes = {
     "mini": "img_mini.jpg",
     "ypoemas": "img_ypoemas.jpg",
@@ -106,17 +112,13 @@ mapeamento_artes = {
 
 arte_atual = mapeamento_artes.get(st.session_state.page)
 if arte_atual and os.path.exists(arte_atual):
+    # A imagem agora é puramente visual, sem botões de controle
     st.sidebar.image(arte_atual, use_container_width=True)
 
 st.sidebar.markdown("<div class='sidebar-title'>⚙️ Configurações</div>", unsafe_allow_html=True)
 
-# Controles de Idioma e Modos
 with st.sidebar.expander("🌍 Idioma e Tradução", expanded=True):
-    st.selectbox(
-        "Selecione o idioma:",
-        ["Português", "English", "Français", "Español", "Italiano"],
-        key="sel_lang"
-    )
+    st.selectbox("Selecione o idioma:", ["Português", "English", "Français", "Español", "Italiano"], key="sel_lang")
 
 with st.sidebar.expander("🛠️ Modo de Execução", expanded=True):
     st.session_state.audio_on = st.checkbox("🎙️ Talk (Voz/Áudio)", value=True)
@@ -127,13 +129,9 @@ st.sidebar.caption(f"Fênix Machina | Status: Online")
 
 ### bof: pages
 
-def page_mini():
-    st.subheader("ツ mini")
-    st.write("A imagem lateral agora está 'fixa' e limpa, sem o botão de expandir.")
-
-# Router simplificado para verificação
 if st.session_state.page == "mini":
-    page_mini()
+    st.subheader("ツ mini")
+    st.info("A imagem lateral agora deve estar 'blindada' contra o fullscreen.")
 else:
     st.subheader(f"ツ {st.session_state.page}")
-    st.write("Palco pronto para montagem.")
+    st.write("Configurações da sidebar prontas.")
