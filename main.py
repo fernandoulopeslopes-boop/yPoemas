@@ -35,17 +35,29 @@ if have_internet():
     except ImportError:
         pass
 
-# Regra 0: Look & Feel (Sidebar 260px)
+# Regra 0: Look & Feel (Botões Arredondados e Palco Limpo)
 st.markdown(
     """ <style>
     footer {visibility: hidden;}
-    .reportview-container .main .block-container{ padding: 0rem; }
+    .reportview-container .main .block-container{ padding-top: 1rem; }
     
-    [data-testid="stSidebar"] {
-        width: 260px !important;
+    [data-testid="stSidebar"] { width: 260px !important; }
+    
+    /* Design dos Botões Originais */
+    div.stButton > button {
+        width: 100%;
+        border-radius: 12px;
+        height: 3em;
+        background-color: #f0f2f6;
+        border: 1px solid #d1d5db;
+        transition: all 0.3s;
+        font-family: 'IBM Plex Sans';
+        font-weight: 500;
     }
-    [data-testid="stSidebar"] > div:first-child {
-        width: 260px !important;
+    div.stButton > button:hover {
+        border-color: powderblue;
+        color: powderblue;
+        background-color: white;
     }
     
     mark { background-color: powderblue; color: black; }
@@ -55,21 +67,18 @@ st.markdown(
         font-family: 'IBM Plex Sans'; color: #000000;
         padding-top: 0px; padding-left: 15px;
     }
-    .logo-img { float:right; }
     </style> """,
     unsafe_allow_html=True,
 )
 
+# Estado da página (MANDALA)
+if "page" not in st.session_state: st.session_state.page = "mini"
 if "lang" not in st.session_state: st.session_state.lang = "pt"
-if "tema" not in st.session_state: st.session_state.tema = "Fatos"
 
-### bof: navigation
+### bof: sidebar (Configurações)
 
-# Menu Principal Atualizado (Regra 1, 2 e 3)
-menu_opcoes = ["mini", "ypoemas", "eureka", "off-machina", "sobre"]
-pagina_selecionada = st.sidebar.selectbox("MANDALA / Menu Principal", menu_opcoes)
+st.sidebar.title("Configurações")
 
-# Mapeamento de Artes (Regra 0 & 3)
 mapeamento_artes = {
     "mini": "img_mini.jpg",
     "ypoemas": "img_ypoemas.jpg",
@@ -78,12 +87,33 @@ mapeamento_artes = {
     "sobre": "img_about.jpg"
 }
 
-arte_atual = mapeamento_artes.get(pagina_selecionada)
-
+# Exibição da arte na sidebar (atualiza conforme o clique nos botões)
+arte_atual = mapeamento_artes.get(st.session_state.page)
 if arte_atual and os.path.exists(arte_atual):
     st.sidebar.image(arte_atual, use_container_width=True)
-else:
-    st.sidebar.warning(f"🖼️ [Arquivo {arte_atual} não localizado]")
+
+st.sidebar.markdown("---")
+st.sidebar.selectbox("Idioma", ["Português", "English", "Français"], key="sel_lang")
+st.sidebar.checkbox("Talk (Voz)", value=True)
+st.sidebar.checkbox("Draw (Desenho)", value=True)
+
+### bof: navigation (Os Botões Originais no Topo)
+
+# Criamos colunas para o deslocamento horizontal
+col1, col2, col3, col4, col5 = st.columns(5)
+
+with col1:
+    if st.button("ツ mini"): st.session_state.page = "mini"
+with col2:
+    if st.button("ypoemas"): st.session_state.page = "ypoemas"
+with col3:
+    if st.button("eureka"): st.session_state.page = "eureka"
+with col4:
+    if st.button("off-machina"): st.session_state.page = "off-machina"
+with col5:
+    if st.button("sobre"): st.session_state.page = "sobre"
+
+st.markdown("---")
 
 ### bof: pages
 
@@ -101,35 +131,24 @@ def page_eureka():
 
 def page_off_machina():
     st.subheader("ツ off-machina")
-    st.info("Fora da máquina: cópias digitais de livros impressos.")
-    st.write("Under Construction")
+    st.info("Cópias digitais de livros impressos.")
 
 def page_sobre():
     st.subheader("ツ sobre")
     st.write("Under Construction")
 
-# Execução da Navegação
-if pagina_selecionada == "mini":
+# Router baseado no clique do botão
+if st.session_state.page == "mini":
     page_mini()
-elif pagina_selecionada == "ypoemas":
+elif st.session_state.page == "ypoemas":
     page_ypoemas()
-elif pagina_selecionada == "eureka":
+elif st.session_state.page == "eureka":
     page_eureka()
-elif pagina_selecionada == "off-machina":
+elif st.session_state.page == "off-machina":
     page_off_machina()
-elif pagina_selecionada == "sobre":
+elif st.session_state.page == "sobre":
     page_sobre()
 
 ### bof: tools
-
 def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):
-    if LOGO_IMAGE == None:
-        st.markdown(f"<div class='container'><p class='logo-text'>{LOGO_TEXTO}</p></div>", unsafe_allow_html=True)
-    else:
-        with open(LOGO_IMAGE, "rb") as f:
-            img_data = base64.b64encode(f.read()).decode()
-        st.markdown(
-            f"<div class='container'><img class='logo-img' src='data:image/jpg;base64,{img_data}'><p class='logo-text'>{LOGO_TEXTO}</p></div>",
-            unsafe_allow_html=True
-        )
-        
+    pass
