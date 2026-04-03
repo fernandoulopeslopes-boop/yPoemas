@@ -38,12 +38,16 @@ if have_internet():
 hostname = socket.gethostname()
 IPAddres = socket.gethostbyname(hostname)
 
-# Regra 0: O "Look" da Machina
+# Regra 0: Look & Feel (Ajuste Sidebar 260px)
 st.markdown(
     """ <style>
     footer {visibility: hidden;}
     .reportview-container .main .block-container{ padding: 0rem; }
-    [data-testid='stSidebar'][aria-expanded='true'] > div:first-child { width: 310px; }
+    
+    [data-testid='stSidebar'][aria-expanded='true'] > div:first-child { 
+        width: 260px; 
+    }
+    
     mark { background-color: powderblue; color: black; }
     .container { display: flex; }
     .logo-text {
@@ -56,11 +60,10 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# Initialize SessionState
 if "lang" not in st.session_state: st.session_state.lang = "pt"
 if "tema" not in st.session_state: st.session_state.tema = "Fatos"
 
-### bof: pages (Ordem Original - Regra 1 e 2)
+### bof: pages
 
 def page_mini():
     st.subheader("ツ mini")
