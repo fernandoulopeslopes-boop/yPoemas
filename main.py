@@ -17,73 +17,75 @@ st.set_page_config(
     initial_sidebar_state="auto",
 )
 
-def have_internet(host="8.8.8.8", port=53, timeout=3):
-    try:
-        socket.setdefaulttimeout(timeout)
-        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
-        return True
-    except socket.error:
-        return False
+# Estado da página (MANDALA) - Inicialização Crítica
+if "page" not in st.session_state: 
+    st.session_state.page = "mini"
 
-if have_internet():
-    try:
-        from deep_translator import GoogleTranslator
-    except ImportError:
-        pass
-    try:
-        from gtts import gTTS
-    except ImportError:
-        pass
-
-# Regra 0: Look & Feel (Botões Compactos a 100px)
+# Regra 0: Look & Feel (Foco no Palco Central)
 st.markdown(
     """ <style>
     footer {visibility: hidden;}
-    
     .main .block-container {
         max-width: 95% !important;
         padding-top: 1.5rem;
-        padding-right: 1rem;
-        padding-left: 1rem;
     }
-    
     [data-testid="stSidebar"] { width: 260px !important; }
     
-    /* Botões Ultra-Compactos: 100px */
+    /* Botões 100px - Simetria de Painel de Controle */
     div.stButton > button {
         width: 100px !important; 
         border-radius: 12px;
         height: 3.2em;
         background-color: #f8f9fa;
         border: 1px solid #d1d5db;
-        transition: all 0.3s ease-in-out;
+        transition: all 0.2s ease-in-out;
         font-family: 'IBM Plex Sans';
         font-weight: 500;
-        font-size: 12px; /* Reduzi levemente a fonte para caber no novo shape */
-        white-space: nowrap;
+        font-size: 12px;
     }
-    
     div.stButton > button:hover {
         border-color: powderblue;
         color: powderblue;
         background-color: white;
-        box-shadow: 0px 4px 8px rgba(0,0,0,0.05);
     }
-
     [data-testid="column"] {
         padding: 0 8px !important;
         display: flex;
         justify-content: center;
     }
-
-    mark { background-color: powderblue; color: black; }
     </style> """,
     unsafe_allow_html=True,
 )
 
-if "page" not in st.session_state: st.session_state.page = "mini"
+### bof: navigation (O Comando do Palco)
+# Processamos o clique ANTES de desenhar a sidebar para atualização instantânea
 
-### bof: sidebar (Configurações)
+_, center_col, _ = st.columns([1, 8, 1]) 
+
+with center_col:
+    nav_cols = st.columns(6)
+    if nav_cols[0].button("ツ mini"): 
+        st.session_state.page = "mini"
+        st.rerun()
+    if nav_cols[1].button("ypoemas"): 
+        st.session_state.page = "ypoemas"
+        st.rerun()
+    if nav_cols[2].button("eureka"): 
+        st.session_state.page = "eureka"
+        st.rerun()
+    if nav_cols[3].button("off-machina"): 
+        st.session_state.page = "off-machina"
+        st.rerun()
+    if nav_cols[4].button("comments"): 
+        st.session_state.page = "comments"
+        st.rerun()
+    if nav_cols[5].button("sobre"): 
+        st.session_state.page = "sobre"
+        st.rerun()
+
+st.markdown("---")
+
+### bof: sidebar (Bastidores / Configurações)
 
 st.sidebar.title("Configurações")
 
@@ -102,57 +104,31 @@ if arte_atual and os.path.exists(arte_atual):
 
 st.sidebar.markdown("---")
 st.sidebar.selectbox("Idioma", ["Português", "English", "Français"], key="sel_lang")
-st.sidebar.checkbox("Talk (Voz)", value=True)
-st.sidebar.checkbox("Draw (Desenho)", value=True)
+st.sidebar.checkbox("Talk (Áudio)", value=True)
+st.sidebar.checkbox("Draw (Imagem)", value=True)
 
-### bof: navigation (Máxima Centralização)
-
-_, center_col, _ = st.columns([1, 8, 1]) 
-
-with center_col:
-    nav_cols = st.columns(6)
-    with nav_cols[0]:
-        if st.button("ツ mini"): st.session_state.page = "mini"
-    with nav_cols[1]:
-        if st.button("ypoemas"): st.session_state.page = "ypoemas"
-    with nav_cols[2]:
-        if st.button("eureka"): st.session_state.page = "eureka"
-    with nav_cols[3]:
-        if st.button("off-machina"): st.session_state.page = "off-machina"
-    with nav_cols[4]:
-        if st.button("comments"): st.session_state.page = "comments"
-    with nav_cols[5]:
-        if st.button("sobre"): st.session_state.page = "sobre"
-
-st.markdown("---")
-
-### bof: pages
+### bof: pages (O Espetáculo)
 
 def page_mini():
     st.subheader("ツ mini")
-    st.info("Palco centralizado. Botões a 100px.")
+    st.write("Configurações aplicadas. O palco é seu.")
 
 def page_ypoemas():
     st.subheader("ツ ypoemas")
-    st.write("Conteúdo da página ypoemas.")
 
 def page_eureka():
     st.subheader("ツ eureka")
-    st.write("Conteúdo da página eureka.")
 
 def page_off_machina():
     st.subheader("ツ off-machina")
-    st.write("Conteúdo da página off-machina.")
 
 def page_comments():
     st.subheader("ツ comments")
-    st.write("Conteúdo da página comments.")
 
 def page_sobre():
     st.subheader("ツ sobre")
-    st.write("Conteúdo da página sobre.")
 
-# Router
+# Router final para carregar a página selecionada
 if st.session_state.page == "mini":
     page_mini()
 elif st.session_state.page == "ypoemas":
@@ -165,7 +141,3 @@ elif st.session_state.page == "comments":
     page_comments()
 elif st.session_state.page == "sobre":
     page_sobre()
-
-### bof: tools
-def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):
-    pass
