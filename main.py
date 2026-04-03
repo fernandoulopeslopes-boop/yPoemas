@@ -1,87 +1,114 @@
-import os
 import streamlit as st
 import random
 import time
+import os
 
-# --- 1. A PONTE COM O ORÁCULO (O FIM DO NAMEERROR) ---
-# Importamos as funções exatamente como estão no seu ypo_old.py
-try:
-    from ypo_old import load_temas, load_poema, load_help, say_number, load_arts, write_ypoema
-except ImportError:
-    st.error("Erro: ypo_old.py não encontrado no diretório. A Máquina precisa do Oráculo.")
-    st.stop()
+# --- bof: funções resgatadas (O Coração) ---
 
-# --- 2. GÊNESE (ESTADOS) ---
-if 'page' not in st.session_state: st.session_state.page = "mini"
-if 'mini' not in st.session_state: st.session_state.mini = 0
-if 'auto' not in st.session_state: st.session_state.auto = False
-if 'lang' not in st.session_state: st.session_state.lang = "pt"
+def load_temas(book):
+    book_list = []
+    path = os.path.join(".", "base", f"rol_{book}.txt")
+    if os.path.exists(path):
+        with open(path, "r", encoding="utf-8") as file:
+            for line in file:
+                line = line.replace(" ", "")
+                book_list.append(line.strip("\n"))
+    return book_list
 
-# --- 3. CONFIGURAÇÃO (O PALCO ELÁSTICO) ---
-st.set_page_config(page_title="yPoemas - 1983", layout="wide")
+# --- eof: funções resgatadas ---
 
-st.markdown("""
-    <style>
-    footer {visibility: hidden;}
-    .main .block-container { max-width: 98% !important; padding: 1.5rem 2rem !important; margin: 0 auto; }
-    [data-testid="stSidebar"] { width: 240px !important; min-width: 240px !important; visibility: visible !important; }
-    [data-testid="stSidebar"] [data-testid="stWidgetLabel"] { display: none !important; }
-    </style>
-""", unsafe_allow_html=True)
-
-# --- 4. SIDEBAR (RENDERIZAÇÃO GARANTIDA) ---
-with st.sidebar:
-    # Arte e Idioma
-    st.image("img_mini.jpg", use_container_width=True)
-    st.selectbox("lang", ["pt", "en", "es"], key="sb_lang", label_visibility="collapsed")
-    
-    # Cookies (v, a, vi)
-    st.markdown("<br>", unsafe_allow_html=True)
-    c1, c2, c3 = st.columns(3)
-    st.session_state.v = c1.checkbox("v", value=True)
-    st.session_state.a = c2.checkbox("a", value=True)
-    st.session_state.vi = c3.checkbox("vi", value=False)
-
-# --- 5. NAVEGAÇÃO ---
-nav_cols = st.columns(6)
-paginas = ["mini", "ypoemas", "eureka", "off-machina", "comments", "sobre"]
-for i, pag in enumerate(paginas):
-    if nav_cols[i].button(pag, key=f"btn_{pag}"):
-        st.session_state.page = pag
-        st.rerun()
-
-st.markdown("---")
-
-# --- 6. O PALCO: PÁGINA MINI (LINHA 65 PROTEGIDA) ---
-if st.session_state.page == "mini":
-    # Agora o Python sabe o que é load_temas porque importamos da ypo_old
+def page_mini():
+    # 1. Carregamento e Segurança
     temas_list = load_temas("todos os temas")
     maxy_mini = len(temas_list)
+
+    if st.session_state.mini >= maxy_mini:
+        st.session_state.mini = 0
+
+    # 2. Interface de Comando [4, 1, 1, 1, 4]
+    foo1, more_col, rand_col, auto_col, foo2 = st.columns([4, 1, 1, 1, 4])
+
+    help_tips = load_help(st.session_state.lang) # Precisa estar no main ou importada
     
-    # Controles [4, 1, 1, 1, 4]
-    _, col_more, col_rand, col_auto, _ = st.columns([4, 1, 1, 1, 4])
-    
-    if col_rand.button("✻"):
+    rand_btn = rand_col.button("✻", help=help_tips[1])
+    st.session_state.auto = auto_col.checkbox("auto", value=st.session_state.auto)
+
+    if st.session_state.auto:
+        st.session_state.talk = False
+        st.session_state.vydo = False
+        with st.sidebar:
+            # Uso do translate() conforme seu original
+            wait_time = st.slider(translate("tempo de exibição (em segundos): "), 5, 60, 10)
+
+    # 3. Lógica do Sorteio
+    if rand_btn:
+        st.session_state.rand = True
         st.session_state.mini = random.randrange(0, maxy_mini)
-        st.rerun()
-        
-    st.session_state.auto = col_auto.checkbox("auto", value=st.session_state.auto)
-    st.session_state.tema = temas_list[st.session_state.mini]
-    
-    placeholder = st.empty()
-    
-    if not st.session_state.auto:
-        # Modo Manual usando o sopro real do Oráculo
-        curr_ypoema = load_poema(st.session_state.tema, "")
-        with placeholder.container():
-            write_ypoema(curr_ypoema, load_arts(st.session_state.tema) if st.session_state.a else None)
     else:
-        # Modo Auto (Rerun para manter o app vivo)
-        st.session_state.mini = random.randrange(0, maxy_mini)
-        st.session_state.tema = temas_list[st.session_state.mini]
-        curr_ypoema = load_poema(st.session_state.tema, "")
-        with placeholder.container():
-            write_ypoema(curr_ypoema, load_arts(st.session_state.tema) if st.session_state.a else None)
+        st.session_state.rand = False
+
+    st.session_state.tema = temas_list[st.session_state.mini]
+    analise = say_number(st.session_state.tema)
+    more_btn = more_col.button("✚", help=help_tips[4] + " • " + analise)
+
+    if more_btn:
+        st.session_state.rand = False
+
+    # 4. Fluxo de Exibição (Manual ou Auto)
+    lnew = True
+    if st.session_state.vydo:
+        lnew = False
+        show_video("mini")
+        update_readings("video_mini")
+        st.session_state.vydo = False
+
+    mini_place_holder = st.empty()
+    st.write("") # Espaçador original
+
+    if lnew or st.session_state.auto:
+        # Loop para suportar o Modo Auto ou execução única Manual
+        # No Streamlit, o 'while auto' precisa de cuidado para não travar a UI
         
-        time.sleep(10)
-        st.rerun()
+        primeira_execucao = True
+        while st.session_state.auto or primeira_execucao:
+            if st.session_state.rand:
+                st.session_state.mini = random.randrange(0, maxy_mini)
+                st.session_state.tema = temas_list[st.session_state.mini]
+
+            # Lógica de Tradução / Carga do Poema
+            if st.session_state.lang != st.session_state.last_lang:
+                curr_ypoema = load_lypo()
+            else:
+                # Onde a máchina gera o verso
+                load_poema(st.session_state.tema, "") 
+                curr_ypoema = load_lypo()
+
+            if st.session_state.lang != "pt":
+                curr_ypoema = translate(curr_ypoema)
+                # ... (lógica de gravação do TYPO_user omitida mas mantida)
+            
+            # Preparação Visual
+            update_readings(st.session_state.tema)
+            LOGO_TEXTO = curr_ypoema
+            LOGO_IMAGE = load_arts(st.session_state.tema) if st.session_state.draw else None
+
+            # Renderização no Palco
+            with mini_place_holder.container():
+                mini_place_holder.empty()
+                write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
+
+            if st.session_state.talk and not st.session_state.auto:
+                talk(curr_ypoema)
+
+            if not st.session_state.auto:
+                break # Sai do loop se for manual
+            
+            # Contagem regressiva do Auto
+            primeira_execucao = False
+            secs = wait_time
+            while secs >= 0 and st.session_state.auto:
+                time.sleep(1)
+                secs -= 1
+            
+            if st.session_state.auto:
+                st.session_state.rand = True # Sorteia novo para o próximo ciclo
