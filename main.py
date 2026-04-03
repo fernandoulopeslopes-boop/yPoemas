@@ -35,7 +35,7 @@ if have_internet():
     except ImportError:
         pass
 
-# Regra 0: Look & Feel (Botões a 85% da largura anterior)
+# Regra 0: Look & Feel (Botões Compactos a 100px)
 st.markdown(
     """ <style>
     footer {visibility: hidden;}
@@ -49,9 +49,9 @@ st.markdown(
     
     [data-testid="stSidebar"] { width: 260px !important; }
     
-    /* Botões compactos: 120px (85% de 140px) */
+    /* Botões Ultra-Compactos: 100px */
     div.stButton > button {
-        width: 120px !important; 
+        width: 100px !important; 
         border-radius: 12px;
         height: 3.2em;
         background-color: #f8f9fa;
@@ -59,7 +59,7 @@ st.markdown(
         transition: all 0.3s ease-in-out;
         font-family: 'IBM Plex Sans';
         font-weight: 500;
-        font-size: 13px;
+        font-size: 12px; /* Reduzi levemente a fonte para caber no novo shape */
         white-space: nowrap;
     }
     
@@ -71,7 +71,7 @@ st.markdown(
     }
 
     [data-testid="column"] {
-        padding: 0 10px !important;
+        padding: 0 8px !important;
         display: flex;
         justify-content: center;
     }
@@ -105,9 +105,9 @@ st.sidebar.selectbox("Idioma", ["Português", "English", "Français"], key="sel_
 st.sidebar.checkbox("Talk (Voz)", value=True)
 st.sidebar.checkbox("Draw (Desenho)", value=True)
 
-### bof: navigation (Compacta e Simétrica)
+### bof: navigation (Máxima Centralização)
 
-_, center_col, _ = st.columns([0.5, 9, 0.5]) 
+_, center_col, _ = st.columns([1, 8, 1]) 
 
 with center_col:
     nav_cols = st.columns(6)
@@ -130,7 +130,7 @@ st.markdown("---")
 
 def page_mini():
     st.subheader("ツ mini")
-    st.info("Palco otimizado com botões compactos.")
+    st.info("Palco centralizado. Botões a 100px.")
 
 def page_ypoemas():
     st.subheader("ツ ypoemas")
