@@ -1,3 +1,4 @@
 streamlit
+extra-stylable-components
 deep-translator
 gTTS
