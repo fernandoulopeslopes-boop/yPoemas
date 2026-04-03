@@ -3,52 +3,46 @@ import streamlit as st
 import random
 import time
 
-# --- 1. GÊNESE (ESTADOS) ---
-if 'page' not in st.session_state: st.session_state.page = "mini"
-if 'auto' not in st.session_state: st.session_state.auto = False
-if 'mini' not in st.session_state: st.session_state.mini = 0
+# --- 1. A PONTE COM O ORÁCULO (O FIM DO NAMEERROR) ---
+# Importamos as funções exatamente como estão no seu ypo_old.py
+try:
+    from ypo_old import load_temas, load_poema, load_help, say_number, load_arts, write_ypoema
+except ImportError:
+    st.error("Erro: ypo_old.py não encontrado no diretório. A Máquina precisa do Oráculo.")
+    st.stop()
 
-# --- 2. REGRA 0: LOOK & FEEL (O PALCO ELÁSTICO) ---
-st.set_page_config(page_title="yPoemas", layout="wide")
+# --- 2. GÊNESE (ESTADOS) ---
+if 'page' not in st.session_state: st.session_state.page = "mini"
+if 'mini' not in st.session_state: st.session_state.mini = 0
+if 'auto' not in st.session_state: st.session_state.auto = False
+if 'lang' not in st.session_state: st.session_state.lang = "pt"
+
+# --- 3. CONFIGURAÇÃO (O PALCO ELÁSTICO) ---
+st.set_page_config(page_title="yPoemas - 1983", layout="wide")
 
 st.markdown("""
     <style>
     footer {visibility: hidden;}
-    /* PALCO EXPANSÍVEL */
-    .main .block-container { max-width: 95% !important; padding: 1.5rem 2rem !important; margin: 0 auto; }
-    [data-testid="stMainViewContainer"] { width: 100% !important; }
-    
-    /* SIDEBAR VISÍVEL E LIMPA */
+    .main .block-container { max-width: 98% !important; padding: 1.5rem 2rem !important; margin: 0 auto; }
     [data-testid="stSidebar"] { width: 240px !important; min-width: 240px !important; visibility: visible !important; }
     [data-testid="stSidebar"] [data-testid="stWidgetLabel"] { display: none !important; }
-    
-    .mini-card {
-        font-family: 'IBM Plex Serif', serif;
-        font-size: 2rem; line-height: 1.7; color: #1a1a1a;
-        text-align: center; padding: 80px 40px;
-        background: #fff; border-radius: 15px;
-        border: 1px solid #f0f0f0; max-width: 700px; margin: 40px auto;
-    }
     </style>
 """, unsafe_allow_html=True)
 
-# --- 3. SIDEBAR (RENDERIZA ANTES DO PALCO PARA NÃO SUMIR) ---
+# --- 4. SIDEBAR (RENDERIZAÇÃO GARANTIDA) ---
 with st.sidebar:
-    st.image("img_mini.jpg", use_container_width=True) # Arte da Mini
-    st.selectbox("lang", ["pt", "en", "es"], key="lang", label_visibility="collapsed")
+    # Arte e Idioma
+    st.image("img_mini.jpg", use_container_width=True)
+    st.selectbox("lang", ["pt", "en", "es"], key="sb_lang", label_visibility="collapsed")
     
+    # Cookies (v, a, vi)
     st.markdown("<br>", unsafe_allow_html=True)
     c1, c2, c3 = st.columns(3)
-    # Cookies
     st.session_state.v = c1.checkbox("v", value=True)
     st.session_state.a = c2.checkbox("a", value=True)
     st.session_state.vi = c3.checkbox("vi", value=False)
-    
-    if st.session_state.auto:
-        st.write("Modo Auto Ativo")
-        wait_time = st.slider("tempo", 5, 60, 10)
 
-# --- 4. NAVEGAÇÃO ---
+# --- 5. NAVEGAÇÃO ---
 nav_cols = st.columns(6)
 paginas = ["mini", "ypoemas", "eureka", "off-machina", "comments", "sobre"]
 for i, pag in enumerate(paginas):
@@ -58,41 +52,36 @@ for i, pag in enumerate(paginas):
 
 st.markdown("---")
 
-# --- 5. O PALCO (PÁGINA MINI) ---
+# --- 6. O PALCO: PÁGINA MINI (LINHA 65 PROTEGIDA) ---
 if st.session_state.page == "mini":
-    # 5.1 CARREGAR TEMAS DO ORÁCULO
-    # (Supondo que load_temas e load_poema estão definidos conforme o ypo_old)
+    # Agora o Python sabe o que é load_temas porque importamos da ypo_old
     temas_list = load_temas("todos os temas")
     maxy_mini = len(temas_list)
-
-    # 5.2 CONTROLES [4, 1, 1, 1, 4]
-    f1, col_more, col_rand, col_auto, f2 = st.columns([4, 1, 1, 1, 4])
+    
+    # Controles [4, 1, 1, 1, 4]
+    _, col_more, col_rand, col_auto, _ = st.columns([4, 1, 1, 1, 4])
     
     if col_rand.button("✻"):
         st.session_state.mini = random.randrange(0, maxy_mini)
         st.rerun()
-
-    # O check do AUTO altera o estado e dá rerun para evitar travar o loop
-    auto_check = col_auto.checkbox("auto", value=st.session_state.auto)
-    if auto_check != st.session_state.auto:
-        st.session_state.auto = auto_check
-        st.rerun()
-
-    # 5.3 EXIBIÇÃO DO SOPRO
+        
+    st.session_state.auto = col_auto.checkbox("auto", value=st.session_state.auto)
     st.session_state.tema = temas_list[st.session_state.mini]
     
     placeholder = st.empty()
-
+    
     if not st.session_state.auto:
-        # MODO MANUAL (Sorteia uma vez e para)
-        texto = load_poema(st.session_state.tema, "")
-        placeholder.markdown(f'<div class="mini-card">{texto}</div>', unsafe_allow_html=True)
+        # Modo Manual usando o sopro real do Oráculo
+        curr_ypoema = load_poema(st.session_state.tema, "")
+        with placeholder.container():
+            write_ypoema(curr_ypoema, load_arts(st.session_state.tema) if st.session_state.a else None)
     else:
-        # MODO AUTO (Usa rerun para não travar o sidebar nem o palco)
-        texto = load_poema(st.session_state.tema, "")
-        placeholder.markdown(f'<div class="mini-card">{texto}</div>', unsafe_allow_html=True)
-        
-        # Em vez de um 'while True' que mata o app, esperamos e reiniciamos
-        time.sleep(10) # ou wait_time se definido
+        # Modo Auto (Rerun para manter o app vivo)
         st.session_state.mini = random.randrange(0, maxy_mini)
+        st.session_state.tema = temas_list[st.session_state.mini]
+        curr_ypoema = load_poema(st.session_state.tema, "")
+        with placeholder.container():
+            write_ypoema(curr_ypoema, load_arts(st.session_state.tema) if st.session_state.a else None)
+        
+        time.sleep(10)
         st.rerun()
