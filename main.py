@@ -1,14 +1,6 @@
 import os
-import re
-import time
-import random
-import base64
-import socket
 import streamlit as st
 from datetime import datetime
-
-# Se o arquivo lay_2_ypo.py já estiver no seu repositório:
-# from lay_2_ypo import gera_poema
 
 ### bof: settings
 
@@ -19,12 +11,12 @@ st.set_page_config(
     initial_sidebar_state="auto",
 )
 
-# Inicialização de Estados (O Coração da Machina)
+# Inicialização de Estados
 if "page" not in st.session_state: st.session_state.page = "mini"
 if "poly_lang" not in st.session_state: st.session_state.poly_lang = "ca"
 if "poly_name" not in st.session_state: st.session_state.poly_name = "català"
 
-# Dicionário de Help Tips (Cockpit Sensível ao Idioma)
+# Dicionário de Help Tips
 help_dict = {
     "Português": "escolha como a machina deve atuar",
     "English": "choose how the machine should act",
@@ -34,44 +26,29 @@ help_dict = {
     st.session_state.poly_name: "tria com ha d'actuar la màquina"
 }
 
-# Regra 0: Look & Feel (A MANDALA de Estilo)
+# Regra 0: Look & Feel (CORRIGIDO: Palco Fluido sem "colar" na direita)
 st.markdown(
     """ <style>
     footer {visibility: hidden;}
     
-    /* PALCO FLUIDO: Ocupa o espaço quando a sidebar recolhe */
+    /* Ajuste do Container Principal para centralizar e fluir */
     .main .block-container { 
         max-width: 95% !important; 
         padding-top: 1.5rem; 
-        padding-left: 2rem;
-        padding-right: 2rem;
-        transition: max-width 0.3s ease;
+        margin: 0 auto; /* Garante que o palco não "cole" em um lado só */
     }
     
-    /* BLINDAGEM: Remove Fullscreen e Toolbars de imagens */
+    /* Blindagem contra Fullscreen */
     [data-testid="stImage"] button, [data-testid="stElementToolbar"] { display: none !important; }
     [data-testid="stImage"] img { pointer-events: none; }
 
-    /* SIDEBAR: Esguia e Minimalista (240px) */
+    /* Sidebar Fixa em 240px */
     [data-testid="stSidebar"] { 
         width: 240px !important; 
-        min-width: 240px !important;
         background-color: #fafafa; 
-        border-right: 1px solid #eeeeee;
     }
     
-    /* CABEÇALHOS: Apenas para Conexões */
-    .sidebar-header {
-        font-family: 'IBM Plex Sans', sans-serif;
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: #999;
-        margin-top: 20px;
-        margin-bottom: 8px;
-        text-transform: lowercase;
-    }
-
-    /* NAVEGAÇÃO: O Trilho de 116px */
+    /* Navegação - Botões em 116px */
     [data-testid="stHorizontalBlock"] { 
         display: flex !important; 
         flex-wrap: nowrap !important; 
@@ -90,19 +67,26 @@ st.markdown(
         background-color: #ffffff; 
         border: 1px solid #d1d5db; 
         font-size: 12px;
-        transition: 0.2s;
     }
     
     div.stButton > button:hover { 
         border-color: powderblue; 
         color: powderblue; 
-        background-color: #f0fbff;
+    }
+
+    .sidebar-header {
+        font-family: 'IBM Plex Sans', sans-serif;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #999;
+        margin-top: 20px;
+        text-transform: lowercase;
     }
     </style> """,
     unsafe_allow_html=True,
 )
 
-### bof: navigation (O Trilho)
+### bof: navigation (Trilho)
 
 nav_cols = st.columns(6)
 paginas = ["mini", "ypoemas", "eureka", "off-machina", "comments", "sobre"]
@@ -116,7 +100,7 @@ for i in range(6):
 
 st.markdown("---")
 
-### bof: sidebar (O Cockpit do Piloto)
+### bof: sidebar (Cockpit)
 
 mapeamento_artes = {
     "mini": "img_mini.jpg",
@@ -127,28 +111,22 @@ mapeamento_artes = {
     "sobre": "img_about.jpg"
 }
 
+# Carregamento da Arte
 arte_atual = mapeamento_artes.get(st.session_state.page)
 if arte_atual and os.path.exists(arte_atual):
     st.sidebar.image(arte_atual, use_container_width=True)
 
 st.sidebar.markdown("<br>", unsafe_allow_html=True)
 
-# 1. Idiomas (O Leitor Descobre)
+# Seletores
 lista_idiomas = ["Português", "English", "Français", "Español", "Italiano", st.session_state.poly_name]
-sel_idioma = st.sidebar.selectbox(
-    "idioma_selector",
-    lista_idiomas,
-    key="sel_lang",
-    label_visibility="collapsed"
-)
+sel_idioma = st.sidebar.selectbox("idioma_selector", lista_idiomas, key="sel_lang", label_visibility="collapsed")
 
-# 2. Recursos (Com Help Tip Dinâmico e Poliglota)
 current_help = help_dict.get(sel_idioma, help_dict["Português"])
-
 st.session_state.audio_on = st.sidebar.checkbox("🎙️ voz (talk)", value=True, help=current_help)
 st.session_state.draw_on = st.sidebar.checkbox("🎨 arte (draw)", value=True, help=current_help)
 
-# 3. Conexões
+# Conexões
 st.sidebar.markdown("<div class='sidebar-header'>conexões</div>", unsafe_allow_html=True)
 st.sidebar.markdown("""
 <div style="display: flex; gap: 18px; font-size: 20px; padding-left: 5px;">
@@ -163,24 +141,13 @@ st.sidebar.caption(f"Phenix Machina | {st.session_state.page}")
 
 ### bof: pages (O Palco)
 
-if st.session_state.page == "mini":
-    st.subheader("ツ mini")
-    st.markdown(f"**Modo Poliglota:** {sel_idioma}")
-    st.write(f"_{current_help}_")
-    
-elif st.session_state.page == "ypoemas":
-    st.subheader("ツ ypoemas")
-    
-elif st.session_state.page == "eureka":
-    st.subheader("ツ eureka")
-    
-elif st.session_state.page == "off-machina":
-    st.subheader("ツ off-machina")
-    
-elif st.session_state.page == "comments":
-    st.subheader("ツ comments")
-    
-elif st.session_state.page == "sobre":
-    st.subheader("ツ sobre")
+# O conteúdo das páginas agora fica dentro de containers para garantir o alinhamento
+container_palco = st.container()
 
-st.write("")
+with container_palco:
+    if st.session_state.page == "mini":
+        st.subheader("ツ mini")
+        st.write(f"Configurado para: **{sel_idioma}**")
+    else:
+        st.subheader(f"ツ {st.session_state.page}")
+        st.write("Palco montado e pronto.")
