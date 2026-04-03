@@ -63,6 +63,28 @@ st.markdown(
 if "lang" not in st.session_state: st.session_state.lang = "pt"
 if "tema" not in st.session_state: st.session_state.tema = "Fatos"
 
+### bof: navigation
+
+menu_opcoes = ["mini", "ypoemas", "eureka", "biblioteca", "oficina", "sobre"]
+pagina_selecionada = st.sidebar.selectbox("MANDALA / Menu Principal", menu_opcoes)
+
+# Exibição da Arte na Barra Lateral (Regra 0 - Design)
+# Nota: Certifique-se de que as imagens existam na pasta ./images/
+artes_paginas = {
+    "mini": "./images/mini.jpg",
+    "ypoemas": "./images/ypoemas.jpg",
+    "eureka": "./images/eureka.jpg",
+    "biblioteca": "./images/biblioteca.jpg",
+    "oficina": "./images/oficina.jpg",
+    "sobre": "./images/sobre.jpg"
+}
+
+arte_atual = artes_paginas.get(pagina_selecionada)
+if arte_atual and os.path.exists(arte_atual):
+    st.sidebar.image(arte_atual, use_container_width=True)
+else:
+    st.sidebar.write(f"🖼️ [Arte: {pagina_selecionada}]")
+
 ### bof: pages
 
 def page_mini():
@@ -88,11 +110,6 @@ def page_oficina():
 def page_sobre():
     st.subheader("ツ sobre")
     st.write("Under Construction")
-
-### bof: navigation
-
-menu_opcoes = ["mini", "ypoemas", "eureka", "biblioteca", "oficina", "sobre"]
-pagina_selecionada = st.sidebar.selectbox("MANDALA / Menu Principal", menu_opcoes)
 
 if pagina_selecionada == "mini":
     page_mini()
