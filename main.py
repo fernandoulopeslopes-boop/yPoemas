@@ -16,7 +16,7 @@ if "page" not in st.session_state: st.session_state.page = "mini"
 if "poly_lang" not in st.session_state: st.session_state.poly_lang = "ca"
 if "poly_name" not in st.session_state: st.session_state.poly_name = "català"
 
-# Dicionário de Nomes para Tooltips (Sem usar o parâmetro 'help' do ST)
+# Dicionário de Nomes para Tooltips (Injetados via CSS)
 tips = {
     "Português": ["voz", "arte", "vídeo"],
     "English": ["voice", "art", "video"],
@@ -25,9 +25,9 @@ tips = {
     "Italiano": ["voce", "arte", "video"],
     st.session_state.poly_name: ["veu", "art", "vídeo"]
 }
-current_tips = tips.get(st.session_state.get("sel_lang", "Português"), tips["Português"])
+t = tips.get(st.session_state.get("sel_lang", "Português"), tips["Português"])
 
-# Regra 0: Look & Feel (Ajuste Final para Checkboxes Invisíveis/Puros)
+# Regra 0: Look & Feel (A MANDALA de Estilo)
 st.markdown(
     f""" <style>
     footer {{visibility: hidden;}}
@@ -48,14 +48,35 @@ st.markdown(
         background-color: #ffffff; border: 1px solid #d1d5db; font-size: 11px;
     }}
     
-    /* REMOVER O BALÃO DE INTERROGAÇÃO E O TEXTO */
+    /* TOOLTIP PERSONALIZADO (Substitui o balão de ?) */
+    .custom-tip {{
+        position: relative;
+        display: inline-block;
+    }}
+    .custom-tip:hover::after {{
+        content: attr(data-tooltip);
+        position: absolute;
+        bottom: 120%;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #333;
+        color: #fff;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 10px;
+        white-space: nowrap;
+        z-index: 999;
+    }}
+
+    /* Esconde o label e o balão original */
     [data-testid="stSidebar"] [data-testid="stWidgetLabel"] {{ display: none !important; }}
     [data-testid="stSidebar"] button[title="View help"] {{ display: none !important; }}
     
-    /* Alinhamento dos 3 quadrados */
+    /* Espaçamento do Grupo de Recursos */
     [data-testid="stSidebar"] [data-testid="stHorizontalBlock"] {{
-        gap: 15px !important;
-        margin-left: 5px !important;
+        gap: 20px !important; /* Aumenta o respiro entre os quadrados */
+        margin-left: 10px !important;
+        margin-top: 10px !important;
     }}
 
     .sidebar-header {{
@@ -102,16 +123,21 @@ sel_idioma = st.sidebar.selectbox("idioma", lista_idiomas, key="sel_lang", label
 
 st.sidebar.markdown("<br>", unsafe_allow_html=True)
 
-# 2. Recursos (Apenas os 3 quadrados, sem interrogação)
-# Removemos o parâmetro 'help' para sumir com o balão "?"
+# 2. Recursos (3 Quadrados com Tooltip Invisível)
 col_rec = st.sidebar.columns([1, 1, 1, 3]) 
 
 with col_rec[0]:
+    st.markdown(f'<div class="custom-tip" data-tooltip="{t[0]}">', unsafe_allow_html=True)
     st.session_state.audio_on = st.checkbox("v", value=True, key="chk_v", label_visibility="collapsed")
+    st.markdown('</div>', unsafe_allow_html=True)
 with col_rec[1]:
+    st.markdown(f'<div class="custom-tip" data-tooltip="{t[1]}">', unsafe_allow_html=True)
     st.session_state.draw_on = st.checkbox("a", value=True, key="chk_a", label_visibility="collapsed")
+    st.markdown('</div>', unsafe_allow_html=True)
 with col_rec[2]:
+    st.markdown(f'<div class="custom-tip" data-tooltip="{t[2]}">', unsafe_allow_html=True)
     st.session_state.video_on = st.checkbox("vi", value=False, key="chk_vi", label_visibility="collapsed")
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # 3. Contato
 st.sidebar.markdown("<div class='sidebar-header'>contato</div>", unsafe_allow_html=True)
@@ -129,6 +155,6 @@ st.sidebar.caption(f"Phenix Machina | {st.session_state.page}")
 
 if st.session_state.page == "mini":
     st.subheader("ツ mini")
-    st.write(f"Cockpit purificado. Os balões '?' foram banidos.")
+    st.write(f"Cockpit calibrado. Passe o mouse nos quadrados para ver as funções em: **{sel_idioma}**.")
 else:
     st.subheader(f"ツ {st.session_state.page}")
