@@ -26,7 +26,7 @@ help_tips = {
     st.session_state.poly_name: ["veu (talk)", "art (draw)", "vídeo (video)"]
 }
 
-# Regra 0: Look & Feel (Ajuste Fino de CSS)
+# Regra 0: Look & Feel (Ajuste Cirúrgico para Horizontalidade)
 st.markdown(
     """ <style>
     footer {visibility: hidden;}
@@ -37,23 +37,34 @@ st.markdown(
     [data-testid="stImage"] img { pointer-events: none; }
 
     /* Sidebar 240px */
-    [data-testid="stSidebar"] { width: 240px !important; background-color: #fafafa; }
+    [data-testid="stSidebar"] { width: 240px !important; min-width: 240px !important; background-color: #fafafa; }
     
-    /* Navegação 111px */
+    /* Navegação Superior 111px */
     [data-testid="stHorizontalBlock"] { display: flex !important; flex-wrap: nowrap !important; gap: 8px !important; }
     [data-testid="column"] { flex: 0 0 auto !important; width: 115px !important; }
+    
     div.stButton > button {
         width: 111px !important; border-radius: 12px; height: 3.2em;
         background-color: #ffffff; border: 1px solid #d1d5db; font-size: 11px;
     }
     div.stButton > button:hover { border-color: powderblue; color: powderblue; }
 
-    /* CSS MÁGICO: Esconde o label do checkbox para sobrarem apenas as 3 caixas */
-    [data-testid="stSidebar"] [data-testid="stCheckbox"] p {
-        display: none !important;
+    /* FORÇAR HORIZONTALIDADE DOS CHECKBOXES NA SIDEBAR */
+    [data-testid="stSidebar"] [data-testid="stHorizontalBlock"] {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        gap: 0px !important;
     }
-    [data-testid="stSidebar"] [data-testid="stCheckbox"] {
-        margin-left: 10px;
+
+    /* Esconde o label (p) e remove margens que empurram para baixo */
+    [data-testid="stSidebar"] [data-testid="stCheckbox"] p { display: none !important; }
+    [data-testid="stSidebar"] [data-testid="stCheckbox"] { 
+        margin-bottom: 0px !important; 
+        margin-top: 0px !important;
+        width: fit-content !important;
     }
 
     .sidebar-header {
@@ -61,7 +72,7 @@ st.markdown(
         font-size: 0.85rem;
         font-weight: 600;
         color: #999;
-        margin-top: 25px;
+        margin-top: 15px;
         margin-bottom: 8px;
         text-transform: lowercase;
     }
@@ -69,7 +80,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-### bof: navigation
+### bof: navigation (Trilho Superior)
 
 nav_cols = st.columns(6)
 paginas = ["mini", "ypoemas", "eureka", "off-machina", "comments", "sobre"]
@@ -85,6 +96,7 @@ st.markdown("---")
 
 ### bof: sidebar
 
+# Artes
 mapeamento_artes = {
     "mini": "img_mini.jpg", "ypoemas": "img_ypoemas.jpg", "eureka": "img_eureka.jpg",
     "off-machina": "img_off-machina.jpg", "comments": "img_poly.jpg", "sobre": "img_about.jpg"
@@ -94,24 +106,23 @@ arte_atual = mapeamento_artes.get(st.session_state.page)
 if arte_atual and os.path.exists(arte_atual):
     st.sidebar.image(arte_atual, use_container_width=True)
 
-st.sidebar.markdown("<br>", unsafe_allow_html=True)
-
 # 1. Idioma
 lista_idiomas = ["Português", "English", "Français", "Español", "Italiano", st.session_state.poly_name]
 sel_idioma = st.sidebar.selectbox("idioma", lista_idiomas, key="sel_lang", label_visibility="collapsed")
-
 tips = help_tips.get(sel_idioma, help_tips["Português"])
 
-# 2. Recursos (Agora sim: 3 quadrados puros)
 st.sidebar.markdown("<br>", unsafe_allow_html=True)
-col1, col2, col3 = st.sidebar.columns(3)
 
-with col1:
-    st.session_state.audio_on = st.sidebar.checkbox("v", value=True, help=tips[0], key="chk_v")
-with col2:
-    st.session_state.draw_on = st.sidebar.checkbox("a", value=True, help=tips[1], key="chk_a")
-with col3:
-    st.session_state.video_on = st.sidebar.checkbox("vi", value=False, help=tips[2], key="chk_vi")
+# 2. Recursos (3 Quadrados na mesma linha, sem quebra)
+# Usamos colunas bem pequenas para garantir que caibam lado a lado
+col_rec = st.sidebar.columns([1, 1, 1, 3]) 
+
+with col_rec[0]:
+    st.session_state.audio_on = st.checkbox("v", value=True, help=tips[0], key="chk_v")
+with col_rec[1]:
+    st.session_state.draw_on = st.checkbox("a", value=True, help=tips[1], key="chk_a")
+with col_rec[2]:
+    st.session_state.video_on = st.checkbox("vi", value=False, help=tips[2], key="chk_vi")
 
 # 3. Contato
 st.sidebar.markdown("<div class='sidebar-header'>contato</div>", unsafe_allow_html=True)
@@ -129,8 +140,6 @@ st.sidebar.caption(f"Phenix Machina | {st.session_state.page}")
 
 if st.session_state.page == "mini":
     st.subheader("ツ mini")
-    st.write(f"Cockpit calibrado. Tooltips ativos em: **{sel_idioma}**.")
+    st.write(f"Cockpit horizontal. Idioma: {sel_idioma}.")
 else:
     st.subheader(f"ツ {st.session_state.page}")
-
-st.write("")
