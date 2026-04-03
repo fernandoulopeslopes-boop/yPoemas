@@ -20,68 +20,81 @@ st.set_page_config(
 if "page" not in st.session_state: 
     st.session_state.page = "mini"
 
-# Regra 0: Look & Feel (Ajuste de 120px para evitar quebra de linha)
+# Regra 0: Look & Feel (O Motor de Scroll Horizontal do yPo)
 st.markdown(
     """ <style>
     footer {visibility: hidden;}
     .main .block-container {
-        max-width: 95% !important;
+        max-width: 98% !important;
         padding-top: 1.5rem;
     }
     [data-testid="stSidebar"] { width: 260px !important; }
     
-    /* Botões com 120px - O tamanho ideal para 'off-machina' */
+    /* FORÇAR O SCROLL HORIZONTAL (Reforçado) */
+    /* Alvo: O container de colunas do Streamlit */
+    div[data-testid="stHorizontalBlock"] {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        gap: 10px !important;
+        padding-bottom: 15px !important;
+        justify-content: flex-start !important;
+    }
+
+    /* Garantir que as colunas não encolham (Don't Shrink) */
+    div[data-testid="column"] {
+        flex: 0 0 auto !important;
+        min-width: 125px !important;
+        width: 125px !important;
+    }
+
+    /* Estilo dos Botões (120px para caber no min-width de 125px da coluna) */
     div.stButton > button {
         width: 120px !important; 
         border-radius: 12px;
         height: 3.2em;
         background-color: #f8f9fa;
         border: 1px solid #d1d5db;
-        transition: all 0.2s ease-in-out;
         font-family: 'IBM Plex Sans';
         font-weight: 500;
         font-size: 13px;
-        white-space: nowrap; /* IMPEDE QUEBRA DE LINHA */
-        overflow: hidden;
+        white-space: nowrap;
     }
+    
     div.stButton > button:hover {
         border-color: powderblue;
         color: powderblue;
         background-color: white;
     }
-    [data-testid="column"] {
-        padding: 0 5px !important;
-        display: flex;
-        justify-content: center;
+
+    /* Barra de scroll discreta */
+    div[data-testid="stHorizontalBlock"]::-webkit-scrollbar {
+        height: 6px;
+    }
+    div[data-testid="stHorizontalBlock"]::-webkit-scrollbar-thumb {
+        background: #e0e0e0;
+        border-radius: 10px;
     }
     </style> """,
     unsafe_allow_html=True,
 )
 
-### bof: navigation (Comando Instantâneo)
+### bof: navigation (Trilho de Scroll)
 
-_, center_col, _ = st.columns([0.2, 9.6, 0.2]) 
+# Usamos um container simples. O CSS acima cuidará de alinhar as colunas dentro dele.
+nav_cols = st.columns(6)
 
-with center_col:
-    nav_cols = st.columns(6)
-    if nav_cols[0].button("ツ mini"): 
-        st.session_state.page = "mini"
-        st.rerun()
-    if nav_cols[1].button("ypoemas"): 
-        st.session_state.page = "ypoemas"
-        st.rerun()
-    if nav_cols[2].button("eureka"): 
-        st.session_state.page = "eureka"
-        st.rerun()
-    if nav_cols[3].button("off-machina"): 
-        st.session_state.page = "off-machina"
-        st.rerun()
-    if nav_cols[4].button("comments"): 
-        st.session_state.page = "comments"
-        st.rerun()
-    if nav_cols[5].button("sobre"): 
-        st.session_state.page = "sobre"
-        st.rerun()
+paginas = ["mini", "ypoemas", "eureka", "off-machina", "comments", "sobre"]
+labels = ["ツ mini", "ypoemas", "eureka", "off-machina", "comments", "sobre"]
+
+for i in range(6):
+    with nav_cols[i]:
+        # key única para evitar conflitos no rerun
+        if st.button(labels[i], key=f"btn_nav_{paginas[i]}"):
+            st.session_state.page = paginas[i]
+            st.rerun()
 
 st.markdown("---")
 
@@ -98,6 +111,7 @@ mapeamento_artes = {
     "sobre": "img_about.jpg"
 }
 
+# Arte instantânea na sidebar
 arte_atual = mapeamento_artes.get(st.session_state.page)
 if arte_atual and os.path.exists(arte_atual):
     st.sidebar.image(arte_atual, use_container_width=True)
@@ -111,7 +125,7 @@ st.sidebar.checkbox("Draw (Imagem)", value=True)
 
 def page_mini():
     st.subheader("ツ mini")
-    st.info("Botões corrigidos para 120px. Sem quebras de linha.")
+    st.info("Role para os lados nos botões se o espaço encurtar. Estilo yPo restaurado.")
 
 def page_ypoemas():
     st.subheader("ツ ypoemas")
@@ -128,7 +142,7 @@ def page_comments():
 def page_sobre():
     st.subheader("ツ sobre")
 
-# Router final
+# Router
 if st.session_state.page == "mini":
     page_mini()
 elif st.session_state.page == "ypoemas":
