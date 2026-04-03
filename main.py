@@ -35,10 +35,7 @@ if have_internet():
     except ImportError:
         pass
 
-hostname = socket.gethostname()
-IPAddres = socket.gethostbyname(hostname)
-
-# Regra 0: Look & Feel (Sidebar 260px com Reforço !important)
+# Regra 0: Look & Feel (Sidebar 260px)
 st.markdown(
     """ <style>
     footer {visibility: hidden;}
@@ -68,16 +65,25 @@ if "tema" not in st.session_state: st.session_state.tema = "Fatos"
 
 ### bof: navigation
 
-menu_opcoes = ["mini", "ypoemas", "eureka", "biblioteca", "oficina", "sobre"]
+# Menu Principal Atualizado (Regra 1, 2 e 3)
+menu_opcoes = ["mini", "ypoemas", "eureka", "off-machina", "sobre"]
 pagina_selecionada = st.sidebar.selectbox("MANDALA / Menu Principal", menu_opcoes)
 
-# Sincronização com os nomes de arquivo no GitHub: img_nome.jpg na raiz
-arte_atual = f"img_{pagina_selecionada}.jpg"
+# Mapeamento de Artes (Regra 0 & 3)
+mapeamento_artes = {
+    "mini": "img_mini.jpg",
+    "ypoemas": "img_ypoemas.jpg",
+    "eureka": "img_eureka.jpg",
+    "off-machina": "img_off-machina.jpg",
+    "sobre": "img_about.jpg"
+}
 
-if os.path.exists(arte_atual):
+arte_atual = mapeamento_artes.get(pagina_selecionada)
+
+if arte_atual and os.path.exists(arte_atual):
     st.sidebar.image(arte_atual, use_container_width=True)
 else:
-    st.sidebar.warning(f"🖼️ [Arte: {arte_atual} não encontrada]")
+    st.sidebar.warning(f"🖼️ [Arquivo {arte_atual} não localizado]")
 
 ### bof: pages
 
@@ -93,28 +99,24 @@ def page_eureka():
     st.subheader("ツ eureka")
     st.write("Em estudo...")
 
-def page_biblioteca():
-    st.subheader("ツ biblioteca")
-    st.write("Under Construction")
-
-def page_oficina():
-    st.subheader("ツ oficina")
+def page_off_machina():
+    st.subheader("ツ off-machina")
+    st.info("Fora da máquina: cópias digitais de livros impressos.")
     st.write("Under Construction")
 
 def page_sobre():
     st.subheader("ツ sobre")
     st.write("Under Construction")
 
+# Execução da Navegação
 if pagina_selecionada == "mini":
     page_mini()
 elif pagina_selecionada == "ypoemas":
     page_ypoemas()
 elif pagina_selecionada == "eureka":
     page_eureka()
-elif pagina_selecionada == "biblioteca":
-    page_biblioteca()
-elif pagina_selecionada == "oficina":
-    page_oficina()
+elif pagina_selecionada == "off-machina":
+    page_off_machina()
 elif pagina_selecionada == "sobre":
     page_sobre()
 
@@ -130,3 +132,4 @@ def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):
             f"<div class='container'><img class='logo-img' src='data:image/jpg;base64,{img_data}'><p class='logo-text'>{LOGO_TEXTO}</p></div>",
             unsafe_allow_html=True
         )
+        
