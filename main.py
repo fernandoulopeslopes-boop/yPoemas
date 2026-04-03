@@ -16,58 +16,49 @@ if "page" not in st.session_state: st.session_state.page = "mini"
 if "poly_lang" not in st.session_state: st.session_state.poly_lang = "ca"
 if "poly_name" not in st.session_state: st.session_state.poly_name = "català"
 
-# Dicionário de Help Tips (Tooltips puros)
-help_tips = {
-    "Português": ["voz (talk)", "arte (draw)", "vídeo (video)"],
-    "English": ["voice (talk)", "art (draw)", "video (video)"],
-    "Français": ["voix (talk)", "art (draw)", "vidéo (video)"],
-    "Español": ["voz (talk)", "arte (draw)", "video (video)"],
-    "Italiano": ["voce (talk)", "arte (draw)", "video (video)"],
-    st.session_state.poly_name: ["veu (talk)", "art (draw)", "vídeo (video)"]
+# Dicionário de Nomes para Tooltips (Sem usar o parâmetro 'help' do ST)
+tips = {
+    "Português": ["voz", "arte", "vídeo"],
+    "English": ["voice", "art", "video"],
+    "Français": ["voix", "art", "vidéo"],
+    "Español": ["voz", "arte", "vídeo"],
+    "Italiano": ["voce", "arte", "video"],
+    st.session_state.poly_name: ["veu", "art", "vídeo"]
 }
+current_tips = tips.get(st.session_state.get("sel_lang", "Português"), tips["Português"])
 
-# Regra 0: Look & Feel (Ajuste Cirúrgico para Horizontalidade)
+# Regra 0: Look & Feel (Ajuste Final para Checkboxes Invisíveis/Puros)
 st.markdown(
-    """ <style>
-    footer {visibility: hidden;}
-    .main .block-container { max-width: 95% !important; padding-top: 1.5rem; margin: 0 auto; }
+    f""" <style>
+    footer {{visibility: hidden;}}
+    .main .block-container {{ max-width: 95% !important; padding-top: 1.5rem; margin: 0 auto; }}
     
-    /* Blindagem contra elementos de imagem */
-    [data-testid="stImage"] button, [data-testid="stElementToolbar"] { display: none !important; }
-    [data-testid="stImage"] img { pointer-events: none; }
+    [data-testid="stImage"] button, [data-testid="stElementToolbar"] {{ display: none !important; }}
+    [data-testid="stImage"] img {{ pointer-events: none; }}
 
     /* Sidebar 240px */
-    [data-testid="stSidebar"] { width: 240px !important; min-width: 240px !important; background-color: #fafafa; }
+    [data-testid="stSidebar"] {{ width: 240px !important; min-width: 240px !important; background-color: #fafafa; }}
     
     /* Navegação Superior 111px */
-    [data-testid="stHorizontalBlock"] { display: flex !important; flex-wrap: nowrap !important; gap: 8px !important; }
-    [data-testid="column"] { flex: 0 0 auto !important; width: 115px !important; }
+    [data-testid="stHorizontalBlock"] {{ display: flex !important; flex-wrap: nowrap !important; gap: 8px !important; }}
+    [data-testid="column"] {{ flex: 0 0 auto !important; width: 115px !important; }}
     
-    div.stButton > button {
+    div.stButton > button {{
         width: 111px !important; border-radius: 12px; height: 3.2em;
         background-color: #ffffff; border: 1px solid #d1d5db; font-size: 11px;
-    }
-    div.stButton > button:hover { border-color: powderblue; color: powderblue; }
+    }}
+    
+    /* REMOVER O BALÃO DE INTERROGAÇÃO E O TEXTO */
+    [data-testid="stSidebar"] [data-testid="stWidgetLabel"] {{ display: none !important; }}
+    [data-testid="stSidebar"] button[title="View help"] {{ display: none !important; }}
+    
+    /* Alinhamento dos 3 quadrados */
+    [data-testid="stSidebar"] [data-testid="stHorizontalBlock"] {{
+        gap: 15px !important;
+        margin-left: 5px !important;
+    }}
 
-    /* FORÇAR HORIZONTALIDADE DOS CHECKBOXES NA SIDEBAR */
-    [data-testid="stSidebar"] [data-testid="stHorizontalBlock"] {
-        display: flex !important;
-        flex-direction: row !important;
-        flex-wrap: nowrap !important;
-        align-items: center !important;
-        justify-content: flex-start !important;
-        gap: 0px !important;
-    }
-
-    /* Esconde o label (p) e remove margens que empurram para baixo */
-    [data-testid="stSidebar"] [data-testid="stCheckbox"] p { display: none !important; }
-    [data-testid="stSidebar"] [data-testid="stCheckbox"] { 
-        margin-bottom: 0px !important; 
-        margin-top: 0px !important;
-        width: fit-content !important;
-    }
-
-    .sidebar-header {
+    .sidebar-header {{
         font-family: 'IBM Plex Sans', sans-serif;
         font-size: 0.85rem;
         font-weight: 600;
@@ -75,12 +66,12 @@ st.markdown(
         margin-top: 15px;
         margin-bottom: 8px;
         text-transform: lowercase;
-    }
+    }}
     </style> """,
     unsafe_allow_html=True,
 )
 
-### bof: navigation (Trilho Superior)
+### bof: navigation
 
 nav_cols = st.columns(6)
 paginas = ["mini", "ypoemas", "eureka", "off-machina", "comments", "sobre"]
@@ -96,7 +87,6 @@ st.markdown("---")
 
 ### bof: sidebar
 
-# Artes
 mapeamento_artes = {
     "mini": "img_mini.jpg", "ypoemas": "img_ypoemas.jpg", "eureka": "img_eureka.jpg",
     "off-machina": "img_off-machina.jpg", "comments": "img_poly.jpg", "sobre": "img_about.jpg"
@@ -109,20 +99,19 @@ if arte_atual and os.path.exists(arte_atual):
 # 1. Idioma
 lista_idiomas = ["Português", "English", "Français", "Español", "Italiano", st.session_state.poly_name]
 sel_idioma = st.sidebar.selectbox("idioma", lista_idiomas, key="sel_lang", label_visibility="collapsed")
-tips = help_tips.get(sel_idioma, help_tips["Português"])
 
 st.sidebar.markdown("<br>", unsafe_allow_html=True)
 
-# 2. Recursos (3 Quadrados na mesma linha, sem quebra)
-# Usamos colunas bem pequenas para garantir que caibam lado a lado
+# 2. Recursos (Apenas os 3 quadrados, sem interrogação)
+# Removemos o parâmetro 'help' para sumir com o balão "?"
 col_rec = st.sidebar.columns([1, 1, 1, 3]) 
 
 with col_rec[0]:
-    st.session_state.audio_on = st.checkbox("v", value=True, help=tips[0], key="chk_v")
+    st.session_state.audio_on = st.checkbox("v", value=True, key="chk_v", label_visibility="collapsed")
 with col_rec[1]:
-    st.session_state.draw_on = st.checkbox("a", value=True, help=tips[1], key="chk_a")
+    st.session_state.draw_on = st.checkbox("a", value=True, key="chk_a", label_visibility="collapsed")
 with col_rec[2]:
-    st.session_state.video_on = st.checkbox("vi", value=False, help=tips[2], key="chk_vi")
+    st.session_state.video_on = st.checkbox("vi", value=False, key="chk_vi", label_visibility="collapsed")
 
 # 3. Contato
 st.sidebar.markdown("<div class='sidebar-header'>contato</div>", unsafe_allow_html=True)
@@ -140,6 +129,6 @@ st.sidebar.caption(f"Phenix Machina | {st.session_state.page}")
 
 if st.session_state.page == "mini":
     st.subheader("ツ mini")
-    st.write(f"Cockpit horizontal. Idioma: {sel_idioma}.")
+    st.write(f"Cockpit purificado. Os balões '?' foram banidos.")
 else:
     st.subheader(f"ツ {st.session_state.page}")
