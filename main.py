@@ -1,106 +1,8 @@
-import os
-import re
-import time
-import random
-import base64
-import socket
-import streamlit as st
-from datetime import datetime
-from lay_2_ypo import gera_poema
+# ... (manter o bloco inicial de settings e navegação)
 
-### bof: settings
+### bof: sidebar (O Novo Painel Minimalista)
 
-st.set_page_config(
-    page_title="a máquina de fazer Poesia - yPoemas",
-    page_icon=":star:",
-    layout="wide",
-    initial_sidebar_state="auto",
-)
-
-if "page" not in st.session_state: st.session_state.page = "mini"
-
-# Regra 0: Look & Feel (Extermínio do Fullscreen e Limpeza Total)
-st.markdown(
-    """ <style>
-    footer {visibility: hidden;}
-    .main .block-container {
-        max-width: 98% !important;
-        padding-top: 1.5rem;
-    }
-    
-    /* BLOQUEIO TOTAL DO BOTÃO FULLSCREEN E INTERAÇÕES NA IMAGEM */
-    [data-testid="stImage"] button, 
-    [data-testid="stElementToolbar"],
-    .st-emotion-cache-15z78ca button,
-    button[title="View fullscreen"] {
-        display: none !important;
-    }
-    
-    /* Impede que a imagem mude o cursor ou pareça clicável */
-    [data-testid="stImage"] img {
-        pointer-events: none;
-    }
-
-    /* Ajuste da Sidebar */
-    [data-testid="stSidebar"] { 
-        width: 280px !important; 
-        background-color: #fafafa;
-    }
-    
-    .sidebar-title {
-        font-family: 'IBM Plex Sans', sans-serif;
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: #444;
-        margin-top: 10px;
-        margin-bottom: 5px;
-    }
-
-    /* Navegação */
-    [data-testid="stHorizontalBlock"] {
-        display: flex !important;
-        flex-wrap: nowrap !important;
-        gap: 12px !important;
-    }
-
-    [data-testid="column"] {
-        flex: 0 0 auto !important;
-        width: 125px !important;
-    }
-
-    div.stButton > button {
-        width: 120px !important; 
-        border-radius: 12px;
-        height: 3.2em;
-        background-color: #ffffff;
-        border: 1px solid #d1d5db;
-        font-size: 13px;
-    }
-    
-    div.stButton > button:hover {
-        border-color: powderblue;
-        color: powderblue;
-    }
-    </style> """,
-    unsafe_allow_html=True,
-)
-
-### bof: navigation
-
-nav_cols = st.columns(6)
-paginas = ["mini", "ypoemas", "eureka", "off-machina", "comments", "sobre"]
-labels = ["ツ mini", "ypoemas", "eureka", "off-machina", "comments", "sobre"]
-
-for i in range(6):
-    with nav_cols[i]:
-        if st.button(labels[i], key=f"btn_nav_{paginas[i]}"):
-            st.session_state.page = paginas[i]
-            st.rerun()
-
-st.markdown("---")
-
-### bof: sidebar (Painel 100% Estático)
-
+# 1. Arte da Página (Sem controles de imagem)
 mapeamento_artes = {
     "mini": "img_mini.jpg",
     "ypoemas": "img_ypoemas.jpg",
@@ -112,26 +14,36 @@ mapeamento_artes = {
 
 arte_atual = mapeamento_artes.get(st.session_state.page)
 if arte_atual and os.path.exists(arte_atual):
-    # A imagem agora é puramente visual, sem botões de controle
     st.sidebar.image(arte_atual, use_container_width=True)
 
-st.sidebar.markdown("<div class='sidebar-title'>⚙️ Configurações</div>", unsafe_allow_html=True)
+st.sidebar.markdown("<br>", unsafe_allow_html=True) # Espaçamento leve
 
-with st.sidebar.expander("🌍 Idioma e Tradução", expanded=True):
-    st.selectbox("Selecione o idioma:", ["Português", "English", "Français", "Español", "Italiano"], key="sel_lang")
+# 2. Seção: Idiomas
+st.sidebar.markdown("### idiomas")
+st.selectbox(
+    "Escolha a tradução:",
+    ["Português", "English", "Français", "Español", "Italiano"],
+    label_visibility="collapsed", # Esconde o label interno para ficar mais clean
+    key="sel_lang"
+)
 
-with st.sidebar.expander("🛠️ Modo de Execução", expanded=True):
-    st.session_state.audio_on = st.checkbox("🎙️ Talk (Voz/Áudio)", value=True)
-    st.session_state.draw_on = st.checkbox("🎨 Draw (Visual/Arte)", value=True)
+# 3. Seção: Recursos
+st.sidebar.markdown("### recursos")
+# Usando checkbox ou um multiselect para "Talk" e "Draw"
+st.session_state.audio_on = st.sidebar.checkbox("🎙️ voz (talk)", value=True)
+st.session_state.draw_on = st.sidebar.checkbox("🎨 arte (draw)", value=True)
 
 st.sidebar.markdown("---")
-st.sidebar.caption(f"Fênix Machina | Status: Online")
 
-### bof: pages
+# 4. Redes Sociais & Info (Onde os botões viram links)
+st.sidebar.markdown("### conexões")
+st.sidebar.markdown("""
+<div style="display: flex; gap: 15px; font-size: 20px;">
+    <a href="https://github.com/seu-perfil" target="_blank">🐙</a>
+    <a href="https://instagram.com/seu-perfil" target="_blank">📸</a>
+    <a href="mailto:seu-email@link.com">✉️</a>
+</div>
+""", unsafe_allow_html=True)
 
-if st.session_state.page == "mini":
-    st.subheader("ツ mini")
-    st.info("A imagem lateral agora deve estar 'blindada' contra o fullscreen.")
-else:
-    st.subheader(f"ツ {st.session_state.page}")
-    st.write("Configurações da sidebar prontas.")
+st.sidebar.markdown("<br>", unsafe_allow_html=True)
+st.sidebar.caption("Phenix Machina v2026")
