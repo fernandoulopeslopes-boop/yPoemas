@@ -38,13 +38,12 @@ if have_internet():
 hostname = socket.gethostname()
 IPAddres = socket.gethostbyname(hostname)
 
-# Regra 0: Look & Feel (Ajuste Sidebar 260px com Seletor Reforçado)
+# Regra 0: Look & Feel (Sidebar 260px com Reforço !important)
 st.markdown(
     """ <style>
     footer {visibility: hidden;}
     .reportview-container .main .block-container{ padding: 0rem; }
     
-    /* Forçando a largura da Sidebar e do container interno */
     [data-testid="stSidebar"] {
         width: 260px !important;
     }
@@ -72,21 +71,13 @@ if "tema" not in st.session_state: st.session_state.tema = "Fatos"
 menu_opcoes = ["mini", "ypoemas", "eureka", "biblioteca", "oficina", "sobre"]
 pagina_selecionada = st.sidebar.selectbox("MANDALA / Menu Principal", menu_opcoes)
 
-# Exibição da Arte na Barra Lateral (Regra 0 - Design)
-artes_paginas = {
-    "mini": "./images/mini.jpg",
-    "ypoemas": "./images/ypoemas.jpg",
-    "eureka": "./images/eureka.jpg",
-    "biblioteca": "./images/biblioteca.jpg",
-    "oficina": "./images/oficina.jpg",
-    "sobre": "./images/sobre.jpg"
-}
+# Sincronização com os nomes de arquivo no GitHub: img_nome.jpg na raiz
+arte_atual = f"img_{pagina_selecionada}.jpg"
 
-arte_atual = artes_paginas.get(pagina_selecionada)
-if arte_atual and os.path.exists(arte_atual):
+if os.path.exists(arte_atual):
     st.sidebar.image(arte_atual, use_container_width=True)
 else:
-    st.sidebar.write(f"🖼️ [Arte: {pagina_selecionada}]")
+    st.sidebar.warning(f"🖼️ [Arte: {arte_atual} não encontrada]")
 
 ### bof: pages
 
