@@ -35,7 +35,7 @@ if have_internet():
     except ImportError:
         pass
 
-# Regra 0: Look & Feel (Simetria e Palco Central)
+# Regra 0: Look & Feel (Simetria Absoluta e Palco Central)
 st.markdown(
     """ <style>
     footer {visibility: hidden;}
@@ -43,19 +43,19 @@ st.markdown(
     
     [data-testid="stSidebar"] { width: 260px !important; }
     
-    /* Botões Originais Simétricos e Arredondados */
+    /* Forçar botões com largura idêntica e cantos arredondados */
     div.stButton > button {
         width: 100% !important;
+        min-width: 120px; /* Garante base mínima */
         border-radius: 12px;
-        height: 3.2em;
+        height: 3.5em;
         background-color: #f8f9fa;
         border: 1px solid #d1d5db;
         transition: all 0.3s ease-in-out;
         font-family: 'IBM Plex Sans';
         font-weight: 500;
         font-size: 14px;
-        display: block;
-        margin: 0 auto;
+        white-space: nowrap;
     }
     
     div.stButton > button:hover {
@@ -64,24 +64,19 @@ st.markdown(
         background-color: white;
         box-shadow: 0px 4px 6px rgba(0,0,0,0.05);
     }
-    
-    /* Ajuste para garantir que as colunas fiquem bem distribuídas */
+
+    /* Remove espaçamentos extras entre colunas para manter a linha compacta */
     [data-testid="column"] {
-        padding: 0 5px !important;
+        padding: 0 2px !important;
     }
 
     mark { background-color: powderblue; color: black; }
-    .logo-text {
-        font-weight: 600; font-size: 18px;
-        font-family: 'IBM Plex Sans'; color: #000000;
-    }
     </style> """,
     unsafe_allow_html=True,
 )
 
 # Estado da página (MANDALA)
 if "page" not in st.session_state: st.session_state.page = "mini"
-if "lang" not in st.session_state: st.session_state.lang = "pt"
 
 ### bof: sidebar (Configurações)
 
@@ -92,10 +87,10 @@ mapeamento_artes = {
     "ypoemas": "img_ypoemas.jpg",
     "eureka": "img_eureka.jpg",
     "off-machina": "img_off-machina.jpg",
+    "comments": "img_poly.jpg", # Usando a poly para comments conforme lista anterior
     "sobre": "img_about.jpg"
 }
 
-# Arte na sidebar sincronizada com o Palco
 arte_atual = mapeamento_artes.get(st.session_state.page)
 if arte_atual and os.path.exists(arte_atual):
     st.sidebar.image(arte_atual, use_container_width=True)
@@ -105,10 +100,10 @@ st.sidebar.selectbox("Idioma", ["Português", "English", "Français"], key="sel_
 st.sidebar.checkbox("Talk (Voz)", value=True)
 st.sidebar.checkbox("Draw (Desenho)", value=True)
 
-### bof: navigation (O Casamento Visual no Topo)
+### bof: navigation (Botões de Tamanho Idêntico)
 
-# Colunas com pesos iguais garantem botões de mesmo tamanho
-cols = st.columns(5)
+# Criamos 6 colunas iguais para as 6 páginas
+cols = st.columns(6)
 
 with cols[0]:
     if st.button("ツ mini"): st.session_state.page = "mini"
@@ -119,6 +114,8 @@ with cols[2]:
 with cols[3]:
     if st.button("off-machina"): st.session_state.page = "off-machina"
 with cols[4]:
+    if st.button("comments"): st.session_state.page = "comments"
+with cols[5]:
     if st.button("sobre"): st.session_state.page = "sobre"
 
 st.markdown("---")
@@ -127,7 +124,7 @@ st.markdown("---")
 
 def page_mini():
     st.subheader("ツ mini")
-    st.write("Aprovada !!! goi'n to next")
+    st.write("Aprovada !!!")
 
 def page_ypoemas():
     st.subheader("ツ ypoemas")
@@ -141,9 +138,13 @@ def page_off_machina():
     st.subheader("ツ off-machina")
     st.info("Cópias digitais de livros impressos.")
 
+def page_comments():
+    st.subheader("ツ comments")
+    st.write("Espaço para interações e notas.")
+
 def page_sobre():
     st.subheader("ツ sobre")
-    st.write("A história por trás da Machina.")
+    st.write("História da Machina.")
 
 # Router
 if st.session_state.page == "mini":
@@ -154,6 +155,8 @@ elif st.session_state.page == "eureka":
     page_eureka()
 elif st.session_state.page == "off-machina":
     page_off_machina()
+elif st.session_state.page == "comments":
+    page_comments()
 elif st.session_state.page == "sobre":
     page_sobre()
 
