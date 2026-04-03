@@ -17,11 +17,10 @@ st.set_page_config(
     initial_sidebar_state="auto",
 )
 
-# Estado da página (MANDALA) - Inicialização Crítica
 if "page" not in st.session_state: 
     st.session_state.page = "mini"
 
-# Regra 0: Look & Feel (Foco no Palco Central)
+# Regra 0: Look & Feel (Ajuste de 120px para evitar quebra de linha)
 st.markdown(
     """ <style>
     footer {visibility: hidden;}
@@ -31,9 +30,9 @@ st.markdown(
     }
     [data-testid="stSidebar"] { width: 260px !important; }
     
-    /* Botões 100px - Simetria de Painel de Controle */
+    /* Botões com 120px - O tamanho ideal para 'off-machina' */
     div.stButton > button {
-        width: 100px !important; 
+        width: 120px !important; 
         border-radius: 12px;
         height: 3.2em;
         background-color: #f8f9fa;
@@ -41,7 +40,9 @@ st.markdown(
         transition: all 0.2s ease-in-out;
         font-family: 'IBM Plex Sans';
         font-weight: 500;
-        font-size: 12px;
+        font-size: 13px;
+        white-space: nowrap; /* IMPEDE QUEBRA DE LINHA */
+        overflow: hidden;
     }
     div.stButton > button:hover {
         border-color: powderblue;
@@ -49,7 +50,7 @@ st.markdown(
         background-color: white;
     }
     [data-testid="column"] {
-        padding: 0 8px !important;
+        padding: 0 5px !important;
         display: flex;
         justify-content: center;
     }
@@ -57,10 +58,9 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-### bof: navigation (O Comando do Palco)
-# Processamos o clique ANTES de desenhar a sidebar para atualização instantânea
+### bof: navigation (Comando Instantâneo)
 
-_, center_col, _ = st.columns([1, 8, 1]) 
+_, center_col, _ = st.columns([0.2, 9.6, 0.2]) 
 
 with center_col:
     nav_cols = st.columns(6)
@@ -85,7 +85,7 @@ with center_col:
 
 st.markdown("---")
 
-### bof: sidebar (Bastidores / Configurações)
+### bof: sidebar (Bastidores)
 
 st.sidebar.title("Configurações")
 
@@ -107,11 +107,11 @@ st.sidebar.selectbox("Idioma", ["Português", "English", "Français"], key="sel_
 st.sidebar.checkbox("Talk (Áudio)", value=True)
 st.sidebar.checkbox("Draw (Imagem)", value=True)
 
-### bof: pages (O Espetáculo)
+### bof: pages
 
 def page_mini():
     st.subheader("ツ mini")
-    st.write("Configurações aplicadas. O palco é seu.")
+    st.info("Botões corrigidos para 120px. Sem quebras de linha.")
 
 def page_ypoemas():
     st.subheader("ツ ypoemas")
@@ -128,7 +128,7 @@ def page_comments():
 def page_sobre():
     st.subheader("ツ sobre")
 
-# Router final para carregar a página selecionada
+# Router final
 if st.session_state.page == "mini":
     page_mini()
 elif st.session_state.page == "ypoemas":
