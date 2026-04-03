@@ -13,7 +13,7 @@ from lay_2_ypo import gera_poema
 st.set_page_config(
     page_title="a máquina de fazer Poesia - yPoemas",
     page_icon=":star:",
-    layout="centered",
+    layout="wide",
     initial_sidebar_state="auto",
 )
 
@@ -35,7 +35,7 @@ if have_internet():
     except ImportError:
         pass
 
-# Regra 0: Look & Feel (Botões Arredondados e Palco Limpo)
+# Regra 0: Look & Feel (Simetria e Palco Central)
 st.markdown(
     """ <style>
     footer {visibility: hidden;}
@@ -43,29 +43,37 @@ st.markdown(
     
     [data-testid="stSidebar"] { width: 260px !important; }
     
-    /* Design dos Botões Originais */
+    /* Botões Originais Simétricos e Arredondados */
     div.stButton > button {
-        width: 100%;
+        width: 100% !important;
         border-radius: 12px;
-        height: 3em;
-        background-color: #f0f2f6;
+        height: 3.2em;
+        background-color: #f8f9fa;
         border: 1px solid #d1d5db;
-        transition: all 0.3s;
+        transition: all 0.3s ease-in-out;
         font-family: 'IBM Plex Sans';
         font-weight: 500;
+        font-size: 14px;
+        display: block;
+        margin: 0 auto;
     }
+    
     div.stButton > button:hover {
         border-color: powderblue;
         color: powderblue;
         background-color: white;
+        box-shadow: 0px 4px 6px rgba(0,0,0,0.05);
     }
     
+    /* Ajuste para garantir que as colunas fiquem bem distribuídas */
+    [data-testid="column"] {
+        padding: 0 5px !important;
+    }
+
     mark { background-color: powderblue; color: black; }
-    .container { display: flex; }
     .logo-text {
         font-weight: 600; font-size: 18px;
         font-family: 'IBM Plex Sans'; color: #000000;
-        padding-top: 0px; padding-left: 15px;
     }
     </style> """,
     unsafe_allow_html=True,
@@ -87,7 +95,7 @@ mapeamento_artes = {
     "sobre": "img_about.jpg"
 }
 
-# Exibição da arte na sidebar (atualiza conforme o clique nos botões)
+# Arte na sidebar sincronizada com o Palco
 arte_atual = mapeamento_artes.get(st.session_state.page)
 if arte_atual and os.path.exists(arte_atual):
     st.sidebar.image(arte_atual, use_container_width=True)
@@ -97,20 +105,20 @@ st.sidebar.selectbox("Idioma", ["Português", "English", "Français"], key="sel_
 st.sidebar.checkbox("Talk (Voz)", value=True)
 st.sidebar.checkbox("Draw (Desenho)", value=True)
 
-### bof: navigation (Os Botões Originais no Topo)
+### bof: navigation (O Casamento Visual no Topo)
 
-# Criamos colunas para o deslocamento horizontal
-col1, col2, col3, col4, col5 = st.columns(5)
+# Colunas com pesos iguais garantem botões de mesmo tamanho
+cols = st.columns(5)
 
-with col1:
+with cols[0]:
     if st.button("ツ mini"): st.session_state.page = "mini"
-with col2:
+with cols[1]:
     if st.button("ypoemas"): st.session_state.page = "ypoemas"
-with col3:
+with cols[2]:
     if st.button("eureka"): st.session_state.page = "eureka"
-with col4:
+with cols[3]:
     if st.button("off-machina"): st.session_state.page = "off-machina"
-with col5:
+with cols[4]:
     if st.button("sobre"): st.session_state.page = "sobre"
 
 st.markdown("---")
@@ -135,9 +143,9 @@ def page_off_machina():
 
 def page_sobre():
     st.subheader("ツ sobre")
-    st.write("Under Construction")
+    st.write("A história por trás da Machina.")
 
-# Router baseado no clique do botão
+# Router
 if st.session_state.page == "mini":
     page_mini()
 elif st.session_state.page == "ypoemas":
