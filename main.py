@@ -16,78 +16,73 @@ if "page" not in st.session_state: st.session_state.page = "mini"
 if "poly_lang" not in st.session_state: st.session_state.poly_lang = "ca"
 if "poly_name" not in st.session_state: st.session_state.poly_name = "català"
 
-# Dicionário de Nomes para Tooltips (Injetados via CSS)
-tips = {
-    "Português": ["voz", "arte", "vídeo"],
-    "English": ["voice", "art", "video"],
-    "Français": ["voix", "art", "vidéo"],
-    "Español": ["voz", "arte", "vídeo"],
-    "Italiano": ["voce", "arte", "video"],
-    st.session_state.poly_name: ["veu", "art", "vídeo"]
+# Configuração de Recursos (Dicionário central)
+recursos_info = {
+    "Português": {"v": "voz", "a": "arte", "vi": "vídeo"},
+    "English": {"v": "voice", "a": "art", "vi": "video"},
+    "Français": {"v": "voix", "a": "art", "vi": "vidéo"},
+    "Español": {"v": "voz", "a": "arte", "vi": "vídeo"},
+    "Italiano": {"v": "voce", "a": "arte", "vi": "video"},
+    st.session_state.poly_name: {"v": "veu", "a": "art", "vi": "vídeo"}
 }
-t = tips.get(st.session_state.get("sel_lang", "Português"), tips["Português"])
 
-# Regra 0: Look & Feel (A MANDALA de Estilo)
+# Regra 0: Look & Feel (Foco em Centralização e Limpeza)
 st.markdown(
-    f""" <style>
-    footer {{visibility: hidden;}}
-    .main .block-container {{ max-width: 95% !important; padding-top: 1.5rem; margin: 0 auto; }}
+    """ <style>
+    footer {visibility: hidden;}
+    .main .block-container { max-width: 95% !important; padding-top: 1.5rem; margin: 0 auto; }
     
-    [data-testid="stImage"] button, [data-testid="stElementToolbar"] {{ display: none !important; }}
-    [data-testid="stImage"] img {{ pointer-events: none; }}
+    [data-testid="stImage"] button, [data-testid="stElementToolbar"] { display: none !important; }
+    [data-testid="stImage"] img { pointer-events: none; }
 
     /* Sidebar 240px */
-    [data-testid="stSidebar"] {{ width: 240px !important; min-width: 240px !important; background-color: #fafafa; }}
+    [data-testid="stSidebar"] { width: 240px !important; min-width: 240px !important; background-color: #fafafa; }
     
     /* Navegação Superior 111px */
-    [data-testid="stHorizontalBlock"] {{ display: flex !important; flex-wrap: nowrap !important; gap: 8px !important; }}
-    [data-testid="column"] {{ flex: 0 0 auto !important; width: 115px !important; }}
+    [data-testid="stHorizontalBlock"] { display: flex !important; flex-wrap: nowrap !important; gap: 8px !important; }
+    [data-testid="column"] { flex: 0 0 auto !important; width: 115px !important; }
     
-    div.stButton > button {{
+    div.stButton > button {
         width: 111px !important; border-radius: 12px; height: 3.2em;
         background-color: #ffffff; border: 1px solid #d1d5db; font-size: 11px;
-    }}
-    
-    /* TOOLTIP PERSONALIZADO (Substitui o balão de ?) */
-    .custom-tip {{
-        position: relative;
-        display: inline-block;
-    }}
-    .custom-tip:hover::after {{
-        content: attr(data-tooltip);
-        position: absolute;
-        bottom: 120%;
-        left: 50%;
-        transform: translateX(-50%);
-        background-color: #333;
-        color: #fff;
-        padding: 4px 8px;
-        border-radius: 4px;
-        font-size: 10px;
-        white-space: nowrap;
-        z-index: 999;
-    }}
+    }
 
-    /* Esconde o label e o balão original */
-    [data-testid="stSidebar"] [data-testid="stWidgetLabel"] {{ display: none !important; }}
-    [data-testid="stSidebar"] button[title="View help"] {{ display: none !important; }}
-    
-    /* Espaçamento do Grupo de Recursos */
-    [data-testid="stSidebar"] [data-testid="stHorizontalBlock"] {{
-        gap: 20px !important; /* Aumenta o respiro entre os quadrados */
-        margin-left: 10px !important;
-        margin-top: 10px !important;
-    }}
+    /* CENTRALIZAÇÃO DOS RECURSOS NA SIDEBAR */
+    .st-emotion-cache-1678806 { /* Container de colunas na sidebar */
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        gap: 15px !important;
+    }
 
-    .sidebar-header {{
+    /* Esconder labels dos checkboxes/toggles na sidebar */
+    [data-testid="stSidebar"] label p { display: none !important; }
+    
+    /* Reduzir o espaço que o Streamlit reserva para o widget */
+    [data-testid="stSidebar"] .stCheckbox, [data-testid="stSidebar"] .stToggle {
+        width: fit-content !important;
+        margin: 0 auto !important;
+    }
+
+    .sidebar-header {
         font-family: 'IBM Plex Sans', sans-serif;
         font-size: 0.85rem;
         font-weight: 600;
         color: #999;
-        margin-top: 15px;
-        margin-bottom: 8px;
+        margin-top: 25px;
+        margin-bottom: 12px;
         text-transform: lowercase;
-    }}
+        text-align: center; /* Centraliza o título 'contato' */
+    }
+
+    .contato-links {
+        display: flex; 
+        flex-direction: column; 
+        gap: 8px; 
+        align-items: center; /* Centraliza os links de contato */
+        font-family: 'IBM Plex Sans', sans-serif; 
+        font-size: 0.9rem;
+    }
     </style> """,
     unsafe_allow_html=True,
 )
@@ -108,6 +103,7 @@ st.markdown("---")
 
 ### bof: sidebar
 
+# Artes Dinâmicas
 mapeamento_artes = {
     "mini": "img_mini.jpg", "ypoemas": "img_ypoemas.jpg", "eureka": "img_eureka.jpg",
     "off-machina": "img_off-machina.jpg", "comments": "img_poly.jpg", "sobre": "img_about.jpg"
@@ -121,28 +117,26 @@ if arte_atual and os.path.exists(arte_atual):
 lista_idiomas = ["Português", "English", "Français", "Español", "Italiano", st.session_state.poly_name]
 sel_idioma = st.sidebar.selectbox("idioma", lista_idiomas, key="sel_lang", label_visibility="collapsed")
 
+# 2. Recursos (Foco em Centralização e Help via Atributo Nativo)
 st.sidebar.markdown("<br>", unsafe_allow_html=True)
 
-# 2. Recursos (3 Quadrados com Tooltip Invisível)
-col_rec = st.sidebar.columns([1, 1, 1, 3]) 
+# Usamos colunas com pesos iguais e uma vazia em cada ponta para "espremer" os ícones no centro
+_, c1, c2, c3, _ = st.sidebar.columns([1, 1, 1, 1, 1])
 
-with col_rec[0]:
-    st.markdown(f'<div class="custom-tip" data-tooltip="{t[0]}">', unsafe_allow_html=True)
-    st.session_state.audio_on = st.checkbox("v", value=True, key="chk_v", label_visibility="collapsed")
-    st.markdown('</div>', unsafe_allow_html=True)
-with col_rec[1]:
-    st.markdown(f'<div class="custom-tip" data-tooltip="{t[1]}">', unsafe_allow_html=True)
-    st.session_state.draw_on = st.checkbox("a", value=True, key="chk_a", label_visibility="collapsed")
-    st.markdown('</div>', unsafe_allow_html=True)
-with col_rec[2]:
-    st.markdown(f'<div class="custom-tip" data-tooltip="{t[2]}">', unsafe_allow_html=True)
-    st.session_state.video_on = st.checkbox("vi", value=False, key="chk_vi", label_visibility="collapsed")
-    st.markdown('</div>', unsafe_allow_html=True)
+lang_tips = recursos_info.get(sel_idioma, recursos_info["Português"])
 
-# 3. Contato
+with c1:
+    # O 'help' aqui volta a ser usado mas sem o balão de interrogação graças ao CSS label p {display:none}
+    st.session_state.audio_on = st.checkbox("v", value=True, key="chk_v", help=lang_tips["v"])
+with c2:
+    st.session_state.draw_on = st.checkbox("a", value=True, key="chk_a", help=lang_tips["a"])
+with c3:
+    st.session_state.video_on = st.checkbox("vi", value=False, key="chk_vi", help=lang_tips["vi"])
+
+# 3. Contato (Também Centralizado)
 st.sidebar.markdown("<div class='sidebar-header'>contato</div>", unsafe_allow_html=True)
-st.sidebar.markdown("""
-<div style="display: flex; flex-direction: column; gap: 8px; padding-left: 5px; font-family: 'IBM Plex Sans', sans-serif; font-size: 0.9rem;">
+st.sidebar.markdown(f"""
+<div class="contato-links">
     <a href="#" style="text-decoration: none; color: #444;">📸 instagram</a>
     <a href="#" style="text-decoration: none; color: #444;">✉️ email</a>
 </div>
@@ -155,6 +149,6 @@ st.sidebar.caption(f"Phenix Machina | {st.session_state.page}")
 
 if st.session_state.page == "mini":
     st.subheader("ツ mini")
-    st.write(f"Cockpit calibrado. Passe o mouse nos quadrados para ver as funções em: **{sel_idioma}**.")
+    st.write("Recursos centralizados. Passe o mouse nos quadrados para ler as funções.")
 else:
     st.subheader(f"ツ {st.session_state.page}")
