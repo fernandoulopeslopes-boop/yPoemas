@@ -14,7 +14,7 @@ st.set_page_config(
 if "page" not in st.session_state: st.session_state.page = "mini"
 if "poly_name" not in st.session_state: st.session_state.poly_name = "català"
 
-# Dicionário de Help (será injetado via HTML 'title')
+# Tooltips (Help via HTML Title)
 tips = {
     "Português": ["voz (talk)", "arte (draw)", "vídeo (video)"],
     "English": ["voice (talk)", "art (draw)", "video (video)"],
@@ -30,10 +30,10 @@ st.markdown(
     footer {visibility: hidden;}
     .main .block-container { max-width: 95% !important; padding-top: 1.5rem; margin: 0 auto; }
     
-    /* SIDEBAR: Fixa e limpa */
+    /* Sidebar Fixa */
     [data-testid="stSidebar"] { width: 240px !important; min-width: 240px !important; background-color: #fafafa; }
     
-    /* NAVEGAÇÃO SUPERIOR: 111px */
+    /* Navegação Superior 111px */
     [data-testid="stHorizontalBlock"] { display: flex !important; flex-wrap: nowrap !important; gap: 8px !important; }
     [data-testid="column"] { flex: 0 0 auto !important; width: 115px !important; }
     div.stButton > button {
@@ -41,19 +41,27 @@ st.markdown(
         background-color: #ffffff; border: 1px solid #d1d5db; font-size: 11px;
     }
 
-    /* MATADOR DE SALADA: Remove qualquer interrogação ou label residual na sidebar */
+    /* MATADOR DE INTERROGAÇÕES E LABELS */
     [data-testid="stSidebar"] [data-testid="stWidgetLabel"], 
     [data-testid="stSidebar"] button[title="View help"] { 
         display: none !important; 
     }
 
-    /* Centralização dos recursos */
-    .recursos-container {
+    /* CONTAINER DOS RECURSOS: Centralização Real */
+    .recursos-wrapper {
         display: flex;
         justify-content: center;
-        gap: 25px;
-        margin-top: 10px;
-        margin-bottom: 20px;
+        align-items: center;
+        gap: 20px;
+        width: 100%;
+        padding: 10px 0;
+    }
+
+    /* Força o checkbox a ser apenas o quadrado */
+    [data-testid="stSidebar"] .stCheckbox {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: fit-content !important;
     }
 
     .sidebar-header {
@@ -99,26 +107,30 @@ lista_idiomas = ["Português", "English", "Français", "Español", "Italiano", s
 sel_idioma = st.sidebar.selectbox("idioma", lista_idiomas, key="sel_lang", label_visibility="collapsed")
 t = tips.get(sel_idioma, tips["Português"])
 
-# 2. Recursos (A Engenharia Sem Salada)
-# Criamos colunas invisíveis para o Streamlit processar os dados, 
-# mas o visual será controlado pelo 'title' do HTML.
 st.sidebar.markdown("<br>", unsafe_allow_html=True)
+
+# 2. Recursos (O Cockpit Purificado)
+# Usamos um container div para agrupar e centralizar
+st.sidebar.markdown('<div class="recursos-wrapper">', unsafe_allow_html=True)
+
+# Criamos 3 colunas dentro da sidebar para os checkboxes
 c1, c2, c3 = st.sidebar.columns([1, 1, 1])
 
 with c1:
-    # O truque: Sem parâmetro 'help', o Streamlit não gera o botão desalinhado.
-    # O checkbox fica 'nu'.
+    # O 'title' no markdown flutuante cria o help do navegador
+    st.markdown(f'<div title="{t[0]}">', unsafe_allow_html=True)
     st.session_state.audio_on = st.checkbox("v", value=True, key="chk_v", label_visibility="collapsed")
-    # Injetamos o help via HTML puro logo abaixo (invisível, só on-mouse)
-    st.markdown(f'<div title="{t[0]}" style="margin-top:-35px; height:30px; cursor:pointer;"></div>', unsafe_allow_html=True)
-
+    st.markdown('</div>', unsafe_allow_html=True)
 with c2:
+    st.markdown(f'<div title="{t[1]}">', unsafe_allow_html=True)
     st.session_state.draw_on = st.checkbox("a", value=True, key="chk_a", label_visibility="collapsed")
-    st.markdown(f'<div title="{t[1]}" style="margin-top:-35px; height:30px; cursor:pointer;"></div>', unsafe_allow_html=True)
-
+    st.markdown('</div>', unsafe_allow_html=True)
 with c3:
+    st.markdown(f'<div title="{t[2]}">', unsafe_allow_html=True)
     st.session_state.video_on = st.checkbox("vi", value=False, key="chk_vi", label_visibility="collapsed")
-    st.markdown(f'<div title="{t[2]}" style="margin-top:-35px; height:30px; cursor:pointer;"></div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+
+st.sidebar.markdown('</div>', unsafe_allow_html=True)
 
 # 3. Contato
 st.sidebar.markdown("<div class='sidebar-header'>contato</div>", unsafe_allow_html=True)
@@ -136,6 +148,6 @@ st.sidebar.caption(f"Phenix Machina | {st.session_state.page}")
 
 if st.session_state.page == "mini":
     st.subheader("ツ mini")
-    st.write(f"Interface limpa. Passe o mouse nos botões para ler as funções em **{sel_idioma}**.")
+    st.write("Interface calibrada. O minimalismo exige precisão.")
 else:
     st.subheader(f"ツ {st.session_state.page}")
