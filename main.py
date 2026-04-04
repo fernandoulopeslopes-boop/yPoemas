@@ -1,20 +1,56 @@
-import streamlit as st
+import os
+import sys
 import random
+import socket
+import streamlit as st
 import streamlit_antd_components as sac
-from lay_2_ipo import gera_poema  # Peça original homologada
 
-# --- 1. CONFIGURAÇÃO DE ENGENHARIA ---
+# --- 1. ENGENHARIA DE ESTRADA (CONFIG) ---
 st.set_page_config(page_title="yPoemas 2026", layout="wide")
 
-# --- 2. GAIOLA DE PROTEÇÃO (ESTADO DO MOTOR) ---
-if 'tema' not in st.session_state:
-    st.session_state.tema = 0
+# Garante que o Python ache o motor lay_2_ypo.py na raiz
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+try:
+    from lay_2_ypo import gera_poema
+except ImportError:
+    st.error("ERRO: O arquivo 'lay_2_ypo.py' não foi encontrado no GitHub.")
+    st.stop()
+
+# Identificação para arquivos temporários (LYPO)
+hostname = socket.gethostname()
+IPAddres = socket.gethostbyname(hostname)
+
+# --- 2. GAIOLA DE PROTEÇÃO (SESSÃO) ---
+if 'tema_idx' not in st.session_state:
+    st.session_state.tema_idx = 0
 if 'sub_take' not in st.session_state:
     st.session_state.sub_take = 0
 if 'aba_atual' not in st.session_state:
     st.session_state.aba_atual = "Mini"
 
-# --- 3. ESTRADAS (AS PÁGINAS) ---
+# --- 3. MOTOR INTERNO (A PONTE) ---
+def load_poema_interno(nome_tema, seed_eureka):
+    """Aciona o motor gera_poema e formata para a tela."""
+    try:
+        script = gera_poema(nome_tema, seed_eureka)
+        novo_ypoema = ""
+        lypo_user = f"LYPO_{IPAddres}"
+        
+        # Garante pasta de cache
+        if not os.path.exists("./temp"):
+            os.makedirs("./temp")
+            
+        with open(os.path.join("./temp/", lypo_user), "w", encoding="utf-8") as f:
+            f.write(nome_tema + "\n")
+            for line in script:
+                f.write(line + "\n")
+                novo_ypoema += (line if line != "\n" else "") + "<br>"
+        return novo_ypoema
+    except Exception as e:
+        return f"Erro no motor: {e}"
+
+# --- 4. AS ESTRADAS (ABAS) ---
 aba = sac.tabs([
     sac.TabsItem(label='Mini', icon='lightning-charge'),
     sac.TabsItem(label='yPoemas', icon='pentagon'),
@@ -22,10 +58,10 @@ aba = sac.tabs([
     sac.TabsItem(label='Help', icon='question-circle'),
 ], align='center', variant='compact')
 
-# Lista de temas da Mini (Nomes dos arquivos .txt ou identificadores)
-lista_mini_nomes = ["mini_01", "mini_02", "mini_03"] 
+# SEUS TEMAS REAIS (Ajuste esta lista com os nomes dos seus .txt)
+lista_mini_nomes = ["mini_01", "mini_02", "mini_03", "mini_04"] 
 
-# Ajuste do limite_max baseado na estrada
+# Lógica de limites
 if aba == 'Mini':
     st.session_state.limite_max = len(lista_mini_nomes) - 1
 elif aba == 'yPoemas':
@@ -33,13 +69,13 @@ elif aba == 'yPoemas':
 else:
     st.session_state.limite_max = 0
 
-# Reset de posição ao trocar de aba
+# Reset ao trocar de aba
 if aba != st.session_state.aba_atual:
-    st.session_state.tema = 0
+    st.session_state.tema_idx = 0
     st.session_state.sub_take = 0
     st.session_state.aba_atual = aba
 
-# --- 4. O VOLANTE (NAVEGAÇÃO OBJETIVA) ---
+# --- 5. O COCKPIT (VOLANTE DE 1 LINHA) ---
 _, b_more, b_last, b_rand, b_next, b_help, b_love, _ = st.columns([2, 1, 1, 1, 1, 1, 1, 2])
 
 with b_more:
@@ -49,17 +85,17 @@ with b_more:
 
 with b_last:
     if st.button("◀"):
-        st.session_state.tema = (st.session_state.tema - 1) % (st.session_state.limite_max + 1)
+        st.session_state.tema_idx = (st.session_state.tema_idx - 1) % (st.session_state.limite_max + 1)
         st.rerun()
 
 with b_rand:
     if st.button("✻"):
-        st.session_state.tema = random.randint(0, st.session_state.limite_max)
+        st.session_state.tema_idx = random.randint(0, st.session_state.limite_max)
         st.rerun()
 
 with b_next:
     if st.button("▶"):
-        st.session_state.tema = (st.session_state.tema + 1) % (st.session_state.limite_max + 1)
+        st.session_state.tema_idx = (st.session_state.tema_idx + 1) % (st.session_state.limite_max + 1)
         st.rerun()
 
 with b_help:
@@ -68,20 +104,13 @@ with b_help:
 with b_love:
     st.button("❤")
 
-# --- 5. A PAISAGEM (PALCO) ---
+# --- 6. A PAISAGEM (OUTPUT) ---
 st.divider()
 
-try:
-    if aba == 'Mini':
-        nome_atual = lista_mini_nomes[st.session_state.tema]
-        # IGNICAÇÃO: gera_poema(nome_tema, seed_eureka)
-        # O sub_take entra como string para garantir a variação
-        texto_poema = gera_poema(nome_atual, str(st.session_state.sub_take))
-        st.markdown(texto_poema, unsafe_allow_html=True)
+if aba == 'Mini':
+    nome_atual = lista_mini_nomes[st.session_state.tema_idx]
+    texto = load_poema_interno(nome_atual, str(st.session_state.sub_take))
+    st.markdown(f"<div style='text-align: center;'>{texto}</div>", unsafe_allow_html=True)
 
-    elif aba == 'yPoemas':
-        # Aplicar a mesma lógica de nomes para a estrada principal
-        st.markdown(f"### Estrada yPoemas - Tema {st.session_state.tema}")
-
-except Exception as e:
-    st.error(f"Erro na pista: {e}")
+elif aba == 'yPoemas':
+    st.info(f"Página yPoemas - Tema atual: {st.session_state.tema_idx}")
