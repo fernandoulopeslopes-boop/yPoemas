@@ -2,35 +2,37 @@ import streamlit as st
 import os
 import random
 
-# --- 1. MOTOR DE ABERTURA (PROTOCOLO AXIOMA_ZERO) ---
+# --- 1. MOTOR: ABERTURA (MANDALA / CASE-SENSITIVE) ---
 @st.cache_data(show_spinner=False)
 def abre(nome_do_tema):
     """
-    :param nome_do_tema
-    :return: lista do arquivo
+    Motor original ajustado para o Axioma_Zero.
+    Resolve a divergência entre Windows (ypo) e Linux (YPO).
     """
-    # Caminho absoluto para garantir funcionamento no Streamlit Cloud (Linux)
+    # Localização absoluta no servidor /mount/src/ypoemas/
     base_path = os.path.dirname(os.path.abspath(__file__))
-    # Extensão .YPO em maiúsculas conforme a realidade da pasta /data
-    full_name = os.path.join(base_path, "data", nome_do_tema + ".YPO")
+    
+    # A força da extensão em maiúsculas (.YPO)
+    arquivo = f"{nome_do_tema}.YPO"
+    full_name = os.path.join(base_path, "data", arquivo)
     
     lista = []
     try:
         with open(full_name, encoding="utf-8") as file:
             for line in file:
                 lista.append(line)
-            file.close()
+            # file.close() automático pelo 'with'
     except FileNotFoundError:
-        return [f"ERRO: {nome_do_tema}.YPO não encontrado."]
+        return [f"ERRO: {arquivo} não encontrado no diretório /data."]
         
     return lista
 
-# --- 2. GESTÃO DE ESTADO ---
+# --- 2. GESTÃO DE ESTADO (NAVEGAÇÃO) ---
 if 'mini_idx' not in st.session_state:
     st.session_state.mini_idx = 0
 
-# --- 3. LISTA DE TEMAS (SEQUÊNCIA AUTORAL) ---
-# Substitua pelos nomes reais dos seus arquivos na pasta /data
+# --- 3. BIBLIOTECA DE TEMAS ---
+# Lista que rege a sequência da Machina
 lista_mini_real = [
     "mini_01",
     "mini_02",
@@ -39,17 +41,16 @@ lista_mini_real = [
 
 st.session_state.limite_mini = len(lista_mini_real) - 1
 
-# --- 4. EXECUÇÃO DO TEMA ---
+# --- 4. IDENTIFICAÇÃO DO ALVO ---
 tema_alvo = lista_mini_real[st.session_state.mini_idx]
 conteudo_fiel = abre(tema_alvo)
 
-# --- 5. INTERFACE (PAINEL DE LINHA ÚNICA) ---
+# --- 5. INTERFACE (PAINEL HEXAGONAL) ---
 # more / last / rand / next / help / love
 c1, c2, c3, c4, c5, c6 = st.columns(6)
 
 with c1:
-    if st.button("more"):
-        pass
+    st.button("more")
 
 with c2:
     if st.button("last"):
@@ -70,16 +71,18 @@ with c4:
 
 with c5:
     if st.button("help"):
-        st.toast("Navegação da Machina de Poesia")
+        st.toast("Protocolo de Navegação Ativo")
 
 with c6:
     if st.button("love"):
         st.snow()
 
-# --- 6. EXIBIÇÃO DO YPOEMA ---
+# --- 6. EXIBIÇÃO (O POEMA) ---
 st.markdown("---")
 st.write(f"### {tema_alvo}")
 
+# O loop que imprime a alma do arquivo
 for linha in conteudo_fiel:
     st.write(linha.strip())
+
 st.markdown("---")
