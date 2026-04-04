@@ -1,11 +1,12 @@
 import streamlit as st
 import os
-import random
+# A IMPORTAÇÃO CRUCIAL QUE EU ESTAVA IGNORANDO:
+from lay_2_ipo import gera_poema
 
-# --- @fernandoulopeslopes-boop's Machina: STATUS ESTÁVEL ---
+# --- @fernandoulopeslopes-boop's Machina: AMBIENTE MODULAR ---
 st.set_page_config(page_title="yPoemas - Machina", layout="wide", initial_sidebar_state="expanded")
 
-# CSS: Calibragem 116px e Estética de Terminal (Verde no Preto)
+# CSS: Calibragem 116px e Estética Industrial
 st.markdown("""
     <style>
     div.stButton > button {
@@ -15,125 +16,96 @@ st.markdown("""
         font-family: 'Courier New', Courier, monospace;
         border: 1px solid #444;
         font-weight: bold;
-        background-color: #1e1e1e;
-        color: #fff;
-    }
-    div.stButton > button:hover {
-        border-color: #00ff00;
-        color: #00ff00;
     }
     .stTextArea textarea {
         font-family: 'Courier New', Courier, monospace;
         background-color: #0e1117;
         color: #00ff00;
         font-size: 16px;
-        border: 1px solid #333;
-        line-height: 1.5;
-    }
-    [data-testid="stSidebar"] {
-        width: 280px !important;
     }
     </style>
 """, unsafe_allow_html=True)
 
-# --- SISTEMA DE ESTADO (PERSISTÊNCIA) ---
+# --- FUNÇÃO DE CARREGAMENTO (CONFORME EXPLICADO) ---
+def load_poema(tema, seed):
+    """
+    Busca o arquivo e utiliza a seed para a geração 
+    via módulo externo lay_2_ipo.
+    """
+    base_path = os.path.dirname(os.path.abspath(__file__))
+    full_name = os.path.join(base_path, "temas", f"{tema}.txt")
+    try:
+        with open(full_name, encoding="utf-8") as file:
+            conteudo = file.read()
+            # Aqui entra a lógica que você mencionou:
+            return gera_poema(conteudo, seed)
+    except FileNotFoundError:
+        return f"SISTEMA: {tema}.txt não localizado."
+
+# --- SISTEMA DE ESTADO ---
 if 'page' not in st.session_state:
     st.session_state.page = "POESIA"
 if 'last_tema' not in st.session_state:
     st.session_state.last_tema = ""
-if 'output' not in st.session_state:
-    st.session_state.output = ""
+if 'seed' not in st.session_state:
+    st.session_state.seed = 42
 
-@st.cache_data
-def abre(tema_alvo):
-    base_path = os.path.dirname(os.path.abspath(__file__))
-    full_name = os.path.join(base_path, "temas", f"{tema_alvo}.txt")
-    try:
-        with open(full_name, encoding="utf-8") as file:
-            return file.read()
-    except FileNotFoundError:
-        return None
-
-def processa(conteudo):
-    if not conteudo: return ""
-    linhas = [l.strip() for l in conteudo.strip().split('\n') if l.strip()]
-    random.shuffle(linhas)
-    return "\n".join(linhas)
-
-# --- SIDEBAR (CONTROLE) ---
+# --- SIDEBAR ---
 with st.sidebar:
     st.title("🌀 yPoemas")
-    st.markdown("### @fernandoulopeslopes-boop's Machina")
-    st.markdown("---")
-    st.write(f"PÁGINA: {st.session_state.page}")
-    st.write(f"TEMA: {st.session_state.last_tema}")
+    st.write(f"**MODO:** {st.session_state.page}")
     st.markdown("---")
     if st.button("RELOAD"):
         st.cache_data.clear()
         st.rerun()
 
-# --- NAVEGADORES ---
-
-# Camada 1: Páginas (116px)
+# --- NAVEGADORES (O PALCO SUPERIOR) ---
 p_cols = st.columns(6)
-with p_cols[0]:
-    if st.button("POESIA"): st.session_state.page = "POESIA"
-with p_cols[1]:
-    if st.button("page_mini"): st.session_state.page = "page_mini"
-with p_cols[2]:
-    if st.button("SOBRE"): st.session_state.page = "SOBRE"
-with p_cols[3]:
-    if st.button("AJUDA"): st.session_state.page = "AJUDA"
-with p_cols[4]:
-    if st.button("CONFIG"): st.session_state.page = "CONFIG"
+pages = ["POESIA", "page_mini", "SOBRE", "AJUDA", "CONFIG"]
+for i, p in enumerate(pages):
+    with p_cols[i]:
+        if st.button(p, key=f"pg_{p}"):
+            st.session_state.page = p
 
-# Camada 2: Operações de Tema (+ < * > ? @)
 t_cols = st.columns(6)
-with t_cols[0]: st.button("+")
-with t_cols[1]: st.button("<")
-with t_cols[2]: st.button("*")
-with t_cols[3]: st.button(">")
-with t_cols[4]: st.button("?")
-with t_cols[5]: st.button("@")
+ops = ["+", "<", "*", ">", "?", "@"]
+for i, op in enumerate(ops):
+    with t_cols[i]:
+        if st.button(op, key=f"op_{op}"):
+            # Lógica de operação (More, Last, Rand...)
+            if op == "*": st.session_state.seed = random.randint(0, 9999)
 
 st.markdown("---")
 
-# --- LÓGICA DE EXECUÇÃO ---
+# --- LÓGICA DAS PÁGINAS ---
 
 if st.session_state.page == "POESIA":
     c_main, c_var = st.columns([5, 1])
-    
     with c_main:
-        # Palco Limpo (Input sem label)
-        tema = st.text_input("INPUT", value=st.session_state.last_tema, label_visibility="collapsed", placeholder="TEMA...")
-        
+        tema = st.text_input("INPUT", value=st.session_state.last_tema, label_visibility="collapsed")
         if st.button("GERAR POESIA"):
             if tema:
                 st.session_state.last_tema = tema
-                raw = abre(tema.lower().strip())
-                if raw:
-                    st.session_state.output = processa(raw)
-                else:
-                    st.session_state.output = f"ERRO: {tema}.txt NÃO ENCONTRADO"
-
-        st.text_area("", value=st.session_state.output, height=600, label_visibility="collapsed")
+                st.session_state.output = load_poema(tema.lower().strip(), st.session_state.seed)
+        
+        if 'output' in st.session_state:
+            st.text_area("", value=st.session_state.output, height=600, label_visibility="collapsed")
 
     with c_var:
         st.markdown("**VARS**")
         for i in range(1, 11):
-            if st.button(f"v{i}", key=f"v_p_{i}"):
-                pass
+            if st.button(f"v{i}", key=f"v_main_{i}"):
+                st.session_state.seed = i
+                st.rerun()
 
 elif st.session_state.page == "page_mini":
+    # A página Mini com temas aparecendo no palco
     st.subheader("📟 page_mini")
-    col_m1, col_m2 = st.columns([1, 2])
-    with col_m1:
-        m_in = st.text_input("M_TARGET", key="mini_in", label_visibility="collapsed")
-        st.button("RAND", key="m_rand")
-    with col_m2:
-        if m_in:
-            res_m = abre(m_in.lower().strip())
-            st.text_area("", value=processa(res_m), height=400, label_visibility="collapsed")
+    # Grid de temas ou seleção rápida
+    m_tema = st.text_input("M_TARGET", key="mini_in", label_visibility="collapsed")
+    if m_tema:
+        output_mini = load_poema(m_tema.lower().strip(), st.session_state.seed)
+        st.text_area("", value=output_mini, height=400, label_visibility="collapsed")
 
 # --- MANDALA ---
 st.markdown("---")
