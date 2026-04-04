@@ -3,77 +3,74 @@ import os
 import random
 
 # Configuração da Página
-st.set_page_config(page_title="yPoemas - Máquina de Fazer Poesia", layout="centered")
+st.set_page_config(page_title="yPoemas - Machina", layout="centered")
 
 def abre(tema_alvo):
     """
-    Função para localizar e abrir os arquivos de texto.
-    Busca o caminho absoluto para evitar o FileNotFoundError no servidor.
+    Mecânica de busca: localiza o arquivo .txt na pasta 'temas' 
+    usando o caminho absoluto do servidor.
     """
-    # Descobre o diretório onde o main.py está localizado
     base_path = os.path.dirname(os.path.abspath(__file__))
-    
-    # Define o nome da pasta (ajuste 'temas' se o nome no GitHub for outro)
     pasta_temas = "temas" 
-    
-    # Monta o caminho completo do arquivo .txt
     full_name = os.path.join(base_path, pasta_temas, f"{tema_alvo}.txt")
     
     try:
         with open(full_name, encoding="utf-8") as file:
             return file.read()
     except FileNotFoundError:
-        return f"Erro: O arquivo {tema_alvo}.txt não foi encontrado na pasta {pasta_temas}."
+        return None
 
 def gerar_poema(conteudo):
     """
-    Lógica para processar as variações e gerar a poesia.
+    Mecânica de permutação: embaralha as variações originais.
     """
-    linhas = conteudo.strip().split('\n')
-    # Exemplo simples de permutação (ajuste conforme sua lógica de variações)
+    if not conteudo:
+        return ""
+    linhas = [linha.strip() for row in conteudo.strip().split('\n') if (linha := row.strip())]
     random.shuffle(linhas)
-    return "\n".join(linhas[:10]) # Retorna as primeiras 10 linhas permutadas
+    return "\n".join(linhas)
 
-# --- INTERFACE STREAMLIT ---
+# --- AMBIENTE @fernandoulopeslopes-boop's Machina ---
 
 st.title("🌀 yPoemas")
-st.subheader("@fernandoulopeslopes-boop's Machina")
+st.markdown("### @fernandoulopeslopes-boop's Machina")
 
-# Navegação em linha única conforme seu design
+# Painel de Navegação em Linha Única (Simbolismo Original)
 col1, col2, col3, col4, col5, col6 = st.columns(6)
 
 with col1:
-    if st.button("more"):
-        st.session_state.acao = "more"
+    if st.button("+"): # more
+        st.session_state.comando = "more"
 with col2:
-    if st.button("last"):
-        st.session_state.acao = "last"
+    if st.button("<"): # last
+        st.session_state.comando = "last"
 with col3:
-    if st.button("rand"):
-        st.session_state.acao = "rand"
+    if st.button("*"): # rand
+        st.session_state.comando = "rand"
 with col4:
-    if st.button("nest"):
-        st.session_state.acao = "nest"
+    if st.button(">"): # nest
+        st.session_state.comando = "nest"
 with col5:
-    if st.button("help"):
-        st.info("Ajuda: Selecione um tema para gerar a poesia.")
+    if st.button("?"): # help
+        st.session_state.comando = "help"
 with col6:
-    if st.button("love"):
-        st.heart("Feito com amor.")
+    if st.button("@"): # love
+        st.session_state.comando = "love"
 
-# Seleção de Tema (Exemplo com os temas da sua máquina)
-tema_escolhido = st.selectbox("Escolha um tema:", ["amor", "tempo", "mar", "noite", "silencio"])
+# Input de Operação
+tema_escolhido = st.text_input("Escolha um tema:", value="")
 
 if st.button("GERAR POESIA"):
-    conteudo_fiel = abre(tema_escolhido.lower())
-    
-    if "Erro:" in conteudo_fiel:
-        st.error(conteudo_fiel)
-    else:
-        poesia = gerar_poema(conteudo_fiel)
-        st.markdown(f"### Poesia Gerada: {tema_escolhido}")
-        st.text_area("", value=poesia, height=400)
+    if tema_escolhido:
+        conteudo_fiel = abre(tema_escolhido.lower().strip())
+        
+        if conteudo_fiel is not None:
+            st.markdown("---")
+            resultado = gerar_poema(conteudo_fiel)
+            st.text_area(label="", value=resultado, height=500)
+        else:
+            st.error(f"Arquivo {tema_escolhido}.txt não encontrado.")
 
-# Rodapé ou Mandala visual
+# MANDALA
 st.markdown("---")
 st.markdown("✨ *A máquina de fazer poesia está ativa.*")
