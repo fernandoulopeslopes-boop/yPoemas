@@ -2,33 +2,30 @@ import streamlit as st
 import os
 import random
 
-# --- CONFIGURAÇÃO E AMBIENTE ---
-st.set_page_config(page_title="yPoemas - Machina", layout="wide")
+# --- CONFIGURAÇÃO DO AMBIENTE ---
+st.set_page_config(page_title="yPoemas - Machina", layout="wide", initial_sidebar_state="expanded")
 
-# CSS para garantir os botões de 116px e o design da Machina
+# CSS para fixar a largura dos botões de navegação (116px) e estilo da Machina
 st.markdown("""
     <style>
     div.stButton > button {
-        width: 116px;
+        width: 116px !important;
         height: 40px;
-        border-radius: 5px;
-        border: 1px solid #ccc;
+        border-radius: 2px;
     }
-    .min-button {
+    /* Estilo para os min_buttons da page_mini */
+    .stButton > button[kind="secondary"] {
         width: 60px !important;
+        font-size: 10px;
     }
     </style>
 """, unsafe_allow_html=True)
 
 @st.cache_data
 def abre(tema_alvo):
-    """
-    Mecânica com cache (st.cache_data) para leitura de arquivos.
-    """
     base_path = os.path.dirname(os.path.abspath(__file__))
     pasta_temas = "temas" 
     full_name = os.path.join(base_path, pasta_temas, f"{tema_alvo}.txt")
-    
     try:
         with open(full_name, encoding="utf-8") as file:
             return file.read()
@@ -36,71 +33,71 @@ def abre(tema_alvo):
         return None
 
 def gerar_poema(conteudo):
-    """
-    Permutação das variações originais.
-    """
     if not conteudo: return ""
     linhas = [l.strip() for row in conteudo.strip().split('\n') if (l := row.strip())]
     random.shuffle(linhas)
     return "\n".join(linhas)
 
-# --- SIDEBAR (NAVEGAÇÃO DE PÁGINAS) ---
+# --- SIDEBAR ESTRUTURADA ---
 with st.sidebar:
-    st.title("🌀 Configurações")
-    pagina = st.radio("Navegar para:", ["Poesia", "Sobre", "Ajuda", "Config"], label_visibility="collapsed")
-    st.markdown("---")
-    st.markdown("### @fernandoulopeslopes-boop's Machina")
-
-# --- CONTEÚDO PRINCIPAL (PÁGINA POESIA) ---
-if pagina == "Poesia":
     st.title("🌀 yPoemas")
-
-    # Navegador de topo (Buttons com 116px de largura)
-    col1, col2, col3, col4, col5, col6 = st.columns(6)
-    with col1:
-        if st.button("+"): st.session_state.cmd = "more"
-    with col2:
-        if st.button("<"): st.session_state.cmd = "last"
-    with col3:
-        if st.button("*"): st.session_state.cmd = "rand"
-    with col4:
-        if st.button(">"): st.session_state.cmd = "nest"
-    with col5:
-        if st.button("?"): st.session_state.cmd = "help"
-    with col6:
-        if st.button("@"): st.session_state.cmd = "love"
-
+    st.markdown("### @fernandoulopeslopes-boop's Machina")
     st.markdown("---")
-
-    # Espaço de Operação e Seleção de Conteúdo
-    col_input, col_min = st.columns([3, 1])
     
-    with col_input:
-        tema_escolhido = st.text_input("Escolha um tema:", value="", placeholder="Digite o tema...")
+    # Navegador de Páginas
+    pagina = st.radio(
+        "Selecione a Interface:",
+        ["Principal", "page_mini", "Configurações", "Ajuda"],
+        index=0
+    )
+    
+    st.markdown("---")
+    st.info("Próxima implementação: Módulo de Voz (gTTS)")
 
-    with col_min:
-        # Navegador com min_buttons para conteúdos/variações da página
+# --- LÓGICA DE NAVEGAÇÃO ---
+
+if pagina == "Principal":
+    st.title("🌀 Machina de Poesia")
+    
+    # Navegador Superior (116px)
+    c1, c2, c3, c4, c5, c6 = st.columns(6)
+    with c1: st.button("+")
+    with c2: st.button("<")
+    with c3: st.button("*")
+    with c4: st.button(">")
+    with c5: st.button("?")
+    with c6: st.button("@")
+    
+    st.markdown("---")
+    
+    tema = st.text_input("Input Tema:", placeholder="Digite aqui...")
+    if st.button("GERAR"):
+        res = abre(tema.lower().strip())
+        if res:
+            st.text_area("", value=gerar_poema(res), height=500)
+
+elif pagina == "page_mini":
+    st.subheader("📟 Machina - Mini View")
+    
+    # Estrutura da page_mini com min_buttons
+    col_view, col_ctrl = st.columns([3, 1])
+    
+    with col_view:
+        tema_mini = st.text_input("Tema:", key="mini_tema")
+        if tema_mini:
+            res_mini = abre(tema_mini.lower().strip())
+            if res_mini:
+                st.text_area("Output", value=gerar_poema(res_mini), height=300)
+
+    with col_ctrl:
         st.write("Variações")
-        m_col1, m_col2 = st.columns(2)
-        with m_col1:
-            if st.button("V1", key="v1", help="Variação 1"): pass
-        with m_col2:
-            if st.button("V2", key="v2", help="Variação 2"): pass
+        m1, m2 = st.columns(2)
+        with m1: st.button("v1", key="m1")
+        with m2: st.button("v2", key="m2")
+        m3, m4 = st.columns(2)
+        with m3: st.button("v3", key="m3")
+        with m4: st.button("v4", key="m4")
 
-    if st.button("GERAR POESIA", use_container_width=True):
-        if tema_escolhido:
-            conteudo_fiel = abre(tema_escolhido.lower().strip())
-            if conteudo_fiel:
-                st.markdown("---")
-                resultado = gerar_poema(conteudo_fiel)
-                st.text_area(label="", value=resultado, height=500)
-            else:
-                st.error(f"Arquivo {tema_escolhido}.txt não encontrado na pasta 'temas'.")
-
-elif pagina == "Sobre":
-    st.subheader("Sobre a Machina")
-    st.write("Projeto de poesia generativa por permutação.")
-
-# MANDALA
+# --- RODAPÉ MANDALA ---
 st.markdown("---")
-st.markdown("✨ *A máquina de fazer poesia está ativa.*")
+st.markdown("✨ *Mandala ativa: A ordem renasce do caos.*")
