@@ -3,10 +3,11 @@ import random
 import os
 
 # --- CONTADOR INTERNO ---
-my_tries = 11
+my_tries = 13
 
-# --- CABEÇALHO DE CONTROLE ---
+# --- CABEÇALHO DE SINCRONIA ---
 st.error(f"yPoemas: commit # {my_tries} | PROTOCOLLO AXIOMA_ZERO")
+st.warning("MODO DE EMERGÊNCIA: CSS REDUZIDO AO MÍNIMO PARA RESTAURAR CLIQUES.")
 
 try:
     from lay_2_ypo import gera_poema
@@ -14,61 +15,23 @@ except Exception as e:
     st.error(f"MOTOR ERROR: {e}")
     def gera_poema(t, s): return "OFFLINE"
 
-# --- CONFIGURAÇÃO E CSS (A CARA DA MADRUGADA) ---
+# --- CONFIGURAÇÃO E CSS MÍNIMO ---
 st.set_page_config(page_title=f"yPoemas #{my_tries}", layout="wide")
 
 st.markdown(f"""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap');
-
-    /* Fundo Absoluto */
+    /* Apenas o fundo, sem mexer na camada de botões */
     .stApp {{
         background-color: #000000 !important;
         color: #00ff00 !important;
     }}
-    
-    /* Botões Operadores (Superior) */
-    div.stButton > button {{
-        width: 100% !important;
-        height: 45px !important;
-        background-color: #000 !important;
+    /* Texto verde para visibilidade */
+    p, label, span, div {{
         color: #00ff00 !important;
-        border: 1px solid #1a1a1a !important;
-        border-radius: 0px !important;
-        font-family: 'Courier Prime', monospace !important;
-        font-size: 20px !important;
+        font-family: monospace !important;
     }}
-    div.stButton > button:hover {{
-        border-color: #00ff00 !important;
-        background-color: #050505 !important;
-    }}
-
-    /* O Palco (Terminal de Saída) */
-    .stTextArea textarea {{
-        background-color: #000 !important;
-        color: #00ff00 !important;
-        font-family: 'Courier Prime', monospace !important;
-        font-size: 22px !important;
-        line-height: 1.5 !important;
-        border: 1px solid #111 !important;
-        border-radius: 0px !important;
-        padding: 25px !important;
-    }}
-
-    /* Campo de Input (Tema) */
-    input {{
-        background-color: #000 !important;
-        color: #00ff00 !important;
-        font-family: 'Courier Prime', monospace !important;
-        text-align: center !important;
-        font-size: 20px !important;
-        border: none !important;
-        border-bottom: 2px solid #1a1a1a !important;
-    }}
-
-    /* UI Minimalista */
+    /* Esconder o que não interessa */
     header, footer, .stDeployButton {{ display: none !important; }}
-    .stMarkdown hr {{ border-top: 1px solid #111 !important; }}
     </style>
 """, unsafe_allow_html=True)
 
@@ -77,14 +40,15 @@ if 'output' not in st.session_state: st.session_state.output = ""
 if 'last_tema' not in st.session_state: st.session_state.last_tema = ""
 if 'seed_eureka' not in st.session_state: st.session_state.seed_eureka = "42"
 
-# --- ESTRUTURA DE COMANDO ---
+# --- ESTRUTURA DE TESTE ---
 
-# 1. Operadores Superiores (+ < * > ? @)
+# 1. Operadores Superiores
 c_nav = st.columns(6)
 ops = ["+", "<", "*", ">", "?", "@"]
 for i, op in enumerate(ops):
     with c_nav[i]:
-        if st.button(op):
+        # Botão padrão (sem CSS customizado)
+        if st.button(op, key=f"op_{op}_{my_tries}"):
             if op == "*":
                 st.session_state.seed_eureka = str(random.randint(1000, 9999))
                 if st.session_state.last_tema:
@@ -94,32 +58,30 @@ for i, op in enumerate(ops):
 
 st.markdown("---")
 
-# 2. Palco Principal e Variáveis
+# 2. Palco e Variáveis
 c_main, c_vars = st.columns([5, 1])
 
 with c_main:
-    # PRECISÃO ABSOLUTA: O input vai direto para o motor.
-    tema = st.text_input("INPUT", value=st.session_state.last_tema, label_visibility="collapsed", placeholder="DIGITE O ARQUIVO (ex: Fatos.ypo)")
+    # Input padrão
+    tema = st.text_input("ARQUIVO", value=st.session_state.last_tema, placeholder="ex: Fatos.ypo", key=f"in_{my_tries}")
     
-    if st.button("PROCESSAR"):
+    if st.button("PROCESSAR AGORA", key=f"proc_{my_tries}"):
         if tema:
             st.session_state.last_tema = tema.strip()
             try:
-                # Motor recebe o tema limpo. 
-                # Se o erro './data/...' persistir, o ajuste deve ser feito na lay_2_ypo.py
                 res = gera_poema(st.session_state.last_tema, st.session_state.seed_eureka)
                 st.session_state.output = "\n".join(res) if isinstance(res, list) else res
             except Exception as e:
-                st.session_state.output = f"FALHA NO CAMINHO: {e}\n\nO motor buscou por este nome. Verifique se o arquivo está na pasta correta no GitHub."
+                st.session_state.output = f"ERRO: {e}"
             st.rerun()
 
-    # Saída do Terminal
-    st.text_area("PALCO", value=st.session_state.output, height=650, label_visibility="collapsed")
+    # Terminal padrão
+    st.text_area("SAÍDA", value=st.session_state.output, height=500, key=f"text_{my_tries}")
 
 with c_vars:
-    # Botões de Variação
+    # Variáveis padrão
     for v in range(1, 11):
-        if st.button(f"v{v}"):
+        if st.button(f"v{v}", key=f"vbtn_{v}_{my_tries}"):
             st.session_state.seed_eureka = str(v)
             if st.session_state.last_tema:
                 res = gera_poema(st.session_state.last_tema, str(v))
