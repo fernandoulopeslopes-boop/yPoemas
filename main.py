@@ -1,92 +1,85 @@
 import streamlit as st
-import random
 import os
+import random
 
-# --- CONTADOR INTERNO ---
-my_tries = 13
-
-# --- CABEÇALHO DE SINCRONIA ---
-st.error(f"yPoemas: commit # {my_tries} | PROTOCOLLO AXIOMA_ZERO")
-st.warning("MODO DE EMERGÊNCIA: CSS REDUZIDO AO MÍNIMO PARA RESTAURAR CLIQUES.")
-
-try:
-    from lay_2_ypo import gera_poema
-except Exception as e:
-    st.error(f"MOTOR ERROR: {e}")
-    def gera_poema(t, s): return "OFFLINE"
-
-# --- CONFIGURAÇÃO E CSS MÍNIMO ---
-st.set_page_config(page_title=f"yPoemas #{my_tries}", layout="wide")
-
-st.markdown(f"""
-    <style>
-    /* Apenas o fundo, sem mexer na camada de botões */
-    .stApp {{
-        background-color: #000000 !important;
-        color: #00ff00 !important;
-    }}
-    /* Texto verde para visibilidade */
-    p, label, span, div {{
-        color: #00ff00 !important;
-        font-family: monospace !important;
-    }}
-    /* Esconder o que não interessa */
-    header, footer, .stDeployButton {{ display: none !important; }}
-    </style>
-""", unsafe_allow_html=True)
-
-# --- ESTADO DA SESSÃO ---
-if 'output' not in st.session_state: st.session_state.output = ""
-if 'last_tema' not in st.session_state: st.session_state.last_tema = ""
-if 'seed_eureka' not in st.session_state: st.session_state.seed_eureka = "42"
-
-# --- ESTRUTURA DE TESTE ---
-
-# 1. Operadores Superiores
-c_nav = st.columns(6)
-ops = ["+", "<", "*", ">", "?", "@"]
-for i, op in enumerate(ops):
-    with c_nav[i]:
-        # Botão padrão (sem CSS customizado)
-        if st.button(op, key=f"op_{op}_{my_tries}"):
-            if op == "*":
-                st.session_state.seed_eureka = str(random.randint(1000, 9999))
-                if st.session_state.last_tema:
-                    res = gera_poema(st.session_state.last_tema, st.session_state.seed_eureka)
-                    st.session_state.output = "\n".join(res) if isinstance(res, list) else res
-                st.rerun()
-
-st.markdown("---")
-
-# 2. Palco e Variáveis
-c_main, c_vars = st.columns([5, 1])
-
-with c_main:
-    # Input padrão
-    tema = st.text_input("ARQUIVO", value=st.session_state.last_tema, placeholder="ex: Fatos.ypo", key=f"in_{my_tries}")
+# --- 1. MOTOR DE ABERTURA (PROTOCOLO AXIOMA_ZERO) ---
+@st.cache_data(show_spinner=False)
+def abre(nome_do_tema):
+    """
+    :param nome_do_tema
+    :return: lista do arquivo
+    """
+    # Caminho absoluto para garantir funcionamento no Streamlit Cloud (Linux)
+    base_path = os.path.dirname(os.path.abspath(__file__))
+    # Extensão .YPO em maiúsculas conforme a realidade da pasta /data
+    full_name = os.path.join(base_path, "data", nome_do_tema + ".YPO")
     
-    if st.button("PROCESSAR AGORA", key=f"proc_{my_tries}"):
-        if tema:
-            st.session_state.last_tema = tema.strip()
-            try:
-                res = gera_poema(st.session_state.last_tema, st.session_state.seed_eureka)
-                st.session_state.output = "\n".join(res) if isinstance(res, list) else res
-            except Exception as e:
-                st.session_state.output = f"ERRO: {e}"
+    lista = []
+    try:
+        with open(full_name, encoding="utf-8") as file:
+            for line in file:
+                lista.append(line)
+            file.close()
+    except FileNotFoundError:
+        return [f"ERRO: {nome_do_tema}.YPO não encontrado."]
+        
+    return lista
+
+# --- 2. GESTÃO DE ESTADO ---
+if 'mini_idx' not in st.session_state:
+    st.session_state.mini_idx = 0
+
+# --- 3. LISTA DE TEMAS (SEQUÊNCIA AUTORAL) ---
+# Substitua pelos nomes reais dos seus arquivos na pasta /data
+lista_mini_real = [
+    "mini_01",
+    "mini_02",
+    "mini_03"
+]
+
+st.session_state.limite_mini = len(lista_mini_real) - 1
+
+# --- 4. EXECUÇÃO DO TEMA ---
+tema_alvo = lista_mini_real[st.session_state.mini_idx]
+conteudo_fiel = abre(tema_alvo)
+
+# --- 5. INTERFACE (PAINEL DE LINHA ÚNICA) ---
+# more / last / rand / next / help / love
+c1, c2, c3, c4, c5, c6 = st.columns(6)
+
+with c1:
+    if st.button("more"):
+        pass
+
+with c2:
+    if st.button("last"):
+        if st.session_state.mini_idx > 0:
+            st.session_state.mini_idx -= 1
             st.rerun()
 
-    # Terminal padrão
-    st.text_area("SAÍDA", value=st.session_state.output, height=500, key=f"text_{my_tries}")
+with c3:
+    if st.button("rand"):
+        st.session_state.mini_idx = random.randint(0, st.session_state.limite_mini)
+        st.rerun()
 
-with c_vars:
-    # Variáveis padrão
-    for v in range(1, 11):
-        if st.button(f"v{v}", key=f"vbtn_{v}_{my_tries}"):
-            st.session_state.seed_eureka = str(v)
-            if st.session_state.last_tema:
-                res = gera_poema(st.session_state.last_tema, str(v))
-                st.session_state.output = "\n".join(res) if isinstance(res, list) else res
+with c4:
+    if st.button("next"):
+        if st.session_state.mini_idx < st.session_state.limite_mini:
+            st.session_state.mini_idx += 1
             st.rerun()
 
+with c5:
+    if st.button("help"):
+        st.toast("Navegação da Machina de Poesia")
+
+with c6:
+    if st.button("love"):
+        st.snow()
+
+# --- 6. EXIBIÇÃO DO YPOEMA ---
 st.markdown("---")
-st.caption(f"yPoemas: commit # {my_tries} | PROTOCOLLO AXIOMA_ZERO")
+st.write(f"### {tema_alvo}")
+
+for linha in conteudo_fiel:
+    st.write(linha.strip())
+st.markdown("---")
