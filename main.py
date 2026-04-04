@@ -52,7 +52,7 @@ for i, op in enumerate(ops):
                     st.session_state.output = gera_poema(st.session_state.last_tema, st.session_state.seed_eureka)
                 st.rerun()
 
-# 2. NAVEGADORES DE PÁGINA (LOGO ABAIXO: POESIA / MINI / SOBRE / AJUDA / CONFIG)
+# 2. NAVEGADORES DE PÁGINA (LOGO ABAIXO: POESIA / page_mini / SOBRE / AJUDA / CONFIG)
 c_pg = st.columns(6)
 pages = ["POESIA", "page_mini", "SOBRE", "AJUDA", "CONFIG"]
 for i, p in enumerate(pages):
@@ -80,7 +80,7 @@ if st.session_state.page == "POESIA":
 
     with c_var:
         st.markdown("**VARS**")
-        # Botões de sementes fixas 1-10
+        # Botões de sementes fixas 1-10 (v1 a v10)
         for v in range(1, 11):
             if st.button(f"v{v}", key=f"v_p_{v}"):
                 st.session_state.seed_eureka = v
