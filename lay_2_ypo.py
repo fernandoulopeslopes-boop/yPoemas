@@ -38,7 +38,7 @@ def gera_poema(nome_tema, seed_eureka):
     # ... resto do código ...
     if seed_eureka != "":
         look_for_seed = True
-        part_string = seed_eureka.partition(" ➪ ")
+        part_string = str(seed_eureka).partition(" ➪ ")
         this_seed = part_string[0]
         find_coords = part_string[2]
 
