@@ -1,56 +1,79 @@
 import streamlit as st
 import os
+import random
 
-# --- 1. MOTOR (AJUSTADO PARA .YPO) ---
-def abre(nome_do_tema):
+# Configuração da Página
+st.set_page_config(page_title="yPoemas - Máquina de Fazer Poesia", layout="centered")
+
+def abre(tema_alvo):
     """
-    :param nome_do_tema
-    :return: lista do arquivo
+    Função para localizar e abrir os arquivos de texto.
+    Busca o caminho absoluto para evitar o FileNotFoundError no servidor.
     """
-    # Ajustado para .YPO conforme a grafia física na pasta /data
-    full_name = os.path.join("./data/", nome_do_tema) + ".YPO"
-    lista = []
-    with open(full_name, encoding="utf-8") as file:
-        for line in file:
-            lista.append(line)
-        file.close()
+    # Descobre o diretório onde o main.py está localizado
+    base_path = os.path.dirname(os.path.abspath(__file__))
+    
+    # Define o nome da pasta (ajuste 'temas' se o nome no GitHub for outro)
+    pasta_temas = "temas" 
+    
+    # Monta o caminho completo do arquivo .txt
+    full_name = os.path.join(base_path, pasta_temas, f"{tema_alvo}.txt")
+    
+    try:
+        with open(full_name, encoding="utf-8") as file:
+            return file.read()
+    except FileNotFoundError:
+        return f"Erro: O arquivo {tema_alvo}.txt não foi encontrado na pasta {pasta_temas}."
 
-    return lista
+def gerar_poema(conteudo):
+    """
+    Lógica para processar as variações e gerar a poesia.
+    """
+    linhas = conteudo.strip().split('\n')
+    # Exemplo simples de permutação (ajuste conforme sua lógica de variações)
+    random.shuffle(linhas)
+    return "\n".join(linhas[:10]) # Retorna as primeiras 10 linhas permutadas
 
-# --- 2. ESTADO ---
-if 'mini_idx' not in st.session_state:
-    st.session_state.mini_idx = 0
+# --- INTERFACE STREAMLIT ---
 
-# --- 3. LISTA (SEQUÊNCIA DO LIVRO) ---
-lista_mini_real = [
-    "mini_01",
-    "mini_02",
-    "mini_03"
-]
+st.title("🌀 yPoemas")
+st.subheader("@fernandoulopeslopes-boop's Machina")
 
-st.session_state.limite_mini = len(lista_mini_real) - 1
+# Navegação em linha única conforme seu design
+col1, col2, col3, col4, col5, col6 = st.columns(6)
 
-# --- 4. EXECUÇÃO ---
-tema_alvo = lista_mini_real[st.session_state.mini_idx]
-conteudo_fiel = abre(tema_alvo)
+with col1:
+    if st.button("more"):
+        st.session_state.acao = "more"
+with col2:
+    if st.button("last"):
+        st.session_state.acao = "last"
+with col3:
+    if st.button("rand"):
+        st.session_state.acao = "rand"
+with col4:
+    if st.button("nest"):
+        st.session_state.acao = "nest"
+with col5:
+    if st.button("help"):
+        st.info("Ajuda: Selecione um tema para gerar a poesia.")
+with col6:
+    if st.button("love"):
+        st.heart("Feito com amor.")
 
-# --- 5. INTERFACE (LINHA ÚNICA) ---
-c1, c2, c3, c4, c5, c6 = st.columns(6)
+# Seleção de Tema (Exemplo com os temas da sua máquina)
+tema_escolhido = st.selectbox("Escolha um tema:", ["amor", "tempo", "mar", "noite", "silencio"])
 
-with c1: st.button("more")
-with c2:
-    if st.button("last") and st.session_state.mini_idx > 0:
-        st.session_state.mini_idx -= 1
-        st.rerun()
-with c3: st.button("rand")
-with c4:
-    if st.button("next") and st.session_state.mini_idx < st.session_state.limite_mini:
-        st.session_state.mini_idx += 1
-        st.rerun()
-with c5: st.button("help")
-with c6: st.button("love")
+if st.button("GERAR POESIA"):
+    conteudo_fiel = abre(tema_escolhido.lower())
+    
+    if "Erro:" in conteudo_fiel:
+        st.error(conteudo_fiel)
+    else:
+        poesia = gerar_poema(conteudo_fiel)
+        st.markdown(f"### Poesia Gerada: {tema_escolhido}")
+        st.text_area("", value=poesia, height=400)
 
-# --- 6. EXIBIÇÃO ---
-st.write(f"### {tema_alvo}")
-for linha in conteudo_fiel:
-    st.write(linha.strip())
+# Rodapé ou Mandala visual
+st.markdown("---")
+st.markdown("✨ *A máquina de fazer poesia está ativa.*")
