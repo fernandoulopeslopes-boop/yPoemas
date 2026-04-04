@@ -1,14 +1,11 @@
 import streamlit as st
 import os
 import random
-import time
 
-# --- @fernandoulopeslopes-boop's Machina: AMBIENTE 05:12 AM ---
-from lay_2_ypo import gera_poema
-
+# --- @fernandoulopeslopes-boop's Machina: DEPLOY REAL ---
 st.set_page_config(page_title="yPoemas - Machina", layout="wide", initial_sidebar_state="expanded")
 
-# CSS: Calibragem 116px e Terminal de Alta Precisão
+# CSS: Precisão 116px e Fontes Mono
 st.markdown("""
     <style>
     div.stButton > button {
@@ -16,33 +13,18 @@ st.markdown("""
         height: 42px !important;
         border-radius: 0px;
         font-family: 'Courier New', Courier, monospace;
-        border: 1px solid #444;
         font-weight: bold;
-        background-color: #0e1117;
-        color: #fff;
-    }
-    div.stButton > button:hover {
-        border-color: #00ff00;
-        color: #00ff00;
     }
     .stTextArea textarea {
         font-family: 'Courier New', Courier, monospace;
-        background-color: #000;
+        background-color: #0e1117;
         color: #00ff00;
-        font-size: 18px;
-        border: 1px solid #222;
-        line-height: 1.6;
-    }
-    [data-testid="stSidebar"] {
-        background-color: #050505;
-        border-right: 1px solid #222;
+        font-size: 16px;
     }
     </style>
 """, unsafe_allow_html=True)
 
-# --- SISTEMA DE ESTADO CRÍTICO ---
-if 'seed_eureka' not in st.session_state:
-    st.session_state.seed_eureka = 42
+# --- ESTADO ---
 if 'page' not in st.session_state:
     st.session_state.page = "POESIA"
 if 'last_tema' not in st.session_state:
@@ -50,78 +32,65 @@ if 'last_tema' not in st.session_state:
 if 'output' not in st.session_state:
     st.session_state.output = ""
 
-# --- SIDEBAR (STATUS DO SISTEMA) ---
-with st.sidebar:
-    st.title("🌀 yPoemas")
-    st.markdown("---")
-    st.write(f"SYSTEM_TIME: {time.strftime('%H:%M:%S')}")
-    st.write(f"SEED_ACTIVE: {st.session_state.seed_eureka}")
-    st.write(f"TARGET_FILE: {st.session_state.last_tema}.ypo")
-    st.markdown("---")
-    if st.button("RESET_CACHE"):
-        st.cache_data.clear()
-        st.rerun()
+def carregar_tema(t):
+    path = f"temas/{t}.txt"
+    if os.path.exists(path):
+        with open(path, "r", encoding="utf-8") as f:
+            linhas = [l.strip() for l in f.readlines() if l.strip()]
+            random.shuffle(linhas)
+            return "\n".join(linhas)
+    return f"SISTEMA: {t}.txt não localizado."
 
-# --- NAVEGADORES (PALCO SUPERIOR) ---
+# --- A ESTRUTURA DO PALCO (O QUE ESTAVA ACIMA) ---
 
-# Linha 1: Páginas (POESIA / MINI / SOBRE / AJUDA / CONFIG)
-p_cols = st.columns(6)
+# 1. BOTÕES DE NAVEGAÇÃO DE FLUXO (O TOPO)
+c_nav = st.columns(6)
+ops = ["+", "<", "*", ">", "?", "@"]
+for i, op in enumerate(ops):
+    with c_nav[i]:
+        if st.button(op, key=f"nav_{op}"):
+            # Lógica de permutação imediata no '*'
+            if op == "*" and st.session_state.last_tema:
+                st.session_state.output = carregar_tema(st.session_state.last_tema)
+
+# 2. BOTÕES DE NAVEGAÇÃO PELAS PÁGINAS (LOGO ABAIXO)
+c_pg = st.columns(6)
 pages = ["POESIA", "page_mini", "SOBRE", "AJUDA", "CONFIG"]
 for i, p in enumerate(pages):
-    with p_cols[i]:
+    with c_pg[i]:
         if st.button(p, key=f"pg_{p}"):
             st.session_state.page = p
 
-# Linha 2: Operações de Ítimos (+ < * > ? @)
-t_cols = st.columns(6)
-ops = ["+", "<", "*", ">", "?", "@"]
-for i, op in enumerate(ops):
-    with t_cols[i]:
-        if st.button(op, key=f"op_{op}"):
-            if op == "*": # RAND SEED
-                st.session_state.seed_eureka = random.randint(1000, 9999)
-                st.rerun()
-
 st.markdown("---")
 
-# --- EXECUÇÃO POR PÁGINA ---
+# --- ÁREA DE TRABALHO ---
 
 if st.session_state.page == "POESIA":
-    c_main, c_var = st.columns([5, 1])
+    col_main, col_vars = st.columns([5, 1])
     
-    with c_main:
-        # Input Seco (sem label)
-        tema = st.text_input("INPUT", value=st.session_state.last_tema, label_visibility="collapsed", placeholder="TEMA...")
+    with col_main:
+        # Input do Tema
+        tema = st.text_input("TEMA", value=st.session_state.last_tema, label_visibility="collapsed", placeholder="TEMA...")
         
-        if st.button("GERAR POESIA"):
+        if st.button("GERAR"):
             if tema:
                 st.session_state.last_tema = tema
-                # Chamada oficial para o script lay_2_ypo
-                st.session_state.output = gera_poema(tema.lower().strip(), st.session_state.seed_eureka)
+                st.session_state.output = carregar_tema(tema.lower().strip())
         
-        st.text_area("", value=st.session_state.output, height=650, label_visibility="collapsed")
+        st.text_area("", value=st.session_state.output, height=600, label_visibility="collapsed")
 
-    with c_var:
+    with col_vars:
         st.markdown("**VARS**")
-        # Seleção de Sementes Fixas (Variações de Ítimos)
-        for v in range(1, 11):
-            if st.button(f"v{v}", key=f"v_p_{v}"):
-                st.session_state.seed_eureka = v
-                if st.session_state.last_tema:
-                    st.session_state.output = gera_poema(st.session_state.last_tema, st.session_state.seed_eureka)
-                st.rerun()
+        for i in range(1, 11):
+            if st.button(f"v{i}"):
+                pass
 
 elif st.session_state.page == "page_mini":
-    st.subheader("📟 MINI_MODULE")
-    col_m1, col_m2 = st.columns([1, 2])
-    with col_m1:
-        m_in = st.text_input("M_TARGET", key="mini_in", label_visibility="collapsed", placeholder="TEMA...")
-    with col_m2:
-        if m_in:
-            # Geração imediata no mini palco
-            res_mini = gera_poema(m_in.lower().strip(), st.session_state.seed_eureka)
-            st.text_area("", value=res_mini, height=450, label_visibility="collapsed")
+    st.subheader("📟 page_mini")
+    m_in = st.text_input("MINI_TARGET", key="mini_in", label_visibility="collapsed")
+    if m_in:
+        st.text_area("", value=carregar_tema(m_in.lower()), height=400, label_visibility="collapsed")
 
 # --- MANDALA ---
 st.markdown("---")
-st.markdown("✨ *Mandala: @fernandoulopeslopes-boop's Machina ativa.*")
+st.markdown("✨ *Mandala: @fernandoulopeslopes-boop's Machina*")
