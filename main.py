@@ -1,12 +1,19 @@
 import streamlit as st
 import os
-# A IMPORTAÇÃO CRUCIAL QUE EU ESTAVA IGNORANDO:
-from lay_2_ipo import gera_poema
+import random
 
-# --- @fernandoulopeslopes-boop's Machina: AMBIENTE MODULAR ---
+# --- CONEXÃO MODULAR CORRIGIDA ---
+try:
+    from lay_2_ypo import gera_poema
+except ModuleNotFoundError:
+    st.error("ERRO: O arquivo 'lay_2_ypo.py' não foi encontrado no repositório.")
+    def gera_poema(nome_tema, seed_eureka):
+        return "Módulo lay_2_ypo não localizado. Verifique o GitHub."
+
+# --- CONFIGURAÇÃO @fernandoulopeslopes-boop ---
 st.set_page_config(page_title="yPoemas - Machina", layout="wide", initial_sidebar_state="expanded")
 
-# CSS: Calibragem 116px e Estética Industrial
+# CSS: Precisão 116px e Ambiente de Terminal
 st.markdown("""
     <style>
     div.stButton > button {
@@ -23,43 +30,36 @@ st.markdown("""
         color: #00ff00;
         font-size: 16px;
     }
+    [data-testid="stSidebar"] {
+        width: 280px !important;
+    }
     </style>
 """, unsafe_allow_html=True)
-
-# --- FUNÇÃO DE CARREGAMENTO (CONFORME EXPLICADO) ---
-def load_poema(tema, seed):
-    """
-    Busca o arquivo e utiliza a seed para a geração 
-    via módulo externo lay_2_ipo.
-    """
-    base_path = os.path.dirname(os.path.abspath(__file__))
-    full_name = os.path.join(base_path, "temas", f"{tema}.txt")
-    try:
-        with open(full_name, encoding="utf-8") as file:
-            conteudo = file.read()
-            # Aqui entra a lógica que você mencionou:
-            return gera_poema(conteudo, seed)
-    except FileNotFoundError:
-        return f"SISTEMA: {tema}.txt não localizado."
 
 # --- SISTEMA DE ESTADO ---
 if 'page' not in st.session_state:
     st.session_state.page = "POESIA"
+if 'seed_eureka' not in st.session_state:
+    st.session_state.seed_eureka = 42
 if 'last_tema' not in st.session_state:
     st.session_state.last_tema = ""
-if 'seed' not in st.session_state:
-    st.session_state.seed = 42
+if 'output_machina' not in st.session_state:
+    st.session_state.output_machina = ""
 
-# --- SIDEBAR ---
+# --- SIDEBAR (CONTROLE DE FLUXO) ---
 with st.sidebar:
     st.title("🌀 yPoemas")
-    st.write(f"**MODO:** {st.session_state.page}")
+    st.markdown("### Machina v.2.3.8")
+    st.write(f"**SEED:** {st.session_state.seed_eureka}")
+    st.write(f"**PAGE:** {st.session_state.page}")
     st.markdown("---")
     if st.button("RELOAD"):
         st.cache_data.clear()
         st.rerun()
 
-# --- NAVEGADORES (O PALCO SUPERIOR) ---
+# --- NAVEGADORES (PALCO SUPERIOR) ---
+
+# Camada 1: Páginas (116px)
 p_cols = st.columns(6)
 pages = ["POESIA", "page_mini", "SOBRE", "AJUDA", "CONFIG"]
 for i, p in enumerate(pages):
@@ -67,46 +67,50 @@ for i, p in enumerate(pages):
         if st.button(p, key=f"pg_{p}"):
             st.session_state.page = p
 
+# Camada 2: Operações (+ < * > ? @)
 t_cols = st.columns(6)
 ops = ["+", "<", "*", ">", "?", "@"]
 for i, op in enumerate(ops):
     with t_cols[i]:
         if st.button(op, key=f"op_{op}"):
-            # Lógica de operação (More, Last, Rand...)
-            if op == "*": st.session_state.seed = random.randint(0, 9999)
+            if op == "*": # RANDOM SEED
+                st.session_state.seed_eureka = random.randint(1000, 9999)
+                st.rerun()
 
 st.markdown("---")
 
-# --- LÓGICA DAS PÁGINAS ---
+# --- LÓGICA DE EXECUÇÃO ---
 
 if st.session_state.page == "POESIA":
     c_main, c_var = st.columns([5, 1])
+    
     with c_main:
-        tema = st.text_input("INPUT", value=st.session_state.last_tema, label_visibility="collapsed")
+        # Input do Tema (nome_tema para a função)
+        tema = st.text_input("INPUT", value=st.session_state.last_tema, label_visibility="collapsed", placeholder="TEMA...")
+        
         if st.button("GERAR POESIA"):
             if tema:
                 st.session_state.last_tema = tema
-                st.session_state.output = load_poema(tema.lower().strip(), st.session_state.seed)
+                # Chamada oficial para lay_2_ypo
+                st.session_state.output_machina = gera_poema(tema.lower().strip(), st.session_state.seed_eureka)
         
-        if 'output' in st.session_state:
-            st.text_area("", value=st.session_state.output, height=600, label_visibility="collapsed")
+        st.text_area("", value=st.session_state.output_machina, height=600, label_visibility="collapsed")
 
     with c_var:
         st.markdown("**VARS**")
-        for i in range(1, 11):
-            if st.button(f"v{i}", key=f"v_main_{i}"):
-                st.session_state.seed = i
+        for v in range(1, 11):
+            if st.button(f"v{v}", key=f"v_p_{v}"):
+                st.session_state.seed_eureka = v
+                st.session_state.output_machina = gera_poema(st.session_state.last_tema, st.session_state.seed_eureka)
                 st.rerun()
 
 elif st.session_state.page == "page_mini":
-    # A página Mini com temas aparecendo no palco
     st.subheader("📟 page_mini")
-    # Grid de temas ou seleção rápida
-    m_tema = st.text_input("M_TARGET", key="mini_in", label_visibility="collapsed")
-    if m_tema:
-        output_mini = load_poema(m_tema.lower().strip(), st.session_state.seed)
-        st.text_area("", value=output_mini, height=400, label_visibility="collapsed")
+    m_in = st.text_input("M_TARGET", key="mini_in", label_visibility="collapsed")
+    if m_in:
+        # Mini palco direto
+        st.text_area("", value=gera_poema(m_in.lower().strip(), st.session_state.seed_eureka), height=450, label_visibility="collapsed")
 
 # --- MANDALA ---
 st.markdown("---")
-st.markdown("✨ *Mandala: @fernandoulopeslopes-boop's Machina*")
+st.markdown("✨ *Mandala: @fernandoulopeslopes-boop's Machina ativa.*")
