@@ -2,18 +2,13 @@ import streamlit as st
 import os
 import random
 
-# --- CONEXÃO MODULAR CORRIGIDA ---
-try:
-    from lay_2_ypo import gera_poema
-except ModuleNotFoundError:
-    st.error("ERRO: O arquivo 'lay_2_ypo.py' não foi encontrado no repositório.")
-    def gera_poema(nome_tema, seed_eureka):
-        return "Módulo lay_2_ypo não localizado. Verifique o GitHub."
-
-# --- CONFIGURAÇÃO @fernandoulopeslopes-boop ---
+# --- @fernandoulopeslopes-boop's Machina: AMBIENTE 05:00 AM ---
 st.set_page_config(page_title="yPoemas - Machina", layout="wide", initial_sidebar_state="expanded")
 
-# CSS: Precisão 116px e Ambiente de Terminal
+# A IMPORTAÇÃO QUE DEFINE A LÓGICA DE ÍTIMOS
+from lay_2_ypo import gera_poema
+
+# CSS: Calibragem 116px e Estética Industrial (Verde/Preto)
 st.markdown("""
     <style>
     div.stButton > button {
@@ -29,6 +24,7 @@ st.markdown("""
         background-color: #0e1117;
         color: #00ff00;
         font-size: 16px;
+        border: 1px solid #333;
     }
     [data-testid="stSidebar"] {
         width: 280px !important;
@@ -36,7 +32,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- SISTEMA DE ESTADO ---
+# --- SISTEMA DE ESTADO (PERSISTÊNCIA TOTAL) ---
 if 'page' not in st.session_state:
     st.session_state.page = "POESIA"
 if 'seed_eureka' not in st.session_state:
@@ -46,20 +42,22 @@ if 'last_tema' not in st.session_state:
 if 'output_machina' not in st.session_state:
     st.session_state.output_machina = ""
 
-# --- SIDEBAR (CONTROLE DE FLUXO) ---
+# --- SIDEBAR (PAINEL DE FLUXO) ---
 with st.sidebar:
     st.title("🌀 yPoemas")
     st.markdown("### Machina v.2.3.8")
+    st.markdown("---")
+    st.write(f"**PÁGINA:** {st.session_state.page}")
     st.write(f"**SEED:** {st.session_state.seed_eureka}")
-    st.write(f"**PAGE:** {st.session_state.page}")
+    st.write(f"**TEMA:** {st.session_state.last_tema}")
     st.markdown("---")
     if st.button("RELOAD"):
         st.cache_data.clear()
         st.rerun()
 
-# --- NAVEGADORES (PALCO SUPERIOR) ---
+# --- NAVEGADORES DE PALCO ---
 
-# Camada 1: Páginas (116px)
+# Linha 1: Páginas (116px)
 p_cols = st.columns(6)
 pages = ["POESIA", "page_mini", "SOBRE", "AJUDA", "CONFIG"]
 for i, p in enumerate(pages):
@@ -67,13 +65,13 @@ for i, p in enumerate(pages):
         if st.button(p, key=f"pg_{p}"):
             st.session_state.page = p
 
-# Camada 2: Operações (+ < * > ? @)
+# Linha 2: Operações de Estado (+ < * > ? @)
 t_cols = st.columns(6)
 ops = ["+", "<", "*", ">", "?", "@"]
 for i, op in enumerate(ops):
     with t_cols[i]:
         if st.button(op, key=f"op_{op}"):
-            if op == "*": # RANDOM SEED
+            if op == "*": # RAND: Altera a semente
                 st.session_state.seed_eureka = random.randint(1000, 9999)
                 st.rerun()
 
@@ -85,19 +83,19 @@ if st.session_state.page == "POESIA":
     c_main, c_var = st.columns([5, 1])
     
     with c_main:
-        # Input do Tema (nome_tema para a função)
+        # Input Seco (nome_tema)
         tema = st.text_input("INPUT", value=st.session_state.last_tema, label_visibility="collapsed", placeholder="TEMA...")
         
         if st.button("GERAR POESIA"):
             if tema:
                 st.session_state.last_tema = tema
-                # Chamada oficial para lay_2_ypo
                 st.session_state.output_machina = gera_poema(tema.lower().strip(), st.session_state.seed_eureka)
         
         st.text_area("", value=st.session_state.output_machina, height=600, label_visibility="collapsed")
 
     with c_var:
         st.markdown("**VARS**")
+        # Variações rápidas que forçam nova geração com seed fixa
         for v in range(1, 11):
             if st.button(f"v{v}", key=f"v_p_{v}"):
                 st.session_state.seed_eureka = v
@@ -106,10 +104,14 @@ if st.session_state.page == "POESIA":
 
 elif st.session_state.page == "page_mini":
     st.subheader("📟 page_mini")
-    m_in = st.text_input("M_TARGET", key="mini_in", label_visibility="collapsed")
-    if m_in:
-        # Mini palco direto
-        st.text_area("", value=gera_poema(m_in.lower().strip(), st.session_state.seed_eureka), height=450, label_visibility="collapsed")
+    col_m1, col_m2 = st.columns([1, 2])
+    with col_m1:
+        m_in = st.text_input("M_TARGET", key="mini_in", label_visibility="collapsed", placeholder="TEMA...")
+        st.button("RAND", on_click=lambda: st.session_state.update({"seed_eureka": random.randint(0,999)}))
+    with col_m2:
+        if m_in:
+            res_mini = gera_poema(m_in.lower().strip(), st.session_state.seed_eureka)
+            st.text_area("", value=res_mini, height=450, label_visibility="collapsed")
 
 # --- MANDALA ---
 st.markdown("---")
