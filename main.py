@@ -5,10 +5,11 @@ import random
 # Configuração da Página
 st.set_page_config(page_title="yPoemas - Machina", layout="centered")
 
+@st.cache_data
 def abre(tema_alvo):
     """
-    Mecânica de busca: localiza o arquivo .txt na pasta 'temas' 
-    usando o caminho absoluto do servidor.
+    Mecânica de busca com cache: localiza o arquivo .txt na pasta 'temas'.
+    Usa st.cache_data conforme a migração que fizemos para performance.
     """
     base_path = os.path.dirname(os.path.abspath(__file__))
     pasta_temas = "temas" 
@@ -26,6 +27,7 @@ def gerar_poema(conteudo):
     """
     if not conteudo:
         return ""
+    # Processamento de linhas (preservando o conteúdo fiel)
     linhas = [linha.strip() for row in conteudo.strip().split('\n') if (linha := row.strip())]
     random.shuffle(linhas)
     return "\n".join(linhas)
@@ -35,7 +37,8 @@ def gerar_poema(conteudo):
 st.title("🌀 yPoemas")
 st.markdown("### @fernandoulopeslopes-boop's Machina")
 
-# Painel de Navegação em Linha Única (Simbolismo Original)
+# Painel de Navegação (Linha Única - Sequência Original)
+# more / last / rand / nest / help / love
 col1, col2, col3, col4, col5, col6 = st.columns(6)
 
 with col1:
@@ -57,19 +60,23 @@ with col6:
     if st.button("@"): # love
         st.session_state.comando = "love"
 
-# Input de Operação
-tema_escolhido = st.text_input("Escolha um tema:", value="")
+# Espaço de Operação
+tema_escolhido = st.text_input("Escolha um tema:", value="", placeholder="Digite o tema...")
 
 if st.button("GERAR POESIA"):
     if tema_escolhido:
+        # Busca o conteúdo usando o cache
         conteudo_fiel = abre(tema_escolhido.lower().strip())
         
         if conteudo_fiel is not None:
             st.markdown("---")
             resultado = gerar_poema(conteudo_fiel)
+            # Saída da Machina
             st.text_area(label="", value=resultado, height=500)
         else:
-            st.error(f"Arquivo {tema_escolhido}.txt não encontrado.")
+            st.error(f"Arquivo {tema_escolhido}.txt não encontrado na pasta 'temas'.")
+    else:
+        st.warning("Por favor, insira um tema.")
 
 # MANDALA
 st.markdown("---")
