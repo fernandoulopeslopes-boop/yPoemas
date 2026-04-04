@@ -2,10 +2,10 @@ import streamlit as st
 import os
 import random
 
-# --- @fernandoulopeslopes-boop's Machina: AMBIENTE FINAL ---
+# --- @fernandoulopeslopes-boop's Machina: STATUS ESTÁVEL ---
 st.set_page_config(page_title="yPoemas - Machina", layout="wide", initial_sidebar_state="expanded")
 
-# CSS: Calibragem 116px, Mini-Buttons e Terminal de Saída Industrial
+# CSS: Calibragem 116px e Estética de Terminal (Verde no Preto)
 st.markdown("""
     <style>
     div.stButton > button {
@@ -22,19 +22,13 @@ st.markdown("""
         border-color: #00ff00;
         color: #00ff00;
     }
-    .min-btn-grid div.stButton > button {
-        width: 52px !important;
-        height: 32px !important;
-        font-size: 10px !important;
-        margin: 1px !important;
-    }
     .stTextArea textarea {
         font-family: 'Courier New', Courier, monospace;
         background-color: #0e1117;
         color: #00ff00;
         font-size: 16px;
         border: 1px solid #333;
-        line-height: 1.4;
+        line-height: 1.5;
     }
     [data-testid="stSidebar"] {
         width: 280px !important;
@@ -42,7 +36,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- SISTEMA DE ESTADO ---
+# --- SISTEMA DE ESTADO (PERSISTÊNCIA) ---
 if 'page' not in st.session_state:
     st.session_state.page = "POESIA"
 if 'last_tema' not in st.session_state:
@@ -53,7 +47,6 @@ if 'output' not in st.session_state:
 @st.cache_data
 def abre(tema_alvo):
     base_path = os.path.dirname(os.path.abspath(__file__))
-    # Busca dinâmica na subpasta temas
     full_name = os.path.join(base_path, "temas", f"{tema_alvo}.txt")
     try:
         with open(full_name, encoding="utf-8") as file:
@@ -63,42 +56,45 @@ def abre(tema_alvo):
 
 def processa(conteudo):
     if not conteudo: return ""
-    # Permutação pura: preserva variações originais
     linhas = [l.strip() for l in conteudo.strip().split('\n') if l.strip()]
     random.shuffle(linhas)
     return "\n".join(linhas)
 
-# --- SIDEBAR (CONTROLE DE FLUXO) ---
+# --- SIDEBAR (CONTROLE) ---
 with st.sidebar:
     st.title("🌀 yPoemas")
-    st.markdown("### Machina v.2.3.8")
+    st.markdown("### @fernandoulopeslopes-boop's Machina")
     st.markdown("---")
     st.write(f"PÁGINA: {st.session_state.page}")
-    st.write(f"TARGET: {st.session_state.last_tema}")
+    st.write(f"TEMA: {st.session_state.last_tema}")
     st.markdown("---")
-    if st.button("RELOAD SYSTEM", use_container_width=True):
+    if st.button("RELOAD"):
         st.cache_data.clear()
         st.rerun()
-    st.markdown("---")
-    st.info("Log: Machina Ativa")
 
-# --- NAVEGADORES DE PALCO ---
+# --- NAVEGADORES ---
 
 # Camada 1: Páginas (116px)
 p_cols = st.columns(6)
-pages = ["POESIA", "MINI", "VOZ", "SOBRE", "CONFIG", "HELP"]
-for i, p in enumerate(pages):
-    with p_cols[i]:
-        if st.button(p, key=f"pg_{p}"):
-            st.session_state.page = p
+with p_cols[0]:
+    if st.button("POESIA"): st.session_state.page = "POESIA"
+with p_cols[1]:
+    if st.button("page_mini"): st.session_state.page = "page_mini"
+with p_cols[2]:
+    if st.button("SOBRE"): st.session_state.page = "SOBRE"
+with p_cols[3]:
+    if st.button("AJUDA"): st.session_state.page = "AJUDA"
+with p_cols[4]:
+    if st.button("CONFIG"): st.session_state.page = "CONFIG"
 
-# Camada 2: Operações
+# Camada 2: Operações de Tema (+ < * > ? @)
 t_cols = st.columns(6)
-ops = ["+", "<", "*", ">", "?", "@"]
-for i, op in enumerate(ops):
-    with t_cols[i]:
-        if st.button(op, key=f"op_{op}"):
-            st.session_state.last_op = op
+with t_cols[0]: st.button("+")
+with t_cols[1]: st.button("<")
+with t_cols[2]: st.button("*")
+with t_cols[3]: st.button(">")
+with t_cols[4]: st.button("?")
+with t_cols[5]: st.button("@")
 
 st.markdown("---")
 
@@ -108,30 +104,28 @@ if st.session_state.page == "POESIA":
     c_main, c_var = st.columns([5, 1])
     
     with c_main:
-        # Ambiente Seco: Input e Execução
+        # Palco Limpo (Input sem label)
         tema = st.text_input("INPUT", value=st.session_state.last_tema, label_visibility="collapsed", placeholder="TEMA...")
         
-        if st.button("EXECUTAR", use_container_width=True):
+        if st.button("GERAR POESIA"):
             if tema:
                 st.session_state.last_tema = tema
                 raw = abre(tema.lower().strip())
                 if raw:
                     st.session_state.output = processa(raw)
                 else:
-                    st.session_state.output = f"SYSTEM_ERROR: {tema}.txt NOT FOUND"
+                    st.session_state.output = f"ERRO: {tema}.txt NÃO ENCONTRADO"
 
         st.text_area("", value=st.session_state.output, height=600, label_visibility="collapsed")
 
     with c_var:
         st.markdown("**VARS**")
-        st.markdown('<div class="min-btn-grid">', unsafe_allow_html=True)
         for i in range(1, 11):
-            if st.button(f"v{i}", key=f"v_m_{i}"):
+            if st.button(f"v{i}", key=f"v_p_{i}"):
                 pass
-        st.markdown('</div>', unsafe_allow_html=True)
 
-elif st.session_state.page == "MINI":
-    st.subheader("📟 MINI_VIEW")
+elif st.session_state.page == "page_mini":
+    st.subheader("📟 page_mini")
     col_m1, col_m2 = st.columns([1, 2])
     with col_m1:
         m_in = st.text_input("M_TARGET", key="mini_in", label_visibility="collapsed")
@@ -140,10 +134,6 @@ elif st.session_state.page == "MINI":
         if m_in:
             res_m = abre(m_in.lower().strip())
             st.text_area("", value=processa(res_m), height=400, label_visibility="collapsed")
-
-elif st.session_state.page == "VOZ":
-    st.title("🎙️ VOICE_MODULE")
-    st.write("gTTS integration pending...")
 
 # --- MANDALA ---
 st.markdown("---")
