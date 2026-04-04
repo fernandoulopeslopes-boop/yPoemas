@@ -1,22 +1,27 @@
 import streamlit as st
 import os
 
-# --- 1. MOTOR ---
-@st.cache_data(show_spinner=False)
+# --- 1. MOTOR (AJUSTADO PARA .YPO) ---
 def abre(nome_do_tema):
-    base_path = os.path.dirname(__file__)
-    full_name = os.path.join(base_path, "data", nome_do_tema + ".ypo")
+    """
+    :param nome_do_tema
+    :return: lista do arquivo
+    """
+    # Ajustado para .YPO conforme a grafia física na pasta /data
+    full_name = os.path.join("./data/", nome_do_tema) + ".YPO"
     lista = []
     with open(full_name, encoding="utf-8") as file:
         for line in file:
             lista.append(line)
+        file.close()
+
     return lista
 
 # --- 2. ESTADO ---
 if 'mini_idx' not in st.session_state:
     st.session_state.mini_idx = 0
 
-# --- 3. LISTA (A SEQUÊNCIA DO LIVRO) ---
+# --- 3. LISTA (SEQUÊNCIA DO LIVRO) ---
 lista_mini_real = [
     "mini_01",
     "mini_02",
