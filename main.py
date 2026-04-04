@@ -5,19 +5,19 @@ import socket
 import streamlit as st
 import streamlit_antd_components as sac
 
-# --- 1. ENGENHARIA DE ESTRADA (CONFIG) ---
+# --- 1. ENGENHARIA DE ESTRADA (LOGÍSTICA) ---
 st.set_page_config(page_title="yPoemas 2026", layout="wide")
 
-# Garante que o Python ache o motor lay_2_ypo.py na raiz
+# Caminho para o motor lay_2_ypo.py
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 try:
     from lay_2_ypo import gera_poema
 except ImportError:
-    st.error("ERRO: O arquivo 'lay_2_ypo.py' não foi encontrado no GitHub.")
+    st.error("ERRO: O arquivo 'lay_2_ypo.py' não foi localizado no GitHub.")
     st.stop()
 
-# Identificação para arquivos temporários (LYPO)
+# Identidade de rede para arquivos temporários (LYPO)
 hostname = socket.gethostname()
 IPAddres = socket.gethostbyname(hostname)
 
@@ -29,15 +29,14 @@ if 'sub_take' not in st.session_state:
 if 'aba_atual' not in st.session_state:
     st.session_state.aba_atual = "Mini"
 
-# --- 3. MOTOR INTERNO (A PONTE) ---
+# --- 3. A PONTE (MOTOR INTERNO) ---
 def load_poema_interno(nome_tema, seed_eureka):
-    """Aciona o motor gera_poema e formata para a tela."""
+    """Executa o motor e formata a saída HTML para o Streamlit."""
     try:
         script = gera_poema(nome_tema, seed_eureka)
         novo_ypoema = ""
         lypo_user = f"LYPO_{IPAddres}"
         
-        # Garante pasta de cache
         if not os.path.exists("./temp"):
             os.makedirs("./temp")
             
@@ -45,6 +44,7 @@ def load_poema_interno(nome_tema, seed_eureka):
             f.write(nome_tema + "\n")
             for line in script:
                 f.write(line + "\n")
+                # Preserva quebras de linha enviadas pelo motor
                 novo_ypoema += (line if line != "\n" else "") + "<br>"
         return novo_ypoema
     except Exception as e:
@@ -58,18 +58,17 @@ aba = sac.tabs([
     sac.TabsItem(label='Help', icon='question-circle'),
 ], align='center', variant='compact')
 
-# SEUS TEMAS REAIS (Ajuste esta lista com os nomes dos seus .txt)
-lista_mini_nomes = ["mini_01", "mini_02", "mini_03", "mini_04"] 
+# FUNÇÃO PARA CARREGAR LISTA DE TEMAS (O SEU CONTEÚDO)
+def carregar_temas_reais(qual_aba):
+    """Lê seus arquivos de controle para alimentar a lista de temas."""
+    # Aqui você pode usar sua lógica de carregar de rol_*.txt se preferir
+    # Por enquanto, mantemos a estrutura funcional:
+    return ["Fatos", "A_Torre_de_Papel", "Linguafiada", "Livro_Vivo", 
+            "Faz_de_Conto", "Um_Romance", "Quase_Que_Eu_Poesia", "Segredo_Público"]
 
-# Lógica de limites
-if aba == 'Mini':
-    st.session_state.limite_max = len(lista_mini_nomes) - 1
-elif aba == 'yPoemas':
-    st.session_state.limite_max = 144
-else:
-    st.session_state.limite_max = 0
+lista_temas = carregar_temas_reais(aba)
+st.session_state.limite_max = len(lista_temas) - 1
 
-# Reset ao trocar de aba
 if aba != st.session_state.aba_atual:
     st.session_state.tema_idx = 0
     st.session_state.sub_take = 0
@@ -104,13 +103,10 @@ with b_help:
 with b_love:
     st.button("❤")
 
-# --- 6. A PAISAGEM (OUTPUT) ---
+# --- 6. A PAISAGEM (SAÍDA DO CONTEÚDO) ---
 st.divider()
 
-if aba == 'Mini':
-    nome_atual = lista_mini_nomes[st.session_state.tema_idx]
+if st.session_state.tema_idx <= st.session_state.limite_max:
+    nome_atual = lista_temas[st.session_state.tema_idx]
     texto = load_poema_interno(nome_atual, str(st.session_state.sub_take))
     st.markdown(f"<div style='text-align: center;'>{texto}</div>", unsafe_allow_html=True)
-
-elif aba == 'yPoemas':
-    st.info(f"Página yPoemas - Tema atual: {st.session_state.tema_idx}")
