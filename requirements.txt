@@ -1,3 +1,4 @@
 deep-translator
 gTTS
 streamlit
+streamlit-antd-components
