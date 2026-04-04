@@ -1,7 +1,7 @@
 import streamlit as st
 import os
 import random
-
+st.write("Versão de Teste: 01 - Sincronizado")
 # Tentar importar o seu motor, mas sem travar o app se ele falhar
 try:
     from lay_2_ypo import gera_poema
