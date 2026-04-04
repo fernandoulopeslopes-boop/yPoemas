@@ -2,14 +2,28 @@ import streamlit as st
 import os
 import random
 
-# Configuração da Página
-st.set_page_config(page_title="yPoemas - Machina", layout="centered")
+# --- CONFIGURAÇÃO E AMBIENTE ---
+st.set_page_config(page_title="yPoemas - Machina", layout="wide")
+
+# CSS para garantir os botões de 116px e o design da Machina
+st.markdown("""
+    <style>
+    div.stButton > button {
+        width: 116px;
+        height: 40px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+    .min-button {
+        width: 60px !important;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
 @st.cache_data
 def abre(tema_alvo):
     """
-    Mecânica de busca com cache: localiza o arquivo .txt na pasta 'temas'.
-    Usa st.cache_data conforme a migração que fizemos para performance.
+    Mecânica com cache (st.cache_data) para leitura de arquivos.
     """
     base_path = os.path.dirname(os.path.abspath(__file__))
     pasta_temas = "temas" 
@@ -23,60 +37,69 @@ def abre(tema_alvo):
 
 def gerar_poema(conteudo):
     """
-    Mecânica de permutação: embaralha as variações originais.
+    Permutação das variações originais.
     """
-    if not conteudo:
-        return ""
-    # Processamento de linhas (preservando o conteúdo fiel)
-    linhas = [linha.strip() for row in conteudo.strip().split('\n') if (linha := row.strip())]
+    if not conteudo: return ""
+    linhas = [l.strip() for row in conteudo.strip().split('\n') if (l := row.strip())]
     random.shuffle(linhas)
     return "\n".join(linhas)
 
-# --- AMBIENTE @fernandoulopeslopes-boop's Machina ---
+# --- SIDEBAR (NAVEGAÇÃO DE PÁGINAS) ---
+with st.sidebar:
+    st.title("🌀 Configurações")
+    pagina = st.radio("Navegar para:", ["Poesia", "Sobre", "Ajuda", "Config"], label_visibility="collapsed")
+    st.markdown("---")
+    st.markdown("### @fernandoulopeslopes-boop's Machina")
 
-st.title("🌀 yPoemas")
-st.markdown("### @fernandoulopeslopes-boop's Machina")
+# --- CONTEÚDO PRINCIPAL (PÁGINA POESIA) ---
+if pagina == "Poesia":
+    st.title("🌀 yPoemas")
 
-# Painel de Navegação (Linha Única - Sequência Original)
-# more / last / rand / nest / help / love
-col1, col2, col3, col4, col5, col6 = st.columns(6)
+    # Navegador de topo (Buttons com 116px de largura)
+    col1, col2, col3, col4, col5, col6 = st.columns(6)
+    with col1:
+        if st.button("+"): st.session_state.cmd = "more"
+    with col2:
+        if st.button("<"): st.session_state.cmd = "last"
+    with col3:
+        if st.button("*"): st.session_state.cmd = "rand"
+    with col4:
+        if st.button(">"): st.session_state.cmd = "nest"
+    with col5:
+        if st.button("?"): st.session_state.cmd = "help"
+    with col6:
+        if st.button("@"): st.session_state.cmd = "love"
 
-with col1:
-    if st.button("+"): # more
-        st.session_state.comando = "more"
-with col2:
-    if st.button("<"): # last
-        st.session_state.comando = "last"
-with col3:
-    if st.button("*"): # rand
-        st.session_state.comando = "rand"
-with col4:
-    if st.button(">"): # nest
-        st.session_state.comando = "nest"
-with col5:
-    if st.button("?"): # help
-        st.session_state.comando = "help"
-with col6:
-    if st.button("@"): # love
-        st.session_state.comando = "love"
+    st.markdown("---")
 
-# Espaço de Operação
-tema_escolhido = st.text_input("Escolha um tema:", value="", placeholder="Digite o tema...")
+    # Espaço de Operação e Seleção de Conteúdo
+    col_input, col_min = st.columns([3, 1])
+    
+    with col_input:
+        tema_escolhido = st.text_input("Escolha um tema:", value="", placeholder="Digite o tema...")
 
-if st.button("GERAR POESIA"):
-    if tema_escolhido:
-        # Busca o conteúdo usando o cache
-        conteudo_fiel = abre(tema_escolhido.lower().strip())
-        
-        if conteudo_fiel is not None:
-            st.markdown("---")
-            resultado = gerar_poema(conteudo_fiel)
-            # Saída da Machina
-            st.text_area(label="", value=resultado, height=500)
-        else:
-            st.error(f"Arquivo {tema_escolhido}.txt não encontrado na pasta 'temas'.")
-    else:
-        st.warning("Por favor, insira um tema.")
+    with col_min:
+        # Navegador com min_buttons para conteúdos/variações da página
+        st.write("Variações")
+        m_col1, m_col2 = st.columns(2)
+        with m_col1:
+            if st.button("V1", key="v1", help="Variação 1"): pass
+        with m_col2:
+            if st.button("V2", key="v2", help="Variação 2"): pass
+
+    if st.button("GERAR POESIA", use_container_width=True):
+        if tema_escolhido:
+            conteudo_fiel = abre(tema_escolhido.lower().strip())
+            if conteudo_fiel:
+                st.markdown("---")
+                resultado = gerar_poema(conteudo_fiel)
+                st.text_area(label="", value=resultado, height=500)
+            else:
+                st.error(f"Arquivo {tema_escolhido}.txt não encontrado na pasta 'temas'.")
+
+elif pagina == "Sobre":
+    st.subheader("Sobre a Machina")
+    st.write("Projeto de poesia generativa por permutação.")
 
 # MANDALA
 st.markdown("---")
