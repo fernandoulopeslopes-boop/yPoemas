@@ -2,10 +2,10 @@ import streamlit as st
 import os
 import random
 
-# --- @fernandoulopeslopes-boop's Machina: AMBIENTE 05:00 AM ---
+# --- @fernandoulopeslopes-boop's Machina: AMBIENTE FINAL ---
 st.set_page_config(page_title="yPoemas - Machina", layout="wide", initial_sidebar_state="expanded")
 
-# CSS: Calibragem 116px, Mini-Buttons e Terminal de Saída
+# CSS: Calibragem 116px, Mini-Buttons e Terminal de Saída Industrial
 st.markdown("""
     <style>
     div.stButton > button {
@@ -15,6 +15,12 @@ st.markdown("""
         font-family: 'Courier New', Courier, monospace;
         border: 1px solid #444;
         font-weight: bold;
+        background-color: #1e1e1e;
+        color: #fff;
+    }
+    div.stButton > button:hover {
+        border-color: #00ff00;
+        color: #00ff00;
     }
     .min-btn-grid div.stButton > button {
         width: 52px !important;
@@ -28,6 +34,7 @@ st.markdown("""
         color: #00ff00;
         font-size: 16px;
         border: 1px solid #333;
+        line-height: 1.4;
     }
     [data-testid="stSidebar"] {
         width: 280px !important;
@@ -46,7 +53,7 @@ if 'output' not in st.session_state:
 @st.cache_data
 def abre(tema_alvo):
     base_path = os.path.dirname(os.path.abspath(__file__))
-    # Caminho corrigido para o ambiente de deploy
+    # Busca dinâmica na subpasta temas
     full_name = os.path.join(base_path, "temas", f"{tema_alvo}.txt")
     try:
         with open(full_name, encoding="utf-8") as file:
@@ -56,6 +63,7 @@ def abre(tema_alvo):
 
 def processa(conteudo):
     if not conteudo: return ""
+    # Permutação pura: preserva variações originais
     linhas = [l.strip() for l in conteudo.strip().split('\n') if l.strip()]
     random.shuffle(linhas)
     return "\n".join(linhas)
@@ -65,16 +73,18 @@ with st.sidebar:
     st.title("🌀 yPoemas")
     st.markdown("### Machina v.2.3.8")
     st.markdown("---")
-    st.write(f"INTERFACE: {st.session_state.page}")
+    st.write(f"PÁGINA: {st.session_state.page}")
     st.write(f"TARGET: {st.session_state.last_tema}")
     st.markdown("---")
     if st.button("RELOAD SYSTEM", use_container_width=True):
         st.cache_data.clear()
         st.rerun()
+    st.markdown("---")
+    st.info("Log: Machina Ativa")
 
 # --- NAVEGADORES DE PALCO ---
 
-# Nível 1: Páginas (116px)
+# Camada 1: Páginas (116px)
 p_cols = st.columns(6)
 pages = ["POESIA", "MINI", "VOZ", "SOBRE", "CONFIG", "HELP"]
 for i, p in enumerate(pages):
@@ -82,7 +92,7 @@ for i, p in enumerate(pages):
         if st.button(p, key=f"pg_{p}"):
             st.session_state.page = p
 
-# Nível 2: Operações
+# Camada 2: Operações
 t_cols = st.columns(6)
 ops = ["+", "<", "*", ">", "?", "@"]
 for i, op in enumerate(ops):
@@ -98,6 +108,7 @@ if st.session_state.page == "POESIA":
     c_main, c_var = st.columns([5, 1])
     
     with c_main:
+        # Ambiente Seco: Input e Execução
         tema = st.text_input("INPUT", value=st.session_state.last_tema, label_visibility="collapsed", placeholder="TEMA...")
         
         if st.button("EXECUTAR", use_container_width=True):
@@ -114,7 +125,7 @@ if st.session_state.page == "POESIA":
     with c_var:
         st.markdown("**VARS**")
         st.markdown('<div class="min-btn-grid">', unsafe_allow_html=True)
-        for i in range(1, 9):
+        for i in range(1, 11):
             if st.button(f"v{i}", key=f"v_m_{i}"):
                 pass
         st.markdown('</div>', unsafe_allow_html=True)
@@ -132,7 +143,7 @@ elif st.session_state.page == "MINI":
 
 elif st.session_state.page == "VOZ":
     st.title("🎙️ VOICE_MODULE")
-    st.write("Aguardando gTTS...")
+    st.write("gTTS integration pending...")
 
 # --- MANDALA ---
 st.markdown("---")
