@@ -2,137 +2,146 @@ import streamlit as st
 import os
 import random
 
-# --- CONFIGURAÇÃO DE AMBIENTE (WIDE & PERSISTENCE) ---
+# --- AMBIENTE @fernandoulopeslopes-boop's Machina ---
 st.set_page_config(page_title="yPoemas - Machina", layout="wide", initial_sidebar_state="expanded")
 
-# CSS Avançado: Botões de 116px, Mini-Buttons e Estética Industrial
+# CSS: Precisão de 116px, Mini-Buttons e Ambiente Industrial/Poético
 st.markdown("""
     <style>
     div.stButton > button {
         width: 116px !important;
-        height: 40px !important;
+        height: 42px !important;
         border-radius: 0px;
         font-family: 'Courier New', Courier, monospace;
-        text-transform: uppercase;
+        border: 1px solid #444;
         font-weight: bold;
     }
-    /* Estilo específico para os min_buttons da page_mini */
+    /* Estilo para os min_buttons da page_mini */
     .min-btn-container div.stButton > button {
-        width: 54px !important;
-        height: 30px !important;
-        font-size: 10px !important;
+        width: 56px !important;
+        height: 32px !important;
+        font-size: 11px !important;
         margin: 1px !important;
     }
     .stTextArea textarea {
         font-family: 'Courier New', Courier, monospace;
-        background-color: #f0f2f6;
-        font-size: 14px;
+        background-color: #0e1117;
+        color: #00ff00;
+        font-size: 15px;
+        border: 1px solid #333;
+    }
+    [data-testid="stSidebar"] {
+        width: 260px !important;
     }
     </style>
 """, unsafe_allow_html=True)
 
-# --- INICIALIZAÇÃO DE ESTADO (SESSION STATE) ---
+# --- SISTEMA DE ESTADO (PERSISTÊNCIA) ---
 if 'page' not in st.session_state:
     st.session_state.page = "POESIA"
 if 'last_tema' not in st.session_state:
     st.session_state.last_tema = ""
-if 'poema_atual' not in st.session_state:
-    st.session_state.poema_atual = ""
+if 'output' not in st.session_state:
+    st.session_state.output = ""
 
 @st.cache_data
 def abre(tema_alvo):
+    """Mecânica de busca no diretório de temas."""
     base_path = os.path.dirname(os.path.abspath(__file__))
-    pasta_temas = "temas" 
-    full_name = os.path.join(base_path, pasta_temas, f"{tema_alvo}.txt")
+    full_name = os.path.join(base_path, "temas", f"{tema_alvo.txt}")
     try:
         with open(full_name, encoding="utf-8") as file:
             return file.read()
     except FileNotFoundError:
         return None
 
-def gerar_poema(conteudo):
+def permuta(conteudo):
+    """Mecânica de permutação das variações."""
     if not conteudo: return ""
-    linhas = [l.strip() for row in conteudo.strip().split('\n') if (l := row.strip())]
+    linhas = [l.strip() for l in conteudo.strip().split('\n') if l.strip()]
     random.shuffle(linhas)
     return "\n".join(linhas)
 
-# --- SIDEBAR (CONTROLE E STATUS) ---
+# --- SIDEBAR (PAINEL DE CONTROLE) ---
 with st.sidebar:
     st.title("🌀 yPoemas")
-    st.markdown("### @fernandoulopeslopes-boop's Machina")
+    st.markdown("### Machina v.238")
     st.markdown("---")
-    st.write(f"**Modo Ativo:** {st.session_state.page}")
-    st.write(f"**Último Tema:** {st.session_state.last_tema}")
+    st.write(f"**STATUS:** {st.session_state.page}")
+    st.write(f"**TARGET:** {st.session_state.last_tema}")
     st.markdown("---")
-    if st.button("RESET CACHE"):
+    if st.button("RELOAD / CLEAR"):
         st.cache_data.clear()
         st.rerun()
     st.markdown("---")
-    st.info("Próxima Página: VOZ (gTTS Integration)")
+    st.info("NEXT: gTTS Integration (VOZ)")
 
-# --- NAVEGADORES DE TOPO (LAYOUT DUPLO) ---
+# --- NAVEGADORES (PALCO SUPERIOR) ---
 
-# 1. Navegador de PÁGINAS (Fixo no topo)
+# Linha 1: Navegador de Páginas (Botões de 116px)
 p_cols = st.columns(6)
 pages = ["POESIA", "MINI", "VOZ", "SOBRE", "CONFIG", "HELP"]
-for i, p_name in enumerate(pages):
+for i, p in enumerate(pages):
     with p_cols[i]:
-        if st.button(p_name, key=f"page_{p_name}"):
-            st.session_state.page = p_name
+        if st.button(p, key=f"btn_pg_{p}"):
+            st.session_state.page = p
 
-# 2. Navegador de OPERAÇÃO (More / Last / Rand / Nest / Help / Love)
+# Linha 2: Navegador de Operação (More / Last / Rand / Nest / Help / Love)
 t_cols = st.columns(6)
-symbols = ["+", "<", "*", ">", "?", "@"]
-for i, sym in enumerate(symbols):
+ops = ["+", "<", "*", ">", "?", "@"]
+for i, op in enumerate(ops):
     with t_cols[i]:
-        st.button(sym, key=f"op_{sym}")
+        if st.button(op, key=f"btn_op_{op}"):
+            st.session_state.last_op = op
 
 st.markdown("---")
 
-# --- LÓGICA DE PÁGINAS (O PALCO) ---
+# --- LÓGICA DE INTERFACE ---
 
 if st.session_state.page == "POESIA":
-    # Interface Principal com Temas no Palco
-    c_main, c_side = st.columns([4, 1])
+    # Palco Principal: Temas e Execução
+    c_main, c_var = st.columns([5, 1])
     
     with c_main:
-        tema = st.text_input("COMANDO DE TEMA", value=st.session_state.last_tema, placeholder="Digite o tema para a Machina...")
+        tema = st.text_input("INPUT", value=st.session_state.last_tema, label_visibility="collapsed", placeholder="TEMA...")
         
         if st.button("EXECUTAR PERMUTAÇÃO", use_container_width=True):
             if tema:
                 st.session_state.last_tema = tema
-                conteudo = abre(tema.lower().strip())
-                if conteudo:
-                    st.session_state.poema_atual = gerar_poema(conteudo)
+                raw = abre(tema.lower().strip())
+                if raw:
+                    st.session_state.output = permuta(raw)
                 else:
-                    st.error(f"ERRO: {tema}.txt não encontrado na pasta 'temas'.")
-        
-        st.text_area("SAÍDA DA MACHINA", value=st.session_state.poema_atual, height=500)
+                    st.session_state.output = f"ERROR: {tema}.txt NOT FOUND"
 
-    with c_side:
-        st.markdown("**VARIAÇÕES**")
-        # Grid de min_buttons para variações rápidas
+        st.text_area("", value=st.session_state.output, height=580, label_visibility="collapsed")
+
+    with c_var:
+        st.markdown("**VAR**")
         st.markdown('<div class="min-btn-container">', unsafe_allow_html=True)
-        for r in range(4):
-            m_cols = st.columns(2)
-            with m_cols[0]: st.button(f"v{r*2+1}", key=f"v{r*2+1}")
-            with m_cols[1]: st.button(f"v{r*2+2}", key=f"v{r*2+2}")
+        for v in range(1, 9):
+            if st.button(f"v{v}", key=f"v_main_{v}"):
+                pass
         st.markdown('</div>', unsafe_allow_html=True)
 
 elif st.session_state.page == "MINI":
-    st.subheader("📟 PAGE_MINI (ACTIVE)")
-    col_mini_main, col_mini_ctrl = st.columns([3, 1])
-    with col_mini_main:
-        m_tema = st.text_input("TEMA MINI:", key="in_mini")
-        if m_tema:
-            res_mini = abre(m_tema.lower().strip())
-            if res_mini:
-                st.text_area("OUTPUT", value=gerar_poema(res_mini), height=300)
-    with col_mini_ctrl:
-        st.write("Params")
-        st.toggle("Auto-Refresh")
-        st.toggle("Compact Mode", value=True)
+    # Estrutura page_mini (Mini View)
+    st.subheader("📟 PAGE_MINI")
+    col_m1, col_m2 = st.columns([3, 1])
+    with col_m1:
+        m_in = st.text_input("MINI_IN", key="mini_in", label_visibility="collapsed", placeholder="MINI TEMA...")
+        if m_in:
+            res = abre(m_in.lower().strip())
+            st.text_area("", value=permuta(res), height=350, label_visibility="collapsed")
+    with col_m2:
+        st.markdown("**MINI CTRL**")
+        st.button("v1", key="m_v1")
+        st.button("v2", key="m_v2")
+
+elif st.session_state.page == "VOZ":
+    st.title("🎙️ Módulo de Voz")
+    st.write("Aguardando implementação gTTS...")
 
 # --- MANDALA ---
 st.markdown("---")
-st.markdown("✨ *Mandala: A ordem nasce do caos. @fernandoulopeslopes-boop's Machina ativa.*")
+st.markdown("✨ *A máquina de fazer poesia está ativa. @fernandoulopeslopes-boop*")
