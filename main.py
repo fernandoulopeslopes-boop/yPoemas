@@ -37,7 +37,7 @@ import streamlit as st
 from lay_2_ypo import gera_poema
 
 # TagCloud
-from wordcloud import WordCloud
+# from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 
 # user_id: to create LYPO and TYPO for each hostname
@@ -404,7 +404,7 @@ def status_readings():
         format_func=lambda x: read_days[x],
         key="opt_readings",
     )
-    tag_cloud(tag_text)
+#    tag_cloud(tag_text)
 
 
 ### eof: update themes readings
@@ -670,36 +670,6 @@ def translate(input_text):
     else:
         st.session_state.lang = "pt"  # if no Internet then...
         return input_text
-
-
-def tag_cloud(text):
-    if text == "_ypo_":
-        if st.session_state.lang == "pt":
-            curr_ypoema = load_lypo()
-        else:
-            curr_ypoema = load_typo()
-
-        text = ""
-        word = ""
-        for line in curr_ypoema:
-            if line == " ":
-                word = word.replace("<br>", " ")
-                if len(word) > 2:
-                    text += word + " "
-                word = ""
-            else:
-                word += line
-
-    wordcloud = WordCloud(collocations=False, background_color="white").generate(text)
-    st.set_option("deprecation.showPyplotGlobalUse", False)
-    plt.imshow(wordcloud, interpolation="bilinear")
-    plt.axis("off")
-    plt.margins(x=0, y=0)
-
-    clouds_expander = st.expander("", True)
-    with clouds_expander:
-        plt.show()
-        st.pyplot()
 
 
 ### eof: functions
