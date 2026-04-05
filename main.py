@@ -37,7 +37,6 @@ st.markdown("""
     [data-testid='stSidebar'] { overflow-x: hidden; }
     [data-testid='stSidebar'][aria-expanded='true'] > div:first-child { width: 310px; }
     
-    /* Botões de Idioma */
     div.stButton > button {
         padding: 2px 2px !important;
         font-size: 14px !important;
@@ -45,7 +44,6 @@ st.markdown("""
         white-space: nowrap !important;
     }
     
-    /* Alinhamento das Colunas */
     [data-testid="column"] { padding: 0 2px !important; min-width: 0px !important; }
     
     .reportview-container .main .block-container {
@@ -62,7 +60,6 @@ st.markdown("""
         color: #333;
     }
 
-    /* Links Sociais no Topo da Sidebar */
     .nav-links {
         font-family: 'Courier New', Courier, monospace;
         font-size: 14px;
@@ -92,7 +89,7 @@ def load_help(idiom):
         with open("./base/helpers.txt", encoding="utf-8") as file:
             for line in file:
                 pipe = line.split("|")
-                if pipe[1].strip() == f"{idiom}_help":
+                if pipe[1].strip().startswith(f"{idiom}_"):
                     returns.append(pipe[2].strip())
         return returns if len(returns) > 7 else ["ajuda"] * 10
     except:
@@ -103,21 +100,25 @@ def get_ypoema(tema):
     if os.path.exists(f_path):
         with open(f_path, "r", encoding="utf-8") as f:
             lines = f.read().splitlines()
-        if not lines: return "ARQUIVO VAZIO."
+        if not lines: return "VÁCUO."
         content = "\n".join(random.sample(lines, min(len(lines), 6)))
         if st.session_state.lang != "pt" and have_internet():
             try:
                 return GoogleTranslator(source='pt', target=st.session_state.lang).translate(content)
             except: return content
         return content
-    return f"ERRO: {f_path} NÃO ENCONTRADO."
+    return f"ERRO: {tema}"
 
 def pick_lang():
     cols = st.sidebar.columns([1.1, 1.13, 1.04, 1.04, 1.17, 1.25])
     langs = ["pt", "es", "it", "fr", "en"]
     for i, l in enumerate(langs):
-        if cols[i].button(l): st.session_state.lang = l
-    if cols[5].button("⚒️"): st.session_state.lang = st.session_state.poly_lang
+        if cols[i].button(l): 
+            st.session_state.lang = l
+            st.rerun()
+    if cols[5].button("⚒️"): 
+        st.session_state.lang = st.session_state.poly_lang
+        st.rerun()
 
 def draw_check_buttons():
     draw_text, talk_text, vyde_text = st.sidebar.columns([3.8, 3.2, 3])
@@ -128,10 +129,8 @@ def draw_check_buttons():
 
 # --- 5. EXECUÇÃO DO COCKPIT (SIDEBAR) ---
 
-# Links no topo absoluto da sidebar
 st.sidebar.markdown('<div class="nav-links"><a href="https://github.com/NandouLopes/yPoemas">github</a> | <a href="https://youtu.be/uL6T3roTtAs">youtube</a></div>', unsafe_allow_html=True)
 
-# Arte da Sidebar (Logo)
 if os.path.exists("./images/logo.jpg"):
     st.sidebar.image("./images/logo.jpg", use_container_width=True)
 
@@ -140,35 +139,28 @@ with st.sidebar:
     st.divider()
     draw_check_buttons()
 
-# --- 6. EXIBIÇÃO DAS PÁGINAS ---
+# --- 6. EXIBIÇÃO AUTOMÁTICA DAS PÁGINAS ---
 paginas = ["Mini", "yPoemas", "Eureka", "Biblioteca", "Livro Vivo", "Ensaios", "Sobre"]
 tabs = st.tabs([p.upper() for p in paginas])
 
 for i, (nome, tab) in enumerate(zip(paginas, tabs)):
     with tab:
+        # A simples seleção da Tab já dispara a lógica
+        st.session_state.tema = nome
+        st.session_state.current_ypoema = get_ypoema(nome)
+        
         col_txt, col_img = st.columns([2, 1])
         
-        # Botão para disparar a geração (sempre visível na aba)
-        if col_txt.button(f"GERAR {nome.upper()}", key=f"btn_{nome}_{i}"):
-            st.session_state.tema = nome
-            st.session_state.current_ypoema = get_ypoema(nome)
-            st.rerun()
-        
-        # Conteúdo persistente se o tema atual for esta aba
-        if st.session_state.tema == nome:
-            if st.session_state.current_ypoema:
-                col_txt.markdown(f'<div class="ypo_box">{st.session_state.current_ypoema.replace("\n", "<br>")}</div>', unsafe_allow_html=True)
-                
-                if st.session_state.talk and have_internet():
-                    tts = gTTS(text=st.session_state.current_ypoema, lang=st.session_state.lang)
-                    if not os.path.exists("temp"): os.makedirs("temp")
-                    tts.save(f"temp/voice.mp3")
-                    st.audio(f"temp/voice.mp3")
+        if st.session_state.current_ypoema:
+            col_txt.markdown(f'<div class="ypo_box">{st.session_state.current_ypoema.replace("\n", "<br>")}</div>', unsafe_allow_html=True)
+            
+            if st.session_state.talk and have_internet():
+                tts = gTTS(text=st.session_state.current_ypoema, lang=st.session_state.lang)
+                if not os.path.exists("temp"): os.makedirs("temp")
+                tts.save(f"temp/voice.mp3")
+                st.audio(f"temp/voice.mp3")
 
-                if st.session_state.draw:
-                    # Tenta carregar a arte específica do tema
-                    img_path = f"./images/{nome.lower().replace(' ', '_')}.jpg"
-                    if os.path.exists(img_path):
-                        col_img.image(img_path, use_container_width=True)
-            else:
-                col_txt.info("Clique no botão acima para iniciar a Machina.")
+            if st.session_state.draw:
+                img_path = f"./images/{nome.lower().replace(' ', '_')}.jpg"
+                if os.path.exists(img_path):
+                    col_img.image(img_path, use_container_width=True)
