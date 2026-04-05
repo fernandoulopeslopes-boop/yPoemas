@@ -1,51 +1,3 @@
-r"""
-
-yPoemas is an app that randomly collects words and phrases
-from specific databases and organizes them
-in different new poems or poetic texts.
-
-All texts are unique and will only be repeated  
-after they are sold out the thourekasands  
-of combinations possible to each theme.
-
-[Epitaph]
-Passei boa parte da minha vida escrevendo a "machina".
-A leitura fica para os amanhãs.
-Não vivo no meu tempo.
-
-º¤ø,¸¸,ø¤º°`°º¤ø,¸¸,ø¤º°`°ºº¤ø,¸¸,ø¤º°`°º¤ø,¸¸,ø¤º°`°ºº¤ø,¸¸,ø¤º°`°º¤ø,¸¸,ø¤º°
-
-ツpoemas
-
-AlfaBetaAção == C:\WINDOWS\new.ini
-config.toml  == C:\Users\dkvece\.streamlit
-
-share : https://share.streamlit.io/
-deploy: https://share.streamlit.io/nandoulopes/ypoemas/main/ypo.py
-runnin: https://nandoulopes-ypoemas-ypo-gf4z3l.streamlitapp.com/
-config: chrome://settings/content/siteDetails?site=https%3A%2F%2Fauth.streamlit.io
-github: https://github.com/NandouLopes/yPoemas
-instag: https://www.instagram.com/maquina_de_fazer_ypoemas/
-youtub: https://youtu.be/uL6T3roTtAs
-google: https://console.cloud.google.com/welcome?project=ypoemas&cloudshell=false
-prosas: https://prosas.com.br/dashboards/my-proposals
-bairro: https://www.superbairro.com.br/joseense-cria-maquina-de-produzir-poemas-2/
-
-para novos temas:
-- incluir novo_tema em \ypo\base\ativos.txt
-- incluir novo_tema em \ypo\base\images.txt
-- incluir novo_tema em \ypo\temp\readings.txt
-- incluir novo_tema em \base\rol_*.txt
-- atualizar ABOUT_NOTES.md se necessário...
-
-VISY == New Visitor
-NANY_VISY == Number of Visitors
-LYPO == Last YPOema created from curr_ypoema
-TYPO == Translated YPOema from LYPO
-POLY == Poliglot Idiom == Changed on Catalán
-
-One more test...
-"""
 
 import os
 ##$ import io
@@ -118,6 +70,7 @@ st.markdown(
     }} </style> """,
     unsafe_allow_html=True,
 )
+
 
 # change sidebar width
 st.markdown(
@@ -291,7 +244,7 @@ def show_icons():  # https://api.whatsapp.com/
         )
 
 
-@st.cache(allow_output_mutation=True)
+#@st.cache(allow_output_mutation=True)
 def load_help_tips():
     help_list = []
     with open(os.path.join("./base/helpers.txt"), encoding="utf-8") as file:
@@ -1493,4 +1446,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
