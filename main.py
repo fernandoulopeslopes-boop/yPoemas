@@ -1,84 +1,132 @@
 import streamlit as st
 import os
 import random
-import base64
 from gtts import gTTS
 from deep_translator import GoogleTranslator
 
-# --- CONFIGURAÇÃO ESTÉTICA (A ASSINATURA DA MACHINA) ---
-st.set_page_config(page_title="Machina de Fazer Poesia", layout="wide", initial_sidebar_state="collapsed")
+# --- 1. SETUP DO PALCO (SEM MARGENS DESNECESSÁRIAS) ---
+st.set_page_config(page_title="Machina de Fazer Poesia", layout="wide", initial_sidebar_state="expanded")
 
-# CSS para garantir a endentação e a "mancha gráfica" correta do yPoema
+# --- 2. A ALMA VISUAL (CSS INJETADO PARA MATAR O PADRÃO) ---
 st.markdown("""
     <style>
+    /* Fundo e Fonte Base */
+    .stApp { background-color: #FFFFFF; }
+    
+    /* A Mancha Gráfica do yPoema */
     .yPoema {
         font-family: 'Courier New', Courier, monospace;
+        font-size: 1.4rem;
+        font-weight: 500;
         line-height: 1.6;
-        padding-left: 10%;
+        color: #000000;
+        padding: 40px;
+        border-left: 3px solid #EEE;
+        margin-top: 20px;
         white-space: pre-wrap;
     }
-    .stButton>button { width: 100%; border-radius: 0; background-color: #1e1e1e; color: white; }
+
+    /* Botões: O Padrão de Comando */
+    .stButton>button {
+        width: 100%;
+        border-radius: 0px;
+        border: 1px solid #333;
+        background-color: #F8F8F8;
+        color: #000;
+        font-weight: bold;
+        transition: 0.3s;
+        height: 3em;
+    }
+    .stButton>button:hover {
+        background-color: #000;
+        color: #FFF;
+    }
+
+    /* Sidebar e Abas */
+    [data-testid="stSidebar"] { background-color: #F0F2F6; border-right: 1px solid #CCC; }
+    .stTabs [data-baseweb="tab-list"] { gap: 10px; }
+    .stTabs [data-baseweb="tab"] {
+        background-color: #F0F0F0;
+        border: 1px solid #CCC;
+        padding: 10px 20px;
+    }
+    .stTabs [aria-selected="true"] { background-color: #000 !important; color: #FFF !important; }
     </style>
     """, unsafe_allow_html=True)
 
-# --- ENGINE: O PROTOCOLO DO ÍTIMO ---
-@st.cache_data
-def carregar_itimos(tema):
-    path = f"base/{tema}.txt"
-    if os.path.exists(path):
-        with open(path, "r", encoding="utf-8") as f:
-            return f.read().splitlines()
-    return []
+# --- 3. LOGICA DE ESTADO (PERSISTÊNCIA) ---
+if 'idioma' not in st.session_state: st.session_state.idioma = 'pt'
+if 'poema_atual' not in st.session_state: st.session_state.poema_atual = ""
 
-def disparar_franco_atirador(tema):
-    # Onde a "Tosquice" morre e o Eixo Z nasce
-    dados = carregar_itimos(tema)
-    if not dados: return "Vácuo detectado."
-    
-    # Aqui reinaremos com as regras de concordância em breve
-    # Por enquanto, garantimos a estrutura de blocos do Protocolo
-    estrofe = random.sample(dados, min(len(dados), 4))
-    return "\n".join(estrofe)
-
-# --- SIDEBAR (O COCKPIT RECOLHÍVEL) ---
+# --- 4. SIDEBAR: HIERARQUIA DO PROTOCOLO ---
 with st.sidebar:
-    st.header("🛸 O.V.N.I. Command")
-    draw = st.toggle("🎨 Artes", value=True)
-    talk = st.toggle("🎙️ Talk", value=False)
-    vyde = st.toggle("🎬 Vyde", value=False)
-    idioma = st.selectbox("Idioma", ["pt", "en", "es", "fr"])
+    st.markdown("### 🌐 SELEÇÃO DE IDIOMA")
+    # Grade de Botões para Idiomas (Sem preguiça de Dropdown)
+    c1, c2 = st.columns(2)
+    langs = {"PORTUGUÊS": "pt", "ENGLISH": "en", "ESPAÑOL": "es", 
+             "FRANÇAIS": "fr", "ITALIANO": "it", "DEUTSCH": "de"}
+    
+    for i, (label, code) in enumerate(langs.items()):
+        target_col = c1 if i % 2 == 0 else c2
+        if target_col.button(label):
+            st.session_state.idioma = code
+
+    st.markdown(f"**Ativo:** `{st.session_state.idioma.upper()}`")
     st.divider()
-    st.caption("Protocolo 1983-2026 Ativo")
 
-# --- O PALCO (TABS SEM RUÍDO) ---
-abas = ["Mini", "yPoemas", "Eureka", "Biblioteca"]
-tabs = st.tabs(abas)
+    st.markdown("### 🕹️ COMMANDS")
+    v_talk = st.toggle("Talk (Voz)", value=False)
+    v_arts = st.toggle("Arts (Imagem)", value=True)
+    v_video = st.toggle("Vídeo (Instrução)", value=False)
+    
+    st.divider()
+    st.caption("O.V.N.I. Command | Protocolo 1983-2026")
 
-for nome_aba, tab in zip(abas, tabs):
-    tema = nome_aba.lower()
+# --- 5. O PALCO: TODAS AS PÁGINAS DO ESQUELETO ---
+abas_nomes = ["Mini", "yPoemas", "Eureka", "Biblioteca", "Livro Vivo", "Ensaios", "Sobre"]
+tabs = st.tabs([a.upper() for a in abas_nomes])
+
+for nome, tab in zip(abas_nomes, tabs):
+    tag = nome.lower().replace(" ", "_")
     with tab:
-        col_txt, col_mid = st.columns([2, 1])
+        col_main, col_aux = st.columns([2, 1])
         
-        with col_txt:
-            if st.button(f"GERAR {nome_aba.upper()}", key=f"btn_{tema}"):
-                poema_bruto = disparar_franco_atirador(tema)
+        with col_main:
+            if st.button(f"DISPARAR FRANCO-ATIRADOR: {nome.upper()}", key=f"btn_{tag}"):
+                # Busca na base
+                path = f"base/{tag}.txt"
+                if os.path.exists(path):
+                    with open(path, "r", encoding="utf-8") as f:
+                        linhas = f.read().splitlines()
+                    
+                    # O ÍTIMO (Simulação fiel à estrutura de 6 linhas)
+                    selecao = random.sample(linhas, min(len(linhas), 6))
+                    texto = "\n".join(selecao)
+                    
+                    # Tradução Seletiva
+                    if st.session_state.idioma != 'pt':
+                        texto = GoogleTranslator(source='pt', target=st.session_state.idioma).translate(texto)
+                    
+                    st.session_state.poema_atual = texto
+                else:
+                    st.session_state.poema_atual = "Vácuo detectado."
+
+            # Exibição da Mancha Gráfica
+            if st.session_state.poema_atual:
+                st.markdown(f'<div class="yPoema">{st.session_state.poema_atual}</div>', unsafe_allow_html=True)
                 
-                # Processamento de Tradução
-                texto_final = poema_bruto
-                if idioma != "pt":
-                    texto_final = GoogleTranslator(source='pt', target=idioma).translate(poema_bruto)
-                
-                # Exibição com a Estética da Machina
-                st.markdown(f'<div class="yPoema">{texto_final}</div>', unsafe_allow_html=True)
-                
-                if talk:
-                    speech = gTTS(text=texto_final, lang=idioma)
-                    speech.save("temp.mp3")
-                    st.audio("temp.mp3")
-        
-        with col_mid:
-            if vyde:
-                # Busca o vídeo correspondente na base
-                v_path = f"base/video_{tema}.webm"
-                if os.path.exists(v_path):
-                    st.video(v_path)
+                if v_talk:
+                    tts = gTTS(text=st.session_state.poema_atual, lang=st.session_state.idioma)
+                    tts.save("temp_voice.mp3")
+                    st.audio("temp_voice.mp3")
+
+        with col_aux:
+            if v_arts:
+                # Tenta carregar imagem do tema
+                img_p = f"base/{tag}.jpg"
+                if os.path.exists(img_p): st.image(img_p, use_column_width=True)
+            
+            if v_video:
+                # Tenta carregar vídeo de instrução
+                vid_p = f"base/video_{tag}.webm"
+                if os.path.exists(vid_p): st.video(vid_p)
