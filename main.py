@@ -418,7 +418,7 @@ def load_file(file):  # Open files for about's
             file_text = f.read()
 
 #        if not ".rol" in file:
-         file_text = translate(file_text)
+            file_text = translate(file_text)
     except:
         file_text = "ooops... arquivo ( " + file + " ) não pode ser aberto. Sorry."
         st.session_state.lang = "pt"
