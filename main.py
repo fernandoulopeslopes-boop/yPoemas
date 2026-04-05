@@ -414,10 +414,10 @@ def status_readings():
 @st.cache(allow_output_mutation=True)
 def load_file(file):  # Open files for about's
     try:
-        with open(os.path.join("./md_files/" + file), encoding="utf-8") as f:
+        with open(os.path.join("./base/" + file), encoding="utf-8") as f:
             file_text = f.read()
 
-#        if not ".rol" in file:
+        if not ".rol" in file:
             file_text = translate(file_text)
     except:
         file_text = "ooops... arquivo ( " + file + " ) não pode ser aberto. Sorry."
@@ -442,7 +442,7 @@ def load_eureka(part_of_word):  # Lexicon
 @st.cache(suppress_st_warning=True, allow_output_mutation=True)
 def load_temas(book):  # List of yPoemas themes inside a Book
     curr_temas_list = []
-    with open(os.path.join("./base/" + book + ".txt"), "r", encoding="utf-8") as file:
+    with open(os.path.join("./base/" + book + ".TXT"), "r", encoding="utf-8") as file:
         for line in file:
             curr_temas_list.append(line.strip("\n"))
     return curr_temas_list
