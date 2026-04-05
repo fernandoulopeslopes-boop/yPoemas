@@ -4,129 +4,246 @@ import random
 from gtts import gTTS
 from deep_translator import GoogleTranslator
 
-# --- 1. SETUP DO PALCO (SEM MARGENS DESNECESSÁRIAS) ---
+# --- 1. SETUP DO PALCO ---
 st.set_page_config(page_title="Machina de Fazer Poesia", layout="wide", initial_sidebar_state="expanded")
 
-# --- 2. A ALMA VISUAL (CSS INJETADO PARA MATAR O PADRÃO) ---
+# --- 2. O DNA ESTÉTICO (ZERO INTERFERÊNCIA) ---
 st.markdown("""
     <style>
-    /* Fundo e Fonte Base */
     .stApp { background-color: #FFFFFF; }
     
-    /* A Mancha Gráfica do yPoema */
-    .yPoema {
+    /* A MANCHA GRÁFICA DO yPoema */
+    .ypo_text {
         font-family: 'Courier New', Courier, monospace;
-        font-size: 1.4rem;
-        font-weight: 500;
-        line-height: 1.6;
-        color: #000000;
+        font-size: 1.35rem;
+        font-weight: 600;
+        line-height: 1.4;
+        color: #1A1A1A;
         padding: 40px;
-        border-left: 3px solid #EEE;
-        margin-top: 20px;
+        background-color: #FAFAFA;
+        border: 1px solid #EEE;
         white-space: pre-wrap;
+        margin-top: 10px;
     }
 
-    /* Botões: O Padrão de Comando */
-    .stButton>button {
-        width: 100%;
-        border-radius: 0px;
-        border: 1px solid #333;
-        background-color: #F8F8F8;
-        color: #000;
+    /* BOTÕES EM LINHA: Respeito à varredura do olho */
+    div.stButton > button {
+        display: inline-block;
+        width: auto !important;
+        min-width: 45px;
+        border-radius: 0px !important;
+        border: 1px solid #000 !important;
+        background-color: #FFF !important;
+        color: #000 !important;
+        font-family: 'Courier New', Courier, monospace;
         font-weight: bold;
-        transition: 0.3s;
-        height: 3em;
+        text-transform: uppercase;
+        margin-right: 2px;
+        padding: 2px 8px;
     }
-    .stButton>button:hover {
-        background-color: #000;
-        color: #FFF;
+    div.stButton > button:hover {
+        background-color: #000 !important;
+        color: #FFF !important;
     }
 
-    /* Sidebar e Abas */
-    [data-testid="stSidebar"] { background-color: #F0F2F6; border-right: 1px solid #CCC; }
-    .stTabs [data-baseweb="tab-list"] { gap: 10px; }
-    .stTabs [data-baseweb="tab"] {
+    section[data-testid="stSidebar"] {
         background-color: #F0F0F0;
-        border: 1px solid #CCC;
-        padding: 10px 20px;
+        border-right: 2px solid #000;
     }
-    .stTabs [aria-selected="true"] { background-color: #000 !important; color: #FFF !important; }
+    
+    .stTabs [aria-selected="true"] {
+        background-color: #000 !important;
+        color: #FFF !important;
+    }
+    
+    /* Remove labels automáticas do Streamlit que poluem o visual */
+    label { display: none !important; }
     </style>
     """, unsafe_allow_html=True)
 
-# --- 3. LOGICA DE ESTADO (PERSISTÊNCIA) ---
-if 'idioma' not in st.session_state: st.session_state.idioma = 'pt'
-if 'poema_atual' not in st.session_state: st.session_state.poema_atual = ""
+# --- 3. ESTADOS ---
+if 'lang' not in st.session_state: st.session_state.lang = 'pt'
+if 'current_text' not in st.session_state: st.session_state.current_text = ""
 
-# --- 4. SIDEBAR: HIERARQUIA DO PROTOCOLO ---
+# --- 4. SIDEBAR: COCKPIT PURA LINHA ---
 with st.sidebar:
-    st.markdown("### 🌐 SELEÇÃO DE IDIOMA")
-    # Grade de Botões para Idiomas (Sem preguiça de Dropdown)
-    c1, c2 = st.columns(2)
-    langs = {"PORTUGUÊS": "pt", "ENGLISH": "en", "ESPAÑOL": "es", 
-             "FRANÇAIS": "fr", "ITALIANO": "it", "DEUTSCH": "de"}
-    
-    for i, (label, code) in enumerate(langs.items()):
-        target_col = c1 if i % 2 == 0 else c2
-        if target_col.button(label):
-            st.session_state.idioma = code
-
-    st.markdown(f"**Ativo:** `{st.session_state.idioma.upper()}`")
-    st.divider()
-
-    st.markdown("### 🕹️ COMMANDS")
-    v_talk = st.toggle("Talk (Voz)", value=False)
-    v_arts = st.toggle("Arts (Imagem)", value=True)
-    v_video = st.toggle("Vídeo (Instrução)", value=False)
+    # Apenas os botões de idioma, lado a lado, sem títulos/labels
+    cols = st.columns([1,1,1,1,1,1])
+    l_codes = [("PT", "pt"), ("EN", "en"), ("ES", "es"), ("FR", "fr"), ("IT", "it"), ("DE", "de")]
+    for i, (lab, cod) in enumerate(l_codes):
+        if cols[i].button(lab): st.session_state.lang = cod
     
     st.divider()
-    st.caption("O.V.N.I. Command | Protocolo 1983-2026")
+    
+    # Toggles sem labels (O olho já sabe o que são pelos nomes Talk/Arts/Vídeo)
+    t_talk = st.toggle("Talk", value=False)
+    t_arts = st.toggle("Arts", value=True)
+    t_vyde = st.toggle("Vídeo", value=False)
 
-# --- 5. O PALCO: TODAS AS PÁGINAS DO ESQUELETO ---
-abas_nomes = ["Mini", "yPoemas", "Eureka", "Biblioteca", "Livro Vivo", "Ensaios", "Sobre"]
-tabs = st.tabs([a.upper() for a in abas_nomes])
+# --- 5. O PALCO ---
+# Nomes das abas oriundos do seu sistema
+paginas = ["Mini", "yPoemas", "Eureka", "Biblioteca", "Livro Vivo", "Ensaios", "Sobre"]
+tabs = st.tabs([p.upper() for p in paginas])
 
-for nome, tab in zip(abas_nomes, tabs):
-    tag = nome.lower().replace(" ", "_")
+for nome, tab in zip(paginas, tabs):
+    slug = nome.lower().replace(" ", "_")
     with tab:
         col_main, col_aux = st.columns([2, 1])
         
         with col_main:
-            if st.button(f"DISPARAR FRANCO-ATIRADOR: {nome.upper()}", key=f"btn_{tag}"):
-                # Busca na base
-                path = f"base/{tag}.txt"
-                if os.path.exists(path):
-                    with open(path, "r", encoding="utf-8") as f:
-                        linhas = f.read().splitlines()
+            # O botão de disparo usa apenas o nome da aba, sem prefixos "Executar"
+            if st.button(nome.upper(), key=f"cmd_{slug}"):
+                f_path = f"base/{slug}.txt"
+                if os.path.exists(f_path):
+                    with open(f_path, "r", encoding="utf-8") as f:
+                        lines = f.read().splitlines()
                     
-                    # O ÍTIMO (Simulação fiel à estrutura de 6 linhas)
-                    selecao = random.sample(linhas, min(len(linhas), 6))
-                    texto = "\n".join(selecao)
+                    # O Ítimo no Eixo Z
+                    raw_text = "\n".join(random.sample(lines, min(len(lines), 6)))
                     
-                    # Tradução Seletiva
-                    if st.session_state.idioma != 'pt':
-                        texto = GoogleTranslator(source='pt', target=st.session_state.idioma).translate(texto)
-                    
-                    st.session_state.poema_atual = texto
+                    # Tradução
+                    if st.session_state.lang != 'pt':
+                        raw_text = GoogleTranslator(source='pt', target=st.session_state.lang).translate(raw_text)
+                    st.session_state.current_text = raw_text
                 else:
-                    st.session_state.poema_atual = "Vácuo detectado."
+                    st.session_state.current_text = "VÁCUO DETECTADO."
 
-            # Exibição da Mancha Gráfica
-            if st.session_state.poema_atual:
-                st.markdown(f'<div class="yPoema">{st.session_state.poema_atual}</div>', unsafe_allow_html=True)
+            if st.session_state.current_text:
+                st.markdown(f'<div class="ypo_text">{st.session_state.current_text}</div>', unsafe_allow_html=True)
                 
-                if v_talk:
-                    tts = gTTS(text=st.session_state.poema_atual, lang=st.session_state.idioma)
-                    tts.save("temp_voice.mp3")
-                    st.audio("temp_voice.mp3")
+                if t_talk:
+                    tts = gTTS(text=st.session_state.current_text, lang=st.session_state.lang)
+                    tts.save("voice.mp3")
+                    st.audio("voice.mp3")
 
         with col_aux:
-            if v_arts:
-                # Tenta carregar imagem do tema
-                img_p = f"base/{tag}.jpg"
-                if os.path.exists(img_p): st.image(img_p, use_column_width=True)
-            
-            if v_video:
-                # Tenta carregar vídeo de instrução
-                vid_p = f"base/video_{tag}.webm"
-                if os.path.exists(vid_p): st.video(vid_p)
+            if t_arts:
+                img = f"base/{slug}.jpg"
+                if os.path.exists(img): st.image(img, use_column_width=True)
+            if t_vyde:
+                vid = f"base/video_{slug}.webm"
+                if os.path.exists(vid): st.video(vid)import streamlit as st
+import os
+import random
+from gtts import gTTS
+from deep_translator import GoogleTranslator
+
+# --- 1. SETUP DO PALCO ---
+st.set_page_config(page_title="Machina de Fazer Poesia", layout="wide", initial_sidebar_state="expanded")
+
+# --- 2. O DNA ESTÉTICO (ZERO INTERFERÊNCIA) ---
+st.markdown("""
+    <style>
+    .stApp { background-color: #FFFFFF; }
+    
+    /* A MANCHA GRÁFICA DO yPoema */
+    .ypo_text {
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 1.35rem;
+        font-weight: 600;
+        line-height: 1.4;
+        color: #1A1A1A;
+        padding: 40px;
+        background-color: #FAFAFA;
+        border: 1px solid #EEE;
+        white-space: pre-wrap;
+        margin-top: 10px;
+    }
+
+    /* BOTÕES EM LINHA: Respeito à varredura do olho */
+    div.stButton > button {
+        display: inline-block;
+        width: auto !important;
+        min-width: 45px;
+        border-radius: 0px !important;
+        border: 1px solid #000 !important;
+        background-color: #FFF !important;
+        color: #000 !important;
+        font-family: 'Courier New', Courier, monospace;
+        font-weight: bold;
+        text-transform: uppercase;
+        margin-right: 2px;
+        padding: 2px 8px;
+    }
+    div.stButton > button:hover {
+        background-color: #000 !important;
+        color: #FFF !important;
+    }
+
+    section[data-testid="stSidebar"] {
+        background-color: #F0F0F0;
+        border-right: 2px solid #000;
+    }
+    
+    .stTabs [aria-selected="true"] {
+        background-color: #000 !important;
+        color: #FFF !important;
+    }
+    
+    /* Remove labels automáticas do Streamlit que poluem o visual */
+    label { display: none !important; }
+    </style>
+    """, unsafe_allow_html=True)
+
+# --- 3. ESTADOS ---
+if 'lang' not in st.session_state: st.session_state.lang = 'pt'
+if 'current_text' not in st.session_state: st.session_state.current_text = ""
+
+# --- 4. SIDEBAR: COCKPIT PURA LINHA ---
+with st.sidebar:
+    # Apenas os botões de idioma, lado a lado, sem títulos/labels
+    cols = st.columns([1,1,1,1,1,1])
+    l_codes = [("PT", "pt"), ("EN", "en"), ("ES", "es"), ("FR", "fr"), ("IT", "it"), ("DE", "de")]
+    for i, (lab, cod) in enumerate(l_codes):
+        if cols[i].button(lab): st.session_state.lang = cod
+    
+    st.divider()
+    
+    # Toggles sem labels (O olho já sabe o que são pelos nomes Talk/Arts/Vídeo)
+    t_talk = st.toggle("Talk", value=False)
+    t_arts = st.toggle("Arts", value=True)
+    t_vyde = st.toggle("Vídeo", value=False)
+
+# --- 5. O PALCO ---
+# Nomes das abas oriundos do seu sistema
+paginas = ["Mini", "yPoemas", "Eureka", "Biblioteca", "Livro Vivo", "Ensaios", "Sobre"]
+tabs = st.tabs([p.upper() for p in paginas])
+
+for nome, tab in zip(paginas, tabs):
+    slug = nome.lower().replace(" ", "_")
+    with tab:
+        col_main, col_aux = st.columns([2, 1])
+        
+        with col_main:
+            # O botão de disparo usa apenas o nome da aba, sem prefixos "Executar"
+            if st.button(nome.upper(), key=f"cmd_{slug}"):
+                f_path = f"base/{slug}.txt"
+                if os.path.exists(f_path):
+                    with open(f_path, "r", encoding="utf-8") as f:
+                        lines = f.read().splitlines()
+                    
+                    # O Ítimo no Eixo Z
+                    raw_text = "\n".join(random.sample(lines, min(len(lines), 6)))
+                    
+                    # Tradução
+                    if st.session_state.lang != 'pt':
+                        raw_text = GoogleTranslator(source='pt', target=st.session_state.lang).translate(raw_text)
+                    st.session_state.current_text = raw_text
+                else:
+                    st.session_state.current_text = "VÁCUO DETECTADO."
+
+            if st.session_state.current_text:
+                st.markdown(f'<div class="ypo_text">{st.session_state.current_text}</div>', unsafe_allow_html=True)
+                
+                if t_talk:
+                    tts = gTTS(text=st.session_state.current_text, lang=st.session_state.lang)
+                    tts.save("voice.mp3")
+                    st.audio("voice.mp3")
+
+        with col_aux:
+            if t_arts:
+                img = f"base/{slug}.jpg"
+                if os.path.exists(img): st.image(img, use_column_width=True)
+            if t_vyde:
+                vid = f"base/video_{slug}.webm"
+                if os.path.exists(vid): st.video(vid)
