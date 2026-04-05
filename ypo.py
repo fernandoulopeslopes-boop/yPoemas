@@ -27,7 +27,7 @@ config: chrome://settings/content/siteDetails?site=https%3A%2F%2Fauth.streamlit.
 github: https://github.com/NandouLopes/yPoemas
 instag: https://www.instagram.com/maquina_de_fazer_ypoemas/
 youtub: https://youtu.be/uL6T3roTtAs
-google: https://console.cloud.google.com/welcome?project=ypoemas&cloudshell=false
+# google: https://console.cloud.google.com/welcome?project=ypoemas&cloudshell=false
 prosas: https://prosas.com.br/dashboards/my-proposals
 bairro: https://www.superbairro.com.br/joseense-cria-maquina-de-produzir-poemas-2/
 
