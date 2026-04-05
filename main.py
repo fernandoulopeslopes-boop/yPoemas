@@ -7,7 +7,7 @@ import socket
 import streamlit as st
 from datetime import datetime
 
-# --- 1. MOTOR: CONFIGURAÇÕES INICIAIS ---
+# --- 1. MOTOR: CONFIGURAÇÕES ---
 st.set_page_config(
     page_title="a máquina de fazer Poesia - yPoemas",
     page_icon=":star:",
@@ -30,137 +30,111 @@ if have_internet():
     except ImportError:
         pass
 
-# --- 2. CONTEÚDO: DNA ESTÉTICO & COMPRESSÃO ---
+# --- 2. CONTEÚDO: CSS ---
 st.markdown("""
     <style>
     footer {visibility: hidden;}
     [data-testid='stSidebar'] { overflow-x: hidden; }
     [data-testid='stSidebar'][aria-expanded='true'] > div:first-child { width: 310px; }
-    
-    div.stButton > button {
-        padding: 2px 2px !important;
-        font-size: 14px !important;
-        width: 100% !important;
-        white-space: nowrap !important;
-    }
-    
+    div.stButton > button { padding: 2px 2px !important; font-size: 14px !important; width: 100% !important; white-space: nowrap !important; }
     [data-testid="column"] { padding: 0 2px !important; min-width: 0px !important; }
-    
-    .reportview-container .main .block-container {
-        padding-top: 0rem; padding-right: 0rem; padding-left: 0rem; padding-bottom: 0rem;
-    }
-    
     .ypo_box {
         font-family: 'Courier New', Courier, monospace;
         background-color: #FAFAFA;
-        padding: 25px;
-        border: 1px solid #EEE;
-        line-height: 1.5;
-        font-size: 16px;
-        color: #333;
+        padding: 25px; border: 1px solid #EEE;
+        line-height: 1.5; font-size: 16px; color: #333;
     }
-
-    .nav-links {
-        font-family: 'Courier New', Courier, monospace;
-        font-size: 14px;
-        padding-bottom: 10px;
-        text-align: center;
-    }
+    .nav-links { font-family: 'Courier New', Courier, monospace; font-size: 14px; padding-bottom: 10px; text-align: center; }
     .nav-links a { color: #555; text-decoration: none; }
     </style>
     """, unsafe_allow_html=True)
 
-# --- 3. CONTEÚDO: INITIALIZE SESSIONSTATE ---
-states = {
-    "lang": "pt", "last_lang": "pt", "book": "livro vivo", "take": 0,
-    "mini": 0, "tema": "Mini", "visy": True, "draw": True, "talk": False, 
-    "vydo": False, "poly_lang": "ca", "poly_name": "català", "current_ypoema": ""
-}
-for key, val in states.items():
-    if key not in st.session_state:
-        st.session_state[key] = val
+# --- 3. CONTEÚDO: SESSION STATE ---
+if "lang" not in st.session_state: st.session_state.lang = "pt"
+if "draw" not in st.session_state: st.session_state.draw = True
+if "talk" not in st.session_state: st.session_state.talk = False
+if "vydo" not in st.session_state: st.session_state.vydo = False
+if "poly_lang" not in st.session_state: st.session_state.poly_lang = "ca"
 
-# --- 4. MOTOR: TOOLS & LOADERS ---
+# --- 4. MOTOR: FUNÇÕES ---
 
 @st.cache_data
 def load_help(idiom):
-    returns = []
     try:
+        returns = []
         with open("./base/helpers.txt", encoding="utf-8") as file:
             for line in file:
                 pipe = line.split("|")
                 if pipe[1].strip().startswith(f"{idiom}_"):
                     returns.append(pipe[2].strip())
         return returns if len(returns) > 7 else ["ajuda"] * 10
-    except:
-        return ["ajuda"] * 10
+    except: return ["..."] * 10
 
-def get_ypoema(tema):
-    f_path = f"./base/rol_{tema.lower().replace(' ', '_')}.txt"
+def get_ypoema(tema, lang):
+    # Ajuste de path para garantir leitura
+    f_name = f"rol_{tema.lower().replace(' ', '_')}.txt"
+    f_path = os.path.join("base", f_name)
+    
     if os.path.exists(f_path):
         with open(f_path, "r", encoding="utf-8") as f:
             lines = f.read().splitlines()
         if not lines: return "VÁCUO."
         content = "\n".join(random.sample(lines, min(len(lines), 6)))
-        if st.session_state.lang != "pt" and have_internet():
+        
+        if lang != "pt" and have_internet():
             try:
-                return GoogleTranslator(source='pt', target=st.session_state.lang).translate(content)
+                return GoogleTranslator(source='pt', target=lang).translate(content)
             except: return content
         return content
-    return f"ERRO: {tema}"
+    return f"ERRO: {f_name} não encontrado em /base/"
 
-def pick_lang():
-    cols = st.sidebar.columns([1.1, 1.13, 1.04, 1.04, 1.17, 1.25])
-    langs = ["pt", "es", "it", "fr", "en"]
-    for i, l in enumerate(langs):
-        if cols[i].button(l): 
-            st.session_state.lang = l
-            st.rerun()
-    if cols[5].button("⚒️"): 
-        st.session_state.lang = st.session_state.poly_lang
-        st.rerun()
-
-def draw_check_buttons():
-    draw_text, talk_text, vyde_text = st.sidebar.columns([3.8, 3.2, 3])
-    help_tips = load_help(st.session_state.lang)
-    st.session_state.draw = draw_text.checkbox(help_tips[5], st.session_state.draw, key="draw_machina")
-    st.session_state.talk = talk_text.checkbox(help_tips[6], st.session_state.talk, key="talk_machina")
-    st.session_state.vydo = vyde_text.checkbox(help_tips[7], st.session_state.vydo, key="vyde_machina")
-
-# --- 5. EXECUÇÃO DO COCKPIT (SIDEBAR) ---
-
+# --- 5. SIDEBAR ---
 st.sidebar.markdown('<div class="nav-links"><a href="https://github.com/NandouLopes/yPoemas">github</a> | <a href="https://youtu.be/uL6T3roTtAs">youtube</a></div>', unsafe_allow_html=True)
 
 if os.path.exists("./images/logo.jpg"):
     st.sidebar.image("./images/logo.jpg", use_container_width=True)
 
 with st.sidebar:
-    pick_lang()
+    # Idiomas
+    c1, c2, c3, c4, c5, c6 = st.columns([1.1, 1.13, 1.04, 1.04, 1.17, 1.25])
+    if c1.button("pt"): st.session_state.lang = "pt"; st.rerun()
+    if c2.button("es"): st.session_state.lang = "es"; st.rerun()
+    if c3.button("it"): st.session_state.lang = "it"; st.rerun()
+    if c4.button("fr"): st.session_state.lang = "fr"; st.rerun()
+    if c5.button("en"): st.session_state.lang = "en"; st.rerun()
+    if c6.button("⚒️"): st.session_state.lang = st.session_state.poly_lang; st.rerun()
+    
     st.divider()
-    draw_check_buttons()
+    
+    # Sensores (draw_check_buttons)
+    draw_text, talk_text, vyde_text = st.columns([3.8, 3.2, 3])
+    help_tips = load_help(st.session_state.lang)
+    st.session_state.draw = draw_text.checkbox(help_tips[5], st.session_state.draw)
+    st.session_state.talk = talk_text.checkbox(help_tips[6], st.session_state.talk)
+    st.session_state.vydo = vyde_text.checkbox(help_tips[7], st.session_state.vydo)
 
-# --- 6. EXIBIÇÃO AUTOMÁTICA DAS PÁGINAS ---
+# --- 6. PALCO ---
 paginas = ["Mini", "yPoemas", "Eureka", "Biblioteca", "Livro Vivo", "Ensaios", "Sobre"]
 tabs = st.tabs([p.upper() for p in paginas])
 
-for i, (nome, tab) in enumerate(zip(paginas, tabs)):
+for nome, tab in zip(paginas, tabs):
     with tab:
-        # A simples seleção da Tab já dispara a lógica
-        st.session_state.tema = nome
-        st.session_state.current_ypoema = get_ypoema(nome)
+        # O motor gera o conteúdo assim que a aba é focada
+        conteudo = get_ypoema(nome, st.session_state.lang)
         
         col_txt, col_img = st.columns([2, 1])
         
-        if st.session_state.current_ypoema:
-            col_txt.markdown(f'<div class="ypo_box">{st.session_state.current_ypoema.replace("\n", "<br>")}</div>', unsafe_allow_html=True)
-            
-            if st.session_state.talk and have_internet():
-                tts = gTTS(text=st.session_state.current_ypoema, lang=st.session_state.lang)
+        col_txt.markdown(f'<div class="ypo_box">{conteudo.replace("\n", "<br>")}</div>', unsafe_allow_html=True)
+        
+        if st.session_state.talk and have_internet():
+            try:
+                tts = gTTS(text=conteudo, lang=st.session_state.lang)
                 if not os.path.exists("temp"): os.makedirs("temp")
-                tts.save(f"temp/voice.mp3")
-                st.audio(f"temp/voice.mp3")
+                tts.save("temp/voice.mp3")
+                st.audio("temp/voice.mp3")
+            except: pass
 
-            if st.session_state.draw:
-                img_path = f"./images/{nome.lower().replace(' ', '_')}.jpg"
-                if os.path.exists(img_path):
-                    col_img.image(img_path, use_container_width=True)
+        if st.session_state.draw:
+            img_path = f"./images/{nome.lower().replace(' ', '_')}.jpg"
+            if os.path.exists(img_path):
+                col_img.image(img_path, use_container_width=True)
