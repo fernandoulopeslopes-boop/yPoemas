@@ -1,8 +1,5 @@
 import os
-import re
-import time
 import random
-import base64
 import socket
 import streamlit as st
 from datetime import datetime
@@ -56,7 +53,17 @@ if "talk" not in st.session_state: st.session_state.talk = False
 if "vydo" not in st.session_state: st.session_state.vydo = False
 if "poly_lang" not in st.session_state: st.session_state.poly_lang = "ca"
 
-# --- 4. MOTOR: FUNÇÕES ---
+# --- 4. MOTOR: MAPEAMENTO DE ARQUIVOS (RIGOROSO) ---
+# Aqui o motor usa os nomes exatos que você enviou
+MAPA_ARQUIVOS = {
+    "Mini": "rol_mini.txt",
+    "yPoemas": "rol_poemas.txt",
+    "Eureka": "rol_jocosos.txt",
+    "Biblioteca": "rol_outros autores.txt",
+    "Livro Vivo": "rol_livro vivo.txt",
+    "Ensaios": "rol_metalinguagem.txt",
+    "Sobre": "info.txt"
+}
 
 @st.cache_data
 def load_help(idiom):
@@ -70,15 +77,18 @@ def load_help(idiom):
         return returns if len(returns) > 7 else ["ajuda"] * 10
     except: return ["..."] * 10
 
-def get_ypoema(tema, lang):
-    # Ajuste de path para garantir leitura
-    f_name = f"rol_{tema.lower().replace(' ', '_')}.txt"
+def get_ypoema(nome_aba, lang):
+    f_name = MAPA_ARQUIVOS.get(nome_aba)
+    if not f_name: return "ERRO: Aba não mapeada."
+    
     f_path = os.path.join("base", f_name)
     
     if os.path.exists(f_path):
         with open(f_path, "r", encoding="utf-8") as f:
             lines = f.read().splitlines()
-        if not lines: return "VÁCUO."
+        if not lines: return "ARQUIVO VAZIO."
+        
+        # Seleção aleatória do backup
         content = "\n".join(random.sample(lines, min(len(lines), 6)))
         
         if lang != "pt" and have_internet():
@@ -86,11 +96,12 @@ def get_ypoema(tema, lang):
                 return GoogleTranslator(source='pt', target=lang).translate(content)
             except: return content
         return content
-    return f"ERRO: {f_name} não encontrado em /base/"
+    return f"ERRO: Arquivo {f_name} não encontrado."
 
 # --- 5. SIDEBAR ---
 st.sidebar.markdown('<div class="nav-links"><a href="https://github.com/NandouLopes/yPoemas">github</a> | <a href="https://youtu.be/uL6T3roTtAs">youtube</a></div>', unsafe_allow_html=True)
 
+# Arte da Sidebar (Logo)
 if os.path.exists("./images/logo.jpg"):
     st.sidebar.image("./images/logo.jpg", use_container_width=True)
 
@@ -106,7 +117,7 @@ with st.sidebar:
     
     st.divider()
     
-    # Sensores (draw_check_buttons)
+    # Sensores
     draw_text, talk_text, vyde_text = st.columns([3.8, 3.2, 3])
     help_tips = load_help(st.session_state.lang)
     st.session_state.draw = draw_text.checkbox(help_tips[5], st.session_state.draw)
@@ -119,9 +130,7 @@ tabs = st.tabs([p.upper() for p in paginas])
 
 for nome, tab in zip(paginas, tabs):
     with tab:
-        # O motor gera o conteúdo assim que a aba é focada
         conteudo = get_ypoema(nome, st.session_state.lang)
-        
         col_txt, col_img = st.columns([2, 1])
         
         col_txt.markdown(f'<div class="ypo_box">{conteudo.replace("\n", "<br>")}</div>', unsafe_allow_html=True)
@@ -135,6 +144,8 @@ for nome, tab in zip(paginas, tabs):
             except: pass
 
         if st.session_state.draw:
-            img_path = f"./images/{nome.lower().replace(' ', '_')}.jpg"
+            # Busca a imagem correspondente à aba
+            img_name = f"{nome.lower().replace(' ', '_')}.jpg"
+            img_path = os.path.join("images", img_name)
             if os.path.exists(img_path):
                 col_img.image(img_path, use_container_width=True)
