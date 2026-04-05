@@ -77,7 +77,7 @@ st.markdown(
     """ 
     <style>
     [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
-        width: 310px;
+        width: 280px;
     }
     </style> """,
     unsafe_allow_html=True,
