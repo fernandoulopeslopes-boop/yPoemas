@@ -417,8 +417,8 @@ def load_file(file):  # Open files for about's
         with open(os.path.join("./md_files/" + file), encoding="utf-8") as f:
             file_text = f.read()
 
-        if not ".rol" in file:
-            file_text = translate(file_text)
+#        if not ".rol" in file:
+         file_text = translate(file_text)
     except:
         file_text = "ooops... arquivo ( " + file + " ) não pode ser aberto. Sorry."
         st.session_state.lang = "pt"
