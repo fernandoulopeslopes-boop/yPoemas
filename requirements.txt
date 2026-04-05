@@ -2,3 +2,4 @@ deep-translator
 gTTS
 streamlit
 streamlit-antd-components
+extra-streamlit-components
