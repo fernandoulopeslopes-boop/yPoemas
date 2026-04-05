@@ -38,7 +38,7 @@ from lay_2_ypo import gera_poema
 
 # TagCloud
 # from wordcloud import WordCloud
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 # user_id: to create LYPO and TYPO for each hostname
 import socket
