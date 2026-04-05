@@ -1,117 +1,119 @@
-import streamlit as st
 import os
 import random
-from gtts import gTTS
-from deep_translator import GoogleTranslator
+import socket
+import base64
+import streamlit as st
+from datetime import datetime
 
-# --- 1. SETUP DO PALCO ---
-st.set_page_config(page_title="Machina de Fazer Poesia", layout="wide", initial_sidebar_state="expanded")
+# Tenta importar dependências externas com fallback de segurança
+try:
+    from deep_translator import GoogleTranslator
+    from gtts import gTTS
+    INTERNET = True
+except ImportError:
+    INTERNET = False
 
-# --- 2. O DNA ESTÉTICO (ZERO INTERFERÊNCIA) ---
-st.markdown("""
+# --- 1. CONFIGURAÇÃO DE PALCO (BACKUP SETTINGS) ---
+st.set_page_config(
+    page_title="a máquina de fazer Poesia - yPoemas",
+    page_icon=":star:",
+    layout="centered",
+    initial_sidebar_state="auto",
+)
+
+# --- 2. O DNA ESTÉTICO (CSS ORIGINAL) ---
+st.markdown(f"""
     <style>
-    .stApp { background-color: #FFFFFF; }
-    
-    .ypo_text {
-        font-family: 'Courier New', Courier, monospace;
-        font-size: 1.35rem;
+    footer {{visibility: hidden;}}
+    .reportview-container .main .block-container{{
+        padding-top: 0rem;
+        padding-right: 0rem;
+        padding-left: 0rem;
+        padding-bottom: 0rem;
+    }}
+    [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {{
+        width: 310px;
+    }}
+    .logo-text {{
         font-weight: 600;
-        line-height: 1.4;
-        color: #1A1A1A;
-        padding: 40px;
-        background-color: #FAFAFA;
-        border: 1px solid #EEE;
-        white-space: pre-wrap;
-        margin-top: 10px;
-    }
-
-    div.stButton > button {
-        display: inline-block;
-        width: auto !important;
-        min-width: 45px;
-        border-radius: 0px !important;
-        border: 1px solid #000 !important;
-        background-color: #FFF !important;
-        color: #000 !important;
+        font-size: 18px;
         font-family: 'Courier New', Courier, monospace;
-        font-weight: bold;
-        text-transform: uppercase;
-        margin-right: 2px;
-        padding: 2px 8px;
-    }
-    div.stButton > button:hover {
-        background-color: #000 !important;
-        color: #FFF !important;
-    }
-
-    section[data-testid="stSidebar"] {
-        background-color: #F0F0F0;
-        border-right: 2px solid #000;
-    }
-    
-    .stTabs [aria-selected="true"] {
-        background-color: #000 !important;
-        color: #FFF !important;
-    }
-    
-    label { display: none !important; }
+        color: #000000;
+        padding-left: 15px;
+    }}
+    .ypo_box {{
+        font-family: 'Courier New', Courier, monospace;
+        background-color: #FAFAFA;
+        padding: 30px;
+        border: 1px solid #EEE;
+        line-height: 1.4;
+    }}
     </style>
     """, unsafe_allow_html=True)
 
-# --- 3. ESTADOS ---
-if 'lang' not in st.session_state: st.session_state.lang = 'pt'
-if 'current_text' not in st.session_state: st.session_state.current_text = ""
+# --- 3. INICIALIZAÇÃO DE ESTADOS (SESSION STATE) ---
+states = {
+    "lang": "pt", "last_lang": "pt", "tema": "Fatos",
+    "draw": True, "talk": False, "vydo": False,
+    "current_ypoema": ""
+}
+for key, val in states.items():
+    if key not in st.session_state:
+        st.session_state[key] = val
 
-# --- 4. SIDEBAR: COCKPIT PURA LINHA ---
+# --- 4. FUNÇÕES DE SUPORTE ---
+def get_ypoema(tema):
+    f_path = f"base/rol_{tema.lower()}.txt"
+    if os.path.exists(f_path):
+        with open(f_path, "r", encoding="utf-8") as f:
+            lines = f.read().splitlines()
+        raw = "\n".join(random.sample(lines, min(len(lines), 6)))
+        if st.session_state.lang != "pt" and INTERNET:
+            try:
+                return GoogleTranslator(source='pt', target=st.session_state.lang).translate(raw)
+            except: return raw
+        return raw
+    return "VÁCUO DETECTADO."
+
+# --- 5. SIDEBAR: COCKPIT ORIGINAL ---
 with st.sidebar:
-    cols = st.columns([1,1,1,1,1,1])
-    l_codes = [("PT", "pt"), ("EN", "en"), ("ES", "es"), ("FR", "fr"), ("IT", "it"), ("DE", "de")]
-    for i, (lab, cod) in enumerate(l_codes):
-        if cols[i].button(lab): st.session_state.lang = cod
-    
+    # PICK_LANG (Pesos decimais do backup)
+    b_pt, b_es, b_it, b_fr, b_en, b_xy = st.columns([1.1, 1.13, 1.04, 1.04, 1.17, 1.25])
+    if b_pt.button("pt"): st.session_state.lang = "pt"
+    if b_es.button("es"): st.session_state.lang = "es"
+    if b_it.button("it"): st.session_state.lang = "it"
+    if b_fr.button("fr"): st.session_state.lang = "fr"
+    if b_en.button("en"): st.session_state.lang = "en"
+    if b_xy.button("⚒️"): st.session_state.lang = "ca"
+
     st.divider()
     
-    t_talk = st.toggle("Talk", value=False)
-    t_arts = st.toggle("Arts", value=True)
-    t_vyde = st.toggle("Vídeo", value=False)
+    # DRAW_CHECK_BUTTONS
+    st.session_state.draw = st.checkbox("Arts", st.session_state.draw)
+    st.session_state.talk = st.checkbox("Talk", st.session_state.talk)
+    st.session_state.vydo = st.checkbox("Vídeo", st.session_state.vydo)
 
-# --- 5. O PALCO ---
+# --- 6. O PALCO (TABS) ---
 paginas = ["Mini", "yPoemas", "Eureka", "Biblioteca", "Livro Vivo", "Ensaios", "Sobre"]
 tabs = st.tabs([p.upper() for p in paginas])
 
 for nome, tab in zip(paginas, tabs):
-    slug = nome.lower().replace(" ", "_")
     with tab:
-        col_main, col_aux = st.columns([2, 1])
+        col_txt, col_img = st.columns([2, 1])
         
-        with col_main:
-            if st.button(nome.upper(), key=f"cmd_{slug}"):
-                f_path = f"base/{slug}.txt"
-                if os.path.exists(f_path):
-                    with open(f_path, "r", encoding="utf-8") as f:
-                        lines = f.read().splitlines()
-                    
-                    raw_text = "\n".join(random.sample(lines, min(len(lines), 6)))
-                    
-                    if st.session_state.lang != 'pt':
-                        raw_text = GoogleTranslator(source='pt', target=st.session_state.lang).translate(raw_text)
-                    st.session_state.current_text = raw_text
-                else:
-                    st.session_state.current_text = "VÁCUO DETECTADO."
+        if col_txt.button(nome.upper(), key=f"btn_{nome}"):
+            st.session_state.tema = nome
+            st.session_state.current_ypoema = get_ypoema(nome)
+        
+        if st.session_state.current_ypoema:
+            col_txt.markdown(f'<div class="ypo_box">{st.session_state.current_ypoema.replace("\n", "<br>")}</div>', unsafe_allow_html=True)
+            
+            if st.session_state.talk and INTERNET:
+                tts = gTTS(text=st.session_state.current_ypoema, lang=st.session_state.lang)
+                tts.save("temp_voice.mp3")
+                st.audio("temp_voice.mp3")
 
-            if st.session_state.current_text:
-                st.markdown(f'<div class="ypo_text">{st.session_state.current_text}</div>', unsafe_allow_html=True)
-                
-                if t_talk:
-                    tts = gTTS(text=st.session_state.current_text, lang=st.session_state.lang)
-                    tts.save("voice.mp3")
-                    st.audio("voice.mp3")
-
-        with col_aux:
-            if t_arts:
-                img = f"base/{slug}.jpg"
-                if os.path.exists(img): st.image(img, use_column_width=True)
-            if t_vyde:
-                vid = f"base/video_{slug}.webm"
-                if os.path.exists(vid): 
-                    st.video(vid)
+            if st.session_state.draw:
+                img_path = f"images/{nome.lower()}.jpg"
+                if os.path.exists(img_path):
+                    col_img.image(img_path, use_column_width=True)
