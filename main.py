@@ -6,6 +6,7 @@ import random
 import base64
 import socket
 
+# 1. ORDEM OBRIGATÓRIA PARA STREAMLIT
 st.set_page_config(
     page_title="a máquina de fazer Poesia - yPoemas",
     page_icon=":star:",
@@ -13,6 +14,7 @@ st.set_page_config(
     initial_sidebar_state="auto",
 )
 
+# 2. SEPARAÇÃO DE LAYOUT
 st.markdown(
     """
     <style>
@@ -35,5 +37,8 @@ from extra_streamlit_components import TabBar as stx
 from datetime import datetime
 from lay_2_ypo import gera_poema
 
+# 3. TESTE DE RENDERIZAÇÃO IMEDIATA
+st.write("Máquina de Poesia Ativa")
+
 ### bof: settings
-# ... segue o restante do código exatamente como está no seu Marco Zero
+# ... restante do seu código
