@@ -1,28 +1,78 @@
-# change padding and fix layout overlap
+import streamlit as st
+import os
+import re
+import time
+import random
+import base64
+import socket
+
+# 1. AJUSTE CIRÚRGICO: SEPARAÇÃO E PALCO CENTRADO
 st.markdown(
     """
     <style>
-    /* 1. Garante que o conteúdo principal não seja invadido pela sidebar */
-    .main .block-container {
-        padding-top: 1rem;
-        padding-right: 1rem;
-        padding-left: 1rem;
-        padding-bottom: 1rem;
-        max-width: 800px; /* Mantém o palco centrado e protegido */
-        margin: auto;
-    }
-
-    /* 2. Ajuste fixo da Sidebar para evitar que ela 'empurre' o centro */
     [data-testid="stSidebar"] {
         min-width: 310px;
         max-width: 310px;
     }
-
-    /* 3. Estabilização do palco centrado na área-mãe */
-    section[data-testid="stSidebar"] + section {
-        margin-left: 0px;
+    .main .block-container {
+        max-width: 850px;
+        padding-left: 3.5rem;
+        padding-right: 3.5rem;
+        margin: auto;
     }
     </style>
     """,
     unsafe_allow_html=True,
 )
+
+from extra_streamlit_components import TabBar as stx
+from datetime import datetime
+from lay_2_ypo import gera_poema
+
+### bof: settings
+
+st.set_page_config(
+    page_title="a máquina de fazer Poesia - yPoemas",
+    page_icon=":star:",
+    layout="centered",
+    initial_sidebar_state="auto",
+)
+
+
+def have_internet(host="8.8.8.8", port=53, timeout=3):
+    try:
+        socket.setdefaulttimeout(timeout)
+        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
+        return True
+    except socket.error as ex:
+        return False
+
+
+if have_internet():
+    try:
+        from deep_translator import GoogleTranslator
+    except ImportError as ex:
+        st.warning("Google Translator não conectado")
+    try:
+        from gtts import gTTS
+    except ImportError as ex:
+        st.warning("Google TTS não conectado")
+else:
+    st.warning("Internet não conectada. Traduções não disponíveis no momento.")
+
+
+# the User IPAddres for LYPO, TYPO
+hostname = socket.gethostname()
+IPAddres = socket.gethostbyname(hostname)
+
+
+# hide Streamlit Menu and Footer
+st.markdown(
+    """ <style>
+    /*#MainMenu {visibility: hidden;}*/
+    footer {visibility: hidden;}
+    </style> """,
+    unsafe_allow_html=True,
+)
+
+# [O restante do seu código segue exatamente igual daqui em diante]
