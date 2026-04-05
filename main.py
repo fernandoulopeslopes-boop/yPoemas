@@ -6,7 +6,13 @@ import random
 import base64
 import socket
 
-# 1. AJUSTE CIRÚRGICO: SEPARAÇÃO E PALCO CENTRADO
+st.set_page_config(
+    page_title="a máquina de fazer Poesia - yPoemas",
+    page_icon=":star:",
+    layout="centered",
+    initial_sidebar_state="auto",
+)
+
 st.markdown(
     """
     <style>
@@ -30,49 +36,4 @@ from datetime import datetime
 from lay_2_ypo import gera_poema
 
 ### bof: settings
-
-st.set_page_config(
-    page_title="a máquina de fazer Poesia - yPoemas",
-    page_icon=":star:",
-    layout="centered",
-    initial_sidebar_state="auto",
-)
-
-
-def have_internet(host="8.8.8.8", port=53, timeout=3):
-    try:
-        socket.setdefaulttimeout(timeout)
-        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
-        return True
-    except socket.error as ex:
-        return False
-
-
-if have_internet():
-    try:
-        from deep_translator import GoogleTranslator
-    except ImportError as ex:
-        st.warning("Google Translator não conectado")
-    try:
-        from gtts import gTTS
-    except ImportError as ex:
-        st.warning("Google TTS não conectado")
-else:
-    st.warning("Internet não conectada. Traduções não disponíveis no momento.")
-
-
-# the User IPAddres for LYPO, TYPO
-hostname = socket.gethostname()
-IPAddres = socket.gethostbyname(hostname)
-
-
-# hide Streamlit Menu and Footer
-st.markdown(
-    """ <style>
-    /*#MainMenu {visibility: hidden;}*/
-    footer {visibility: hidden;}
-    </style> """,
-    unsafe_allow_html=True,
-)
-
-# [O restante do seu código segue exatamente igual daqui em diante]
+# ... segue o restante do código exatamente como está no seu Marco Zero
