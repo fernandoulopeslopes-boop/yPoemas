@@ -1,93 +1,84 @@
 import streamlit as st
 import os
 import random
+import base64
 from gtts import gTTS
 from deep_translator import GoogleTranslator
-import base64
 
-# CONFIGURAÇÃO DO PALCO (O.V.N.I.)
-st.set_page_config(page_title="Machina de Fazer Poesia", layout="wide", initial_sidebar_state="expanded")
+# --- CONFIGURAÇÃO ESTÉTICA (A ASSINATURA DA MACHINA) ---
+st.set_page_config(page_title="Machina de Fazer Poesia", layout="wide", initial_sidebar_state="collapsed")
 
-# --- LINHA ZERO: CARREGAMENTO DE ATIVOS ---
+# CSS para garantir a endentação e a "mancha gráfica" correta do yPoema
+st.markdown("""
+    <style>
+    .yPoema {
+        font-family: 'Courier New', Courier, monospace;
+        line-height: 1.6;
+        padding-left: 10%;
+        white-space: pre-wrap;
+    }
+    .stButton>button { width: 100%; border-radius: 0; background-color: #1e1e1e; color: white; }
+    </style>
+    """, unsafe_allow_html=True)
+
+# --- ENGINE: O PROTOCOLO DO ÍTIMO ---
 @st.cache_data
-def carregar_base(arquivo):
-    path = os.path.join("base", arquivo)
+def carregar_itimos(tema):
+    path = f"base/{tema}.txt"
     if os.path.exists(path):
         with open(path, "r", encoding="utf-8") as f:
             return f.read().splitlines()
     return []
 
-def get_video_base64(page_name):
-    video_path = os.path.join("base", f"video_{page_name}.webm")
-    if os.path.exists(video_path):
-        with open(video_path, "rb") as f:
-            data = f.read()
-            return base64.b64encode(data).decode()
-    return None
-
-# --- O MOTOR: O ÍTIMO E O EIXO Z ---
-def gera_ypoema(tema_selecionado):
-    # Aqui reside a inteligência de 1983 (resumida para o teste)
-    # O Protocolo exige que as regras de concordância e rima operem aqui
-    linhas = carregar_base(f"{tema_selecionado}.txt")
-    if not linhas:
-        return "O vácuo não contém palavras no momento."
+def disparar_franco_atirador(tema):
+    # Onde a "Tosquice" morre e o Eixo Z nasce
+    dados = carregar_itimos(tema)
+    if not dados: return "Vácuo detectado."
     
-    # Simulação do Franco-Atirador (Eixo Z)
-    corpo = random.sample(linhas, min(len(linhas), 5))
-    return "\n".join(corpo)
+    # Aqui reinaremos com as regras de concordância em breve
+    # Por enquanto, garantimos a estrutura de blocos do Protocolo
+    estrofe = random.sample(dados, min(len(dados), 4))
+    return "\n".join(estrofe)
 
-# --- SIDEBAR: O COCKPIT DE PREFERÊNCIAS ---
+# --- SIDEBAR (O COCKPIT RECOLHÍVEL) ---
 with st.sidebar:
-    st.title("📟 Painel de Controle")
-    st.subheader("Configurações do Observador")
-    
-    draw = st.checkbox("🎨 Artes (Draw)", value=True)
-    talk = st.checkbox("🎙️ Áudio (Talk)", value=False)
-    vyde = st.checkbox("🎬 Vídeo (Vyde)", value=False)
-    
+    st.header("🛸 O.V.N.I. Command")
+    draw = st.toggle("🎨 Artes", value=True)
+    talk = st.toggle("🎙️ Talk", value=False)
+    vyde = st.toggle("🎬 Vyde", value=False)
+    idioma = st.selectbox("Idioma", ["pt", "en", "es", "fr"])
     st.divider()
-    idioma = st.selectbox("🌐 Idioma", ["pt", "en", "es", "fr", "it"])
-    
-    st.info("O cockpit pode ser recolhido para foco total no Palco.")
+    st.caption("Protocolo 1983-2026 Ativo")
 
-# --- O PALCO CENTRAL ---
-tabs = st.tabs(["🛸 Mini", "📜 yPoemas", "💡 Eureka", "📚 Biblioteca"])
+# --- O PALCO (TABS SEM RUÍDO) ---
+abas = ["Mini", "yPoemas", "Eureka", "Biblioteca"]
+tabs = st.tabs(abas)
 
-for i, tab in enumerate(tabs):
-    tab_names = ["mini", "ypoemas", "eureka", "biblioteca"]
-    current_tab = tab_names[i]
-    
+for nome_aba, tab in zip(abas, tabs):
+    tema = nome_aba.lower()
     with tab:
-        col1, col2 = st.columns([2, 1])
+        col_txt, col_mid = st.columns([2, 1])
         
-        with col1:
-            if st.button(f"Disparar Franco-Atirador ({current_tab})", key=f"btn_{current_tab}"):
-                poema = gera_ypoema(current_tab)
+        with col_txt:
+            if st.button(f"GERAR {nome_aba.upper()}", key=f"btn_{tema}"):
+                poema_bruto = disparar_franco_atirador(tema)
                 
-                # Tradução (Se necessário)
+                # Processamento de Tradução
+                texto_final = poema_bruto
                 if idioma != "pt":
-                    poema = GoogleTranslator(source='pt', target=idioma).translate(poema)
+                    texto_final = GoogleTranslator(source='pt', target=idioma).translate(poema_bruto)
                 
-                st.markdown(f"### {current_tab.upper()}")
-                st.write(poema)
+                # Exibição com a Estética da Machina
+                st.markdown(f'<div class="yPoema">{texto_final}</div>', unsafe_allow_html=True)
                 
-                # Resposta aos Sensores da Sidebar
                 if talk:
-                    tts = gTTS(poema, lang=idioma)
-                    tts.save("speech.mp3")
-                    st.audio("speech.mp3")
-                
-                if draw:
-                    st.image("https://placekitten.com/800/400", caption="Arte Gerada pelo Ítimo") # Exemplo de placeholder
-
-        with col2:
+                    speech = gTTS(text=texto_final, lang=idioma)
+                    speech.save("temp.mp3")
+                    st.audio("temp.mp3")
+        
+        with col_mid:
             if vyde:
-                video_data = get_video_base64(current_tab)
-                if video_data:
-                    st.video(f"data:video/webm;base64,{video_data}")
-                else:
-                    st.warning(f"Vídeo de instrução ({current_tab}) não localizado.")
-
-# --- RODAPÉ DO PROTOCOLO ---
-st.caption("Machina de Fazer Poesia | 1983 - 2026 | Protocolo Linha Zero Ativo")
+                # Busca o vídeo correspondente na base
+                v_path = f"base/video_{tema}.webm"
+                if os.path.exists(v_path):
+                    st.video(v_path)
