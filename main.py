@@ -19,22 +19,26 @@ st.set_page_config(
     initial_sidebar_state="auto",
 )
 
-# PROTOCOLO DE LAYOUT: CSS INTEGRADO (Proteção contra encavalamento)
+# PROTOCOLO DE LAYOUT: CSS INTEGRADO (Proteção contra encavalamento e Palco Central)
 st.markdown(
     """
     <style>
+    /* Estabilização da Sidebar */
     [data-testid="stSidebar"] {
         min-width: 310px;
         max-width: 310px;
     }
+    
+    /* Centralização e Respiro do Palco Principal */
     .main .block-container {
         max-width: 850px;
-        padding-top: 1rem;
+        padding-top: 2rem;
         padding-right: 1rem;
         padding-left: 1rem;
-        padding-bottom: 1rem;
+        padding-bottom: 2rem;
         margin: auto;
     }
+    
     footer {visibility: hidden;}
     #MainMenu {visibility: hidden;}
     
@@ -44,16 +48,22 @@ st.markdown(
     }
     .container {
         display: flex;
+        flex-direction: column;
+        align-items: center;
     }
     .logo-text {
         font-weight: 600;
-        font-size: 18px;
-        font-family: 'IBM Plex Sans';
-        color: #000000;
-        padding-left: 15px;
+        font-size: 20px;
+        font-family: 'IBM Plex Sans', sans-serif;
+        color: #1E1E1E;
+        line-height: 1.6;
+        text-align: center;
     }
     .logo-img {
-        float:right;
+        margin-bottom: 20px;
+        max-width: 100%;
+        height: auto;
+        border-radius: 5px;
     }
     </style>
     """,
@@ -65,117 +75,135 @@ def have_internet(host="8.8.8.8", port=53, timeout=3):
         socket.setdefaulttimeout(timeout)
         socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
         return True
-    except socket.error:
+    except:
         return False
 
-if have_internet():
-    try:
-        from deep_translator import GoogleTranslator
-        from gtts import gTTS
-    except ImportError:
-        pass
+# Initialize SessionState (Completo conforme Backup)
+if "lang" not in st.session_state: st.session_state.lang = "pt"
+if "book" not in st.session_state: st.session_state.book = "livro vivo"
+if "take" not in st.session_state: st.session_state.take = 0
+if "tema" not in st.session_state: st.session_state.tema = "Fatos"
+if "draw" not in st.session_state: st.session_state.draw = True
+if "talk" not in st.session_state: st.session_state.talk = False
+if "vydo" not in st.session_state: st.session_state.vydo = False
+if "arts" not in st.session_state: st.session_state.arts = []
 
 hostname = socket.gethostname()
 IPAddres = socket.gethostbyname(hostname)
 
-# Initialize SessionState
-states = {
-    "lang": "pt", "last_lang": "pt", "book": "livro vivo", 
-    "take": 0, "mini": 0, "tema": "Fatos", "off_book": 0, 
-    "off_take": 0, "eureka": 0, "poly_lang": "ca", 
-    "poly_name": "català", "poly_take": 12, "poly_file": "poly_pt.txt",
-    "visy": True, "nany_visy": 0, "draw": False, "talk": False, 
-    "vydo": False, "arts": [], "auto": False, "rand": False
-}
-for key, val in states.items():
-    if key not in st.session_state:
-        st.session_state[key] = val
-
-### bof: tools (Abreviadas para foco no fluxo, mas funcionais)
+### bof: Protocolo de Funções Fixas
 
 def translate(input_text):
     if st.session_state.lang == "pt" or not have_internet():
         return input_text
     try:
+        from deep_translator import GoogleTranslator
         return GoogleTranslator(source="pt", target=st.session_state.lang).translate(text=input_text)
     except:
         return input_text
 
 def pick_lang():
-    cols = st.sidebar.columns([1, 1, 1, 1, 1, 1])
-    langs = ["pt", "es", "it", "fr", "en", "⚒️"]
+    st.sidebar.write("🌐 Idioma")
+    cols = st.sidebar.columns(6)
+    langs = ["pt", "es", "it", "fr", "en", "ca"]
     for i, l in enumerate(langs):
-        if cols[i].button(l, key=f"lang_{l}"):
-            if l == "⚒️":
-                st.session_state.lang = st.session_state.poly_lang
-            else:
-                st.session_state.lang = l
+        if cols[i].button(l, key=f"btn_{l}"):
+            st.session_state.lang = l
 
 def draw_check_buttons():
-    draw_text, talk_text, vyde_text = st.sidebar.columns([3.8, 3.2, 3])
-    st.session_state.draw = draw_text.checkbox("imagem", st.session_state.draw)
-    st.session_state.talk = talk_text.checkbox("áudio", st.session_state.talk)
-    st.session_state.vydo = vyde_text.checkbox("vídeo", st.session_state.vydo)
+    st.sidebar.write("🛠️ Ferramentas")
+    c1, c2, c3 = st.sidebar.columns(3)
+    st.session_state.draw = c1.checkbox("Imagem", value=st.session_state.draw)
+    st.session_state.talk = c2.checkbox("Áudio", value=st.session_state.talk)
+    st.session_state.vydo = c3.checkbox("Vídeo", value=st.session_state.vydo)
 
-def load_poema(nome_tema, seed=""):
-    script = gera_poema(nome_tema, seed)
-    lypo_user = f"LYPO_{IPAddres}"
-    with open(os.path.join("./temp/", lypo_user), "w", encoding="utf-8") as f:
-        f.write(nome_tema + "\n" + "\n".join(script))
-    return "<br>".join(script)
-
-def load_lypo():
+def load_temas(book_name):
+    # Garante o formato correto para o arquivo rol_
+    filename = f"./base/rol_{book_name.replace(' ', '_')}.txt"
     try:
-        with open(os.path.join("./temp/", f"LYPO_{IPAddres}"), encoding="utf-8") as f:
-            return f.read().replace("\n", "<br>")
-    except: return ""
+        with open(filename, "r", encoding="utf-8") as f:
+            return [line.strip() for line in f if line.strip()]
+    except:
+        return ["Fatos"]
 
-def write_ypoema(text, img=None):
-    if img:
-        img_b64 = base64.b64encode(open(img, 'rb').read()).decode()
-        st.markdown(f"<div class='container'><img class='logo-img' src='data:image/jpg;base64,{img_b64}'><p class='logo-text'>{text}</p></div>", unsafe_allow_html=True)
+def write_ypoema(text, img_path=None):
+    if img_path and os.path.exists(img_path):
+        with open(img_path, "rb") as f:
+            data = base64.b64encode(f.read()).decode()
+        st.markdown(f"""<div class='container'><img class='logo-img' src='data:image/jpg;base64,{data}'><p class='logo-text'>{text}</p></div>""", unsafe_allow_html=True)
     else:
-        st.markdown(f"<div class='container'><p class='logo-text'>{text}</p></div>", unsafe_allow_html=True)
+        st.markdown(f"""<div class='container'><p class='logo-text'>{text}</p></div>""", unsafe_allow_html=True)
 
-### bof: main navigation
+### bof: Interface Principal (Sidebar + Palco)
 
 with st.sidebar:
-    st.title("Machina")
+    st.header("Machina")
     pick_lang()
+    st.write("---")
+    
+    # Carregamento do seletor de livros
+    books = ["livro vivo", "linguafiada", "faz de conto", "todos os temas"]
+    selected_book = st.selectbox("Selecione o Livro", books, index=books.index(st.session_state.book))
+    if selected_book != st.session_state.book:
+        st.session_state.book = selected_book
+        st.session_state.take = 0
+        st.rerun()
+
     draw_check_buttons()
+    st.write("---")
     
-    # Seletor de Livros
-    books_list = ["livro vivo", "linguafiada", "faz de conto", "todos os temas"]
-    st.session_state.book = st.selectbox("Escolha o Livro:", books_list)
-    
-    st.markdown("---")
-    st.info("Status: Online" if have_internet() else "Status: Offline")
+    # Navegação Secundária na Sidebar
+    temas_disponiveis = load_temas(st.session_state.book)
+    st.session_state.take = st.number_input("Índice", 0, len(temas_disponiveis)-1, value=st.session_state.take)
+    st.session_state.tema = temas_disponiveis[st.session_state.take]
 
-# Execução da Página
+# Palco Principal
 def run_machina():
-    temas = []
-    # Simulação de carregamento de temas do arquivo rol_
-    try:
-        with open(f"./base/rol_{st.session_state.book.replace(' ', '_')}.txt", "r", encoding="utf-8") as f:
-            temas = [line.strip() for line in f if line.strip()]
-    except:
-        temas = ["Fatos", "Amor", "Tempo"]
-
+    # Botões de controle no topo do palco
     col1, col2, col3 = st.columns([1, 2, 1])
-    if col1.button("◀"): st.session_state.take -= 1
-    if col2.button("✻ NOVO POEMA"): st.session_state.take = random.randint(0, len(temas)-1)
-    if col3.button("▶"): st.session_state.take += 1
-    
+    if col1.button("◀ Anterior"): 
+        st.session_state.take -= 1
+        st.rerun()
+    if col2.button("✻ ALEATÓRIO"): 
+        temas = load_temas(st.session_state.book)
+        st.session_state.take = random.randint(0, len(temas)-1)
+        st.rerun()
+    if col3.button("Próximo ▶"): 
+        st.session_state.take += 1
+        st.rerun()
+
+    # Proteção de índice
+    temas = load_temas(st.session_state.book)
     st.session_state.take %= len(temas)
     st.session_state.tema = temas[st.session_state.take]
-    
-    st.subheader(f"Tema: {st.session_state.tema}")
-    
-    poema = load_poema(st.session_state.tema)
-    if st.session_state.lang != "pt":
-        poema = translate(poema)
-    
-    write_ypoema(poema)
+
+    # Geração do Poema (Passando o nome do tema limpo para o lay_2_ypo)
+    try:
+        script = gera_poema(st.session_state.tema, "")
+        poema_html = "<br>".join(script)
+        
+        if st.session_state.lang != "pt":
+            poema_html = translate(poema_html)
+            
+        # Lógica de Imagem
+        img_file = None
+        if st.session_state.draw:
+            # Busca simples de imagem (ajuste conforme seu diretório real)
+            img_dir = f"./images/matrix/{st.session_state.tema.capitalize()}.jpg"
+            if os.path.exists(img_dir):
+                img_file = img_dir
+
+        write_ypoema(poema_html, img_file)
+        
+        if st.session_state.talk and have_internet():
+            from gtts import gTTS
+            tts = gTTS(text=poema_html.replace("<br>", "\n"), lang=st.session_state.lang)
+            tts.save("temp_audio.mp3")
+            st.audio("temp_audio.mp3")
+
+    except Exception as e:
+        st.error(f"Erro ao processar o tema '{st.session_state.tema}': {e}")
+        st.info("Verifique se o arquivo .Pip correspondente existe na pasta base.")
 
 if __name__ == "__main__":
     run_machina()
