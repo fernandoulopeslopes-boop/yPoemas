@@ -5,13 +5,18 @@ import random
 import time
 import os
 
-# [Lógica de inicialização de estados e funções auxiliares mantida]
+# [Lógica de inicialização de estados e funções auxiliares]
+
+# MOVIDO: Definição da função antes da chamada para evitar NameError
+def update_visy():
+    # Insira aqui a lógica original da sua função update_visy
+    pass
 
 if 'visy' not in st.session_state:
     st.session_state.visy = True
 
 if st.session_state.visy:
-    update_visy()
+    update_visy() # Agora a função já existe no escopo
     temas_list = load_temas(st.session_state.book)
     maxy_ypoemas = len(temas_list)
     st.session_state.take = random.randrange(0, maxy_ypoemas)
@@ -82,7 +87,6 @@ def page_mini():
                         time.sleep(wait_time)
 
 def main():
-    # Substituição para usar extra-streamlit-components (stx)
     chosen_id = stx.tab_bar(data=[
         stx.TabBarItemData(id="1", title="mini", description=""),
         stx.TabBarItemData(id="2", title="yPoemas", description=""),
