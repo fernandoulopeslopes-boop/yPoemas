@@ -3,63 +3,60 @@ import extra_streamlit_components as stx
 import random
 import os
 
-# --- CONFIGURAÇÃO DE CAMINHOS ---
-PATH_DATA = "data"          # Onde residem os arquivos .ypo (ítimos)
-PATH_MD = "md_files"
-PATH_BASE = "base"
-PATH_OFF = "off-maquina"
+# --- PROTOCOLO ZERO: RIGOR NOS CAMINHOS ---
+PATH_DATA = r"data"
+PATH_MD = r"md_files"
+PATH_BASE = r"base"
+PATH_OFF = r"off-maquina"
 
-# --- MOTOR DE CARREGAMENTO NOBRE ---
 def get_md(file_name):
     path = os.path.join(PATH_MD, file_name)
     if os.path.exists(path):
         with open(path, "r", encoding="utf-8", errors="ignore") as f:
             return f.read()
-    return f"Manual {file_name} não localizado."
+    return ""
 
 def get_rol(book_name):
-    file_name = f"rol_{book_name}.txt" if not book_name.startswith("rol_") else f"{book_name}.txt"
-    path = os.path.join(PATH_BASE, file_name)
+    target = f"rol_{book_name}.txt" if not book_name.startswith("rol_") else f"{book_name}.txt"
+    path = os.path.join(PATH_BASE, target)
     if os.path.exists(path):
         with open(path, "r", encoding="utf-8", errors="ignore") as f:
             return [l.strip() for l in f if l.strip() and not l.startswith("[")]
     return []
 
-def parse_ypo_line(line):
-    """
-    Extrai o conteúdo da 7ª coluna de uma linha .ypo (ítimo).
-    Exemplo: |01|01|Amaré_0101|F|1|1|O amor, o que é?| -> 'O amor, o que é?'
-    """
-    parts = line.split('|')
-    if len(parts) >= 8:
-        return parts[7].strip()
-    return None
-
-def get_verso_by_lexico(tema, seed):
-    """
-    Busca o verso exato em arquivos .ypo baseado no endereçamento interno.
-    """
+# --- MOTOR DE ÍTIMOS (.YPO) ---
+def get_verso_ypo(tema, seed=None):
     path = os.path.join(PATH_DATA, f"{tema}.ypo")
     if not os.path.exists(path):
-        return f"Arquivo {tema}.ypo não encontrado em {PATH_DATA}."
+        return f"Erro: {tema}.ypo ausente."
     
     with open(path, "r", encoding="utf-8", errors="ignore") as f:
-        # Filtra apenas linhas que seguem o padrão |00|00|...
-        linhas_validas = [l.strip() for l in f if l.startswith('|')]
+        linhas = [l.strip() for l in f if l.startswith("|")]
         
         if seed:
-            # Procura a linha que contém a seed exata (ex: Amaré_0101) na 3ª coluna
-            for l in linhas_validas:
-                parts = l.split('|')
-                if len(parts) >= 4 and parts[3].strip() == f"{tema}_{seed}":
-                    return parse_ypo_line(l)
-        
-        # Fallback: Escolha aleatória entre as linhas de conteúdo real
-        # Filtra linhas vazias de metadados como |02|00|
-        conteudo_real = [parse_ypo_line(l) for l in linhas_validas if parse_ypo_line(l)]
-        return random.choice(conteudo_real) if conteudo_real else "Ítimo não localizado."
+            target_id = f"{tema}_{seed}"
+            for l in linhas:
+                p = l.split("|")
+                if len(p) >= 4 and p[3].strip() == target_id:
+                    # Retorna a 7ª coluna (o verso/ítimo)
+                    return p[7].strip() if len(p) >= 8 else ""
 
-# --- PÁGINAS ---
+        # Sorteio nos ítimos reais (coluna 7)
+        pool = []
+        for l in linhas:
+            p = l.split("|")
+            if len(p) >= 8:
+                txt = p[7].strip()
+                if txt and txt != "?": pool.append(txt)
+        return random.choice(pool) if pool else "Silêncio."
+
+def render_display(texto, tema):
+    st.markdown("---")
+    st.markdown(f"### {tema.upper()}")
+    st.markdown(f"#### {texto}")
+    st.markdown("---")
+
+# --- INTERFACE ---
 def page_eureka():
     st.subheader("🔍 Busca Eureka")
     query = st.text_input("Verbete:").strip().lower()
@@ -70,27 +67,68 @@ def page_eureka():
         with open(path_lexico, "r", encoding="utf-8", errors="ignore") as f:
             for linha in f:
                 if ":" in linha and query in linha.lower():
-                    parts = linha.split(":")
-                    verbete = parts[0].strip()
-                    endereco = parts[1].strip() # Ex: Amaré_0101
-                    if "_" in endereco:
-                        t, s = endereco.split("_")
-                        hits.append({"v": verbete, "t": t, "s": s})
+                    partes = linha.split(":")
+                    end = partes[1].strip()
+                    if "_" in end:
+                        t, s = end.split("_")
+                        hits.append({"v": partes[0].strip(), "t": t, "s": s})
         
         if hits:
             sel = st.selectbox(f"Encontrados: {len(hits)}", range(len(hits)),
-                               format_func=lambda i: f"« {hits[i]['v']} » em {hits[i]['t']} ({hits[i]['s']})")
+                               format_func=lambda i: f"{hits[i]['v']} -> {hits[i]['t']}")
             h = hits[sel]
-            txt = get_verso_by_lexico(h['t'], h['s'])
-            if txt:
-                st.markdown(f"**{h['t'].upper()}**")
-                st.markdown(f"### {txt.replace(query, f' « {query} » ')}")
+            txt = get_verso_ypo(h['t'], h['s'])
+            render_display(txt.replace(query, f" « {query} » "), h['t'])
 
-# --- (Restante das funções page_mini, page_ypoemas seguem a mesma lógica de get_verso_by_lexico) ---
+def page_ypoemas():
+    livro = st.session_state.get('current_book', 'poemas')
+    temas = get_rol(livro)
+    if not temas: return
+    if 'idx_y' not in st.session_state: st.session_state.idx_y = 0
+    
+    c = st.columns([1,1,2,1,1])
+    if c[0].button("➕", key="y1"): st.rerun()
+    if c[1].button("◀", key="y2"): st.session_state.idx_y -= 1
+    if c[2].button("✻", key="y3"): st.session_state.idx_y = random.randrange(len(temas))
+    if c[3].button("▶", key="y4"): st.session_state.idx_y += 1
+    
+    st.session_state.idx_y %= len(temas)
+    t = temas[st.session_state.idx_y]
+    render_display(get_verso_ypo(t), t)
+
+def page_mini():
+    temas = get_rol("temas_mini")
+    if not temas: return
+    if 'idx_m' not in st.session_state: st.session_state.idx_m = 0
+    c = st.columns([1,1,2,1,1])
+    if c[0].button("➕", key="m1"): st.rerun()
+    if c[1].button("◀", key="m2"): st.session_state.idx_m -= 1
+    if c[2].button("✻", key="m3"): st.session_state.idx_m = random.randrange(len(temas))
+    if c[3].button("▶", key="m4"): st.session_state.idx_m += 1
+    st.session_state.idx_m %= len(temas)
+    t = temas[st.session_state.idx_m]
+    render_display(get_verso_ypo(t), t)
 
 def main():
-    # ... (lógica de Tab Bar e Sidebar idêntica à anterior, chamando as novas funções de .ypo)
-    pass
+    if 'current_book' not in st.session_state: st.session_state.current_book = "poemas"
+    try: st.set_page_config(layout="wide", page_title="yPoemas")
+    except: pass
+
+    chosen_id = stx.tab_bar(data=[
+        stx.TabBarItemData(id="1", title="mini", description=""),
+        stx.TabBarItemData(id="2", title="yPoemas", description=""),
+        stx.TabBarItemData(id="3", title="eureka", description=""),
+        stx.TabBarItemData(id="4", title="off-machina", description=""),
+        stx.TabBarItemData(id="5", title="books", description=""),
+    ], default="2")
+
+    pages = {"1": page_mini, "2": page_ypoemas, "3": page_eureka}
+    
+    with st.sidebar:
+        st.info(get_md("INFO_YPOEMAS.md"))
+        if st.button("Limpar Cache"): st.cache_data.clear()
+
+    if chosen_id in pages: pages[chosen_id]()
 
 if __name__ == "__main__":
     main()
