@@ -4,7 +4,14 @@ import random
 import time
 import os
 
-# 1. UTILITÁRIOS E INFRAESTRUTURA
+# ==========================================
+# 1. FUNÇÕES DE SUPORTE (Obrigatório vir antes)
+# ==========================================
+
+# Se estas funções (pick_lang, etc) estiverem em outro arquivo, 
+# certifique-se de que o import está no topo. 
+# Se estiverem aqui, mova os 'def' para este bloco.
+
 def normalize_text(text):
     if not text: return ""
     return text.replace('\r\n', '\n').strip()
@@ -23,18 +30,21 @@ def render_display(texto, tema):
     if st.session_state.talk:
         talk(texto)
 
-# 2. DEFINIÇÃO DAS PÁGINAS (ORDEM DE PRECEDÊNCIA)
+# ==========================================
+# 2. DEFINIÇÃO DAS PÁGINAS
+# ==========================================
+
 def page_mini():
     temas_list = load_temas("todos os temas")
     maxy = len(temas_list)
     with st.sidebar:
         wait_time = st.slider(translate("tempo de exibição:"), 5, 60, 10)
     
-    col_rand, col_auto = st.columns([1, 1])
-    if col_rand.button("✻"):
+    col1, col2, col3, col4, col5 = st.columns([4, 1, 1, 1, 4])
+    if col3.button("✻"):
         st.session_state.mini = random.randrange(0, maxy)
     
-    st.session_state.auto = col_auto.checkbox("auto", value=st.session_state.get('auto', False))
+    st.session_state.auto = col4.checkbox("auto", value=st.session_state.get('auto', False))
     
     placeholder = st.empty()
     if st.session_state.auto:
@@ -84,9 +94,7 @@ def page_eureka():
 def page_off_machina():
     off_books_list = load_all_offs()
     idx_book = st.selectbox(translate("Livros"), range(len(off_books_list)), format_func=lambda x: off_books_list[x])
-    # Lógica simplificada de navegação interna
-    page_func = lambda: None # Placeholder
-    page_func()
+    pass
 
 def page_books():
     books_list = ["livro vivo", "poemas", "jocosos", "ensaios", "variações", "metalinguagem", "sociais", "todos os temas"]
@@ -96,20 +104,23 @@ def page_books():
         st.session_state.take = 0
 
 def page_polys():
-    # Lógica de troca de idiomas
     pass
 
 def page_abouts():
-    # Lógica de sobre
     pass
 
-# 3. CORE EXECUTION (MAIN DEFINIDO POR ÚLTIMO)
+# ==========================================
+# 3. FUNÇÃO PRINCIPAL (MAIN)
+# ==========================================
+
 def main():
+    # Configuração inicial
     try:
         st.set_page_config(layout="wide", page_title="Máquina de Poesia")
     except:
         pass
 
+    # Abas
     chosen_id = stx.tab_bar(data=[
         stx.TabBarItemData(id="1", title="mini", description=""),
         stx.TabBarItemData(id="2", title="yPoemas", description=""),
@@ -120,10 +131,11 @@ def main():
         stx.TabBarItemData(id="7", title="about", description=""),
     ], default="2")
 
-    # Chamadas globais (Devem estar no namespace)
+    # Chamadas de interface (Garantido que já foram lidas)
     pick_lang()
     draw_check_buttons()
 
+    # Mapeamento de páginas
     pages = {
         "1": ("INFO_MINI.md", "img_mini.jpg", page_mini),
         "2": ("INFO_YPOEMAS.md", "img_ypoemas.jpg", page_ypoemas),
@@ -135,12 +147,16 @@ def main():
     }
 
     if chosen_id in pages:
-        info, img, func = pages[chosen_id]
-        st.sidebar.info(load_md_file(info))
-        st.sidebar.image(img)
-        func()
+        info_file, img_file, page_func = pages[chosen_id]
+        st.sidebar.info(load_md_file(info_file))
+        st.sidebar.image(img_file)
+        page_func()
 
     show_icons()
+
+# ==========================================
+# 4. EXECUÇÃO
+# ==========================================
 
 if __name__ == "__main__":
     main()
