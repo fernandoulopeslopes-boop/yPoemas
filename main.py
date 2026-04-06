@@ -3,17 +3,17 @@ import streamlit as st
 # --- CONFIGURAÇÃO DA PÁGINA ---
 st.set_page_config(page_title="Máquina de Fazer Poesia", layout="wide")
 
-# --- PROTOCOLO DE ESTÉTICA: LARGURA INTELIGENTE ---
+# --- PROTOCOLO DE ESTÉTICA: LARGURA REDUZIDA (300px) ---
 st.markdown(
     """
     <style>
         [data-testid="stSidebar"][aria-expanded="true"] {
-            min-width: 380px;
-            max-width: 450px;
+            min-width: 300px;
+            max-width: 350px;
         }
         
         .stSelectbox div[data-baseweb="select"] {
-            max-width: 200px;
+            max-width: 180px;
             margin: 0 auto;
         }
 
@@ -24,18 +24,18 @@ st.markdown(
         }
     </style>
     """,
-    unsafe_allow_html=True
+    unsafe_allow_html=True,
 )
 
 # --- SIDEBAR: ORGANIZAÇÃO ---
 with st.sidebar:
-    # 1. Dropdown de Idiomas (Corrigido para incluir 'ca' e remover 'de')
+    # 1. Dropdown de Idiomas (Sequência Original Corrigida conforme mensagens anteriores)
     idiomas_opcoes = {
         "Português": "pt",
-        "English": "en",
         "Español": "es",
         "Français": "fr",
         "Italiano": "it",
+        "English": "en",
         "Català": "ca"
     }
     
@@ -53,8 +53,7 @@ with st.sidebar:
     st.markdown("### 🎨 Navegação & Arte")
     
     st.info(
-        "Descrição da página com espaço ampliado para evitar a fragmentação do texto "
-        "em linhas muito curtas."
+        "Largura de 300px. English movido para a posição correta na sequência original."
     )
     st.markdown('</div>', unsafe_allow_html=True)
 
