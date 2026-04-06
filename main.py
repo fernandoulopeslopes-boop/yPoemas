@@ -3,7 +3,7 @@ import extra_streamlit_components as stx
 import random
 import os
 
-# --- PROTOCOLO ZERO: RIGOR NOS CAMINHOS ---
+# --- ARQUITETURA DE DIRETÓRIOS ---
 PATH_DATA = r"data"
 PATH_MD = r"md_files"
 PATH_BASE = r"base"
@@ -38,10 +38,8 @@ def get_verso_ypo(tema, seed=None):
             for l in linhas:
                 p = l.split("|")
                 if len(p) >= 4 and p[3].strip() == target_id:
-                    # Retorna a 7ª coluna (o verso/ítimo)
                     return p[7].strip() if len(p) >= 8 else ""
 
-        # Sorteio nos ítimos reais (coluna 7)
         pool = []
         for l in linhas:
             p = l.split("|")
@@ -56,7 +54,7 @@ def render_display(texto, tema):
     st.markdown(f"#### {texto}")
     st.markdown("---")
 
-# --- INTERFACE ---
+# --- PÁGINAS ---
 def page_eureka():
     st.subheader("🔍 Busca Eureka")
     query = st.text_input("Verbete:").strip().lower()
@@ -109,6 +107,21 @@ def page_mini():
     t = temas[st.session_state.idx_m]
     render_display(get_verso_ypo(t), t)
 
+def page_off_machina():
+    livros = [f.replace(".txt", "") for f in os.listdir(PATH_OFF) if f.endswith(".txt")]
+    if livros:
+        sel = st.selectbox("Obra:", livros)
+        c1, c2 = st.columns([1, 2])
+        capa = os.path.join(PATH_OFF, f"{sel}.jpg")
+        if os.path.exists(capa): c1.image(capa, width=200)
+        with open(os.path.join(PATH_OFF, f"{sel}.txt"), "r", encoding="utf-8") as f:
+            c2.text_area("Texto", f.read(), height=400)
+
+def page_books():
+    rois = [f.replace("rol_", "").replace(".txt", "") for f in os.listdir(PATH_BASE) if f.startswith("rol_")]
+    st.session_state.current_book = st.radio("Acervo:", rois)
+
+# --- ORQUESTRAÇÃO ---
 def main():
     if 'current_book' not in st.session_state: st.session_state.current_book = "poemas"
     try: st.set_page_config(layout="wide", page_title="yPoemas")
@@ -122,7 +135,7 @@ def main():
         stx.TabBarItemData(id="5", title="books", description=""),
     ], default="2")
 
-    pages = {"1": page_mini, "2": page_ypoemas, "3": page_eureka}
+    pages = {"1": page_mini, "2": page_ypoemas, "3": page_eureka, "4": page_off_machina, "5": page_books}
     
     with st.sidebar:
         st.info(get_md("INFO_YPOEMAS.md"))
