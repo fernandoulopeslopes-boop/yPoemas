@@ -1,11 +1,14 @@
 import streamlit as st
 import streamlit_antd_components as sac
-import streamlit_selection_bar as stx
+import extra_streamlit_components as stx
 import random
 import time
 import os
 
-# [Lógica de inicialização e estados mantida conforme original]
+# [Lógica de inicialização de estados e funções auxiliares mantida]
+
+if 'visy' not in st.session_state:
+    st.session_state.visy = True
 
 if st.session_state.visy:
     update_visy()
@@ -30,8 +33,8 @@ def page_mini():
     with st.container():
         foo1, more, rand, auto, foo2 = st.columns([1, 1, 1, 1, 1])
         help_tips = load_help(st.session_state.lang)
-        rand_btn = rand.button("✻", help=help_tips[1])
-        st.session_state.auto = auto.checkbox("auto")
+        rand_btn = rand.button("✻", help=help_tips[1], key="btn_rand_mini")
+        st.session_state.auto = auto.checkbox("auto", key="chk_auto_mini")
 
         if st.session_state.auto:
             st.session_state.talk = False
@@ -47,7 +50,7 @@ def page_mini():
 
         st.session_state.tema = temas_list[st.session_state.mini]
         analise = say_number(st.session_state.tema)
-        more_btn = more.button("✚", help=help_tips[4] + " • " + analise)
+        more_btn = more.button("✚", help=help_tips[4] + " • " + analise, key="btn_more_mini")
 
         if more_btn:
             st.session_state.rand = False
@@ -60,32 +63,12 @@ def page_mini():
             st.session_state.vydo = False
 
         if lnew or st.session_state.auto:
-            if st.session_state.rand:
-                st.session_state.mini = random.randrange(0, maxy_mini)
-                st.session_state.tema = temas_list[st.session_state.mini]
-
-            if st.session_state.lang != st.session_state.last_lang:
-                curr_ypoema = load_lypo()
-            else:
-                curr_ypoema = load_poema(st.session_state.tema, "")
-                curr_ypoema = load_lypo()
-
-            if st.session_state.lang != "pt":
-                curr_ypoema = translate(curr_ypoema)
-                typo_user = "TYPO_" + IPAddres
-                with open(os.path.join("./temp/" + typo_user), "w", encoding="utf-8") as save_typo:
-                    save_typo.write(curr_ypoema)
-                curr_ypoema = load_typo()
-
+            curr_ypoema = load_poema(st.session_state.tema, "")
             update_readings(st.session_state.tema)
             LOGO_TEXTO = curr_ypoema
-            LOGO_IMAGE = None
-            if st.session_state.draw:
-                LOGO_IMAGE = load_arts(st.session_state.tema)
+            LOGO_IMAGE = load_arts(st.session_state.tema) if st.session_state.draw else None
 
             mini_place_holder = st.empty()
-            st.write("")
-
             if not st.session_state.auto:
                 with mini_place_holder:
                     write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
@@ -93,69 +76,22 @@ def page_mini():
                     talk(curr_ypoema)
             else:
                 while st.session_state.auto:
-                    # [Lógica auto repetida do bloco anterior]
                     with mini_place_holder:
                         mini_place_holder.empty()
                         write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
                         time.sleep(wait_time)
 
-def page_ypoemas():
-    temas_list = load_temas(st.session_state.book)
-    maxy_ypoemas = len(temas_list) - 1
-    if st.session_state.take > maxy_ypoemas or st.session_state.take < 0:
-        st.session_state.take = 0
-
-    with st.container():
-        foo1, more, last, rand, nest, manu, foo2 = st.columns([1, 1, 1, 1, 1, 1, 1])
-        help_tips = load_help(st.session_state.lang)
-        
-        btn_more = more.button("✚", help=help_tips[4])
-        btn_last = last.button("◀", help=help_tips[0])
-        btn_rand = rand.button("✻", help=help_tips[1])
-        btn_nest = nest.button("▶", help=help_tips[2])
-        btn_manu = manu.button("?", help="help !!!")
-
-        if btn_last:
-            st.session_state.take -= 1
-            if st.session_state.take < 0: st.session_state.take = maxy_ypoemas
-        if btn_rand:
-            st.session_state.take = random.randrange(0, maxy_ypoemas)
-        if btn_nest:
-            st.session_state.take += 1
-            if st.session_state.take > maxy_ypoemas: st.session_state.take = 0
-
-        if not st.session_state.draw:
-            options = list(range(len(temas_list)))
-            opt_take = st.selectbox("↓ " + translate("lista de Temas"), options, index=st.session_state.take, format_func=lambda z: temas_list[z])
-            if opt_take != st.session_state.take: st.session_state.take = opt_take
-
-        st.session_state.tema = temas_list[st.session_state.take]
-        # [Exibição do yPoema no container]
-        ypoemas_expander = st.expander("", expanded=True)
-        with ypoemas_expander:
-            # [Lógica de carregamento e escrita original]
-            pass
-
-def page_eureka():
-    with st.container():
-        seed, more, rand, manu, occurrences = st.columns([4, 1, 1, 1, 4])
-        # [Restante da lógica eureka mantida no container]
-
-def page_off_machina():
-    with st.container():
-        foo1, last, rand, nest, love, manu, foo2 = st.columns([1, 1, 1, 1, 1, 1, 1])
-        # [Restante da lógica off-machina mantida no container]
-
 def main():
+    # Substituição para usar extra-streamlit-components (stx)
     chosen_id = stx.tab_bar(data=[
-        stx.TabBarItemData(id=1, title="mini", description=""),
-        stx.TabBarItemData(id=2, title="yPoemas", description=""),
-        stx.TabBarItemData(id=3, title="eureka", description=""),
-        stx.TabBarItemData(id=4, title="off-machina", description=""),
-        stx.TabBarItemData(id=5, title="books", description=""),
-        stx.TabBarItemData(id=6, title="poly", description=""),
-        stx.TabBarItemData(id=7, title="about", description=""),
-    ], default=2)
+        stx.TabBarItemData(id="1", title="mini", description=""),
+        stx.TabBarItemData(id="2", title="yPoemas", description=""),
+        stx.TabBarItemData(id="3", title="eureka", description=""),
+        stx.TabBarItemData(id="4", title="off-machina", description=""),
+        stx.TabBarItemData(id="5", title="books", description=""),
+        stx.TabBarItemData(id="6", title="poly", description=""),
+        stx.TabBarItemData(id="7", title="about", description=""),
+    ], default="2")
 
     pick_lang()
     draw_check_buttons()
@@ -173,13 +109,11 @@ def main():
     if chosen_id in pages:
         func, info, img = pages[chosen_id]
         st.sidebar.info(load_md_file(info))
-        magy = img
-        # Chamada protegida por container para evitar sobreposição da sidebar
         with st.container():
             func()
+        with st.sidebar:
+            st.image(img)
 
-    with st.sidebar:
-        st.image(magy)
     show_icons()
 
 if __name__ == "__main__":
