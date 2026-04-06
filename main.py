@@ -151,6 +151,19 @@ def main():
     if st.session_state.visy:
         st.session_state.visy = False
 
+    # Correção de sintaxe para tab_bar
     chosen_id = stx.tab_bar(data=[
         stx.TabBarItemData(id="1", title="mini", description=""),
-        stx.TabBarItemData(id="2", title="yPoemas", description=""),
+        stx.TabBarItemData(id="2", title="yPoemas", description="")
+    ], default="2")
+
+    if chosen_id == "1":
+        st.write("Interface Mini")
+    else:
+        page_ypoemas()
+
+    st.sidebar.write("---")
+    st.sidebar.write("Máquina de Fazer Poesia © 2026")
+
+if __name__ == "__main__":
+    main()
