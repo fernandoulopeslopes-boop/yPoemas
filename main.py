@@ -5,28 +5,54 @@ import time
 import os
 
 # ==============================================================================
-# 1. FUNÇÕES DE INFRAESTRUTURA (O ALICERCE)
+# 1. FUNÇÕES DE INFRAESTRUTURA (OBRIGATÓRIO VIR NO TOPO)
 # ==============================================================================
 
 def load_md_file(file_path):
-    """Lê arquivos Markdown com tratamento de erro e verificação de existência."""
     try:
         if os.path.exists(file_path):
             with open(file_path, "r", encoding="utf-8") as f:
                 return f.read()
-        return f"Aviso: O arquivo `{file_path}` não foi encontrado no servidor."
-    except Exception as e:
-        return f"Erro ao carregar `{file_path}`: {str(e)}"
+        return f"Aviso: `{file_path}` não encontrado."
+    except: return "Erro ao carregar documento."
 
-def normalize_text(text):
-    if not text: return ""
-    return text.replace('\r\n', '\n').strip()
+# --- DEFINIÇÕES DE CARREGAMENTO (SUBSTITUA PELA SUA LÓGICA REAL SE NECESSÁRIO) ---
+
+def load_temas(book_name="todos os temas"):
+    # Se você tiver uma pasta com temas, mude esta lógica aqui
+    return ["amor", "morte", "tempo", "natureza", "infinito", "esperança"]
+
+def load_poema(tema, seed=""):
+    return f"Poema gerado sobre {tema} {seed}"
+
+def load_lypo():
+    return ""
+
+def translate(text):
+    return text
+
+def update_readings(tema):
+    pass
+
+def load_arts(tema):
+    return None
+
+def write_ypoema(texto, image=None):
+    if image: st.image(image)
+    st.markdown(f"#### {texto}")
+
+def talk(texto):
+    pass
+
+def translate_ui(label):
+    return label
+
+# ==============================================================================
+# 2. COMPONENTES DE INTERFACE
+# ==============================================================================
 
 def pick_lang():
-    """Gerencia a seleção de idiomas na barra lateral."""
-    if 'lang' not in st.session_state:
-        st.session_state.lang = "pt"
-    
+    if 'lang' not in st.session_state: st.session_state.lang = "pt"
     langs = {"pt": "🇧🇷", "en": "🇺🇸", "es": "🇪🇸", "fr": "🇫🇷", "it": "🇮🇹"}
     cols = st.sidebar.columns(5)
     for i, (lang, flag) in enumerate(langs.items()):
@@ -35,7 +61,6 @@ def pick_lang():
             st.rerun()
 
 def draw_check_buttons():
-    """Controles globais de áudio e imagem na sidebar."""
     with st.sidebar:
         st.markdown("### ⚙️ Configurações")
         st.session_state.talk = st.checkbox("📢 Voz", value=st.session_state.get('talk', False))
@@ -43,22 +68,16 @@ def draw_check_buttons():
         st.session_state.auto = st.checkbox("🔄 Auto", value=st.session_state.get('auto', False))
 
 def show_icons():
-    """Rodapé da barra lateral."""
     st.sidebar.markdown("---")
     st.sidebar.caption("Máquina de Fazer Poesia © 2026")
 
-# ==============================================================================
-# 2. MOTOR DE CONTEÚDO (DEPENDENTE DAS FUNÇÕES ACIMA)
-# ==============================================================================
-
 def get_processed_content(tema, seed=""):
-    # IMPORTANTE: Garanta que load_poema, load_lypo e translate estejam acessíveis
     curr = load_poema(tema, seed)
     curr += load_lypo()
     if st.session_state.lang != "pt":
         curr = translate(curr)
     update_readings(tema)
-    return normalize_text(curr)
+    return curr.replace('\r\n', '\n').strip()
 
 def render_display(texto, tema):
     image = load_arts(tema) if st.session_state.draw else None
@@ -67,7 +86,7 @@ def render_display(texto, tema):
         talk(texto)
 
 # ==============================================================================
-# 3. DEFINIÇÃO DAS PÁGINAS (DEPENDENTES DO MOTOR)
+# 3. PÁGINAS DO APLICATIVO
 # ==============================================================================
 
 def page_mini():
@@ -80,8 +99,7 @@ def page_mini():
         st.session_state.mini = random.randrange(0, maxy)
         tema = temas_list[st.session_state.mini]
         texto = get_processed_content(tema)
-        with placeholder.container():
-            render_display(texto, tema)
+        with placeholder.container(): render_display(texto, tema)
         time.sleep(wait_time)
         st.rerun()
     else:
@@ -91,7 +109,7 @@ def page_mini():
 
 def page_ypoemas():
     if 'book' not in st.session_state: st.session_state.book = "todos os temas"
-    temas_list = load_temas(st.session_state.book)
+    temas_list = load_temas(st.session_state.book) # Agora garantido!
     maxy = len(temas_list)
     
     col1, col2, col3 = st.columns([1, 2, 1])
@@ -104,17 +122,14 @@ def page_ypoemas():
     render_display(get_processed_content(tema), tema)
 
 # ==============================================================================
-# 4. FUNÇÃO PRINCIPAL (MAIN) - CONCENTRA A ORQUESTRAÇÃO
+# 4. EXECUÇÃO (MAIN) - DEVE SER A ÚLTIMA PARTE
 # ==============================================================================
 
 def main():
-    # Primeira instrução obrigatória do Streamlit
     try:
         st.set_page_config(layout="wide", page_title="Máquina de Poesia")
-    except:
-        pass
+    except: pass
 
-    # Componente de Tabs (TabBar)
     chosen_id = stx.tab_bar(data=[
         stx.TabBarItemData(id="1", title="mini", description=""),
         stx.TabBarItemData(id="2", title="yPoemas", description=""),
@@ -122,34 +137,25 @@ def main():
         stx.TabBarItemData(id="4", title="about", description=""),
     ], default="2")
 
-    # Chamadas seguras: Todas as funções abaixo já foram definidas acima
     pick_lang()
     draw_check_buttons()
 
-    # Mapeamento de funções de página
     pages = {
         "1": ("INFO_MINI.md", "img_mini.jpg", page_mini),
         "2": ("INFO_YPOEMAS.md", "img_ypoemas.jpg", page_ypoemas),
-        "3": ("INFO_EUREKA.md", "img_eureka.jpg", lambda: st.write("Busca Eureka")),
+        "3": ("INFO_EUREKA.md", "img_eureka.jpg", lambda: st.write("Busca")),
         "4": ("INFO_ABOUT.md", "img_about.jpg", lambda: st.markdown(load_md_file("INFO_ABOUT.md")))
     }
 
     if chosen_id in pages:
         info_file, img_file, page_func = pages[chosen_id]
         with st.sidebar:
-            # load_md_file está garantida no namespace agora
             st.info(load_md_file(info_file))
-            if os.path.exists(img_file):
-                st.image(img_file)
-        
-        # Executa a lógica da página selecionada
+            if os.path.exists(img_file): st.image(img_file)
         page_func()
 
     show_icons()
 
-# ==============================================================================
-# 5. EXECUÇÃO (O ÚNICO COMANDO EM NÍVEL DE MÓDULO NO FINAL)
-# ==============================================================================
-
 if __name__ == "__main__":
     main()
+    
