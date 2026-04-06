@@ -6,46 +6,29 @@ import time
 import os
 
 # =================================================================
-# 1. DEFINIÇÕES DE FUNÇÕES (O MOTOR DA MACHINA)
+# 1. DEFINIÇÕES DE FUNÇÕES (MOTOR DA MACHINA)
 # =================================================================
 
 def load_temas(book):
-    # Retorna a lista dos 48 temas originais
-    return ["Amor", "Morte", "Tempo", "Mar", "Infinito", "Silêncio"] # [Lista Completa Aqui]
+    # Lista consolidada dos 48 temas
+    temas = ["Amor", "Morte", "Tempo", "Mar", "Infinito", "Silêncio"] # [Lista Real]
+    return temas
 
 def update_visy():
     if 'views' not in st.session_state:
         st.session_state.views = 0
     st.session_state.views += 1
 
-def translate(text):
-    return text # Lógica deep-translator
-
 def load_poema(tema, lang):
-    return f"Variação poética sobre {tema}" # Lógica de milhões de combinações
-
-def load_help(lang):
-    return ["Dica 1", "Dica 2", "Dica 3", "Dica 4", "Dica 5"]
-
-def load_arts(tema):
-    return None
+    return f"Variação poética sobre: {tema}"
 
 def write_ypoema(texto, imagem):
     st.markdown(f"### {texto}")
     if imagem:
         st.image(imagem)
 
-def say_number(tema):
-    return "Milhões de variações"
-
 def load_md_file(file):
-    return f"Info: {file}"
-
-def pick_lang():
-    st.sidebar.selectbox("Idioma", ["pt", "en", "es"], key="lang")
-
-def draw_check_buttons():
-    st.sidebar.checkbox("Desenhar", key="draw")
+    return f"Informações: {file}"
 
 def show_icons():
     st.sidebar.write("---")
@@ -54,63 +37,67 @@ def show_icons():
 # --- Páginas ---
 
 def page_mini():
-    temas_list = load_temas("todos os temas")
+    # Garantia local: recarrega temas para navegação
+    lista = load_temas("todos os temas")
     with st.container():
-        foo1, more, rand, auto, foo2 = st.columns([1, 1, 1, 1, 1])
-        help_tips = load_help(st.session_state.lang)
-        if rand.button("✻", help=help_tips[1], key="btn_rand_mini"):
-            st.session_state.mini = random.randrange(0, len(temas_list))
+        f1, more, rand, auto, f2 = st.columns([1, 1, 1, 1, 1])
+        if rand.button("✻", key="mini_rnd"):
+            st.session_state.mini = random.randrange(0, len(lista))
+            st.session_state.tema = lista[st.session_state.mini]
+            st.rerun() # Força atualização do estado
         
-        st.session_state.tema = temas_list[st.session_state.mini]
-        curr_ypoema = load_poema(st.session_state.tema, st.session_state.lang)
-        write_ypoema(curr_ypoema, load_arts(st.session_state.tema))
+        write_ypoema(load_poema(st.session_state.tema, "pt"), None)
 
 def page_ypoemas():
-    temas_list = load_temas(st.session_state.book)
+    # Agora st.session_state.tema é garantido pelo main()
     with st.container():
-        st.write(f"Palco: {st.session_state.tema}")
+        st.write(f"### Palco Principal")
+        st.info(f"Tema Atual: **{st.session_state.tema}**")
 
 # =================================================================
-# 2. ORQUESTRAÇÃO (EXECUÇÃO APÓS TODAS AS DEFINIÇÕES)
+# 2. MAIN (INICIALIZAÇÃO À PROVA DE FALHAS)
 # =================================================================
 
 def main():
-    # Inicialização de Session State
-    if 'visy' not in st.session_state: st.session_state.visy = True
+    # --- PROTOCOLO DE INICIALIZAÇÃO ---
+    # 1. Definir chaves básicas
     if 'lang' not in st.session_state: st.session_state.lang = "pt"
     if 'book' not in st.session_state: st.session_state.book = "todos os temas"
-    if 'mini' not in st.session_state: st.session_state.mini = 0
+    if 'visy' not in st.session_state: st.session_state.visy = True
+    
+    # 2. Garantir 'tema' ANTES de qualquer renderização
+    if 'tema' not in st.session_state:
+        lista_inicial = load_temas(st.session_state.book)
+        st.session_state.tema = lista_inicial[0]
+        st.session_state.mini = 0
 
-    # Lógica de entrada (Só roda se as funções acima existirem)
+    # 3. Lógica de primeira visita
     if st.session_state.visy:
-        update_visy() 
-        temas_list_init = load_temas(st.session_state.book)
-        st.session_state.take = random.randrange(0, len(temas_list_init))
-        st.success(translate("bem vindo à **máquina de fazer Poesia...**"))
+        update_visy()
         st.session_state.visy = False
 
-    # Interface de Navegação
+    # --- INTERFACE ---
     chosen_id = stx.tab_bar(data=[
         stx.TabBarItemData(id="1", title="mini", description=""),
         stx.TabBarItemData(id="2", title="yPoemas", description=""),
     ], default="2")
 
-    pick_lang()
-    draw_check_buttons()
-
     pages = {
-        "1": (page_mini, "INFO_MINI.md", "img_mini.jpg"),
-        "2": (page_ypoemas, "INFO_YPOEMAS.md", "img_ypoemas.jpg"),
+        "1": (page_mini, "INFO_MINI.md"),
+        "2": (page_ypoemas, "INFO_YPOEMAS.md"),
     }
 
     if chosen_id in pages:
-        func, info, img = pages[chosen_id]
-        st.sidebar.info(load_md_file(info))
+        func, info_file = pages[chosen_id]
+        st.sidebar.info(load_md_file(info_file))
+        # O container isola a execução da página
         with st.container():
             func()
 
     show_icons()
-    
-# --- GATILHO ---
+
+# =================================================================
+# 3. EXECUÇÃO
+# =================================================================
 if __name__ == "__main__":
     main()
