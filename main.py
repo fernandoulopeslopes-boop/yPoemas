@@ -6,12 +6,12 @@ import base64
 import socket
 import streamlit as st
 
-from extra_streamlit_components import TabBar as stx
+import extra_streamlit_components as stx
 from datetime import datetime
 from lay_2_ypo import gera_poema
 
 # =================================================================
-# 1. SETTINGS & INTERFACE (CORREÇÃO DE SOBREPOSIÇÃO)
+# 1. SETTINGS & INTERFACE
 # =================================================================
 
 st.set_page_config(
@@ -21,44 +21,6 @@ st.set_page_config(
     initial_sidebar_state="auto",
 )
 
-# CSS REVISADO: Resolve a invasão da sidebar no palco
-st.markdown(
-    """ <style>
-    footer {visibility: hidden;}
-    
-    /* Ajuste de Margens para evitar sobreposição */
-    [data-testid="stSidebarNav"] {padding-top: 2rem;}
-    .main .block-container {
-        padding-top: 2rem;
-        padding-bottom: 2rem;
-        max-width: 95%;
-    }
-    
-    /* Estilização dos Containers de Poesia */
-    .logo-text {
-        font-weight: 400;
-        font-size: 20px;
-        font-family: 'serif';
-        color: #1a1a1a;
-        line-height: 1.6;
-        padding: 20px;
-        background-color: #f9f9f9;
-        border-radius: 10px;
-    }
-    .logo-img {
-        float: right;
-        margin-left: 20px;
-        border-radius: 5px;
-        max-width: 250px;
-    }
-    </style> """,
-    unsafe_allow_html=True,
-)
-
-# =================================================================
-# 2. FERRAMENTAS & MOTOR (RECHEIO REAL)
-# =================================================================
-
 def have_internet(host="8.8.8.8", port=53, timeout=3):
     try:
         socket.setdefaulttimeout(timeout)
@@ -67,125 +29,128 @@ def have_internet(host="8.8.8.8", port=53, timeout=3):
     except:
         return False
 
-# Inicialização de dependências de Tradução/Voz
 if have_internet():
     try:
         from deep_translator import GoogleTranslator
         from gtts import gTTS
     except ImportError:
-        st.sidebar.warning("Módulos de Tradução/Voz ausentes.")
+        pass
 
-# IP para identificação de arquivos temporários (LYPO/TYPO)
 hostname = socket.gethostname()
 IPAddres = socket.gethostbyname(hostname)
 
+st.markdown(
+    """ <style>
+    footer {visibility: hidden;}
+    
+    .main .block-container {
+        max-width: 900px;
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+    }
+
+    .logo-text {
+        font-weight: 400;
+        font-size: 20px;
+        font-family: 'IBM Plex Sans', serif;
+        color: #000000;
+        line-height: 1.6;
+        padding-top: 10px;
+        padding-left: 15px;
+    }
+    
+    .logo-img {
+        float: right;
+        margin-left: 20px;
+        max-width: 280px;
+        border-radius: 4px;
+    }
+
+    [data-testid="stSidebar"] {
+        min-width: 310px;
+        max-width: 310px;
+    }
+    </style> """,
+    unsafe_allow_html=True,
+)
+
+# =================================================================
+# 2. SESSION STATE
+# =================================================================
+
+if "lang" not in st.session_state: st.session_state.lang = "pt"
+if "last_lang" not in st.session_state: st.session_state.last_lang = "pt"
+if "book" not in st.session_state: st.session_state.book = "livro vivo"
+if "take" not in st.session_state: st.session_state.take = 0
+if "tema" not in st.session_state: st.session_state.tema = "Fatos"
+if "visy" not in st.session_state: st.session_state.visy = True
+if "draw" not in st.session_state: st.session_state.draw = True
+if "talk" not in st.session_state: st.session_state.talk = False
+if "vydo" not in st.session_state: st.session_state.vydo = False
+if "arts" not in st.session_state: st.session_state.arts = []
+
+# =================================================================
+# 3. TOOLS & LOADERS
+# =================================================================
+
 def translate(input_text):
-    if st.session_state.lang == "pt": return input_text
-    if not have_internet(): return input_text
+    if st.session_state.lang == "pt" or not have_internet():
+        return input_text
     try:
-        output_text = GoogleTranslator(source="pt", target=st.session_state.lang).translate(text=input_text)
-        return output_text.replace("<br>>", "<br>")
+        return GoogleTranslator(source="pt", target=st.session_state.lang).translate(text=input_text)
     except:
         return input_text
 
-# =================================================================
-# 3. INICIALIZAÇÃO DE ESTADO (PROTOCOLO OBRIGATÓRIO)
-# =================================================================
-
-def init_session():
-    defaults = {
-        "lang": "pt", "last_lang": "pt", "book": "livro vivo",
-        "take": 0, "mini": 0, "tema": "Fatos", "visy": True,
-        "draw": True, "talk": False, "vydo": False, "auto": False,
-        "nany_visy": 0, "arts": []
-    }
-    for key, val in defaults.items():
-        if key not in st.session_state:
-            st.session_state[key] = val
-
-# =================================================================
-# 4. FUNÇÕES DE CARREGAMENTO (LOADERS)
-# =================================================================
-
 def load_temas(book):
-    file_path = os.path.join("./base/rol_" + book + ".txt")
-    if not os.path.exists(file_path): return ["Fatos"]
-    with open(file_path, "r", encoding="utf-8") as f:
-        return [line.strip().replace(" ", "") for line in f if line.strip()]
-
-def load_poema_real(nome_tema):
-    # Chama o seu script lay_2_ypo.py
-    script = gera_poema(nome_tema, "")
-    lypo_user = f"LYPO_{IPAddres}"
-    novo_ypoema = "<br>".join(script)
-    
-    # Salva para tradução futura
-    with open(os.path.join("./temp/", lypo_user), "w", encoding="utf-8") as f:
-        f.write(f"{nome_tema}\n{novo_ypoema}")
-    return novo_ypoema
+    try:
+        with open(os.path.join("./base/rol_" + book + ".txt"), "r", encoding="utf-8") as f:
+            return [line.strip().replace(" ", "") for line in f if line.strip()]
+    except:
+        return ["Fatos"]
 
 def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):
-    img_html = ""
-    if LOGO_IMAGE:
+    if LOGO_IMAGE == None:
+        st.markdown(f"<div class='container'><p class='logo-text'>{LOGO_TEXTO}</p></div>", unsafe_allow_html=True)
+    else:
         try:
             with open(LOGO_IMAGE, "rb") as f:
-                data = base64.b64encode(f.read()).decode()
-            img_html = f'<img class="logo-img" src="data:image/jpg;base64,{data}">'
-        except: pass
-    
-    st.markdown(
-        f'<div class="container">{img_html}<p class="logo-text">{LOGO_TEXTO}</p></div>',
-        unsafe_allow_html=True
-    )
+                img_base64 = base64.b64encode(f.read()).decode()
+            st.markdown(
+                f"""<div class='container'>
+                    <img class='logo-img' src='data:image/jpg;base64,{img_base64}'>
+                    <p class='logo-text'>{LOGO_TEXTO}</p>
+                </div>""", 
+                unsafe_allow_html=True
+            )
+        except:
+            st.markdown(f"<div class='container'><p class='logo-text'>{LOGO_TEXTO}</p></div>", unsafe_allow_html=True)
 
 # =================================================================
-# 5. ORQUESTRAÇÃO DAS PÁGINAS
+# 4. PAGES
+# =================================================================
+
+def page_ypoemas():
+    temas_list = load_temas(st.session_state.book)
+    if st.session_state.take >= len(temas_list): st.session_state.take = 0
+    st.session_state.tema = temas_list[st.session_state.take]
+    
+    poema_raw = gera_poema(st.session_state.tema, "")
+    poema_formatado = "<br>".join(poema_raw)
+    
+    if st.session_state.lang != "pt":
+        poema_formatado = translate(poema_formatado)
+
+    st.write(f"### {st.session_state.tema}")
+    write_ypoema(poema_formatado, None)
+
+# =================================================================
+# 5. MAIN
 # =================================================================
 
 def main():
-    init_session()
-    
-    # Lógica de primeira visita
     if st.session_state.visy:
-        # update_visy() # Ativar quando o arquivo existir
         st.session_state.visy = False
 
-    # Barra de Navegação
-    chosen_id = stx(data=[
+    chosen_id = stx.tab_bar(data=[
         stx.TabBarItemData(id="1", title="mini", description=""),
         stx.TabBarItemData(id="2", title="yPoemas", description=""),
-    ], default="2")
-
-    # Controles Laterais
-    st.sidebar.title("Machina")
-    # pick_lang() # Insira sua função de botões aqui
-    # draw_check_buttons() # Insira sua função de checkboxes aqui
-
-    if chosen_id == "1":
-        st.subheader("Pílula Poética")
-        temas = load_temas("todos os temas")
-        if st.button("✻ Aleatório"):
-            st.session_state.mini = random.randrange(0, len(temas))
-            st.session_state.tema = temas[st.session_state.mini]
-        
-        poema = load_poema_real(st.session_state.tema)
-        write_ypoema(poema, None)
-
-    elif chosen_id == "2":
-        temas = load_temas(st.session_state.book)
-        st.session_state.tema = temas[st.session_state.take]
-        
-        st.write(f"### {st.session_state.tema}")
-        poema = load_poema_real(st.session_state.tema)
-        
-        # Renderiza com imagem se habilitado
-        img = None
-        # if st.session_state.draw: img = load_arts(st.session_state.tema)
-        
-        write_ypoema(poema, img)
-
-    st.sidebar.write("---")
-    st.sidebar.write("Máquina de Fazer Poesia © 2026")
-
-if __name__ == "__main__":
-    main()
