@@ -3,3 +3,4 @@ gTTS
 streamlit
 streamlit-antd-components
 extra-streamlit-components
+streamlit-selection-bar
