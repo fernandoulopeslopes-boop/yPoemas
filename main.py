@@ -4,126 +4,50 @@ import random
 import time
 import os
 
-# --- MESTRE: FUNÇÕES DE UTILIDADE (MEMÓRIA > DISCO) ---
+# --- 1. FUNÇÕES DE SUPORTE E UTILIDADE ---
+def normalize_text(text):
+    if not text: return ""
+    return text.replace('\r\n', '\n').strip()
 
 def get_processed_content(tema, seed=""):
-    """Gerencia carregamento, tradução e log em um único fluxo de memória."""
-    try:
-        # Evita recarregar se a língua não mudou e o tema é o mesmo (Otimização)
-        curr_ypoema = load_poema(tema, seed)
-        curr_ypoema = load_lypo()
-        
-        if st.session_state.lang != "pt":
-            curr_ypoema = translate(curr_ypoema)
-            # Normalização de quebras de linha em memória (Substitui o I/O de arquivo)
-            curr_ypoema = curr_ypoema.replace('\r\n', '\n').strip()
-            
-        update_readings(tema)
-        return curr_ypoema
-    except Exception as e:
-        return f"Erro ao processar conteúdo: {e}"
+    # (Lógica interna omitida para brevidade, mantenha a versão anterior)
+    curr_ypoema = load_poema(tema, seed)
+    curr_ypoema = load_lypo()
+    if st.session_state.lang != "pt":
+        curr_ypoema = translate(curr_ypoema)
+    update_readings(tema)
+    return normalize_text(curr_ypoema)
 
-def render_display(texto, tema, context=""):
-    """Padroniza a exibição de imagem + texto em todas as páginas."""
+def render_display(texto, tema):
     image = load_arts(tema) if st.session_state.draw else None
     write_ypoema(texto, image)
     if st.session_state.talk:
         talk(texto)
 
-# --- MESTRE: PÁGINAS REFATORADAS ---
+# --- 2. DEFINIÇÃO DAS PÁGINAS (Devem vir antes do Main) ---
 
 def page_mini():
-    temas_list = load_temas("todos os temas")
-    maxy = len(temas_list)
+    # ... código da page_mini ...
+    pass
 
-    # Sidebar UI
-    with st.sidebar:
-        wait_time = st.slider(translate("tempo de exibição (segundos):"), 5, 60, 10)
-    
-    col1, col2, col3, col4, col5 = st.columns([4, 1, 1, 1, 4])
-    help_tips = load_help(st.session_state.lang)
-    
-    btn_rand = col3.button("✻", help=help_tips[1])
-    st.session_state.auto = col4.checkbox("auto", value=st.session_state.get('auto', False))
-
-    if btn_rand:
-        st.session_state.mini = random.randrange(0, maxy)
-
-    # Placeholder para evitar "jumpy UI"
-    placeholder = st.empty()
-
-    # LÓGICA DE EXECUÇÃO
-    if st.session_state.auto:
-        # Loop controlado por Rerun (Não trava a Main Thread)
-        st.session_state.mini = random.randrange(0, maxy)
-        tema = temas_list[st.session_state.mini]
-        texto = get_processed_content(tema)
-        
-        with placeholder.container():
-            render_display(texto, tema)
-            st.caption(f"Próximo em {wait_time}s...")
-        
-        time.sleep(wait_time)
-        st.rerun()
-    else:
-        # Modo Manual
-        st.session_state.mini %= maxy
-        tema = temas_list[st.session_state.mini]
-        
-        # Botão More (+)
-        analise = say_number(tema)
-        if col2.button("✚", help=help_tips[4] + " • " + analise):
-            pass # Lógica de expansão se necessária
-
-        texto = get_processed_content(tema)
-        with placeholder.container():
-            render_display(texto, tema)
+def page_ypoemas():
+    # ... código da page_ypoemas ...
+    pass
 
 def page_eureka():
-    help_tips = load_help(st.session_state.lang)
-    col_input, col_plus, col_rand, col_help, col_res = st.columns([2.5, 1.5, 1.5, 0.7, 4])
+    # ... código da page_eureka ...
+    pass
 
-    with col_input:
-        find_what = st.text_input(label=translate("buscar..."))
+# ... defina page_off_machina, page_books, page_polys, page_abouts aqui ...
 
-    if len(find_what) < 3:
-        st.warning(translate("mínimo 3 letras..."))
-        return
-
-    eureka_list = load_eureka(find_what)
-    if not eureka_list:
-        st.error(translate("nada encontrado."))
-        return
-
-    # Processamento da lista em memória
-    seed_data = []
-    for line in eureka_list:
-        p, _, f = line.partition(" : ")
-        if p and f: seed_data.append({"display": f"{p} ➪ {f}", "tema": f[0:-5], "seed": f"{p} ➪ {f}"})
-
-    if col_rand.button("✻"):
-        st.session_state.eureka = random.randrange(0, len(seed_data))
-
-    selected_idx = col_res.selectbox(
-        f"↓ {len(seed_data)} ocorrências",
-        range(len(seed_data)),
-        index=st.session_state.get('eureka', 0) % len(seed_data),
-        format_func=lambda x: seed_data[x]["display"]
-    )
-    st.session_state.eureka = selected_idx
-    
-    item = seed_data[selected_idx]
-    texto = get_processed_content(item["tema"], item["seed"])
-    
-    with st.expander("EUREKA!", expanded=True):
-        render_display(texto, item["tema"])
-
-# --- MESTRE: ENTRY POINT ---
-
+# --- 3. FUNÇÃO PRINCIPAL (MAIN) ---
 def main():
-    # Estilização básica para remover margens excessivas
-    st.set_page_config(layout="wide")
-    
+    # Configuração de página deve ser a PRIMEIRA coisa do Streamlit
+    if 'setup_done' not in st.session_state:
+        st.set_page_config(layout="wide", page_title="Máquina de Poesia")
+        st.session_state.setup_done = True
+
+    # Agora sim, chamadas de funções que já foram lidas acima
     chosen_id = stx.tab_bar(data=[
         stx.TabBarItemData(id="1", title="mini", description=""),
         stx.TabBarItemData(id="2", title="yPoemas", description=""),
@@ -134,10 +58,10 @@ def main():
         stx.TabBarItemData(id="7", title="about", description=""),
     ], default="2")
 
+    # Funções globais de UI (certifique-se de que estão definidas no seu arquivo de funções importadas)
     pick_lang()
     draw_check_buttons()
 
-    # Mapeamento de Info/Imagens da Sidebar
     pages_config = {
         "1": ("INFO_MINI.md", "img_mini.jpg", page_mini),
         "2": ("INFO_YPOEMAS.md", "img_ypoemas.jpg", page_ypoemas),
@@ -152,9 +76,10 @@ def main():
         info_md, img, func = pages_config[chosen_id]
         st.sidebar.info(load_md_file(info_md))
         st.sidebar.image(img)
-        func()
+        func() # Executa a página selecionada
 
     show_icons()
 
+# --- 4. EXECUÇÃO FINAL (O GATILHO) ---
 if __name__ == "__main__":
     main()
