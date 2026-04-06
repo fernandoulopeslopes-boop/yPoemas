@@ -1,3 +1,4 @@
+```python
 import streamlit as st
 import random
 import os
@@ -6,9 +7,10 @@ from pathlib import Path
 from deep_translator import GoogleTranslator
 from gtts import gTTS
 
-# --- [ PROTOCOLO DE SEGURANÇA E DISPARO v1.7.1 ] ---
-# Reintegração Total: Dicionários, Tradução, Vox e Blindagem de Caminhos.
-# Estabilização de Layout e Prevenção de SyntaxError.
+# --- [ PROTOCOLO DE SEGURANÇA E DISPARO v1.7.4 ] ---
+# Diagnóstico: O estado da sessão (st.session_state) está funcional, 
+# mas o feedback visual depende da persistência do gatilho.
+# Versão Consolidada: Dicionários, Tradução, Vox e Blindagem de Caminhos.
 
 st.set_page_config(
     page_title="Machina yPoemas",
@@ -91,7 +93,7 @@ with st.sidebar:
         ["O Palco (Home)", "O Manual (About)", "Traduttore & Vox"]
     )
     st.markdown("---")
-    st.caption("v1.7.1 - Versão Consolidada")
+    st.caption("v1.7.4 - Versão Consolidada")
 
 # --- PÁGINA 1: O PALCO (HOME) ---
 if menu_choice == "O Palco (Home)":
@@ -99,14 +101,16 @@ if menu_choice == "O Palco (Home)":
     
     tema_selecionado = st.selectbox("Selecione o Tema:", list(DIC_TEMAS.keys()))
     
+    # O botão dispara o sorteio e armazena no session_state
     if st.button("Girar a Machina"):
-        poema = random.choice(DIC_TEMAS[tema_selecionado])
-        st.session_state.current_poem = poema
+        poema_escolhido = random.choice(DIC_TEMAS[tema_selecionado])
+        st.session_state.current_poem = poema_escolhido
     
+    # Exibição persistente do resultado
     if "current_poem" in st.session_state:
         st.markdown(f'<div class="poesia-box">{st.session_state.current_poem}</div>', unsafe_allow_html=True)
     else:
-        st.info("Escolha um tema e gire a Machina.")
+        st.info("Escolha um tema e gire a Machina para revelar o Drope.")
 
 # --- PÁGINA 2: O MANUAL (ABOUT) ---
 elif menu_choice == "O Manual (About)":
@@ -149,3 +153,4 @@ elif menu_choice == "Traduttore & Vox":
         st.warning("Gere um poema no Palco primeiro.")
 
 # --- FIM DO ARQUIVO ---
+```
