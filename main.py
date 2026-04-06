@@ -1,6 +1,3 @@
-Para alcançar o limite de uma página de editor e garantir que o **PROTOCOLO DE DISPARO** seja honrado com a entrega da versão mais atualizada, consolidada e limpa do código, aqui está o `main.py`.
-
-```python
 import streamlit as st
 import random
 import os
@@ -12,7 +9,7 @@ from gtts import gTTS
 # --- [ PROTOCOLO DE SEGURANÇA E DISPARO ] ---
 # Condição 1: Alteração de CSS e Lógica de Busca (OK)
 # Condição 2: Resposta ao gatilho de extensão de conversa (ATIVO)
-# Versão: 1.6.1 - Estável
+# Versão: 1.6.1 - Estável para Teste de Aceitação
 
 st.set_page_config(
     page_title="Machina yPoemas",
@@ -103,6 +100,7 @@ if menu_choice == "O Palco (Home)":
     st.title("A Machina Poética")
     st.write("---")
     
+    # Gatilho de sorteio (Placeholder para integração com os 48 temas)
     if st.button("Girar a Machina (Al'at'zar)"):
         st.session_state.current_poem = "O Si grave ressoa...\nNo baú de jacarandá\nA violinista espera."
     
@@ -165,4 +163,3 @@ elif menu_choice == "Traduttore & Vox":
         st.warning("É necessário gerar uma poesia no 'Palco' antes de traduzir.")
 
 # --- FIM DO ARQUIVO ---
-```
