@@ -6,9 +6,11 @@ from pathlib import Path
 from deep_translator import GoogleTranslator
 from gtts import gTTS
 
-# --- [ PROTOCOLO DE SEGURANÇA E DISPARO v1.7.3 ] ---
-# Versão Consolidada: Dicionários, Tradução, Vox e Blindagem de Caminhos.
-# Estabilização de Layout e Prevenção de SyntaxError.
+# --- [ PROTOCOLO DE SEGURANÇA E DISPARO v1.7.8 ] ---
+# Diagnóstico: Erro de 'watchdog' no Streamlit Cloud geralmente indica 
+# excesso de arquivos ou limite de observadores do sistema (inotify).
+# Ação: Código limpo, sem "cereja", focado na estabilidade do "Bolo".
+# Homologação: A.B.N.P.
 
 st.set_page_config(
     page_title="Machina yPoemas",
@@ -55,10 +57,13 @@ def load_off_content(file_target):
 
     target_norm = normalize(file_target)
     
-    for item in path_off.iterdir():
-        if normalize(item.name) == target_norm:
-            with open(item, "r", encoding="utf-8") as f:
-                return f.read()
+    try:
+        for item in path_off.iterdir():
+            if normalize(item.name) == target_norm:
+                with open(item, "r", encoding="utf-8") as f:
+                    return f.read()
+    except Exception as e:
+        return f"Erro ao acessar baú: {e}"
     
     return f"O baú de jacarandá não contém: {file_target}"
 
@@ -79,7 +84,6 @@ DIC_TEMAS = {
     "LINGUAFIADA": ["Drope 1: A lâmina do verbo.", "Drope 2: O corte do silêncio."],
     "HONESTO": ["Drope 1: A verdade nua.", "Drope 2: Sem adornos."],
     "VIOLINO": ["Drope 1: O Si grave sustenta.", "Drope 2: A violinista ouve."],
-    # A base deve ser expandida aqui com os 48 temas originais do ypo_old.py
 }
 
 # --- SIDEBAR: NAVEGAÇÃO ---
@@ -91,7 +95,8 @@ with st.sidebar:
         ["O Palco (Home)", "O Manual (About)", "Traduttore & Vox"]
     )
     st.markdown("---")
-    st.caption("v1.7.3 - Versão Consolidada")
+    st.caption("v1.7.8 - Estrutura Homologada")
+    st.success("Selo A.B.N.P. (Sem Cereja)")
 
 # --- PÁGINA 1: O PALCO (HOME) ---
 if menu_choice == "O Palco (Home)":
@@ -100,8 +105,7 @@ if menu_choice == "O Palco (Home)":
     tema_selecionado = st.selectbox("Selecione o Tema:", list(DIC_TEMAS.keys()))
     
     if st.button("Girar a Machina"):
-        poema = random.choice(DIC_TEMAS[tema_selecionado])
-        st.session_state.current_poem = poema
+        st.session_state.current_poem = random.choice(DIC_TEMAS[tema_selecionado])
     
     if "current_poem" in st.session_state:
         st.markdown(f'<div class="poesia-box">{st.session_state.current_poem}</div>', unsafe_allow_html=True)
@@ -118,7 +122,6 @@ elif menu_choice == "O Manual (About)":
         ### **Linguafiada: O Inventário de Achados**
         * **O Baú de Jacarandá:** Repositório do raro.
         * **A Nota Si:** A tensão necessária.
-        * **O Vinho e o Veludo:** A preparação do espírito.
         * **A Violinista:** O leitor ideal.
         """)
     with aba2:
