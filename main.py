@@ -1,127 +1,188 @@
-import streamlit as st
-import streamlit_antd_components as sac
-import extra_streamlit_components as stx
-import random
-import time
 import os
+import re
+import time
+import random
+import base64
+import socket
+import streamlit as st
+
+from extra_streamlit_components import TabBar as stx
+from datetime import datetime
+from lay_2_ypo import gera_poema
 
 # =================================================================
-# 1. MOTOR DA MACHINA (RECHEIO REAL RESTAURADO)
+# 1. SETTINGS & INTERFACE (CORREÇÃO DE SOBREPOSIÇÃO)
+# =================================================================
+
+st.set_page_config(
+    page_title="a máquina de fazer Poesia - yPoemas",
+    page_icon=":star:",
+    layout="centered",
+    initial_sidebar_state="auto",
+)
+
+# CSS REVISADO: Resolve a invasão da sidebar no palco
+st.markdown(
+    """ <style>
+    footer {visibility: hidden;}
+    
+    /* Ajuste de Margens para evitar sobreposição */
+    [data-testid="stSidebarNav"] {padding-top: 2rem;}
+    .main .block-container {
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+        max-width: 95%;
+    }
+    
+    /* Estilização dos Containers de Poesia */
+    .logo-text {
+        font-weight: 400;
+        font-size: 20px;
+        font-family: 'serif';
+        color: #1a1a1a;
+        line-height: 1.6;
+        padding: 20px;
+        background-color: #f9f9f9;
+        border-radius: 10px;
+    }
+    .logo-img {
+        float: right;
+        margin-left: 20px;
+        border-radius: 5px;
+        max-width: 250px;
+    }
+    </style> """,
+    unsafe_allow_html=True,
+)
+
+# =================================================================
+# 2. FERRAMENTAS & MOTOR (RECHEIO REAL)
+# =================================================================
+
+def have_internet(host="8.8.8.8", port=53, timeout=3):
+    try:
+        socket.setdefaulttimeout(timeout)
+        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
+        return True
+    except:
+        return False
+
+# Inicialização de dependências de Tradução/Voz
+if have_internet():
+    try:
+        from deep_translator import GoogleTranslator
+        from gtts import gTTS
+    except ImportError:
+        st.sidebar.warning("Módulos de Tradução/Voz ausentes.")
+
+# IP para identificação de arquivos temporários (LYPO/TYPO)
+hostname = socket.gethostname()
+IPAddres = socket.gethostbyname(hostname)
+
+def translate(input_text):
+    if st.session_state.lang == "pt": return input_text
+    if not have_internet(): return input_text
+    try:
+        output_text = GoogleTranslator(source="pt", target=st.session_state.lang).translate(text=input_text)
+        return output_text.replace("<br>>", "<br>")
+    except:
+        return input_text
+
+# =================================================================
+# 3. INICIALIZAÇÃO DE ESTADO (PROTOCOLO OBRIGATÓRIO)
+# =================================================================
+
+def init_session():
+    defaults = {
+        "lang": "pt", "last_lang": "pt", "book": "livro vivo",
+        "take": 0, "mini": 0, "tema": "Fatos", "visy": True,
+        "draw": True, "talk": False, "vydo": False, "auto": False,
+        "nany_visy": 0, "arts": []
+    }
+    for key, val in defaults.items():
+        if key not in st.session_state:
+            st.session_state[key] = val
+
+# =================================================================
+# 4. FUNÇÕES DE CARREGAMENTO (LOADERS)
 # =================================================================
 
 def load_temas(book):
-    """Retorna a lista real de 48 temas da Machina."""
-    # Aqui reside a estrutura que você consolidou
-    temas_list = [
-        "Amor", "Morte", "Tempo", "Mar", "Infinito", "Silêncio", 
-        "Memória", "Vento", "Luz", "Sombra", "Abismo", "Caos",
-        "Cosmos", "Destino", "Eternidade", "Fogo", "Gelo", "Horizonte",
-        "Incerteza", "Janela", "Labirinto", "Mundo", "Noite", "Olhar",
-        "Palavra", "Quimera", "Rastro", "Sonho", "Terra", "Universo",
-        "Vazio", "Zênite", "Alma", "Busca", "Caminho", "Dúvida",
-        "Espelho", "Fluxo", "Grito", "Hoje", "Instante", "Jogo",
-        "Kairós", "Lugar", "Névoa", "Origem", "Ponto", "Queda"
-    ]
-    return temas_list
+    file_path = os.path.join("./base/rol_" + book + ".txt")
+    if not os.path.exists(file_path): return ["Fatos"]
+    with open(file_path, "r", encoding="utf-8") as f:
+        return [line.strip().replace(" ", "") for line in f if line.strip()]
 
-def load_poema(tema, lang):
-    """A verdadeira lógica de milhões de variações poéticas."""
-    # Simulação da estrutura de matrizes que compõe a sua obra
-    versos_base = [
-        f"No {tema} se esconde o segredo,",
-        f"O {tema} flui como o rio sem margem,",
-        f"Onde o {tema} ecoa, a alma descansa.",
-        f"Fragmentos de {tema} sob o luar."
-    ]
-    return random.choice(versos_base)
+def load_poema_real(nome_tema):
+    # Chama o seu script lay_2_ypo.py
+    script = gera_poema(nome_tema, "")
+    lypo_user = f"LYPO_{IPAddres}"
+    novo_ypoema = "<br>".join(script)
+    
+    # Salva para tradução futura
+    with open(os.path.join("./temp/", lypo_user), "w", encoding="utf-8") as f:
+        f.write(f"{nome_tema}\n{novo_ypoema}")
+    return novo_ypoema
 
-def update_visy():
-    if 'views' not in st.session_state:
-        st.session_state.views = 0
-    st.session_state.views += 1
-
-def write_ypoema(texto, imagem):
-    """Renderiza a poesia com a dignidade que ela merece."""
-    st.markdown(f"## {texto}")
-    if imagem:
-        st.image(imagem)
-
-def load_md_file(file):
-    # Simulação do carregamento dos seus arquivos .md de ajuda
-    content = {
-        "INFO_MINI.md": "### Mini-Machina\nGerador rápido de pílulas poéticas.",
-        "INFO_YPOEMAS.md": "### yPoemas\nO palco principal das variações infinitas."
-    }
-    return content.get(file, "Informação não disponível.")
+def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):
+    img_html = ""
+    if LOGO_IMAGE:
+        try:
+            with open(LOGO_IMAGE, "rb") as f:
+                data = base64.b64encode(f.read()).decode()
+            img_html = f'<img class="logo-img" src="data:image/jpg;base64,{data}">'
+        except: pass
+    
+    st.markdown(
+        f'<div class="container">{img_html}<p class="logo-text">{LOGO_TEXTO}</p></div>',
+        unsafe_allow_html=True
+    )
 
 # =================================================================
-# 2. PÁGINAS (COM LÓGICA FUNCIONAL)
-# =================================================================
-
-def page_mini():
-    temas_list = load_temas("todos os temas")
-    with st.container():
-        f1, more, rand, auto, f2 = st.columns([1, 1, 1, 1, 1])
-        
-        # Sorteio manual
-        if rand.button("✻", help="Sortear novo tema", key="btn_rand"):
-            st.session_state.mini = random.randrange(0, len(temas_list))
-            st.session_state.tema = temas_list[st.session_state.mini]
-            st.rerun()
-
-        # Renderização do Poema Real
-        poema_gerado = load_poema(st.session_state.tema, st.session_state.lang)
-        write_ypoema(poema_gerado, None)
-
-def page_ypoemas():
-    with st.container():
-        st.write("---")
-        st.subheader(f"Palco: {st.session_state.tema}")
-        # Aqui entra a navegação complexa entre os 48 temas
-        st.info("Utilize os controles laterais para navegar na imensidão da Machina.")
-        poema_principal = load_poema(st.session_state.tema, st.session_state.lang)
-        write_ypoema(poema_principal, None)
-
-# =================================================================
-# 3. ORQUESTRAÇÃO (INICIALIZAÇÃO E FLUXO)
+# 5. ORQUESTRAÇÃO DAS PÁGINAS
 # =================================================================
 
 def main():
-    # --- GARANTIA DE ESTADO (OBRIGATÓRIO) ---
-    if 'lang' not in st.session_state: st.session_state.lang = "pt"
-    if 'book' not in st.session_state: st.session_state.book = "todos os temas"
-    if 'visy' not in st.session_state: st.session_state.visy = True
+    init_session()
     
-    # Inicializa tema se não existir
-    if 'tema' not in st.session_state:
-        temas_iniciais = load_temas("todos os temas")
-        st.session_state.tema = random.choice(temas_iniciais)
-        st.session_state.mini = 0
-
+    # Lógica de primeira visita
     if st.session_state.visy:
-        update_visy()
+        # update_visy() # Ativar quando o arquivo existir
         st.session_state.visy = False
 
-    # --- BARRA DE NAVEGAÇÃO ---
-    chosen_id = stx.tab_bar(data=[
-        stx.TabBarItemData(id="1", title="mini", description="Pílulas"),
-        stx.TabBarItemData(id="2", title="yPoemas", description="Palco"),
+    # Barra de Navegação
+    chosen_id = stx(data=[
+        stx.TabBarItemData(id="1", title="mini", description=""),
+        stx.TabBarItemData(id="2", title="yPoemas", description=""),
     ], default="2")
 
-    # Sidebar
+    # Controles Laterais
     st.sidebar.title("Machina")
-    st.sidebar.selectbox("Idioma", ["pt", "en", "es"], key="lang_select")
-    
-    pages = {
-        "1": (page_mini, "INFO_MINI.md"),
-        "2": (page_ypoemas, "INFO_YPOEMAS.md"),
-    }
+    # pick_lang() # Insira sua função de botões aqui
+    # draw_check_buttons() # Insira sua função de checkboxes aqui
 
-    if chosen_id in pages:
-        func, info_file = pages[chosen_id]
-        st.sidebar.info(load_md_file(info_file))
-        with st.container():
-            func()
+    if chosen_id == "1":
+        st.subheader("Pílula Poética")
+        temas = load_temas("todos os temas")
+        if st.button("✻ Aleatório"):
+            st.session_state.mini = random.randrange(0, len(temas))
+            st.session_state.tema = temas[st.session_state.mini]
+        
+        poema = load_poema_real(st.session_state.tema)
+        write_ypoema(poema, None)
+
+    elif chosen_id == "2":
+        temas = load_temas(st.session_state.book)
+        st.session_state.tema = temas[st.session_state.take]
+        
+        st.write(f"### {st.session_state.tema}")
+        poema = load_poema_real(st.session_state.tema)
+        
+        # Renderiza com imagem se habilitado
+        img = None
+        # if st.session_state.draw: img = load_arts(st.session_state.tema)
+        
+        write_ypoema(poema, img)
 
     st.sidebar.write("---")
     st.sidebar.write("Máquina de Fazer Poesia © 2026")
