@@ -110,7 +110,7 @@ def main():
             func()
 
     show_icons()
-
+    
 # --- GATILHO ---
 if __name__ == "__main__":
     main()
