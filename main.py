@@ -1,7 +1,7 @@
 import streamlit as st
 
 # --- CONFIGURAÇÃO DA PÁGINA ---
-st.set_page_config(page_title="Máquina de Fazer Poesia", layout="wide")
+st.set_page_config(page_title="a Máquina de Fazer Poesia", layout="wide")
 
 # --- PROTOCOLO DE ESTÉTICimport streamlit as st
 
@@ -94,7 +94,7 @@ with st.sidebar:
 # --- CORPO PRINCIPAL ---
 st.title("Máquina de Fazer Poesia")
 st.subheader(f"Interface: {pagina}")
-st.write(f"Idioma de processamento: **{idioma_selecionado}**")A: LARGURA REDUZIDA (300px) ---
+st.write(f"Idioma de processamento: **{idioma_selecionado}**")
 st.markdown(
     """
     <style>
