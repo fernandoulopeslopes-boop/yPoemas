@@ -11,36 +11,53 @@ st.markdown(
             min-width: 300px;
             max-width: 300px;
         }
-        
         .stSelectbox div[data-baseweb="select"] {
-            max-width: 180px;
+            max-width: 200px;
             margin: 0 auto;
         }
-
         .sidebar-text {
             font-size: 0.95rem;
             line-height: 1.5;
             padding: 10px;
+            text-align: justify;
         }
-        
         .sidebar-arte {
+            font-family: monospace;
+            white-space: pre;
             display: flex;
             justify-content: center;
-            margin-bottom: 20px;
+            padding: 20px 0;
+            color: #ff4b4b;
         }
     </style>
     """,
     unsafe_allow_html=True,
 )
 
-# --- SIDEBAR: MONTAGEM FINAL ---
+# --- DADOS DO PROJETO (ARTES E DESCRIÇÕES) ---
+conteudo_temas = {
+    "Ais": {
+        "arte": "((( ๑ )))\n(( ๑ ๑ ))\n( ๑ ๑ ๑ )",
+        "desc": "Variações sobre a dor e o suspiro. Explora a fonética do lamento em quindecilhões de formas."
+    },
+    "Amaré": {
+        "arte": ".~~~~.\n<  ♥  >\n'~~~~'",
+        "desc": "A fluidez do verbo amar conjugada com o movimento das marés. Poesia líquida e constante."
+    },
+    "Anjos": {
+        "arte": "  _\\/_  \n  \\  /  \n   \\/   ",
+        "desc": "Ascensão e queda. Versos que tocam o metafísico através da estrutura da 'máquina'."
+    }
+}
+
+# --- SIDEBAR: MONTAGEM COMPLETA ---
 with st.sidebar:
-    # 1. Dropdown de Idiomas (Sequência Original Corrigida)
+    # 1. Seletor de Idiomas (Sequência Original)
     idiomas_opcoes = {
         "Português": "pt",
         "Español": "es",
-        "Français": "fr",
         "Italiano": "it",
+        "Français": "fr",
         "English": "en",
         "Català": "ca"
     }
@@ -50,36 +67,33 @@ with st.sidebar:
         options=list(idiomas_opcoes.keys()),
         index=0,
         label_visibility="collapsed",
-        key="idioma_sidebar_final"
+        key="key_idioma_ypoemas"
     )
     
     st.divider()
 
-    # 2. Arte da Página Selecionada
-    # Espaço para renderizar o elemento visual/temático
+    # 2. Seletor de Tema (Navegação)
+    tema_selecionado = st.selectbox(
+        "Selecione o Tema:",
+        options=list(conteudo_temas.keys()),
+        key="key_tema_navegacao"
+    )
+
+    # 3. Arte da Página (Dinâmica)
     st.markdown('<div class="sidebar-arte">', unsafe_allow_html=True)
-    # Exemplo de placeholder para a arte temática do projeto
-    st.write("✨ **[ARTE TEMÁTICA]** ✨")
+    st.text(conteudo_temas[tema_selecionado]["arte"])
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # 3. Descrição da Página e Conteúdo do Corpo
+    # 4. Descrição da Página (Corpo da Sidebar)
     st.markdown('<div class="sidebar-text">', unsafe_allow_html=True)
-    
-    st.subheader("Sobre esta variação")
-    # Aqui o código recebe a descrição dinâmica baseada na página atual
-    st.write(
-        "Descrição detalhada da página que agora ocupa a largura de 300px, "
-        "permitindo uma leitura fluida sem quebras excessivas de linha."
-    )
+    st.markdown(f"### {tema_selecionado}")
+    st.write(conteudo_temas[tema_selecionado]["desc"])
     
     st.divider()
-    
-    # Outros elementos do corpo (ex: métricas ou infos rápidas)
-    st.caption("Status da Máquina:")
-    st.success("Gerador Ativo")
-    
+    st.caption(f"Processando em: {idiomas_opcoes[idioma_selecionado].upper()}")
     st.markdown('</div>', unsafe_allow_html=True)
 
 # --- CORPO PRINCIPAL ---
-st.title("Máquina de Fazer Poesia")
-st.write(f"Idioma de processamento: **{idioma_selecionado}**")
+st.title("a Máquina de Fazer Poesia")
+st.header(f"Variação: {tema_selecionado}")
+st.info(f"Aguardando geração de versos em {idioma_selecionado}...")
