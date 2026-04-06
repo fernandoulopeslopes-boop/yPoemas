@@ -29,13 +29,14 @@ st.markdown(
 
 # --- SIDEBAR: ORGANIZAÇÃO ---
 with st.sidebar:
+    # 1. Dropdown de Idiomas (Corrigido para incluir 'ca' e remover 'de')
     idiomas_opcoes = {
         "Português": "pt",
         "English": "en",
         "Español": "es",
         "Français": "fr",
-        "Deutsch": "de",
-        "Italiano": "it"
+        "Italiano": "it",
+        "Català": "ca"
     }
     
     idioma_selecionado = st.selectbox(
@@ -47,6 +48,7 @@ with st.sidebar:
     
     st.divider()
 
+    # 2. Espaço para Arte e Navegação
     st.markdown('<div class="sidebar-text">', unsafe_allow_html=True)
     st.markdown("### 🎨 Navegação & Arte")
     
