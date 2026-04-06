@@ -87,9 +87,9 @@ def page_eureka():
 
 def page_off_machina():
     offs = load_all_offs()
-    choice = st.selectbox(translate("Livros Off"), range(len(offs)), format_func=lambda x: offs[x])
-    # Lógica específica de navegação off-machina aqui
-    st.info("Navegação Off-Machina Ativa")
+    if offs:
+        choice = st.selectbox(translate("Livros Off"), range(len(offs)), format_func=lambda x: offs[x])
+        st.info(f"Livro Off selecionado: {offs[choice]}")
 
 def page_books():
     books = ["livro vivo", "poemas", "jocosos", "ensaios", "variações", "metalinguagem", "sociais", "todos os temas"]
@@ -97,18 +97,15 @@ def page_books():
     if st.button("Confirmar Seleção"):
         st.session_state.book = books[opt]
         st.session_state.take = 0
-        st.success(f"Livro atual: {books[opt]}")
 
 def page_polys():
-    st.subheader(translate("Configurações de Idioma"))
-    # pick_lang() já lida com a lógica, aqui apenas exibimos se necessário
     st.write(f"Idioma atual: {st.session_state.lang}")
 
 def page_abouts():
     st.markdown(load_md_file("INFO_ABOUT.md"))
 
 # ==========================================
-# 3. CORE EXECUTION (O MESTRE NO COMANDO)
+# 3. CORE EXECUTION
 # ==========================================
 
 def main():
@@ -116,7 +113,6 @@ def main():
         st.set_page_config(layout="wide", page_title="Máquina de Poesia")
     except: pass
 
-    # Tab Bar centralizada
     chosen_id = stx.tab_bar(data=[
         stx.TabBarItemData(id="1", title="mini", description=""),
         stx.TabBarItemData(id="2", title="yPoemas", description=""),
@@ -127,10 +123,10 @@ def main():
         stx.TabBarItemData(id="7", title="about", description=""),
     ], default="2")
 
-    # Funções de Setup UI (Assegure que pick_lang e draw_check_buttons existam)
     pick_lang()
     draw_check_buttons()
 
+    # BLOCO PAGES CORRIGIDO E FECHADO
     pages = {
         "1": ("INFO_MINI.md", "img_mini.jpg", page_mini),
         "2": ("INFO_YPOEMAS.md", "img_ypoemas.jpg", page_ypoemas),
@@ -138,3 +134,18 @@ def main():
         "4": ("INFO_OFF.md", "img_off.jpg", page_off_machina),
         "5": ("INFO_BOOKS.md", "img_books.jpg", page_books),
         "6": ("INFO_POLY.md", "img_poly.jpg", page_polys),
+        "7": ("INFO_ABOUT.md", "img_about.jpg", page_abouts)
+    }
+
+    if chosen_id in pages:
+        info_file, img_file, page_func = pages[chosen_id]
+        with st.sidebar:
+            st.info(load_md_file(info_file))
+            if os.path.exists(img_file):
+                st.image(img_file)
+        page_func()
+
+    show_icons()
+
+if __name__ == "__main__":
+    main()
