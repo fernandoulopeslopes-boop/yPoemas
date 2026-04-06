@@ -7,32 +7,28 @@ st.set_page_config(page_title="Máquina de Fazer Poesia", layout="wide")
 st.markdown(
     """
     <style>
-        /* Largura da sidebar apenas quando expandida */
         [data-testid="stSidebar"][aria-expanded="true"] {
             min-width: 380px;
             max-width: 450px;
         }
         
-        /* Estilização do Selectbox de idiomas */
         .stSelectbox div[data-baseweb="select"] {
             max-width: 200px;
             margin: 0 auto;
         }
 
-        /* Centralização e estilo para a arte da Mandala */
         .mandala-container {
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 200px; /* Tamanho da mandala */
+            font-size: 200px;
             line-height: 1;
-            margin-top: -30px; /* Ajuste vertical para ocupar o topo */
+            margin-top: -30px;
             margin-bottom: 20px;
-            color: #ff4b4b; /* Cor da mandala (opcional, ajustável) */
-            font-family: serif; /* Garante que o caractere Unicode renderize corretamente */
+            color: #ff4b4b;
+            font-family: serif;
         }
 
-        /* Ajuste fino para o texto das descrições */
         .sidebar-text {
             font-size: 0.95rem;
             line-height: 1.5;
@@ -45,12 +41,35 @@ st.markdown(
 
 # --- SIDEBAR: ORGANIZAÇÃO ---
 with st.sidebar:
-    # 1. Mandala no Topo (Ocupando o espaço da 'tripa')
-    # O caractere ☸ é a "Roda do Dharma", muitas vezes usada para representar mandalas
     st.markdown('<div class="mandala-container">☸</div>', unsafe_allow_html=True)
 
-    # 2. Dropdown de Idiomas (Logo abaixo da mandala)
     idiomas_opcoes = {
         "Português": "pt",
         "English": "en",
-        "Español": "es
+        "Español": "es",
+        "Français": "fr",
+        "Deutsch": "de",
+        "Italiano": "it"
+    }
+    
+    idioma_selecionado = st.selectbox(
+        "🌐 Idioma", 
+        options=list(idiomas_opcoes.keys()),
+        index=0,
+        label_visibility="collapsed" 
+    )
+    
+    st.divider()
+
+    st.markdown('<div class="sidebar-text">', unsafe_allow_html=True)
+    st.markdown("### 🎨 Navegação & Arte")
+    
+    st.info(
+        "A largura da sidebar agora suporta descrições detalhadas sem comprometer "
+        "a estética quando recolhida."
+    )
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# --- CORPO PRINCIPAL ---
+st.title("Máquina de Fazer Poesia")
+st.write(f"Idioma atual: **{idioma_selecionado}**")
