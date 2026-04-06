@@ -13,8 +13,8 @@ st.markdown(
     """
     <style>
         [data-testid="stSidebar"][aria-expanded="true"] {
-            min-width: 300px;
-            max-width: 300px;
+            min-width: 260px;
+            max-width: 280px;
         }
         
         .stSelectbox div[data-baseweb="select"] {
