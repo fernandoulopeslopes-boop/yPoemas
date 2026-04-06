@@ -4,52 +4,42 @@ import random
 import os
 
 # ==============================================================================
-# 1. MOTOR DE DADOS (FUNCIONAL E ROBUSTO)
+# 1. MOTOR DE DADOS (DIRETÓRIOS REAIS)
 # ==============================================================================
 
-PATH_TEMAS = "temas"
+PATH_DATA = "data"          # 45.000 verbetes (.txt)
+PATH_MANUAIS = "md_files"   # Manuais (.md)
+PATH_BASE = "base"          # Listas de livros (rol_*.txt)
+PATH_OFF = "off-maquina"    # Livros off-machina
 
-def ensure_path():
-    """Garante a existência do diretório para evitar erros de execução."""
-    if not os.path.exists(PATH_TEMAS):
-        os.makedirs(PATH_TEMAS)
+def load_md_content(file_name):
+    """Busca os manuais estritamente na pasta \md_files."""
+    path = os.path.join(PATH_MANUAIS, file_name)
+    if os.path.exists(path):
+        with open(path, "r", encoding="utf-8") as f:
+            return f.read()
+    return f"Erro: {file_name} não encontrado em {PATH_MANUAIS}"
 
-def load_temas(book_name="todos os temas"):
-    ensure_path()
-    try:
-        # Lista arquivos .txt e limpa a extensão
-        arquivos = sorted([f.replace(".txt", "") for f in os.listdir(PATH_TEMAS) if f.endswith(".txt")])
-        if book_name != "todos os temas":
-            # Filtro por livro baseado no nome do arquivo
-            return [f for f in arquivos if book_name.lower() in f.lower()]
-        return arquivos
-    except:
-        return []
+def load_book_list(book_name):
+    """Carrega os temas de um livro da pasta \base."""
+    # Garante o prefixo 'rol_' conforme sua estrutura
+    file_name = f"rol_{book_name}.txt" if not book_name.startswith("rol_") else f"{book_name}.txt"
+    path = os.path.join(PATH_BASE, file_name)
+    if os.path.exists(path):
+        with open(path, "r", encoding="utf-8") as f:
+            return [line.strip() for line in f if line.strip() and not line.startswith("[")]
+    return []
 
 def load_poema(tema):
-    ensure_path()
-    try:
-        file_path = os.path.join(PATH_TEMAS, f"{tema}.txt")
-        if os.path.exists(file_path):
-            with open(file_path, "r", encoding="utf-8") as f:
-                linhas = [l.strip() for l in f if l.strip()]
-                return random.choice(linhas) if linhas else "O tema existe, mas está vazio."
-        return f"Arquivo '{tema}' não encontrado."
-    except:
-        return "Erro técnico ao ler o fragmento."
-
-def load_md_file(file_path):
-    """Lê os manuais .md reais do seu repositório."""
-    if os.path.exists(file_path):
-        try:
-            with open(file_path, "r", encoding="utf-8") as f:
-                return f.read()
-        except:
-            return f"Erro ao ler {file_path}"
-    return f"Manual {file_path} não localizado."
+    """Lê um verso aleatório de um tema na pasta \data."""
+    path = os.path.join(PATH_DATA, f"{tema}.txt")
+    if os.path.exists(path):
+        with open(path, "r", encoding="utf-8") as f:
+            linhas = [l.strip() for l in f if l.strip()]
+            return random.choice(linhas) if linhas else ""
+    return ""
 
 def render_display(texto, tema):
-    """Renderiza o poema e alimenta o cache persistente."""
     st.session_state.last_poem = {"texto": texto, "tema": tema}
     st.markdown("---")
     st.markdown(f"### {tema.upper()}")
@@ -57,114 +47,98 @@ def render_display(texto, tema):
     st.markdown("---")
 
 # ==============================================================================
-# 2. CONSOLE DE NAVEGAÇÃO (+ < * > ?) - A SEQUÊNCIA LÓGICA
+# 2. INTERFACE (+ < * > ?)
 # ==============================================================================
 
 def draw_navigation_bar(temas, label_info):
-    if not temas:
-        st.warning(f"Nenhum arquivo .txt encontrado para {label_info} na pasta /temas.")
+    if not temas: 
+        st.error(f"Lista de temas vazia para: {label_info}")
         return None
     
-    if 'take' not in st.session_state:
-        st.session_state.take = 0
-    
+    if 'take' not in st.session_state: st.session_state.take = 0
     maxy = len(temas)
-    c_plus, c_prev, c_rand, c_next, c_info = st.columns([1, 1, 2, 1, 1])
     
-    # + Gera nova variação para o mesmo tema
-    if c_plus.button("➕", key=f"p_{label_info}"):
-        st.rerun()
-
-    # < Volta um tema na lista
-    if c_prev.button("◀", key=f"l_{label_info}"):
-        st.session_state.take -= 1
-
-    # * Escolhe um tema aleatório
-    if c_rand.button("✻ Aleatório", key=f"s_{label_info}"):
-        st.session_state.take = random.randrange(maxy)
-
-    # > Avança um tema na lista
-    if c_next.button("▶", key=f"r_{label_info}"):
-        st.session_state.take += 1
-
-    # ? Status e Informação
-    if c_info.button("❓", key=f"i_{label_info}"):
-        st.toast(f"{label_info}: {st.session_state.take % maxy + 1} de {maxy}")
+    cols = st.columns([1, 1, 2, 1, 1])
+    if cols[0].button("➕", key=f"p_{label_info}", help="Nova variação"): st.rerun()
+    if cols[1].button("◀", key=f"l_{label_info}", help="Tema anterior"): st.session_state.take -= 1
+    if cols[2].button("✻", key=f"s_{label_info}", help="Tema aleatório"): st.session_state.take = random.randrange(maxy)
+    if cols[3].button("▶", key=f"r_{label_info}", help="Próximo tema"): st.session_state.take += 1
+    if cols[4].button("❓", key=f"i_{label_info}"): 
+        st.toast(f"{label_info}: {st.session_state.take % maxy + 1}/{maxy}")
 
     st.session_state.take %= maxy
     return temas[st.session_state.take]
 
 # ==============================================================================
-# 3. PÁGINAS (IMPLEMENTAÇÃO COMPLETA)
+# 3. PÁGINAS (CONTEÚDO E REGRAS)
 # ==============================================================================
 
 def page_mini():
-    temas = load_temas()
+    temas = load_book_list("temas_mini")
     tema = draw_navigation_bar(temas, "Mini")
-    if tema:
-        render_display(load_poema(tema), tema)
+    if tema: render_display(load_poema(tema), tema)
 
 def page_ypoemas():
-    livro = st.session_state.get('book', 'todos os temas')
-    temas = load_temas(livro)
-    tema = draw_navigation_bar(temas, f"yPoemas ({livro})")
-    if tema:
-        render_display(load_poema(tema), tema)
+    livro = st.session_state.get('current_book', 'poemas')
+    temas = load_book_list(livro)
+    tema = draw_navigation_bar(temas, f"yPoemas: {livro}")
+    if tema: render_display(load_poema(tema), tema)
 
 def page_eureka():
     st.subheader("🔍 Busca Eureka")
-    termo = st.text_input("Pesquisar palavra ou trecho em toda a obra:")
+    termo = st.text_input("Pesquisar nos 45.000 verbetes (min. 3 letras):")
     if len(termo) >= 3:
-        ensure_path()
-        arquivos = [f for f in os.listdir(PATH_TEMAS) if f.endswith(".txt")]
         resultados = []
-        for arq in arquivos:
-            t_nome = arq.replace(".txt", "")
-            try:
-                with open(os.path.join(PATH_TEMAS, arq), "r", encoding="utf-8") as f:
-                    for linha in f:
-                        if termo.lower() in linha.lower():
-                            # Implementação do destaque « » solicitado
-                            destaque = linha.strip().replace(termo, f" « {termo} » ")
-                            resultados.append({"verso": destaque, "tema": t_nome})
-            except: continue
-        
+        # Varredura real na pasta \data
+        for arq in [f for f in os.listdir(PATH_DATA) if f.endswith(".txt")]:
+            tema_nome = arq.replace(".txt", "")
+            with open(os.path.join(PATH_DATA, arq), "r", encoding="utf-8") as f:
+                for linha in f:
+                    if termo.lower() in linha.lower():
+                        texto_h = linha.strip().replace(termo, f" « {termo} » ")
+                        resultados.append({"verso": texto_h, "tema": tema_nome})
         if resultados:
-            idx = st.selectbox("Fragmentos encontrados:", range(len(resultados)),
+            idx = st.selectbox(f"Encontrados: {len(resultados)}", range(len(resultados)),
                                format_func=lambda i: f"{resultados[i]['verso'][:60]}... [{resultados[i]['tema']}]")
-            item = resultados[idx]
-            render_display(item['verso'], item['tema'])
-        else:
-            st.info("Nenhum termo correspondente foi localizado nos arquivos.")
+            render_display(resultados[idx]['verso'], resultados[idx]['tema'])
+        else: st.info("Nenhum termo correspondente localizado.")
 
 def page_off_machina():
-    st.subheader("🌑 Modo Off-Machina")
-    if 'last_poem' in st.session_state:
-        st.markdown("Recuperando o último fragmento gerado pela máquina:")
-        render_display(st.session_state.last_poem['texto'], st.session_state.last_poem['tema'])
-    else:
-        st.info("Navegue pelas outras abas para que a máquina registre poemas na memória local.")
+    st.subheader("🌑 Off-Machina")
+    if os.path.exists(PATH_OFF):
+        livros = [f.replace(".txt", "") for f in os.listdir(PATH_OFF) if f.endswith(".txt")]
+        if livros:
+            escolha = st.selectbox("Selecione o livro:", livros)
+            col1, col2 = st.columns([1, 2])
+            capa = os.path.join(PATH_OFF, f"{escolha}.jpg")
+            if os.path.exists(capa): col1.image(capa, width=200)
+            
+            with open(os.path.join(PATH_OFF, f"{escolha}.txt"), "r", encoding="utf-8") as f:
+                col2.markdown(f"**{escolha}**")
+                col2.text_area("", f.read(), height=400)
+        else: st.info("Pasta off-maquina vazia.")
 
 def page_books():
-    st.subheader("📚 Seleção de Biblioteca")
-    opcoes = ["todos os temas", "poemas", "jocosos", "livro vivo"]
-    st.session_state.book = st.radio("Escolha o acervo para o yPoemas:", opcoes)
+    st.subheader("📚 Bibliotecas")
+    if os.path.exists(PATH_BASE):
+        opcoes = [f.replace("rol_", "").replace(".txt", "") for f in os.listdir(PATH_BASE) if f.startswith("rol_")]
+        st.session_state.current_book = st.radio("Selecione o acervo para o yPoemas:", opcoes)
 
 def page_poly():
-    st.subheader("🌐 Tradutor Poly")
-    st.write("Abaixo, selecione o idioma de destino para os motores de tradução:")
-    st.selectbox("Idiomas (+97 disponíveis):", ["English", "Español", "Français", "Italiano", "Deutsch", "Português"])
+    st.subheader("🌐 Poly")
+    st.info("Utilize as siglas na sidebar para tradução.")
 
 # ==============================================================================
-# 4. ORQUESTRAÇÃO FINAL (MAIN)
+# 4. MAIN (MANDALA E SIDEBAR FIXA)
 # ==============================================================================
 
 def main():
-    try:
-        st.set_page_config(layout="wide", page_title="yPoemas", page_icon="📜")
+    if 'current_book' not in st.session_state: st.session_state.current_book = "poemas"
+    if 'poly_name' not in st.session_state: st.session_state.poly_name = "Català"
+    
+    try: st.set_page_config(layout="wide", page_title="yPoemas", page_icon="📜")
     except: pass
 
-    # Tab Bar com 7 posições
     chosen_id = stx.tab_bar(data=[
         stx.TabBarItemData(id="1", title="mini", description=""),
         stx.TabBarItemData(id="2", title="yPoemas", description=""),
@@ -175,31 +149,39 @@ def main():
         stx.TabBarItemData(id="7", title="about", description=""),
     ], default="2")
 
-    # Mapeamento Real de Arquivos e Funções
-    mapping = {
+    pages = {
         "1": ("INFO_MINI.md", page_mini),
         "2": ("INFO_YPOEMAS.md", page_ypoemas),
         "3": ("INFO_EUREKA.md", page_eureka),
         "4": ("INFO_OFF-MACHINA.md", page_off_machina),
         "5": ("INFO_BOOKS.md", page_books),
         "6": ("INFO_POLY.md", page_poly),
-        "7": ("INFO_ABOUT.md", lambda: st.markdown(load_md_file("INFO_ABOUT.md")))
+        "7": ("INFO_ABOUT.md", lambda: st.markdown(load_md_content("INFO_ABOUT.md")))
     }
 
-    if chosen_id in mapping:
-        info_file, func = mapping[chosen_id]
+    if chosen_id in pages:
+        info_file, func = pages[chosen_id]
         
-        # Sidebar: Conteúdo Real e Rodapés
+        # SIDEBAR TOTALMENTE POPULADA
         with st.sidebar:
-            st.info(load_md_file(info_file))
+            st.write("🌍 **Idiomas**")
+            b1, b2, b3, b4, b5, b6 = st.columns(6)
+            if b1.button("pt", key=1, help="Português"): st.session_state.lang = "pt"
+            if b2.button("es", key=2, help="Español"): st.session_state.lang = "es"
+            if b3.button("it", key=3, help="Italiano"): st.session_state.lang = "it"
+            if b4.button("fr", key=4, help="Français"): st.session_state.lang = "fr"
+            if b5.button("en", key=5, help="English"): st.session_state.lang = "en"
+            if b6.button("⚒️", key=6, help=st.session_state.poly_name): st.session_state.lang = "xy"
+            
             st.markdown("---")
-            st.info(load_md_file("INFO_BEST.md"))
-            st.markdown(load_md_file("INFO_MEDIA.md"))
-            st.caption("Máquina de Fazer Poesia © 2026")
+            # Carrega o manual da aba atual da pasta \md_files
+            st.info(load_md_content(info_file))
+            st.markdown("---")
+            # Manuais fixos de rodapé
+            st.info(load_md_content("INFO_BEST.md"))
+            st.markdown(load_md_content("INFO_MEDIA.md"))
         
-        # Execução da função da página
-        if callable(func):
-            func()
+        if callable(func): func()
 
 if __name__ == "__main__":
     main()
