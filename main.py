@@ -104,4 +104,61 @@ def main():
 
         # Texto Informativo (Parte Central)
         info_path = os.path.join(PATH_MD, asset["md"])
-        if os.
+        if os.path.exists(info_path):
+            with open(info_path, "r", encoding="utf-8") as f:
+                st.markdown(traduzir_texto(f.read(), sel_idioma))
+        
+        # Arte Ancorada na Base (Identidade Visual)
+        st.markdown("<div style='height: 25vh;'></div>", unsafe_allow_html=True)
+        st.markdown("---")
+        if os.path.exists(asset["img"]):
+            st.image(asset["img"], use_container_width=True)
+
+    # --- 2. PALCO (ABAS E BOTÕES DE NAVEGAÇÃO ✚ ❰ ✱ ❱ ❓) ---
+    tab_id = stx.tab_bar(
+        data=[stx.TabBarItemData(id=t, title=t.upper(), description="") for t in tabs_list], 
+        default=active_tab,
+        key="machina_v24_stable"
+    )
+
+    # Barra de Navegação Icônica
+    cols = st.columns([0.8, 0.8, 0.8, 0.8, 0.8, 10])
+    
+    if cols[0].button("✚"): 
+        pass
+        
+    if cols[1].button("❰"):
+        st.session_state.current_tab_idx = (st.session_state.current_tab_idx - 1) % len(tabs_list)
+        st.rerun()
+        
+    if cols[2].button("✱"):
+        st.session_state.current_tab_idx = 1 # Retorno para YPOEMAS
+        st.rerun()
+        
+    if cols[3].button("❱"):
+        st.session_state.current_tab_idx = (st.session_state.current_tab_idx + 1) % len(tabs_list)
+        st.rerun()
+        
+    if cols[4].button("❓"): 
+        pass
+
+    # Sincronização entre Tab Bar e Estado
+    if tab_id != active_tab:
+        st.session_state.current_tab_idx = tabs_list.index(tab_id)
+        st.rerun()
+
+    st.markdown("---")
+    
+    # ÁREA DE CONTEÚDO (PALCO PURIFICADO)
+    if active_tab == "comments":
+        c_path = os.path.join(PATH_MD, "COMMENTS.md")
+        if os.path.exists(c_path):
+            with open(c_path, "r", encoding="utf-8") as f:
+                st.markdown(traduzir_texto(f.read(), sel_idioma))
+    elif active_tab == "ypoemas":
+        st.markdown(f"### {active_tab.upper()}")
+    else:
+        st.empty()
+
+if __name__ == "__main__":
+    main()
