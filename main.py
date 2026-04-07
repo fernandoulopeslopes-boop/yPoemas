@@ -5,15 +5,25 @@ import os
 # --- DIRETRIZES TÉCNICAS (BACKUP SALVADOR) ---
 PATH_MD = r"md_files"
 PATH_LOGO = "image_0.png"
-BULB_ICON = "💡"
-IDIOMAS_ABC = ["PT", "ES", "IT", "FR", "DE", "EN", "CA", "GL", "RO"]
+
+# LINHA ZERO: Sigla - Nome (Somente caracteres latinos/ocidentais)
+IDIOMAS_ABC = [
+    "PT - Português", "ES - Español", "IT - Italiano", "FR - Français", 
+    "DE - Deutsch", "EN - English", "CA - Català", "GL - Galego", "RO - Română"
+]
 
 def main():
-    # Estética: Sidebar fixa em 300px
-    st.markdown("<style>[data-testid='stSidebar'] { width: 300px !important; min-width: 300px !important; }</style>", unsafe_allow_html=True)
+    # Estética: Sidebar fixa em 300px e ajuste de topo
+    st.markdown("""
+        <style>
+            [data-testid="stSidebar"] { width: 300px !important; min-width: 300px !important; }
+            .stAppHeader { background-color: transparent; }
+            div[data-testid="stVerticalBlock"] > div:first-child { margin-top: -2.5rem; }
+        </style>
+    """, unsafe_allow_html=True)
     
-    # 1. TRATAMENTO DE NAVEGAÇÃO
-    tabs_list = ["mini", "ypoemas", "eureka", "off", "books", "comments", "about"]
+    # LISTA DE PÁGINAS (Nome-conceito: off-máquina)
+    tabs_list = ["mini", "ypoemas", "eureka", "off-máquina", "books", "comments", "about"]
     
     if 'current_tab_idx' not in st.session_state: 
         st.session_state.current_tab_idx = 1
@@ -23,40 +33,42 @@ def main():
     except: 
         pass
 
-    # --- 2. LINHA ZERO (LIMPA - SEM TEXTO/LABEL) ---
-    c_topo = st.columns([8, 2])
+    # --- 1. LINHA ZERO (ABSOLUTA NO TOPO) ---
+    c_topo = st.columns([7, 3])
     with c_topo[1]:
         st.selectbox("", IDIOMAS_ABC, label_visibility="collapsed", key="lang_sel")
 
-    # --- 3. PALCO CENTRAL: TAB BAR ---
-    tab_id = stx.tab_bar(data=[stx.TabBarItemData(id=t, title=t, description="") for t in tabs_list], 
-                         default=tabs_list[st.session_state.current_tab_idx])
-    
-    # Sincronização imediata para garantir que INFO e ARTE correspondam à TAB clicada
-    if st.session_state.current_tab_idx != tabs_list.index(tab_id):
-        st.session_state.current_tab_idx = tabs_list.index(tab_id)
-        st.rerun()
-
+    # --- 2. SIDEBAR (IDENTIDADE + INFO SINCRONIZADA) ---
     active_tab = tabs_list[st.session_state.current_tab_idx]
-
-    # --- 4. SIDEBAR (IDENTIDADE + INFO SINCRONIZADA) ---
+    
     with st.sidebar:
-        # Bloco I: Identidade
-        col_id1, col_id2 = st.columns([1, 3])
-        col_id1.markdown(f"## {BULB_ICON}")
+        # Bloco I: Identidade (Apenas o Logotipo)
         if os.path.exists(PATH_LOGO):
-            col_id2.image(PATH_LOGO, width=120)
+            st.image(PATH_LOGO, width=200)
         
         st.markdown("---")
         
-        # Bloco II: INFO (O texto que explica a página selecionada no palco)
-        info_path = os.path.join(PATH_MD, f"INFO_{active_tab.upper()}.md")
+        # Bloco II: INFO (Texto explicativo da página ativa)
+        file_name = active_tab.replace("-", "_").upper()
+        info_path = os.path.join(PATH_MD, f"INFO_{file_name}.md")
+        
         if os.path.exists(info_path):
             with open(info_path, "r", encoding="utf-8") as f:
                 st.markdown(f.read())
 
-    # --- 5. PALCO CENTRAL: ARTE ---
-    img_path = os.path.join(PATH_MD, f"{active_tab}.jpg")
+    # --- 3. PALCO CENTRAL (TAB BAR + ARTE) ---
+    tab_id = stx.tab_bar(data=[stx.TabBarItemData(id=t, title=t, description="") for t in tabs_list], 
+                         default=tabs_list[st.session_state.current_tab_idx])
+    
+    # Sincronização e Rerun imediato
+    if st.session_state.current_tab_idx != tabs_list.index(tab_id):
+        st.session_state.current_tab_idx = tabs_list.index(tab_id)
+        st.rerun()
+
+    # ARTE DA PÁGINA (Abaixo da TabBar)
+    img_name = tab_id.replace("-", "_")
+    img_path = os.path.join(PATH_MD, f"{img_name}.jpg")
+    
     if os.path.exists(img_path):
         st.image(img_path, use_container_width=True)
 
