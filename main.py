@@ -3,116 +3,122 @@ import extra_streamlit_components as stx
 from deep_translator import GoogleTranslator
 import os
 
-# --- MOTOR DE TRADUÇÃO COM CACHE (EFICIÊNCIA) ---
+# --- MOTOR DE TRADUÇÃO ---
 @st.cache_data
-def traduzir_texto(texto, destino='pt'):
-    if not texto or destino == 'pt': 
+def traduzir_texto(texto, destino_nome):
+    if not texto or "Português" in destino_nome: 
         return texto
     try:
-        # Mapeamento simples de códigos para o GoogleTranslator
         codigos = {
             "PT - Português": "pt", "ES - Español": "es", "IT - Italiano": "it",
             "FR - Français": "fr", "DE - Deutsch": "de", "EN - English": "en",
             "CA - Català": "ca", "GL - Galego": "gl", "RO - Română": "ro"
         }
-        target = codigos.get(destino, 'en')
+        target = codigos.get(destino_nome, 'en')
         return GoogleTranslator(source='auto', target=target).translate(texto)
     except:
         return texto
 
-# --- CONFIGURAÇÕES DE RAIZ ---
+# --- CONFIGURAÇÕES ---
 PATH_MD = "md_files"
-PATH_LOGO = "image_0.png"
 ICON_YPO = "icon_ypo.ico"
-
 IDIOMAS_ABC = [
     "PT - Português", "ES - Español", "IT - Italiano", "FR - Français", 
     "DE - Deutsch", "EN - English", "CA - Català", "GL - Galego", "RO - Română"
 ]
 
 def main():
-    # 1. ÂNCORA DE IDENTIDADE (O SELO NO TOPO)
     st.set_page_config(
         layout="wide", 
         page_title="yPoemas", 
         page_icon=ICON_YPO if os.path.exists(ICON_YPO) else "🎭"
     )
 
-    # 2. ESTADO E CONCEITOS
+    # ESTADO
     tabs_list = ["mini", "ypoemas", "eureka", "off-máquina", "books", "comments", "about"]
     if 'current_tab_idx' not in st.session_state:
         st.session_state.current_tab_idx = 1
     
-    # 3. SIDEBAR (A ESQUERDA - PRIMEIRO FOCO)
+    active_tab = tabs_list[st.session_state.current_tab_idx]
+
+    # Mapeamento de Ativos (Garante que off-máquina aponte para os arquivos certos)
+    map_assets = {
+        "mini": {"img": "img_mini.jpg", "md": "INFO_MINI.md"},
+        "ypoemas": {"img": "img_ypoemas.jpg", "md": "INFO_YPOEMAS.md"},
+        "eureka": {"img": "img_eureka.jpg", "md": "INFO_EUREKA.md"},
+        "off-máquina": {"img": "img_off-machina.jpg", "md": "INFO_OFF_MACHINA.md"},
+        "books": {"img": "img_books.jpg", "md": "INFO_BOOKS.md"},
+        "comments": {"img": "img_poly.jpg", "md": "INFO_COMMENTS.md"},
+        "about": {"img": "img_about.jpg", "md": "INFO_ABOUT.md"}
+    }
+
+    # --- 1. SIDEBAR (ESQUERDA) ---
     with st.sidebar:
-        if os.path.exists(PATH_LOGO):
-            st.image(PATH_LOGO, use_container_width=True)
-        
+        # A - TOPO: Idiomas
+        st.write("### Idioma")
+        sel_idioma = st.selectbox("Selecione", IDIOMAS_ABC, label_visibility="collapsed", key="lang_sel")
         st.markdown("---")
-        
-        # LINHA ZERO: Seletor de Idiomas (Suporte)
-        sel_idioma = st.selectbox("Idioma / Language", IDIOMAS_ABC, key="lang_sel")
-        
-        st.markdown("---")
-        
-        # INFO Sincronizado e Traduzido
-        active_tab = tabs_list[st.session_state.current_tab_idx]
-        file_name = active_tab.replace("-", "_").upper()
-        info_path = os.path.join(PATH_MD, f"INFO_{file_name}.md")
+
+        # B - MEIO: Texto Informativo (Tratamento para nomes com hífen)
+        info_file = map_assets[active_tab]["md"]
+        info_path = os.path.join(PATH_MD, info_file)
         
         if os.path.exists(info_path):
             with open(info_path, "r", encoding="utf-8") as f:
-                conteudo_info = f.read()
-                st.markdown(traduzir_texto(conteudo_info, sel_idioma))
+                st.markdown(traduzir_texto(f.read(), sel_idioma))
+        else:
+            st.caption(f"(Arquivo {info_file} não detectado)")
 
-    # 4. PALCO (A DIREITA - HIERARQUIA DE RENDERIZAÇÃO)
+        # C - BASE: Logo da Página Selecionada
+        st.markdown("<br>" * 10, unsafe_allow_html=True) # Empurra para o final
+        st.markdown("---")
+        logo_path = map_assets[active_tab]["img"]
+        if os.path.exists(logo_path):
+            st.image(logo_path, caption=f"Identidade: {active_tab}", use_container_width=True)
+
+    # --- 2. PALCO (DIREITA) ---
     st.markdown("""
         <style>
-            [data-testid="stSidebar"] { width: 300px !important; min-width: 300px !important; }
-            header[data-testid="stHeader"] { visibility: hidden; height: 0px; }
-            .block-container { padding-top: 0rem !important; }
-            .stTabs [data-baseweb="tab-list"] { gap: 10px; }
+            header[data-testid="stHeader"] { visibility: hidden; }
+            .block-container { padding-top: 1rem !important; }
         </style>
     """, unsafe_allow_html=True)
 
-    # MOTOR DE NAVEGAÇÃO (Topo do Palco)
-    c_navegacao = st.container()
-    with c_navegacao:
-        tab_id = stx.tab_bar(
-            data=[stx.TabBarItemData(id=t, title=t, description="") for t in tabs_list], 
-            default=tabs_list[st.session_state.current_tab_idx],
-            key="motor_ypo_v_final"
-        )
+    # MOTOR DE ABAS
+    tab_id = stx.tab_bar(
+        data=[stx.TabBarItemData(id=t, title=t, description="") for t in tabs_list], 
+        default=active_tab,
+        key="motor_ypo_v4"
+    )
     
-    # Sincronização de Clique
-    if st.session_state.current_tab_idx != tabs_list.index(tab_id):
+    # BOTÕES DE NAVEGAÇÃO (Logo abaixo das abas)
+    col_prev, col_next, _ = st.columns([1, 1, 8])
+    with col_prev:
+        if st.button("← Anterior"):
+            st.session_state.current_tab_idx = (st.session_state.current_tab_idx - 1) % len(tabs_list)
+            st.rerun()
+    with col_next:
+        if st.button("Próxima →"):
+            st.session_state.current_tab_idx = (st.session_state.current_tab_idx + 1) % len(tabs_list)
+            st.rerun()
+
+    # Sincronização do Motor stx com o Estado
+    if tab_id != active_tab:
         st.session_state.current_tab_idx = tabs_list.index(tab_id)
         st.rerun()
 
-    # ESPAÇO DA ARTE E CONTEÚDO (Base do Palco)
-    c_arte = st.container()
-    with c_arte:
-        img_map = {
-            "mini": "img_mini.jpg",
-            "ypoemas": "img_ypoemas.jpg",
-            "eureka": "img_eureka.jpg",
-            "off-máquina": "img_off-machina.jpg",
-            "books": "img_books.jpg",
-            "about": "img_about.jpg",
-            "comments": "img_poly.jpg"
-        }
-        
-        img_file = img_map.get(active_tab)
-        if img_file and os.path.exists(img_file):
-            st.image(img_file, use_container_width=True)
+    # ARTE DO PALCO (Centro das Atenções)
+    arte_path = map_assets[active_tab]["img"]
+    if os.path.exists(arte_path):
+        st.image(arte_path, use_container_width=True)
 
-        # Se for COMMENTS, carrega o texto traduzido abaixo da arte
-        if active_tab == "comments":
-            comm_path = os.path.join(PATH_MD, "COMMENTS.md")
-            if os.path.exists(comm_path):
-                with open(comm_path, "r", encoding="utf-8") as f:
-                    st.markdown("---")
-                    st.markdown(traduzir_texto(f.read(), sel_idioma))
+    # CONTEÚDO EXTRA (Exclusivo para Comments ou Books se houver MD adicional)
+    if active_tab == "comments":
+        extra_path = os.path.join(PATH_MD, "COMMENTS.md")
+        if os.path.exists(extra_path):
+            with open(extra_path, "r", encoding="utf-8") as f:
+                st.markdown("---")
+                st.markdown(traduzir_texto(f.read(), sel_idioma))
 
 if __name__ == "__main__":
     main()
