@@ -12,63 +12,56 @@ IDIOMAS_ABC = [
 ]
 
 def main():
-    # 1. PRIMEIRA INSTRUÇÃO: Configuração de Página
+    # 1. CONFIGURAÇÃO INICIAL (Obrigatória no topo)
     try: 
         st.set_page_config(layout="wide", page_title="yPoemas", page_icon="icon_ypo.ico")
     except: 
         pass
 
-    # 2. LIMPEZA RADICAL (CSS): Remove Botão Share e destrava o Palco
+    # 2. LIMPEZA DE INTERFACE (CSS)
     st.markdown("""
         <style>
-            /* Esconde o Header do Streamlit/Google que contém o Share */
-            header[data-testid="stHeader"] { visibility: hidden; height: 0px; }
-            
-            /* Trava a Sidebar em 300px e remove margens internas */
             [data-testid="stSidebar"] { width: 300px !important; min-width: 300px !important; }
-            
-            /* Garante que o palco central seja clicável e não tenha sobreposição */
-            .main .block-container { 
-                padding-top: 1rem !important; 
-                max-width: 100% !important; 
-            }
-            
-            /* Remove espaços fantasmas no topo */
-            #root > div:nth-child(1) > div > div > div > div > section > div { padding-top: 0rem; }
+            header[data-testid="stHeader"] { visibility: hidden; height: 0px; }
+            .block-container { padding-top: 0rem !important; }
+            /* Remove o espaço que a lista de idiomas ocuparia se estivesse no palco */
+            [data-testid="stVerticalBlock"] > div:first-child { margin-top: -3rem; }
         </style>
     """, unsafe_allow_html=True)
     
-    # LISTA DE PÁGINAS (Nome-conceito: off-máquina)
+    # Nome-conceito: off-máquina
     tabs_list = ["mini", "ypoemas", "eureka", "off-máquina", "books", "comments", "about"]
     
     if 'current_tab_idx' not in st.session_state: 
         st.session_state.current_tab_idx = 1
 
-    # --- 1. LINHA ZERO (ABSOLUTA NO TOPO DIREITO) ---
+    # --- 3. LINHA ZERO (HEADER) ---
+    # Renderizamos o seletor em colunas para forçar o posicionamento no topo
     c_topo = st.columns([7, 3])
     with c_topo[1]:
         st.selectbox("Idioma", IDIOMAS_ABC, label_visibility="collapsed", key="lang_sel")
 
-    # --- 2. MOTOR DE NAVEGAÇÃO (TAB BAR) ---
-    # Captura imediata para forçar a atualização da Sidebar
+    # --- 4. MOTOR DE NAVEGAÇÃO ---
+    # Captura a tab ANTES de desenhar a Sidebar
     tab_id = stx.tab_bar(data=[stx.TabBarItemData(id=t, title=t, description="") for t in tabs_list], 
                          default=tabs_list[st.session_state.current_tab_idx])
     
-    # Se houve troca de aba, reinicia para atualizar INFO e ARTE
+    # Gatilho de Sincronia
     if st.session_state.current_tab_idx != tabs_list.index(tab_id):
         st.session_state.current_tab_idx = tabs_list.index(tab_id)
         st.rerun()
 
     active_tab = tabs_list[st.session_state.current_tab_idx]
 
-    # --- 3. SIDEBAR (IDENTIDADE + INFO SINCRONIZADA) ---
+    # --- 5. SIDEBAR (PREENCHIMENTO OBRIGATÓRIO) ---
     with st.sidebar:
+        # Bloco I: Identidade
         if os.path.exists(PATH_LOGO):
             st.image(PATH_LOGO, use_container_width=True)
         
         st.markdown("---")
         
-        # INFO Sincronizado
+        # Bloco II: INFO (Markdown do Contexto)
         file_name = active_tab.replace("-", "_").upper()
         info_path = os.path.join(PATH_MD, f"INFO_{file_name}.md")
         
@@ -76,7 +69,7 @@ def main():
             with open(info_path, "r", encoding="utf-8") as f:
                 st.markdown(f.read())
 
-    # --- 4. PALCO CENTRAL: ARTE ---
+    # --- 6. PALCO CENTRAL: ARTE ---
     img_name = active_tab.replace("-", "_") + ".jpg"
     img_path = os.path.join(PATH_MD, img_name)
     
