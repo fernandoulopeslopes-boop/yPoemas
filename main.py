@@ -34,7 +34,7 @@ def main():
         page_icon=ICON_YPO if os.path.exists(ICON_YPO) else "🎭"
     )
 
-    # --- CSS DE PRECISÃO (FECHAMENTO RIGOROSO) ---
+    # --- CSS DE PRECISÃO: LARGURA 300PX E DESIGN DOS BOTÕES ---
     st.markdown("""
         <style>
             header[data-testid="stHeader"] { visibility: hidden; height: 0px; }
@@ -47,12 +47,12 @@ def main():
                 max-width: 300px !important;
             }
             
-            /* Topo Absoluto na Sidebar */
+            /* Topo Absoluto na Sidebar (Zerar padding) */
             [data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
                 padding-top: 0rem !important;
             }
 
-            /* Botões de Navegação: Glifos ✚ ❰ ✱ ❱ ❓ */
+            /* Botões de Navegação: Padrão Glifos Pesados */
             div.stButton > button {
                 border-radius: 50% !important;
                 width: 52px !important;
@@ -96,56 +96,12 @@ def main():
     }
     asset = map_assets.get(active_tab)
 
-    # --- 1. SIDEBAR ---
+    # --- 1. SIDEBAR (CONTROLE, INFORMAÇÃO E IDENTIDADE) ---
     with st.sidebar:
         st.markdown("### 🌐 Idioma")
         sel_idioma = st.selectbox("Seletor", IDIOMAS_ABC, label_visibility="collapsed", key="lang_sel")
         st.markdown("---")
 
+        # Texto Informativo (Parte Central)
         info_path = os.path.join(PATH_MD, asset["md"])
-        if os.path.exists(info_path):
-            with open(info_path, "r", encoding="utf-8") as f:
-                st.markdown(traduzir_texto(f.read(), sel_idioma))
-        
-        st.markdown("<div style='height: 22vh;'></div>", unsafe_allow_html=True)
-        st.markdown("---")
-        if os.path.exists(asset["img"]):
-            st.image(asset["img"], use_container_width=True)
-
-    # --- 2. PALCO ---
-    tab_id = stx.tab_bar(
-        data=[stx.TabBarItemData(id=t, title=t.upper(), description="") for t in tabs_list], 
-        default=active_tab,
-        key="machina_v19_stable"
-    )
-
-    cols = st.columns([0.8, 0.8, 0.8, 0.8, 0.8, 10])
-    if cols[0].button("✚"): pass
-    if cols[1].button("❰"):
-        st.session_state.current_tab_idx = (st.session_state.current_tab_idx - 1) % len(tabs_list)
-        st.rerun()
-    if cols[2].button("✱"):
-        st.session_state.current_tab_idx = 1
-        st.rerun()
-    if cols[3].button("❱"):
-        st.session_state.current_tab_idx = (st.session_state.current_tab_idx + 1) % len(tabs_list)
-        st.rerun()
-    if cols[4].button("❓"): pass
-
-    if tab_id != active_tab:
-        st.session_state.current_tab_idx = tabs_list.index(tab_id)
-        st.rerun()
-
-    st.markdown("---")
-    
-    if active_tab == "comments":
-        c_path = os.path.join(PATH_MD, "COMMENTS.md")
-        if os.path.exists(c_path):
-            with open(c_path, "r", encoding="utf-8") as f:
-                st.markdown(traduzir_texto(f.read(), sel_idioma))
-    else:
-        if os.path.exists(asset["img"]):
-            st.image(asset["img"], use_container_width=True)
-
-if __name__ == "__main__":
-    main()
+        if os.
