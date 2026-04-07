@@ -19,7 +19,7 @@ def traduzir_texto(texto, destino_nome):
     except:
         return texto
 
-# --- CONFIGURAÇÕES ---
+# --- CONFIGURAÇÕES DE DIRETÓRIO ---
 PATH_MD = "md_files"
 ICON_YPO = "icon_ypo.ico"
 IDIOMAS_ABC = [
@@ -41,84 +41,83 @@ def main():
     
     active_tab = tabs_list[st.session_state.current_tab_idx]
 
-    # Mapeamento de Ativos (Garante que off-máquina aponte para os arquivos certos)
+    # MAPEAMENTO DE ATIVOS (CORREÇÃO DE NOMES ABOUT)
     map_assets = {
         "mini": {"img": "img_mini.jpg", "md": "INFO_MINI.md"},
         "ypoemas": {"img": "img_ypoemas.jpg", "md": "INFO_YPOEMAS.md"},
         "eureka": {"img": "img_eureka.jpg", "md": "INFO_EUREKA.md"},
-        "off-máquina": {"img": "img_off-machina.jpg", "md": "INFO_OFF_MACHINA.md"},
+        "off-máquina": {"img": "img_off-machina.jpg", "md": "ABOUT_OFF-MACHINA.md"},
         "books": {"img": "img_books.jpg", "md": "INFO_BOOKS.md"},
-        "comments": {"img": "img_poly.jpg", "md": "INFO_COMMENTS.md"},
+        "comments": {"img": "img_poly.jpg", "md": "ABOUT_COMMENTS.md"},
         "about": {"img": "img_about.jpg", "md": "INFO_ABOUT.md"}
     }
 
     # --- 1. SIDEBAR (ESQUERDA) ---
     with st.sidebar:
-        # A - TOPO: Idiomas
+        # TOPO
         st.write("### Idioma")
         sel_idioma = st.selectbox("Selecione", IDIOMAS_ABC, label_visibility="collapsed", key="lang_sel")
         st.markdown("---")
 
-        # B - MEIO: Texto Informativo (Tratamento para nomes com hífen)
-        info_file = map_assets[active_tab]["md"]
-        info_path = os.path.join(PATH_MD, info_file)
-        
+        # MEIO
+        asset = map_assets.get(active_tab)
+        info_path = os.path.join(PATH_MD, asset["md"])
         if os.path.exists(info_path):
             with open(info_path, "r", encoding="utf-8") as f:
                 st.markdown(traduzir_texto(f.read(), sel_idioma))
-        else:
-            st.caption(f"(Arquivo {info_file} não detectado)")
-
-        # C - BASE: Logo da Página Selecionada
-        st.markdown("<br>" * 10, unsafe_allow_html=True) # Empurra para o final
+        
+        # BASE (Logo da Seção)
+        st.markdown("<br>" * 10, unsafe_allow_html=True)
         st.markdown("---")
-        logo_path = map_assets[active_tab]["img"]
-        if os.path.exists(logo_path):
-            st.image(logo_path, caption=f"Identidade: {active_tab}", use_container_width=True)
+        if os.path.exists(asset["img"]):
+            st.image(asset["img"], use_container_width=True)
 
     # --- 2. PALCO (DIREITA) ---
-    st.markdown("""
-        <style>
-            header[data-testid="stHeader"] { visibility: hidden; }
-            .block-container { padding-top: 1rem !important; }
-        </style>
-    """, unsafe_allow_html=True)
+    st.markdown("""<style>header {visibility: hidden;} .block-container {padding-top: 1rem !important;}</style>""", unsafe_allow_html=True)
 
     # MOTOR DE ABAS
     tab_id = stx.tab_bar(
         data=[stx.TabBarItemData(id=t, title=t, description="") for t in tabs_list], 
         default=active_tab,
-        key="motor_ypo_v4"
+        key="motor_ypo_v6"
     )
+
+    # BOTÕES DE NAVEGAÇÃO ESPECÍFICOS: + < * > ?
+    col1, col2, col3, col4, col5, _ = st.columns([0.5, 0.5, 0.5, 0.5, 0.5, 8])
     
-    # BOTÕES DE NAVEGAÇÃO (Logo abaixo das abas)
-    col_prev, col_next, _ = st.columns([1, 1, 8])
-    with col_prev:
-        if st.button("← Anterior"):
+    with col1:
+        if st.button("+"): # Exemplo: Novo/Ação
+            pass
+    with col2:
+        if st.button("<"): # Anterior
             st.session_state.current_tab_idx = (st.session_state.current_tab_idx - 1) % len(tabs_list)
             st.rerun()
-    with col_next:
-        if st.button("Próxima →"):
+    with col3:
+        if st.button("*"): # Home/Reset
+            st.session_state.current_tab_idx = 1 # ypoemas
+            st.rerun()
+    with col4:
+        if st.button(">"): # Próxima
             st.session_state.current_tab_idx = (st.session_state.current_tab_idx + 1) % len(tabs_list)
             st.rerun()
+    with col5:
+        if st.button("?"): # Ajuda/Info
+            pass
 
-    # Sincronização do Motor stx com o Estado
+    # Sincronia motor -> estado
     if tab_id != active_tab:
         st.session_state.current_tab_idx = tabs_list.index(tab_id)
         st.rerun()
 
-    # ARTE DO PALCO (Centro das Atenções)
-    arte_path = map_assets[active_tab]["img"]
-    if os.path.exists(arte_path):
-        st.image(arte_path, use_container_width=True)
-
-    # CONTEÚDO EXTRA (Exclusivo para Comments ou Books se houver MD adicional)
+    # CONTEÚDO DO PALCO
     if active_tab == "comments":
-        extra_path = os.path.join(PATH_MD, "COMMENTS.md")
-        if os.path.exists(extra_path):
-            with open(extra_path, "r", encoding="utf-8") as f:
-                st.markdown("---")
+        c_path = os.path.join(PATH_MD, "COMMENTS.md")
+        if os.path.exists(c_path):
+            with open(c_path, "r", encoding="utf-8") as f:
                 st.markdown(traduzir_texto(f.read(), sel_idioma))
+    else:
+        if os.path.exists(asset["img"]):
+            st.image(asset["img"], use_container_width=True)
 
 if __name__ == "__main__":
     main()
