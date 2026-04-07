@@ -2,7 +2,7 @@ import streamlit as st
 import extra_streamlit_components as stx
 import os
 
-# --- DIRETRIZES TÉCNICAS (ESTRUTURA RAIZ /ypo) ---
+# --- DIRETRIZES TÉCNICAS (RAIZ /ypo) ---
 PATH_MD = "md_files"
 PATH_LOGO = "image_0.png"
 
@@ -17,60 +17,56 @@ def main():
     except:
         pass
 
-    # CSS: Limpeza de Header e travamento de Sidebar
+    # CSS: Limpeza radical e proteção da Sidebar
     st.markdown("""
         <style>
             [data-testid="stSidebar"] { width: 300px !important; min-width: 300px !important; }
             header[data-testid="stHeader"] { visibility: hidden; height: 0px; }
             .block-container { padding-top: 0rem !important; }
-            /* Posicionamento da Linha Zero */
+            /* Ajuste para a Linha Zero não sobrepor as Tabs */
             div[data-testid="stVerticalBlock"] > div:first-child { margin-top: -3.8rem; }
         </style>
     """, unsafe_allow_html=True)
 
-    # Navegação com nomes-conceito
+    # Navegação (Ordem preservada)
     tabs_list = ["mini", "ypoemas", "eureka", "off-máquina", "books", "comments", "about"]
     
     if 'current_tab_idx' not in st.session_state:
         st.session_state.current_tab_idx = 1
 
-    # --- 1. LINHA ZERO (HEADER) ---
+    # --- 1. LINHA ZERO (HEADER SUPERIOR DIREITO) ---
     c_topo = st.columns([7, 3])
     with c_topo[1]:
         st.selectbox("Idioma", IDIOMAS_ABC, label_visibility="collapsed", key="lang_sel")
 
-    # --- 2. MOTOR DE NAVEGAÇÃO ---
+    # --- 2. MOTOR DE NAVEGAÇÃO (ESTA É A PRIMEIRA COISA NO PALCO) ---
     tab_id = stx.tab_bar(data=[stx.TabBarItemData(id=t, title=t, description="") for t in tabs_list], 
                          default=tabs_list[st.session_state.current_tab_idx])
     
+    # Sincronização
     if st.session_state.current_tab_idx != tabs_list.index(tab_id):
         st.session_state.current_tab_idx = tabs_list.index(tab_id)
         st.rerun()
 
     active_tab = tabs_list[st.session_state.current_tab_idx]
 
-    # --- 3. SIDEBAR (IDENTIDADE + INFO) ---
+    # --- 3. SIDEBAR (CONFINAMENTO DA IDENTIDADE) ---
     with st.sidebar:
-        # Logo na raiz
+        # O LOGO (Desenho.jpg ou image_0.png) deve estar estritamente aqui
         if os.path.exists(PATH_LOGO):
             st.image(PATH_LOGO, use_container_width=True)
         
         st.markdown("---")
         
-        # INFO Sincronizado (Busca em md_files)
-        # Ex: "off-máquina" -> "INFO_OFF_MÁQUINA.md"
+        # INFO Sincronizado
         file_name = active_tab.replace("-", "_").upper()
         info_path = os.path.join(PATH_MD, f"INFO_{file_name}.md")
         
         if os.path.exists(info_path):
             with open(info_path, "r", encoding="utf-8") as f:
                 st.markdown(f.read())
-        else:
-            st.markdown(f"**{active_tab.upper()}**")
-            st.caption("Documentação em processamento...")
 
-    # --- 4. PALCO CENTRAL (ARTES DA RAIZ) ---
-    # Mapeamento exato baseado na sua cópia de arquivos
+    # --- 4. PALCO (ARTE ABAIXO DA NAVEGAÇÃO) ---
     img_map = {
         "mini": "img_mini.jpg",
         "ypoemas": "img_ypoemas.jpg",
@@ -83,12 +79,11 @@ def main():
     
     img_file = img_map.get(active_tab)
     
+    # Se a arte existir na raiz, ela aparece no palco
     if img_file and os.path.exists(img_file):
         st.image(img_file, use_container_width=True)
-    else:
-        st.error(f"Arquivo {img_file} não detectado na raiz /ypo")
 
-    # Conteúdo de Comments
+    # Conteúdo de Comments ou Outras Lógicas
     if active_tab == "comments":
         comm_path = os.path.join(PATH_MD, "COMMENTS.md")
         if os.path.exists(comm_path):
