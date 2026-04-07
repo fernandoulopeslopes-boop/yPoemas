@@ -34,7 +34,7 @@ def main():
         page_icon=ICON_YPO if os.path.exists(ICON_YPO) else "🎭"
     )
 
-    # --- CSS DE PRECISÃO: LARGURA RIGOROSA 300PX E HIERARQUIA ---
+    # --- CSS DE PRECISÃO (FECHAMENTO RIGOROSO) ---
     st.markdown("""
         <style>
             header[data-testid="stHeader"] { visibility: hidden; height: 0px; }
@@ -48,3 +48,104 @@ def main():
             }
             
             /* Topo Absoluto na Sidebar */
+            [data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
+                padding-top: 0rem !important;
+            }
+
+            /* Botões de Navegação: Glifos ✚ ❰ ✱ ❱ ❓ */
+            div.stButton > button {
+                border-radius: 50% !important;
+                width: 52px !important;
+                height: 52px !important;
+                border: 1px solid #333 !important;
+                background-color: #ffffff !important;
+                color: #111 !important;
+                font-size: 26px !important;
+                font-weight: bold !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                transition: all 0.2s ease-in-out;
+                box-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+                margin: 0 auto !important;
+            }
+            div.stButton > button:hover {
+                border-color: #ff4b4b !important;
+                color: #ff4b4b !important;
+                transform: translateY(-1px);
+                box-shadow: 2px 4px 8px rgba(0,0,0,0.15);
+            }
+        </style>
+    """, unsafe_allow_html=True)
+
+    # ESTADO E ATIVOS
+    tabs_list = ["mini", "ypoemas", "eureka", "off-máquina", "books", "comments", "about"]
+    if 'current_tab_idx' not in st.session_state:
+        st.session_state.current_tab_idx = 1
+    
+    active_tab = tabs_list[st.session_state.current_tab_idx]
+
+    map_assets = {
+        "mini": {"img": "img_mini.jpg", "md": "INFO_MINI.md"},
+        "ypoemas": {"img": "img_ypoemas.jpg", "md": "INFO_YPOEMAS.md"},
+        "eureka": {"img": "img_eureka.jpg", "md": "INFO_EUREKA.md"},
+        "off-máquina": {"img": "img_off-machina.jpg", "md": "ABOUT_OFF-MACHINA.md"},
+        "books": {"img": "img_books.jpg", "md": "INFO_BOOKS.md"},
+        "comments": {"img": "img_poly.jpg", "md": "ABOUT_COMMENTS.md"},
+        "about": {"img": "img_about.jpg", "md": "INFO_ABOUT.md"}
+    }
+    asset = map_assets.get(active_tab)
+
+    # --- 1. SIDEBAR ---
+    with st.sidebar:
+        st.markdown("### 🌐 Idioma")
+        sel_idioma = st.selectbox("Seletor", IDIOMAS_ABC, label_visibility="collapsed", key="lang_sel")
+        st.markdown("---")
+
+        info_path = os.path.join(PATH_MD, asset["md"])
+        if os.path.exists(info_path):
+            with open(info_path, "r", encoding="utf-8") as f:
+                st.markdown(traduzir_texto(f.read(), sel_idioma))
+        
+        st.markdown("<div style='height: 22vh;'></div>", unsafe_allow_html=True)
+        st.markdown("---")
+        if os.path.exists(asset["img"]):
+            st.image(asset["img"], use_container_width=True)
+
+    # --- 2. PALCO ---
+    tab_id = stx.tab_bar(
+        data=[stx.TabBarItemData(id=t, title=t.upper(), description="") for t in tabs_list], 
+        default=active_tab,
+        key="machina_v19_stable"
+    )
+
+    cols = st.columns([0.8, 0.8, 0.8, 0.8, 0.8, 10])
+    if cols[0].button("✚"): pass
+    if cols[1].button("❰"):
+        st.session_state.current_tab_idx = (st.session_state.current_tab_idx - 1) % len(tabs_list)
+        st.rerun()
+    if cols[2].button("✱"):
+        st.session_state.current_tab_idx = 1
+        st.rerun()
+    if cols[3].button("❱"):
+        st.session_state.current_tab_idx = (st.session_state.current_tab_idx + 1) % len(tabs_list)
+        st.rerun()
+    if cols[4].button("❓"): pass
+
+    if tab_id != active_tab:
+        st.session_state.current_tab_idx = tabs_list.index(tab_id)
+        st.rerun()
+
+    st.markdown("---")
+    
+    if active_tab == "comments":
+        c_path = os.path.join(PATH_MD, "COMMENTS.md")
+        if os.path.exists(c_path):
+            with open(c_path, "r", encoding="utf-8") as f:
+                st.markdown(traduzir_texto(f.read(), sel_idioma))
+    else:
+        if os.path.exists(asset["img"]):
+            st.image(asset["img"], use_container_width=True)
+
+if __name__ == "__main__":
+    main()
