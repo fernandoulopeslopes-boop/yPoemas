@@ -31,55 +31,54 @@ def get_help_tips(idioma):
     }
     return {k: traduzir_texto(v, idioma) for k, v in tips.items()}
 
-# --- ARQUITETURA DE ESTILO (PTC-CSS V35 - RIGOR ESTRUTURAL) ---
+# --- ARQUITETURA DE ESTILO (PTC-CSS V36 - O DOMADOR DE SCROLL) ---
 def aplicar_estetica_machina():
     st.markdown("""
         <style>
-            /* Reset e Ocultação */
+            /* Desativa o scroll nativo da sidebar para forçar o nosso */
+            [data-testid="stSidebarUserContent"] {
+                overflow: hidden !important;
+                display: flex;
+                flex-direction: column;
+                height: 95vh !important;
+            }
+            
+            section[data-testid="stSidebar"] {
+                background-color: white !important;
+            }
+
             header[data-testid="stHeader"] { visibility: hidden; height: 0px; }
             .block-container { padding-top: 1rem !important; }
             footer { visibility: hidden; }
 
-            /* SIDEBAR: Reengenharia Flexbox */
-            section[data-testid="stSidebar"] > div {
-                height: 100vh;
-                display: flex;
-                flex-direction: column;
-            }
-
-            /* Container principal que o Streamlit usa para colocar componentes */
-            [data-testid="stSidebarUserContent"] {
-                display: flex;
-                flex-direction: column;
-                height: 100% !important;
-                padding-bottom: 20px !important;
-            }
-
             /* Bloco 1 & 2: Cabeçalho Estático */
             .sb-header {
                 flex-shrink: 0;
-                margin-top: -30px;
-                padding-bottom: 10px;
-                border-bottom: 1px solid #f0f0f0;
+                margin-top: -40px;
+                background: white;
+                z-index: 10;
+                padding-bottom: 5px;
             }
 
-            /* Bloco 3: O Pulmão (Scroll Único aqui) */
+            /* Bloco 3: O PULMÃO (Altura Fixa Calculada) */
             .sb-content-scroll {
-                flex-grow: 1;
+                height: 55vh !important; /* Altura rígida para textos longos */
                 overflow-y: auto !important;
-                margin: 15px 0;
-                padding-right: 10px;
+                margin: 5px 0;
+                padding-right: 12px;
+                border-bottom: 1px solid #f0f0f0;
+                scrollbar-width: thin;
             }
 
-            /* Bloco 4: Arte Ancorada */
+            /* Bloco 4: Arte Ancorada de Forma Absoluta */
             .sb-footer-art {
                 flex-shrink: 0;
-                border-top: 1px solid #f0f0f0;
-                padding-top: 10px;
-                background-color: white;
+                background: white;
+                padding-top: 5px;
+                width: 100%;
             }
 
-            /* Estilo dos Botões de Navegação */
+            /* Estilo dos Botões */
             div.stButton > button {
                 border-radius: 50% !important;
                 width: 52px !important;
@@ -131,7 +130,7 @@ def main():
     aba_atual = PAGINAS[st.session_state.current_tab_idx]
     ativos = MAPA_ATIVOS.get(aba_atual)
 
-    # --- 1. SIDEBAR (CONSTRUÇÃO POR BLOCOS FLEX) ---
+    # --- 1. SIDEBAR (CONTROLE DE CONTAINERS) ---
     with st.sidebar:
         # BLOCO 1 & 2
         st.markdown('<div class="sb-header">', unsafe_allow_html=True)
@@ -146,7 +145,7 @@ def main():
         
         tips = get_help_tips(idioma)
 
-        # BLOCO 3: ÁREA DE SCROLL
+        # BLOCO 3: ÁREA DE SCROLL (LIMITADA POR VH)
         st.markdown('<div class="sb-content-scroll">', unsafe_allow_html=True)
         path_md = os.path.join(DIR_MD, ativos["md"])
         if os.path.exists(path_md):
@@ -154,7 +153,7 @@ def main():
                 st.markdown(traduzir_texto(f.read(), idioma))
         st.markdown('</div>', unsafe_allow_html=True)
 
-        # BLOCO 4: ARTE ANCORADA
+        # BLOCO 4: ARTE (ÂNCORA FINAL)
         st.markdown('<div class="sb-footer-art">', unsafe_allow_html=True)
         if os.path.exists(ativos["img"]):
             st.image(ativos["img"], use_container_width=True)
@@ -163,10 +162,9 @@ def main():
     # --- 2. PALCO ---
     aba_clicada = stx.tab_bar(
         data=[stx.TabBarItemData(id=p, title=p.upper(), description="") for p in PAGINAS], 
-        default=aba_atual, key="machina_v35_beta"
+        default=aba_atual, key="machina_v36_scroll_fix"
     )
 
-    # Navegação Centralizada
     cl, c1, c2, c3, c4, c5, cr = st.columns([4, 1, 1, 1, 1, 1, 4])
     
     if c1.button("✚", help=tips["plus"]):
@@ -197,7 +195,7 @@ def main():
             with open(path_c, "r", encoding="utf-8") as f:
                 st.markdown(traduzir_texto(f.read(), idioma))
     elif aba_atual == "ypoemas":
-        st.markdown(f"### {aba_atual.upper()} (Seed: {st.session_state.poema_seed})")
+        st.markdown(f"### {aba_atual.upper()} (Semente: {st.session_state.poema_seed})")
     else:
         st.empty()
 
