@@ -5,7 +5,11 @@ import os
 import random
 
 # --- [PROTOCOL] MOTOR SOBERANO ---
-from lay_2_ypo import gera_poema
+# Tentativa de importação robusta para evitar quebra total se o arquivo sumir
+try:
+    from lay_2_ypo import gera_poema
+except ImportError:
+    def gera_poema(t, s=""): return f"Erro: lay_2_ypo.py não encontrado.\nTema: {t}"
 
 def normalizar_e_traduzir(conteudo, idioma):
     if not conteudo: return ""
@@ -56,16 +60,20 @@ def carregar_temas(nome_book):
     arquivo = MAPA_BOOKS.get(nome_book, "rol_poemas.txt")
     caminho = os.path.join("base", arquivo)
     if os.path.exists(caminho):
-        with open(caminho, "r", encoding="utf-8") as f:
-            return [l.strip() for l in f if l.strip() and not l.startswith("[")]
+        try:
+            with open(caminho, "r", encoding="utf-8") as f:
+                return [l.strip() for l in f if l.strip() and not l.startswith("[")]
+        except Exception: pass
     return ["Fatos"]
 
 def main():
-    st.set_page_config(layout="wide", page_title="yPoemas")
+    # Configuração inicial deve ser a primeira chamada Streamlit
+    st.set_page_config(layout="wide", page_title="yPoemas", initial_sidebar_state="expanded")
     aplicar_estetica_machina()
 
     PAGINAS_APP = ["mini", "ypoemas", "eureka", "off-máquina", "books", "comments", "about"]
     
+    # Garantia de Session State (Reset se corrompido)
     if 'current_tab_idx' not in st.session_state: st.session_state.current_tab_idx = 1
     if 'book_em_foco' not in st.session_state: st.session_state.book_em_foco = "poemas"
     if 'tema_idx_por_book' not in st.session_state: st.session_state.tema_idx_por_book = {b: 0 for b in MAPA_BOOKS}
@@ -74,9 +82,11 @@ def main():
 
     aba_atual = PAGINAS_APP[st.session_state.current_tab_idx]
     
+    # Determinação do livro
     if aba_atual == "mini": book_em_foco = "temas mini"
     elif aba_atual == "eureka": book_em_foco = "livro vivo"
     else: book_em_foco = st.session_state.book_em_foco
     
     temas_do_livro = carregar_temas(book_em_foco)
-    total_pag
+    total_paginas = len(temas_do_livro)
+    idx_atual = st.session_state.tema_idx_por_book.get(book_em_foco, 0) % total_paginas
