@@ -74,8 +74,5 @@ def main():
 
     aba_atual = PAGINAS_APP[st.session_state.current_tab_idx]
     
-    if aba_atual == "mini": book_em_foco = "temas mini"
-    elif aba_atual == "eureka": book_em_foco = "livro vivo"
-    else: book_em_foco = st.session_state.book_em_foco
-    
-    temas_do_livro = carregar_temas(book_
+    # Definição do livro baseada na navegação técnica ou seleção do leitor
+    if
