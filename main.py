@@ -127,10 +127,18 @@ def aplicar_estetica_machina():
         </style>
     """, unsafe_allow_html=True)
 
+def limpar_para_audio(t):
+    """Peneira para eliminar 'esquirlas' de tradução e sinais sistêmicos"""
+    ruidos = ['"', '*', '_', '[', ']', '(', ')', '«', '»', '—']
+    for r in ruidos:
+        t = t.replace(r, '')
+    return t.strip()
+
 def executar_som(texto, idioma_nome):
     try:
+        texto_limpo = limpar_para_audio(texto)
         cod_lang = idioma_nome.split(" - ")[0].lower()
-        tts = gTTS(text=texto, lang=cod_lang)
+        tts = gTTS(text=texto_limpo, lang=cod_lang)
         fp = io.BytesIO()
         tts.write_to_fp(fp)
         return fp
@@ -186,7 +194,7 @@ def main():
         st.session_state.current_tab_idx = PAGINAS_APP.index(aba_clicada)
         st.rerun()
 
-    # RACIOCÍNIO MINI: Força "todos os temas" para ser o Cartão de Visita
+    # RACIOCÍNIO MINI: Força "todos os temas"
     book_em_foco = "todos os temas" if aba_atual == "mini" else st.session_state.book_em_foco
     
     temas_do_livro = carregar_temas(book_em_foco)
