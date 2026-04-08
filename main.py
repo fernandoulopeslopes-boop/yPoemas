@@ -37,7 +37,7 @@ def aplicar_estetica_machina():
         </style>
     """, unsafe_allow_html=True)
 
-# Dicionário de Books Reais
+# Mapeamento Estrito dos Livros (\base)
 MAPA_BOOKS = {
     "livro vivo": "rol_livro_vivo.txt",
     "poemas": "rol_poemas.txt",
@@ -73,31 +73,30 @@ def main():
 
     aba_atual = PAGINAS_APP[st.session_state.current_tab_idx]
     
-    # Determina qual livro está sendo exibido
-    # Se estiver na aba 'books', o usuário escolhe o book em foco. 
-    # Nas outras abas, o book é fixo ou herdado.
-    book_atual = st.session_state.book_em_foco
-    if aba_atual == "mini": book_atual = "temas mini"
-    elif aba_atual == "eureka": book_atual = "livro vivo"
+    # Lógica de Foco: eureka e mini forçam livros específicos
+    if aba_atual == "mini": book_em_foco = "temas mini"
+    elif aba_atual == "eureka": book_em_foco = "livro vivo"
+    else: book_em_foco = st.session_state.book_em_foco
     
-    temas_do_livro = carregar_temas(book_atual)
-    idx_atual = st.session_state.tema_idx_por_book.get(book_atual, 0) % len(temas_do_livro)
+    temas_do_livro = carregar_temas(book_em_foco)
+    total_paginas = len(temas_do_livro)
+    idx_atual = st.session_state.tema_idx_por_book.get(book_em_foco, 0) % total_paginas
     tema_selecionado = temas_do_livro[idx_atual]
 
-    # --- 1. CONTROLES TOP ---
+    # --- CONTROLES TOP ---
     cl, c_plus, c_prev, c_rand, c_next, c_help, cr = st.columns([3, 1, 1, 1, 1, 1, 3])
     
     if c_plus.button("✚"):
         st.session_state.seed_eureka += 1
         st.rerun()
     if c_prev.button("❰"):
-        st.session_state.tema_idx_por_book[book_atual] = (idx_atual - 1) % len(temas_do_livro)
+        st.session_state.tema_idx_por_book[book_em_foco] = (idx_atual - 1) % total_paginas
         st.rerun()
     if c_rand.button("✱"):
-        st.session_state.tema_idx_por_book[book_atual] = random.randint(0, len(temas_do_livro) - 1)
+        st.session_state.tema_idx_por_book[book_em_foco] = random.randint(0, total_paginas - 1)
         st.rerun()
     if c_next.button("❱"):
-        st.session_state.tema_idx_por_book[book_atual] = (idx_atual + 1) % len(temas_do_livro)
+        st.session_state.tema_idx_por_book[book_em_foco] = (idx_atual + 1) % total_paginas
         st.rerun()
     if c_help.button("?"):
         st.session_state.help_ativo = not st.session_state.help_ativo
@@ -109,18 +108,19 @@ def main():
         idioma = st.selectbox("L", ["PT - Português", "ES - Español", "IT - Italiano", "EN - English"], label_visibility="collapsed")
         sigla = idioma[:2].lower()
         
-        # Header Dinâmico: pt ( {nome do book em foco} )
-        st.markdown(f'<div class="book-header">{sigla} ({book_atual})</div>', unsafe_allow_html=True)
+        # Header: pt ( {nome do book em foco} ) ( 1 / 33 )
+        status_header = f"{sigla} ({book_em_foco}) ( {idx_atual + 1} / {total_paginas} )"
+        st.markdown(f'<div class="book-header">{status_header}</div>', unsafe_allow_html=True)
         
         if aba_atual == "books":
-            novo_book = st.selectbox("Selecione o Livro", list(MAPA_BOOKS.keys()), index=list(MAPA_BOOKS.keys()).index(book_atual))
-            if novo_book != book_atual:
+            novo_book = st.selectbox("Livros da Máquina", list(MAPA_BOOKS.keys()), index=list(MAPA_BOOKS.keys()).index(book_em_foco))
+            if novo_book != book_em_foco:
                 st.session_state.book_em_foco = novo_book
                 st.rerun()
         
         tema_sel = st.selectbox("Temas", temas_do_livro, index=idx_atual, label_visibility="collapsed")
         if tema_sel != tema_selecionado:
-            st.session_state.tema_idx_por_book[book_atual] = temas_do_livro.index(tema_sel)
+            st.session_state.tema_idx_por_book[book_em_foco] = temas_do_livro.index(tema_sel)
             st.rerun()
 
     if aba_clicada != aba_atual:
@@ -131,10 +131,10 @@ def main():
 
     # --- PALCO CENTRAL ---
     if st.session_state.help_ativo or aba_atual == "books":
-        nome_doc = f"MANUAL_{aba_atual.upper()}.md"
-        path_doc = os.path.join("md_files", nome_doc)
-        if os.path.exists(path_doc):
-            with open(path_doc, "r", encoding="utf-8") as f:
+        nome_manual = f"MANUAL_{aba_atual.upper()}.md"
+        path_manual = os.path.join("md_files", nome_manual)
+        if os.path.exists(path_manual):
+            with open(path_manual, "r", encoding="utf-8") as f:
                 st.markdown(normalizar_e_traduzir(f.read(), idioma))
     elif aba_atual in ["mini", "ypoemas", "eureka"]:
         semente = st.session_state.seed_eureka if aba_atual == "eureka" else ""
