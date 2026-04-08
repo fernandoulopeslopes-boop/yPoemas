@@ -93,11 +93,10 @@ def aplicar_estetica_machina():
             .titulo-poema {
                 font-family: serif;
                 font-size: 2.2em;
-                font-style: italic;
                 font-weight: bold;
                 color: #333;
-                margin-bottom: 1.5rem;
-                text-align: left;
+                margin-bottom: 2rem;
+                text-align: center;
             }
             .poema-box {
                 font-family: serif; 
@@ -206,7 +205,7 @@ def main():
     if c_help.button("?", help="ajuda"): 
         st.session_state.help_ativo = not st.session_state.help_ativo; st.rerun()
 
-    # 3º NÍVEL: COCKPIT REORDENADO
+    # 3º NÍVEL: COCKPIT
     _, col_arte, col_idioma, col_livro, col_tema, col_som, _ = st.columns([0.5, 1, 2, 2, 2, 1, 0.5])
     
     with col_arte:
@@ -221,41 +220,4 @@ def main():
     with col_tema:
         tema_sel = st.selectbox("Tema", temas_do_livro, index=idx_atual, label_visibility="collapsed")
         if tema_sel != tema_selecionado: 
-            st.session_state.tema_idx_por_book[book_em_foco] = temas_do_livro.index(tema_sel)
-            st.rerun()
-    with col_som:
-        st.session_state.com_som = st.toggle("Som", value=st.session_state.com_som)
-
-    st.markdown("---")
-
-    # --- PALCO CENTRAL ---
-    if st.session_state.help_ativo:
-        path_doc = os.path.join(BASE_DIR, "md_files", f"MANUAL_{aba_atual.upper()}.md")
-        if os.path.exists(path_doc):
-            with open(path_doc, "r", encoding="utf-8") as f:
-                st.markdown(normalizar_e_traduzir(f.read(), idioma))
-    else:
-        semente = st.session_state.seed_eureka if aba_atual == "eureka" else ""
-        poema = gera_poema(tema_selecionado, semente)
-        txt = normalizar_e_traduzir(poema, idioma)
-
-        if st.session_state.com_som:
-            audio_fp = executar_som(txt, idioma)
-            if audio_fp: st.audio(audio_fp, format='audio/mp3')
-
-        if st.session_state.com_imagem:
-            col_img, col_txt = st.columns([1, 2])
-            with col_txt:
-                st.markdown(f'<div class="titulo-poema">{tema_selecionado.upper()}</div>', unsafe_allow_html=True)
-                st.markdown(f'<div class="poema-box">{txt}</div>', unsafe_allow_html=True)
-            with col_img:
-                caminho_arte = load_arts(tema_selecionado)
-                if caminho_arte: st.image(caminho_arte, use_container_width=True)
-        else:
-            _, col_central, _ = st.columns([1, 4, 1])
-            with col_central:
-                st.markdown(f'<div class="titulo-poema">{tema_selecionado.upper()}</div>', unsafe_allow_html=True)
-                st.markdown(f'<div class="poema-box">{txt}</div>', unsafe_allow_html=True)
-
-if __name__ == "__main__":
-    main()
+            st.session_state.tema_idx_por_
