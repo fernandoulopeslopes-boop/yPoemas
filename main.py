@@ -27,16 +27,15 @@ def aplicar_estetica_machina():
         <style>
             header[data-testid="stHeader"] { visibility: hidden; height: 0px; }
             footer { visibility: hidden; }
+            [data-testid="stSidebar"] { display: none; }
+            
             .block-container { 
                 padding-top: 1.5rem !important; 
-                padding-left: 2rem !important; 
-                padding-right: 2rem !important; 
-                max-width: 98% !important;
+                padding-left: 5% !important; 
+                padding-right: 5% !important; 
+                max-width: 100% !important;
             }
-            [data-testid="stSidebar"] {
-                min-width: 280px !important;
-                max-width: 280px !important;
-            }
+            
             div.stButton > button {
                 border-radius: 50% !important;
                 width: 46px !important;
@@ -45,14 +44,16 @@ def aplicar_estetica_machina():
                 background-color: white !important;
                 margin: 0 auto !important;
                 display: block;
+                font-weight: bold;
             }
-            .book-header { 
-                font-size: 0.82em; 
+            
+            .cockpit-header { 
+                font-size: 0.85em; 
                 font-weight: bold; 
-                color: #555; 
-                margin-top: 10px;
-                margin-bottom: 5px;
+                color: #666; 
+                margin-bottom: 2px;
                 font-family: monospace; 
+                text-align: center;
                 text-transform: lowercase;
             }
         </style>
@@ -93,7 +94,7 @@ def carregar_temas(nome_book):
     return ["Fatos"]
 
 def main():
-    st.set_page_config(layout="wide", page_title="yPoemas", initial_sidebar_state="expanded")
+    st.set_page_config(layout="wide", page_title="yPoemas", initial_sidebar_state="collapsed")
     aplicar_estetica_machina()
 
     PAGINAS_APP = ["mini", "ypoemas", "eureka", "off-máquina", "books", "comments", "about"]
@@ -112,7 +113,7 @@ def main():
     idx_atual = st.session_state.tema_idx_por_book.get(book_em_foco, 0) % total_paginas
     tema_selecionado = temas_do_livro[idx_atual]
 
-    # --- CONTROLES TOP ---
+    # --- CONTROLES DE NAVEGAÇÃO ---
     _, c_plus, c_prev, c_rand, c_next, c_help, _ = st.columns([2, 1, 1, 1, 1, 1, 2])
     
     if c_plus.button("✚"):
@@ -132,24 +133,25 @@ def main():
 
     aba_clicada = stx.tab_bar(data=[stx.TabBarItemData(id=p, title=p.upper(), description="") for p in PAGINAS_APP], default=aba_atual)
 
-    # --- SIDEBAR ---
-    with st.sidebar:
-        idioma = st.selectbox("L", LISTA_IDIOMAS, label_visibility="collapsed")
-        sigla = idioma.split(" - ")[0].lower()
-        
-        lista_livros = list(MAPA_BOOKS.keys())
-        idx_livro_foco = lista_livros.index(book_em_foco) if book_em_foco in lista_livros else 0
-        novo_book = st.selectbox("Livro", lista_livros, index=idx_livro_foco, label_visibility="collapsed")
-        if novo_book != book_em_foco:
-            st.session_state.book_em_foco = novo_book
-            st.rerun()
-        
-        st.markdown(f'<div class="book-header">{sigla} ({book_em_foco}) ({idx_atual + 1}/{total_paginas})</div>', unsafe_allow_html=True)
-        
-        tema_sel = st.selectbox("Tema", temas_do_livro, index=idx_atual, label_visibility="collapsed", key="sb_tema_safe")
-        if tema_sel != tema_selecionado:
-            st.session_state.tema_idx_por_book[book_em_foco] = temas_do_livro.index(tema_sel)
-            st.rerun()
+    # --- COCKPIT SUPERIOR (INTEGRADO NO PALCO) ---
+    c1, c2, c3 = st.columns([1, 1, 2])
+    
+    idioma = c1.selectbox("L", LISTA_IDIOMAS, label_visibility="collapsed")
+    sigla = idioma.split(" - ")[0].lower()
+    
+    lista_livros = list(MAPA_BOOKS.keys())
+    idx_livro_foco = lista_livros.index(book_em_foco) if book_em_foco in lista_livros else 0
+    novo_book = c2.selectbox("Livro", lista_livros, index=idx_livro_foco, label_visibility="collapsed")
+    if novo_book != book_em_foco:
+        st.session_state.book_em_foco = novo_book
+        st.rerun()
+
+    tema_sel = c3.selectbox("Tema", temas_do_livro, index=idx_atual, label_visibility="collapsed")
+    if tema_sel != tema_selecionado:
+        st.session_state.tema_idx_por_book[book_em_foco] = temas_do_livro.index(tema_sel)
+        st.rerun()
+
+    st.markdown(f'<div class="cockpit-header">{sigla} | {book_em_foco} | página {idx_atual + 1} de {total_paginas}</div>', unsafe_allow_html=True)
 
     if aba_clicada != aba_atual:
         st.session_state.current_tab_idx = PAGINAS_APP.index(aba_clicada)
@@ -171,4 +173,4 @@ def main():
 if __name__ == "__main__":
     main()
 
-# --- FIM DO ARQUIVO: OPERAÇÃO CONCLUÍDA COM SUCESSO ---
+# --- FIM DO ARQUIVO: SIDEBAR REMOVIDA ---
