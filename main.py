@@ -51,7 +51,7 @@ def aplicar_estetica_machina():
             }
             .poema-box {
                 font-family: serif; 
-                font-size: 1.35em;
+                font-size: 1.4em;
                 line-height: 1.6;
                 color: #1a1a1a;
                 background-color: transparent;
@@ -67,27 +67,19 @@ def aplicar_estetica_machina():
                 margin: 0 auto !important;
                 display: block;
             }
-            .cockpit-info { 
-                font-size: 0.8em; 
-                font-weight: bold; 
-                color: #999; 
-                text-align: center;
-                font-family: monospace; 
-                text-transform: lowercase;
-            }
+            hr { margin: 1em 0 !important; }
         </style>
     """, unsafe_allow_html=True)
 
 def buscar_arte_curada(tema, mapa_fotos):
     grupo = mapa_fotos.get(tema, "maquina")
     for g in [grupo, "maquina"]:
-        # O caminho físico para verificar se existe
         path_fisico = os.path.join(BASE_DIR, "img", g)
         if os.path.exists(path_fisico):
             arquivos = [f for f in os.listdir(path_fisico) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
             if arquivos:
-                # O Streamlit acessa a pasta 'img' se ela estiver na raiz do app
-                return f"img/{g}/{random.choice(arquivos)}"
+                # Retorna o caminho absoluto para o st.image garantir a leitura
+                return os.path.join(path_fisico, random.choice(arquivos))
     return None
 
 MAPA_BOOKS = {
@@ -120,7 +112,7 @@ def main():
     st.set_page_config(layout="wide", page_title="yPoemas")
     aplicar_estetica_machina()
 
-    # Session State (Blindagem)
+    # Inicialização do Estado
     for key, val in {'current_tab_idx': 1, 'book_em_foco': 'poemas', 'com_imagem': True, 'seed_eureka': 0, 'help_ativo': False}.items():
         if key not in st.session_state: st.session_state[key] = val
     if 'tema_idx_por_book' not in st.session_state: st.session_state.tema_idx_por_book = {b: 0 for b in MAPA_BOOKS}
@@ -164,7 +156,7 @@ def main():
     
     st.session_state.com_imagem = c4.toggle("Arte", value=st.session_state.com_imagem)
 
-    st.markdown(f'<div class="cockpit-info">{book_em_foco} | {tema_selecionado} ({idx_atual+1}/{len(temas_do_livro)})</div>', unsafe_allow_html=True)
+    # REMOVIDA A LINHA DE INFO ABAIXO DOS TEMAS (poemas | tema...)
     st.markdown("---")
 
     # --- PALCO CENTRAL ---
