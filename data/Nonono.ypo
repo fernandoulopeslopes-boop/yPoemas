@@ -5,17 +5,18 @@
 *- Manter |02|02| ítimo atual -1 de |06|02|
 *- Manter |05|01|F| e |09|01|T|
 *-
-|01|01|Restos_0101|F|1|1|Ainda em vida quero|Espero poder|Na próxima viagem vou|Imagina só...|Ando pensando em|
-|01|02|Restos_0102|T|1|2|borrifar|desfiar|dispersar|espalhar|esparramar|lançar|polvilhar|salpicar|aspergir|
-|01|03|Restos_0103|F|1|1|meus Restos Imortais|
-|02|01|Restos_0201|T|1|1|no Mangue|no Estuário|no Morro|no Pantanal|no Planalto|no Vale|na Catinga|na Cachoeira|na Serra|na Restinga|na Chapada|na Colina|na Cordilheira|na Enseada|na Garganta|na Ilha|na Lagoa|na Várzea|na Vertente
-|02|02|Restos_0202|T|1|1|do Araguaia|de Jericoacoara|da Capivara|de Itatiaia|da Canastra|de Araraquara|da Marambaia|de Itanhaém|
-|02|03|Restos_0203|F|1|1|... ou |
-|02|04|Restos_0204|T|1|1|no Mangue|no Estuário|no Morro|no Pantanal|no Planalto|no Vale|na Catinga|na Cachoeira|na Serra|na Restinga|na Chapada|na Colina|na Cordilheira|na Enseada|na Garganta|na Ilha|na Lagoa|na Várzea|na Vertente
-|02|04|Restos_0205|T|1|1|de Itacaré|de Baturité|do Rola-Moça|de Catingueira|do Anhangabaú|do Jalapão|de Jurubatiba|do Espinhaço|do Cipó|
-|02|05|Restos_0205|T|1|1|.|
-|03|00|
-|04|01|Restos_0401|F|1|1|Antigamente era comum...|Dizem que dá sorte.|Fica perto do horizonte.|E a cara da eternidade.|
+|01|06|Restos_0101|F|1|1|Ainda em vida quero|Espero poder|Na próxima viagem vou|Imagina só...|Ando pensando em|
+|02|01|Restos_0201|T|1|9|borrifar|desfiar|dispersar|espalhar|esparramar|lançar|polvilhar|salpicar|aspergir|
+|02|02|Restos_0202|F|1|1|meus Restos Imortais|
+|03|01|Restos_0301|T|3|19|no Mangue|no Estuário|no Morro|no Pantanal|no Planalto|no Vale|na Catinga|na Cachoeira|na Serra|na Restinga|na Chapada|na Colina|na Cordilheira|na Enseada|na Garganta|na Ilha|na Lagoa|na Várzea|na Vertente
+|03|02|Restos_0302|T|1|8|do Araguaia|de Jericoacoara|da Capivara|de Itatiaia|da Canastra|de Araraquara|da Marambaia|de Itanhaém|
+|04|00|
+|04|01|Restos_0203|F|1|1|... ou |
+|04|02Restos_0204|T|1|19|no Mangue|no Estuário|no Morro|no Pantanal|no Planalto|no Vale|na Catinga|na Cachoeira|na Serra|na Restinga|na Chapada|na Colina|na Cordilheira|na Enseada|na Garganta|na Ilha|na Lagoa|na Várzea|na Vertente
+|04|03|Restos_0205|T|1|9|de Itacaré|de Baturité|do Rola-Moça|de Catingueira|do Anhangabaú|do Jalapão|de Jurubatiba|do Espinhaço|do Cipó|
+|04|04|Restos_0205|T|1|1|.|
+|05|00|
+|05|01|Restos_0401|F|1|1|Antigamente era comum...|Dizem que dá sorte.|Fica perto do horizonte.|E a cara da eternidade.|
 <EOF>
 # 
 #      Verbetes usados: 43
