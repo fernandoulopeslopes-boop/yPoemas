@@ -31,54 +31,55 @@ def get_help_tips(idioma):
     }
     return {k: traduzir_texto(v, idioma) for k, v in tips.items()}
 
-# --- ARQUITETURA DE ESTILO (PTC-CSS V36 - O DOMADOR DE SCROLL) ---
+# --- ARQUITETURA DE ESTILO (PTC-CSS V37 - RIGIDEZ TOTAL) ---
 def aplicar_estetica_machina():
     st.markdown("""
         <style>
-            /* Desativa o scroll nativo da sidebar para forçar o nosso */
+            /* Bloqueio do Scroll Global da Sidebar */
             [data-testid="stSidebarUserContent"] {
                 overflow: hidden !important;
                 display: flex;
                 flex-direction: column;
-                height: 95vh !important;
-            }
-            
-            section[data-testid="stSidebar"] {
-                background-color: white !important;
+                height: 100vh !important;
             }
 
             header[data-testid="stHeader"] { visibility: hidden; height: 0px; }
             .block-container { padding-top: 1rem !important; }
             footer { visibility: hidden; }
 
-            /* Bloco 1 & 2: Cabeçalho Estático */
+            /* BLOCO 1 & 2: Cabeçalho Estático */
             .sb-header {
                 flex-shrink: 0;
-                margin-top: -40px;
+                margin-top: -45px;
                 background: white;
-                z-index: 10;
-                padding-bottom: 5px;
+                padding-bottom: 10px;
+                z-index: 20;
             }
 
-            /* Bloco 3: O PULMÃO (Altura Fixa Calculada) */
+            /* BLOCO 3: Janela de Scroll Rígida */
             .sb-content-scroll {
-                height: 55vh !important; /* Altura rígida para textos longos */
+                flex-grow: 1;
+                height: calc(100vh - 450px) !important; /* Altura calculada para nunca empurrar a arte */
+                max-height: calc(100vh - 450px) !important;
                 overflow-y: auto !important;
-                margin: 5px 0;
-                padding-right: 12px;
-                border-bottom: 1px solid #f0f0f0;
+                padding-right: 15px;
+                margin-bottom: 5px;
                 scrollbar-width: thin;
+                border-bottom: 1px solid #f0f0f0;
             }
 
-            /* Bloco 4: Arte Ancorada de Forma Absoluta */
+            /* BLOCO 4: Arte Fixada no Rodapé da Sidebar */
             .sb-footer-art {
-                flex-shrink: 0;
+                position: fixed;
+                bottom: 0;
+                width: 260px;
                 background: white;
-                padding-top: 5px;
-                width: 100%;
+                padding: 10px 0;
+                z-index: 30;
+                border-top: 1px solid #eee;
             }
 
-            /* Estilo dos Botões */
+            /* Estilo dos Botões do Palco */
             div.stButton > button {
                 border-radius: 50% !important;
                 width: 52px !important;
@@ -91,14 +92,11 @@ def aplicar_estetica_machina():
                 display: flex !important;
                 align-items: center !important;
                 justify-content: center !important;
-                transition: all 0.2s ease;
                 box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
-                margin: 0 auto !important;
             }
             div.stButton > button:hover {
                 border-color: #ff4b4b !important;
                 color: #ff4b4b !important;
-                transform: scale(1.05);
             }
 
             [data-testid="column"] { display: flex; justify-content: center; align-items: center; }
@@ -130,9 +128,9 @@ def main():
     aba_atual = PAGINAS[st.session_state.current_tab_idx]
     ativos = MAPA_ATIVOS.get(aba_atual)
 
-    # --- 1. SIDEBAR (CONTROLE DE CONTAINERS) ---
+    # --- 1. SIDEBAR REESTRUTURADA ---
     with st.sidebar:
-        # BLOCO 1 & 2
+        # BLOCO 1 & 2: Topo Fixo
         st.markdown('<div class="sb-header">', unsafe_allow_html=True)
         idioma = st.selectbox("L", [
             "PT - Português", "ES - Español", "IT - Italiano", "FR - Français", 
@@ -145,7 +143,7 @@ def main():
         
         tips = get_help_tips(idioma)
 
-        # BLOCO 3: ÁREA DE SCROLL (LIMITADA POR VH)
+        # BLOCO 3: O Pulmão com Scroll Controlado
         st.markdown('<div class="sb-content-scroll">', unsafe_allow_html=True)
         path_md = os.path.join(DIR_MD, ativos["md"])
         if os.path.exists(path_md):
@@ -153,7 +151,7 @@ def main():
                 st.markdown(traduzir_texto(f.read(), idioma))
         st.markdown('</div>', unsafe_allow_html=True)
 
-        # BLOCO 4: ARTE (ÂNCORA FINAL)
+        # BLOCO 4: Arte Blindada no Rodapé
         st.markdown('<div class="sb-footer-art">', unsafe_allow_html=True)
         if os.path.exists(ativos["img"]):
             st.image(ativos["img"], use_container_width=True)
@@ -162,7 +160,7 @@ def main():
     # --- 2. PALCO ---
     aba_clicada = stx.tab_bar(
         data=[stx.TabBarItemData(id=p, title=p.upper(), description="") for p in PAGINAS], 
-        default=aba_atual, key="machina_v36_scroll_fix"
+        default=aba_atual, key="machina_v37_rigid"
     )
 
     cl, c1, c2, c3, c4, c5, cr = st.columns([4, 1, 1, 1, 1, 1, 4])
