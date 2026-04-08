@@ -39,13 +39,13 @@ def aplicar_estetica_machina():
 DIR_MD = "md_files"
 PAGINAS = ["mini", "ypoemas", "eureka", "off-máquina", "books", "comments", "about"]
 MAPA_ATIVOS = {
-    "mini": {"img": "img_mini.jpg", "md": "INFO_MINI.md", "tema_motor": "mini"},
-    "ypoemas": {"img": "img_ypoemas.jpg", "md": "INFO_YPOEMAS.md", "tema_motor": "fatos"},
-    "eureka": {"img": "img_eureka.jpg", "md": "INFO_EUREKA.md", "tema_motor": "eureka"},
-    "off-máquina": {"img": "img_off-machina.jpg", "md": "ABOUT_OFF-MACHINA.md", "tema_motor": None},
-    "books": {"img": "img_books.jpg", "md": "INFO_BOOKS.md", "tema_motor": None},
-    "comments": {"img": "img_poly.jpg", "md": "ABOUT_COMMENTS.md", "tema_motor": None},
-    "about": {"img": "img_about.jpg", "md": "INFO_ABOUT.md", "tema_motor": None}
+    "mini": {"img": "img_mini.jpg", "md": "INFO_MINI.md"},
+    "ypoemas": {"img": "img_ypoemas.jpg", "md": "INFO_YPOEMAS.md"},
+    "eureka": {"img": "img_eureka.jpg", "md": "INFO_EUREKA.md"},
+    "off-máquina": {"img": "img_off-machina.jpg", "md": "ABOUT_OFF-MACHINA.md"},
+    "books": {"img": "img_books.jpg", "md": "INFO_BOOKS.md"},
+    "comments": {"img": "img_poly.jpg", "md": "ABOUT_COMMENTS.md"},
+    "about": {"img": "img_about.jpg", "md": "INFO_ABOUT.md"}
 }
 
 def main():
@@ -54,12 +54,13 @@ def main():
 
     # Inicialização de Estados
     if 'current_tab_idx' not in st.session_state: st.session_state.current_tab_idx = 1
-    if 'poema_seed' not in st.session_state: st.session_state.poema_seed = 0
+    if 'seed_eureka' not in st.session_state: st.session_state.seed_eureka = 0
+    if 'tema_selecionado' not in st.session_state: st.session_state.tema_selecionado = "Fatos"
 
     aba_atual = PAGINAS[st.session_state.current_tab_idx]
     ativos = MAPA_ATIVOS.get(aba_atual)
 
-    # --- SIDEBAR (INFORMATIVA) ---
+    # --- SIDEBAR ---
     with st.sidebar:
         idioma = st.selectbox("L", ["PT - Português", "ES - Español", "IT - Italiano", "EN - English"], label_visibility="collapsed")
         
@@ -67,52 +68,45 @@ def main():
         if os.path.exists(ativos["img"]): st.image(ativos["img"], use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
         
-        # Conteúdo textual da sidebar
+        # Seletor de Tema
+        st.session_state.tema_selecionado = st.selectbox("Tema", ["Fatos", "Amaré", "Anjos", "Babel"], label_visibility="visible")
+
         path_md = os.path.join(DIR_MD, ativos["md"])
         if os.path.exists(path_md):
             with open(path_md, "r", encoding="utf-8") as f:
                 st.markdown(traduzir_texto(f.read(), idioma))
 
-    # --- NAVEGAÇÃO DE PÁGINAS (SUPERIOR) ---
+    # --- NAVEGAÇÃO SUPERIOR ---
     aba_clicada = stx.tab_bar(data=[stx.TabBarItemData(id=p, title=p.upper(), description="") for p in PAGINAS], default=aba_atual)
 
-    # --- CONTROLES DO PALCO ---
+    # --- CONTROLES DO PALCO (A semente só é manipulada aqui) ---
     cl, c1, c2, c3, c4, cr = st.columns([4, 1, 1, 1, 1, 4])
     
-    if c1.button("✚"): 
-        st.session_state.poema_seed += 1
-        st.rerun()
-    
-    if c2.button("❰"): 
-        st.session_state.poema_seed -= 1
-        st.rerun()
-    
-    if c3.button("✱"): 
-        st.session_state.poema_seed = random.randint(0, 999999)
-        st.rerun()
-    
-    if c4.button("❱"): 
-        st.session_state.poema_seed += 1
-        st.rerun()
+    # Ações de semente restritas à lógica interna do yPoema
+    if c1.button("✚"): st.session_state.seed_eureka += 1; st.rerun()
+    if c2.button("❰"): st.session_state.seed_eureka -= 1; st.rerun()
+    if c3.button("✱"): st.session_state.seed_eureka = random.randint(0, 999999); st.rerun()
+    if c4.button("❱"): st.session_state.seed_eureka += 1; st.rerun()
 
-    # Sincronia das Abas
     if aba_clicada != aba_atual:
         st.session_state.current_tab_idx = PAGINAS.index(aba_clicada)
         st.rerun()
 
     st.markdown("---")
     
-    # --- RENDERIZAÇÃO DO CONTEÚDO ---
-    # Só aciona o motor se a página atual tiver um 'tema_motor' definido
-    tema_para_o_motor = ativos.get("tema_motor")
-    
-    if tema_para_o_motor:
-        # O motor recebe o tema específico da página e a semente atual
-        resultado = gera_poema(tema_para_o_motor, st.session_state.poema_seed)
+    # --- PALCO CENTRAL (Lógica de Semente) ---
+    if aba_atual in ["mini", "ypoemas", "eureka"]:
+        
+        # A regra de ouro: semente só existe na página Eureka
+        semente_final = ""
+        if aba_atual == "eureka":
+            semente_final = st.session_state.seed_eureka
+            
+        # Chamada do motor respeitando a semente (ou a falta dela)
+        resultado = gera_poema(st.session_state.tema_selecionado, semente_final)
+        
         st.text(traduzir_texto(resultado, idioma))
     else:
-        # Para as outras páginas (off-máquina, books, etc), o palco fica limpo 
-        # ou exibe o conteúdo MD já processado na sidebar.
         st.empty()
 
 if __name__ == "__main__":
