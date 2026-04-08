@@ -25,7 +25,7 @@ def load_images_list():
     return []
 
 def load_arts(nome_tema):
-    """Sua mecânica original de sorteio e histórico de repetição"""
+    """Mecânica original: sorteio e histórico de 36 imagens para evitar repetição"""
     path = "./images/machina/"
     path_list = load_images_list()
     
@@ -44,12 +44,13 @@ def load_arts(nome_tema):
     if not arts_list:
         return None
 
-    sorte = random.randrange(0, len(arts_list))
-    image = arts_list[sorte]
-
     if 'arts' not in st.session_state:
         st.session_state.arts = []
 
+    sorte = random.randrange(0, len(arts_list))
+    image = arts_list[sorte]
+
+    # Lógica de verificação no histórico (st.session_state.arts)
     if image in st.session_state.arts:
         intentos = 0
         while image in st.session_state.arts and intentos < 10:
@@ -64,19 +65,23 @@ def load_arts(nome_tema):
     return path + image
 
 def normalizar_e_traduzir(conteudo, idioma_nome):
-    """Respeita a entrega do gera_poema sem limpezas invasivas"""
+    """Garante respiro com espaços duplos e respeita a entrega do motor"""
     if not conteudo: return ""
     texto_bruto = "\n".join(conteudo) if isinstance(conteudo, list) else conteudo
     
     cod_target = idioma_nome.split(" - ")[0].lower()
+    
     if cod_target == "pt":
-        return texto_bruto.strip()
-    try:
-        # A tradução mantém a estrutura de quebras do original
-        texto_final = GoogleTranslator(source='auto', target=cod_target).translate(texto_bruto)
-        return texto_final.strip()
-    except: 
-        return texto_bruto
+        texto_final = texto_bruto
+    else:
+        try:
+            texto_final = GoogleTranslator(source='auto', target=cod_target).translate(texto_bruto)
+        except: 
+            texto_final = texto_bruto
+
+    # Limpeza de resíduos e imposição do espaço duplo (identidade visual)
+    texto_final = texto_final.replace('\r\n', '\n').replace('\n\n', '\n')
+    return texto_final.replace('\n', '\n\n').strip()
 
 def aplicar_estetica_machina():
     st.markdown("""
@@ -85,10 +90,19 @@ def aplicar_estetica_machina():
             footer { visibility: hidden; }
             [data-testid="stSidebar"] { display: none; }
             .block-container { 
-                padding-top: 1.5rem !important; 
+                padding-top: 1.0rem !important; 
                 padding-left: 5% !important; 
                 padding-right: 5% !important; 
                 max-width: 100% !important;
+            }
+            .titulo-poema {
+                font-family: serif;
+                font-size: 2.2em;
+                font-style: italic;
+                font-weight: bold;
+                color: #333;
+                margin-bottom: 1rem;
+                text-align: left;
             }
             .poema-box {
                 font-family: serif; 
@@ -96,7 +110,6 @@ def aplicar_estetica_machina():
                 line-height: 1.6;
                 color: #1a1a1a;
                 background-color: transparent;
-                padding: 20px;
                 white-space: pre-wrap;
                 text-align: left !important;
             }
@@ -113,11 +126,10 @@ def aplicar_estetica_machina():
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                text-align: center;
             }
             .stSelectbox, .stToggle {
                 width: 100% !important;
-                min-width: 180px;
+                min-width: 150px;
             }
             hr { margin: 1em 0 !important; }
         </style>
@@ -126,7 +138,8 @@ def aplicar_estetica_machina():
 def executar_som(texto, idioma_nome):
     try:
         cod_lang = idioma_nome.split(" - ")[0].lower()
-        tts = gTTS(text=texto, lang=cod_lang)
+        texto_limpo = texto.replace('\n\n', '. ')
+        tts = gTTS(text=texto_limpo, lang=cod_lang)
         fp = io.BytesIO()
         tts.write_to_fp(fp)
         return fp
@@ -140,12 +153,12 @@ MAPA_BOOKS = {
 }
 
 LISTA_IDIOMAS = [
-    "PT - Português", "AF - Afrikaans", "SQ - Albanian", "CA - Catalan", "HR - Croatian", 
-    "CS - Czech", "DA - Danish", "NL - Dutch", "EN - English", "ET - Estonian", 
-    "FI - Finnish", "FR - French", "DE - German", "HU - Hungarian", "IS - Icelandic", 
-    "ID - Indonesian", "IT - Italiano", "LV - Latvian", "LT - Lithuanian", "NO - Norwegian", 
-    "PL - Polish", "RO - Romanian", "SK - Slovak", "SL - Slovenian", "ES - Español", 
-    "SW - Swahili", "SV - Swedish", "TR - Turkish", "VI - Vietnamese"
+    "PT - Português", "ES - Español", "IT - Italiano", "FR - French", "EN - English", "CA - Catalan",
+    "AF - Afrikaans", "SQ - Albanian", "DE - German", "HR - Croatian", "DA - Danish", 
+    "SK - Slovak", "SL - Slovenian", "ET - Estonian", "FI - Finnish", "HU - Hungarian", 
+    "IS - Icelandic", "ID - Indonesian", "LV - Latvian", "LT - Lithuanian", "NO - Norwegian", 
+    "NL - Dutch", "PL - Polish", "RO - Romanian", "SW - Swahili", "SV - Swedish", 
+    "TR - Turkish", "VI - Vietnamese"
 ]
 
 def carregar_temas(nome_book):
@@ -163,19 +176,29 @@ def main():
     aplicar_estetica_machina()
 
     # Estado Inicial
-    for key, val in {'current_tab_idx': 1, 'book_em_foco': 'poemas', 'com_imagem': True, 'com_som': False, 'seed_eureka': 0, 'help_ativo': False, 'arts': []}.items():
-        if key not in st.session_state: st.session_state[key] = val
+    if 'current_tab_idx' not in st.session_state: st.session_state.current_tab_idx = 1
+    if 'book_em_foco' not in st.session_state: st.session_state.book_em_foco = 'poemas'
+    if 'com_imagem' not in st.session_state: st.session_state.com_imagem = True
+    if 'com_som' not in st.session_state: st.session_state.com_som = False
+    if 'seed_eureka' not in st.session_state: st.session_state.seed_eureka = 0
+    if 'help_ativo' not in st.session_state: st.session_state.help_ativo = False
+    if 'arts' not in st.session_state: st.session_state.arts = []
     if 'tema_idx_por_book' not in st.session_state: st.session_state.tema_idx_por_book = {b: 0 for b in MAPA_BOOKS}
 
     PAGINAS_APP = ["mini", "ypoemas", "eureka", "off-máquina", "books", "comments", "about"]
     aba_atual = PAGINAS_APP[st.session_state.current_tab_idx]
-    book_em_foco = st.session_state.book_em_foco
     
+    # 1º NÍVEL: ABAS (Híerarquia Invertida)
+    aba_clicada = stx.tab_bar(data=[stx.TabBarItemData(id=p, title=p.upper(), description="") for p in PAGINAS_APP], default=aba_atual)
+    if aba_clicada != aba_atual:
+        st.session_state.current_tab_idx = PAGINAS_APP.index(aba_clicada); st.rerun()
+
+    book_em_foco = st.session_state.book_em_foco
     temas_do_livro = carregar_temas(book_em_foco)
     idx_atual = st.session_state.tema_idx_por_book.get(book_em_foco, 0) % len(temas_do_livro)
     tema_selecionado = temas_do_livro[idx_atual]
 
-    # --- NAVEGAÇÃO ---
+    # 2º NÍVEL: RÉGUA DE NAVEGAÇÃO
     _, c_plus, c_prev, c_rand, c_next, c_help, _ = st.columns([2, 1, 1, 1, 1, 1, 2])
     
     if c_plus.button("✚", help="gera novo yPoema"): 
@@ -186,34 +209,26 @@ def main():
         st.session_state.tema_idx_por_book[book_em_foco] = random.randint(0, len(temas_do_livro)-1); st.rerun()
     if c_next.button("❱", help="Próxima página"): 
         st.session_state.tema_idx_por_book[book_em_foco] = (idx_atual + 1); st.rerun()
-    if c_help.button("?", help="menu de ajuda"): 
+    if c_help.button("?", help="ajuda"): 
         st.session_state.help_ativo = not st.session_state.help_ativo; st.rerun()
 
-    aba_clicada = stx.tab_bar(data=[stx.TabBarItemData(id=p, title=p.upper(), description="") for p in PAGINAS_APP], default=aba_atual)
-    if aba_clicada != aba_atual:
-        st.session_state.current_tab_idx = PAGINAS_APP.index(aba_clicada); st.rerun()
-
-    # --- COCKPIT ---
+    # 3º NÍVEL: COCKPIT CENTRALIZADO
     _, col_idioma, col_livro, col_tema, col_arte, col_som, _ = st.columns([0.5, 2, 2, 2, 1, 1, 0.5])
     
     with col_idioma:
         idioma = st.selectbox("Idioma", LISTA_IDIOMAS, label_visibility="collapsed")
-    
     with col_livro:
         novo_book = st.selectbox("Livro", list(MAPA_BOOKS.keys()), index=list(MAPA_BOOKS.keys()).index(book_em_foco), label_visibility="collapsed")
         if novo_book != book_em_foco: 
             st.session_state.book_em_foco = novo_book
             st.rerun()
-    
     with col_tema:
         tema_sel = st.selectbox("Tema", temas_do_livro, index=idx_atual, label_visibility="collapsed")
         if tema_sel != tema_selecionado: 
             st.session_state.tema_idx_por_book[book_em_foco] = temas_do_livro.index(tema_sel)
             st.rerun()
-    
     with col_arte:
         st.session_state.com_imagem = st.toggle("Arte", value=st.session_state.com_imagem)
-
     with col_som:
         st.session_state.com_som = st.toggle("Som", value=st.session_state.com_som)
 
@@ -232,18 +247,22 @@ def main():
 
         if st.session_state.com_som:
             audio_fp = executar_som(txt, idioma)
-            if audio_fp:
-                st.audio(audio_fp, format='audio/mp3')
+            if audio_fp: st.audio(audio_fp, format='audio/mp3')
 
+        # Exibição do Título (Identidade) e Conteúdo
         if st.session_state.com_imagem:
             col_img, col_txt = st.columns([1, 2])
-            caminho_arte = load_arts(tema_selecionado)
-            if caminho_arte:
-                col_img.image(caminho_arte, use_container_width=True)
-            col_txt.markdown(f'<div class="poema-box">{txt}</div>', unsafe_allow_html=True)
+            with col_txt:
+                st.markdown(f'<div class="titulo-poema">{tema_selecionado.upper()}</div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="poema-box">{txt}</div>', unsafe_allow_html=True)
+            with col_img:
+                caminho_arte = load_arts(tema_selecionado)
+                if caminho_arte: st.image(caminho_arte, use_container_width=True)
         else:
             _, col_central, _ = st.columns([1, 4, 1])
-            col_central.markdown(f'<div class="poema-box">{txt}</div>', unsafe_allow_html=True)
+            with col_central:
+                st.markdown(f'<div class="titulo-poema">{tema_selecionado.upper()}</div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="poema-box">{txt}</div>', unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
