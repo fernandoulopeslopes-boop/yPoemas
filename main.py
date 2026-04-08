@@ -13,13 +13,9 @@ except ImportError:
 def normalizar_e_traduzir(conteudo, idioma_nome):
     if not conteudo: return ""
     texto_unificado = "\n".join(conteudo) if isinstance(conteudo, list) else conteudo
-    
-    # Extrai o código (ex: "en" de "EN - English")
     cod_target = idioma_nome.split(" - ")[0].lower()
-    
     if cod_target == "pt":
         return texto_unificado.replace('\r\n', '\n').replace('\n\n', '\n').strip()
-    
     try:
         texto_final = GoogleTranslator(source='auto', target=cod_target).translate(texto_unificado)
         return texto_final.replace('\r\n', '\n').replace('\n\n', '\n').strip()
@@ -31,14 +27,25 @@ def aplicar_estetica_machina():
         <style>
             header[data-testid="stHeader"] { visibility: hidden; height: 0px; }
             footer { visibility: hidden; }
-            .block-container { padding-top: 0rem !important; }
+            .block-container { 
+                padding-top: 1rem !important; 
+                padding-bottom: 0rem !important;
+                max-width: 95% !important;
+            }
+            /* Garantia de visibilidade dos botões de controle */
             div.stButton > button {
                 border-radius: 50% !important;
-                width: 50px !important;
-                height: 50px !important;
+                width: 45px !important;
+                height: 45px !important;
                 border: 1px solid #333 !important;
                 background-color: white !important;
-                margin: 0 10px !important;
+                margin: 0 auto !important;
+                display: block;
+                transition: all 0.3s ease;
+            }
+            div.stButton > button:hover {
+                border-color: #000 !important;
+                background-color: #f0f0f0 !important;
             }
             .book-header { 
                 font-size: 0.85em; 
@@ -65,7 +72,6 @@ MAPA_BOOKS = {
     "temas mini": "rol_temas_mini.txt"
 }
 
-# Lista Curada: Alfabeto Ocidental
 LISTA_IDIOMAS = [
     "PT - Português", "AF - Afrikaans", "SQ - Albanian", "CA - Catalan", 
     "HR - Croatian", "CS - Czech", "DA - Danish", "NL - Dutch", 
@@ -87,7 +93,7 @@ def carregar_temas(nome_book):
     return ["Fatos"]
 
 def main():
-    st.set_page_config(layout="wide", page_title="yPoemas")
+    st.set_page_config(layout="wide", page_title="yPoemas", initial_sidebar_state="expanded")
     aplicar_estetica_machina()
 
     PAGINAS_APP = ["mini", "ypoemas", "eureka", "off-máquina", "books", "comments", "about"]
@@ -109,8 +115,8 @@ def main():
     idx_atual = st.session_state.tema_idx_por_book.get(book_em_foco, 0) % total_paginas
     tema_selecionado = temas_do_livro[idx_atual]
 
-    # --- CONTROLES TOP ---
-    cl, c_plus, c_prev, c_rand, c_next, c_help, cr = st.columns([3, 1, 1, 1, 1, 1, 3])
+    # --- CONTROLES TOP (Layout Centralizado e Estável) ---
+    _, c_plus, c_prev, c_rand, c_next, c_help, _ = st.columns([2, 1, 1, 1, 1, 1, 2])
     
     if c_plus.button("✚"):
         st.session_state.seed_eureka += 1
@@ -129,27 +135,23 @@ def main():
 
     aba_clicada = stx.tab_bar(data=[stx.TabBarItemData(id=p, title=p.upper(), description="") for p in PAGINAS_APP], default=aba_atual)
 
-    # --- SIDEBAR (COCKPIT PURO) ---
+    # --- SIDEBAR ---
     with st.sidebar:
-        # 1. Seletor de Idioma (Lista Ampla)
         idioma = st.selectbox("L", LISTA_IDIOMAS, label_visibility="collapsed")
         sigla = idioma.split(" - ")[0].lower()
         
-        # 2. Seletor de Livro
         lista_livros = list(MAPA_BOOKS.keys())
         idx_livro_foco = lista_livros.index(book_em_foco) if book_em_foco in lista_livros else 0
         
-        novo_book = st.selectbox("Livro", lista_livros, index=idx_livro_foco, label_visibility="collapsed", key="sb_book_pure")
+        novo_book = st.selectbox("Livro", lista_livros, index=idx_livro_foco, label_visibility="collapsed")
         if novo_book != book_em_foco:
             st.session_state.book_em_foco = novo_book
             st.rerun()
         
-        # 3. Header de Navegação (Acima do Tema)
         status_header = f"{sigla} ({book_em_foco}) ( {idx_atual + 1} / {total_paginas} )"
         st.markdown(f'<div class="book-header">{status_header}</div>', unsafe_allow_html=True)
         
-        # 4. Seletor de Temas
-        tema_sel = st.selectbox("Tema", temas_do_livro, index=idx_atual, label_visibility="collapsed", key="sb_tema_pure")
+        tema_sel = st.selectbox("Tema", temas_do_livro, index=idx_atual, label_visibility="collapsed", key="sb_tema_final")
         if tema_sel != tema_selecionado:
             st.session_state.tema_idx_por_book[book_em_foco] = temas_do_livro.index(tema_sel)
             st.rerun()
