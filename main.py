@@ -36,8 +36,14 @@ def aplicar_estetica_machina():
                 background-color: white !important;
                 margin: 0 10px !important;
             }
-            .book-header { font-size: 0.85em; font-weight: bold; color: #666; margin-bottom: 2px; font-family: monospace; }
-            .page-info { font-size: 0.75em; color: #999; margin-top: 5px; font-style: italic; margin-bottom: 10px; }
+            .book-header { 
+                font-size: 0.85em; 
+                font-weight: bold; 
+                color: #666; 
+                margin-top: 15px;
+                margin-bottom: 2px; 
+                font-family: monospace; 
+            }
         </style>
     """, unsafe_allow_html=True)
 
@@ -118,16 +124,11 @@ def main():
 
     # --- SIDEBAR (COCKPIT) ---
     with st.sidebar:
-        img_path = os.path.join("img", f"side_{aba_atual}.png")
-        if os.path.exists(img_path):
-            st.image(img_path, use_container_width=True)
-        
+        # 1. Seletor de Idioma
         idioma = st.selectbox("L", ["PT - Português", "ES - Español", "IT - Italiano", "EN - English"], label_visibility="collapsed")
         sigla = idioma[:2].lower()
         
-        st.markdown(f'<div class="book-header">{sigla} ({book_em_foco}) ( {idx_atual + 1} / {total_paginas} )</div>', unsafe_allow_html=True)
-        st.markdown(f'<div class="page-info">foco: {aba_atual}</div>', unsafe_allow_html=True)
-
+        # 2. Seletor de Livro
         lista_livros = list(MAPA_BOOKS.keys())
         idx_livro_foco = lista_livros.index(book_em_foco) if book_em_foco in lista_livros else 0
         
@@ -136,6 +137,11 @@ def main():
             st.session_state.book_em_foco = novo_book
             st.rerun()
         
+        # 3. Info de Foco (Posicionado acima da lista de temas)
+        status_header = f"{sigla} ({book_em_foco}) ( {idx_atual + 1} / {total_paginas} )"
+        st.markdown(f'<div class="book-header">{status_header}</div>', unsafe_allow_html=True)
+        
+        # 4. Seletor de Temas
         tema_sel = st.selectbox("Tema", temas_do_livro, index=idx_atual, label_visibility="collapsed", key="sb_tema_select")
         if tema_sel != tema_selecionado:
             st.session_state.tema_idx_por_book[book_em_foco] = temas_do_livro.index(tema_sel)
