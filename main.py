@@ -64,7 +64,7 @@ def load_arts(nome_tema):
     return path + image
 
 def normalizar_e_traduzir(conteudo, idioma_nome):
-    """Fidelidade absoluta: respeita o layout original do motor"""
+    """Fidelidade absoluta ao layout original do motor"""
     if not conteudo: return ""
     texto_bruto = "\n".join(conteudo) if isinstance(conteudo, list) else conteudo
     
@@ -95,8 +95,9 @@ def aplicar_estetica_machina():
                 font-size: 2.2em;
                 font-weight: bold;
                 color: #333;
-                margin-bottom: 2rem;
+                margin-bottom: 1.5rem;
                 text-align: center;
+                width: 100%;
             }
             .poema-box {
                 font-family: serif; 
@@ -181,7 +182,7 @@ def main():
     PAGINAS_APP = ["mini", "ypoemas", "eureka", "off-máquina", "books", "comments", "about"]
     aba_atual = PAGINAS_APP[st.session_state.current_tab_idx]
     
-    # 1º NÍVEL: ABAS
+    # --- 1º NÍVEL: ABAS ---
     aba_clicada = stx.tab_bar(data=[stx.TabBarItemData(id=p, title=p.upper(), description="") for p in PAGINAS_APP], default=aba_atual)
     if aba_clicada != aba_atual:
         st.session_state.current_tab_idx = PAGINAS_APP.index(aba_clicada); st.rerun()
@@ -191,7 +192,7 @@ def main():
     idx_atual = st.session_state.tema_idx_por_book.get(book_em_foco, 0) % len(temas_do_livro)
     tema_selecionado = temas_do_livro[idx_atual]
 
-    # 2º NÍVEL: NAVEGAÇÃO
+    # --- 2º NÍVEL: NAVEGAÇÃO ---
     _, c_plus, c_prev, c_rand, c_next, c_help, _ = st.columns([2, 1, 1, 1, 1, 1, 2])
     
     if c_plus.button("✚", help="gera novo yPoema"): 
@@ -205,7 +206,7 @@ def main():
     if c_help.button("?", help="ajuda"): 
         st.session_state.help_ativo = not st.session_state.help_ativo; st.rerun()
 
-    # 3º NÍVEL: COCKPIT
+    # --- 3º NÍVEL: COCKPIT ---
     _, col_arte, col_idioma, col_livro, col_tema, col_som, _ = st.columns([0.5, 1, 2, 2, 2, 1, 0.5])
     
     with col_arte:
@@ -229,8 +230,6 @@ def main():
 
     # --- PALCO CENTRAL ---
     if not st.session_state.help_ativo:
-        st.markdown(f'<div class="titulo-poema">{tema_selecionado}</div>', unsafe_allow_html=True)
-        
         semente = st.session_state.seed_eureka if aba_atual == "eureka" else ""
         poema = gera_poema(tema_selecionado, semente)
         txt = normalizar_e_traduzir(poema, idioma)
@@ -242,14 +241,17 @@ def main():
         if st.session_state.com_imagem:
             col_img, col_txt = st.columns([1, 2])
             with col_txt:
+                # Título integrado à coluna de texto para alinhamento perfeito
+                st.markdown(f'<div class="titulo-poema">{tema_selecionado}</div>', unsafe_allow_html=True)
                 st.markdown(f'<div class="poema-box">{txt}</div>', unsafe_allow_html=True)
             with col_img:
                 caminho_arte = load_arts(tema_selecionado)
-                # AJUSTE: use_container_width -> width='stretch'
                 if caminho_arte: st.image(caminho_arte, width='stretch')
         else:
             _, col_central, _ = st.columns([1, 4, 1])
             with col_central:
+                # Título integrado à coluna central
+                st.markdown(f'<div class="titulo-poema">{tema_selecionado}</div>', unsafe_allow_html=True)
                 st.markdown(f'<div class="poema-box">{txt}</div>', unsafe_allow_html=True)
     else:
         path_doc = os.path.join(BASE_DIR, "md_files", f"MANUAL_{aba_atual.upper()}.md")
