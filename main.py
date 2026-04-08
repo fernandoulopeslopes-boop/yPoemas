@@ -25,7 +25,7 @@ def load_images_list():
     return []
 
 def load_arts(nome_tema):
-    """Mecânica original: sorteio e histórico de 36 imagens para evitar repetição"""
+    """Mecânica original: sorteio e histórico de 36 imagens"""
     path = "./images/machina/"
     path_list = load_images_list()
     
@@ -50,7 +50,6 @@ def load_arts(nome_tema):
     sorte = random.randrange(0, len(arts_list))
     image = arts_list[sorte]
 
-    # Lógica de verificação no histórico (st.session_state.arts)
     if image in st.session_state.arts:
         intentos = 0
         while image in st.session_state.arts and intentos < 10:
@@ -65,23 +64,19 @@ def load_arts(nome_tema):
     return path + image
 
 def normalizar_e_traduzir(conteudo, idioma_nome):
-    """Garante respiro com espaços duplos e respeita a entrega do motor"""
+    """Fidelidade absoluta: respeita o layout original do motor"""
     if not conteudo: return ""
     texto_bruto = "\n".join(conteudo) if isinstance(conteudo, list) else conteudo
     
     cod_target = idioma_nome.split(" - ")[0].lower()
     
     if cod_target == "pt":
-        texto_final = texto_bruto
-    else:
-        try:
-            texto_final = GoogleTranslator(source='auto', target=cod_target).translate(texto_bruto)
-        except: 
-            texto_final = texto_bruto
-
-    # Limpeza de resíduos e imposição do espaço duplo (identidade visual)
-    texto_final = texto_final.replace('\r\n', '\n').replace('\n\n', '\n')
-    return texto_final.replace('\n', '\n\n').strip()
+        return texto_bruto.strip()
+    try:
+        texto_final = GoogleTranslator(source='auto', target=cod_target).translate(texto_bruto)
+        return texto_final.replace('\r\n', '\n').strip()
+    except: 
+        return texto_bruto.strip()
 
 def aplicar_estetica_machina():
     st.markdown("""
@@ -101,7 +96,7 @@ def aplicar_estetica_machina():
                 font-style: italic;
                 font-weight: bold;
                 color: #333;
-                margin-bottom: 1rem;
+                margin-bottom: 1.5rem;
                 text-align: left;
             }
             .poema-box {
@@ -138,8 +133,7 @@ def aplicar_estetica_machina():
 def executar_som(texto, idioma_nome):
     try:
         cod_lang = idioma_nome.split(" - ")[0].lower()
-        texto_limpo = texto.replace('\n\n', '. ')
-        tts = gTTS(text=texto_limpo, lang=cod_lang)
+        tts = gTTS(text=texto, lang=cod_lang)
         fp = io.BytesIO()
         tts.write_to_fp(fp)
         return fp
@@ -188,7 +182,7 @@ def main():
     PAGINAS_APP = ["mini", "ypoemas", "eureka", "off-máquina", "books", "comments", "about"]
     aba_atual = PAGINAS_APP[st.session_state.current_tab_idx]
     
-    # 1º NÍVEL: ABAS (Híerarquia Invertida)
+    # 1º NÍVEL: ABAS (Inversão)
     aba_clicada = stx.tab_bar(data=[stx.TabBarItemData(id=p, title=p.upper(), description="") for p in PAGINAS_APP], default=aba_atual)
     if aba_clicada != aba_atual:
         st.session_state.current_tab_idx = PAGINAS_APP.index(aba_clicada); st.rerun()
@@ -198,7 +192,7 @@ def main():
     idx_atual = st.session_state.tema_idx_por_book.get(book_em_foco, 0) % len(temas_do_livro)
     tema_selecionado = temas_do_livro[idx_atual]
 
-    # 2º NÍVEL: RÉGUA DE NAVEGAÇÃO
+    # 2º NÍVEL: NAVEGAÇÃO
     _, c_plus, c_prev, c_rand, c_next, c_help, _ = st.columns([2, 1, 1, 1, 1, 1, 2])
     
     if c_plus.button("✚", help="gera novo yPoema"): 
@@ -212,7 +206,7 @@ def main():
     if c_help.button("?", help="ajuda"): 
         st.session_state.help_ativo = not st.session_state.help_ativo; st.rerun()
 
-    # 3º NÍVEL: COCKPIT CENTRALIZADO
+    # 3º NÍVEL: COCKPIT
     _, col_idioma, col_livro, col_tema, col_arte, col_som, _ = st.columns([0.5, 2, 2, 2, 1, 1, 0.5])
     
     with col_idioma:
@@ -249,7 +243,6 @@ def main():
             audio_fp = executar_som(txt, idioma)
             if audio_fp: st.audio(audio_fp, format='audio/mp3')
 
-        # Exibição do Título (Identidade) e Conteúdo
         if st.session_state.com_imagem:
             col_img, col_txt = st.columns([1, 2])
             with col_txt:
