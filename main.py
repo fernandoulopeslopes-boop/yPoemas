@@ -4,10 +4,10 @@ from deep_translator import GoogleTranslator
 import os
 import random
 
-# --- [PROTOCOL] IMPORTAÇÃO DO MOTOR ---
+# --- IMPORTAÇÃO DO MOTOR ---
 from lay_2_ypo import gera_poema
 
-# --- MOTOR DE TRADUÇÃO ---
+# --- MOTOR DE TRADUÇÃO (Acionado apenas por escolha de idioma) ---
 @st.cache_data(show_spinner=False)
 def traduzir_texto(texto, destino_nome):
     if not texto or "Português" in destino_nome: 
@@ -25,11 +25,7 @@ def aplicar_estetica_machina():
         <style>
             header[data-testid="stHeader"] { visibility: hidden; }
             footer { visibility: hidden; }
-            
-            /* Sidebar: Arte no Topo */
             .sb-art-top { margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-            
-            /* Botões de Navegação */
             div.stButton > button {
                 border-radius: 50% !important;
                 width: 50px !important;
@@ -56,6 +52,7 @@ def main():
     st.set_page_config(layout="wide", page_title="yPoemas")
     aplicar_estetica_machina()
 
+    # Inicialização de Estados
     if 'current_tab_idx' not in st.session_state: st.session_state.current_tab_idx = 1
     if 'poema_seed' not in st.session_state: st.session_state.poema_seed = 0
     if 'tema_atual' not in st.session_state: st.session_state.tema_atual = "Fatos"
@@ -71,6 +68,7 @@ def main():
         if os.path.exists(ativos["img"]): st.image(ativos["img"], use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
         
+        # Seletor de Tema (Este sim, dita o que o gera_poema fará)
         st.session_state.tema_atual = st.selectbox("Tema", ["Fatos", "Amaré", "Anjos", "Babel"], label_visibility="visible")
 
         path_md = os.path.join(DIR_MD, ativos["md"])
@@ -78,37 +76,44 @@ def main():
             with open(path_md, "r", encoding="utf-8") as f:
                 st.markdown(traduzir_texto(f.read(), idioma))
 
-    # --- NAVEGAÇÃO ---
+    # --- NAVEGAÇÃO DE PÁGINAS (SUPERIOR) ---
     aba_clicada = stx.tab_bar(data=[stx.TabBarItemData(id=p, title=p.upper(), description="") for p in PAGINAS], default=aba_atual)
 
+    # --- CONTROLES DO PALCO (OPERAÇÃO DO TEMA) ---
     cl, c1, c2, c3, c4, cr = st.columns([4, 1, 1, 1, 1, 4])
-    if c1.button("✚"): st.session_state.poema_seed += 1; st.rerun()
-    if c2.button("❰"): st.session_state.current_tab_idx = (st.session_state.current_tab_idx - 1) % len(PAGINAS); st.rerun()
-    if c3.button("✱"): st.session_state.current_tab_idx = random.choice([i for i in range(len(PAGINAS))]); st.rerun()
-    if c4.button("❱"): st.session_state.current_tab_idx = (st.session_state.current_tab_idx + 1) % len(PAGINAS); st.rerun()
+    
+    # + : Nova versão (incrementa seed)
+    if c1.button("✚"): 
+        st.session_state.poema_seed += 1
+        st.rerun()
+    
+    # ❰ : Versão anterior do mesmo tema
+    if c2.button("❰"): 
+        st.session_state.poema_seed -= 1
+        st.rerun()
+    
+    # ✱ : Versão aleatória do mesmo tema
+    if c3.button("✱"): 
+        st.session_state.poema_seed = random.randint(0, 999999)
+        st.rerun()
+    
+    # ❱ : Próxima versão do mesmo tema
+    if c4.button("❱"): 
+        st.session_state.poema_seed += 1
+        st.rerun()
 
+    # Sincronia das Abas (Aqui é onde as páginas mudam)
     if aba_clicada != aba_atual:
         st.session_state.current_tab_idx = PAGINAS.index(aba_clicada)
         st.rerun()
 
     st.markdown("---")
     
-    # --- RENDERIZAÇÃO SEM INTERFERÊNCIA ---
+    # --- RENDERIZAÇÃO DO CONTEÚDO ---
     if aba_atual in ["mini", "ypoemas", "eureka"]:
-        # Motor original
-        poema_bruto = gera_poema(st.session_state.tema_atual, st.session_state.poema_seed)
-        
-        # Consolidação do texto para evitar espaçamento duplo do Streamlit
-        if isinstance(poema_bruto, list):
-            texto_final = "\n".join(poema_bruto)
-        else:
-            texto_final = poema_bruto
-
-        # Tradução aplicada ao bloco inteiro
-        texto_exibicao = traduzir_texto(texto_final, idioma)
-
-        # st.code ou st.text em bloco único mantém a fonte mono e o espaçamento original
-        st.text(texto_exibicao)
+        # O motor opera SOBRE o tema e a semente controlada pelos botões acima
+        resultado = gera_poema(st.session_state.tema_atual, st.session_state.poema_seed)
+        st.text(traduzir_texto(resultado, idioma))
     else:
         st.empty()
 
