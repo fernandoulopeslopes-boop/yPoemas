@@ -27,21 +27,16 @@ def aplicar_estetica_machina():
         <style>
             header[data-testid="stHeader"] { visibility: hidden; height: 0px; }
             footer { visibility: hidden; }
-            
-            /* Previne que o conteúdo suma ao recolher a sidebar */
             .block-container { 
                 padding-top: 1.5rem !important; 
                 padding-left: 2rem !important; 
                 padding-right: 2rem !important; 
                 max-width: 98% !important;
             }
-            
-            /* Sidebar com largura fixa para evitar 'esmagamento' */
             [data-testid="stSidebar"] {
                 min-width: 280px !important;
                 max-width: 280px !important;
             }
-
             div.stButton > button {
                 border-radius: 50% !important;
                 width: 46px !important;
@@ -50,9 +45,7 @@ def aplicar_estetica_machina():
                 background-color: white !important;
                 margin: 0 auto !important;
                 display: block;
-                font-weight: bold;
             }
-            
             .book-header { 
                 font-size: 0.82em; 
                 font-weight: bold; 
@@ -105,7 +98,6 @@ def main():
 
     PAGINAS_APP = ["mini", "ypoemas", "eureka", "off-máquina", "books", "comments", "about"]
     
-    # Garantia de Session State
     if 'current_tab_idx' not in st.session_state: st.session_state.current_tab_idx = 1
     if 'book_em_foco' not in st.session_state: st.session_state.book_em_foco = "poemas"
     if 'tema_idx_por_book' not in st.session_state: st.session_state.tema_idx_por_book = {b: 0 for b in MAPA_BOOKS}
@@ -136,4 +128,47 @@ def main():
         st.session_state.tema_idx_por_book[book_em_foco] = (idx_atual + 1) % total_paginas
         st.rerun()
     if c_help.button("?"):
-        st
+        st.session_state.help_ativo = not st.session_state.help_ativo
+
+    aba_clicada = stx.tab_bar(data=[stx.TabBarItemData(id=p, title=p.upper(), description="") for p in PAGINAS_APP], default=aba_atual)
+
+    # --- SIDEBAR ---
+    with st.sidebar:
+        idioma = st.selectbox("L", LISTA_IDIOMAS, label_visibility="collapsed")
+        sigla = idioma.split(" - ")[0].lower()
+        
+        lista_livros = list(MAPA_BOOKS.keys())
+        idx_livro_foco = lista_livros.index(book_em_foco) if book_em_foco in lista_livros else 0
+        novo_book = st.selectbox("Livro", lista_livros, index=idx_livro_foco, label_visibility="collapsed")
+        if novo_book != book_em_foco:
+            st.session_state.book_em_foco = novo_book
+            st.rerun()
+        
+        st.markdown(f'<div class="book-header">{sigla} ({book_em_foco}) ({idx_atual + 1}/{total_paginas})</div>', unsafe_allow_html=True)
+        
+        tema_sel = st.selectbox("Tema", temas_do_livro, index=idx_atual, label_visibility="collapsed", key="sb_tema_safe")
+        if tema_sel != tema_selecionado:
+            st.session_state.tema_idx_por_book[book_em_foco] = temas_do_livro.index(tema_sel)
+            st.rerun()
+
+    if aba_clicada != aba_atual:
+        st.session_state.current_tab_idx = PAGINAS_APP.index(aba_clicada)
+        st.rerun()
+
+    st.markdown("---")
+
+    # --- PALCO CENTRAL ---
+    if st.session_state.help_ativo or aba_atual == "books":
+        path_doc = os.path.join("md_files", f"MANUAL_{aba_atual.upper()}.md")
+        if os.path.exists(path_doc):
+            with open(path_doc, "r", encoding="utf-8") as f:
+                st.markdown(normalizar_e_traduzir(f.read(), idioma))
+    elif aba_atual in ["mini", "ypoemas", "eureka"]:
+        semente = st.session_state.seed_eureka if aba_atual == "eureka" else ""
+        poema = gera_poema(tema_selecionado, semente)
+        st.text(normalizar_e_traduzir(poema, idioma))
+
+if __name__ == "__main__":
+    main()
+
+# --- FIM DO ARQUIVO: OPERAÇÃO CONCLUÍDA COM SUCESSO ---
