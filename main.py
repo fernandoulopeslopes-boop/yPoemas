@@ -68,8 +68,4 @@ def main():
     
     if 'current_tab_idx' not in st.session_state: st.session_state.current_tab_idx = 1
     if 'book_em_foco' not in st.session_state: st.session_state.book_em_foco = "poemas"
-    if 'tema_idx_por_book' not in st.session_state: st.session_state.tema_idx_por_book = {b: 0 for b in MAPA_BOOKS}
-    if 'seed_eureka' not in st.session_state: st.session_state.seed_eureka = 0
-    if 'help_ativo' not in st.session_state: st.session_state.help_ativo = False
-
-    aba_atual = PAGINAS_APP[st.session_
+    if 'tema_idx_por_book' not in st.session_state: st.
