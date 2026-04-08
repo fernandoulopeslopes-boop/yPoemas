@@ -19,34 +19,22 @@ def traduzir_texto(texto, destino_nome):
     except Exception:
         return texto
 
-# --- ESTÉTICA MINIMALISTA ---
+# --- ESTÉTICA DO BACKUP (SIMPLES) ---
 def aplicar_estetica_machina():
     st.markdown("""
         <style>
             header[data-testid="stHeader"] { visibility: hidden; }
             footer { visibility: hidden; }
             
-            /* Fonte Original e Formatação Limpa */
-            .poema-container {
-                font-family: 'Courier New', Courier, monospace;
-                font-size: 1.2rem;
-                color: #1a1a1a;
-                line-height: 1.6;
-                white-space: pre-wrap;
-                padding: 20px;
-                margin-top: 20px;
-            }
-
-            /* Sidebar: Arte no Topo */
+            /* Sidebar: Arte no Topo conforme acordado */
             .sb-art-top { margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
             
-            /* Botões Circulares */
+            /* Botões de Navegação */
             div.stButton > button {
                 border-radius: 50% !important;
                 width: 50px !important;
                 height: 50px !important;
                 border: 1px solid #333 !important;
-                background-color: white !important;
             }
         </style>
     """, unsafe_allow_html=True)
@@ -79,15 +67,12 @@ def main():
     with st.sidebar:
         idioma = st.selectbox("L", ["PT - Português", "ES - Español", "IT - Italiano", "EN - English"], label_visibility="collapsed")
         
-        # Arte ancorada no topo
         st.markdown('<div class="sb-art-top">', unsafe_allow_html=True)
         if os.path.exists(ativos["img"]): st.image(ativos["img"], use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
         
-        # Seletor de Tema
         st.session_state.tema_atual = st.selectbox("Tema", ["Fatos", "Amaré", "Anjos", "Babel"], label_visibility="visible")
 
-        # Texto da Sidebar
         path_md = os.path.join(DIR_MD, ativos["md"])
         if os.path.exists(path_md):
             with open(path_md, "r", encoding="utf-8") as f:
@@ -108,16 +93,19 @@ def main():
 
     st.markdown("---")
     
-    # --- RENDERIZAÇÃO LIMPA ---
+    # --- RENDERIZAÇÃO SEM COMPLICAÇÃO ---
     if aba_atual in ["mini", "ypoemas", "eureka"]:
-        # Chamada pura do motor
+        # Motor original entrega o texto limpo
         poema_bruto = gera_poema(st.session_state.tema_atual, st.session_state.poema_seed)
         
-        # Se poema_bruto vier como lista (conforme seu snippet), juntamos com quebras de linha
-        if isinstance(poema_bruto, list):
-            poema_bruto = "\n".join(poema_bruto)
-            
-        st.markdown(f'<div class="poema-container">{traduzir_texto(poema_bruto, idioma)}</div>', unsafe_allow_html=True)
+        # Se for lista, unifica; se não, imprime o objeto direto (st.write ou st.markdown limpo)
+        texto_final = traduzir_texto(poema_bruto, idioma)
+        
+        if isinstance(texto_final, list):
+            for linha in texto_final:
+                st.text(linha)
+        else:
+            st.text(texto_final)
     else:
         st.empty()
 
