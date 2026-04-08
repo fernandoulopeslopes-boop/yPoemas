@@ -27,12 +27,15 @@ def aplicar_estetica_machina():
         <style>
             header[data-testid="stHeader"] { visibility: hidden; height: 0px; }
             footer { visibility: hidden; }
+            
+            /* Ajuste de margens para evitar que botões sumam ao fechar a sidebar */
             .block-container { 
                 padding-top: 1rem !important; 
-                padding-bottom: 0rem !important;
-                max-width: 95% !important;
+                padding-left: 5% !important; 
+                padding-right: 5% !important; 
+                max-width: 100% !important;
             }
-            /* Garantia de visibilidade dos botões de controle */
+            
             div.stButton > button {
                 border-radius: 50% !important;
                 width: 45px !important;
@@ -41,18 +44,13 @@ def aplicar_estetica_machina():
                 background-color: white !important;
                 margin: 0 auto !important;
                 display: block;
-                transition: all 0.3s ease;
             }
-            div.stButton > button:hover {
-                border-color: #000 !important;
-                background-color: #f0f0f0 !important;
-            }
+            
             .book-header { 
                 font-size: 0.85em; 
                 font-weight: bold; 
                 color: #666; 
-                margin-top: 5px;
-                margin-bottom: 2px; 
+                margin-top: 8px;
                 font-family: monospace; 
             }
         </style>
@@ -105,18 +103,15 @@ def main():
     if 'help_ativo' not in st.session_state: st.session_state.help_ativo = False
 
     aba_atual = PAGINAS_APP[st.session_state.current_tab_idx]
-    
-    if aba_atual == "mini": book_em_foco = "temas mini"
-    elif aba_atual == "eureka": book_em_foco = "livro vivo"
-    else: book_em_foco = st.session_state.book_em_foco
+    book_em_foco = "temas mini" if aba_atual == "mini" else ("livro vivo" if aba_atual == "eureka" else st.session_state.book_em_foco)
     
     temas_do_livro = carregar_temas(book_em_foco)
     total_paginas = len(temas_do_livro)
     idx_atual = st.session_state.tema_idx_por_book.get(book_em_foco, 0) % total_paginas
     tema_selecionado = temas_do_livro[idx_atual]
 
-    # --- CONTROLES TOP (Layout Centralizado e Estável) ---
-    _, c_plus, c_prev, c_rand, c_next, c_help, _ = st.columns([2, 1, 1, 1, 1, 1, 2])
+    # --- CONTROLES TOP (Colunas equilibradas) ---
+    _, c_plus, c_prev, c_rand, c_next, c_help, _ = st.columns([1.5, 1, 1, 1, 1, 1, 1.5])
     
     if c_plus.button("✚"):
         st.session_state.seed_eureka += 1
@@ -142,14 +137,12 @@ def main():
         
         lista_livros = list(MAPA_BOOKS.keys())
         idx_livro_foco = lista_livros.index(book_em_foco) if book_em_foco in lista_livros else 0
-        
         novo_book = st.selectbox("Livro", lista_livros, index=idx_livro_foco, label_visibility="collapsed")
         if novo_book != book_em_foco:
             st.session_state.book_em_foco = novo_book
             st.rerun()
         
-        status_header = f"{sigla} ({book_em_foco}) ( {idx_atual + 1} / {total_paginas} )"
-        st.markdown(f'<div class="book-header">{status_header}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="book-header">{sigla} ({book_em_foco}) ( {idx_atual + 1} / {total_paginas} )</div>', unsafe_allow_html=True)
         
         tema_sel = st.selectbox("Tema", temas_do_livro, index=idx_atual, label_visibility="collapsed", key="sb_tema_final")
         if tema_sel != tema_selecionado:
@@ -157,22 +150,4 @@ def main():
             st.rerun()
 
     if aba_clicada != aba_atual:
-        st.session_state.current_tab_idx = PAGINAS_APP.index(aba_clicada)
-        st.rerun()
-
-    st.markdown("---")
-
-    # --- PALCO CENTRAL ---
-    if st.session_state.help_ativo or aba_atual == "books":
-        nome_doc = f"MANUAL_{aba_atual.upper()}.md"
-        path_doc = os.path.join("md_files", nome_doc)
-        if os.path.exists(path_doc):
-            with open(path_doc, "r", encoding="utf-8") as f:
-                st.markdown(normalizar_e_traduzir(f.read(), idioma))
-    elif aba_atual in ["mini", "ypoemas", "eureka"]:
-        semente = st.session_state.seed_eureka if aba_atual == "eureka" else ""
-        poema = gera_poema(tema_selecionado, semente)
-        st.text(normalizar_e_traduzir(poema, idioma))
-
-if __name__ == "__main__":
-    main()
+        st.
