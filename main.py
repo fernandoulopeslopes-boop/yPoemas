@@ -4,33 +4,41 @@ from deep_translator import GoogleTranslator
 import os
 import random
 
-# --- IMPORTAÇÃO DO MOTOR ---
+# --- [PROTOCOL] MOTOR SOBERANO ---
 from lay_2_ypo import gera_poema
 
-# --- MOTOR DE TRADUÇÃO ---
+# --- TRADUTOR (CONDICIONAL) ---
 @st.cache_data(show_spinner=False)
 def traduzir_texto(texto, destino_nome):
     if not texto or "Português" in destino_nome: 
         return texto
     try:
-        codigos = {"PT - Português": "pt", "ES - Español": "es", "IT - Italiano": "it", "EN - English": "en"}
+        codigos = {
+            "PT - Português": "pt", "ES - Español": "es", 
+            "IT - Italiano": "it", "EN - English": "en"
+        }
         target = codigos.get(destino_nome, 'en')
         return GoogleTranslator(source='auto', target=target).translate(texto)
     except Exception:
         return texto
 
-# --- ESTÉTICA DO BACKUP ---
+# --- ESTÉTICA IDENTITÁRIA ---
 def aplicar_estetica_machina():
     st.markdown("""
         <style>
             header[data-testid="stHeader"] { visibility: hidden; }
             footer { visibility: hidden; }
+            
+            /* Sidebar: Arte e Limpeza */
             .sb-art-top { margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+            
+            /* Botões Circulares do Palco */
             div.stButton > button {
                 border-radius: 50% !important;
                 width: 50px !important;
                 height: 50px !important;
                 border: 1px solid #333 !important;
+                background-color: white !important;
             }
         </style>
     """, unsafe_allow_html=True)
@@ -52,7 +60,7 @@ def main():
     st.set_page_config(layout="wide", page_title="yPoemas")
     aplicar_estetica_machina()
 
-    # Inicialização de Estados
+    # --- ESTADOS DE SESSÃO ---
     if 'current_tab_idx' not in st.session_state: st.session_state.current_tab_idx = 1
     if 'seed_eureka' not in st.session_state: st.session_state.seed_eureka = 0
     if 'tema_selecionado' not in st.session_state: st.session_state.tema_selecionado = "Fatos"
@@ -68,43 +76,48 @@ def main():
         if os.path.exists(ativos["img"]): st.image(ativos["img"], use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
         
-        # Seletor de Tema
+        # Seletor de Tema (Motor)
         st.session_state.tema_selecionado = st.selectbox("Tema", ["Fatos", "Amaré", "Anjos", "Babel"], label_visibility="visible")
 
+        # Texto Informativo MD
         path_md = os.path.join(DIR_MD, ativos["md"])
         if os.path.exists(path_md):
             with open(path_md, "r", encoding="utf-8") as f:
                 st.markdown(traduzir_texto(f.read(), idioma))
 
-    # --- NAVEGAÇÃO SUPERIOR ---
+    # --- NAVEGAÇÃO SUPERIOR (STX) ---
     aba_clicada = stx.tab_bar(data=[stx.TabBarItemData(id=p, title=p.upper(), description="") for p in PAGINAS], default=aba_atual)
 
-    # --- CONTROLES DO PALCO (A semente só é manipulada aqui) ---
+    # --- CONTROLES DO PALCO ---
     cl, c1, c2, c3, c4, cr = st.columns([4, 1, 1, 1, 1, 4])
     
-    # Ações de semente restritas à lógica interna do yPoema
+    # ✚ e ❱ : Incremento da seed_eureka
     if c1.button("✚"): st.session_state.seed_eureka += 1; st.rerun()
+    # ❰ : Decremento da seed_eureka
     if c2.button("❰"): st.session_state.seed_eureka -= 1; st.rerun()
+    # ✱ : Random seed_eureka
     if c3.button("✱"): st.session_state.seed_eureka = random.randint(0, 999999); st.rerun()
+    # ❱ : Incremento (Próximo)
     if c4.button("❱"): st.session_state.seed_eureka += 1; st.rerun()
 
+    # Sincronia de Abas
     if aba_clicada != aba_atual:
         st.session_state.current_tab_idx = PAGINAS.index(aba_clicada)
         st.rerun()
 
     st.markdown("---")
     
-    # --- PALCO CENTRAL (Lógica de Semente) ---
+    # --- RENDERIZAÇÃO DO PALCO ---
     if aba_atual in ["mini", "ypoemas", "eureka"]:
         
-        # A regra de ouro: semente só existe na página Eureka
-        semente_final = ""
-        if aba_atual == "eureka":
-            semente_final = st.session_state.seed_eureka
+        # A SEMENTE SÓ É NECESSÁRIA NA PÁGINA EUREKA
+        # Para mini e ypoemas, passamos "" (conforme o Oráculo)
+        semente_final = st.session_state.seed_eureka if aba_atual == "eureka" else ""
             
-        # Chamada do motor respeitando a semente (ou a falta dela)
+        # O motor devolve o texto limpo e pronto
         resultado = gera_poema(st.session_state.tema_selecionado, semente_final)
         
+        # Impressão Direta (Traduz apenas se idioma != PT)
         st.text(traduzir_texto(resultado, idioma))
     else:
         st.empty()
