@@ -4,7 +4,7 @@ from deep_translator import GoogleTranslator
 import os
 import random
 
-# --- IMPORTAÇÃO DO MOTOR ---
+# --- [PROTOCOL] IMPORTAÇÃO DO MOTOR ---
 from lay_2_ypo import gera_poema
 
 # --- MOTOR DE TRADUÇÃO ---
@@ -19,14 +19,14 @@ def traduzir_texto(texto, destino_nome):
     except Exception:
         return texto
 
-# --- ESTÉTICA DO BACKUP (SIMPLES) ---
+# --- ESTÉTICA DO BACKUP ---
 def aplicar_estetica_machina():
     st.markdown("""
         <style>
             header[data-testid="stHeader"] { visibility: hidden; }
             footer { visibility: hidden; }
             
-            /* Sidebar: Arte no Topo conforme acordado */
+            /* Sidebar: Arte no Topo */
             .sb-art-top { margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
             
             /* Botões de Navegação */
@@ -93,19 +93,22 @@ def main():
 
     st.markdown("---")
     
-    # --- RENDERIZAÇÃO SEM COMPLICAÇÃO ---
+    # --- RENDERIZAÇÃO SEM INTERFERÊNCIA ---
     if aba_atual in ["mini", "ypoemas", "eureka"]:
-        # Motor original entrega o texto limpo
+        # Motor original
         poema_bruto = gera_poema(st.session_state.tema_atual, st.session_state.poema_seed)
         
-        # Se for lista, unifica; se não, imprime o objeto direto (st.write ou st.markdown limpo)
-        texto_final = traduzir_texto(poema_bruto, idioma)
-        
-        if isinstance(texto_final, list):
-            for linha in texto_final:
-                st.text(linha)
+        # Consolidação do texto para evitar espaçamento duplo do Streamlit
+        if isinstance(poema_bruto, list):
+            texto_final = "\n".join(poema_bruto)
         else:
-            st.text(texto_final)
+            texto_final = poema_bruto
+
+        # Tradução aplicada ao bloco inteiro
+        texto_exibicao = traduzir_texto(texto_final, idioma)
+
+        # st.code ou st.text em bloco único mantém a fonte mono e o espaçamento original
+        st.text(texto_exibicao)
     else:
         st.empty()
 
