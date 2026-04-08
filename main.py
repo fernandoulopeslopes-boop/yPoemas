@@ -4,17 +4,16 @@ from deep_translator import GoogleTranslator
 import os
 import random
 
-# --- CONFIGURAÇÃO DE DIRETÓRIO RAIZ (BLINDAGEM) ---
+# --- DIRETÓRIO RAIZ ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # --- [PROTOCOL] MOTOR SOBERANO ---
 try:
     from lay_2_ypo import gera_poema
 except ImportError:
-    def gera_poema(t, s=""): return f"Erro: lay_2_ypo.py não localizado no diretório.\nTema: {t}"
+    def gera_poema(t, s=""): return f"Erro: lay_2_ypo.py não localizado.\nTema: {t}"
 
 def carregar_mapa_imagens():
-    """Lê a curadoria exata de base/images.txt"""
     mapa = {}
     caminho = os.path.join(BASE_DIR, "base", "images.txt")
     if os.path.exists(caminho):
@@ -82,11 +81,13 @@ def aplicar_estetica_machina():
 def buscar_arte_curada(tema, mapa_fotos):
     grupo = mapa_fotos.get(tema, "maquina")
     for g in [grupo, "maquina"]:
-        path_pasta = os.path.join(BASE_DIR, "img", g)
-        if os.path.exists(path_pasta):
-            arquivos = [f for f in os.listdir(path_pasta) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
+        # O caminho físico para verificar se existe
+        path_fisico = os.path.join(BASE_DIR, "img", g)
+        if os.path.exists(path_fisico):
+            arquivos = [f for f in os.listdir(path_fisico) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
             if arquivos:
-                return os.path.join("img", g, random.choice(arquivos))
+                # O Streamlit acessa a pasta 'img' se ela estiver na raiz do app
+                return f"img/{g}/{random.choice(arquivos)}"
     return None
 
 MAPA_BOOKS = {
@@ -119,7 +120,7 @@ def main():
     st.set_page_config(layout="wide", page_title="yPoemas")
     aplicar_estetica_machina()
 
-    # Session State garantido
+    # Session State (Blindagem)
     for key, val in {'current_tab_idx': 1, 'book_em_foco': 'poemas', 'com_imagem': True, 'seed_eureka': 0, 'help_ativo': False}.items():
         if key not in st.session_state: st.session_state[key] = val
     if 'tema_idx_por_book' not in st.session_state: st.session_state.tema_idx_por_book = {b: 0 for b in MAPA_BOOKS}
@@ -136,11 +137,17 @@ def main():
 
     # --- NAVEGAÇÃO ---
     _, c_plus, c_prev, c_rand, c_next, c_help, _ = st.columns([2, 1, 1, 1, 1, 1, 2])
-    if c_plus.button("✚", help="Nova Variação (Semente)"): st.session_state.seed_eureka += 1; st.rerun()
-    if c_prev.button("❰", help="Página anterior"): st.session_state.tema_idx_por_book[book_em_foco] = (idx_atual - 1); st.rerun()
-    if c_rand.button("✱", help="Tema aleatório"): st.session_state.tema_idx_por_book[book_em_foco] = random.randint(0, len(temas_do_livro)-1); st.rerun()
-    if c_next.button("❱", help="Próxima página"): st.session_state.tema_idx_por_book[book_em_foco] = (idx_atual + 1); st.rerun()
-    if c_help.button("?", help="Exibir/Ocultar Guia"): st.session_state.help_ativo = not st.session_state.help_ativo; st.rerun()
+    
+    if c_plus.button("✚", help="gera novo yPoema"): 
+        st.session_state.seed_eureka += 1; st.rerun()
+    if c_prev.button("❰", help="Página anterior"): 
+        st.session_state.tema_idx_por_book[book_em_foco] = (idx_atual - 1); st.rerun()
+    if c_rand.button("✱", help="Tema aleatório"): 
+        st.session_state.tema_idx_por_book[book_em_foco] = random.randint(0, len(temas_do_livro)-1); st.rerun()
+    if c_next.button("❱", help="Próxima página"): 
+        st.session_state.tema_idx_por_book[book_em_foco] = (idx_atual + 1); st.rerun()
+    if c_help.button("?", help="menu de ajuda"): 
+        st.session_state.help_ativo = not st.session_state.help_ativo; st.rerun()
 
     aba_clicada = stx.tab_bar(data=[stx.TabBarItemData(id=p, title=p.upper(), description="") for p in PAGINAS_APP], default=aba_atual)
     if aba_clicada != aba_atual:
@@ -174,7 +181,8 @@ def main():
         if st.session_state.com_imagem:
             col_img, col_txt = st.columns([1, 2])
             arte = buscar_arte_curada(tema_selecionado, mapa_fotos)
-            if arte: col_img.image(arte, use_container_width=True)
+            if arte: 
+                col_img.image(arte, use_container_width=True)
             col_txt.markdown(f'<div class="poema-box">{txt}</div>', unsafe_allow_html=True)
         else:
             _, col_central, _ = st.columns([1, 4, 1])
