@@ -31,52 +31,31 @@ def get_help_tips(idioma):
     }
     return {k: traduzir_texto(v, idioma) for k, v in tips.items()}
 
-# --- ARQUITETURA DE ESTILO (PTC-CSS V37 - RIGIDEZ TOTAL) ---
+# --- ARQUITETURA DE ESTILO (PTC-CSS V39 - INVERSÃO DE FLUXO) ---
 def aplicar_estetica_machina():
     st.markdown("""
         <style>
-            /* Bloqueio do Scroll Global da Sidebar */
-            [data-testid="stSidebarUserContent"] {
-                overflow: hidden !important;
-                display: flex;
-                flex-direction: column;
-                height: 100vh !important;
-            }
-
             header[data-testid="stHeader"] { visibility: hidden; height: 0px; }
             .block-container { padding-top: 1rem !important; }
             footer { visibility: hidden; }
 
-            /* BLOCO 1 & 2: Cabeçalho Estático */
-            .sb-header {
-                flex-shrink: 0;
-                margin-top: -45px;
-                background: white;
-                padding-bottom: 10px;
-                z-index: 20;
+            /* Ajustes Finos da Sidebar */
+            [data-testid="stSidebarUserContent"] {
+                padding-top: 20px !important;
             }
 
-            /* BLOCO 3: Janela de Scroll Rígida */
-            .sb-content-scroll {
-                flex-grow: 1;
-                height: calc(100vh - 450px) !important; /* Altura calculada para nunca empurrar a arte */
-                max-height: calc(100vh - 450px) !important;
-                overflow-y: auto !important;
-                padding-right: 15px;
-                margin-bottom: 5px;
-                scrollbar-width: thin;
+            /* Container para a Arte no Topo */
+            .sb-art-top {
+                margin-top: 10px;
+                margin-bottom: 20px;
                 border-bottom: 1px solid #f0f0f0;
+                padding-bottom: 15px;
             }
 
-            /* BLOCO 4: Arte Fixada no Rodapé da Sidebar */
-            .sb-footer-art {
-                position: fixed;
-                bottom: 0;
-                width: 260px;
-                background: white;
-                padding: 10px 0;
-                z-index: 30;
-                border-top: 1px solid #eee;
+            /* Container para o Texto (Bloco 3) */
+            .sb-text-content {
+                font-size: 0.95rem;
+                line-height: 1.5;
             }
 
             /* Estilo dos Botões do Palco */
@@ -92,11 +71,12 @@ def aplicar_estetica_machina():
                 display: flex !important;
                 align-items: center !important;
                 justify-content: center !important;
-                box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+                transition: all 0.2s ease;
             }
             div.stButton > button:hover {
                 border-color: #ff4b4b !important;
                 color: #ff4b4b !important;
+                transform: scale(1.05);
             }
 
             [data-testid="column"] { display: flex; justify-content: center; align-items: center; }
@@ -128,10 +108,9 @@ def main():
     aba_atual = PAGINAS[st.session_state.current_tab_idx]
     ativos = MAPA_ATIVOS.get(aba_atual)
 
-    # --- 1. SIDEBAR REESTRUTURADA ---
+    # --- 1. SIDEBAR (ORDEM INVERTIDA) ---
     with st.sidebar:
-        # BLOCO 1 & 2: Topo Fixo
-        st.markdown('<div class="sb-header">', unsafe_allow_html=True)
+        # BLOCO 1 & 2: Idioma e Nome
         idioma = st.selectbox("L", [
             "PT - Português", "ES - Español", "IT - Italiano", "FR - Français", 
             "DE - Deutsch", "EN - English", "CA - Català", "GL - Galego", "RO - Română"
@@ -139,28 +118,27 @@ def main():
         
         if ativos["desc"]:
             st.markdown(f"**{traduzir_texto(ativos['desc'], idioma)}**")
+        
+        # BLOCO 4: ARTE (AGORA NO TOPO)
+        st.markdown('<div class="sb-art-top">', unsafe_allow_html=True)
+        if os.path.exists(ativos["img"]):
+            st.image(ativos["img"], use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
         
         tips = get_help_tips(idioma)
 
-        # BLOCO 3: O Pulmão com Scroll Controlado
-        st.markdown('<div class="sb-content-scroll">', unsafe_allow_html=True)
+        # BLOCO 3: TEXTO (AGORA NA BASE, LIVRE PARA CRESCER)
+        st.markdown('<div class="sb-text-content">', unsafe_allow_html=True)
         path_md = os.path.join(DIR_MD, ativos["md"])
         if os.path.exists(path_md):
             with open(path_md, "r", encoding="utf-8") as f:
                 st.markdown(traduzir_texto(f.read(), idioma))
         st.markdown('</div>', unsafe_allow_html=True)
 
-        # BLOCO 4: Arte Blindada no Rodapé
-        st.markdown('<div class="sb-footer-art">', unsafe_allow_html=True)
-        if os.path.exists(ativos["img"]):
-            st.image(ativos["img"], use_container_width=True)
-        st.markdown('</div>', unsafe_allow_html=True)
-
     # --- 2. PALCO ---
     aba_clicada = stx.tab_bar(
         data=[stx.TabBarItemData(id=p, title=p.upper(), description="") for p in PAGINAS], 
-        default=aba_atual, key="machina_v37_rigid"
+        default=aba_atual, key="machina_v39_inverted"
     )
 
     cl, c1, c2, c3, c4, c5, cr = st.columns([4, 1, 1, 1, 1, 1, 4])
@@ -186,7 +164,6 @@ def main():
 
     st.markdown("---")
     
-    # RENDERIZAÇÃO
     if aba_atual == "comments":
         path_c = os.path.join(DIR_MD, "COMMENTS.md")
         if os.path.exists(path_c):
