@@ -67,6 +67,15 @@ def aplicar_estetica_machina():
                 margin: 0 auto !important;
                 display: block;
             }
+            /* Centralização e ajuste dos widgets do cockpit */
+            [data-testid="column"] {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .stSelectbox, .stToggle {
+                width: 100% !important;
+            }
             hr { margin: 1em 0 !important; }
         </style>
     """, unsafe_allow_html=True)
@@ -78,8 +87,8 @@ def buscar_arte_curada(tema, mapa_fotos):
         if os.path.exists(path_fisico):
             arquivos = [f for f in os.listdir(path_fisico) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
             if arquivos:
-                # Retorna o caminho absoluto para o st.image garantir a leitura
-                return os.path.join(path_fisico, random.choice(arquivos))
+                # Retorna o caminho relativo que o Streamlit espera (img/grupo/arquivo)
+                return f"img/{g}/{random.choice(arquivos)}"
     return None
 
 MAPA_BOOKS = {
@@ -145,18 +154,28 @@ def main():
     if aba_clicada != aba_atual:
         st.session_state.current_tab_idx = PAGINAS_APP.index(aba_clicada); st.rerun()
 
-    # --- COCKPIT ---
-    c1, c2, c3, c4 = st.columns([1, 1.5, 2.5, 1])
-    idioma = c1.selectbox("Idioma", LISTA_IDIOMAS, label_visibility="collapsed")
-    novo_book = c2.selectbox("Livro", list(MAPA_BOOKS.keys()), index=list(MAPA_BOOKS.keys()).index(book_em_foco), label_visibility="collapsed")
-    if novo_book != book_em_foco: st.session_state.book_em_foco = novo_book; st.rerun()
+    # --- COCKPIT CENTRALIZADO ---
+    # Usando proporções iguais para os 4 elementos para forçar o mesmo width
+    _, col_idioma, col_livro, col_tema, col_arte, _ = st.columns([1, 2, 2, 2, 1, 1])
     
-    tema_sel = c3.selectbox("Tema", temas_do_livro, index=idx_atual, label_visibility="collapsed")
-    if tema_sel != tema_selecionado: st.session_state.tema_idx_por_book[book_em_foco] = temas_do_livro.index(tema_sel); st.rerun()
+    with col_idioma:
+        idioma = st.selectbox("Idioma", LISTA_IDIOMAS, label_visibility="collapsed")
     
-    st.session_state.com_imagem = c4.toggle("Arte", value=st.session_state.com_imagem)
+    with col_livro:
+        novo_book = st.selectbox("Livro", list(MAPA_BOOKS.keys()), index=list(MAPA_BOOKS.keys()).index(book_em_foco), label_visibility="collapsed")
+        if novo_book != book_em_foco: 
+            st.session_state.book_em_foco = novo_book
+            st.rerun()
+    
+    with col_tema:
+        tema_sel = st.selectbox("Tema", temas_do_livro, index=idx_atual, label_visibility="collapsed")
+        if tema_sel != tema_selecionado: 
+            st.session_state.tema_idx_por_book[book_em_foco] = temas_do_livro.index(tema_sel)
+            st.rerun()
+    
+    with col_arte:
+        st.session_state.com_imagem = st.toggle("Arte", value=st.session_state.com_imagem)
 
-    # REMOVIDA A LINHA DE INFO ABAIXO DOS TEMAS (poemas | tema...)
     st.markdown("---")
 
     # --- PALCO CENTRAL ---
@@ -174,7 +193,8 @@ def main():
             col_img, col_txt = st.columns([1, 2])
             arte = buscar_arte_curada(tema_selecionado, mapa_fotos)
             if arte: 
-                col_img.image(arte, use_container_width=True)
+                # O st.image resolve caminhos relativos à raiz do app
+                st.image(arte) if not col_img.image(arte, use_container_width=True) else None
             col_txt.markdown(f'<div class="poema-box">{txt}</div>', unsafe_allow_html=True)
         else:
             _, col_central, _ = st.columns([1, 4, 1])
