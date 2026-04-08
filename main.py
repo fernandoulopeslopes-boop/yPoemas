@@ -5,7 +5,6 @@ import os
 import random
 
 # --- [PROTOCOL] MOTOR SOBERANO ---
-# Tentativa de importação robusta para evitar quebra total se o arquivo sumir
 try:
     from lay_2_ypo import gera_poema
 except ImportError:
@@ -38,55 +37,4 @@ def aplicar_estetica_machina():
                 margin: 0 10px !important;
             }
             .book-header { font-size: 0.85em; font-weight: bold; color: #666; margin-bottom: 2px; font-family: monospace; }
-            .page-info { font-size: 0.75em; color: #999; margin-top: 5px; font-style: italic; }
-        </style>
-    """, unsafe_allow_html=True)
-
-MAPA_BOOKS = {
-    "livro vivo": "rol_livro_vivo.txt",
-    "poemas": "rol_poemas.txt",
-    "ensaios": "rol_ensaios.txt",
-    "jocosos": "rol_jocosos.txt",
-    "variações": "rol_variações.txt",
-    "metalinguagem": "rol_metalinguagem.txt",
-    "sociais": "rol_sociais.txt",
-    "outros autores": "rol_outros autores.txt",
-    "todos os temas": "rol_poemas.txt",
-    "todos os signos": "rol_todos os signos.txt",
-    "temas mini": "rol_temas_mini.txt"
-}
-
-def carregar_temas(nome_book):
-    arquivo = MAPA_BOOKS.get(nome_book, "rol_poemas.txt")
-    caminho = os.path.join("base", arquivo)
-    if os.path.exists(caminho):
-        try:
-            with open(caminho, "r", encoding="utf-8") as f:
-                return [l.strip() for l in f if l.strip() and not l.startswith("[")]
-        except Exception: pass
-    return ["Fatos"]
-
-def main():
-    # Configuração inicial deve ser a primeira chamada Streamlit
-    st.set_page_config(layout="wide", page_title="yPoemas", initial_sidebar_state="expanded")
-    aplicar_estetica_machina()
-
-    PAGINAS_APP = ["mini", "ypoemas", "eureka", "off-máquina", "books", "comments", "about"]
-    
-    # Garantia de Session State (Reset se corrompido)
-    if 'current_tab_idx' not in st.session_state: st.session_state.current_tab_idx = 1
-    if 'book_em_foco' not in st.session_state: st.session_state.book_em_foco = "poemas"
-    if 'tema_idx_por_book' not in st.session_state: st.session_state.tema_idx_por_book = {b: 0 for b in MAPA_BOOKS}
-    if 'seed_eureka' not in st.session_state: st.session_state.seed_eureka = 0
-    if 'help_ativo' not in st.session_state: st.session_state.help_ativo = False
-
-    aba_atual = PAGINAS_APP[st.session_state.current_tab_idx]
-    
-    # Determinação do livro
-    if aba_atual == "mini": book_em_foco = "temas mini"
-    elif aba_atual == "eureka": book_em_foco = "livro vivo"
-    else: book_em_foco = st.session_state.book_em_foco
-    
-    temas_do_livro = carregar_temas(book_em_foco)
-    total_paginas = len(temas_do_livro)
-    idx_atual = st.session_state.tema_idx_por_book.get(book_em_foco, 0) % total_paginas
+            .page-info { font-size: 0
