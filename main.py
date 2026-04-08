@@ -2,8 +2,9 @@ import streamlit as st
 import extra_streamlit_components as stx
 from deep_translator import GoogleTranslator
 import os
+import random
 
-# --- NÚCLEO DE TRADUÇÃO (SINTONIA FINA) ---
+# --- MOTOR DE TRADUÇÃO (ESTABILIDADE) ---
 @st.cache_data(show_spinner=False)
 def traduzir_texto(texto, destino_nome):
     if not texto or "Português" in destino_nome: 
@@ -19,52 +20,75 @@ def traduzir_texto(texto, destino_nome):
     except Exception:
         return texto
 
-# --- ESTÉTICA E GEOMETRIA (CSS) ---
-def aplicar_estilo_ypoemas():
+# --- MANUAL DE OPERAÇÃO (HELP_LISTER) ---
+def get_help_tips(idioma):
+    tips = {
+        "plus": "Imprime mais uma cópia do mesmo tema",
+        "prev": "Retorna ao tema anterior",
+        "random": "Escolhe um tema ao acaso (Random)",
+        "next": "Avança para o próximo tema",
+        "help": "Manual de Instruções da Machina"
+    }
+    return {k: traduzir_texto(v, idioma) for k, v in tips.items()}
+
+# --- ARQUITETURA DE ESTILO (PTC-CSS) ---
+def aplicar_estetica_machina():
     st.markdown("""
         <style>
-            /* Limpeza de Interface */
+            /* Reset e Ocultação de Elementos Nativos */
             header[data-testid="stHeader"] { visibility: hidden; height: 0px; }
-            .block-container { padding-top: 1.5rem !important; }
+            .block-container { padding-top: 1rem !important; }
             footer { visibility: hidden; }
 
-            /* Sidebar: Rigor de 300px e Topo Zero */
+            /* Sidebar: Estrutura em 4 Containers */
             section[data-testid="stSidebar"] {
                 width: 300px !important;
                 min-width: 300px !important;
                 max-width: 300px !important;
             }
-            [data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
-                padding-top: 0rem !important;
-                gap: 0.5rem !important;
+            
+            /* Bloco 2 & 3: Container de Scroll Independente */
+            .sidebar-content-scroll {
+                height: calc(100vh - 300px);
+                overflow-y: auto;
+                padding-right: 8px;
+                margin-bottom: 10px;
+            }
+            
+            /* Bloco 4: Arte Ancorada na Base */
+            .sidebar-footer-fixed {
+                position: absolute;
+                bottom: 15px;
+                width: 260px;
+                background: white;
+                z-index: 100;
             }
 
-            /* Botões de Navegação: Glifos Circulares Pesados */
+            /* Botões de Navegação: Glifos de Alta Densidade */
             div.stButton > button {
                 border-radius: 50% !important;
-                width: 52px !important;
-                height: 52px !important;
-                border: 1px solid #333 !important;
+                width: 54px !important;
+                height: 54px !important;
+                border: 2px solid #222 !important;
                 background-color: #ffffff !important;
-                color: #111 !important;
-                font-size: 24px !important;
-                font-weight: bold !important;
+                color: #000 !important;
+                font-size: 26px !important;
+                font-weight: 900 !important;
                 display: flex !important;
                 align-items: center !important;
                 justify-content: center !important;
-                transition: all 0.2s ease-in-out;
-                box-shadow: 1px 2px 4px rgba(0,0,0,0.1);
+                transition: all 0.2s ease;
+                box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
                 margin: 0 auto !important;
                 padding: 0px !important;
             }
             div.stButton > button:hover {
                 border-color: #ff4b4b !important;
                 color: #ff4b4b !important;
-                transform: translateY(-2px);
-                box-shadow: 2px 4px 8px rgba(0,0,0,0.15);
+                transform: scale(1.1);
             }
 
-            /* Centralização de Colunas */
+            /* Palco: Centralização das Colunas */
             [data-testid="column"] {
                 display: flex;
                 justify-content: center;
@@ -73,100 +97,108 @@ def aplicar_estilo_ypoemas():
         </style>
     """, unsafe_allow_html=True)
 
-# --- CONFIGURAÇÕES E ATIVOS ---
+# --- CONFIGURAÇÕES E MAPEAMENTO ---
 DIR_MD = "md_files"
-ARQUIVO_ICONE = "icon_ypo.ico"
-IDIOMAS = [
-    "PT - Português", "ES - Español", "IT - Italiano", "FR - Français", 
-    "DE - Deutsch", "EN - English", "CA - Català", "GL - Galego", "RO - Română"
-]
 PAGINAS = ["mini", "ypoemas", "eureka", "off-máquina", "books", "comments", "about"]
-
-ATRIBUTOS = {
-    "mini": {"img": "img_mini.jpg", "md": "INFO_MINI.md"},
-    "ypoemas": {"img": "img_ypoemas.jpg", "md": "INFO_YPOEMAS.md"},
-    "eureka": {"img": "img_eureka.jpg", "md": "INFO_EUREKA.md"},
-    "off-máquina": {"img": "img_off-machina.jpg", "md": "ABOUT_OFF-MACHINA.md"},
-    "books": {"img": "img_books.jpg", "md": "INFO_BOOKS.md"},
-    "comments": {"img": "img_poly.jpg", "md": "ABOUT_COMMENTS.md"},
-    "about": {"img": "img_about.jpg", "md": "INFO_ABOUT.md"}
+MAPA_ATIVOS = {
+    "mini": {"img": "img_mini.jpg", "md": "INFO_MINI.md", "desc": "Sobre a Mini-Machina"},
+    "ypoemas": {"img": "img_ypoemas.jpg", "md": "INFO_YPOEMAS.md", "desc": ""},
+    "eureka": {"img": "img_eureka.jpg", "md": "INFO_EUREKA.md", "desc": "O momento da descoberta"},
+    "off-máquina": {"img": "img_off-machina.jpg", "md": "ABOUT_OFF-MACHINA.md", "desc": "Sobre os livros off-machina"},
+    "books": {"img": "img_books.jpg", "md": "INFO_BOOKS.md", "desc": "A biblioteca da Machina"},
+    "comments": {"img": "img_poly.jpg", "md": "ABOUT_COMMENTS.md", "desc": ""},
+    "about": {"img": "img_about.jpg", "md": "INFO_ABOUT.md", "desc": "A alma do projeto"}
 }
 
 def main():
-    st.set_page_config(
-        layout="wide", 
-        page_title="yPoemas", 
-        page_icon=ARQUIVO_ICONE if os.path.exists(ARQUIVO_ICONE) else "🎭"
-    )
-    aplicar_estilo_ypoemas()
+    # Inicialização do Ambiente
+    st.set_page_config(layout="wide", page_title="yPoemas", page_icon="🎭")
+    aplicar_estetica_machina()
 
-    # Controle Robusto de Navegação
+    # Gestão de Estado (Navegação e Motor)
     if 'current_tab_idx' not in st.session_state:
         st.session_state.current_tab_idx = 1
+    if 'poema_seed' not in st.session_state:
+        st.session_state.poema_seed = 0
     
-    pagina_ativa = PAGINAS[st.session_state.current_tab_idx]
-    ativo = ATRIBUTOS.get(pagina_ativa)
+    aba_atual = PAGINAS[st.session_state.current_tab_idx]
+    ativos = MAPA_ATIVOS.get(aba_atual)
 
-    # --- 1. SIDEBAR (TRADUÇÃO E IDENTIDADE) ---
+    # --- 1. SIDEBAR (TRIPÉ DE INTERFACE) ---
     with st.sidebar:
-        # Seletor no Topo
-        st.markdown("<div style='margin-top: -10px;'></div>", unsafe_allow_html=True)
-        idioma_sel = st.selectbox("Lang", IDIOMAS, label_visibility="collapsed", key="lang_ypo")
+        # BLOCO 1: Seletor de Idioma (Topo Absoluto)
+        idioma = st.selectbox("L", [
+            "PT - Português", "ES - Español", "IT - Italiano", "FR - Français", 
+            "DE - Deutsch", "EN - English", "CA - Català", "GL - Galego", "RO - Română"
+        ], label_visibility="collapsed")
+        
         st.markdown("---")
+        tips = get_help_tips(idioma)
 
-        # Texto de Apoio
-        path_md = os.path.join(DIR_MD, ativo["md"])
+        # BLOCO 2 & 3: Descrição + Conteúdo (Área de Scroll Independente)
+        st.markdown('<div class="sidebar-content-scroll">', unsafe_allow_html=True)
+        if ativos["desc"]:
+            st.markdown(f"**{traduzir_texto(ativos['desc'], idioma)}**")
+        
+        path_md = os.path.join(DIR_MD, ativos["md"])
         if os.path.exists(path_md):
             with open(path_md, "r", encoding="utf-8") as f:
-                st.markdown(traduzir_texto(f.read(), idioma_sel))
-        
-        # Arte Ancorada (Resgate Visual)
-        st.markdown("<div style='height: 20vh;'></div>", unsafe_allow_html=True)
-        st.markdown("---")
-        if os.path.exists(ativo["img"]):
-            st.image(ativo["img"], use_container_width=True)
+                st.markdown(traduzir_texto(f.read(), idioma))
+        st.markdown('</div>', unsafe_allow_html=True)
 
-    # --- 2. PALCO (NAVEGAÇÃO E CONTEÚDO) ---
+        # BLOCO 4: Arte Ancorada (Rodapé Fixo)
+        st.markdown('<div class="sidebar-footer-fixed">', unsafe_allow_html=True)
+        st.markdown("---")
+        if os.path.exists(ativos["img"]):
+            st.image(ativos["img"], use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    # --- 2. PALCO (SIMETRIA E NAVEGAÇÃO ICÔNICA) ---
     aba_clicada = stx.tab_bar(
         data=[stx.TabBarItemData(id=p, title=p.upper(), description="") for p in PAGINAS], 
-        default=pagina_ativa,
-        key="machina_v28_final"
+        default=aba_atual, key="machina_v33_final"
     )
 
-    # Botões Glifo (✚ ❰ ✱ ❱ ❓)
-    c1, c2, c3, c4, c5, c_void = st.columns([1, 1, 1, 1, 1, 8])
+    # Grelha de Navegação Centrada (✚ ❰ ✱ ❱ ？)
+    c_puffer_l, c1, c2, c3, c4, c5, c_puffer_r = st.columns([4, 1, 1, 1, 1, 1, 4])
     
-    if c1.button("✚"): pass
+    if c1.button("✚", help=tips["plus"]):
+        st.session_state.poema_seed += 1
+        st.rerun()
     
-    if c2.button("❰"):
+    if c2.button("❰", help=tips["prev"]):
         st.session_state.current_tab_idx = (st.session_state.current_tab_idx - 1) % len(PAGINAS)
         st.rerun()
         
-    if c3.button("✱"):
-        st.session_state.current_tab_idx = 1 # Home
+    if c3.button("✱", help=tips["random"]):
+        opcoes = [i for i in range(len(PAGINAS)) if i != st.session_state.current_tab_idx]
+        st.session_state.current_tab_idx = random.choice(opcoes)
         st.rerun()
         
-    if c4.button("❱"):
+    if c4.button("❱", help=tips["next"]):
         st.session_state.current_tab_idx = (st.session_state.current_tab_idx + 1) % len(PAGINAS)
         st.rerun()
         
-    if c5.button("❓"): pass
+    if c5.button("？", help=tips["help"]): 
+        pass
 
-    # Sincronização Tab -> Estado
-    if aba_clicada != pagina_ativa:
+    # Sincronia entre Tab Bar e Botões
+    if aba_clicada != aba_atual:
         st.session_state.current_tab_idx = PAGINAS.index(aba_clicada)
         st.rerun()
 
     st.markdown("---")
     
-    # Conteúdo Principal
-    if pagina_ativa == "comments":
+    # RENDERIZAÇÃO DE CONTEÚDO
+    if aba_atual == "comments":
         path_c = os.path.join(DIR_MD, "COMMENTS.md")
         if os.path.exists(path_c):
             with open(path_c, "r", encoding="utf-8") as f:
-                st.markdown(traduzir_texto(f.read(), idioma_sel))
-    elif pagina_ativa == "ypoemas":
-        st.markdown(f"### {pagina_ativa.upper()}")
+                st.markdown(traduzir_texto(f.read(), idioma))
+    elif aba_atual == "ypoemas":
+        # Placeholder para o Motor de Poesia
+        st.markdown(f"### {aba_atual.upper()}")
+        st.write(f"Versão de Impressão: {st.session_state.poema_seed}")
     else:
         st.empty()
 
