@@ -25,7 +25,6 @@ def aplicar_estetica_machina():
             header[data-testid="stHeader"] { visibility: hidden; height: 0px; }
             footer { visibility: hidden; }
             .block-container { padding-top: 0rem !important; }
-            .sb-art-top { margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
             div.stButton > button {
                 border-radius: 50% !important;
                 width: 50px !important;
@@ -38,22 +37,22 @@ def aplicar_estetica_machina():
         </style>
     """, unsafe_allow_html=True)
 
-# Mapeamento dos Livros REAIS presentes na pasta \base
+# Dicionário de Books Reais
 MAPA_BOOKS = {
-    "mini": "rol_temas_mini.txt",
-    "ypoemas": "rol_poemas.txt",
-    "eureka": "rol_livro_vivo.txt",
-    "off-máquina": "rol_livro_vivo.txt",
-    "books": "rol_variações.txt",
-    "sociais": "rol_sociais.txt",
+    "livro vivo": "rol_livro_vivo.txt",
+    "poemas": "rol_poemas.txt",
     "ensaios": "rol_ensaios.txt",
     "jocosos": "rol_jocosos.txt",
+    "variações": "rol_variações.txt",
     "metalinguagem": "rol_metalinguagem.txt",
-    "outros": "rol_outros autores.txt"
+    "sociais": "rol_sociais.txt",
+    "outros autores": "rol_outros autores.txt",
+    "temas mini": "rol_temas_mini.txt",
+    "todos os signos": "rol_todos os signos.txt"
 }
 
-def carregar_temas_reais(aba):
-    arquivo = MAPA_BOOKS.get(aba, "rol_poemas.txt")
+def carregar_temas(nome_book):
+    arquivo = MAPA_BOOKS.get(nome_book, "rol_poemas.txt")
     caminho = os.path.join("base", arquivo)
     if os.path.exists(caminho):
         with open(caminho, "r", encoding="utf-8") as f:
@@ -67,89 +66,80 @@ def main():
     PAGINAS_APP = ["mini", "ypoemas", "eureka", "off-máquina", "books", "comments", "about"]
     
     if 'current_tab_idx' not in st.session_state: st.session_state.current_tab_idx = 1
+    if 'book_em_foco' not in st.session_state: st.session_state.book_em_foco = "poemas"
+    if 'tema_idx_por_book' not in st.session_state: st.session_state.tema_idx_por_book = {b: 0 for b in MAPA_BOOKS}
     if 'seed_eureka' not in st.session_state: st.session_state.seed_eureka = 0
-    if 'tema_idx_por_aba' not in st.session_state: st.session_state.tema_idx_por_aba = {p: 0 for p in PAGINAS_APP}
     if 'help_ativo' not in st.session_state: st.session_state.help_ativo = False
 
     aba_atual = PAGINAS_APP[st.session_state.current_tab_idx]
-    temas_do_livro = carregar_temas_reais(aba_atual)
     
-    idx_atual = st.session_state.tema_idx_por_aba[aba_atual] % len(temas_do_livro)
-    tema_atual = temas_do_livro[idx_atual]
+    # Determina qual livro está sendo exibido
+    # Se estiver na aba 'books', o usuário escolhe o book em foco. 
+    # Nas outras abas, o book é fixo ou herdado.
+    book_atual = st.session_state.book_em_foco
+    if aba_atual == "mini": book_atual = "temas mini"
+    elif aba_atual == "eureka": book_atual = "livro vivo"
+    
+    temas_do_livro = carregar_temas(book_atual)
+    idx_atual = st.session_state.tema_idx_por_book.get(book_atual, 0) % len(temas_do_livro)
+    tema_selecionado = temas_do_livro[idx_atual]
 
-    # --- 1. CONTROLES NO TOP (ORDEM: + < * > ? ) ---
+    # --- 1. CONTROLES TOP ---
     cl, c_plus, c_prev, c_rand, c_next, c_help, cr = st.columns([3, 1, 1, 1, 1, 1, 3])
     
     if c_plus.button("✚"):
         st.session_state.seed_eureka += 1
-        st.session_state.help_ativo = False
         st.rerun()
-
     if c_prev.button("❰"):
-        if aba_atual == "eureka": st.session_state.seed_eureka -= 1
-        else: st.session_state.tema_idx_por_aba[aba_atual] = (idx_atual - 1) % len(temas_do_livro)
-        st.session_state.help_ativo = False
+        st.session_state.tema_idx_por_book[book_atual] = (idx_atual - 1) % len(temas_do_livro)
         st.rerun()
-
     if c_rand.button("✱"):
-        if aba_atual == "eureka": st.session_state.seed_eureka = random.randint(0, 999999)
-        else: st.session_state.tema_idx_por_aba[aba_atual] = random.randint(0, len(temas_do_livro) - 1)
-        st.session_state.help_ativo = False
+        st.session_state.tema_idx_por_book[book_atual] = random.randint(0, len(temas_do_livro) - 1)
         st.rerun()
-
     if c_next.button("❱"):
-        if aba_atual == "eureka": st.session_state.seed_eureka += 1
-        else: st.session_state.tema_idx_por_aba[aba_atual] = (idx_atual + 1) % len(temas_do_livro)
-        st.session_state.help_ativo = False
+        st.session_state.tema_idx_por_book[book_atual] = (idx_atual + 1) % len(temas_do_livro)
         st.rerun()
-
     if c_help.button("?"):
         st.session_state.help_ativo = not st.session_state.help_ativo
 
-    # --- 2. NAVEGAÇÃO DE PÁGINAS ---
     aba_clicada = stx.tab_bar(data=[stx.TabBarItemData(id=p, title=p.upper(), description="") for p in PAGINAS_APP], default=aba_atual)
 
-    # --- SIDEBAR (Cockpit da Machina) ---
+    # --- SIDEBAR ---
     with st.sidebar:
         idioma = st.selectbox("L", ["PT - Português", "ES - Español", "IT - Italiano", "EN - English"], label_visibility="collapsed")
-        sigla_idioma = idioma[:2].lower()
+        sigla = idioma[:2].lower()
         
-        # Ativos Visuais
-        img_aba = "img_poly.jpg" if aba_atual == "comments" else f"img_{aba_atual}.jpg"
-        if os.path.exists(img_aba): st.image(img_aba, use_container_width=True)
+        # Header Dinâmico: pt ( {nome do book em foco} )
+        st.markdown(f'<div class="book-header">{sigla} ({book_atual})</div>', unsafe_allow_html=True)
         
-        # LINHA DE STATUS BIBLIOGRÁFICO (Conforme MANUAL_YPOEMAS)
-        status_line = f"{sigla_idioma} ( {aba_atual} ) ( {idx_atual + 1} / {len(temas_do_livro)} )"
-        st.markdown(f'<div class="book-header">{status_line}</div>', unsafe_allow_html=True)
+        if aba_atual == "books":
+            novo_book = st.selectbox("Selecione o Livro", list(MAPA_BOOKS.keys()), index=list(MAPA_BOOKS.keys()).index(book_atual))
+            if novo_book != book_atual:
+                st.session_state.book_em_foco = novo_book
+                st.rerun()
         
-        tema_sel = st.selectbox("Book", temas_do_livro, index=idx_atual, label_visibility="collapsed")
-        if tema_sel != tema_atual:
-            st.session_state.tema_idx_por_aba[aba_atual] = temas_do_livro.index(tema_sel)
+        tema_sel = st.selectbox("Temas", temas_do_livro, index=idx_atual, label_visibility="collapsed")
+        if tema_sel != tema_selecionado:
+            st.session_state.tema_idx_por_book[book_atual] = temas_do_livro.index(tema_sel)
             st.rerun()
 
     if aba_clicada != aba_atual:
         st.session_state.current_tab_idx = PAGINAS_APP.index(aba_clicada)
-        st.session_state.help_ativo = False
         st.rerun()
 
     st.markdown("---")
-    
-    # --- 3. PALCO CENTRAL (Manual ou Motor) ---
-    if st.session_state.help_ativo:
-        # Busca o Manual Oficial da Página
-        nome_manual = f"MANUAL_{aba_atual.upper()}.md"
-        path_manual = os.path.join("md_files", nome_manual)
-        
-        if os.path.exists(path_manual):
-            with open(path_manual, "r", encoding="utf-8") as f:
+
+    # --- PALCO CENTRAL ---
+    if st.session_state.help_ativo or aba_atual == "books":
+        nome_doc = f"MANUAL_{aba_atual.upper()}.md"
+        path_doc = os.path.join("md_files", nome_doc)
+        if os.path.exists(path_doc):
+            with open(path_doc, "r", encoding="utf-8") as f:
                 st.markdown(normalizar_e_traduzir(f.read(), idioma))
-        else:
-            st.warning(f"Manual {nome_manual} não localizado.")
-            
-    elif aba_atual in ["mini", "ypoemas", "eureka", "books"]:
+    elif aba_atual in ["mini", "ypoemas", "eureka"]:
         semente = st.session_state.seed_eureka if aba_atual == "eureka" else ""
-        poema_bruto = gera_poema(tema_atual, semente)
-        st.text(normalizar_e_traduzir(poema_bruto, idioma))
+        poema = gera_poema(tema_selecionado, semente)
+        st.text(normalizar_e_traduzir(poema, idioma))
 
 if __name__ == "__main__":
     main()
