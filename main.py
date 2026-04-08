@@ -8,7 +8,7 @@ import random
 
 # --- DIRETÓRIO RAIZ ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-ICON_PATH = os.path.join(BASE_DIR, "icon_ypo.ico") # Caminho do seu selo
+ICON_PATH = os.path.join(BASE_DIR, "icon_ypo.ico")
 
 # --- [PROTOCOL] MOTOR SOBERANO ---
 try:
@@ -88,12 +88,6 @@ def aplicar_estetica_machina():
                 padding-right: 5% !important; 
                 max-width: 100% !important;
             }
-            /* Centralização do Selo Logo */
-            .logo-container {
-                display: flex;
-                justify-content: center;
-                margin-bottom: 0.5rem;
-            }
             .titulo-poema {
                 font-family: serif;
                 font-size: 2.2em;
@@ -171,12 +165,12 @@ def carregar_temas(nome_book):
     return ["Fatos"]
 
 def main():
-    # 1. Selo na Aba do Navegador
+    # Selo no Navegador
     st.set_page_config(layout="wide", page_title="yPoemas", page_icon=ICON_PATH)
     aplicar_estetica_machina()
 
     # Estado Inicial
-    if 'current_tab_idx' not in st.session_state: st.session_state.current_tab_idx = 0 # Inicia na Mini
+    if 'current_tab_idx' not in st.session_state: st.session_state.current_tab_idx = 0 
     if 'book_em_foco' not in st.session_state: st.session_state.book_em_foco = 'todos os temas'
     if 'com_imagem' not in st.session_state: st.session_state.com_imagem = True
     if 'com_som' not in st.session_state: st.session_state.com_som = False
@@ -188,26 +182,26 @@ def main():
     PAGINAS_APP = ["mini", "ypoemas", "eureka", "off-máquina", "books", "comments", "about"]
     aba_atual = PAGINAS_APP[st.session_state.current_tab_idx]
 
-    # --- 0º NÍVEL: O SELO (COROAMENTO) ---
+    # --- SELO DE COROAMENTO (Opção 1) ---
     _, col_logo, _ = st.columns([5, 1, 5])
     with col_logo:
         if os.path.exists(ICON_PATH):
             st.image(ICON_PATH, width=40)
 
-    # --- 1º NÍVEL: ABAS ---
+    # --- ABAS ---
     aba_clicada = stx.tab_bar(data=[stx.TabBarItemData(id=p, title=p.upper(), description="") for p in PAGINAS_APP], default=aba_atual)
     if aba_clicada != aba_atual:
         st.session_state.current_tab_idx = PAGINAS_APP.index(aba_clicada)
         st.rerun()
 
-    # RACIOCÍNIO MINI: Força "todos os temas" na aba mini
+    # Lógica Mini: Cartão de Visita
     book_em_foco = "todos os temas" if aba_atual == "mini" else st.session_state.book_em_foco
     
     temas_do_livro = carregar_temas(book_em_foco)
     idx_atual = st.session_state.tema_idx_por_book.get(book_em_foco, 0) % len(temas_do_livro)
     tema_selecionado = temas_do_livro[idx_atual]
 
-    # --- 2º NÍVEL: NAVEGAÇÃO ---
+    # --- NAVEGAÇÃO ---
     _, c_plus, c_prev, c_rand, c_next, c_help, _ = st.columns([2, 1, 1, 1, 1, 1, 2])
     
     if c_plus.button("✚", help="gera novo yPoema"): 
@@ -221,7 +215,7 @@ def main():
     if c_help.button("?", help="ajuda"): 
         st.session_state.help_ativo = not st.session_state.help_ativo; st.rerun()
 
-    # --- 3º NÍVEL: COCKPIT ---
+    # --- COCKPIT ---
     _, col_arte, col_idioma, col_livro, col_tema, col_som, _ = st.columns([0.5, 1, 2, 2, 2, 1, 0.5])
     
     with col_arte:
@@ -229,7 +223,6 @@ def main():
     with col_idioma:
         idioma = st.selectbox("Idioma", LISTA_IDIOMAS, label_visibility="collapsed")
     with col_livro:
-        # Na Mini, o seletor mostra que estamos em "todos os temas", mas você pode navegar se desejar
         novo_book = st.selectbox("Livro", list(MAPA_BOOKS.keys()), index=list(MAPA_BOOKS.keys()).index(book_em_foco), label_visibility="collapsed")
         if novo_book != book_em_foco: 
             st.session_state.book_em_foco = novo_book
