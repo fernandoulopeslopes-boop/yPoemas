@@ -8,6 +8,7 @@ import random
 
 # --- DIRETÓRIO RAIZ ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+ICON_PATH = os.path.join(BASE_DIR, "icon_ypo.ico") # Caminho do seu selo
 
 # --- [PROTOCOL] MOTOR SOBERANO ---
 try:
@@ -25,7 +26,6 @@ def load_images_list():
     return []
 
 def load_arts(nome_tema):
-    """Mecânica original: sorteio e histórico de 36 imagens"""
     path = "./images/machina/"
     path_list = load_images_list()
     
@@ -64,10 +64,8 @@ def load_arts(nome_tema):
     return path + image
 
 def normalizar_e_traduzir(conteudo, idioma_nome):
-    """Fidelidade absoluta ao layout original do motor"""
     if not conteudo: return ""
     texto_bruto = "\n".join(conteudo) if isinstance(conteudo, list) else conteudo
-    
     cod_target = idioma_nome.split(" - ")[0].lower()
     
     if cod_target == "pt":
@@ -85,10 +83,16 @@ def aplicar_estetica_machina():
             footer { visibility: hidden; }
             [data-testid="stSidebar"] { display: none; }
             .block-container { 
-                padding-top: 1.0rem !important; 
+                padding-top: 0.5rem !important; 
                 padding-left: 5% !important; 
                 padding-right: 5% !important; 
                 max-width: 100% !important;
+            }
+            /* Centralização do Selo Logo */
+            .logo-container {
+                display: flex;
+                justify-content: center;
+                margin-bottom: 0.5rem;
             }
             .titulo-poema {
                 font-family: serif;
@@ -140,10 +144,11 @@ def executar_som(texto, idioma_nome):
     except: return None
 
 MAPA_BOOKS = {
-    "livro vivo": "rol_livro_vivo.txt", "poemas": "rol_poemas.txt", "ensaios": "rol_ensaios.txt",
-    "jocosos": "rol_jocosos.txt", "variações": "rol_variações.txt", "metalinguagem": "rol_metalinguagem.txt",
+    "todos os temas": "rol_poemas.txt", "livro vivo": "rol_livro_vivo.txt", 
+    "poemas": "rol_poemas.txt", "ensaios": "rol_ensaios.txt", "jocosos": "rol_jocosos.txt", 
+    "variações": "rol_variações.txt", "metalinguagem": "rol_metalinguagem.txt",
     "sociais": "rol_sociais.txt", "outros autores": "rol_outros autores.txt",
-    "todos os temas": "rol_poemas.txt", "todos os signos": "rol_todos os signos.txt", "temas mini": "rol_temas_mini.txt"
+    "todos os signos": "rol_todos os signos.txt", "temas mini": "rol_temas_mini.txt"
 }
 
 LISTA_IDIOMAS = [
@@ -166,12 +171,13 @@ def carregar_temas(nome_book):
     return ["Fatos"]
 
 def main():
-    st.set_page_config(layout="wide", page_title="yPoemas")
+    # 1. Selo na Aba do Navegador
+    st.set_page_config(layout="wide", page_title="yPoemas", page_icon=ICON_PATH)
     aplicar_estetica_machina()
 
     # Estado Inicial
-    if 'current_tab_idx' not in st.session_state: st.session_state.current_tab_idx = 1
-    if 'book_em_foco' not in st.session_state: st.session_state.book_em_foco = 'poemas'
+    if 'current_tab_idx' not in st.session_state: st.session_state.current_tab_idx = 0 # Inicia na Mini
+    if 'book_em_foco' not in st.session_state: st.session_state.book_em_foco = 'todos os temas'
     if 'com_imagem' not in st.session_state: st.session_state.com_imagem = True
     if 'com_som' not in st.session_state: st.session_state.com_som = False
     if 'seed_eureka' not in st.session_state: st.session_state.seed_eureka = 0
@@ -181,13 +187,22 @@ def main():
 
     PAGINAS_APP = ["mini", "ypoemas", "eureka", "off-máquina", "books", "comments", "about"]
     aba_atual = PAGINAS_APP[st.session_state.current_tab_idx]
-    
+
+    # --- 0º NÍVEL: O SELO (COROAMENTO) ---
+    _, col_logo, _ = st.columns([5, 1, 5])
+    with col_logo:
+        if os.path.exists(ICON_PATH):
+            st.image(ICON_PATH, width=40)
+
     # --- 1º NÍVEL: ABAS ---
     aba_clicada = stx.tab_bar(data=[stx.TabBarItemData(id=p, title=p.upper(), description="") for p in PAGINAS_APP], default=aba_atual)
     if aba_clicada != aba_atual:
-        st.session_state.current_tab_idx = PAGINAS_APP.index(aba_clicada); st.rerun()
+        st.session_state.current_tab_idx = PAGINAS_APP.index(aba_clicada)
+        st.rerun()
 
-    book_em_foco = st.session_state.book_em_foco
+    # RACIOCÍNIO MINI: Força "todos os temas" na aba mini
+    book_em_foco = "todos os temas" if aba_atual == "mini" else st.session_state.book_em_foco
+    
     temas_do_livro = carregar_temas(book_em_foco)
     idx_atual = st.session_state.tema_idx_por_book.get(book_em_foco, 0) % len(temas_do_livro)
     tema_selecionado = temas_do_livro[idx_atual]
@@ -214,6 +229,7 @@ def main():
     with col_idioma:
         idioma = st.selectbox("Idioma", LISTA_IDIOMAS, label_visibility="collapsed")
     with col_livro:
+        # Na Mini, o seletor mostra que estamos em "todos os temas", mas você pode navegar se desejar
         novo_book = st.selectbox("Livro", list(MAPA_BOOKS.keys()), index=list(MAPA_BOOKS.keys()).index(book_em_foco), label_visibility="collapsed")
         if novo_book != book_em_foco: 
             st.session_state.book_em_foco = novo_book
@@ -241,7 +257,6 @@ def main():
         if st.session_state.com_imagem:
             col_img, col_txt = st.columns([1, 2])
             with col_txt:
-                # Título integrado à coluna de texto para alinhamento perfeito
                 st.markdown(f'<div class="titulo-poema">{tema_selecionado}</div>', unsafe_allow_html=True)
                 st.markdown(f'<div class="poema-box">{txt}</div>', unsafe_allow_html=True)
             with col_img:
@@ -250,7 +265,6 @@ def main():
         else:
             _, col_central, _ = st.columns([1, 4, 1])
             with col_central:
-                # Título integrado à coluna central
                 st.markdown(f'<div class="titulo-poema">{tema_selecionado}</div>', unsafe_allow_html=True)
                 st.markdown(f'<div class="poema-box">{txt}</div>', unsafe_allow_html=True)
     else:
