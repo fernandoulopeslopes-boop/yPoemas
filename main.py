@@ -16,7 +16,7 @@ def normalizar_e_traduzir(conteudo, idioma):
             codigos = {"ES - Español": "es", "IT - Italiano": "it", "EN - English": "en"}
             target = codigos.get(idioma, 'en')
             texto_final = GoogleTranslator(source='auto', target=target).translate(texto_unificado)
-        except: pass
+        except Exception: pass
     return texto_final.replace('\r\n', '\n').replace('\n\n', '\n').strip()
 
 def aplicar_estetica_machina():
@@ -34,16 +34,22 @@ def aplicar_estetica_machina():
                 background-color: white !important;
                 margin: 0 10px !important;
             }
-            .book-header { font-size: 0.85em; font-weight: bold; color: #666; margin-bottom: 2px; }
+            .book-header { font-size: 0.85em; font-weight: bold; color: #666; margin-bottom: 2px; font-family: monospace; }
         </style>
     """, unsafe_allow_html=True)
 
-# Mapeamento estrito dos Books (rol_) para as Abas
+# Mapeamento dos Livros REAIS presentes na pasta \base
 MAPA_BOOKS = {
     "mini": "rol_temas_mini.txt",
     "ypoemas": "rol_poemas.txt",
     "eureka": "rol_livro_vivo.txt",
-    "books": "rol_variações.txt"
+    "off-máquina": "rol_livro_vivo.txt",
+    "books": "rol_variações.txt",
+    "sociais": "rol_sociais.txt",
+    "ensaios": "rol_ensaios.txt",
+    "jocosos": "rol_jocosos.txt",
+    "metalinguagem": "rol_metalinguagem.txt",
+    "outros": "rol_outros autores.txt"
 }
 
 def carregar_temas_reais(aba):
@@ -71,7 +77,7 @@ def main():
     idx_atual = st.session_state.tema_idx_por_aba[aba_atual] % len(temas_do_livro)
     tema_atual = temas_do_livro[idx_atual]
 
-    # --- CONTROLES NO TOP ( + < * > ? ) ---
+    # --- 1. CONTROLES NO TOP (ORDEM: + < * > ? ) ---
     cl, c_plus, c_prev, c_rand, c_next, c_help, cr = st.columns([3, 1, 1, 1, 1, 1, 3])
     
     if c_plus.button("✚"):
@@ -100,38 +106,26 @@ def main():
     if c_help.button("?"):
         st.session_state.help_ativo = not st.session_state.help_ativo
 
+    # --- 2. NAVEGAÇÃO DE PÁGINAS ---
     aba_clicada = stx.tab_bar(data=[stx.TabBarItemData(id=p, title=p.upper(), description="") for p in PAGINAS_APP], default=aba_atual)
 
-    # --- SIDEBAR ---
+    # --- SIDEBAR (Cockpit da Machina) ---
     with st.sidebar:
         idioma = st.selectbox("L", ["PT - Português", "ES - Español", "IT - Italiano", "EN - English"], label_visibility="collapsed")
+        sigla_idioma = idioma[:2].lower()
         
-        ativos = {
-            "mini": {"img": "img_mini.jpg", "md": "INFO_MINI.md"},
-            "ypoemas": {"img": "img_ypoemas.jpg", "md": "INFO_YPOEMAS.md"},
-            "eureka": {"img": "img_eureka.jpg", "md": "INFO_EUREKA.md"},
-            "off-máquina": {"img": "img_off-machina.jpg", "md": "ABOUT_OFF-MACHINA.md"},
-            "books": {"img": "img_books.jpg", "md": "INFO_BOOKS.md"},
-            "comments": {"img": "img_poly.jpg", "md": "ABOUT_COMMENTS.md"},
-            "about": {"img": "img_about.jpg", "md": "INFO_ABOUT.md"}
-        }.get(aba_atual)
-
-        if os.path.exists(ativos["img"]): st.image(ativos["img"], use_container_width=True)
+        # Ativos Visuais
+        img_aba = "img_poly.jpg" if aba_atual == "comments" else f"img_{aba_atual}.jpg"
+        if os.path.exists(img_aba): st.image(img_aba, use_container_width=True)
         
-        # Cabeçalho do Book: NOME: PAGINA / TOTAL
-        header_book = f"{aba_atual.upper()}: {idx_atual + 1} / {len(temas_do_livro)}"
-        st.markdown(f'<div class="book-header">{header_book}</div>', unsafe_allow_html=True)
+        # LINHA DE STATUS BIBLIOGRÁFICO (Conforme MANUAL_YPOEMAS)
+        status_line = f"{sigla_idioma} ( {aba_atual} ) ( {idx_atual + 1} / {len(temas_do_livro)} )"
+        st.markdown(f'<div class="book-header">{status_line}</div>', unsafe_allow_html=True)
         
         tema_sel = st.selectbox("Book", temas_do_livro, index=idx_atual, label_visibility="collapsed")
         if tema_sel != tema_atual:
             st.session_state.tema_idx_por_aba[aba_atual] = temas_do_livro.index(tema_sel)
             st.rerun()
-
-        # O Help (INFO/ABOUT) da página, respeitando o Oráculo
-        path_md = os.path.join("md_files", ativos["md"])
-        if os.path.exists(path_md):
-            with open(path_md, "r", encoding="utf-8") as f:
-                st.markdown(normalizar_e_traduzir(f.read(), idioma))
 
     if aba_clicada != aba_atual:
         st.session_state.current_tab_idx = PAGINAS_APP.index(aba_clicada)
@@ -140,15 +134,18 @@ def main():
 
     st.markdown("---")
     
-    # --- PALCO ---
+    # --- 3. PALCO CENTRAL (Manual ou Motor) ---
     if st.session_state.help_ativo:
-        # Se o Help for acionado pelo '?', ele busca o HELP.md ou o INFO da aba
-        path_help = os.path.join("md_files", f"HELP_{aba_atual.upper()}.md")
-        if not os.path.exists(path_help): path_help = os.path.join("md_files", ativos["md"])
+        # Busca o Manual Oficial da Página
+        nome_manual = f"MANUAL_{aba_atual.upper()}.md"
+        path_manual = os.path.join("md_files", nome_manual)
         
-        if os.path.exists(path_help):
-            with open(path_help, "r", encoding="utf-8") as f:
+        if os.path.exists(path_manual):
+            with open(path_manual, "r", encoding="utf-8") as f:
                 st.markdown(normalizar_e_traduzir(f.read(), idioma))
+        else:
+            st.warning(f"Manual {nome_manual} não localizado.")
+            
     elif aba_atual in ["mini", "ypoemas", "eureka", "books"]:
         semente = st.session_state.seed_eureka if aba_atual == "eureka" else ""
         poema_bruto = gera_poema(tema_atual, semente)
