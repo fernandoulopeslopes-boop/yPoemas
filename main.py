@@ -128,7 +128,6 @@ def aplicar_estetica_machina():
     """, unsafe_allow_html=True)
 
 def limpar_para_audio(t):
-    """Peneira para eliminar 'esquirlas' de tradução e sinais sistêmicos"""
     ruidos = ['"', '*', '_', '[', ']', '(', ')', '«', '»', '—']
     for r in ruidos:
         t = t.replace(r, '')
@@ -185,23 +184,24 @@ def main():
     if 'arts' not in st.session_state: st.session_state.arts = []
     if 'tema_idx_por_book' not in st.session_state: st.session_state.tema_idx_por_book = {b: 0 for b in MAPA_BOOKS}
 
-    PAGINAS_APP = ["mini", "ypoemas", "eureka", "off-máquina", "books", "comments", "about"]
+    # --- TROCA DE NOME: MINI -> DEMO ---
+    PAGINAS_APP = ["demo", "ypoemas", "eureka", "off-máquina", "books", "comments", "about"]
     aba_atual = PAGINAS_APP[st.session_state.current_tab_idx]
 
-    # --- 1º NÍVEL: ABAS ---
+    # --- ABAS ---
     aba_clicada = stx.tab_bar(data=[stx.TabBarItemData(id=p, title=p.upper(), description="") for p in PAGINAS_APP], default=aba_atual)
     if aba_clicada != aba_atual:
         st.session_state.current_tab_idx = PAGINAS_APP.index(aba_clicada)
         st.rerun()
 
-    # RACIOCÍNIO MINI: Força "todos os temas"
-    book_em_foco = "todos os temas" if aba_atual == "mini" else st.session_state.book_em_foco
+    # Lógica DEMO: Força "todos os temas"
+    book_em_foco = "todos os temas" if aba_atual == "demo" else st.session_state.book_em_foco
     
     temas_do_livro = carregar_temas(book_em_foco)
     idx_atual = st.session_state.tema_idx_por_book.get(book_em_foco, 0) % len(temas_do_livro)
     tema_selecionado = temas_do_livro[idx_atual]
 
-    # --- 2º NÍVEL: NAVEGAÇÃO ---
+    # --- NAVEGAÇÃO ---
     _, c_plus, c_prev, c_rand, c_next, c_help, _ = st.columns([2, 1, 1, 1, 1, 1, 2])
     
     if c_plus.button("✚", help="gera novo yPoema"): 
@@ -215,7 +215,7 @@ def main():
     if c_help.button("?", help="ajuda"): 
         st.session_state.help_ativo = not st.session_state.help_ativo; st.rerun()
 
-    # --- 3º NÍVEL: COCKPIT ---
+    # --- COCKPIT ---
     _, col_arte, col_idioma, col_livro, col_tema, col_som, _ = st.columns([0.5, 1, 2, 2, 2, 1, 0.5])
     
     with col_arte:
