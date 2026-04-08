@@ -124,7 +124,7 @@ def aplicar_estetica_machina():
             }
             .stSelectbox, .stToggle {
                 width: 100% !important;
-                min-width: 150px;
+                min-width: 120px;
             }
             hr { margin: 1em 0 !important; }
         </style>
@@ -182,7 +182,7 @@ def main():
     PAGINAS_APP = ["mini", "ypoemas", "eureka", "off-máquina", "books", "comments", "about"]
     aba_atual = PAGINAS_APP[st.session_state.current_tab_idx]
     
-    # 1º NÍVEL: ABAS (Inversão)
+    # 1º NÍVEL: ABAS
     aba_clicada = stx.tab_bar(data=[stx.TabBarItemData(id=p, title=p.upper(), description="") for p in PAGINAS_APP], default=aba_atual)
     if aba_clicada != aba_atual:
         st.session_state.current_tab_idx = PAGINAS_APP.index(aba_clicada); st.rerun()
@@ -206,9 +206,11 @@ def main():
     if c_help.button("?", help="ajuda"): 
         st.session_state.help_ativo = not st.session_state.help_ativo; st.rerun()
 
-    # 3º NÍVEL: COCKPIT
-    _, col_idioma, col_livro, col_tema, col_arte, col_som, _ = st.columns([0.5, 2, 2, 2, 1, 1, 0.5])
+    # 3º NÍVEL: COCKPIT REORDENADO
+    _, col_arte, col_idioma, col_livro, col_tema, col_som, _ = st.columns([0.5, 1, 2, 2, 2, 1, 0.5])
     
+    with col_arte:
+        st.session_state.com_imagem = st.toggle("Arte", value=st.session_state.com_imagem)
     with col_idioma:
         idioma = st.selectbox("Idioma", LISTA_IDIOMAS, label_visibility="collapsed")
     with col_livro:
@@ -221,8 +223,6 @@ def main():
         if tema_sel != tema_selecionado: 
             st.session_state.tema_idx_por_book[book_em_foco] = temas_do_livro.index(tema_sel)
             st.rerun()
-    with col_arte:
-        st.session_state.com_imagem = st.toggle("Arte", value=st.session_state.com_imagem)
     with col_som:
         st.session_state.com_som = st.toggle("Som", value=st.session_state.com_som)
 
