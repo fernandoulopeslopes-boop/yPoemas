@@ -1,10 +1,12 @@
 import streamlit as st
 import extra_streamlit_components as stx
 from deep_translator import GoogleTranslator
+from gtts import gTTS # Adicionado para o som
+import io
 import os
 import random
 
-# --- DIRETÓRIO RAIZ ---
+# --- DIRETÓRIO RAIZ (BLINDAGEM APENAS PARA VERIFICAÇÃO DE EXISTÊNCIA) ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # --- [PROTOCOL] MOTOR SOBERANO ---
@@ -72,6 +74,7 @@ def aplicar_estetica_machina():
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                text-align: center;
             }
             .stSelectbox, .stToggle {
                 width: 100% !important;
@@ -80,16 +83,28 @@ def aplicar_estetica_machina():
         </style>
     """, unsafe_allow_html=True)
 
+# --- LÓGICA RESTAURADA DO SALVADOR (Try #1 que funcionava) ---
 def buscar_arte_curada(tema, mapa_fotos):
     grupo = mapa_fotos.get(tema, "maquina")
+    # Tenta o grupo mapeado, depois tenta 'maquina'
     for g in [grupo, "maquina"]:
+        # Verificação física do caminho (BASE_DIR)
         path_fisico = os.path.join(BASE_DIR, "img", g)
         if os.path.exists(path_fisico):
             arquivos = [f for f in os.listdir(path_fisico) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
             if arquivos:
-                # Retorna o caminho relativo que o Streamlit espera (img/grupo/arquivo)
+                # RETORNA APENAS O CAMINHO RELATIVO (A string pura que o Cloud entende)
                 return f"img/{g}/{random.choice(arquivos)}"
     return None
+
+def executar_som(texto, idioma_nome):
+    try:
+        cod_lang = idioma_nome.split(" - ")[0].lower()
+        tts = gTTS(text=texto, lang=cod_lang)
+        fp = io.BytesIO()
+        tts.write_to_fp(fp)
+        return fp
+    except: return None
 
 MAPA_BOOKS = {
     "livro vivo": "rol_livro_vivo.txt", "poemas": "rol_poemas.txt", "ensaios": "rol_ensaios.txt",
@@ -122,7 +137,7 @@ def main():
     aplicar_estetica_machina()
 
     # Inicialização do Estado
-    for key, val in {'current_tab_idx': 1, 'book_em_foco': 'poemas', 'com_imagem': True, 'seed_eureka': 0, 'help_ativo': False}.items():
+    for key, val in {'current_tab_idx': 1, 'book_em_foco': 'poemas', 'com_imagem': True, 'com_som': False, 'seed_eureka': 0, 'help_ativo': False}.items():
         if key not in st.session_state: st.session_state[key] = val
     if 'tema_idx_por_book' not in st.session_state: st.session_state.tema_idx_por_book = {b: 0 for b in MAPA_BOOKS}
 
@@ -155,8 +170,7 @@ def main():
         st.session_state.current_tab_idx = PAGINAS_APP.index(aba_clicada); st.rerun()
 
     # --- COCKPIT CENTRALIZADO ---
-    # Usando proporções iguais para os 4 elementos para forçar o mesmo width
-    _, col_idioma, col_livro, col_tema, col_arte, _ = st.columns([1, 2, 2, 2, 1, 1])
+    _, col_idioma, col_livro, col_tema, col_arte, col_som, _ = st.columns([1, 2, 2, 2, 1, 1, 1])
     
     with col_idioma:
         idioma = st.selectbox("Idioma", LISTA_IDIOMAS, label_visibility="collapsed")
@@ -176,6 +190,9 @@ def main():
     with col_arte:
         st.session_state.com_imagem = st.toggle("Arte", value=st.session_state.com_imagem)
 
+    with col_som:
+        st.session_state.com_som = st.toggle("Som", value=st.session_state.com_som)
+
     st.markdown("---")
 
     # --- PALCO CENTRAL ---
@@ -189,12 +206,18 @@ def main():
         poema = gera_poema(tema_selecionado, semente)
         txt = normalizar_e_traduzir(poema, idioma)
 
+        # Execução do som (se ativo)
+        if st.session_state.com_som:
+            audio_fp = executar_som(txt, idioma)
+            if audio_fp:
+                st.audio(audio_fp, format='audio/mp3')
+
         if st.session_state.com_imagem:
             col_img, col_txt = st.columns([1, 2])
             arte = buscar_arte_curada(tema_selecionado, mapa_fotos)
             if arte: 
-                # O st.image resolve caminhos relativos à raiz do app
-                st.image(arte) if not col_img.image(arte, use_container_width=True) else None
+                # Lógica restaurada: st.image usando o caminho relativo (string)
+                col_img.image(arte, use_container_width=True)
             col_txt.markdown(f'<div class="poema-box">{txt}</div>', unsafe_allow_html=True)
         else:
             _, col_central, _ = st.columns([1, 4, 1])
