@@ -8,7 +8,6 @@ import random
 
 # --- DIRETÓRIO RAIZ ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-ICON_PATH = os.path.join(BASE_DIR, "icon_ypo.ico")
 
 # --- [PROTOCOL] MOTOR SOBERANO ---
 try:
@@ -83,7 +82,7 @@ def aplicar_estetica_machina():
             footer { visibility: hidden; }
             [data-testid="stSidebar"] { display: none; }
             .block-container { 
-                padding-top: 0.5rem !important; 
+                padding-top: 1.5rem !important; 
                 padding-left: 5% !important; 
                 padding-right: 5% !important; 
                 max-width: 100% !important;
@@ -165,8 +164,7 @@ def carregar_temas(nome_book):
     return ["Fatos"]
 
 def main():
-    # Selo no Navegador
-    st.set_page_config(layout="wide", page_title="yPoemas", page_icon=ICON_PATH)
+    st.set_page_config(layout="wide", page_title="yPoemas")
     aplicar_estetica_machina()
 
     # Estado Inicial
@@ -182,26 +180,20 @@ def main():
     PAGINAS_APP = ["mini", "ypoemas", "eureka", "off-máquina", "books", "comments", "about"]
     aba_atual = PAGINAS_APP[st.session_state.current_tab_idx]
 
-    # --- SELO DE COROAMENTO (Opção 1) ---
-    _, col_logo, _ = st.columns([5, 1, 5])
-    with col_logo:
-        if os.path.exists(ICON_PATH):
-            st.image(ICON_PATH, width=40)
-
-    # --- ABAS ---
+    # --- 1º NÍVEL: ABAS ---
     aba_clicada = stx.tab_bar(data=[stx.TabBarItemData(id=p, title=p.upper(), description="") for p in PAGINAS_APP], default=aba_atual)
     if aba_clicada != aba_atual:
         st.session_state.current_tab_idx = PAGINAS_APP.index(aba_clicada)
         st.rerun()
 
-    # Lógica Mini: Cartão de Visita
+    # RACIOCÍNIO MINI: Força "todos os temas" para ser o Cartão de Visita
     book_em_foco = "todos os temas" if aba_atual == "mini" else st.session_state.book_em_foco
     
     temas_do_livro = carregar_temas(book_em_foco)
     idx_atual = st.session_state.tema_idx_por_book.get(book_em_foco, 0) % len(temas_do_livro)
     tema_selecionado = temas_do_livro[idx_atual]
 
-    # --- NAVEGAÇÃO ---
+    # --- 2º NÍVEL: NAVEGAÇÃO ---
     _, c_plus, c_prev, c_rand, c_next, c_help, _ = st.columns([2, 1, 1, 1, 1, 1, 2])
     
     if c_plus.button("✚", help="gera novo yPoema"): 
@@ -215,7 +207,7 @@ def main():
     if c_help.button("?", help="ajuda"): 
         st.session_state.help_ativo = not st.session_state.help_ativo; st.rerun()
 
-    # --- COCKPIT ---
+    # --- 3º NÍVEL: COCKPIT ---
     _, col_arte, col_idioma, col_livro, col_tema, col_som, _ = st.columns([0.5, 1, 2, 2, 2, 1, 0.5])
     
     with col_arte:
