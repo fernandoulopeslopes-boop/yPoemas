@@ -3,7 +3,7 @@ import extra_streamlit_components as stx
 import os
 import random
 
-# CRONOLOGIA ATIVA: X=10 (v1.3 - Cockpit Sync & HTML Linebreaks)
+# CRONOLOGIA ATIVA: X=10 (v1.4 - Fix Breakpoint & State Initialization)
 
 try:
     from streamlit_autorefresh import st_autorefresh
@@ -106,4 +106,76 @@ def main():
     if 'tema_idx_por_book' not in st.session_state: st.session_state.tema_idx_por_book = {b: 0 for b in MAPA_BOOKS}
     if 'com_imagem' not in st.session_state: st.session_state.com_imagem = True
     if 'show_config' not in st.session_state: st.session_state.show_config = False
-    if 'seed_mutante' not in st.session_state: st.session_state.seed_mutante =
+    if 'seed_mutante' not in st.session_state: st.session_state.seed_mutante = 0
+    if 'modo_auto' not in st.session_state: st.session_state.modo_auto = False
+    if 'vel_auto' not in st.session_state: st.session_state.vel_auto = 15
+
+    PAGINAS_APP = ["demo", "ypoemas", "eureka", "off-máquina", "books", "comments", "about"]
+    aba_atual = PAGINAS_APP[st.session_state.current_tab_idx]
+
+    aba_clicada = stx.tab_bar(data=[stx.TabBarItemData(id=p, title=p.upper(), description="") for p in PAGINAS_APP], default=aba_atual)
+    if aba_clicada and aba_clicada != aba_atual:
+        st.session_state.current_tab_idx = PAGINAS_APP.index(aba_clicada)
+        st.rerun()
+
+    book_foco = "todos os temas" if aba_atual == "demo" else st.session_state.book_em_foco
+    lista_temas = carregar_temas_cached(MAPA_BOOKS.get(book_foco, "rol_todos os temas.txt"))
+    
+    if aba_atual == "demo" and st.session_state.modo_auto and HAS_AUTO:
+        st_autorefresh(interval=st.session_state.vel_auto * 1000, key="auto_pilot")
+        st.session_state.tema_idx_por_book[book_foco] += 1
+
+    idx_tema = st.session_state.tema_idx_por_book.get(book_foco, 0) % len(lista_temas)
+    tema_atual = lista_temas[idx_tema]
+
+    # --- COCKPIT ---
+    st.markdown("<br>", unsafe_allow_html=True)
+    c_l, c_p, c_pr, c_ra, c_ne, c_he, c_cf, c_r = st.columns([3, 1, 1, 1, 1, 1, 1, 3])
+    
+    if c_p.button("✚"): st.session_state.seed_mutante += 1; st.rerun()
+    if c_pr.button("❰"): st.session_state.tema_idx_por_book[book_foco] = idx_tema - 1; st.rerun()
+    if c_ra.button("✱"): st.session_state.tema_idx_por_book[book_foco] = random.randint(0, len(lista_temas)-1); st.rerun()
+    if c_ne.button("❱"): st.session_state.tema_idx_por_book[book_foco] = idx_tema + 1; st.rerun()
+    if c_he.button("?"): st.session_state.help_ativo = not st.session_state.get('help_ativo', False); st.rerun()
+    if c_cf.button("@"): st.session_state.show_config = not st.session_state.show_config; st.rerun()
+
+    def troca_tema(): 
+        st.session_state.tema_idx_por_book[book_foco] = lista_temas.index(st.session_state[f"sel_{book_foco}"])
+    
+    st.selectbox("Tema", lista_temas, index=idx_tema, key=f"sel_{book_foco}", on_change=troca_tema, label_visibility="collapsed")
+
+    if st.session_state.show_config:
+        with st.container(border=True):
+            cfg_cols = st.columns(4)
+            with cfg_cols[0]: st.selectbox("Idioma", ["PT - Português", "EN - English", "ES - Español"])
+            with cfg_cols[1]: 
+                def troca_book(): st.session_state.book_em_foco = st.session_state.sel_book
+                st.selectbox("Livro", list(MAPA_BOOKS.keys()), index=list(MAPA_BOOKS.keys()).index(book_foco), key="sel_book", on_change=troca_book, disabled=(aba_atual=="demo"))
+            with cfg_cols[2]: st.session_state.com_imagem = st.toggle("Artes", value=st.session_state.com_imagem)
+            with cfg_cols[3]:
+                if aba_atual == "demo":
+                    st.session_state.modo_auto = st.toggle("Auto", value=st.session_state.modo_auto)
+                    st.session_state.vel_auto = st.slider("Segundos", 5, 60, st.session_state.vel_auto)
+
+    st.markdown("---")
+
+    # --- PALCO CENTRAL ---
+    if not st.session_state.get('help_ativo', False):
+        try:
+            res_bruto = gera_poema(tema_atual, str(st.session_state.seed_mutante))
+            txt_raw = "".join(res_bruto) if isinstance(res_bruto, list) else str(res_bruto)
+            # Força quebras de linha reais com <br>
+            txt_poema = txt_raw.strip().replace("\n", "<br>")
+
+            if st.session_state.com_imagem:
+                col_i, col_t = st.columns([1, 2])
+                with col_t: st.markdown(f'<div class="poema-box">{txt_poema}</div>', unsafe_allow_html=True)
+                with col_i:
+                    img_path = load_arts(tema_atual)
+                    if img_path: st.image(img_path, use_container_width=True)
+            else:
+                st.markdown(f'<div class="poema-box" style="text-align:center;">{txt_poema}</div>', unsafe_allow_html=True)
+        except: st.error("Erro na Machina.")
+
+if __name__ == "__main__":
+    main()
