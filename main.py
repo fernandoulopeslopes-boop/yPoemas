@@ -1,5 +1,6 @@
 import streamlit as st
 from deep_translator import GoogleTranslator
+import extra_streamlit_components as stx # Para os componentes extras (seletor de abas, etc.)
 
 # --- PROTOCOLO PTC: MANUTENÇÃO DO ESTADO ---
 if 'lang' not in st.session_state:
@@ -96,15 +97,15 @@ def gerenciar_fluxo(pipe_line):
 
 # --- INTERFACE ---
 def main():
-    chosen_id = st.tab_bar(
+    chosen_id = stx.tab_bar(
         data=[
-            st.TabBarItemData(id=1, title="mini", description=""),
-            st.TabBarItemData(id=2, title="yPoemas", description=""),
-            st.TabBarItemData(id=3, title="eureka", description=""),
-            st.TabBarItemData(id=4, title="off-machina", description=""),
-            st.TabBarItemData(id=5, title="books", description=""),
-            st.TabBarItemData(id=6, title="poly", description=""),
-            st.TabBarItemData(id=7, title="about", description=""),
+            stx.tabBarItemData(id=1, title="mini", description=""),
+            stx.tabBarItemData(id=2, title="yPoemas", description=""),
+            stx.tabBarItemData(id=3, title="eureka", description=""),
+            stx.tabBarItemData(id=4, title="off-machina", description=""),
+            stx.tabBarItemData(id=5, title="books", description=""),
+            stx.tabBarItemData(id=6, title="poly", description=""),
+            stx.tabBarItemData(id=7, title="about", description=""),
         ],
         default=2,
     )
