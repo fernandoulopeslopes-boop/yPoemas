@@ -62,5 +62,30 @@ def load_arts(nome_tema):
         image = random.choice(arts_list)
         intentos += 1
     st.session_state.arts.append(image)
-    if len(st.session_state.arts) >
-    
+    if len(st.session_state.arts) > 36: del st.session_state.arts[0]
+    return path + image
+
+def aplicar_estetica_machina():
+    st.markdown("""
+        <style>
+            header[data-testid="stHeader"], footer { visibility: hidden; height: 0px; }
+            [data-testid="stSidebar"] { display: none; }
+            .block-container { padding-top: 1rem !important; max-width: 100% !important; }
+            
+            /* Sequência Sagrada Centralizada */
+            div[data-testid="column"] { display: flex; justify-content: center; align-items: center; }
+            .stButton > button { 
+                border-radius: 50% !important; width: 42px !important; height: 42px !important; 
+                border: 1px solid #eee !important; background: white !important; color: #555 !important;
+                display: flex; justify-content: center; align-items: center;
+            }
+            
+            /* Lista de Temas Light e Centralizada no Vão */
+            div[data-testid="stSelectbox"] {
+                width: fit-content !important;
+                min-width: 120px !important;
+                margin: 0 auto !important;
+            }
+            div[data-baseweb="select"] { 
+                border: none !important; background: transparent !important; 
+                font-family: serif !important; font-size: 1.2em
