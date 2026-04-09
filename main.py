@@ -84,7 +84,7 @@ def gerenciar_fluxo(pipe_line):
         else:
             nome_tema = pipe_line[1].replace("@ ", "")
             try:
-                off_book_text = load_poema(nome_tema, "")
+                off_book_text = gera_poema(nome_tema, "")
                 off_book_text = "<br>" + load_lypo()
             except NameError:
                 off_book_text = ""
