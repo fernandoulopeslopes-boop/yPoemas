@@ -75,17 +75,4 @@ def aplicar_estetica_machina():
             /* Sequência Sagrada Centralizada */
             div[data-testid="column"] { display: flex; justify-content: center; align-items: center; }
             .stButton > button { 
-                border-radius: 50% !important; width: 42px !important; height: 42px !important; 
-                border: 1px solid #eee !important; background: white !important; color: #555 !important;
-                display: flex; justify-content: center; align-items: center;
-            }
-            
-            /* Lista de Temas Light e Centralizada no Vão */
-            div[data-testid="stSelectbox"] {
-                width: fit-content !important;
-                min-width: 120px !important;
-                margin: 0 auto !important;
-            }
-            div[data-baseweb="select"] { 
-                border: none !important; background: transparent !important; 
-                font-family: serif !important; font-size: 1.2em
+                border-radius: 50% !important; width: 42px !important; height: 42px !important;
