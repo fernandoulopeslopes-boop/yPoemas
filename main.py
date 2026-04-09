@@ -72,7 +72,43 @@ def aplicar_estetica_machina():
             [data-testid="stSidebar"] { display: none; }
             .block-container { padding-top: 1rem !important; max-width: 100% !important; }
             
-            /* Sequência Sagrada Centralizada */
             div[data-testid="column"] { display: flex; justify-content: center; align-items: center; }
             .stButton > button { 
-                border-radius: 50% !important; width: 42px !important; height: 42px !important;
+                border-radius: 50% !important; width: 42px !important; height: 42px !important; 
+                border: 1px solid #eee !important; background: white !important; color: #555 !important;
+                display: flex; justify-content: center; align-items: center;
+            }
+            
+            div[data-testid="stSelectbox"] {
+                width: fit-content !important;
+                min-width: 120px !important;
+                margin: 0 auto !important;
+            }
+            div[data-baseweb="select"] { 
+                border: none !important; background: transparent !important; 
+                font-family: serif !important; font-size: 1.2em !important; font-weight: bold !important;
+            }
+            
+            .poema-box { font-family: serif; font-size: 1.45em; line-height: 1.6; white-space: pre-wrap; color: #1a1a1a; margin-top: 2rem; }
+        </style>
+        """, unsafe_allow_html=True)
+
+MAPA_BOOKS = {
+    "todos os temas": "rol_todos os temas.txt", "livro vivo": "rol_livro_vivo.txt", 
+    "ensaios": "rol_ensaios.txt", "jocosos": "rol_jocosos.txt", "variações": "rol_variações.txt", 
+    "metalinguagem": "rol_metalinguagem.txt", "sociais": "rol_sociais.txt", 
+    "outros autores": "rol_outros autores.txt", "todos os signos": "rol_todos os signos.txt", 
+    "temas mini": "rol_temas_mini.txt"
+}
+
+def main():
+    st.set_page_config(layout="wide", page_title="yPoemas")
+    aplicar_estetica_machina()
+
+    if 'current_tab_idx' not in st.session_state: st.session_state.current_tab_idx = 0 
+    if 'book_em_foco' not in st.session_state: st.session_state.book_em_foco = 'todos os temas'
+    if 'tema_idx_por_book' not in st.session_state: st.session_state.tema_idx_por_book = {b: 0 for b in MAPA_BOOKS}
+    if 'com_imagem' not in st.session_state: st.session_state.com_imagem = True
+    if 'show_config' not in st.session_state: st.session_state.show_config = False
+    if 'seed_mutante' not in st.session_state: st.session_state.seed_mutante = 0
+    if 'modo_auto' not in
