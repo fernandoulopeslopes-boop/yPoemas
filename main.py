@@ -4,24 +4,18 @@ import os
 import random
 from deep_translator import GoogleTranslator
 
-# CRONOLOGIA ATIVA: X=36 (CURADORIA INTEGRAL: Raiz, Ancestralidade e Expansão Latina)
+# CRONOLOGIA ATIVA: X=39 (ANCORAGEM SUPERIOR ABSOLUTA + REFORMA DE QUEBRAS)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE_PATH = os.path.join(BASE_DIR, "base")
 
-# A LISTA AMPLA: Honrando todas as escolhas feitas
 DICI_LANG = {
-    'Português': 'pt', 
-    'English': 'en', 
-    'Español': 'es', 
-    'Français': 'fr', 
-    'Italiano': 'it',
-    'Latim': 'la',
-    'Galego': 'gl',
-    'Català': 'ca'
+    'Português': 'pt', 'Español': 'es', 'Italiano': 'it', 
+    'Français': 'fr', 'English': 'en', 'Català': 'ca',
+    'Deutsch': 'de', 'Galego': 'gl', 'Română': 'ro'
 }
 
-def aplicar_estetica_v36():
+def aplicar_estetica_v39():
     st.markdown("""
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
@@ -29,14 +23,16 @@ def aplicar_estetica_v36():
             header[data-testid="stHeader"], footer { visibility: hidden; height: 0px; }
             [data-testid="stSidebar"] { display: none; }
             
+            /* Zerando margens do Streamlit */
             .main .block-container {
                 padding-top: 0rem !important;
                 padding-bottom: 0rem !important;
-                margin-top: -55px !important; 
+                margin-top: -60px !important; 
             }
             
             .stApp { background-color: #ffffff; }
 
+            /* Cockpit */
             .fixed-top {
                 position: fixed; top: 0; left: 0; width: 100%;
                 background-color: rgba(255, 255, 255, 0.98);
@@ -50,45 +46,49 @@ def aplicar_estetica_v36():
                 border: 1px solid #eee !important; background: white !important; 
             }
 
-            div[data-testid="stSelectbox"] { 
-                width: 180px !important; 
-                margin: 0 auto !important;
-            }
+            div[data-testid="stSelectbox"] { width: 180px !important; margin: 0 auto !important; }
 
+            /* CORREÇÃO DO PALCO: Forçando o topo absoluto */
             .main-content { 
-                margin-top: 105px; 
+                margin-top: 100px; 
                 display: flex; 
                 flex-direction: column; 
                 align-items: center; 
-                justify-content: flex-start; 
+                justify-content: flex-start !important; /* Grampeia no topo */
                 min-height: 100vh;
+                text-align: left;
             }
 
             .poema-box { 
-                font-family: 'Libre Baskerville', serif; font-size: 1.9em; line-height: 1.7; 
-                color: #111; max-width: 750px; padding: 10px 35px; 
+                font-family: 'Libre Baskerville', serif; 
+                font-size: 1.9em; 
+                line-height: 1.6; 
+                color: #111; 
+                max-width: 750px; 
+                padding: 20px 35px; 
                 border-left: 5px solid #111;
-                margin-top: 0px !important;
+                margin-top: 0px !important; /* Sem folga superior interna */
+                align-self: center;
             }
             
-            .cfg-head { 
-                font-size: 0.72em; font-weight: bold; color: #aaa; 
-                text-transform: uppercase; margin-bottom: 4px; letter-spacing: 1px;
-            }
+            .cfg-head { font-size: 0.72em; font-weight: bold; color: #aaa; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 1px; }
         </style>
     """, unsafe_allow_html=True)
 
 def main():
     st.set_page_config(layout="wide", page_title="Machina Poética")
-    aplicar_estetica_v36()
+    aplicar_estetica_v39()
 
-    if 'current_tab_idx' not in st.session_state: st.session_state.current_tab_idx = 0 
+    # --- ESTADOS ---
+    PAGINAS = ["demo", "ypoemas", "eureka", "off-máquina", "books", "about"]
+    if 'current_tab' not in st.session_state: st.session_state.current_tab = "demo"
     if 'book_em_foco' not in st.session_state: st.session_state.book_em_foco = "todos os temas"
     if 'memoria_temas' not in st.session_state: st.session_state.memoria_temas = {"todos os temas": 0}
     if 'seed' not in st.session_state: st.session_state.seed = 0
     if 'lang' not in st.session_state: st.session_state.lang = 'Português'
     if 'show_config' not in st.session_state: st.session_state.show_config = False
 
+    # --- COCKPIT ---
     st.markdown('<div class="fixed-top">', unsafe_allow_html=True)
     
     col_l, col_c, col_r = st.columns([1, 2, 1])
@@ -105,23 +105,21 @@ def main():
 
         arquivos = sorted([f for f in os.listdir(BASE_PATH) if f.startswith("rol_") and f.endswith(".txt")]) if os.path.exists(BASE_PATH) else []
         LIVROS = {f.replace("rol_", "").replace(".txt", ""): f for f in arquivos}
-        PAGINAS = ["demo", "ypoemas", "eureka", "off-máquina", "books", "about"]
-        aba_atual = PAGINAS[st.session_state.current_tab_idx]
         
-        book_foco = "todos os temas" if aba_atual == "demo" else st.session_state.book_em_foco
+        book_foco = "todos os temas" if st.session_state.current_tab == "demo" else st.session_state.book_em_foco
         caminho_livro = os.path.join(BASE_PATH, LIVROS.get(book_foco, "rol_todos os temas.txt"))
         
         with open(caminho_livro, "r", encoding="utf-8") as f:
             lista_temas = [l.strip() for l in f if l.strip() and not l.startswith("[")]
         
         idx_tema = st.session_state.memoria_temas.get(book_foco, 0) % len(lista_temas)
-        st.selectbox("T", lista_temas, index=idx_tema, key=f"v36_{idx_tema}", 
-                     on_change=lambda: st.session_state.memoria_temas.update({book_foco: lista_temas.index(st.session_state[f"v36_{idx_tema}"])}),
+        st.selectbox("T", lista_temas, index=idx_tema, key=f"v39_{idx_tema}", 
+                     on_change=lambda: st.session_state.memoria_temas.update({book_foco: lista_temas.index(st.session_state[f"v39_{idx_tema}"])}),
                      label_visibility="collapsed")
 
-    aba_sel = stx.tab_bar(data=[stx.TabBarItemData(id=p, title=p.upper(), description="") for p in PAGINAS], default=aba_atual)
-    if aba_sel and aba_sel != aba_atual:
-        st.session_state.current_tab_idx = PAGINAS.index(aba_sel)
+    aba_sel = stx.tab_bar(data=[stx.TabBarItemData(id=p, title=p.upper(), description="") for p in PAGINAS], default=st.session_state.current_tab)
+    if aba_sel and aba_sel != st.session_state.current_tab:
+        st.session_state.current_tab = aba_sel
         st.rerun()
 
     if st.session_state.show_config:
@@ -129,27 +127,30 @@ def main():
         with c_cfg:
             st.markdown('<div style="background:#fdfdfd; padding:12px; border:1px solid #eee; margin-top:2px; text-align:center;">', unsafe_allow_html=True)
             st.markdown('<p class="cfg-head">idiomas disponíveis</p>', unsafe_allow_html=True)
-            st.session_state.lang = st.selectbox("L", list(DICI_LANG.keys()), 
-                                                index=list(DICI_LANG.keys()).index(st.session_state.lang), 
-                                                label_visibility="collapsed")
+            st.session_state.lang = st.selectbox("L", list(DICI_LANG.keys()), index=list(DICI_LANG.keys()).index(st.session_state.lang), label_visibility="collapsed")
             st.markdown('</div>', unsafe_allow_html=True)
-
     st.markdown('</div>', unsafe_allow_html=True)
 
+    # --- PALCO ---
     st.markdown('<div class="main-content">', unsafe_allow_html=True)
     
-    if aba_atual in ["demo", "ypoemas"]:
+    if st.session_state.current_tab in ["demo", "ypoemas"]:
         try:
             from lay_2_ypo import gera_poema
             res = gera_poema(lista_temas[idx_tema], str(st.session_state.seed))
-            txt = ("".join(res) if isinstance(res, list) else str(res)).strip().replace("\n", "<br>")
+            
+            # Tratamento rigoroso de quebras de linha para manter o poema no topo
+            txt_bruto = "".join(res) if isinstance(res, list) else str(res)
+            txt_limpo = txt_bruto.strip().replace("\n", "<br>")
+            
             if st.session_state.lang != 'Português':
-                txt = GoogleTranslator(source='pt', target=DICI_LANG[st.session_state.lang]).translate(text=txt)
-            st.markdown(f'<div class="poema-box">{txt}</div>', unsafe_allow_html=True)
+                txt_limpo = GoogleTranslator(source='pt', target=DICI_LANG[st.session_state.lang]).translate(text=txt_limpo)
+            
+            st.markdown(f'<div class="poema-box">{txt_limpo}</div>', unsafe_allow_html=True)
         except Exception as e:
             st.error(f"Integridade do Motor: {e}")
-    elif aba_atual == "about":
-        st.markdown(f'<div class="poema-box"><b>a Máquina de Fazer Poesia</b><br>Versão 2026.04<br>Curadoria Integral de Idiomas.</div>', unsafe_allow_html=True)
+    elif st.session_state.current_tab == "about":
+        st.markdown('<div class="poema-box"><b>a Máquina de Fazer Poesia</b><br>Poema ancorado no topo.</div>', unsafe_allow_html=True)
 
     st.markdown('</div>', unsafe_allow_html=True)
 
