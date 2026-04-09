@@ -143,12 +143,18 @@ def executar_som(texto, idioma_nome):
         return fp
     except: return None
 
+# --- MAPA CORRIGIDO (rol_todos os temas.txt) ---
 MAPA_BOOKS = {
-    "todos os temas": "rol_poemas.txt", "livro vivo": "rol_livro_vivo.txt", 
-    "poemas": "rol_poemas.txt", "ensaios": "rol_ensaios.txt", "jocosos": "rol_jocosos.txt", 
-    "variações": "rol_variações.txt", "metalinguagem": "rol_metalinguagem.txt",
-    "sociais": "rol_sociais.txt", "outros autores": "rol_outros autores.txt",
-    "todos os signos": "rol_todos os signos.txt", "temas mini": "rol_temas_mini.txt"
+    "todos os temas": "rol_todos os temas.txt", 
+    "livro vivo": "rol_livro_vivo.txt", 
+    "ensaios": "rol_ensaios.txt", 
+    "jocosos": "rol_jocosos.txt", 
+    "variações": "rol_variações.txt", 
+    "metalinguagem": "rol_metalinguagem.txt",
+    "sociais": "rol_sociais.txt", 
+    "outros autores": "rol_outros autores.txt",
+    "todos os signos": "rol_todos os signos.txt", 
+    "temas mini": "rol_temas_mini.txt"
 }
 
 LISTA_IDIOMAS = [
@@ -161,7 +167,7 @@ LISTA_IDIOMAS = [
 ]
 
 def carregar_temas(nome_book):
-    arquivo = MAPA_BOOKS.get(nome_book, "rol_poemas.txt")
+    arquivo = MAPA_BOOKS.get(nome_book, "rol_todos os temas.txt")
     caminho = os.path.join(BASE_DIR, "base", arquivo)
     if os.path.exists(caminho):
         try:
@@ -184,17 +190,16 @@ def main():
     if 'arts' not in st.session_state: st.session_state.arts = []
     if 'tema_idx_por_book' not in st.session_state: st.session_state.tema_idx_por_book = {b: 0 for b in MAPA_BOOKS}
 
-    # --- TROCA DE NOME: MINI -> DEMO ---
+    # --- ABAS (DEMO OK) ---
     PAGINAS_APP = ["demo", "ypoemas", "eureka", "off-máquina", "books", "comments", "about"]
     aba_atual = PAGINAS_APP[st.session_state.current_tab_idx]
 
-    # --- ABAS ---
     aba_clicada = stx.tab_bar(data=[stx.TabBarItemData(id=p, title=p.upper(), description="") for p in PAGINAS_APP], default=aba_atual)
     if aba_clicada != aba_atual:
         st.session_state.current_tab_idx = PAGINAS_APP.index(aba_clicada)
         st.rerun()
 
-    # Lógica DEMO: Força "todos os temas"
+    # Lógica DEMO: Força pool total
     book_em_foco = "todos os temas" if aba_atual == "demo" else st.session_state.book_em_foco
     
     temas_do_livro = carregar_temas(book_em_foco)
