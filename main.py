@@ -2,24 +2,45 @@ import streamlit as st
 import extra_streamlit_components as stx
 import os
 import random
+from deep_translator import GoogleTranslator
 
-# CRONOLOGIA ATIVA: X=10 (v1.7 - AUDITORIA COMPLETA E ESTABILIZAÇÃO)
-
-try:
-    from streamlit_autorefresh import st_autorefresh
-    HAS_AUTO = True
-except ImportError:
-    HAS_AUTO = False
+# CRONOLOGIA ATIVA: X=10 (v2.0 - Sincronia de Idiomas & Sanitização Obsessiva)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# --- MOTOR ---
+# --- MOTOR DE TRADUÇÃO (MODO SEGURO) ---
+def tradutor_na_marra(input_text, target_lang='pt'):
+    # Mapeamento para o deep-translator
+    lang_map = {"PT": "pt", "EN": "en", "ES": "es"}
+    target = lang_map.get(target_lang, "pt")
+    
+    if not input_text or target == 'pt':
+        return input_text
+    
+    try:
+        # Tradução mantendo as tags <br>
+        output_text = GoogleTranslator(source='pt', target=target).translate(text=input_text)
+        
+        # O "Vício" da Sanitização: Limpeza de alucinações do tradutor
+        rep = {
+            "<br>>": "<br>", "< br>": "<br>", "<br >": "<br>", 
+            "<br ": "<br>", " br>": "<br>", "</br>": "<br>", 
+            "<Br>": "<br>", "<BR>": "<br>"
+        }
+        for old, new in rep.items():
+            output_text = output_text.replace(old, new)
+        
+        return output_text
+    except:
+        return input_text
+
+# --- MOTOR DE POESIA ---
 try:
     from lay_2_ypo import gera_poema
 except ImportError:
     def gera_poema(t, s=""): return f"Erro: Motor não localizado.\nTema: {t}"
 
-# --- DADOS & ASSETS ---
+# --- DADOS ---
 @st.cache_data
 def carregar_temas_cached(arquivo_nome):
     caminho = os.path.join(BASE_DIR, "base", arquivo_nome)
@@ -30,39 +51,6 @@ def carregar_temas_cached(arquivo_nome):
         except: pass
     return ["Fatos"]
 
-@st.cache_data
-def load_images_list_cached():
-    caminho = os.path.join(BASE_DIR, "base", "images.txt")
-    if os.path.exists(caminho):
-        try:
-            with open(caminho, "r", encoding="utf-8") as f:
-                return f.readlines()
-        except: pass
-    return []
-
-def load_arts(nome_tema):
-    path = "./images/machina/"
-    path_list = load_images_list_cached()
-    for line in path_list:
-        if line.startswith(nome_tema):
-            this_line = line.strip("\n")
-            part_line = this_line.partition(" : ")
-            if nome_tema == part_line[0]:
-                path = "./images/" + part_line[2] + "/"
-                break
-    if not os.path.exists(path): return None
-    arts_list = [f for f in os.listdir(path) if f.lower().endswith((".jpg", ".png", ".jpeg"))]
-    if not arts_list: return None
-    if 'arts' not in st.session_state: st.session_state.arts = []
-    image = random.choice(arts_list)
-    intentos = 0
-    while image in st.session_state.arts and intentos < 10:
-        image = random.choice(arts_list)
-        intentos += 1
-    st.session_state.arts.append(image)
-    if len(st.session_state.arts) > 36: del st.session_state.arts[0]
-    return path + image
-
 # --- INTERFACE ---
 def aplicar_estetica_machina():
     st.markdown("""
@@ -70,17 +58,15 @@ def aplicar_estetica_machina():
             header[data-testid="stHeader"], footer { visibility: hidden; height: 0px; }
             [data-testid="stSidebar"] { display: none; }
             .block-container { padding-top: 1rem !important; max-width: 100% !important; }
-            div[data-testid="column"] { display: flex; justify-content: center; align-items: center; }
             .stButton > button { 
                 border-radius: 50% !important; width: 42px !important; height: 42px !important; 
                 border: 1px solid #eee !important; background: white !important; color: #555 !important;
             }
-            div[data-testid="stSelectbox"] { width: fit-content !important; min-width: 250px !important; margin: 0 auto !important; }
-            div[data-baseweb="select"] { border: none !important; background: transparent !important; font-family: serif !important; font-size: 1.4em !important; font-weight: bold !important; }
             .poema-box { 
-                font-family: serif; font-size: 1.6em; line-height: 1.7; 
-                color: #1a1a1a; margin-top: 2rem; padding: 10px; text-align: left;
+                font-family: 'Georgia', serif; font-size: 1.7em; line-height: 1.6; 
+                color: #1a1a1a; margin-top: 2rem; padding: 15px; text-align: left;
             }
+            .lang-text { font-family: sans-serif; font-size: 0.8em; color: #888; margin-bottom: 5px; }
         </style>
     """, unsafe_allow_html=True)
 
@@ -96,19 +82,17 @@ def main():
     st.set_page_config(layout="wide", page_title="yPoemas")
     aplicar_estetica_machina()
 
-    # --- INICIALIZAÇÃO DE ESTADOS ---
-    DEFAULTS = {
-        'current_tab_idx': 0, 'book_em_foco': 'todos os temas', 
-        'tema_idx_por_book': {b: 0 for b in MAPA_BOOKS}, 'com_imagem': True,
-        'show_config': False, 'seed_mutante': 0, 'modo_auto': False, 'vel_auto': 15
-    }
-    for key, val in DEFAULTS.items():
-        if key not in st.session_state: st.session_state[key] = val
+    # --- ESTADOS ---
+    if 'current_tab_idx' not in st.session_state: st.session_state.current_tab_idx = 0 
+    if 'book_em_foco' not in st.session_state: st.session_state.book_em_foco = 'todos os temas'
+    if 'tema_idx_por_book' not in st.session_state: st.session_state.tema_idx_por_book = {b: 0 for b in MAPA_BOOKS}
+    if 'idioma' not in st.session_state: st.session_state.idioma = 'PT'
+    if 'seed_mutante' not in st.session_state: st.session_state.seed_mutante = 0
 
     PAGINAS_APP = ["demo", "ypoemas", "eureka", "off-máquina", "books", "comments", "about"]
     aba_atual = PAGINAS_APP[st.session_state.current_tab_idx]
 
-    # Barra de abas sincronizada
+    # Barra de abas
     aba_clicada = stx.tab_bar(data=[stx.TabBarItemData(id=p, title=p.upper(), description="") for p in PAGINAS_APP], default=aba_atual)
     if aba_clicada and aba_clicada != aba_atual:
         st.session_state.current_tab_idx = PAGINAS_APP.index(aba_clicada)
@@ -116,65 +100,46 @@ def main():
 
     book_foco = "todos os temas" if aba_atual == "demo" else st.session_state.book_em_foco
     lista_temas = carregar_temas_cached(MAPA_BOOKS.get(book_foco, "rol_todos os temas.txt"))
-    
-    # Piloto Automático
-    if aba_atual == "demo" and st.session_state.modo_auto and HAS_AUTO:
-        st_autorefresh(interval=st.session_state.vel_auto * 1000, key="auto_pilot")
-        st.session_state.tema_idx_por_book[book_foco] += 1
-
-    # Índice Real do Tema
     idx_tema = st.session_state.tema_idx_por_book.get(book_foco, 0) % len(lista_temas)
     tema_atual = lista_temas[idx_tema]
 
     # --- COCKPIT ---
     st.markdown("<br>", unsafe_allow_html=True)
-    c_l, c_p, c_pr, c_ra, c_ne, c_he, c_cf, c_r = st.columns([3, 1, 1, 1, 1, 1, 1, 3])
+    c_l, c_p, c_pr, c_ra, c_ne, c_lang, c_r = st.columns([2, 0.5, 0.5, 0.5, 0.5, 2, 2])
     
     if c_p.button("✚"): st.session_state.seed_mutante += 1; st.rerun()
     if c_pr.button("❰"): st.session_state.tema_idx_por_book[book_foco] = idx_tema - 1; st.rerun()
     if c_ra.button("✱"): st.session_state.tema_idx_por_book[book_foco] = random.randint(0, len(lista_temas)-1); st.rerun()
     if c_ne.button("❱"): st.session_state.tema_idx_por_book[book_foco] = idx_tema + 1; st.rerun()
-    if c_he.button("?"): st.session_state.help_ativo = not st.session_state.get('help_ativo', False); st.rerun()
-    if c_cf.button("@"): st.session_state.show_config = not st.session_state.show_config; st.rerun()
 
-    # Seletor Sincronizado (Uso de Key Dinâmica Força Refresh)
-    def update_tema():
-        st.session_state.tema_idx_por_book[book_foco] = lista_temas.index(st.session_state[f"sel_key_{idx_tema}"])
+    with c_lang:
+        # Seletor de Idioma Obsessivo
+        opcoes_idioma = ["PT", "EN", "ES"]
+        st.session_state.idioma = st.radio(
+            "Idioma", opcoes_idioma, 
+            index=opcoes_idioma.index(st.session_state.idioma),
+            horizontal=True, label_visibility="collapsed"
+        )
 
-    st.selectbox("Tema", lista_temas, index=idx_tema, key=f"sel_key_{idx_tema}", on_change=update_tema, label_visibility="collapsed")
-
-    if st.session_state.show_config:
-        with st.container(border=True):
-            cfg_cols = st.columns(4)
-            with cfg_cols[0]: st.selectbox("Idioma", ["PT - Português", "EN - English", "ES - Español"])
-            with cfg_cols[1]: 
-                def troca_book(): st.session_state.book_em_foco = st.session_state.sel_book
-                st.selectbox("Livro", list(MAPA_BOOKS.keys()), index=list(MAPA_BOOKS.keys()).index(book_foco), key="sel_book", on_change=troca_book, disabled=(aba_atual=="demo"))
-            with cfg_cols[2]: st.session_state.com_imagem = st.toggle("Artes", value=st.session_state.com_imagem)
-            with cfg_cols[3]:
-                if aba_atual == "demo":
-                    st.session_state.modo_auto = st.toggle("Auto", value=st.session_state.modo_auto)
-                    st.session_state.vel_auto = st.slider("Segundos", 5, 60, st.session_state.vel_auto)
-
-    st.markdown("---")
+    st.selectbox("Tema", lista_temas, index=idx_tema, key=f"sel_{idx_tema}", label_visibility="collapsed")
 
     # --- PALCO CENTRAL ---
-    if not st.session_state.get('help_ativo', False):
-        try:
-            res_bruto = gera_poema(tema_atual, str(st.session_state.seed_mutante))
-            # Tratamento de Quebras de Linha (A prova de falhas)
-            txt_raw = "".join(res_bruto) if isinstance(res_bruto, list) else str(res_bruto)
-            txt_poema = txt_raw.strip().replace("\n", "<br>")
+    st.markdown("---")
+    
+    try:
+        # 1. Geração Original
+        res_bruto = gera_poema(tema_atual, str(st.session_state.seed_mutante))
+        txt_raw = "".join(res_bruto) if isinstance(res_bruto, list) else str(res_bruto)
+        
+        # 2. Preparação Estrutural (Linhas -> HTML)
+        txt_com_breaks = txt_raw.strip().replace("\n", "<br>")
+        
+        # 3. Tradução com Sanitização de "Segredinhos"
+        txt_final = tradutor_na_marra(txt_com_breaks, target_lang=st.session_state.idioma)
 
-            if st.session_state.com_imagem:
-                col_i, col_t = st.columns([1, 2])
-                with col_t: st.markdown(f'<div class="poema-box">{txt_poema}</div>', unsafe_allow_html=True)
-                with col_i:
-                    img_path = load_arts(tema_atual)
-                    if img_path: st.image(img_path, use_container_width=True)
-            else:
-                st.markdown(f'<div class="poema-box" style="text-align:center;">{txt_poema}</div>', unsafe_allow_html=True)
-        except: st.error("A Machina aguarda ajuste no motor.")
+        st.markdown(f'<div class="poema-box">{txt_final}</div>', unsafe_allow_html=True)
+    except:
+        st.error("A Machina exige silêncio para processar.")
 
 if __name__ == "__main__":
     main()
