@@ -134,3 +134,4 @@ def main():
     st.markdown('<div style="margin-top: 170px;"></div>', unsafe_allow_html=True)
     
     if st.session_state.current:
+        pass
