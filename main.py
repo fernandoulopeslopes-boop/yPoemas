@@ -5,8 +5,8 @@ import os
 import random
 from deep_translator import GoogleTranslator
 
-# CRONOLOGIA ATIVA: X=48 (RESTAURAÇÃO DE ESCOPO + ESTABILIDADE DE ABAS)
-# REGRA_ZERO: Foco na eliminação do NameError e correção da geometria.
+# CRONOLOGIA ATIVA: X=50 (GEOMETRIA DE PRECISÃO + EXTIRPAÇÃO TOTAL)
+# REGRA_ZERO: Alinhamento milimétrico. Sem transbordo.
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE_PATH = os.path.join(BASE_DIR, "base")
@@ -17,7 +17,7 @@ DICI_LANG = {
     'Deutsch': 'de', 'Galego': 'gl', 'Română': 'ro'
 }
 
-def aplicar_estetica_v48():
+def aplicar_estetica_v50():
     st.markdown("""
         <style>
             header[data-testid="stHeader"], footer { visibility: hidden; height: 0px; }
@@ -27,12 +27,11 @@ def aplicar_estetica_v48():
             .main .block-container {
                 padding-top: 0rem !important;
                 padding-bottom: 0rem !important;
-                margin-top: -125px !important; 
+                margin-top: -140px !important; 
             }
             
-            /* Neutralização de Gaps Nativos do Streamlit */
             [data-testid="stVerticalBlock"] > div { gap: 0rem !important; }
-            [data-testid="stElementContainer"] { margin-bottom: -1.5rem !important; }
+            [data-testid="stElementContainer"] { margin-bottom: -1.6rem !important; }
 
             /* COCKPIT FIXO */
             .fixed-top {
@@ -40,7 +39,7 @@ def aplicar_estetica_v48():
                 background-color: white; z-index: 999;
                 border-bottom: 1px solid #f2f2f2;
                 display: flex; flex-direction: column; align-items: center;
-                padding-bottom: 5px;
+                padding-bottom: 8px;
             }
             
             .stButton > button { 
@@ -48,22 +47,25 @@ def aplicar_estetica_v48():
                 background: white !important; border: 1px solid #eee !important;
             }
             
-            /* SELECTBOX: Geometria sob os botões 2 e 3 */
+            /* SELECTBOX: Reset de largura e centralização */
+            div[data-testid="stSelectbox"] {
+                margin-top: -10px !important;
+                width: 280px !important; /* Largura controlada para cobrir os botões 2 e 3 */
+            }
             div[data-testid="stSelectbox"] label { display: none !important; }
-            div[data-testid="stSelectbox"] { margin-top: -8px !important; }
         </style>
     """, unsafe_allow_html=True)
 
 def main():
     st.set_page_config(layout="wide", page_title="Machina Poética")
-    aplicar_estetica_v48()
+    aplicar_estetica_v50()
 
-    # --- 1. ESTADOS ---
+    # --- 1. ESTADOS (HOSPITALIDADE INICIAL) ---
     if 'seed' not in st.session_state: st.session_state.seed = random.randint(1, 9999)
     if 'current_tab' not in st.session_state: st.session_state.current_tab = "demo"
     if 'book_em_foco' not in st.session_state: st.session_state.book_em_foco = "todos os temas"
     if 'memoria_temas' not in st.session_state: 
-        st.session_state.memoria_temas = {"todos os temas": random.randint(0, 5)}
+        st.session_state.memoria_temas = {"todos os temas": random.randint(0, 10)}
     if 'lang' not in st.session_state: st.session_state.lang = 'Português'
     if 'show_config' not in st.session_state: st.session_state.show_config = False
 
@@ -84,6 +86,7 @@ def main():
     
     col_l, col_c, col_r = st.columns([1, 2, 1])
     with col_c:
+        # Linha de Botões
         b_cols = st.columns(6)
         if b_cols[0].button("✚", help="Nova variação"): 
             st.session_state.seed += 1
@@ -103,16 +106,15 @@ def main():
             st.session_state.show_config = not st.session_state.show_config
             st.rerun()
 
-        s_cols = st.columns(6)
-        with s_cols[1]: 
+        # ÁREA DA LISTA (ALINHAMENTO CENTRAL SOB ❰ e ✱)
+        # Usamos uma coluna central mais larga para o selectbox não sofrer compressão lateral
+        _, s_area, _ = st.columns([0.4, 2, 0.4])
+        with s_area:
             idx_tema = st.session_state.memoria_temas.get(book_foco, 0) % len(lista_temas)
-            st.markdown('<div style="width:340%; margin-left:0px;">', unsafe_allow_html=True)
-            st.selectbox("T", lista_temas, index=idx_tema, key=f"v48_{idx_tema}", 
-                         on_change=lambda: st.session_state.memoria_temas.update({book_foco: lista_temas.index(st.session_state[f"v48_{idx_tema}"])}),
+            st.selectbox("T", lista_temas, index=idx_tema, key=f"v50_{idx_tema}", 
+                         on_change=lambda: st.session_state.memoria_temas.update({book_foco: lista_temas.index(st.session_state[f"v50_{idx_tema}"])}),
                          label_visibility="collapsed")
-            st.markdown('</div>', unsafe_allow_html=True)
 
-    # RESTAURAÇÃO DA LISTA DE ABAS (CORREÇÃO DO NAMERROR)
     PAGINAS = ["demo", "ypoemas", "eureka", "off-máquina", "books", "about"]
     aba_sel = stx.tab_bar(data=[stx.TabBarItemData(id=p, title=p.upper(), description="") for p in PAGINAS], default=st.session_state.current_tab)
     
@@ -127,7 +129,7 @@ def main():
     st.markdown('</div>', unsafe_allow_html=True)
 
     # --- 4. PALCO ---
-    st.markdown('<div style="margin-top: 110px;"></div>', unsafe_allow_html=True)
+    st.markdown('<div style="margin-top: 130px;"></div>', unsafe_allow_html=True)
     
     if st.session_state.current_tab in ["demo", "ypoemas"]:
         try:
