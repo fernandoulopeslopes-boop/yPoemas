@@ -5,8 +5,8 @@ import os
 import random
 from deep_translator import GoogleTranslator
 
-# CRONOLOGIA ATIVA: X=51 (CORREÇÃO DE SOBREPOSIÇÃO + ALINHAMENTO POR COLUNAS)
-# REGRA_ZERO: Os botões devem ser clicáveis. A lista deve estar abaixo.
+# CRONOLOGIA ATIVA: X=52 (ESTRUTURA DE GRADE UNIFICADA + LARGURA REAL)
+# REGRA_ZERO: Sem transbordo, sem largura mínima. Geometria por proporção real.
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE_PATH = os.path.join(BASE_DIR, "base")
@@ -17,21 +17,21 @@ DICI_LANG = {
     'Deutsch': 'de', 'Galego': 'gl', 'Română': 'ro'
 }
 
-def aplicar_estetica_v51():
+def aplicar_estetica_v52():
     st.markdown("""
         <style>
             header[data-testid="stHeader"], footer { visibility: hidden; height: 0px; }
             [data-testid="stSidebar"] { display: none; }
             
-            /* AJUSTE DA MARGEM SUPERIOR PARA EVITAR SUMIÇO DO COCKPIT */
+            /* EXTIRPAÇÃO DO BLOCO SUPERIOR */
             .main .block-container {
                 padding-top: 0rem !important;
                 padding-bottom: 0rem !important;
-                margin-top: -120px !important; 
+                margin-top: -125px !important; 
             }
             
             [data-testid="stVerticalBlock"] > div { gap: 0rem !important; }
-            [data-testid="stElementContainer"] { margin-bottom: -1.0rem !important; }
+            [data-testid="stElementContainer"] { margin-bottom: -1.2rem !important; }
 
             /* COCKPIT FIXO */
             .fixed-top {
@@ -39,7 +39,7 @@ def aplicar_estetica_v51():
                 background-color: white; z-index: 999;
                 border-bottom: 1px solid #f2f2f2;
                 display: flex; flex-direction: column; align-items: center;
-                padding-bottom: 10px;
+                padding-bottom: 12px;
             }
             
             .stButton > button { 
@@ -47,18 +47,15 @@ def aplicar_estetica_v51():
                 background: white !important; border: 1px solid #eee !important;
             }
             
-            /* SELECTBOX: Ajuste para não encobrir os botões */
-            div[data-testid="stSelectbox"] {
-                margin-top: 5px !important; /* Espaço positivo para descer em relação aos botões */
-                z-index: 1;
-            }
+            /* SELECTBOX: Limpeza de labels e ajustes de margem */
             div[data-testid="stSelectbox"] label { display: none !important; }
+            div[data-testid="stSelectbox"] { margin-top: 2px !important; }
         </style>
     """, unsafe_allow_html=True)
 
 def main():
     st.set_page_config(layout="wide", page_title="Machina Poética")
-    aplicar_estetica_v51()
+    aplicar_estetica_v52()
 
     # --- 1. ESTADOS ---
     if 'seed' not in st.session_state: st.session_state.seed = random.randint(1, 9999)
@@ -84,40 +81,41 @@ def main():
     # --- 3. COCKPIT ---
     st.markdown('<div class="fixed-top">', unsafe_allow_html=True)
     
+    # Centralização do Cockpit
     col_l, col_c, col_r = st.columns([1, 2, 1])
     with col_c:
-        # Linha 1: Botões
+        # LINHA 1: BOTÕES (6 colunas iguais)
         b_cols = st.columns(6)
-        if b_cols[0].button("✚", key="btn_plus"): 
+        if b_cols[0].button("✚", key="b1"): 
             st.session_state.seed += 1
             st.rerun()
-        if b_cols[1].button("❰", key="btn_prev"): 
+        if b_cols[1].button("❰", key="b2"): 
             st.session_state.memoria_temas[book_foco] -= 1
             st.rerun()
-        if b_cols[2].button("✱", key="btn_rnd"): 
+        if b_cols[2].button("✱", key="b3"): 
             st.session_state.seed = random.randint(1, 9999)
             st.session_state.memoria_temas[book_foco] = random.randint(0, len(lista_temas)-1)
             st.rerun()
-        if b_cols[3].button("❱", key="btn_next"): 
+        if b_cols[3].button("❱", key="b4"): 
             st.session_state.memoria_temas[book_foco] += 1
             st.rerun()
-        b_cols[4].button("?", key="btn_help")
-        if b_cols[5].button("@", key="btn_cfg"):
+        b_cols[4].button("?", key="b5")
+        if b_cols[5].button("@", key="b6"):
             st.session_state.show_config = not st.session_state.show_config
             st.rerun()
 
-        # Linha 2: Selectbox ALINHADO ABAIXO
-        # Usamos columns(6) novamente para espelhar a largura exata dos slots dos botões
-        s_cols = st.columns(6)
-        with s_cols[1]: # Começa abaixo do ❰
+        # LINHA 2: LISTA DE TEMAS (Alinhamento por proporção)
+        # Para cair sob os botões 2 e 3 de um grid de 6:
+        # Espaço 1 (botão 1) | Espaço 2 (botão 2+3) | Espaço 3 (botão 4+5+6)
+        # Proporção: [1, 2, 3]
+        s_cols = st.columns([1, 2, 3])
+        with s_cols[1]:
             idx_tema = st.session_state.memoria_temas.get(book_foco, 0) % len(lista_temas)
-            # Engloba as colunas 1 e 2 (relativas ao grid de 6)
-            st.markdown('<div style="width:210%; margin-left:0px;">', unsafe_allow_html=True)
-            st.selectbox("T", lista_temas, index=idx_tema, key=f"v51_{idx_tema}", 
-                         on_change=lambda: st.session_state.memoria_temas.update({book_foco: lista_temas.index(st.session_state[f"v51_{idx_tema}"])}),
+            st.selectbox("T", lista_temas, index=idx_tema, key=f"v52_{idx_tema}", 
+                         on_change=lambda: st.session_state.memoria_temas.update({book_foco: lista_temas.index(st.session_state[f"v52_{idx_tema}"])}),
                          label_visibility="collapsed")
-            st.markdown('</div>', unsafe_allow_html=True)
 
+    # ABAS
     PAGINAS = ["demo", "ypoemas", "eureka", "off-máquina", "books", "about"]
     aba_sel = stx.tab_bar(data=[stx.TabBarItemData(id=p, title=p.upper(), description="") for p in PAGINAS], default=st.session_state.current_tab)
     
@@ -132,7 +130,7 @@ def main():
     st.markdown('</div>', unsafe_allow_html=True)
 
     # --- 4. PALCO ---
-    st.markdown('<div style="margin-top: 150px;"></div>', unsafe_allow_html=True)
+    st.markdown('<div style="margin-top: 155px;"></div>', unsafe_allow_html=True)
     
     if st.session_state.current_tab in ["demo", "ypoemas"]:
         try:
