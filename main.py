@@ -6,8 +6,8 @@ from gtts import gTTS
 from io import BytesIO
 from deep_translator import GoogleTranslator
 
-# CRONOLOGIA ATIVA: X=60 (RESTAURAÇÃO DO ORIGINAL)
-# FOCO: Fidelidade total à diagramação de anos. Sem travas de altura.
+# CRONOLOGIA ATIVA: X=61 (FIX DE DIAGRAMAÇÃO - WHITE-SPACE PRE)
+# FOCO: Manter o formato exato do tema.ypo sem achatar linhas.
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE_PATH = os.path.join(BASE_DIR, "base")
@@ -23,7 +23,15 @@ def configurar_basico():
         <style>
             header, footer { visibility: hidden; }
             .stButton > button { border-radius: 50% !important; width: 40px; height: 40px; }
-            pre { font-family: 'serif'; font-size: 20px; line-height: 1.6; white-space: pre-wrap; }
+            /* PRE PURO: RESPEITA QUEBRAS DE LINHA DO ARQUIVO ORIGINAL */
+            pre { 
+                font-family: 'serif'; 
+                font-size: 20px; 
+                line-height: 1.6; 
+                white-space: pre !important; 
+                word-wrap: normal !important;
+                overflow-x: auto;
+            }
         </style>
     """, unsafe_allow_html=True)
 
@@ -31,7 +39,6 @@ def main():
     st.set_page_config(layout="wide")
     configurar_basico()
 
-    # --- ESTADOS ORIGINAIS ---
     if 'seed' not in st.session_state: st.session_state.seed = random.randint(1, 9999)
     if 'lang' not in st.session_state: st.session_state.lang = 'Português'
     if 'book' not in st.session_state: st.session_state.book = "todos os temas"
@@ -39,7 +46,6 @@ def main():
     if 'talk' not in st.session_state: st.session_state.talk = False
     if 'draw' not in st.session_state: st.session_state.draw = False
 
-    # --- CARGA DE DADOS ---
     arquivos = sorted([f for f in os.listdir(BASE_PATH) if f.startswith("rol_")])
     LIVROS = {f.replace("rol_", "").replace(".txt", ""): f for f in arquivos}
     
@@ -47,9 +53,8 @@ def main():
         with open(os.path.join(BASE_PATH, LIVROS.get(st.session_state.book, "rol_todos os temas.txt")), "r", encoding="utf-8") as f:
             temas_list = [l.strip() for l in f if l.strip() and not l.startswith("[")]
     except:
-        temas_list = ["Erro de carregamento"]
+        temas_list = ["Erro"]
 
-    # --- COCKPIT (APENAS O NECESSÁRIO) ---
     _, col_nav, _ = st.columns([1, 2, 1])
     with col_nav:
         c = st.columns(6)
@@ -57,44 +62,36 @@ def main():
         if c[1].button("❰"): st.session_state.tema_idx -= 1; st.rerun()
         if c[2].button("✱"): st.session_state.seed = random.randint(1, 9999); st.session_state.tema_idx = random.randint(0, len(temas_list)-1); st.rerun()
         if c[3].button("❱"): st.session_state.tema_idx += 1; st.rerun()
-        
         with c[5]:
             with st.popover("@"):
                 st.session_state.lang = st.selectbox("Idioma", list(DICI_LANG.keys()), index=list(DICI_LANG.keys()).index(st.session_state.lang))
                 st.session_state.talk = st.checkbox("Talk", value=st.session_state.talk)
                 st.session_state.draw = st.checkbox("Arts", value=st.session_state.draw)
-
         st.session_state.tema_idx = temas_list.index(st.selectbox("V", temas_list, index=st.session_state.tema_idx % len(temas_list), label_visibility="collapsed"))
 
-    # --- O PALCO (REPRODUÇÃO DA LÓGICA DE ANOS) ---
     st.divider()
     
-    what_book = f"⚫ {st.session_state.lang} ( {st.session_state.book} ) ( {st.session_state.tema_idx + 1} / {len(temas_list)} )"
+    header = f"⚫ {st.session_state.lang} ( {st.session_state.book} ) ( {st.session_state.tema_idx + 1} / {len(temas_list)} )"
     
-    ypoemas_expander = st.expander(what_book, expanded=True)
-    with ypoemas_expander:
+    with st.expander(header, expanded=True):
         try:
             from lay_2_ypo import gera_poema
             tema_atual = temas_list[st.session_state.tema_idx % len(temas_list)]
             
-            # GERAÇÃO
+            # GERAÇÃO PURA
             res = gera_poema(tema_atual, str(st.session_state.seed))
             curr_ypoema = "".join(res) if isinstance(res, list) else str(res)
 
-            # TRADUÇÃO E NORMALIZAÇÃO
+            # TRADUÇÃO (Mantendo a estrutura de strings se possível)
             if st.session_state.lang != "Português":
                 curr_ypoema = GoogleTranslator(source='pt', target=DICI_LANG[st.session_state.lang]).translate(curr_ypoema)
-                # Normalização manual de quebras para evitar erro de diagramação do tradutor
-                curr_ypoema = curr_ypoema.replace(". ", ".\n").replace("! ", "!\n").replace("? ", "?\n")
 
-            # EXIBIÇÃO (DIAGRAMAÇÃO ORIGINAL)
+            # EXIBIÇÃO EM BLOCO PRÉ-FORMATADO
             st.markdown(f"<pre>{curr_ypoema}</pre>", unsafe_allow_html=True)
 
-            # ARTS (DRAW)
             if st.session_state.draw:
                 st.image("https://via.placeholder.com/500", caption=tema_atual)
 
-            # TALK
             if st.session_state.talk:
                 tts = gTTS(text=curr_ypoema, lang=DICI_LANG[st.session_state.lang])
                 fp = BytesIO()
