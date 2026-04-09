@@ -1,6 +1,11 @@
 import streamlit as st
 import extra_streamlit_components as stx
-from streamlit_autorefresh import st_autorefresh # Necessário: pip install streamlit-autorefresh
+try:
+    from streamlit_autorefresh import st_autorefresh
+    HAS_AUTO = True
+except ImportError:
+    HAS_AUTO = False
+
 from deep_translator import GoogleTranslator
 from gtts import gTTS
 import io
@@ -112,32 +117,35 @@ def main():
     st.set_page_config(layout="wide", page_title="yPoemas")
     aplicar_estetica_machina()
 
-    # --- INITIAL STATE ---
+    # --- INICIALIZAÇÃO BLINDADA (ESMERO) ---
     if 'current_tab_idx' not in st.session_state: st.session_state.current_tab_idx = 0 
     if 'book_em_foco' not in st.session_state: st.session_state.book_em_foco = 'todos os temas'
     if 'com_imagem' not in st.session_state: st.session_state.com_imagem = True
     if 'com_som' not in st.session_state: st.session_state.com_som = False
+    if 'help_ativo' not in st.session_state: st.session_state.help_ativo = False
     if 'modo_auto' not in st.session_state: st.session_state.modo_auto = False
     if 'vel_auto' not in st.session_state: st.session_state.vel_auto = 15
     if 'tema_idx_por_book' not in st.session_state: st.session_state.tema_idx_por_book = {b: 0 for b in MAPA_BOOKS}
 
     PAGINAS_APP = ["demo", "ypoemas", "eureka", "off-máquina", "books", "comments", "about"]
-    aba_atual = PAGINAS_APP[st.session_state.current_tab_idx]
+    
+    # Prevenção de erro de índice
+    aba_idx = st.session_state.current_tab_idx
+    aba_atual = PAGINAS_APP[aba_idx] if aba_idx < len(PAGINAS_APP) else PAGINAS_APP[0]
 
-    # --- ABAS ---
     aba_clicada = stx.tab_bar(data=[stx.TabBarItemData(id=p, title=p.upper(), description="") for p in PAGINAS_APP], default=aba_atual)
+    
     if aba_clicada and aba_clicada != aba_atual:
         st.session_state.current_tab_idx = PAGINAS_APP.index(aba_clicada)
         st.rerun()
 
-    # --- CONTEXTO ---
     book_em_foco = "todos os temas" if aba_atual == "demo" else st.session_state.book_em_foco
-    temas_do_livro = carregar_temas_cached(MAPA_BOOKS[book_em_foco])
+    temas_do_livro = carregar_temas_cached(MAPA_BOOKS.get(book_em_foco, "rol_todos os temas.txt"))
     
-    # --- AUTOMATIZAÇÃO (A ALMA DA DEMO) ---
-    if aba_atual == "demo" and st.session_state.modo_auto:
-        st_autorefresh(interval=st.session_state.vel_auto * 1000, key="auto_pilot")
-        st.session_state.tema_idx_por_book[book_em_foco] += 1
+    # Auto-Refresh
+    if aba_atual == "demo" and st.session_state.get('modo_auto', False) and HAS_AUTO:
+        st_autorefresh(interval=st.session_state.get('vel_auto', 15) * 1000, key="auto_pilot")
+        st.session_state.tema_idx_por_book[book_em_foco] = st.session_state.tema_idx_por_book.get(book_em_foco, 0) + 1
 
     idx_atual = st.session_state.tema_idx_por_book.get(book_em_foco, 0) % len(temas_do_livro)
     tema_selecionado = temas_do_livro[idx_atual]
@@ -147,41 +155,50 @@ def main():
     if c_prev.button("❰"): st.session_state.tema_idx_por_book[book_em_foco] = (idx_atual - 1); st.rerun()
     if c_rand.button("✱"): st.session_state.tema_idx_por_book[book_em_foco] = random.randint(0, len(temas_do_livro)-1); st.rerun()
     if c_next.button("❱"): st.session_state.tema_idx_por_book[book_em_foco] = (idx_atual + 1); st.rerun()
-    if c_help.button("?"): st.session_state.help_ativo = not st.session_state.help_ativo; st.rerun()
+    if c_help.button("?"): st.session_state.help_ativo = not st.session_state.get('help_ativo', False); st.rerun()
 
     # --- COCKPIT ---
     col_size = [0.5, 1, 1, 2, 2, 2, 1, 0.5] if aba_atual == "demo" else [1, 1, 2, 2, 2, 1, 1]
     cols = st.columns(col_size)
     
-    idx = 1
-    with cols[idx]: st.session_state.com_imagem = st.toggle("Arte", value=st.session_state.com_imagem); idx+=1
+    with cols[1]: st.session_state.com_imagem = st.toggle("Arte", value=st.session_state.get('com_imagem', True))
     
+    curr = 2
     if aba_atual == "demo":
-        with cols[idx]: st.session_state.modo_auto = st.toggle("Auto", value=st.session_state.modo_auto); idx+=1
-        with cols[idx]: st.session_state.vel_auto = st.slider("Seg", 5, 60, st.session_state.vel_auto, label_visibility="collapsed"); idx+=1
+        with cols[curr]: 
+            st.session_state.modo_auto = st.toggle("Auto", value=st.session_state.get('modo_auto', False), disabled=not HAS_AUTO)
+            curr += 1
+        with cols[curr]: 
+            st.session_state.vel_auto = st.slider("Seg", 5, 60, st.session_state.get('vel_auto', 15), label_visibility="collapsed", disabled=not HAS_AUTO)
+            curr += 1
     
-    with cols[idx]: idioma = st.selectbox("Idioma", LISTA_IDIOMAS, label_visibility="collapsed"); idx+=1
-    with cols[idx]:
+    with cols[curr]: 
+        idioma = st.selectbox("Idioma", LISTA_IDIOMAS, label_visibility="collapsed")
+        curr += 1
+    with cols[curr]:
         def m_livro(): st.session_state.book_em_foco = st.session_state.bk_tmp
         st.selectbox("Livro", list(MAPA_BOOKS.keys()), index=list(MAPA_BOOKS.keys()).index(book_em_foco), 
-                     key="bk_tmp", on_change=m_livro, label_visibility="collapsed", disabled=(aba_atual=="demo")); idx+=1
-    with cols[idx]:
+                     key="bk_tmp", on_change=m_livro, label_visibility="collapsed", disabled=(aba_atual=="demo"))
+        curr += 1
+    with cols[curr]:
         def m_tema(): st.session_state.tema_idx_por_book[book_em_foco] = temas_do_livro.index(st.session_state.tm_tmp)
-        st.selectbox("Tema", temas_do_livro, index=idx_atual, key="tm_tmp", on_change=m_tema, label_visibility="collapsed"); idx+=1
-    with cols[idx]: st.session_state.com_som = st.toggle("Som", value=st.session_state.com_som)
+        st.selectbox("Tema", temas_do_livro, index=idx_atual, key="tm_tmp", on_change=m_tema, label_visibility="collapsed")
+        curr += 1
+    with cols[curr]: 
+        st.session_state.com_som = st.toggle("Som", value=st.session_state.get('com_som', False))
 
     st.markdown("---")
 
     # --- PALCO CENTRAL ---
-    if not st.session_state.help_ativo:
+    if not st.session_state.get('help_ativo', False):
         try:
             poema = gera_poema(tema_selecionado)
             txt = normalizar_e_traduzir(poema, idioma)
-            if st.session_state.com_som:
+            if st.session_state.get('com_som', False):
                 audio_fp = executar_som(txt, idioma)
-                if audio_fp: st.audio(audio_fp, format='audio/mp3', autoplay=st.session_state.modo_auto)
+                if audio_fp: st.audio(audio_fp, format='audio/mp3', autoplay=st.session_state.get('modo_auto', False))
 
-            if st.session_state.com_imagem:
+            if st.session_state.get('com_imagem', True):
                 col_img, col_txt = st.columns([1, 2])
                 with col_txt:
                     st.markdown(f'<div class="titulo-poema">{tema_selecionado}</div>', unsafe_allow_html=True)
