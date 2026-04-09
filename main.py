@@ -4,26 +4,26 @@ import os
 import random
 from deep_translator import GoogleTranslator
 
-# CRONOLOGIA ATIVA: RESTAURAÇÃO DE ONTEM (Pré-Pausa / Ponto de Estabilidade)
+# CRONOLOGIA ATIVA: X=09 (RETOMADA: Estabilidade Pós-Pausa)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE_PATH = os.path.join(BASE_DIR, "base")
 
-def aplicar_estetica():
+def aplicar_estetica_v09():
     st.markdown("""
         <style>
             header[data-testid="stHeader"], footer { visibility: hidden; height: 0px; }
             [data-testid="stSidebar"] { display: none; }
             .block-container { padding-top: 2rem !important; max-width: 90% !important; }
             
-            /* Cockpit de Comando */
+            /* Cockpit de Comando: Simetria e Respiro */
             .stButton > button { 
                 border-radius: 50% !important; width: 42px !important; height: 42px !important; 
                 border: 1px solid #eee !important; background: white !important; color: #555 !important;
                 box-shadow: 0px 2px 4px rgba(0,0,0,0.05);
             }
             
-            /* O Palco Central da Poesia */
+            /* O Palco Central: Sonoridade Georgia */
             .poema-box { 
                 font-family: 'Georgia', serif; font-size: 1.8em; line-height: 1.6; 
                 color: #1a1a1a; margin-top: 3rem; padding: 10px; text-align: left;
@@ -36,7 +36,7 @@ def tradutor_na_marra(input_text, target_lang='pt'):
     if not input_text or target_lang == 'pt': return input_text
     try:
         output = GoogleTranslator(source='pt', target=target_lang).translate(text=input_text)
-        # Sanitização de quebras para manter a sonoridade
+        # Sanitização para que o tradutor não engula as quebras de linha
         for tag in ["<br>>", "< br>", "<br >", "<br ", " br>", "</br>", " <br>"]:
             output = output.replace(tag, "<br>")
         return output
@@ -52,8 +52,8 @@ def listar_livros_reais():
     return livros if livros else {"todos os temas": "rol_todos os temas.txt"}
 
 def main():
-    st.set_page_config(layout="wide", page_title="Machina Poética")
-    aplicar_estetica()
+    st.set_page_config(layout="wide", page_title="Machina Poética Nova")
+    aplicar_estetica_v09()
 
     LIVROS = listar_livros_reais()
 
@@ -67,6 +67,7 @@ def main():
     PAGINAS = ["demo", "ypoemas", "eureka", "off-máquina", "books", "about"]
     aba_atual = PAGINAS[st.session_state.current_tab_idx]
 
+    # Tabs Superiores
     aba_sel = stx.tab_bar(data=[stx.TabBarItemData(id=p, title=p.upper(), description="") for p in PAGINAS], default=aba_atual)
     if aba_sel and aba_sel != aba_atual:
         st.session_state.current_tab_idx = PAGINAS.index(aba_sel)
@@ -86,7 +87,7 @@ def main():
     idx_tema = st.session_state.tema_idx_por_book.get(book_foco, 0) % len(temas)
     tema_atual = temas[idx_tema]
 
-    # --- COCKPIT (Distribuição de Ontem) ---
+    # --- COCKPIT (Distribuição v09) ---
     st.markdown("<br>", unsafe_allow_html=True)
     c_p, c_pr, c_ra, c_ne, c_lang, c_esp = st.columns([1, 1, 1, 1, 3, 5])
     
@@ -95,18 +96,20 @@ def main():
     if c_ra.button("✱"): st.session_state.tema_idx_por_book[book_foco] = random.randint(0, len(temas)-1); st.rerun()
     if c_ne.button("❱"): st.session_state.tema_idx_por_book[book_foco] = idx_tema + 1; st.rerun()
 
-    langs = {"Português": "pt", "English": "en", "Español": "es", "Français": "fr", "Italiano": "it"}
+    langs = {"Português": "pt", "English": "en", "Español": "es", "Français": "fr"}
     with c_lang:
+        # Rádio de idiomas horizontal para manter o Cockpit baixo e limpo
         st.session_state.idioma_idx = list(langs.keys()).index(
             st.radio("Idiomas", list(langs.keys()), index=st.session_state.idioma_idx, 
                      horizontal=True, label_visibility="collapsed")
         )
 
+    # Seletor de Temas
     st.selectbox("Tema", temas, index=idx_tema, key=f"sel_{idx_tema}", label_visibility="collapsed")
 
     st.markdown("---")
     
-    # --- PALCO ---
+    # --- PALCO CENTRAL ---
     try:
         from lay_2_ypo import gera_poema
         res = gera_poema(tema_atual, str(st.session_state.seed_mutante))
@@ -117,7 +120,7 @@ def main():
 
         st.markdown(f'<div class="poema-box">{txt_final}</div>', unsafe_allow_html=True)
     except Exception as e:
-        st.error(f"Integridade preservada. Erro técnico: {e}")
+        st.error(f"Aguardando o Motor... ({e})")
 
 if __name__ == "__main__":
     main()
