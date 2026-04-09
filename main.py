@@ -4,70 +4,69 @@ import os
 import random
 from deep_translator import GoogleTranslator
 
-# CRONOLOGIA ATIVA: X=09 (RETOMADA: Estabilidade Pós-Pausa)
+# CRONOLOGIA ATIVA: RESTAURAÇÃO CANÔNICA (A Versão "Perfeita" Pré-Retomada)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE_PATH = os.path.join(BASE_DIR, "base")
 
-def aplicar_estetica_v09():
+def aplicar_estetica_original():
     st.markdown("""
         <style>
             header[data-testid="stHeader"], footer { visibility: hidden; height: 0px; }
             [data-testid="stSidebar"] { display: none; }
-            .block-container { padding-top: 2rem !important; max-width: 90% !important; }
+            .block-container { padding-top: 1rem !important; max-width: 95% !important; }
             
-            /* Cockpit de Comando: Simetria e Respiro */
+            /* Botões de Comando Circulares e Minimalistas */
             .stButton > button { 
                 border-radius: 50% !important; width: 42px !important; height: 42px !important; 
-                border: 1px solid #eee !important; background: white !important; color: #555 !important;
-                box-shadow: 0px 2px 4px rgba(0,0,0,0.05);
+                border: 1px solid #eee !important; background: white !important; 
+                color: #444 !important; box-shadow: 0px 1px 3px rgba(0,0,0,0.05);
             }
             
-            /* O Palco Central: Sonoridade Georgia */
+            /* O Palco: Onde a poesia respira com sonoridade */
             .poema-box { 
                 font-family: 'Georgia', serif; font-size: 1.8em; line-height: 1.6; 
-                color: #1a1a1a; margin-top: 3rem; padding: 10px; text-align: left;
-                border-left: 2px solid #f0f0f0;
+                color: #111; margin-top: 2rem; padding: 10px; text-align: left;
+                border-left: 2px solid #efefef;
             }
         </style>
     """, unsafe_allow_html=True)
 
-def tradutor_na_marra(input_text, target_lang='pt'):
+def sanitizar_fiel(texto):
+    if not texto: return ""
+    # A ladainha de limpeza manual que preserva a alma do motor
+    for tag in ["<br>>", "< br>", "<br >", "<br ", " br>", "</br>", " <br>"]:
+        texto = texto.replace(tag, "<br>")
+    return texto
+
+def tradutor_machina(input_text, target_lang='pt'):
     if not input_text or target_lang == 'pt': return input_text
     try:
         output = GoogleTranslator(source='pt', target=target_lang).translate(text=input_text)
-        # Sanitização para que o tradutor não engula as quebras de linha
-        for tag in ["<br>>", "< br>", "<br >", "<br ", " br>", "</br>", " <br>"]:
-            output = output.replace(tag, "<br>")
-        return output
+        return sanitizar_fiel(output)
     except: return input_text
 
-def listar_livros_reais():
-    livros = {}
-    if os.path.exists(BASE_PATH):
-        arquivos = sorted([f for f in os.listdir(BASE_PATH) if f.startswith("rol_") and f.endswith(".txt")])
-        for arq in arquivos:
-            nome = arq.replace("rol_", "").replace(".txt", "")
-            livros[nome] = arq
-    return livros if livros else {"todos os temas": "rol_todos os temas.txt"}
-
 def main():
-    st.set_page_config(layout="wide", page_title="Machina Poética Nova")
-    aplicar_estetica_v09()
+    st.set_page_config(layout="wide", page_title="Machina Poética")
+    aplicar_estetica_original()
 
-    LIVROS = listar_livros_reais()
+    # --- MAPA DE LIVROS (Recuperando a fidelidade aos arquivos) ---
+    if not os.path.exists(BASE_PATH): os.makedirs(BASE_PATH, exist_ok=True)
+    arquivos = sorted([f for f in os.listdir(BASE_PATH) if f.startswith("rol_") and f.endswith(".txt")])
+    LIVROS = {f.replace("rol_", "").replace(".txt", ""): f for f in arquivos}
+    if not LIVROS: LIVROS = {"todos os temas": "rol_todos os temas.txt"}
 
-    # --- ESTADOS (O Coração da Permanência) ---
+    # --- ESTADOS SOBERANOS ---
     if 'current_tab_idx' not in st.session_state: st.session_state.current_tab_idx = 0 
     if 'book_em_foco' not in st.session_state: st.session_state.book_em_foco = list(LIVROS.keys())[0]
     if 'tema_idx_por_book' not in st.session_state: st.session_state.tema_idx_por_book = {b: 0 for b in LIVROS}
     if 'seed_mutante' not in st.session_state: st.session_state.seed_mutante = 0
-    if 'idioma_idx' not in st.session_state: st.session_state.idioma_idx = 0
+    if 'idioma_selecionado' not in st.session_state: st.session_state.idioma_selecionado = 'Português'
 
+    # Navegação Superior (Tabs)
     PAGINAS = ["demo", "ypoemas", "eureka", "off-máquina", "books", "about"]
     aba_atual = PAGINAS[st.session_state.current_tab_idx]
-
-    # Tabs Superiores
+    
     aba_sel = stx.tab_bar(data=[stx.TabBarItemData(id=p, title=p.upper(), description="") for p in PAGINAS], default=aba_atual)
     if aba_sel and aba_sel != aba_atual:
         st.session_state.current_tab_idx = PAGINAS.index(aba_sel)
@@ -76,36 +75,39 @@ def main():
     book_foco = "todos os temas" if aba_atual == "demo" else st.session_state.book_em_foco
     
     @st.cache_data
-    def get_temas(arquivo):
+    def load_temas(arquivo):
         caminho = os.path.join(BASE_PATH, arquivo)
         if os.path.exists(caminho):
             with open(caminho, "r", encoding="utf-8") as f:
                 return [l.strip() for l in f if l.strip() and not l.startswith("[")]
         return ["Silêncio"]
 
-    temas = get_temas(LIVROS.get(book_foco, "rol_todos os temas.txt"))
+    temas = load_temas(LIVROS.get(book_foco, "rol_todos os temas.txt"))
     idx_tema = st.session_state.tema_idx_por_book.get(book_foco, 0) % len(temas)
     tema_atual = temas[idx_tema]
 
-    # --- COCKPIT (Distribuição v09) ---
+    # --- COCKPIT (A Geometria Sagrada) ---
     st.markdown("<br>", unsafe_allow_html=True)
-    c_p, c_pr, c_ra, c_ne, c_lang, c_esp = st.columns([1, 1, 1, 1, 3, 5])
+    # Colunas precisas para evitar o "misturado e bagunçado"
+    c_btn1, c_btn2, c_btn3, c_btn4, c_sel_tema, c_lang = st.columns([0.5, 0.5, 0.5, 0.5, 4, 1.5])
     
-    if c_p.button("✚"): st.session_state.seed_mutante += 1; st.rerun()
-    if c_pr.button("❰"): st.session_state.tema_idx_por_book[book_foco] = idx_tema - 1; st.rerun()
-    if c_ra.button("✱"): st.session_state.tema_idx_por_book[book_foco] = random.randint(0, len(temas)-1); st.rerun()
-    if c_ne.button("❱"): st.session_state.tema_idx_por_book[book_foco] = idx_tema + 1; st.rerun()
+    if c_btn1.button("✚"): st.session_state.seed_mutante += 1; st.rerun()
+    if c_btn2.button("❰"): st.session_state.tema_idx_por_book[book_foco] = idx_tema - 1; st.rerun()
+    if c_btn3.button("✱"): st.session_state.tema_idx_por_book[book_foco] = random.randint(0, len(temas)-1); st.rerun()
+    if c_btn4.button("❱"): st.session_state.tema_idx_por_book[book_foco] = idx_tema + 1; st.rerun()
 
-    langs = {"Português": "pt", "English": "en", "Español": "es", "Français": "fr"}
+    with c_sel_tema:
+        # Seletor de Tema largo e central
+        st.selectbox("T", temas, index=idx_tema, key=f"sel_{idx_tema}", 
+                     on_change=lambda: st.session_state.tema_idx_por_book.update({book_foco: temas.index(st.session_state[f"sel_{idx_tema}"])}),
+                     label_visibility="collapsed")
+
     with c_lang:
-        # Rádio de idiomas horizontal para manter o Cockpit baixo e limpo
-        st.session_state.idioma_idx = list(langs.keys()).index(
-            st.radio("Idiomas", list(langs.keys()), index=st.session_state.idioma_idx, 
-                     horizontal=True, label_visibility="collapsed")
-        )
-
-    # Seletor de Temas
-    st.selectbox("Tema", temas, index=idx_tema, key=f"sel_{idx_tema}", label_visibility="collapsed")
+        # O Seletor de Idiomas discreto e funcional (Selectbox, No Way Radio!)
+        idiomas = {'Português': 'pt', 'English': 'en', 'Español': 'es', 'Français': 'fr', 'Italiano': 'it', 'Deutsch': 'de'}
+        st.session_state.idioma_selecionado = st.selectbox("L", list(idiomas.keys()), 
+                                                          index=list(idiomas.keys()).index(st.session_state.idioma_selecionado),
+                                                          label_visibility="collapsed")
 
     st.markdown("---")
     
@@ -115,12 +117,10 @@ def main():
         res = gera_poema(tema_atual, str(st.session_state.seed_mutante))
         txt = ("".join(res) if isinstance(res, list) else str(res)).strip().replace("\n", "<br>")
         
-        target = list(langs.values())[st.session_state.idioma_idx]
-        txt_final = tradutor_na_marra(txt, target_lang=target)
-
+        txt_final = tradutor_machina(txt, target_lang=idiomas[st.session_state.idioma_selecionado])
         st.markdown(f'<div class="poema-box">{txt_final}</div>', unsafe_allow_html=True)
     except Exception as e:
-        st.error(f"Aguardando o Motor... ({e})")
+        st.error(f"Erro no Motor: {e}")
 
 if __name__ == "__main__":
     main()
