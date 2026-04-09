@@ -1,16 +1,13 @@
 import streamlit as st
 import extra_streamlit_components as stx
+import os
+import random
+
 try:
     from streamlit_autorefresh import st_autorefresh
     HAS_AUTO = True
 except ImportError:
     HAS_AUTO = False
-
-from deep_translator import GoogleTranslator
-from gtts import gTTS
-import io
-import os
-import random
 
 # --- CONFIGURAÇÃO DE AMBIENTE ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -53,14 +50,14 @@ def load_arts(nome_tema):
                 path = "./images/" + part_line[2] + "/"
                 break
     
-    if not os.path.exists(path): 
+    if not os.path.exists(path):
         return None
         
     arts_list = [f for f in os.listdir(path) if f.lower().endswith((".jpg", ".png", ".jpeg"))]
-    if not arts_list: 
+    if not arts_list:
         return None
         
-    if 'arts' not in st.session_state: 
+    if 'arts' not in st.session_state:
         st.session_state.arts = []
         
     image = random.choice(arts_list)
@@ -70,7 +67,7 @@ def load_arts(nome_tema):
         intentos += 1
         
     st.session_state.arts.append(image)
-    if len(st.session_state.arts) > 36: 
+    if len(st.session_state.arts) > 36:
         del st.session_state.arts[0]
         
     return path + image
@@ -91,7 +88,7 @@ def aplicar_estetica_machina():
             
             div[data-testid="stSelectbox"] {
                 width: fit-content !important;
-                min-width: 120px !important;
+                min-width: 150px !important;
                 margin: 0 auto !important;
             }
             div[data-baseweb="select"] { 
@@ -99,7 +96,14 @@ def aplicar_estetica_machina():
                 font-family: serif !important; font-size: 1.25em !important; font-weight: bold !important;
             }
             
-            .poema-box { font-family: serif; font-size: 1.5em; line-height: 1.6; white-space: pre-wrap; color: #1a1a1a; margin-top: 2rem; }
+            .poema-box { 
+                font-family: serif; 
+                font-size: 1.5em; 
+                line-height: 1.6; 
+                white-space: pre-wrap; 
+                color: #1a1a1a; 
+                margin-top: 2rem; 
+            }
         </style>
     """, unsafe_allow_html=True)
 
@@ -115,7 +119,7 @@ def main():
     st.set_page_config(layout="wide", page_title="yPoemas")
     aplicar_estetica_machina()
 
-    # --- ESTADOS ---
+    # --- INICIALIZAÇÃO DE ESTADOS ---
     if 'current_tab_idx' not in st.session_state: st.session_state.current_tab_idx = 0 
     if 'book_em_foco' not in st.session_state: st.session_state.book_em_foco = 'todos os temas'
     if 'tema_idx_por_book' not in st.session_state: st.session_state.tema_idx_por_book = {b: 0 for b in MAPA_BOOKS}
@@ -128,13 +132,11 @@ def main():
     PAGINAS_APP = ["demo", "ypoemas", "eureka", "off-máquina", "books", "comments", "about"]
     aba_atual = PAGINAS_APP[st.session_state.current_tab_idx]
 
-    # --- NAVEGAÇÃO SUPERIOR ---
     aba_clicada = stx.tab_bar(data=[stx.TabBarItemData(id=p, title=p.upper(), description="") for p in PAGINAS_APP], default=aba_atual)
     if aba_clicada and aba_clicada != aba_atual:
         st.session_state.current_tab_idx = PAGINAS_APP.index(aba_clicada)
         st.rerun()
 
-    # --- DEFINIÇÃO DE CONTEÚDO ---
     book_foco = "todos os temas" if aba_atual == "demo" else st.session_state.book_em_foco
     lista_temas = carregar_temas_cached(MAPA_BOOKS.get(book_foco, "rol_todos os temas.txt"))
     
@@ -156,19 +158,16 @@ def main():
     if c_he.button("?"): st.session_state.help_ativo = not st.session_state.get('help_ativo', False); st.rerun()
     if c_cf.button("@"): st.session_state.show_config = not st.session_state.show_config; st.rerun()
 
-    # --- LISTA DE TEMAS ---
     def troca_tema(): 
         st.session_state.tema_idx_por_book[book_foco] = lista_temas.index(st.session_state.sel_tema)
     st.selectbox("Tema", lista_temas, index=idx_tema, key="sel_tema", on_change=troca_tema, label_visibility="collapsed")
 
-    # --- PAINEL DE CONFIGURAÇÕES ---
     if st.session_state.show_config:
         with st.container(border=True):
             cfg_cols = st.columns(4)
             with cfg_cols[0]: st.selectbox("Idioma", ["PT - Português", "EN - English", "ES - Español"])
             with cfg_cols[1]: 
-                def troca_book(): 
-                    st.session_state.book_em_foco = st.session_state.sel_book
+                def troca_book(): st.session_state.book_em_foco = st.session_state.sel_book
                 st.selectbox("Livro", list(MAPA_BOOKS.keys()), index=list(MAPA_BOOKS.keys()).index(book_foco), 
                              key="sel_book", on_change=troca_book, disabled=(aba_atual=="demo"))
             with cfg_cols[2]:
@@ -180,15 +179,15 @@ def main():
 
     st.markdown("---")
 
-    # --- PALCO CENTRAL ---
+    # --- PALCO CENTRAL: RENDERIZAÇÃO LIMPA ---
     if not st.session_state.get('help_ativo', False):
         try:
-            resultado_motor = gera_poema(tema_atual, str(st.session_state.seed_mutante))
+            res_bruto = gera_poema(tema_atual, str(st.session_state.seed_mutante))
             
-            if isinstance(resultado_motor, list):
-                txt_poema = "".join(resultado_motor)
-            else:
-                txt_poema = str(resultado_motor)
+            # Unir lista e limpar quebras excessivas
+            txt_poema = "".join(res_bruto) if isinstance(res_bruto, list) else str(res_bruto)
+            while "\n\n\n" in txt_poema:
+                txt_poema = txt_poema.replace("\n\n\n", "\n\n")
 
             if st.session_state.com_imagem:
                 col_i, col_t = st.columns([1, 2])
