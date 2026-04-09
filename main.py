@@ -86,12 +86,12 @@ def aplicar_estetica_machina():
             }
             div[data-baseweb="select"] { 
                 border: none !important; background: transparent !important; 
-                font-family: serif !important; font-size: 1.2em !important; font-weight: bold !important;
+                font-family: serif !important; font-size: 1.25em !important; font-weight: bold !important;
             }
             
-            .poema-box { font-family: serif; font-size: 1.45em; line-height: 1.6; white-space: pre-wrap; color: #1a1a1a; margin-top: 2rem; }
+            .poema-box { font-family: serif; font-size: 1.5em; line-height: 1.6; white-space: pre-wrap; color: #1a1a1a; margin-top: 2rem; }
         </style>
-        """, unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
 MAPA_BOOKS = {
     "todos os temas": "rol_todos os temas.txt", "livro vivo": "rol_livro_vivo.txt", 
@@ -105,10 +105,82 @@ def main():
     st.set_page_config(layout="wide", page_title="yPoemas")
     aplicar_estetica_machina()
 
+    # --- ESTADOS ---
     if 'current_tab_idx' not in st.session_state: st.session_state.current_tab_idx = 0 
     if 'book_em_foco' not in st.session_state: st.session_state.book_em_foco = 'todos os temas'
     if 'tema_idx_por_book' not in st.session_state: st.session_state.tema_idx_por_book = {b: 0 for b in MAPA_BOOKS}
     if 'com_imagem' not in st.session_state: st.session_state.com_imagem = True
     if 'show_config' not in st.session_state: st.session_state.show_config = False
     if 'seed_mutante' not in st.session_state: st.session_state.seed_mutante = 0
-    if 'modo_auto' not in
+    if 'modo_auto' not in st.session_state: st.session_state.modo_auto = False
+    if 'vel_auto' not in st.session_state: st.session_state.vel_auto = 15
+
+    PAGINAS_APP = ["demo", "ypoemas", "eureka", "off-máquina", "books", "comments", "about"]
+    aba_atual = PAGINAS_APP[st.session_state.current_tab_idx]
+
+    # --- NAVEGAÇÃO SUPERIOR ---
+    aba_clicada = stx.tab_bar(data=[stx.TabBarItemData(id=p, title=p.upper(), description="") for p in PAGINAS_APP], default=aba_atual)
+    if aba_clicada and aba_clicada != aba_atual:
+        st.session_state.current_tab_idx = PAGINAS_APP.index(aba_clicada)
+        st.rerun()
+
+    # --- DEFINIÇÃO DE CONTEÚDO ---
+    book_foco = "todos os temas" if aba_atual == "demo" else st.session_state.book_em_foco
+    lista_temas = carregar_temas_cached(MAPA_BOOKS.get(book_foco, "rol_todos os temas.txt"))
+    
+    if aba_atual == "demo" and st.session_state.modo_auto and HAS_AUTO:
+        st_autorefresh(interval=st.session_state.vel_auto * 1000, key="auto_pilot")
+        st.session_state.tema_idx_por_book[book_foco] += 1
+
+    idx_tema = st.session_state.tema_idx_por_book.get(book_foco, 0) % len(lista_temas)
+    tema_atual = lista_temas[idx_tema]
+
+    # --- COCKPIT: SEQUÊNCIA SAGRADA ---
+    st.markdown("<br>", unsafe_allow_html=True)
+    c_l, c_p, c_pr, c_ra, c_ne, c_he, c_cf, c_r = st.columns([3, 1, 1, 1, 1, 1, 1, 3])
+    
+    if c_p.button("✚"): st.session_state.seed_mutante += 1; st.rerun()
+    if c_pr.button("❰"): st.session_state.tema_idx_por_book[book_foco] = (idx_tema - 1); st.rerun()
+    if c_ra.button("✱"): st.session_state.tema_idx_por_book[book_foco] = random.randint(0, len(lista_temas)-1); st.rerun()
+    if c_ne.button("❱"): st.session_state.tema_idx_por_book[book_foco] = (idx_tema + 1); st.rerun()
+    if c_he.button("?"): st.session_state.help_ativo = not st.session_state.get('help_ativo', False); st.rerun()
+    if c_cf.button("@"): st.session_state.show_config = not st.session_state.show_config; st.rerun()
+
+    # --- LISTA DE TEMAS (O VÃO CENTRAL) ---
+    def troca_tema(): st.session_state.tema_idx_por_book[book_foco] = lista_temas.index(st.session_state.sel_tema)
+    st.selectbox("Tema", lista_temas, index=idx_tema, key="sel_tema", on_change=troca_tema, label_visibility="collapsed")
+
+    # --- PAINEL DE CONFIGURAÇÕES (@) ---
+    if st.session_state.show_config:
+        with st.container(border=True):
+            cfg_cols = st.columns(4)
+            with cfg_cols[0]: st.selectbox("Idioma", ["PT - Português", "EN - English", "ES - Español"])
+            with cfg_cols[1]: 
+                def troca_book(): st.session_state.book_em_foco = st.session_state.sel_book
+                st.selectbox("Livro", list(MAPA_BOOKS.keys()), index=list(MAPA_BOOKS.keys()).index(book_foco), 
+                             key="sel_book", on_change=troca_book, disabled=(aba_atual=="demo"))
+            with cfg_cols[2]:
+                st.session_state.com_imagem = st.toggle("Artes", value=st.session_state.com_imagem)
+            with cfg_cols[3]:
+                if aba_atual == "demo":
+                    st.session_state.modo_auto = st.toggle("Auto", value=st.session_state.modo_auto)
+                    st.session_state.vel_auto = st.slider("Segundos", 5, 60, st.session_state.vel_auto)
+
+    st.markdown("---")
+
+    # --- PALCO CENTRAL ---
+    if not st.session_state.get('help_ativo', False):
+        try:
+            txt_poema = gera_poema(tema_atual, str(st.session_state.seed_mutante))
+            if st.session_state.com_imagem:
+                col_i, col_t = st.columns([1, 2])
+                with col_t: st.markdown(f'<div class="poema-box">{txt_poema}</div>', unsafe_allow_html=True)
+                with col_i:
+                    img_path = load_arts(tema_atual)
+                    if img_path: st.image(img_path, use_container_width=True)
+            else:
+                st.markdown(f'<div class="poema-box" style="text-align:center;">{txt_poema}</div>', unsafe_allow_html=True)
+        except Exception: st.error("A Machina encontrou um obstáculo técnico.")
+
+if __name__ == "__main__":
+    main()
