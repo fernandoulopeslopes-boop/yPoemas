@@ -5,8 +5,8 @@ import os
 import random
 from deep_translator import GoogleTranslator
 
-# CRONOLOGIA ATIVA: X=52 (ESTRUTURA DE GRADE UNIFICADA + LARGURA REAL)
-# REGRA_ZERO: Sem transbordo, sem largura mínima. Geometria por proporção real.
+# CRONOLOGIA ATIVA: X=54 (RESTAURAÇÃO DO PALCO + TEXTO FIEL + ESTÉTICA CIRÚRGICA)
+# REGRA_ZERO: Foco na hospitalidade do texto e na eliminação da "tripa" visual.
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE_PATH = os.path.join(BASE_DIR, "base")
@@ -17,7 +17,7 @@ DICI_LANG = {
     'Deutsch': 'de', 'Galego': 'gl', 'Română': 'ro'
 }
 
-def aplicar_estetica_v52():
+def aplicar_estetica_v54():
     st.markdown("""
         <style>
             header[data-testid="stHeader"], footer { visibility: hidden; height: 0px; }
@@ -31,7 +31,6 @@ def aplicar_estetica_v52():
             }
             
             [data-testid="stVerticalBlock"] > div { gap: 0rem !important; }
-            [data-testid="stElementContainer"] { margin-bottom: -1.2rem !important; }
 
             /* COCKPIT FIXO */
             .fixed-top {
@@ -39,23 +38,37 @@ def aplicar_estetica_v52():
                 background-color: white; z-index: 999;
                 border-bottom: 1px solid #f2f2f2;
                 display: flex; flex-direction: column; align-items: center;
-                padding-bottom: 12px;
+                padding-bottom: 15px;
             }
             
+            /* BOTÕES CIRCULARES */
             .stButton > button { 
-                border-radius: 50% !important; width: 36px !important; height: 38px !important; 
+                border-radius: 50% !important; width: 38px !important; height: 38px !important; 
                 background: white !important; border: 1px solid #eee !important;
             }
             
-            /* SELECTBOX: Limpeza de labels e ajustes de margem */
+            /* VISOR DE TEMAS (SELECTBOX CUSTOM) */
+            div[data-testid="stSelectbox"] {
+                margin-top: 10px !important;
+                width: 500px !important; 
+            }
             div[data-testid="stSelectbox"] label { display: none !important; }
-            div[data-testid="stSelectbox"] { margin-top: 2px !important; }
+            
+            /* Limpeza estética do Selectbox nativo */
+            div[data-testid="stSelectbox"] > div[data-baseweb="select"] > div {
+                border: none !important;
+                background-color: transparent !important;
+                box-shadow: none !important;
+                font-size: 18px !important;
+                color: #555 !important;
+                text-align: center !important;
+            }
         </style>
     """, unsafe_allow_html=True)
 
 def main():
     st.set_page_config(layout="wide", page_title="Machina Poética")
-    aplicar_estetica_v52()
+    aplicar_estetica_v54()
 
     # --- 1. ESTADOS ---
     if 'seed' not in st.session_state: st.session_state.seed = random.randint(1, 9999)
@@ -81,83 +94,43 @@ def main():
     # --- 3. COCKPIT ---
     st.markdown('<div class="fixed-top">', unsafe_allow_html=True)
     
-    # Centralização do Cockpit
-    col_l, col_c, col_r = st.columns([1, 2, 1])
-    with col_c:
-        # LINHA 1: BOTÕES (6 colunas iguais)
+    _, col_nav, _ = st.columns([1, 2, 1])
+    with col_nav:
         b_cols = st.columns(6)
-        if b_cols[0].button("✚", key="b1"): 
+        if b_cols[0].button("✚", key="x54_plus"): 
             st.session_state.seed += 1
             st.rerun()
-        if b_cols[1].button("❰", key="b2"): 
+        if b_cols[1].button("❰", key="x54_prev"): 
             st.session_state.memoria_temas[book_foco] -= 1
             st.rerun()
-        if b_cols[2].button("✱", key="b3"): 
+        if b_cols[2].button("✱", key="x54_rnd"): 
             st.session_state.seed = random.randint(1, 9999)
             st.session_state.memoria_temas[book_foco] = random.randint(0, len(lista_temas)-1)
             st.rerun()
-        if b_cols[3].button("❱", key="b4"): 
+        if b_cols[3].button("❱", key="x54_next"): 
             st.session_state.memoria_temas[book_foco] += 1
             st.rerun()
-        b_cols[4].button("?", key="b5")
-        if b_cols[5].button("@", key="b6"):
+        b_cols[4].button("?", key="x54_help")
+        if b_cols[5].button("@", key="x54_cfg"):
             st.session_state.show_config = not st.session_state.show_config
             st.rerun()
 
-        # LINHA 2: LISTA DE TEMAS (Alinhamento por proporção)
-        # Para cair sob os botões 2 e 3 de um grid de 6:
-        # Espaço 1 (botão 1) | Espaço 2 (botão 2+3) | Espaço 3 (botão 4+5+6)
-        # Proporção: [1, 2, 3]
-        s_cols = st.columns([1, 2, 3])
-        with s_cols[1]:
-            idx_tema = st.session_state.memoria_temas.get(book_foco, 0) % len(lista_temas)
-            st.selectbox("T", lista_temas, index=idx_tema, key=f"v52_{idx_tema}", 
-                         on_change=lambda: st.session_state.memoria_temas.update({book_foco: lista_temas.index(st.session_state[f"v52_{idx_tema}"])}),
-                         label_visibility="collapsed")
+    idx_tema = st.session_state.memoria_temas.get(book_foco, 0) % len(lista_temas)
+    st.selectbox("Visor", lista_temas, index=idx_tema, key=f"v54_sel", 
+                 on_change=lambda: st.session_state.memoria_temas.update({book_foco: lista_temas.index(st.session_state["v54_sel"])}),
+                 label_visibility="collapsed")
 
-    # ABAS
     PAGINAS = ["demo", "ypoemas", "eureka", "off-máquina", "books", "about"]
     aba_sel = stx.tab_bar(data=[stx.TabBarItemData(id=p, title=p.upper(), description="") for p in PAGINAS], default=st.session_state.current_tab)
-    
     if aba_sel and aba_sel != st.session_state.current_tab:
         st.session_state.current_tab = aba_sel
         st.rerun()
 
     if st.session_state.show_config:
-        _, c_cfg, _ = st.columns([1, 1, 1])
-        with c_cfg:
-            st.session_state.lang = st.selectbox("Idioma", list(DICI_LANG.keys()), index=list(DICI_LANG.keys()).index(st.session_state.lang))
+        st.session_state.lang = st.selectbox("Idioma", list(DICI_LANG.keys()), index=list(DICI_LANG.keys()).index(st.session_state.lang))
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # --- 4. PALCO ---
-    st.markdown('<div style="margin-top: 155px;"></div>', unsafe_allow_html=True)
+    # --- 4. PALCO (RESTORED PRINT) ---
+    st.markdown('<div style="margin-top: 170px;"></div>', unsafe_allow_html=True)
     
-    if st.session_state.current_tab in ["demo", "ypoemas"]:
-        try:
-            from lay_2_ypo import gera_poema
-            res = gera_poema(lista_temas[idx_tema], str(st.session_state.seed))
-            txt = "".join(res) if isinstance(res, list) else str(res)
-            
-            if st.session_state.lang != 'Português':
-                txt = GoogleTranslator(source='pt', target=DICI_LANG[st.session_state.lang]).translate(text=txt)
-
-            html_content = f"""
-            <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville&display=swap" rel="stylesheet">
-            <style>
-                body {{ margin: 0; padding: 0; background: white; display: flex; justify-content: center; overflow: hidden; }}
-                .stage {{ width: 780px; margin-top: 0px; }}
-                pre {{
-                    font-family: 'Libre Baskerville', serif; font-size: 21px; line-height: 1.6;
-                    color: #1a1a1a; border-left: 3px solid #111; padding: 0px 45px;
-                    white-space: pre-wrap; margin: 0;
-                }}
-            </style>
-            <div class="stage"><pre>{txt}</pre></div>
-            """
-            components.html(html_content, height=1200, scrolling=False)
-            
-        except Exception as e:
-            st.error(f"Integridade: {e}")
-
-if __name__ == "__main__":
-    main()
+    if st.session_state.current
