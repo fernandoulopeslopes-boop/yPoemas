@@ -27,7 +27,6 @@ def load_images_list():
 def load_arts(nome_tema):
     path = "./images/machina/"
     path_list = load_images_list()
-    
     for line in path_list:
         if line.startswith(nome_tema):
             this_line = line.strip("\n")
@@ -35,45 +34,30 @@ def load_arts(nome_tema):
             if nome_tema == part_line[0]:
                 path = "./images/" + part_line[2] + "/"
                 break
-
-    if not os.path.exists(path):
-        return None
-
+    if not os.path.exists(path): return None
     arts_list = [f for f in os.listdir(path) if f.lower().endswith((".jpg", ".png", ".jpeg"))]
-    if not arts_list:
-        return None
-
-    if 'arts' not in st.session_state:
-        st.session_state.arts = []
-
+    if not arts_list: return None
+    if 'arts' not in st.session_state: st.session_state.arts = []
     sorte = random.randrange(0, len(arts_list))
     image = arts_list[sorte]
-
     if image in st.session_state.arts:
         intentos = 0
         while image in st.session_state.arts and intentos < 10:
             sorte = random.randrange(0, len(arts_list))
             image = arts_list[sorte]
             intentos += 1
-    
     st.session_state.arts.append(image)
-    if len(st.session_state.arts) > 36:
-        del st.session_state.arts[0]
-
+    if len(st.session_state.arts) > 36: del st.session_state.arts[0]
     return path + image
 
 def normalizar_e_traduzir(conteudo, idioma_nome):
     if not conteudo: return ""
     texto_bruto = "\n".join(conteudo) if isinstance(conteudo, list) else conteudo
     cod_target = idioma_nome.split(" - ")[0].lower()
-    
-    if cod_target == "pt":
-        return texto_bruto.strip()
+    if cod_target == "pt": return texto_bruto.strip()
     try:
-        texto_final = GoogleTranslator(source='auto', target=cod_target).translate(texto_bruto)
-        return texto_final.replace('\r\n', '\n').strip()
-    except: 
-        return texto_bruto.strip()
+        return GoogleTranslator(source='auto', target=cod_target).translate(texto_bruto).replace('\r\n', '\n').strip()
+    except: return texto_bruto.strip()
 
 def aplicar_estetica_machina():
     st.markdown("""
@@ -81,79 +65,35 @@ def aplicar_estetica_machina():
             header[data-testid="stHeader"] { visibility: hidden; height: 0px; }
             footer { visibility: hidden; }
             [data-testid="stSidebar"] { display: none; }
-            .block-container { 
-                padding-top: 1.5rem !important; 
-                padding-left: 5% !important; 
-                padding-right: 5% !important; 
-                max-width: 100% !important;
-            }
-            .titulo-poema {
-                font-family: serif;
-                font-size: 2.2em;
-                font-weight: bold;
-                color: #333;
-                margin-bottom: 1.5rem;
-                text-align: center;
-                width: 100%;
-            }
-            .poema-box {
-                font-family: serif; 
-                font-size: 1.4em;
-                line-height: 1.6;
-                color: #1a1a1a;
-                background-color: transparent;
-                white-space: pre-wrap;
-                text-align: left !important;
-            }
-            div.stButton > button {
-                border-radius: 50% !important;
-                width: 48px !important;
-                height: 48px !important;
-                border: 1px solid #ddd !important;
-                background-color: white !important;
-                margin: 0 auto !important;
-                display: block;
-            }
-            [data-testid="column"] {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-            .stSelectbox, .stToggle {
-                width: 100% !important;
-                min-width: 120px;
-            }
+            .block-container { padding-top: 1.5rem !important; padding-left: 5% !important; padding-right: 5% !important; max-width: 100% !important; }
+            .titulo-poema { font-family: serif; font-size: 2.2em; font-weight: bold; color: #333; margin-bottom: 1.5rem; text-align: center; width: 100%; }
+            .poema-box { font-family: serif; font-size: 1.4em; line-height: 1.6; color: #1a1a1a; white-space: pre-wrap; text-align: left !important; }
+            div.stButton > button { border-radius: 50% !important; width: 48px !important; height: 48px !important; border: 1px solid #ddd !important; background-color: white !important; margin: 0 auto !important; display: block; }
+            [data-testid="column"] { display: flex; align-items: center; justify-content: center; }
+            .stSelectbox, .stToggle { width: 100% !important; min-width: 120px; }
             hr { margin: 1em 0 !important; }
         </style>
     """, unsafe_allow_html=True)
 
 def limpar_para_audio(t):
     ruidos = ['"', '*', '_', '[', ']', '(', ')', '«', '»', '—']
-    for r in ruidos:
-        t = t.replace(r, '')
+    for r in ruidos: t = t.replace(r, '')
     return t.strip()
 
 def executar_som(texto, idioma_nome):
     try:
         texto_limpo = limpar_para_audio(texto)
-        cod_lang = idioma_nome.split(" - ")[0].lower()
-        tts = gTTS(text=texto_limpo, lang=cod_lang)
+        tts = gTTS(text=texto_limpo, lang=idioma_nome.split(" - ")[0].lower())
         fp = io.BytesIO()
         tts.write_to_fp(fp)
         return fp
     except: return None
 
-# --- MAPA CORRIGIDO (rol_todos os temas.txt) ---
 MAPA_BOOKS = {
-    "todos os temas": "rol_todos os temas.txt", 
-    "livro vivo": "rol_livro_vivo.txt", 
-    "ensaios": "rol_ensaios.txt", 
-    "jocosos": "rol_jocosos.txt", 
-    "variações": "rol_variações.txt", 
-    "metalinguagem": "rol_metalinguagem.txt",
-    "sociais": "rol_sociais.txt", 
-    "outros autores": "rol_outros autores.txt",
-    "todos os signos": "rol_todos os signos.txt", 
+    "todos os temas": "rol_todos os temas.txt", "livro vivo": "rol_livro_vivo.txt", 
+    "ensaios": "rol_ensaios.txt", "jocosos": "rol_jocosos.txt", "variações": "rol_variações.txt", 
+    "metalinguagem": "rol_metalinguagem.txt", "sociais": "rol_sociais.txt", 
+    "outros autores": "rol_outros autores.txt", "todos os signos": "rol_todos os signos.txt", 
     "temas mini": "rol_temas_mini.txt"
 }
 
@@ -187,40 +127,34 @@ def main():
     if 'com_som' not in st.session_state: st.session_state.com_som = False
     if 'seed_eureka' not in st.session_state: st.session_state.seed_eureka = 0
     if 'help_ativo' not in st.session_state: st.session_state.help_ativo = False
-    if 'arts' not in st.session_state: st.session_state.arts = []
     if 'tema_idx_por_book' not in st.session_state: st.session_state.tema_idx_por_book = {b: 0 for b in MAPA_BOOKS}
 
-    # --- ABAS (DEMO OK) ---
     PAGINAS_APP = ["demo", "ypoemas", "eureka", "off-máquina", "books", "comments", "about"]
     aba_atual = PAGINAS_APP[st.session_state.current_tab_idx]
 
+    # --- ABAS ---
     aba_clicada = stx.tab_bar(data=[stx.TabBarItemData(id=p, title=p.upper(), description="") for p in PAGINAS_APP], default=aba_atual)
-    if aba_clicada != aba_atual:
+    if aba_clicada and aba_clicada != aba_atual:
         st.session_state.current_tab_idx = PAGINAS_APP.index(aba_clicada)
         st.rerun()
 
-    # Lógica DEMO: Força pool total
+    # Forçar Livro na DEMO
     book_em_foco = "todos os temas" if aba_atual == "demo" else st.session_state.book_em_foco
-    
     temas_do_livro = carregar_temas(book_em_foco)
+    
+    # Índice Seguro
     idx_atual = st.session_state.tema_idx_por_book.get(book_em_foco, 0) % len(temas_do_livro)
     tema_selecionado = temas_do_livro[idx_atual]
 
     # --- NAVEGAÇÃO ---
     _, c_plus, c_prev, c_rand, c_next, c_help, _ = st.columns([2, 1, 1, 1, 1, 1, 2])
-    
-    if c_plus.button("✚", help="gera novo yPoema"): 
-        st.session_state.seed_eureka += 1; st.rerun()
-    if c_prev.button("❰", help="Página anterior"): 
-        st.session_state.tema_idx_por_book[book_em_foco] = (idx_atual - 1); st.rerun()
-    if c_rand.button("✱", help="Tema aleatório"): 
-        st.session_state.tema_idx_por_book[book_em_foco] = random.randint(0, len(temas_do_livro)-1); st.rerun()
-    if c_next.button("❱", help="Próxima página"): 
-        st.session_state.tema_idx_por_book[book_em_foco] = (idx_atual + 1); st.rerun()
-    if c_help.button("?", help="ajuda"): 
-        st.session_state.help_ativo = not st.session_state.help_ativo; st.rerun()
+    if c_plus.button("✚"): st.session_state.seed_eureka += 1; st.rerun()
+    if c_prev.button("❰"): st.session_state.tema_idx_por_book[book_em_foco] = (idx_atual - 1); st.rerun()
+    if c_rand.button("✱"): st.session_state.tema_idx_por_book[book_em_foco] = random.randint(0, len(temas_do_livro)-1); st.rerun()
+    if c_next.button("❱"): st.session_state.tema_idx_por_book[book_em_foco] = (idx_atual + 1); st.rerun()
+    if c_help.button("?"): st.session_state.help_ativo = not st.session_state.help_ativo; st.rerun()
 
-    # --- COCKPIT ---
+    # --- COCKPIT (Ajustado para evitar loops) ---
     _, col_arte, col_idioma, col_livro, col_tema, col_som, _ = st.columns([0.5, 1, 2, 2, 2, 1, 0.5])
     
     with col_arte:
@@ -228,15 +162,16 @@ def main():
     with col_idioma:
         idioma = st.selectbox("Idioma", LISTA_IDIOMAS, label_visibility="collapsed")
     with col_livro:
-        novo_book = st.selectbox("Livro", list(MAPA_BOOKS.keys()), index=list(MAPA_BOOKS.keys()).index(book_em_foco), label_visibility="collapsed")
-        if novo_book != book_em_foco: 
-            st.session_state.book_em_foco = novo_book
-            st.rerun()
+        # Usamos callback para mudar o livro sem rerun manual direto no loop
+        def mudar_livro(): st.session_state.book_em_foco = st.session_state.new_book
+        st.selectbox("Livro", list(MAPA_BOOKS.keys()), 
+                     index=list(MAPA_BOOKS.keys()).index(book_em_foco), 
+                     key="new_book", on_change=mudar_livro, label_visibility="collapsed")
     with col_tema:
-        tema_sel = st.selectbox("Tema", temas_do_livro, index=idx_atual, label_visibility="collapsed")
-        if tema_sel != tema_selecionado: 
-            st.session_state.tema_idx_por_book[book_em_foco] = temas_do_livro.index(tema_sel)
-            st.rerun()
+        # Usamos callback para mudar o tema
+        def mudar_tema(): st.session_state.tema_idx_por_book[book_em_foco] = temas_do_livro.index(st.session_state.new_tema)
+        st.selectbox("Tema", temas_do_livro, index=idx_atual, 
+                     key="new_tema", on_change=mudar_tema, label_visibility="collapsed")
     with col_som:
         st.session_state.com_som = st.toggle("Som", value=st.session_state.com_som)
 
