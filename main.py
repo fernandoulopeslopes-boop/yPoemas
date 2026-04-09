@@ -5,8 +5,8 @@ import os
 import random
 from deep_translator import GoogleTranslator
 
-# CRONOLOGIA ATIVA: X=47 (CORREÇÃO SINTÁTICA + ESTABILIZAÇÃO DO PALCO)
-# REGRA_ZERO: Foco na execução sem erros de compilação.
+# CRONOLOGIA ATIVA: X=48 (RESTAURAÇÃO DE ESCOPO + ESTABILIDADE DE ABAS)
+# REGRA_ZERO: Foco na eliminação do NameError e correção da geometria.
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE_PATH = os.path.join(BASE_DIR, "base")
@@ -17,7 +17,7 @@ DICI_LANG = {
     'Deutsch': 'de', 'Galego': 'gl', 'Română': 'ro'
 }
 
-def aplicar_estetica_v47():
+def aplicar_estetica_v48():
     st.markdown("""
         <style>
             header[data-testid="stHeader"], footer { visibility: hidden; height: 0px; }
@@ -55,9 +55,8 @@ def aplicar_estetica_v47():
     """, unsafe_allow_html=True)
 
 def main():
-    # CORREÇÃO: Parêntese fechado e posição inicial garantida
     st.set_page_config(layout="wide", page_title="Machina Poética")
-    aplicar_estetica_v47()
+    aplicar_estetica_v48()
 
     # --- 1. ESTADOS ---
     if 'seed' not in st.session_state: st.session_state.seed = random.randint(1, 9999)
@@ -108,12 +107,15 @@ def main():
         with s_cols[1]: 
             idx_tema = st.session_state.memoria_temas.get(book_foco, 0) % len(lista_temas)
             st.markdown('<div style="width:340%; margin-left:0px;">', unsafe_allow_html=True)
-            st.selectbox("T", lista_temas, index=idx_tema, key=f"v47_{idx_tema}", 
-                         on_change=lambda: st.session_state.memoria_temas.update({book_foco: lista_temas.index(st.session_state[f"v47_{idx_tema}"])}),
+            st.selectbox("T", lista_temas, index=idx_tema, key=f"v48_{idx_tema}", 
+                         on_change=lambda: st.session_state.memoria_temas.update({book_foco: lista_temas.index(st.session_state[f"v48_{idx_tema}"])}),
                          label_visibility="collapsed")
             st.markdown('</div>', unsafe_allow_html=True)
 
+    # RESTAURAÇÃO DA LISTA DE ABAS (CORREÇÃO DO NAMERROR)
+    PAGINAS = ["demo", "ypoemas", "eureka", "off-máquina", "books", "about"]
     aba_sel = stx.tab_bar(data=[stx.TabBarItemData(id=p, title=p.upper(), description="") for p in PAGINAS], default=st.session_state.current_tab)
+    
     if aba_sel and aba_sel != st.session_state.current_tab:
         st.session_state.current_tab = aba_sel
         st.rerun()
