@@ -132,17 +132,13 @@ def main():
     PAGINAS_APP = ["demo", "ypoemas", "eureka", "off-máquina", "books", "comments", "about"]
     aba_atual = PAGINAS_APP[st.session_state.current_tab_idx]
 
-    # --- ABAS ---
     aba_clicada = stx.tab_bar(data=[stx.TabBarItemData(id=p, title=p.upper(), description="") for p in PAGINAS_APP], default=aba_atual)
     if aba_clicada and aba_clicada != aba_atual:
         st.session_state.current_tab_idx = PAGINAS_APP.index(aba_clicada)
         st.rerun()
 
-    # Forçar Livro na DEMO
     book_em_foco = "todos os temas" if aba_atual == "demo" else st.session_state.book_em_foco
     temas_do_livro = carregar_temas(book_em_foco)
-    
-    # Índice Seguro
     idx_atual = st.session_state.tema_idx_por_book.get(book_em_foco, 0) % len(temas_do_livro)
     tema_selecionado = temas_do_livro[idx_atual]
 
@@ -154,52 +150,47 @@ def main():
     if c_next.button("❱"): st.session_state.tema_idx_por_book[book_em_foco] = (idx_atual + 1); st.rerun()
     if c_help.button("?"): st.session_state.help_ativo = not st.session_state.help_ativo; st.rerun()
 
-    # --- COCKPIT (Ajustado para evitar loops) ---
+    # --- COCKPIT ---
     _, col_arte, col_idioma, col_livro, col_tema, col_som, _ = st.columns([0.5, 1, 2, 2, 2, 1, 0.5])
-    
-    with col_arte:
-        st.session_state.com_imagem = st.toggle("Arte", value=st.session_state.com_imagem)
-    with col_idioma:
-        idioma = st.selectbox("Idioma", LISTA_IDIOMAS, label_visibility="collapsed")
+    with col_arte: st.session_state.com_imagem = st.toggle("Arte", value=st.session_state.com_imagem)
+    with col_idioma: idioma = st.selectbox("Idioma", LISTA_IDIOMAS, label_visibility="collapsed")
     with col_livro:
-        # Usamos callback para mudar o livro sem rerun manual direto no loop
         def mudar_livro(): st.session_state.book_em_foco = st.session_state.new_book
-        st.selectbox("Livro", list(MAPA_BOOKS.keys()), 
-                     index=list(MAPA_BOOKS.keys()).index(book_em_foco), 
-                     key="new_book", on_change=mudar_livro, label_visibility="collapsed")
+        st.selectbox("Livro", list(MAPA_BOOKS.keys()), index=list(MAPA_BOOKS.keys()).index(book_em_foco), key="new_book", on_change=mudar_livro, label_visibility="collapsed")
     with col_tema:
-        # Usamos callback para mudar o tema
         def mudar_tema(): st.session_state.tema_idx_por_book[book_em_foco] = temas_do_livro.index(st.session_state.new_tema)
-        st.selectbox("Tema", temas_do_livro, index=idx_atual, 
-                     key="new_tema", on_change=mudar_tema, label_visibility="collapsed")
-    with col_som:
-        st.session_state.com_som = st.toggle("Som", value=st.session_state.com_som)
+        st.selectbox("Tema", temas_do_livro, index=idx_atual, key="new_tema", on_change=mudar_tema, label_visibility="collapsed")
+    with col_som: st.session_state.com_som = st.toggle("Som", value=st.session_state.com_som)
 
     st.markdown("---")
 
-    # --- PALCO CENTRAL ---
+    # --- PALCO CENTRAL (Try/Except Adicionado) ---
     if not st.session_state.help_ativo:
-        semente = st.session_state.seed_eureka if aba_atual == "eureka" else ""
-        poema = gera_poema(tema_selecionado, semente)
-        txt = normalizar_e_traduzir(poema, idioma)
+        try:
+            semente = st.session_state.seed_eureka if aba_atual == "eureka" else ""
+            poema = gera_poema(tema_selecionado, semente)
+            txt = normalizar_e_traduzir(poema, idioma)
+            
+            if st.session_state.com_som:
+                audio_fp = executar_som(txt, idioma)
+                if audio_fp: st.audio(audio_fp, format='audio/mp3')
 
-        if st.session_state.com_som:
-            audio_fp = executar_som(txt, idioma)
-            if audio_fp: st.audio(audio_fp, format='audio/mp3')
-
-        if st.session_state.com_imagem:
-            col_img, col_txt = st.columns([1, 2])
-            with col_txt:
-                st.markdown(f'<div class="titulo-poema">{tema_selecionado}</div>', unsafe_allow_html=True)
-                st.markdown(f'<div class="poema-box">{txt}</div>', unsafe_allow_html=True)
-            with col_img:
-                caminho_arte = load_arts(tema_selecionado)
-                if caminho_arte: st.image(caminho_arte, width='stretch')
-        else:
-            _, col_central, _ = st.columns([1, 4, 1])
-            with col_central:
-                st.markdown(f'<div class="titulo-poema">{tema_selecionado}</div>', unsafe_allow_html=True)
-                st.markdown(f'<div class="poema-box">{txt}</div>', unsafe_allow_html=True)
+            if st.session_state.com_imagem:
+                col_img, col_txt = st.columns([1, 2])
+                with col_txt:
+                    st.markdown(f'<div class="titulo-poema">{tema_selecionado}</div>', unsafe_allow_html=True)
+                    st.markdown(f'<div class="poema-box">{txt}</div>', unsafe_allow_html=True)
+                with col_img:
+                    caminho_arte = load_arts(tema_selecionado)
+                    if caminho_arte: st.image(caminho_arte, width='stretch')
+            else:
+                _, col_central, _ = st.columns([1, 4, 1])
+                with col_central:
+                    st.markdown(f'<div class="titulo-poema">{tema_selecionado}</div>', unsafe_allow_html=True)
+                    st.markdown(f'<div class="poema-box">{txt}</div>', unsafe_allow_html=True)
+        except Exception as e:
+            st.error(f"A Machina encontrou um descompasso no tema '{tema_selecionado}'. Verifique os arquivos na pasta /base.")
+            st.info("Dica: Isso ocorre quando a linha 7 do arquivo de suporte do tema está vazia ou corrompida.")
     else:
         path_doc = os.path.join(BASE_DIR, "md_files", f"MANUAL_{aba_atual.upper()}.md")
         if os.path.exists(path_doc):
