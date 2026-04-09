@@ -5,8 +5,8 @@ import os
 import random
 from deep_translator import GoogleTranslator
 
-# CRONOLOGIA ATIVA: X=54 (RESTAURAÇÃO DO PALCO + TEXTO FIEL + ESTÉTICA CIRÚRGICA)
-# REGRA_ZERO: Foco na hospitalidade do texto e na eliminação da "tripa" visual.
+# CRONOLOGIA ATIVA: X=56 (CORREÇÃO DE ATRIBUTO + ESTABILIDADE DO ESTADO)
+# REGRA_ZERO: Foco na precisão nominal. Session State blindado.
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE_PATH = os.path.join(BASE_DIR, "base")
@@ -17,13 +17,12 @@ DICI_LANG = {
     'Deutsch': 'de', 'Galego': 'gl', 'Română': 'ro'
 }
 
-def aplicar_estetica_v54():
+def aplicar_estetica_v56():
     st.markdown("""
         <style>
             header[data-testid="stHeader"], footer { visibility: hidden; height: 0px; }
             [data-testid="stSidebar"] { display: none; }
             
-            /* EXTIRPAÇÃO DO BLOCO SUPERIOR */
             .main .block-container {
                 padding-top: 0rem !important;
                 padding-bottom: 0rem !important;
@@ -32,7 +31,6 @@ def aplicar_estetica_v54():
             
             [data-testid="stVerticalBlock"] > div { gap: 0rem !important; }
 
-            /* COCKPIT FIXO */
             .fixed-top {
                 position: fixed; top: 0; left: 0; width: 100%;
                 background-color: white; z-index: 999;
@@ -41,20 +39,17 @@ def aplicar_estetica_v54():
                 padding-bottom: 15px;
             }
             
-            /* BOTÕES CIRCULARES */
             .stButton > button { 
                 border-radius: 50% !important; width: 38px !important; height: 38px !important; 
                 background: white !important; border: 1px solid #eee !important;
             }
             
-            /* VISOR DE TEMAS (SELECTBOX CUSTOM) */
             div[data-testid="stSelectbox"] {
                 margin-top: 10px !important;
                 width: 500px !important; 
             }
             div[data-testid="stSelectbox"] label { display: none !important; }
             
-            /* Limpeza estética do Selectbox nativo */
             div[data-testid="stSelectbox"] > div[data-baseweb="select"] > div {
                 border: none !important;
                 background-color: transparent !important;
@@ -68,7 +63,7 @@ def aplicar_estetica_v54():
 
 def main():
     st.set_page_config(layout="wide", page_title="Machina Poética")
-    aplicar_estetica_v54()
+    aplicar_estetica_v56()
 
     # --- 1. ESTADOS ---
     if 'seed' not in st.session_state: st.session_state.seed = random.randint(1, 9999)
@@ -97,27 +92,27 @@ def main():
     _, col_nav, _ = st.columns([1, 2, 1])
     with col_nav:
         b_cols = st.columns(6)
-        if b_cols[0].button("✚", key="x54_plus"): 
+        if b_cols[0].button("✚", key="x56_plus"): 
             st.session_state.seed += 1
             st.rerun()
-        if b_cols[1].button("❰", key="x54_prev"): 
+        if b_cols[1].button("❰", key="x56_prev"): 
             st.session_state.memoria_temas[book_foco] -= 1
             st.rerun()
-        if b_cols[2].button("✱", key="x54_rnd"): 
+        if b_cols[2].button("✱", key="x56_rnd"): 
             st.session_state.seed = random.randint(1, 9999)
             st.session_state.memoria_temas[book_foco] = random.randint(0, len(lista_temas)-1)
             st.rerun()
-        if b_cols[3].button("❱", key="x54_next"): 
+        if b_cols[3].button("❱", key="x56_next"): 
             st.session_state.memoria_temas[book_foco] += 1
             st.rerun()
-        b_cols[4].button("?", key="x54_help")
-        if b_cols[5].button("@", key="x54_cfg"):
+        b_cols[4].button("?", key="x56_help")
+        if b_cols[5].button("@", key="x56_cfg"):
             st.session_state.show_config = not st.session_state.show_config
             st.rerun()
 
     idx_tema = st.session_state.memoria_temas.get(book_foco, 0) % len(lista_temas)
-    st.selectbox("Visor", lista_temas, index=idx_tema, key=f"v54_sel", 
-                 on_change=lambda: st.session_state.memoria_temas.update({book_foco: lista_temas.index(st.session_state["v54_sel"])}),
+    st.selectbox("Visor", lista_temas, index=idx_tema, key=f"v56_sel", 
+                 on_change=lambda: st.session_state.memoria_temas.update({book_foco: lista_temas.index(st.session_state["v56_sel"])}),
                  label_visibility="collapsed")
 
     PAGINAS = ["demo", "ypoemas", "eureka", "off-máquina", "books", "about"]
@@ -130,8 +125,34 @@ def main():
         st.session_state.lang = st.selectbox("Idioma", list(DICI_LANG.keys()), index=list(DICI_LANG.keys()).index(st.session_state.lang))
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # --- 4. PALCO (RESTORED PRINT) ---
+    # --- 4. PALCO (ATTRIBUTE CORRIGIDO) ---
     st.markdown('<div style="margin-top: 170px;"></div>', unsafe_allow_html=True)
     
-if st.session_state.current:
-    pass
+    if st.session_state.current_tab in ["demo", "ypoemas"]:
+        try:
+            from lay_2_ypo import gera_poema
+            res = gera_poema(lista_temas[idx_tema], str(st.session_state.seed))
+            txt = "".join(res) if isinstance(res, list) else str(res)
+            
+            if st.session_state.lang != 'Português':
+                txt = GoogleTranslator(source='pt', target=DICI_LANG[st.session_state.lang]).translate(text=txt)
+
+            html_content = f"""
+            <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville&display=swap" rel="stylesheet">
+            <style>
+                body {{ margin: 0; padding: 0; background: white; display: flex; justify-content: center; overflow-x: hidden; }}
+                .stage {{ width: 780px; padding-top: 20px; }}
+                pre {{
+                    font-family: 'Libre Baskerville', serif; font-size: 21px; line-height: 1.6;
+                    color: #1a1a1a; border-left: 3px solid #111; padding: 0px 45px;
+                    white-space: pre-wrap; word-wrap: break-word; margin: 0;
+                }}
+            </style>
+            <div class="stage"><pre>{txt}</pre></div>
+            """
+            components.html(html_content, height=1200, scrolling=False)
+        except Exception as e:
+            st.error(f"Integridade: {e}")
+
+if __name__ == "__main__":
+    main()
