@@ -3,9 +3,7 @@ import extra_streamlit_components as stx
 import os
 import random
 
-# --- CONTROLE DE CRONOLOGIA (X=10) ---
-# copia_menos_1: v0_stable_render (2026-04-08)
-# copia_menos_2: v0_stable_sync (2026-04-08)
+# CRONOLOGIA ATIVA: X=10 (v1.1 - Fix Renderização de Quebras)
 
 try:
     from streamlit_autorefresh import st_autorefresh
@@ -13,7 +11,6 @@ try:
 except ImportError:
     HAS_AUTO = False
 
-# --- AMBIENTE ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # --- MOTOR ---
@@ -72,14 +69,28 @@ def aplicar_estetica_machina():
             header[data-testid="stHeader"], footer { visibility: hidden; height: 0px; }
             [data-testid="stSidebar"] { display: none; }
             .block-container { padding-top: 1rem !important; max-width: 100% !important; }
+            
             div[data-testid="column"] { display: flex; justify-content: center; align-items: center; }
+            
             .stButton > button { 
                 border-radius: 50% !important; width: 42px !important; height: 42px !important; 
                 border: 1px solid #eee !important; background: white !important; color: #555 !important;
             }
+            
             div[data-testid="stSelectbox"] { width: fit-content !important; min-width: 250px !important; margin: 0 auto !important; }
             div[data-baseweb="select"] { border: none !important; background: transparent !important; font-family: serif !important; font-size: 1.4em !important; font-weight: bold !important; }
-            .poema-box { font-family: serif; font-size: 1.6em; line-height: 1.6; white-space: pre-wrap; color: #1a1a1a; margin-top: 2rem; }
+            
+            /* SOBERANO: Garante que as quebras de linha vinda do Python sejam respeitadas */
+            .poema-box { 
+                font-family: serif; 
+                font-size: 1.6em; 
+                line-height: 1.7; 
+                white-space: pre-wrap !important; 
+                word-wrap: break-word;
+                color: #1a1a1a; 
+                margin-top: 2rem; 
+                padding: 10px;
+            }
         </style>
     """, unsafe_allow_html=True)
 
@@ -120,7 +131,6 @@ def main():
         st_autorefresh(interval=st.session_state.vel_auto * 1000, key="auto_pilot")
         st.session_state.tema_idx_por_book[book_foco] += 1
 
-    # Índice Soberano (Protege a sincronia)
     idx_tema = st.session_state.tema_idx_por_book.get(book_foco, 0) % len(lista_temas)
     tema_atual = lista_temas[idx_tema]
 
@@ -156,16 +166,24 @@ def main():
 
     st.markdown("---")
 
-    # --- PALCO (Renderização Resgatada) ---
+    # --- PALCO CENTRAL ---
     if not st.session_state.get('help_ativo', False):
         try:
             res_bruto = gera_poema(tema_atual, str(st.session_state.seed_mutante))
-            # join crítico para manter \n
-            txt_poema = "".join(res_bruto) if isinstance(res_bruto, list) else str(res_bruto)
             
+            # UNE A LISTA SEM PERDER OS \n
+            if isinstance(res_bruto, list):
+                txt_poema = "".join(res_bruto)
+            else:
+                txt_poema = str(res_bruto)
+            
+            # LIMPEZA DE SEGURANÇA (Opcional, mas mantém o esmero)
+            txt_poema = txt_poema.strip()
+
             if st.session_state.com_imagem:
                 col_i, col_t = st.columns([1, 2])
-                with col_t: st.markdown(f'<div class="poema-box">{txt_poema}</div>', unsafe_allow_html=True)
+                with col_t: 
+                    st.markdown(f'<div class="poema-box">{txt_poema}</div>', unsafe_allow_html=True)
                 with col_i:
                     img_path = load_arts(tema_atual)
                     if img_path: st.image(img_path, use_container_width=True)
@@ -175,4 +193,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
