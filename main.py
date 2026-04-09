@@ -99,7 +99,7 @@ def main():
     st.set_page_config(page_title="yPoemas", layout="wide")
     
     # Header corrigido (sem f-string incompleta)
-    st.write(f"### ⚫ Machina: {st.session_state.lang.upper()}")
+    # st.write(f"### ⚫ Machina: {st.session_state.lang.upper()}")
 
 if __name__ == "__main__":
     main()
