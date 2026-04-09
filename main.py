@@ -133,4 +133,4 @@ def main():
     # --- 4. PALCO (RESTORED PRINT) ---
     st.markdown('<div style="margin-top: 170px;"></div>', unsafe_allow_html=True)
     
-    if st.session_state.current
+    if st.session_state.current:
