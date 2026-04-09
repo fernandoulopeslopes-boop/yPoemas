@@ -1,6 +1,5 @@
 import streamlit as st
 from deep_translator import GoogleTranslator
-import re
 
 # --- PROTOCOLO PTC: MANUTENÇÃO DO ESTADO ---
 if 'lang' not in st.session_state:
@@ -13,17 +12,19 @@ def translate(input_text):
     if st.session_state.lang == "pt":
         return input_text
 
-    # Simulação da checagem de internet (conforme seu bloco)
-    if not have_internet():
-        st.session_state.lang = "pt"
-        return input_text
+    # Função have_internet deve existir no seu ambiente global
+    try:
+        if not have_internet():
+            st.session_state.lang = "pt"
+            return input_text
+    except NameError:
+        pass # Mantém o fluxo se a função não estiver definida ainda
 
     try:
-        output_text = GoogleTranslator(
-            source="pt", target=st.session_state.lang
-        ).translate(text=input_text)
+        translator = GoogleTranslator(source="pt", target=st.session_state.lang)
+        output_text = translator.translate(text=input_text)
 
-        # Limpezas manuais específicas (conforme seu bloco #1)
+        # Limpezas manuais (conforme bloco #1 original)
         output_text = output_text.replace("<br>>", "<br>")
         output_text = output_text.replace("< br>", "<br>")
         output_text = output_text.replace("<br >", "<br>")
@@ -31,20 +32,17 @@ def translate(input_text):
         output_text = output_text.replace(" br>", "<br>")
         return output_text
     except:
-        return translate("Arquivo muito grande para ser traduzido.")
+        return "Arquivo muito grande para ser traduzido."
 
 # --- BLOCO #3: SANITIZAÇÃO PARA VOZ ---
 def talk_fala(text):
-    # Limpeza para a voz não ler tags (conforme seu bloco #3)
     text_clean = text.replace("<br>", " ").replace("< br>", "").replace("<br >", "").replace("<br/>", " ")
     return text_clean
 
-# --- LÓGICA DE EXIBIÇÃO E FORMATAÇÃO (BLOCO #2 e #4) ---
+# --- BLOCO #2 e #4: FORMATAÇÃO ---
 def formatar_poema(raw_text, dados_tema):
-    # Extração de dados para o Bloco #2
     nome_tema, genero, imagem, qtd_versos, qtd_wordin, qtd_lexico, qtd_itimos, qtd_analiz, qtd_cienti = dados_tema
     
-    # Bloco #4: Formatação de linhas e &nbsp;
     if raw_text:
         linhas_formatadas = []
         for l in raw_text.split('\n'):
@@ -57,7 +55,6 @@ def formatar_poema(raw_text, dados_tema):
     else:
         texto_formatado = "Gerando versos..."
 
-    # Bloco #2: Metadados
     result = "<br><br><br>"
     result += "Titulo: " + nome_tema + "<br>"
     result += "Gênero: " + genero + "  " + "<br>"
@@ -72,31 +69,34 @@ def formatar_poema(raw_text, dados_tema):
     
     return texto_formatado + result
 
-# --- BLOCO #5: GERENCIAMENTO DE CARREGAMENTO (OFF-BOOK) ---
+# --- BLOCO #5: FLUXO OFF-BOOK ---
 def gerenciar_fluxo(pipe_line):
     off_book_text = ""
     
-    if "@ " in pipe_line[1]:
+    if len(pipe_line) > 1 and "@ " in pipe_line[1]:
         if st.session_state.lang != st.session_state.last_lang:
-            off_book_text = load_lypo()  # Mudança de idioma, mantém LYPO
+            # load_lypo deve existir no seu ambiente
+            try:
+                off_book_text = load_lypo()
+            except NameError:
+                off_book_text = "Erro: load_lypo não definido."
         else:
             nome_tema = pipe_line[1].replace("@ ", "")
-            off_book_text = load_poema(nome_tema, "")
-            off_book_text = "<br>" + load_lypo()
+            try:
+                off_book_text = load_poema(nome_tema, "")
+                off_book_text = "<br>" + load_lypo()
+            except NameError:
+                off_book_text = "Erro: funções de carga não definidas."
     else:
         for text in pipe_line:
             off_book_text += text + "<br>"
             
     return off_book_text
 
-# --- MAIN INTERFACE ---
+# --- INTERFACE ---
 def main():
-    st.sidebar.title("yPoemas - Cockpit")
-    # Lógica do seletor de idiomas aqui...
-    
-    # Exemplo de fluxo de renderização
-    # (Aqui entra a integração dos seus processos de geração)
-    pass
+    st.set_page_config(page_title="yPoemas", layout="wide")
+    st.write(f"Machina operacional: {st.session_state.lang}")
 
 if __name__ == "__main__":
     main()
