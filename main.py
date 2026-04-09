@@ -12,19 +12,19 @@ def translate(input_text):
     if st.session_state.lang == "pt":
         return input_text
 
-    # Função have_internet deve existir no seu ambiente global
+    # Verifica internet (presumindo existência da função no seu escopo)
     try:
         if not have_internet():
             st.session_state.lang = "pt"
             return input_text
     except NameError:
-        pass # Mantém o fluxo se a função não estiver definida ainda
+        pass
 
     try:
         translator = GoogleTranslator(source="pt", target=st.session_state.lang)
         output_text = translator.translate(text=input_text)
 
-        # Limpezas manuais (conforme bloco #1 original)
+        # Limpezas manuais conforme bloco #1
         output_text = output_text.replace("<br>>", "<br>")
         output_text = output_text.replace("< br>", "<br>")
         output_text = output_text.replace("<br >", "<br>")
@@ -36,6 +36,7 @@ def translate(input_text):
 
 # --- BLOCO #3: SANITIZAÇÃO PARA VOZ ---
 def talk_fala(text):
+    # Limpeza para a voz não ler tags (conforme bloco #3)
     text_clean = text.replace("<br>", " ").replace("< br>", "").replace("<br >", "").replace("<br/>", " ")
     return text_clean
 
@@ -55,6 +56,7 @@ def formatar_poema(raw_text, dados_tema):
     else:
         texto_formatado = "Gerando versos..."
 
+    # Construção do Bloco #2
     result = "<br><br><br>"
     result += "Titulo: " + nome_tema + "<br>"
     result += "Gênero: " + genero + "  " + "<br>"
@@ -75,18 +77,17 @@ def gerenciar_fluxo(pipe_line):
     
     if len(pipe_line) > 1 and "@ " in pipe_line[1]:
         if st.session_state.lang != st.session_state.last_lang:
-            # load_lypo deve existir no seu ambiente
             try:
                 off_book_text = load_lypo()
             except NameError:
-                off_book_text = "Erro: load_lypo não definido."
+                off_book_text = ""
         else:
             nome_tema = pipe_line[1].replace("@ ", "")
             try:
                 off_book_text = load_poema(nome_tema, "")
                 off_book_text = "<br>" + load_lypo()
             except NameError:
-                off_book_text = "Erro: funções de carga não definidas."
+                off_book_text = ""
     else:
         for text in pipe_line:
             off_book_text += text + "<br>"
@@ -96,7 +97,9 @@ def gerenciar_fluxo(pipe_line):
 # --- INTERFACE ---
 def main():
     st.set_page_config(page_title="yPoemas", layout="wide")
-    st.write(f"Machina operacional: {st.session_state.lang}")
+    
+    # Header corrigido (sem f-string incompleta)
+    st.write(f"### ⚫ Machina: {st.session_state.lang.upper()}")
 
 if __name__ == "__main__":
     main()
