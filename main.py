@@ -96,15 +96,15 @@ def gerenciar_fluxo(pipe_line):
 
 # --- INTERFACE ---
 def main():
-    chosen_id = stx.tab_bar(
+    chosen_id = st.tab_bar(
         data=[
-            stx.TabBarItemData(id=1, title="mini", description=""),
-            stx.TabBarItemData(id=2, title="yPoemas", description=""),
-            stx.TabBarItemData(id=3, title="eureka", description=""),
-            stx.TabBarItemData(id=4, title="off-machina", description=""),
-            stx.TabBarItemData(id=5, title="books", description=""),
-            stx.TabBarItemData(id=6, title="poly", description=""),
-            stx.TabBarItemData(id=7, title="about", description=""),
+            st.TabBarItemData(id=1, title="mini", description=""),
+            st.TabBarItemData(id=2, title="yPoemas", description=""),
+            st.TabBarItemData(id=3, title="eureka", description=""),
+            st.TabBarItemData(id=4, title="off-machina", description=""),
+            st.TabBarItemData(id=5, title="books", description=""),
+            st.TabBarItemData(id=6, title="poly", description=""),
+            st.TabBarItemData(id=7, title="about", description=""),
         ],
         default=2,
     )
