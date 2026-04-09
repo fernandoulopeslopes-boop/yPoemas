@@ -4,89 +4,74 @@ import os
 import random
 from deep_translator import GoogleTranslator
 
-# CRONOLOGIA ATIVA: X=14 (CONSOLIDAÇÃO: Cockpit Fixo + Scroll de Palco)
+# CRONOLOGIA ATIVA: X=15 (ESTÉTICA FINAL: Cockpit Centralizado + Eixo de Simetria)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE_PATH = os.path.join(BASE_DIR, "base")
 
-def aplicar_estetica_fixed_cockpit():
+def aplicar_estetica_central():
     st.markdown("""
         <style>
             header[data-testid="stHeader"], footer { visibility: hidden; height: 0px; }
             [data-testid="stSidebar"] { display: none; }
             
-            /* FIXANDO O COCKPIT NO TOPO */
+            /* Centralização Absoluta do Cockpit */
             .fixed-top {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                background-color: white;
-                z-index: 999;
-                padding: 10px 2.5% 0 2.5%;
-                border-bottom: 1px solid #f0f0f0;
+                position: fixed; top: 0; left: 0; width: 100%;
+                background-color: white; z-index: 999;
+                padding: 15px 0 10px 0; border-bottom: 1px solid #eee;
+                display: flex; flex-direction: column; align-items: center;
             }
             
-            /* ESPAÇAMENTO PARA O PALCO NÃO SUMIR SOB O COCKPIT */
-            .main-content { margin-top: 180px; }
+            /* Container interno para forçar o centro */
+            .console-inner { width: 90%; max-width: 900px; margin: 0 auto; }
+            
+            .main-content { margin-top: 190px; display: flex; justify-content: center; }
 
             .stButton > button { 
-                border-radius: 50% !important; width: 42px !important; height: 42px !important; 
+                border-radius: 50% !important; width: 44px !important; height: 44px !important; 
                 border: 1px solid #ddd !important; background: #fff;
             }
-            
+
             .poema-box { 
-                font-family: 'Georgia', serif; font-size: 1.85em; line-height: 1.6; 
-                color: #111; padding: 20px; text-align: left;
-                border-left: 3px solid #f5f5f5;
+                font-family: 'Georgia', serif; font-size: 1.9em; line-height: 1.7; 
+                color: #111; max-width: 800px; padding: 20px;
+                text-align: left; border-left: 1px solid #ddd;
             }
         </style>
     """, unsafe_allow_html=True)
 
-def tradutor_machina(txt, lang='pt'):
-    if not txt or lang == 'pt': return txt
+def tradutor_fiel(txt, target='pt'):
+    if not txt or target == 'pt': return txt
     try:
-        trad = GoogleTranslator(source='pt', target=lang).translate(text=txt)
-        for tag in ["<br>>", "< br>", "<br >", "<br ", " br>", "</br>", " <br>"]:
-            trad = trad.replace(tag, "<br>")
-        return trad
+        res = GoogleTranslator(source='pt', target=target).translate(text=txt)
+        # Limpeza cirúrgica de tags
+        for t in ["<br>>", "< br>", "<br >", "<br ", " br>", "</br>", " <br>"]:
+            res = res.replace(t, "<br>")
+        return res
     except: return txt
 
 def main():
-    st.set_page_config(layout="wide", page_title="Machina Poética - Cockpit Fixo")
-    aplicar_estetica_fixed_cockpit()
+    st.set_page_config(layout="wide", page_title="Machina Poética")
+    aplicar_estetica_central()
 
-    # --- DADOS ---
+    # --- CARGA DE DADOS ---
     arquivos = sorted([f for f in os.listdir(BASE_PATH) if f.startswith("rol_") and f.endswith(".txt")]) if os.path.exists(BASE_PATH) else []
     LIVROS = {f.replace("rol_", "").replace(".txt", ""): f for f in arquivos}
     if not LIVROS: LIVROS = {"todos os temas": "rol_todos os temas.txt"}
 
-    # --- ESTADO ---
+    # --- ESTADOS ---
     if 'current_tab_idx' not in st.session_state: st.session_state.current_tab_idx = 0 
     if 'book_em_foco' not in st.session_state: st.session_state.book_em_foco = list(LIVROS.keys())[0]
-    if 'temas_memoria' not in st.session_state: st.session_state.temas_memoria = {b: 0 for b in LIVROS}
-    if 'seed_mutante' not in st.session_state: st.session_state.seed_mutante = 0
-    if 'idioma' not in st.session_state: st.session_state.idioma = 'Português'
+    if 'memoria_temas' not in st.session_state: st.session_state.memoria_temas = {b: 0 for b in LIVROS}
+    if 'seed' not in st.session_state: st.session_state.seed = 0
+    if 'lang' not in st.session_state: st.session_state.lang = 'Português'
     if 'talk' not in st.session_state: st.session_state.talk = False
 
-    # --- CONTAINER FIXO (COCKPIT) ---
-    st.markdown('<div class="fixed-top">', unsafe_allow_html=True)
+    # --- COCKPIT CENTRALIZADO ---
+    st.markdown('<div class="fixed-top"><div class="console-inner">', unsafe_allow_html=True)
     
-    # Linha 1: Botões e Idioma
-    c_mut, c_prev, c_rand, c_next, c_help, c_talk, c_lang, c_esp = st.columns([0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 2, 4])
-    if c_mut.button("✚"): st.session_state.seed_mutante += 1; st.rerun()
-    if c_prev.button("❰"): st.session_state.temas_memoria[st.session_state.book_em_foco] -= 1; st.rerun()
-    if c_rand.button("✱"): st.session_state.temas_memoria[st.session_state.book_em_foco] = random.randint(0, 999); st.rerun()
-    if c_next.button("❱"): st.session_state.temas_memoria[st.session_state.book_em_foco] += 1; st.rerun()
-    c_help.button("?")
-    t_icon = "🎙️" if st.session_state.talk else "🔇"
-    if c_talk.button(t_icon): st.session_state.talk = not st.session_state.talk; st.rerun()
-    
-    with c_lang:
-        langs = {'Português': 'pt', 'English': 'en', 'Español': 'es', 'Français': 'fr', 'Italiano': 'it'}
-        st.session_state.idioma = st.selectbox("L", list(langs.keys()), index=list(langs.keys()).index(st.session_state.idioma), label_visibility="collapsed")
-
-    # Linha 2: Abas de Navegação
+    # Linha 1: Navegação de Páginas (Abas) - Agora no topo centro
     PAGINAS = ["demo", "ypoemas", "eureka", "off-máquina", "books", "about"]
     aba_atual = PAGINAS[st.session_state.current_tab_idx]
     aba_sel = stx.tab_bar(data=[stx.TabBarItemData(id=p, title=p.upper(), description="") for p in PAGINAS], default=aba_atual)
@@ -94,28 +79,42 @@ def main():
         st.session_state.current_tab_idx = PAGINAS.index(aba_sel)
         st.rerun()
 
+    # Linha 2: Botões de Ação e Idioma
+    col_btns, col_lang = st.columns([7, 3])
+    
+    with col_btns:
+        c1, c2, c3, c4, c5, c6 = st.columns(6)
+        if c1.button("✚"): st.session_state.seed += 1; st.rerun()
+        if c2.button("❰"): st.session_state.memoria_temas[st.session_state.book_em_foco] -= 1; st.rerun()
+        if c3.button("✱"): st.session_state.memoria_temas[st.session_state.book_em_foco] = random.randint(0, 500); st.rerun()
+        if c4.button("❱"): st.session_state.memoria_temas[st.session_state.book_em_foco] += 1; st.rerun()
+        c5.button("?")
+        t_icon = "🎙️" if st.session_state.talk else "🔇"
+        if c6.button(t_icon): st.session_state.talk = not st.session_state.talk; st.rerun()
+
+    with col_lang:
+        idiomas = {'Português': 'pt', 'English': 'en', 'Español': 'es', 'Français': 'fr', 'Italiano': 'it'}
+        st.session_state.lang = st.selectbox("L", list(idiomas.keys()), index=list(idiomas.keys()).index(st.session_state.lang), label_visibility="collapsed")
+
     # Linha 3: Drop_list de Temas
     book_foco = "todos os temas" if aba_atual == "demo" else st.session_state.book_em_foco
-    lista_temas = ["Silêncio"]
-    caminho_livro = os.path.join(BASE_PATH, LIVROS.get(book_foco, "rol_todos os temas.txt"))
-    if os.path.exists(caminho_livro):
-        with open(caminho_livro, "r", encoding="utf-8") as f:
-            lista_temas = [l.strip() for l in f if l.strip() and not l.startswith("[")]
+    with open(os.path.join(BASE_PATH, LIVROS.get(book_foco, "rol_todos os temas.txt")), "r", encoding="utf-8") as f:
+        lista_temas = [l.strip() for l in f if l.strip() and not l.startswith("[")]
 
-    idx_tema = st.session_state.temas_memoria.get(book_foco, 0) % len(lista_temas)
-    st.selectbox("Tema", lista_temas, index=idx_tema, key=f"drop_{idx_tema}", 
-                 on_change=lambda: st.session_state.temas_memoria.update({book_foco: lista_temas.index(st.session_state[f"drop_{idx_tema}"])}),
+    idx_tema = st.session_state.memoria_temas.get(book_foco, 0) % len(lista_temas)
+    st.selectbox("T", lista_temas, index=idx_tema, key=f"d_{idx_tema}", 
+                 on_change=lambda: st.session_state.memoria_temas.update({book_foco: lista_temas.index(st.session_state[f"d_{idx_tema}"])}),
                  label_visibility="collapsed")
     
-    st.markdown('</div>', unsafe_allow_html=True) # FIM DO FIXED-TOP
+    st.markdown('</div></div>', unsafe_allow_html=True)
 
-    # --- PALCO (CONTEÚDO) ---
+    # --- PALCO CENTRALIZADO ---
     st.markdown('<div class="main-content">', unsafe_allow_html=True)
     try:
         from lay_2_ypo import gera_poema
-        res = gera_poema(lista_temas[idx_tema], str(st.session_state.seed_mutante))
+        res = gera_poema(lista_temas[idx_tema], str(st.session_state.seed))
         txt = ("".join(res) if isinstance(res, list) else str(res)).strip().replace("\n", "<br>")
-        txt_final = tradutor_machina(txt, lang=langs[st.session_state.idioma])
+        txt_final = tradutor_fiel(txt, target=idiomas[st.session_state.lang])
         st.markdown(f'<div class="poema-box">{txt_final}</div>', unsafe_allow_html=True)
     except Exception as e:
         st.error(f"Integridade do Motor: {e}")
