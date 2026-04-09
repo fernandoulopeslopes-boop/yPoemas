@@ -15,7 +15,7 @@ try:
 except ImportError:
     def gera_poema(t, s=""): return f"Erro: lay_2_ypo.py não localizado.\nTema: {t}"
 
-# --- CACHE DE SISTEMA (ESMERO & PERFORMANCE) ---
+# --- CACHE DE SISTEMA (PERFORMANCE & FLUIDEZ) ---
 @st.cache_data
 def load_images_list_cached():
     caminho = os.path.join(BASE_DIR, "base", "images.txt")
@@ -53,7 +53,6 @@ def load_arts(nome_tema):
     if 'arts' not in st.session_state: st.session_state.arts = []
     image = random.choice(arts_list)
     
-    # Evita repetição imediata
     intentos = 0
     while image in st.session_state.arts and intentos < 10:
         image = random.choice(arts_list)
@@ -81,13 +80,8 @@ def aplicar_estetica_machina():
             .block-container { padding-top: 1.5rem !important; padding-left: 5% !important; padding-right: 5% !important; max-width: 100% !important; }
             .titulo-poema { font-family: serif; font-size: 2.2em; font-weight: bold; color: #333; margin-bottom: 1.5rem; text-align: center; }
             .poema-box { font-family: serif; font-size: 1.4em; line-height: 1.6; color: #1a1a1a; white-space: pre-wrap; }
-            
-            /* Botões de Navegação Circulares */
             div.stButton > button { border-radius: 50% !important; width: 48px !important; height: 48px !important; border: 1px solid #ddd !important; background-color: white !important; margin: 0 auto !important; display: block; }
-            
-            /* Ajuste de Dropdowns para evitar 'travamentos' */
             .stSelectbox div[data-baseweb="select"] { cursor: pointer; }
-            
             [data-testid="column"] { display: flex; align-items: center; justify-content: center; }
             hr { margin: 1em 0 !important; }
         </style>
@@ -107,11 +101,17 @@ def executar_som(texto, idioma_nome):
         return fp
     except: return None
 
+# --- MAPA DE LIVROS ---
 MAPA_BOOKS = {
-    "todos os temas": "rol_todos os temas.txt", "livro vivo": "rol_livro_vivo.txt", 
-    "ensaios": "rol_ensaios.txt", "jocosos": "rol_jocosos.txt", "variações": "rol_variações.txt", 
-    "metalinguagem": "rol_metalinguagem.txt", "sociais": "rol_sociais.txt", 
-    "outros autores": "rol_outros autores.txt", "todos os signos": "rol_todos os signos.txt", 
+    "todos os temas": "rol_todos os temas.txt", 
+    "livro vivo": "rol_livro_vivo.txt", 
+    "ensaios": "rol_ensaios.txt", 
+    "jocosos": "rol_jocosos.txt", 
+    "variações": "rol_variações.txt", 
+    "metalinguagem": "rol_metalinguagem.txt",
+    "sociais": "rol_sociais.txt", 
+    "outros autores": "rol_outros autores.txt",
+    "todos os signos": "rol_todos os signos.txt", 
     "temas mini": "rol_temas_mini.txt"
 }
 
@@ -125,11 +125,11 @@ LISTA_IDIOMAS = [
 ]
 
 def main():
-    st.set_page_config(layout="wide", page_title="yPoemas", page_icon="base/icon_ypo.ico")
+    st.set_page_config(layout="wide", page_title="yPoemas")
     aplicar_estetica_machina()
 
     # --- INITIAL STATE ---
-    if 'current_tab_idx' not in st.session_state: st.session_state.current_tab_idx = 0 
+    if 'current_tab_idx' not in st.session_state: st.session_state.current_tab_idx = 1 # Inicia agora em yPoemas
     if 'book_em_foco' not in st.session_state: st.session_state.book_em_foco = 'todos os temas'
     if 'com_imagem' not in st.session_state: st.session_state.com_imagem = True
     if 'com_som' not in st.session_state: st.session_state.com_som = False
@@ -146,8 +146,10 @@ def main():
         st.session_state.current_tab_idx = PAGINAS_APP.index(aba_clicada)
         st.rerun()
 
-    # --- DATA BINDING (CACHED) ---
+    # --- LÓGICA DE CONTEXTO ---
+    # Na yPoemas, respeitamos o st.session_state.book_em_foco. Na Demo, forçamos.
     book_em_foco = "todos os temas" if aba_atual == "demo" else st.session_state.book_em_foco
+    
     arquivo_alvo = MAPA_BOOKS.get(book_em_foco, "rol_todos os temas.txt")
     temas_do_livro = carregar_temas_cached(arquivo_alvo)
     
@@ -156,11 +158,11 @@ def main():
 
     # --- NAVEGAÇÃO ---
     _, c_plus, c_prev, c_rand, c_next, c_help, _ = st.columns([2, 1, 1, 1, 1, 1, 2])
-    if c_plus.button("✚"): st.session_state.seed_eureka += 1; st.rerun()
-    if c_prev.button("❰"): st.session_state.tema_idx_por_book[book_em_foco] = (idx_atual - 1); st.rerun()
-    if c_rand.button("✱"): st.session_state.tema_idx_por_book[book_em_foco] = random.randint(0, len(temas_do_livro)-1); st.rerun()
-    if c_next.button("❱"): st.session_state.tema_idx_por_book[book_em_foco] = (idx_atual + 1); st.rerun()
-    if c_help.button("?"): st.session_state.help_ativo = not st.session_state.help_ativo; st.rerun()
+    if c_plus.button("✚", help="Novo yPoema"): st.session_state.seed_eureka += 1; st.rerun()
+    if c_prev.button("❰", help="Anterior"): st.session_state.tema_idx_por_book[book_em_foco] = (idx_atual - 1); st.rerun()
+    if c_rand.button("✱", help="Aleatório"): st.session_state.tema_idx_por_book[book_em_foco] = random.randint(0, len(temas_do_livro)-1); st.rerun()
+    if c_next.button("❱", help="Próximo"): st.session_state.tema_idx_por_book[book_em_foco] = (idx_atual + 1); st.rerun()
+    if c_help.button("?", help="Ajuda"): st.session_state.help_ativo = not st.session_state.help_ativo; st.rerun()
 
     # --- COCKPIT ---
     _, col_arte, col_idioma, col_livro, col_tema, col_som, _ = st.columns([0.5, 1, 2, 2, 2, 1, 0.5])
@@ -169,7 +171,7 @@ def main():
     with col_livro:
         def m_livro(): st.session_state.book_em_foco = st.session_state.bk_tmp
         st.selectbox("Livro", list(MAPA_BOOKS.keys()), index=list(MAPA_BOOKS.keys()).index(book_em_foco), 
-                     key="bk_tmp", on_change=m_livro, label_visibility="collapsed")
+                     key="bk_tmp", on_change=m_livro, label_visibility="collapsed", disabled=(aba_atual=="demo"))
     with col_tema:
         def m_tema(): st.session_state.tema_idx_por_book[book_em_foco] = temas_do_livro.index(st.session_state.tm_tmp)
         st.selectbox("Tema", temas_do_livro, index=idx_atual, key="tm_tmp", on_change=m_tema, label_visibility="collapsed")
@@ -195,7 +197,7 @@ def main():
                     st.markdown(f'<div class="poema-box">{txt}</div>', unsafe_allow_html=True)
                 with col_img:
                     c_arte = load_arts(tema_selecionado)
-                    if c_arte: st.image(c_arte, width='stretch')
+                    if c_arte: st.image(c_arte, use_container_width=True)
             else:
                 _, col_c, _ = st.columns([1, 4, 1])
                 with col_c:
