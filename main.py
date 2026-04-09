@@ -5,8 +5,8 @@ import os
 import random
 from deep_translator import GoogleTranslator
 
-# CRONOLOGIA ATIVA: X=50 (GEOMETRIA DE PRECISÃO + EXTIRPAÇÃO TOTAL)
-# REGRA_ZERO: Alinhamento milimétrico. Sem transbordo.
+# CRONOLOGIA ATIVA: X=51 (CORREÇÃO DE SOBREPOSIÇÃO + ALINHAMENTO POR COLUNAS)
+# REGRA_ZERO: Os botões devem ser clicáveis. A lista deve estar abaixo.
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE_PATH = os.path.join(BASE_DIR, "base")
@@ -17,21 +17,21 @@ DICI_LANG = {
     'Deutsch': 'de', 'Galego': 'gl', 'Română': 'ro'
 }
 
-def aplicar_estetica_v50():
+def aplicar_estetica_v51():
     st.markdown("""
         <style>
             header[data-testid="stHeader"], footer { visibility: hidden; height: 0px; }
             [data-testid="stSidebar"] { display: none; }
             
-            /* EXTIRPAÇÃO DO BLOCO SUPERIOR */
+            /* AJUSTE DA MARGEM SUPERIOR PARA EVITAR SUMIÇO DO COCKPIT */
             .main .block-container {
                 padding-top: 0rem !important;
                 padding-bottom: 0rem !important;
-                margin-top: -140px !important; 
+                margin-top: -120px !important; 
             }
             
             [data-testid="stVerticalBlock"] > div { gap: 0rem !important; }
-            [data-testid="stElementContainer"] { margin-bottom: -1.6rem !important; }
+            [data-testid="stElementContainer"] { margin-bottom: -1.0rem !important; }
 
             /* COCKPIT FIXO */
             .fixed-top {
@@ -39,7 +39,7 @@ def aplicar_estetica_v50():
                 background-color: white; z-index: 999;
                 border-bottom: 1px solid #f2f2f2;
                 display: flex; flex-direction: column; align-items: center;
-                padding-bottom: 8px;
+                padding-bottom: 10px;
             }
             
             .stButton > button { 
@@ -47,10 +47,10 @@ def aplicar_estetica_v50():
                 background: white !important; border: 1px solid #eee !important;
             }
             
-            /* SELECTBOX: Reset de largura e centralização */
+            /* SELECTBOX: Ajuste para não encobrir os botões */
             div[data-testid="stSelectbox"] {
-                margin-top: -10px !important;
-                width: 280px !important; /* Largura controlada para cobrir os botões 2 e 3 */
+                margin-top: 5px !important; /* Espaço positivo para descer em relação aos botões */
+                z-index: 1;
             }
             div[data-testid="stSelectbox"] label { display: none !important; }
         </style>
@@ -58,9 +58,9 @@ def aplicar_estetica_v50():
 
 def main():
     st.set_page_config(layout="wide", page_title="Machina Poética")
-    aplicar_estetica_v50()
+    aplicar_estetica_v51()
 
-    # --- 1. ESTADOS (HOSPITALIDADE INICIAL) ---
+    # --- 1. ESTADOS ---
     if 'seed' not in st.session_state: st.session_state.seed = random.randint(1, 9999)
     if 'current_tab' not in st.session_state: st.session_state.current_tab = "demo"
     if 'book_em_foco' not in st.session_state: st.session_state.book_em_foco = "todos os temas"
@@ -86,34 +86,37 @@ def main():
     
     col_l, col_c, col_r = st.columns([1, 2, 1])
     with col_c:
-        # Linha de Botões
+        # Linha 1: Botões
         b_cols = st.columns(6)
-        if b_cols[0].button("✚", help="Nova variação"): 
+        if b_cols[0].button("✚", key="btn_plus"): 
             st.session_state.seed += 1
             st.rerun()
-        if b_cols[1].button("❰", help="Tema anterior"): 
-            st.session_state.memoria_temas[st.session_state.book_em_foco] -= 1
+        if b_cols[1].button("❰", key="btn_prev"): 
+            st.session_state.memoria_temas[book_foco] -= 1
             st.rerun()
-        if b_cols[2].button("✱", help="Sorteio Aleatório"): 
+        if b_cols[2].button("✱", key="btn_rnd"): 
             st.session_state.seed = random.randint(1, 9999)
             st.session_state.memoria_temas[book_foco] = random.randint(0, len(lista_temas)-1)
             st.rerun()
-        if b_cols[3].button("❱", help="Próximo tema"): 
-            st.session_state.memoria_temas[st.session_state.book_em_foco] += 1
+        if b_cols[3].button("❱", key="btn_next"): 
+            st.session_state.memoria_temas[book_foco] += 1
             st.rerun()
-        b_cols[4].button("?", help="Ajuda")
-        if b_cols[5].button("@", help="Configurações"):
+        b_cols[4].button("?", key="btn_help")
+        if b_cols[5].button("@", key="btn_cfg"):
             st.session_state.show_config = not st.session_state.show_config
             st.rerun()
 
-        # ÁREA DA LISTA (ALINHAMENTO CENTRAL SOB ❰ e ✱)
-        # Usamos uma coluna central mais larga para o selectbox não sofrer compressão lateral
-        _, s_area, _ = st.columns([0.4, 2, 0.4])
-        with s_area:
+        # Linha 2: Selectbox ALINHADO ABAIXO
+        # Usamos columns(6) novamente para espelhar a largura exata dos slots dos botões
+        s_cols = st.columns(6)
+        with s_cols[1]: # Começa abaixo do ❰
             idx_tema = st.session_state.memoria_temas.get(book_foco, 0) % len(lista_temas)
-            st.selectbox("T", lista_temas, index=idx_tema, key=f"v50_{idx_tema}", 
-                         on_change=lambda: st.session_state.memoria_temas.update({book_foco: lista_temas.index(st.session_state[f"v50_{idx_tema}"])}),
+            # Engloba as colunas 1 e 2 (relativas ao grid de 6)
+            st.markdown('<div style="width:210%; margin-left:0px;">', unsafe_allow_html=True)
+            st.selectbox("T", lista_temas, index=idx_tema, key=f"v51_{idx_tema}", 
+                         on_change=lambda: st.session_state.memoria_temas.update({book_foco: lista_temas.index(st.session_state[f"v51_{idx_tema}"])}),
                          label_visibility="collapsed")
+            st.markdown('</div>', unsafe_allow_html=True)
 
     PAGINAS = ["demo", "ypoemas", "eureka", "off-máquina", "books", "about"]
     aba_sel = stx.tab_bar(data=[stx.TabBarItemData(id=p, title=p.upper(), description="") for p in PAGINAS], default=st.session_state.current_tab)
@@ -129,7 +132,7 @@ def main():
     st.markdown('</div>', unsafe_allow_html=True)
 
     # --- 4. PALCO ---
-    st.markdown('<div style="margin-top: 130px;"></div>', unsafe_allow_html=True)
+    st.markdown('<div style="margin-top: 150px;"></div>', unsafe_allow_html=True)
     
     if st.session_state.current_tab in ["demo", "ypoemas"]:
         try:
