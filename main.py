@@ -36,11 +36,6 @@ if have_internet():
         from gtts import gTTS
     except ImportError:
         pass
-else:
-    st.warning("Internet não conectada.")
-
-hostname = socket.gethostname()
-IPAddres = socket.gethostbyname(hostname)
 
 st.markdown(
     """ <style>
@@ -110,15 +105,19 @@ def draw_check_buttons():
 
 @st.cache_data
 def load_temas(book):
-    with open(f"./base/rol_{book}.txt", "r", encoding="utf-8") as f:
-        return [line.strip() for line in f]
+    filename = f"./base/rol_{book}.txt"
+    if os.path.exists(filename):
+        with open(filename, "r", encoding="utf-8") as f:
+            return [line.strip() for line in f]
+    return ["Fatos"]
 
 def load_eureka(part_of_word):
     lexico_list = []
-    with open("./base/lexico_pt.txt", "r", encoding="utf-8") as f:
-        for line in f:
-            if part_of_word.lower() in line.lower():
-                lexico_list.append(line.strip())
+    if os.path.exists("./base/lexico_pt.txt"):
+        with open("./base/lexico_pt.txt", "r", encoding="utf-8") as f:
+            for line in f:
+                if part_of_word.lower() in line.lower():
+                    lexico_list.append(line.strip())
     return lexico_list
 
 def load_poema(nome_tema, seed_eureka):
@@ -127,14 +126,17 @@ def load_poema(nome_tema, seed_eureka):
 
 def load_arts(nome_tema):
     path = "./images/machina/"
-    # Lógica de seleção de imagem simplificada
-    arts_list = [f for f in os.listdir(path) if f.endswith(".jpg")]
-    image = random.choice(arts_list)
-    return path + image
+    if os.path.exists(path):
+        arts_list = [f for f in os.listdir(path) if f.endswith(".jpg")]
+        if arts_list:
+            image = random.choice(arts_list)
+            return path + image
+    return None
 
 def write_ypoema(LOGO_TEXT, LOGO_IMAGE):
     if LOGO_IMAGE:
-        img_b64 = base64.b64encode(open(LOGO_IMAGE, 'rb').read()).decode()
+        with open(LOGO_IMAGE, 'rb') as f:
+            img_b64 = base64.b64encode(f.read()).decode()
         st.markdown(f"<div class='container'><img class='logo-img' src='data:image/jpg;base64,{img_b64}'><p class='logo-text'>{LOGO_TEXT}</p></div>", unsafe_allow_html=True)
     else:
         st.markdown(f"<div class='container'><p class='logo-text'>{LOGO_TEXT}</p></div>", unsafe_allow_html=True)
