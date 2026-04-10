@@ -1,12 +1,8 @@
 r"""
-
 º¤ø,¸¸,ø¤º°`°º¤ø,¸¸,ø¤º°`°ºº¤ø,¸¸,ø¤º°`°º¤ø,¸¸,ø¤º°`°ºº¤ø,¸¸,ø¤º°`°º¤ø,¸¸,ø¤º°
-
-yPoemas - PAI ORIGINAL (INTEGRAL & FUNCIONAL)
+yPoemas - PAI ORIGINAL (INTEGRAL & SINTAXE CORRIGIDA)
 [ESTRUTURA DE PALCO COMPLETA - PTC]
-
 º¤ø,¸¸,ø¤º°`°º¤ø,¸¸,ø¤º°`°ºº¤ø,¸¸,ø¤º°`°º¤ø,¸¸,ø¤º°`°ºº¤ø,¸¸,ø¤º°`°º¤ø,¸¸,ø¤º°
-
 """
 import streamlit as st
 import os
@@ -75,7 +71,7 @@ def translate(text, target):
 from lay_2_ypo import gera_poema
 
 # =================================================================
-# 📱 AS PÁGINAS DO PALCO (O TODO)
+# 📱 AS PÁGINAS DO PALCO (CORREÇÃO SINTÁTICA NA LINHA 86)
 # =================================================================
 
 def nav_menu():
@@ -83,4 +79,101 @@ def nav_menu():
     c = st.columns([1,1,1,1,1,1,1])
     if c[0].button("yPoemas"): st.session_state.page = "yPoemas"
     if c[1].button("Mini"): st.session_state.page = "Mini"
-    if c[2].button("Eureka
+    if c[2].button("Eureka"): st.session_state.page = "Eureka"  # <--- LINHA 86 CORRIGIDA
+    if c[3].button("Poly"): st.session_state.page = "Poly"
+    if c[4].button("Livros"): st.session_state.page = "Books"
+    if c[5].button("Ajuda"): st.session_state.page = "Help"
+    if c[6].button("Sobre"): st.session_state.page = "About"
+    st.write("---")
+
+def page_ypoemas():
+    nav_menu()
+    st.write(f"⚫ {st.session_state.lang} ( {st.session_state.tema} )")
+    script = gera_poema(st.session_state.tema, "")
+    poema = "\n".join(script)
+    if st.session_state.lang != "pt": poema = translate(poema, st.session_state.lang)
+    st.markdown(f"<p class='logo-text'>{poema.replace('\n', '<br>')}</p>", unsafe_allow_html=True)
+
+def page_mini():
+    nav_menu()
+    st.write("### 🧩 MINI")
+    script = gera_poema("Fatos", "")
+    st.markdown(f"<p class='logo-text'>{"\n".join(script).replace('\n', '<br>')}</p>", unsafe_allow_html=True)
+
+def page_eureka():
+    nav_menu()
+    st.write("### 💡 EUREKA")
+    lexico = load_eureka_database()
+    search = st.text_input("Busca no Léxico:", value=st.session_state.eureka_search)
+    if search:
+        results = [l for l in lexico if search.lower() in l.lower()]
+        st.write(f"Encontrados: {len(results)}")
+        for r in results[:50]: st.write(f"• {r}")
+
+def page_poly():
+    nav_menu()
+    st.write("### 🌍 POLYGLOT")
+    script = gera_poema(st.session_state.tema, "")
+    base_text = "\n".join(script)
+    st.write("**Texto Base (PT):**")
+    st.info(base_text)
+    target = st.selectbox("Traduzir para:", ["en", "es", "it", "fr", "ca"])
+    st.write(f"**Tradução ({target}):**")
+    st.success(translate(base_text, target))
+
+def page_books():
+    nav_menu()
+    st.write("### 📚 BIBLIOTECA / ROLS")
+    if os.path.exists("base/ativos.txt"):
+        with open("base/ativos.txt", "r") as f:
+            for line in f: st.write(f"📖 {line.strip()}")
+
+def page_help():
+    nav_menu()
+    st.write("### ❓ AJUDA")
+    if os.path.exists("base/helpers.txt"):
+        with open("base/helpers.txt", "r", encoding="utf-8") as f:
+            st.markdown(f.read())
+
+def page_about():
+    nav_menu()
+    st.write("### ℹ️ ABOUT")
+    st.markdown("A Máquina de Fazer Poesia - Fernando Lopes.")
+
+# =================================================================
+# 🏰 SIDEBAR (CONTROLES E LINGUAGEM)
+# =================================================================
+
+with st.sidebar:
+    st.write("### a máquina de fazer Poesia")
+    st.write("---")
+    
+    langs = ["pt", "es", "it", "fr", "en", "ca"]
+    c = st.columns(len(langs))
+    for i, l in enumerate(langs):
+        if c[i].button(l if l != "ca" else "⚒️"): 
+            st.session_state.lang = l
+    
+    st.write("---")
+    st.session_state.draw = 'Y' if st.checkbox("Art", value=(st.session_state.draw == 'Y')) else 'N'
+    st.session_state.talk = 'Y' if st.checkbox("Talk", value=(st.session_state.talk == 'Y')) else 'N'
+    st.session_state.vydo = 'Y' if st.checkbox("Video", value=(st.session_state.vydo == 'Y')) else 'N'
+    
+    st.write("---")
+    st.markdown("<nav><a href='#'>facebook</a> | <a href='#'>instagram</a></nav>", unsafe_allow_html=True)
+
+# =================================================================
+# 🏁 ROTEADOR DO AMBIENTE
+# =================================================================
+
+router = {
+    "yPoemas": page_ypoemas,
+    "Mini": page_mini,
+    "Eureka": page_eureka,
+    "Poly": page_poly,
+    "Books": page_books,
+    "Help": page_help,
+    "About": page_about
+}
+
+router[st.session_state.page]()
