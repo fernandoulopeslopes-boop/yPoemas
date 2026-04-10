@@ -1,5 +1,5 @@
 deep-translator
-gTTS
+edge-tts
 streamlit
 streamlit-antd-components
 extra-streamlit-components
