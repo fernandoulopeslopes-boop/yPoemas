@@ -1,199 +1,115 @@
 import os
-import io
-import re
-import time
 import random
 import base64
-import socket
 import streamlit as st
-from datetime import datetime
 from lay_2_ypo import gera_poema
 
-# --- Settings ---
+# --- CONFIGURAÇÃO VISUAL ---
+st.set_page_config(page_title="yPoemas", layout="centered")
 
-st.set_page_config(
-    page_title="a máquina de fazer Poesia - yPoemas",
-    page_icon=":star:",
-    layout="centered",
-    initial_sidebar_state="auto",
-)
-
-@st.cache_data
-def have_internet(host="8.8.8.8", port=53, timeout=3):
-    try:
-        socket.setdefaulttimeout(timeout)
-        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
-        return True
-    except socket.error:
-        return False
-
-if have_internet():
-    try:
-        from deep_translator import GoogleTranslator
-    except ImportError:
-        pass
-    try:
-        from gtts import gTTS
-    except ImportError:
-        pass
-
-st.markdown(
-    """ <style>
-    footer {visibility: hidden;}
+st.markdown("""
+    <style>
+    /* Fixa a largura da sidebar em 300px */
     [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
         width: 300px;
     }
-    .reportview-container .main .block-container{
-        padding: 0rem;
+    /* Estética do Poema */
+    .poema-box {
+        background-color: #ffffff;
+        padding: 30px;
+        border-radius: 5px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        font-family: 'serif';
+        font-size: 1.3rem;
+        color: #1a1a1a;
+        line-height: 1.7;
     }
-    mark {
-      background-color: powderblue;
-      color: black;
-    }
-    .container {
-        display: flex;
-    }
-    .logo-text {
-        font-weight: 600;
-        font-size: 18px;
-        font-family: 'IBM Plex Sans';
-        color: #000000;
-        padding-left: 15px;
-    }
-    .logo-img {
-        float:right;
-    }
-    </style> """,
-    unsafe_allow_html=True,
-)
+    </style>
+""", unsafe_allow_html=True)
 
-# --- Session State ---
-
+# --- ESTADOS DE SESSÃO ---
 if "lang" not in st.session_state: st.session_state.lang = "pt"
-if "book" not in st.session_state: st.session_state.book = "livro vivo"
 if "take" not in st.session_state: st.session_state.take = 0
-if "mini" not in st.session_state: st.session_state.mini = 0
-if "tema" not in st.session_state: st.session_state.tema = "Fatos"
-if "eureka" not in st.session_state: st.session_state.eureka = 0
-if "find_eureka" not in st.session_state: st.session_state.find_eureka = "amar"
 if "draw" not in st.session_state: st.session_state.draw = False
 if "talk" not in st.session_state: st.session_state.talk = False
 
-# --- Tools ---
+# --- COMPONENTES ---
 
-def translate(input_text):
-    if st.session_state.lang == "pt" or not have_internet():
-        return input_text
-    try:
-        output_text = GoogleTranslator(source="pt", target=st.session_state.lang).translate(text=input_text)
-        return output_text.replace("<br>>", "<br>").replace("< br>", "<br>").replace("<br >", "<br>")
-    except:
-        return input_text
+def get_ui_labels():
+    labels = {
+        "pt": ["Anterior", "Acaso", "Próximo", "Ajuda", "🎨 Imagem", "🔊 Áudio"],
+        "en": ["Previous", "Random", "Next", "Help", "🎨 Art", "🔊 Talk"],
+        "es": ["Anterior", "Azar", "Próximo", "Ayuda", "🎨 Imagen", "🔊 Áudio"]
+    }
+    return labels.get(st.session_state.lang, labels["pt"])
 
-def pick_lang():
-    btn_pt, btn_es, btn_it, btn_fr, btn_en, btn_xy = st.sidebar.columns([1, 1, 1, 1, 1, 1])
-    if btn_pt.button("pt", key=1): st.session_state.lang = "pt"
-    if btn_es.button("es", key=2): st.session_state.lang = "es"
-    if btn_it.button("it", key=3): st.session_state.lang = "it"
-    if btn_fr.button("fr", key=4): st.session_state.lang = "fr"
-    if btn_en.button("en", key=5): st.session_state.lang = "en"
-
-def draw_check_buttons():
-    draw_col, talk_col = st.sidebar.columns(2)
-    st.session_state.draw = draw_col.checkbox("🎨 Art", st.session_state.draw)
-    st.session_state.talk = talk_col.checkbox("🔊 Talk", st.session_state.talk)
-
-@st.cache_data
-def load_temas(book):
-    filename = f"./base/rol_{book}.txt"
-    if os.path.exists(filename):
-        with open(filename, "r", encoding="utf-8") as f:
-            return [line.strip() for line in f]
-    return ["Fatos"]
-
-def load_eureka(part_of_word):
-    lexico_list = []
-    if os.path.exists("./base/lexico_pt.txt"):
-        with open("./base/lexico_pt.txt", "r", encoding="utf-8") as f:
-            for line in f:
-                if part_of_word.lower() in line.lower():
-                    lexico_list.append(line.strip())
-    return lexico_list
-
-def load_poema(nome_tema, seed_eureka):
-    script = gera_poema(nome_tema, seed_eureka)
-    return "<br>".join(script)
-
-def load_arts(nome_tema):
-    path = "./images/machina/"
-    if os.path.exists(path):
-        arts_list = [f for f in os.listdir(path) if f.endswith(".jpg")]
-        if arts_list:
-            image = random.choice(arts_list)
-            return path + image
-    return None
-
-def write_ypoema(LOGO_TEXT, LOGO_IMAGE):
-    if LOGO_IMAGE:
-        with open(LOGO_IMAGE, 'rb') as f:
-            img_b64 = base64.b64encode(f.read()).decode()
-        st.markdown(f"<div class='container'><img class='logo-img' src='data:image/jpg;base64,{img_b64}'><p class='logo-text'>{LOGO_TEXT}</p></div>", unsafe_allow_html=True)
-    else:
-        st.markdown(f"<div class='container'><p class='logo-text'>{LOGO_TEXT}</p></div>", unsafe_allow_html=True)
-
-def talk(text):
-    if have_internet():
-        clean_text = text.replace("<br>", "\n")
-        tts = gTTS(text=clean_text, lang=st.session_state.lang)
-        filename = f"./temp/audio_{random.randint(1,1000)}.mp3"
-        tts.save(filename)
-        st.audio(open(filename, "rb").read(), format="audio/mpeg")
-        os.remove(filename)
-
-# --- Pages ---
-
-def page_mini():
-    temas_list = load_temas("todos os temas")
-    st.session_state.tema = temas_list[st.session_state.mini]
-    curr_ypoema = load_poema(st.session_state.tema, "")
-    if st.session_state.lang != "pt": curr_ypoema = translate(curr_ypoema)
-    LOGO_IMAGE = load_arts(st.session_state.tema) if st.session_state.draw else None
-    write_ypoema(curr_ypoema, LOGO_IMAGE)
-    if st.session_state.talk: talk(curr_ypoema)
-
-def page_ypoemas():
-    temas_list = load_temas(st.session_state.book)
-    st.session_state.tema = temas_list[st.session_state.take]
-    curr_ypoema = load_poema(st.session_state.tema, "")
-    if st.session_state.lang != "pt": curr_ypoema = translate(curr_ypoema)
-    LOGO_IMAGE = load_arts(st.session_state.tema) if st.session_state.draw else None
-    write_ypoema(curr_ypoema, LOGO_IMAGE)
-    if st.session_state.talk: talk(curr_ypoema)
-
-def page_eureka():
-    find_what = st.text_input("Busca Eureka", value=st.session_state.find_eureka)
-    if len(find_what) >= 3:
-        results = load_eureka(find_what)
-        seed_list = [line.partition(" : ")[0] for line in results if " : " in line]
-        if seed_list:
-            st.selectbox("Sementes:", seed_list)
-        else:
-            st.info("Nada encontrado.")
-
-# --- Main ---
-
-def main():
+def build_sidebar():
     with st.sidebar:
         st.write("### yPoemas")
-        pick_lang()
-        st.divider()
-        page = st.radio("Menu", ["Mini", "yPoemas", "Eureka"])
-        st.divider()
-        draw_check_buttons()
+        
+        # Idiomas
+        st.write("---")
+        cols = st.columns(5)
+        langs = ["pt", "es", "it", "fr", "en"]
+        for i, l in enumerate(langs):
+            if cols[i].button(l, key=f"lang_{l}"):
+                st.session_state.lang = l
+                st.rerun()
+        
+        st.write("---")
+        # Navegação
+        page = st.radio("Navegação", ["yPoemas", "Mini", "Eureka"])
+        
+        st.write("---")
+        # Sentidos
+        labels = get_ui_labels()
+        st.session_state.draw = st.checkbox(labels[4], st.session_state.draw)
+        st.session_state.talk = st.checkbox(labels[5], st.session_state.talk)
+        
+        return page
 
-    if page == "Mini": page_mini()
-    elif page == "yPoemas": page_ypoemas()
-    elif page == "Eureka": page_eureka()
+def page_ypoemas():
+    labels = get_ui_labels()
+    
+    # 1. Barra de Navegação Superior (Navegação, Acaso, Help)
+    c1, c2, c3, c4 = st.columns([1, 1, 1, 1])
+    
+    if c1.button(f"⬅️ {labels[0]}"):
+        st.session_state.take -= 1
+    if c2.button(f"🎲 {labels[1]}"):
+        st.session_state.take = random.randint(0, 1000)
+    if c3.button(f"➡️ {labels[2]}"):
+        st.session_state.take += 1
+    
+    with c4:
+        with st.expander(f"❓ {labels[3]}"):
+            st.write("Use as setas para navegar entre as variações temáticas ou o dado para saltar no acaso.")
 
-if __name__ == "__main__":
-    main()
+    st.write("---")
+
+    # 2. Geração de Conteúdo
+    tema = "Fatos" # Exemplo fixo para visualização
+    poema_raw = gera_poema(tema, "")
+    poema_html = "<br>".join(poema_raw)
+
+    # 3. Exibição: Texto e Imagem
+    if st.session_state.draw:
+        col_txt, col_img = st.columns([1.5, 1])
+        with col_txt:
+            st.markdown(f"<div class='poema-box'>{poema_html}</div>", unsafe_allow_html=True)
+        with col_img:
+            # Placeholder para imagem da Machina
+            st.image("https://via.placeholder.com/400x600.png?text=Machina+Art", use_container_width=True)
+    else:
+        st.markdown(f"<div class='poema-box'>{poema_html}</div>", unsafe_allow_html=True)
+
+# --- EXECUÇÃO ---
+
+current_page = build_sidebar()
+
+if current_page == "yPoemas":
+    page_ypoemas()
+elif current_page == "Mini":
+    st.info("Página Mini: Próxima da sequência.")
+elif current_page == "Eureka":
+    st.info("Página Eureka: Aguardando.")
