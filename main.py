@@ -20,7 +20,7 @@ import json
 import glob
 import shutil
 import socket
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt  # <--- Comentado para evitar erro de deploy
 import extra_streamlit_components as stx
 from PIL import Image, ImageDraw, ImageFont
 
