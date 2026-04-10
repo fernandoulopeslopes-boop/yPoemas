@@ -4,112 +4,68 @@ import base64
 import streamlit as st
 from lay_2_ypo import gera_poema
 
-# --- CONFIGURAÇÃO VISUAL ---
+# --- CONFIGURAÇÃO ---
 st.set_page_config(page_title="yPoemas", layout="centered")
 
 st.markdown("""
     <style>
-    /* Fixa a largura da sidebar em 300px */
     [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
         width: 300px;
-    }
-    /* Estética do Poema */
-    .poema-box {
-        background-color: #ffffff;
-        padding: 30px;
-        border-radius: 5px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        font-family: 'serif';
-        font-size: 1.3rem;
-        color: #1a1a1a;
-        line-height: 1.7;
     }
     </style>
 """, unsafe_allow_html=True)
 
-# --- ESTADOS DE SESSÃO ---
-if "lang" not in st.session_state: st.session_state.lang = "pt"
-if "take" not in st.session_state: st.session_state.take = 0
-if "draw" not in st.session_state: st.session_state.draw = False
-if "talk" not in st.session_state: st.session_state.talk = False
-
-# --- COMPONENTES ---
-
-def get_ui_labels():
-    labels = {
-        "pt": ["Anterior", "Acaso", "Próximo", "Ajuda", "🎨 Imagem", "🔊 Áudio"],
-        "en": ["Previous", "Random", "Next", "Help", "🎨 Art", "🔊 Talk"],
-        "es": ["Anterior", "Azar", "Próximo", "Ayuda", "🎨 Imagen", "🔊 Áudio"]
-    }
-    return labels.get(st.session_state.lang, labels["pt"])
+# --- SIDEBAR COMPLETA (Fiel ao ypo.py) ---
 
 def build_sidebar():
     with st.sidebar:
-        st.write("### yPoemas")
+        # 1. Título/Logo
+        st.write("### a máquina de fazer Poesia")
         
-        # Idiomas
+        # 2. Seletor de Idiomas (pick_lang)
         st.write("---")
-        cols = st.columns(5)
-        langs = ["pt", "es", "it", "fr", "en"]
-        for i, l in enumerate(langs):
-            if cols[i].button(l, key=f"lang_{l}"):
-                st.session_state.lang = l
-                st.rerun()
-        
-        st.write("---")
-        # Navegação
-        page = st.radio("Navegação", ["yPoemas", "Mini", "Eureka"])
+        c1, c2, c3, c4, c5, c6 = st.columns([1,1,1,1,1,1])
+        if c1.button("pt"): st.session_state.lang = "pt"
+        if c2.button("es"): st.session_state.lang = "es"
+        if c3.button("it"): st.session_state.lang = "it"
+        if c4.button("fr"): st.session_state.lang = "fr"
+        if c5.button("en"): st.session_state.lang = "en"
+        if c6.button("⚒️"): st.session_state.lang = "poly" # Seletor de expansão
         
         st.write("---")
-        # Sentidos
-        labels = get_ui_labels()
-        st.session_state.draw = st.checkbox(labels[4], st.session_state.draw)
-        st.session_state.talk = st.checkbox(labels[5], st.session_state.talk)
+        
+        # 3. Navegação de Páginas (Radio como no original)
+        page = st.radio("Menu", ["Mini", "yPoemas", "Eureka"], index=1)
+        
+        st.write("---")
+        
+        # 4. Seleção de Livro e Temas (Essencial para o funcionamento da página)
+        # No original, isso muda conforme a página, mas reside na sidebar
+        if page == "yPoemas":
+            st.session_state.book = st.selectbox("Livro:", ["livro vivo", "todos os temas"])
+            # Aqui entraria a carga de temas dinâmica do PAI
+            st.session_state.tema = st.selectbox("Tema:", ["Fatos", "Amor", "Morte"]) 
+
+        st.write("---")
+        
+        # 5. Checkboxes de Sentidos (draw_check_buttons)
+        col_draw, col_talk = st.columns(2)
+        st.session_state.draw = col_draw.checkbox("Imagem", st.session_state.draw)
+        st.session_state.talk = col_talk.checkbox("Áudio", st.session_state.talk)
         
         return page
 
-def page_ypoemas():
-    labels = get_ui_labels()
-    
-    # 1. Barra de Navegação Superior (Navegação, Acaso, Help)
-    c1, c2, c3, c4 = st.columns([1, 1, 1, 1])
-    
-    if c1.button(f"⬅️ {labels[0]}"):
-        st.session_state.take -= 1
-    if c2.button(f"🎲 {labels[1]}"):
-        st.session_state.take = random.randint(0, 1000)
-    if c3.button(f"➡️ {labels[2]}"):
-        st.session_state.take += 1
-    
-    with c4:
-        with st.expander(f"❓ {labels[3]}"):
-            st.write("Use as setas para navegar entre as variações temáticas ou o dado para saltar no acaso.")
-
-    st.write("---")
-
-    # 2. Geração de Conteúdo
-    tema = "Fatos" # Exemplo fixo para visualização
-    poema_raw = gera_poema(tema, "")
-    poema_html = "<br>".join(poema_raw)
-
-    # 3. Exibição: Texto e Imagem
-    if st.session_state.draw:
-        col_txt, col_img = st.columns([1.5, 1])
-        with col_txt:
-            st.markdown(f"<div class='poema-box'>{poema_html}</div>", unsafe_allow_html=True)
-        with col_img:
-            # Placeholder para imagem da Machina
-            st.image("https://via.placeholder.com/400x600.png?text=Machina+Art", use_container_width=True)
-    else:
-        st.markdown(f"<div class='poema-box'>{poema_html}</div>", unsafe_allow_html=True)
-
 # --- EXECUÇÃO ---
+
+# Inicialização de estados básicos do PAI
+if "lang" not in st.session_state: st.session_state.lang = "pt"
+if "draw" not in st.session_state: st.session_state.draw = False
+if "talk" not in st.session_state: st.session_state.talk = False
+if "book" not in st.session_state: st.session_state.book = "livro vivo"
 
 current_page = build_sidebar()
 
+# Exibição da página conforme seleção
 if current_page == "yPoemas":
-    page_ypoemas()
-elif current_page == "Mini":
-    st.info("Página Mini: Próxima da sequência.")
-elif current_page == "Eureka":
-    st.info("Página Eureka: Aguardando.")
+    st.write(f"### Página yPoemas (Lógica do PAI)")
+    # Próxima etapa será montar o corpo desta página completo.
