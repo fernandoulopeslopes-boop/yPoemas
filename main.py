@@ -1,5 +1,6 @@
 ### bof: main execution logic
 
+
 def main():
     # Sidebar: Título e Navegação
     with st.sidebar:
