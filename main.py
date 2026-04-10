@@ -7,7 +7,9 @@ from lay_2_ypo import gera_poema
 
 # --- CONFIGURAÇÃO ---
 st.set_page_config(
-    page_title="a máquina de fazer Pimport os
+    page_title="a máquina de fazer Poesia"
+    
+import os
 import random
 import base64
 import socket
