@@ -237,7 +237,7 @@ def gera_poema(nome_tema, seed_eureka):
     else:
         # rebuild script with new positions
         with open(
-            st.cache_data
+            # st.cache_data
             os.path.join("./data/" + nome_tema + ".ypo"), "w", encoding="utf-8"
         ) as file:
             for linha in lista_header:
