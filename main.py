@@ -6,97 +6,107 @@ st.set_page_config(page_title="yPoemas", page_icon="ツ", layout="centered")
 
 st.markdown("""
     <style>
-    /* SIDEBAR: Largura Fixa e Cor Sutil */
+    /* SIDEBAR: Largura Fixa Rigorosa */
     [data-testid="stSidebar"] { 
         min-width: 320px !important; 
         max-width: 320px !important; 
-        background-color: #fafafa;
     }
     
-    /* PALCO: Container 800px Centralizado */
+    /* PALCO: Container 800px com respiro para a Linha Zero */
     .main .block-container { 
         max-width: 800px !important; 
-        padding-top: 1.5rem; 
+        padding-top: 4rem !important; 
     }
 
-    /* MENU NAVEGAÇÃO: Limitado a 1/3 do Palco */
-    .nav-wrapper {
-        width: 33%;
-        margin: 0 auto;
+    /* BARRA FIXA NA LINHA ZERO (Topo Absoluto) */
+    [data-testid="stHeader"] {
+        background-color: rgba(255, 255, 255, 0) !important; /* Transparente para não chocar */
+    }
+    
+    .topo-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 50px;
+        background-color: #ffffff; /* Fundo limpo */
+        z-index: 999999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-bottom: 1px solid #f0f2f6;
     }
 
-    /* BOTÕES: Rosa Pastel, 32px Diâmetro */
+    /* BOTÕES: Cor de fundo do chat (#f0f2f6), Diâmetro 30px */
     div.stButton > button {
-        background-color: #fce4ec !important;
-        color: #f06292 !important;
+        background-color: #f0f2f6 !important; 
+        color: #f06292 !important;           
         border-radius: 50% !important;
-        width: 32px !important;
-        height: 32px !important;
-        min-width: 32px !important;
-        border: 1px solid #f8bbd0 !important;
+        width: 30px !important;
+        height: 30px !important;
+        min-width: 30px !important;
+        border: 1px solid #e0e0e0 !important;
         font-size: 14px !important;
         padding: 0px !important;
         margin: 0 auto !important;
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: 0.2s;
-    }
-    div.stButton > button:hover {
-        background-color: #f8bbd0 !important;
-        transform: scale(1.1);
-    }
-
-    /* SELECTBOX NO PALCO: Sem label e centralizado */
-    .stSelectbox label { display: none !important; }
-    div[data-testid="stSelectbox"] {
-        max-width: 280px;
-        margin: 0 auto !important;
+        box-shadow: none !important;
     }
     
-    hr { border: 0; height: 1px; background: linear-gradient(to right, transparent, #f8bbd0, transparent); margin: 1.5rem 0; }
+    div.stButton > button:hover {
+        background-color: #ffffff !important;
+        border-color: #f06292 !important;
+    }
+
+    /* SELECTBOX: Centralizado no Palco */
+    div[data-testid="stSelectbox"] {
+        max-width: 300px;
+        margin: 0 auto !important;
+    }
+    label { display: none !important; }
+    
+    hr { border: 0; height: 1px; background: linear-gradient(to right, transparent, #e0e0e0, transparent); margin: 1rem 0; }
     </style>
 """, unsafe_allow_html=True)
 
-# --- 2. SIDEBAR (Reintegração do Controle) ---
-with st.sidebar:
-    st.markdown("<h1 style='text-align: center; color: #f06292;'>ツ Machina</h1>", unsafe_allow_html=True)
-    
-    # Lista de Idiomas Ocidentais (O Pacto)
-    idiomas = ["Português", "English", "Español", "Français", "Italiano", "Deutsch", "Nederlands"]
-    st.selectbox("Idioma", idiomas, key="side_lang")
-    
-    st.markdown("---")
-    
-    # Botões de Ação Lateral (Baseados no ypo_seguro.py)
-    c1, c2 = st.columns(2)
-    c1.button("Talk", key="side_tk")
-    c2.button("Arte", key="side_art")
-    
-    st.markdown("---")
-    st.button("Share", key="side_sh", use_container_width=True)
+# --- 2. NAVEGAÇÃO LINHA ZERO ---
+# Criando o container via Streamlit columns para manter a funcionalidade dos botões
+# O CSS acima se encarrega de posicionar este bloco no topo
+topo = st.container()
+with topo:
+    _, col_centro, _ = st.columns([1, 1, 1]) # 1/3 do palco
+    with col_centro:
+        n1, n2, n3, n4, n5 = st.columns(5)
+        n1.button("+", key="btn_add")
+        n2.button("<", key="btn_prev")
+        n3.button("*", key="btn_rand")
+        n4.button(">", key="btn_next")
+        n5.button("?", key="btn_help")
 
-# --- 3. PALCO: NAVEGAÇÃO (1/3 da largura) ---
-_, col_nav, _ = st.columns([1, 1, 1])
-with col_nav:
-    n1, n2, n3, n4, n5 = st.columns(5)
-    n1.button("+")
-    n2.button("<")
-    n3.button("*")
-    n4.button(">")
-    n5.button("?")
+# --- 3. SIDEBAR ---
+with st.sidebar:
+    st.markdown("<h1 style='text-align: center; color: #f06292; font-size: 28px;'>ツ Machina</h1>", unsafe_allow_html=True)
+    st.selectbox("Idioma", ["Português", "English", "Español", "Français"], key="lang_v32")
+    st.markdown("---")
+    c1, c2 = st.columns(2)
+    c1.button("Talk", key="tk_v32")
+    c2.button("Arte", key="art_v32")
+    st.button("Share", key="sh_v32", use_container_width=True)
 
 # --- 4. PALCO: SELETOR DE TEMAS ---
-st.markdown("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
-_, col_tema, _ = st.columns([1, 1.5, 1])
-with col_tema:
+# Logo abaixo da linha zero, centralizado.
+st.markdown("<br>", unsafe_allow_html=True)
+_, col_p, _ = st.columns([1, 1.5, 1])
+with col_p:
     try:
         arquivos = [f.replace(".ypo", "") for f in os.listdir("data") if f.endswith(".ypo")]
-        st.selectbox("Palco", arquivos, key="palco_main")
+        st.selectbox("Selecione o Palco", arquivos, key="palco_select")
     except:
-        st.error("Pasta /data não encontrada")
+        st.write("Pasta /data não encontrada")
 
 st.markdown("<hr>", unsafe_allow_html=True)
 
-# 5. RENDERIZAÇÃO
-st.markdown("<div style='text-align: center; color: #f06292; font-family: Georgia;'>Palco e Sidebar reintegrados.</div>", unsafe_allow_html=True)
+# 5. CONTEÚDO
+st.markdown("<div style='text-align: center; color: #b0bec5; font-family: Georgia; font-size: 18px;'>Modo Automático Ativado. Palco em Re-Build.</div>", unsafe_allow_html=True)
