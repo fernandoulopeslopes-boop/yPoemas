@@ -1,62 +1,98 @@
-# =================================================================
-# 🧠 MOTOR LÉXICO DA MACHINA (lay_2_ypo.py) - LIMPEZA CIRÚRGICA
-# =================================================================
-
-import os
-import io
-import re
-import time
-import random
-import base64
-import socket
 import streamlit as st
+import os
+import random
+import time
 from datetime import datetime
 
-# --- REMOVIDO: extra_streamlit_components (causador de crash no Py 3.14)
-# --- REMOVIDO: from lay_2_ypo import gera_poema (auto-importação eliminada)
+# --- IMPORTAÇÃO DO MOTOR ---
+# Certifique-se de que o arquivo lay_2_ypo.py esteja na mesma pasta
+from lay_2_ypo import gera_poema, translate, talk, have_internet
 
-### bof: settings
+# =================================================================
+# 🛠️ CONFIGURAÇÕES PRO & CACHE (Timeline Atualizada)
+# =================================================================
 
-# ... (Mantenha suas configurações de st.set_page_config e estilos CSS aqui)
-
-# --- CORREÇÃO DE CACHE (Protocolo de Segurança para Python Moderno) ---
-# Substituindo o antigo @st.cache por st.cache_data
+st.set_page_config(
+    page_title="a Máquina de Fazer Poesia",
+    page_icon="ツ",
+    layout="centered",
+    initial_sidebar_state="expanded",
+)
 
 @st.cache_data(show_spinner=False)
-def load_help_tips():
-    help_list = []
+def load_md_file(file_name):
     try:
-        with open(os.path.join("./base/helpers.txt"), encoding="utf-8") as file:
-            for line in file:
-                help_list.append(line)
-    except Exception:
-        return ["Ajuda não disponível"]
-    return help_list
+        with open(os.path.join("./base", file_name), "r", encoding="utf-8") as f:
+            return f.read()
+    except:
+        return ""
 
-@st.cache_data(show_spinner=False)
-def load_temas(book):
-    book_list = []
-    try:
-        with open(os.path.join("./base/rol_" + book + ".txt"), "r", encoding="utf-8") as file:
-            for line in file:
-                book_list.append(line.strip("\n"))
-    except Exception:
-        return ["Erro ao carregar temas"]
-    return book_list
+# --- ESTILIZAÇÃO CSS (Otimizada) ---
+st.markdown("""
+    <style>
+    [data-testid="stSidebar"] { width: 310px; }
+    .main .block-container { padding-top: 1rem; }
+    .stButton>button { width: 100%; border-radius: 5px; }
+    </style>
+    """, unsafe_allow_html=True)
 
 # =================================================================
-# ⚙️ FUNÇÃO MESTRE: gera_poema
+# 🧭 NAVEGAÇÃO NATIVA (Substituindo stx.TabBar)
 # =================================================================
-# Esta função deve ser autossuficiente e NÃO importar a si mesma.
 
-def gera_poema(tema, seed_manual=""):
-    # Sua lógica de trilhões de combinações permanece intacta aqui.
-    # Certifique-se de que todas as sub-funções chamadas aqui 
-    # também estejam definidas neste arquivo.
+def main():
+    if 'lang' not in st.session_state: st.session_state.lang = "pt"
     
-    poema_gerado = [] 
-    # ... (sua lógica original de construção do texto)
+    # Menu lateral com botões nativos para evitar erro de pkg_resources
+    st.sidebar.title("ツ Machina")
     
-    return poema_gerado
+    menu = {
+        "1": "Mini",
+        "2": "yPoemas",
+        "3": "Eureka",
+        "4": "Off-Machina",
+        "5": "Books",
+        "6": "Poly",
+        "7": "About"
+    }
+    
+    # Seleção de Navegação
+    chosen_id = st.sidebar.radio(
+        "Navegação", 
+        options=list(menu.keys()), 
+        format_func=lambda x: menu[x],
+        index=1
+    )
 
-# =================================================================
+    # --- BOTÕES DE AÇÃO NA SIDEBAR ---
+    st.sidebar.markdown("---")
+    col1, col2 = st.sidebar.columns(2)
+    with col1:
+        if st.button("Talk"):
+            st.session_state.talk = True
+    with col2:
+        if st.button("Arte"):
+            st.session_state.draw = True
+
+    # --- LÓGICA DE PÁGINAS ---
+    if chosen_id == "1":
+        st.sidebar.info(load_md_file("INFO_MINI.md"))
+        render_page("mini")
+    elif chosen_id == "2":
+        st.sidebar.info(load_md_file("INFO_YPOEMAS.md"))
+        render_page("ypoemas")
+    elif chosen_id == "3":
+        st.sidebar.info(load_md_file("INFO_EUREKA.md"))
+        render_page("eureka")
+    # ... (repetir lógica para os demais IDs)
+
+def render_page(tipo):
+    st.title(f"Modo: {tipo.capitalize()}")
+    # Aqui chama as funções de geração que estão no lay_2_ypo
+    if st.button("Gerar Poema"):
+        poema = gera_poema(tipo)
+        for linha in poema:
+            st.write(linha)
+
+if __name__ == "__main__":
+    main()
