@@ -1,100 +1,98 @@
 import streamlit as st
+import random
 import os
 
-# --- IMPORTAÇÃO DO MOTOR ---
-try:
-    from lay_2_ypo import gera_poema
-except ImportError:
-    st.error("Erro: Arquivo 'lay_2_ypo.py' não encontrado.")
+# 1. ARQUITETURA DE HARDWARE VIRTUAL (Layout Fixo)
+st.set_page_config(page_title="a Máquina de Fazer Poesia", page_icon="ツ", layout="centered")
 
-# =================================================================
-# ⚙️ CONFIGURAÇÕES & ESTILO
-# =================================================================
-
-st.set_page_config(
-    page_title="a Máquina de Fazer Poesia",
-    page_icon="ツ",
-    layout="centered",
-    initial_sidebar_state="expanded",
-)
-
-# Cache moderno para arquivos auxiliares
-@st.cache_data(show_spinner=False)
-def load_info(file_name):
-    path = os.path.join("./base", file_name)
-    if os.path.exists(path):
-        with open(path, "r", encoding="utf-8") as f:
-            return f.read()
-    return ""
-
-# CSS para manter o esmero visual
 st.markdown("""
     <style>
-    [data-testid="stSidebar"] { width: 310px; }
-    .main .block-container { padding-top: 1.5rem; }
-    div.stButton > button { width: 100%; border-radius: 5px; }
+    /* SIDEBAR: Rigor de 320px */
+    [data-testid="stSidebar"] { min-width: 320px !important; max-width: 320px !important; }
+    
+    /* PALCO: Container de 800px para leitura poética */
+    .main .block-container { max-width: 800px !important; padding-top: 2rem; }
+    
+    /* MENU SUPERIOR: Botões Rosa Circulares 65px */
+    div.stButton > button {
+        background-color: #ff4b4b; color: white; border-radius: 50% !important;
+        width: 65px !important; height: 65px !important; border: none;
+        font-weight: bold; font-size: 26px; transition: 0.2s;
+        display: flex; align-items: center; justify-content: center;
+        margin: auto; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    div.stButton > button:hover { background-color: #d33; transform: scale(1.1); rotate: 5deg; }
+    
+    /* DROP-DOWNS: Estilo Minimalista (Collapsed) */
+    .stSelectbox label { display: none; } 
+    
+    /* DIVISOR: O 'fio de navalha' em gradiente */
+    hr { border: 0; height: 1px; background: linear-gradient(to right, transparent, #ff4b4b, transparent); margin: 2rem 0; }
+    
+    /* VERSOS: Fonte Serifada para o Palco */
+    .stSubheader { font-family: 'Georgia', serif; font-weight: 300; text-align: center; color: #1a1a1a; padding: 0.6rem 0; line-height: 1.4; }
     </style>
-    """, unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 
-# =================================================================
-# 🧭 NAVEGAÇÃO & SIDEBAR
-# =================================================================
+# 2. MOTOR DA MACHINA (Filtragem de Quatrilhões de Verbetes)
+def motor_v30(tema):
+    try:
+        caminho = f"data/{tema}.ypo"
+        if not os.path.exists(caminho): return [f"Palco {tema} não encontrado."]
+        
+        with open(caminho, "r", encoding="utf-8") as f:
+            linhas = f.read().splitlines()
+        
+        poema = []
+        for l in linhas:
+            t = l.strip()
+            # O Algoritmo agora identifica o que é POESIA e o que é CÓDIGO/BUILD
+            if (not t or t.startswith(("#", "*-", "<EOF>")) or 
+                t == "F" or t.isdigit() or "_" in t):
+                continue
+            
+            # Escolha aleatória nos ítimos separados por pipe
+            poema.append(random.choice(t.split("|")) if "|" in t else t)
+        return poema
+    except Exception as e:
+        return [f"Erro de processamento: {e}"]
 
-def main():
-    st.sidebar.title("ツ Machina")
+# 3. SIDEBAR (Configurações e Menu de Ação)
+with st.sidebar:
+    st.markdown("<h1 style='text-align: center;'>ツ Machina</h1>", unsafe_allow_html=True)
     
-    # Menu Nativo (Substituindo o TabBar problemático)
-    menu = {
-        "1": "Mini",
-        "2": "yPoemas",
-        "3": "Eureka",
-        "4": "Off-Machina",
-        "5": "Books",
-        "6": "Poly",
-        "7": "About"
-    }
+    # Menu Idiomas (O topo da sidebar)
+    st.selectbox("Idioma", ["Português", "English", "Español", "Français", "Italiano"], key="lang_sel")
     
-    chosen_id = st.sidebar.radio(
-        "Navegação", 
-        options=list(menu.keys()), 
-        format_func=lambda x: menu[x].upper(),
-        index=1
-    )
-
-    st.sidebar.markdown("---")
+    st.markdown("---")
     
-    # Botões de Ação solicitados
-    col1, col2 = st.sidebar.columns(2)
-    with col1:
-        if st.sidebar.button("Talk"):
-            st.session_state.action = "talk"
-    with col2:
-        if st.sidebar.button("Arte"):
-            st.session_state.action = "draw"
-
-    # Exibição automática de informações do tema na Sidebar
-    info_files = {
-        "1": "INFO_MINI.md", "2": "INFO_YPOEMAS.md", "3": "INFO_EUREKA.md",
-        "4": "INFO_OFF-MACHINA.md", "5": "INFO_BOOKS.md", "6": "INFO_POLY.md",
-        "7": "INFO_ABOUT.md"
-    }
+    # Drop-down de Temas (Palcos)
+    try:
+        arquivos = [f.replace(".ypo", "") for f in os.listdir("data") if f.endswith(".ypo")]
+        tema_atual = st.selectbox("Tema", arquivos, index=0, key="tema_sel")
+    except:
+        st.error("Pasta /data não encontrada.")
     
-    info_content = load_info(info_files.get(chosen_id, ""))
-    if info_content:
-        st.sidebar.info(info_content)
+    st.markdown("---")
+    # Botões de Ação
+    c1, c2 = st.columns(2)
+    c1.button("Talk", key="tk_btn")
+    c2.button("Arte", key="art_btn")
+    st.button("Share", key="sh_btn", use_container_width=True)
 
-    # --- RENDERIZAÇÃO PRINCIPAL ---
-    tema_selecionado = menu[chosen_id]
-    st.title(f"Modo: {tema_selecionado}")
-    
-    if st.button(f"Gerar {tema_selecionado}"):
-        with st.spinner("Semeando versos..."):
-            poema = gera_poema(tema_selecionado)
-            if poema:
-                st.markdown("---")
-                for linha in poema:
-                    st.write(linha)
-                st.markdown("---")
+# 4. NAVEGAÇÃO SUPERIOR (Centralizada no Palco)
+nav = st.columns(5)
+icones = ["+", "<", "*", ">", "?"]
+for i, col in enumerate(nav):
+    with col:
+        st.button(icones[i], key=f"nav_{i}")
 
-if __name__ == "__main__":
-    main()
+# 5. O PALCO (Apresentação Final)
+st.markdown("<hr>", unsafe_allow_html=True)
+
+# Execução do motor e renderização dos subheaders
+versos_finais = motor_v30(st.session_state.get("tema_sel", "Mirante"))
+for verso in versos_finais:
+    st.subheader(verso)
+
+st.markdown("<hr>", unsafe_allow_html=True)
