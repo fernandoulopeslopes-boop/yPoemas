@@ -2,44 +2,54 @@ import streamlit as st
 import random
 import os
 
-# 1. CONFIGURAÇÃO E ESTILO (O "Esmero" Visual)
+# 1. ARQUITETURA DE INTERFACE (Refinamento v.30)
 st.set_page_config(page_title="a Máquina de Fazer Poesia", page_icon="ツ", layout="centered")
 
 st.markdown("""
     <style>
-    /* Botões Circulares Rosa */
+    /* Reset de margens e centralização */
+    .block-container { padding-top: 2rem; }
+    
+    /* Botões Circulares Rosa (Identidade Visual) */
     div.stButton > button {
         background-color: #ff4b4b;
         color: white;
-        border-radius: 50%;
-        width: 50px;
-        height: 50px;
+        border-radius: 50% !important;
+        width: 50px !important;
+        height: 50px !important;
         border: none;
         font-weight: bold;
         font-size: 20px;
-        transition: 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: auto;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        transition: 0.2s;
     }
     div.stButton > button:hover {
         background-color: #ff3333;
-        transform: scale(1.1);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 8px rgba(0,0,0,0.2);
     }
-    /* Estética do Palco */
+    
+    /* Estilo dos Versos (Subheaders limpos) */
     .stSubheader {
-        font-weight: 300;
-        color: #31333F;
-        letter-spacing: -0.5px;
+        font-family: 'serif';
+        font-weight: 400;
+        text-align: center;
+        color: #1E1E1E;
+        padding: 0.2rem 0;
     }
     </style>
 """, unsafe_allow_html=True)
 
-# 2. INICIALIZAÇÃO DE ESTADO
-if "page" not in st.session_state:
-    st.session_state.page = "Demo"
-if "tema_atual" not in st.session_state:
-    st.session_state.tema_atual = "Mirante"
+# 2. GESTÃO DE ESTADO (PTC: Persistent State)
+if "page" not in st.session_state: st.session_state.page = "Demo"
+if "tema_atual" not in st.session_state: st.session_state.tema_atual = "Mirante"
 
-# 3. MOTOR DA MACHINA (Integrado v.28)
-def motor_v28(tema):
+# 3. O MOTOR (Baseado nas análises de filtro de metadados)
+def motor_v30(tema):
     try:
         caminho = f"data/{tema}.ypo"
         with open(caminho, "r", encoding="utf-8") as f:
@@ -48,10 +58,14 @@ def motor_v28(tema):
         poema = []
         for l in linhas:
             txt = l.strip()
-            # Filtro de metadados e marcas técnicas (F, números, caminhos de build)
-            if (not txt or txt.startswith("#") or txt.startswith("*-") or 
-                txt.startswith("<EOF>") or txt == "F" or txt.isdigit() or 
-                "_" in txt):
+            # Filtros aplicados conforme suas análises:
+            if (not txt or                     # Linhas vazias
+                txt.startswith("#") or         # Comentários
+                txt.startswith("*-") or        # Separadores de build
+                txt.startswith("<EOF>") or     # Fim de arquivo
+                txt == "F" or                  # Marcador F
+                txt.isdigit() or               # IDs numéricos (00, 02, 10...)
+                "_" in txt):                   # Tags de build (ex: Mirante_0402)
                 continue
                 
             if "|" in txt:
@@ -60,42 +74,43 @@ def motor_v28(tema):
                 poema.append(txt)
         return poema
     except Exception as e:
-        return [f"Erro no motor: {e}"]
+        return [f"Erro: {e}"]
 
-# 4. SIDEBAR REFINADA
+# 4. SIDEBAR (Talk, Arte, Share)
 with st.sidebar:
     st.title("ツ Machina")
     try:
         arquivos = [f.replace(".ypo", "") for f in os.listdir("data") if f.endswith(".ypo")]
-        st.session_state.tema_atual = st.selectbox("Palco", arquivos, index=arquivos.index(st.session_state.tema_atual) if st.session_state.tema_atual in arquivos else 0)
+        st.session_state.tema_atual = st.selectbox("Selecione o Palco", arquivos, 
+                                                   index=arquivos.index(st.session_state.tema_atual) if st.session_state.tema_atual in arquivos else 0)
     except:
-        st.error("Diretório /data inacessível")
+        st.error("Diretório /data não encontrado.")
     
     st.markdown("---")
     c1, c2 = st.columns(2)
-    c1.button("Talk")
-    c2.button("Arte")
+    with c1: st.button("Talk")
+    with c2: st.button("Arte")
     st.button("Share", use_container_width=True)
 
-# 5. NAVEGAÇÃO DE TOPO (Botões Circulares)
-nav = st.columns([1,1,1,1,1])
-botoes = ["+", "<", "*", ">", "?"]
-paginas = ["Demo", "yPoemas", "Eureka", "Off-Machina", "About"]
+# 5. NAVEGAÇÃO SUPERIOR ( + < * > ? )
+nav = st.columns(5)
+btns = ["+", "<", "*", ">", "?"]
+pgs = ["Demo", "yPoemas", "Eureka", "Off-Machina", "About"]
 
 for i, col in enumerate(nav):
     with col:
-        if st.button(botoes[i]):
-            st.session_state.page = paginas[i]
+        if st.button(btns[i]):
+            st.session_state.page = pgs[i]
 
 # 6. RENDERIZAÇÃO DO PALCO
 st.markdown("---")
 
-# Filtro de Página
 if st.session_state.page == "Demo":
-    versos = motor_v28(st.session_state.tema_atual)
+    versos = motor_v30(st.session_state.tema_atual)
     for v in versos:
         st.subheader(v)
 else:
-    st.info(f"Página {st.session_state.page} em construção.")
+    st.write(f"### Seção {st.session_state.page}")
+    st.info("Em desenvolvimento...")
 
 st.markdown("---")
