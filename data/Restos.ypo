@@ -5,15 +5,15 @@
 |02|01|Restos_0201|T|9|2|borrifar|desfiar|dispersar|espalhar|esparramar|lançar|polvilhar|salpicar|aspergir|
 |02|02|Restos_0202|F|1|1|meus Restos Imortais|
 |03|01|Restos_0301|F|19|1|no Mangue|no Estuário|no Morro|no Pantanal|no Planalto|no Vale|na Catinga|na Cachoeira|na Serra|na Restinga|na Chapada|na Colina|na Cordilheira|na Enseada|na Garganta|na Ilha|na Lagoa|na Várzea|na Vertente
-|03|02|Restos_0302|T|8|1|do Araguaia|de Jericoacoara|da Capivara|de Itatiaia|da Canastra|de Araraquara|da Marambaia|de Itanhaém|
+|03|02|Restos_0302|T|8|1|do Araguaia|de Jericoacoara|de Itatiaia|da Canastra|do Anhangabaú|de Araraquara|da Marambaia|de Itanhaém|do Jalapão|do Cipó|de Itacaré|do Rola-Moça|de Catingueira|de Baturité|de Jurubatiba|do Espinhaço|da Capivara|
 |03|03|Restos_0303|F|1|1|.|
 |04|00|
 |05|01|Restos_0501|T|1|1|( |
 |05|02|Restos_0502|F|1|1|ou... |quiçá |e também |talvez |
 |05|02|Restos_0301|T|19|1|no Mangue|no Estuário|no Morro|no Pantanal|no Planalto|no Vale|na Catinga|na Cachoeira|na Serra|na Restinga|na Chapada|na Colina|na Cordilheira|na Enseada|na Garganta|na Ilha|na Lagoa|na Várzea|na Vertente
-|05|04|Restos_0504|T|9|1|de Itacaré|de Baturité|do Rola-Moça|de Catingueira|do Anhangabaú|do Jalapão|de Jurubatiba|do Espinhaço|do Cipó|
+|05|04|Restos_0302|T|9|1|do Araguaia|de Jericoacoara|de Itatiaia|da Canastra|do Anhangabaú|de Araraquara|da Marambaia|de Itanhaém|do Jalapão|do Cipó|de Itacaré|do Rola-Moça|de Catingueira|de Baturité|de Jurubatiba|do Espinhaço|da Capivara|
 |05|05|Restos_0505|T|1|1| )|
 |07|00|
-|07|01|Restos_0601|F|13|1|fica perto do horizonte|é a cara da eternidade|morada digna de sonhos|lá estarei ao abrigo do tédio|lado alado dos infinitos|um dia ainda vira moda|ao abrigo das coisas mundanas|na Paz que trás a natureza|nos braços de algum silêncio|o início de outro início|um rasgo de liberdade|a amplidão da quietude|espaço aberto ao imaginário|
+|07|01|Restos_0601|F|13|1|fica perto do horizonte|é a cara da eternidade|morada digna de sonhos|ao abrigo das horas de tédio|lado alado dos infinitos|distante das coisas mundanas|na Paz que trás a natureza|nos braços de algum silêncio|o início de outro início|um rasgo de liberdade|a amplidão da quietude|espaço aberto ao imaginário|
 |07|02|Restos_0303|F|4|1|.|...|!|?|
 <EOF>
