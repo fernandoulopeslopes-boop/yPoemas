@@ -10,7 +10,7 @@ except SyntaxError:
     st.error("Erro de Sintaxe no motor. Verifique o arquivo lay_2_ypo.py.")
 
 # =================================================================
-# ⚙️ CONFIGURAÇÕES & ESTILO
+# ⚙️ CONFIGURAÇÕES & ESTILO 
 # =================================================================
 
 st.set_page_config(
