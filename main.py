@@ -1,15 +1,14 @@
 import streamlit as st
 import os
-import random
-import time
-from datetime import datetime
 
-# --- IMPORTAÇÃO DO MOTOR ---
-# Certifique-se de que o arquivo lay_2_ypo.py esteja na mesma pasta
-from lay_2_ypo import gera_poema, translate, talk, have_internet
+# --- MOTOR LÉXICO (Importando do seu lay_2_ypo.py) ---
+try:
+    from lay_2_ypo import gera_poema, translate, talk, have_internet
+except ImportError:
+    st.error("Erro: Arquivo 'lay_2_ypo.py' não encontrado na mesma pasta.")
 
 # =================================================================
-# 🛠️ CONFIGURAÇÕES PRO & CACHE (Timeline Atualizada)
+# 🛠️ CONFIGURAÇÕES PRO & CACHE (Timeline 2026)
 # =================================================================
 
 st.set_page_config(
@@ -19,33 +18,37 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
+# Cache moderno: substitui o antigo @st.cache
 @st.cache_data(show_spinner=False)
 def load_md_file(file_name):
     try:
-        with open(os.path.join("./base", file_name), "r", encoding="utf-8") as f:
-            return f.read()
+        path = os.path.join("./base", file_name)
+        if os.path.exists(path):
+            with open(path, "r", encoding="utf-8") as f:
+                return f.read()
     except:
         return ""
+    return ""
 
-# --- ESTILIZAÇÃO CSS (Otimizada) ---
+# Estilização para manter a identidade visual
 st.markdown("""
     <style>
     [data-testid="stSidebar"] { width: 310px; }
     .main .block-container { padding-top: 1rem; }
-    .stButton>button { width: 100%; border-radius: 5px; }
+    div.stButton > button { width: 100%; }
     </style>
     """, unsafe_allow_html=True)
 
 # =================================================================
-# 🧭 NAVEGAÇÃO NATIVA (Substituindo stx.TabBar)
+# 🧭 NAVEGAÇÃO NATIVA (Plano B / Sem pkg_resources)
 # =================================================================
 
 def main():
     if 'lang' not in st.session_state: st.session_state.lang = "pt"
     
-    # Menu lateral com botões nativos para evitar erro de pkg_resources
     st.sidebar.title("ツ Machina")
     
+    # Menu robusto e imune a erros de instalação
     menu = {
         "1": "Mini",
         "2": "yPoemas",
@@ -56,11 +59,11 @@ def main():
         "7": "About"
     }
     
-    # Seleção de Navegação
+    # O st.sidebar.radio que substitui o stx.TabBar
     chosen_id = st.sidebar.radio(
         "Navegação", 
         options=list(menu.keys()), 
-        format_func=lambda x: menu[x],
+        format_func=lambda x: menu[x].upper(),
         index=1
     )
 
@@ -74,25 +77,33 @@ def main():
         if st.button("Arte"):
             st.session_state.draw = True
 
-    # --- LÓGICA DE PÁGINAS ---
-    if chosen_id == "1":
-        st.sidebar.info(load_md_file("INFO_MINI.md"))
-        render_page("mini")
-    elif chosen_id == "2":
-        st.sidebar.info(load_md_file("INFO_YPOEMAS.md"))
-        render_page("ypoemas")
-    elif chosen_id == "3":
-        st.sidebar.info(load_md_file("INFO_EUREKA.md"))
-        render_page("eureka")
-    # ... (repetir lógica para os demais IDs)
+    # --- LÓGICA DE EXIBIÇÃO DE INFO ---
+    info_map = {
+        "1": "INFO_MINI.md", "2": "INFO_YPOEMAS.md", "3": "INFO_EUREKA.md",
+        "4": "INFO_OFF-MACHINA.md", "5": "INFO_BOOKS.md", "6": "INFO_POLY.md",
+        "7": "INFO_ABOUT.md"
+    }
+    
+    info_content = load_md_file(info_map.get(chosen_id, ""))
+    if info_content:
+        st.sidebar.info(info_content)
 
-def render_page(tipo):
+    # --- RENDERIZAÇÃO DA PÁGINA ---
+    tipo_selecionado = menu[chosen_id].lower()
+    render_engine(tipo_selecionado)
+
+def render_engine(tipo):
     st.title(f"Modo: {tipo.capitalize()}")
-    # Aqui chama as funções de geração que estão no lay_2_ypo
-    if st.button("Gerar Poema"):
-        poema = gera_poema(tipo)
-        for linha in poema:
-            st.write(linha)
+    
+    # Interface de geração simplificada para teste
+    if st.button(f"Gerar {tipo.capitalize()}"):
+        with st.spinner("A Machina está processando..."):
+            poema = gera_poema(tipo)
+            if poema:
+                st.markdown("---")
+                for linha in poema:
+                    st.write(linha)
+                st.markdown("---")
 
 if __name__ == "__main__":
     main()
