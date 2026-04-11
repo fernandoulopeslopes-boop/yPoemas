@@ -1,109 +1,37 @@
-import streamlit as st
 import os
-import traceback
+import random
 
-# --- TENTATIVA DE IMPORTAÇÃO COM DIAGNÓSTICO ---
-try:
-    from lay_2_ypo import gera_poema
-except Exception:
-    st.error("Falha Crítica ao carregar o motor 'lay_2_ypo.py'")
-    st.code(traceback.format_exc()) # Isso vai mostrar o erro real escondido
-    st.stop()
-
-# =================================================================
-# ⚙️ CONFIGURAÇÕES & ESTILO
-# =================================================================
-
-st.set_page_config(
-    page_title="a Máquina de Fazer Poesia",
-    page_icon="ツ",
-    layout="centered",
-    initial_sidebar_state="expanded",
-)
-
-@st.cache_data(show_spinner=False)
-def load_info(file_name):
-    path = os.path.join("./base", file_name)
-    if os.path.exists(path):
-        with open(path, "r", encoding="utf-8") as f:
-            return f.read()
-    return ""
-
-st.markdown("""
-    <style>
-    [data-testid="stSidebar"] { width: 310px; }
-    .main .block-container { padding-top: 1.5rem; }
-    div.stButton > button { width: 100%; border-radius: 5px; }
-    </style>
-    """, unsafe_allow_html=True)
-
-# =================================================================
-# 🧭 NAVEGAÇÃO & SIDEBAR
-# =================================================================
-
-def main():
-    st.sidebar.title("ツ Machina")
+def gera_poema(nome_tema, seed_eureka=""):
+    """
+    Motor lógico: Recebe o tema e a semente, sorteia os versos
+    e devolve a lista para a interface.
+    """
     
-    menu = {
-        "1": "Mini",
-        "2": "yPoemas",
-        "3": "Eureka",
-        "4": "Off-Machina",
-        "5": "Books",
-        "6": "Poly",
-        "7": "About"
-    }
+    # 1. Localização da base de dados (exemplo)
+    # Supondo que seus versos estejam em arquivos dentro de /base
+    caminho_base = os.path.join("./base", f"{nome_tema}.txt")
     
-    chosen_id = st.sidebar.radio(
-        "Navegação", 
-        options=list(menu.keys()), 
-        format_func=lambda x: menu[x].upper(),
-        index=1
-    )
+    # --- AQUI ENTRA A SUA LÓGICA ORIGINAL DE SORTEIO ---
+    # Se o arquivo não existir, retornamos um aviso ou um sorteio padrão
+    if not os.path.exists(caminho_base):
+        poema_gerado = [f"Iniciando versos sobre {nome_tema}...", "O silêncio precede a criação."]
+    else:
+        with open(caminho_base, "r", encoding="utf-8") as f:
+            linhas = f.readlines()
+            # Sorteia, por exemplo, 5 versos aleatórios
+            poema_gerado = random.sample(linhas, min(len(linhas), 5))
+            poema_gerado = [l.strip() for l in poema_gerado]
 
-    st.sidebar.markdown("---")
-    
-    col1, col2 = st.sidebar.columns(2)
-    with col1:
-        if st.sidebar.button("Talk"):
-            st.session_state.action = "talk"
-    with col2:
-        if st.sidebar.button("Arte"):
-            st.session_state.action = "draw"
+    # 2. Gravação do histórico (.ypo)
+    try:
+        if not os.path.exists("./data"):
+            os.makedirs("./data")
+        
+        caminho_save = os.path.join("./data", f"{nome_tema}.ypo")
+        with open(caminho_save, "w", encoding="utf-8") as f_save:
+            for verso in poema_gerado:
+                f_save.write(str(verso) + "\n")
+    except Exception:
+        pass # Silencioso conforme o protocolo
 
-    info_files = {
-        "1": "INFO_MINI.md", "2": "INFO_YPOEMAS.md", "3": "INFO_EUREKA.md",
-        "4": "INFO_OFF-MACHINA.md", "5": "INFO_BOOKS.md", "6": "INFO_POLY.md",
-        "7": "INFO_ABOUT.md"
-    }
-    
-    info_content = load_info(info_files.get(chosen_id, ""))
-    if info_content:
-        st.sidebar.info(info_content)
-
-    # --- RENDERIZAÇÃO PRINCIPAL ---
-    tema_selecionado = menu[chosen_id]
-    st.title(f"Modo: {tema_selecionado}")
-    
-    seed_eureka = ""
-    if tema_selecionado == "Eureka":
-        seed_eureka = st.text_input("Semente ➪ Coords:", value="")
-    
-    if st.button(f"Gerar {tema_selecionado}"):
-        with st.spinner("Semeando versos..."):
-            try:
-                # Chamada com os 2 parâmetros
-                resultado = gera_poema(tema_selecionado, seed_eureka)
-                if resultado:
-                    st.markdown("---")
-                    if isinstance(resultado, list):
-                        for linha in resultado:
-                            st.write(linha)
-                    else:
-                        st.write(resultado)
-                    st.markdown("---")
-            except Exception as e:
-                st.error(f"Erro na execução: {e}")
-
-if __name__ == "__main__":
-    main()
+    return poema_gerado
