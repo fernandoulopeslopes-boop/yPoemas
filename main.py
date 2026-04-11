@@ -1,8 +1,14 @@
 import streamlit as st
 import os
+import traceback
 
-# Importação direta e obrigatória
-from lay_2_ypo import gera_poema
+# --- TENTATIVA DE IMPORTAÇÃO COM DIAGNÓSTICO ---
+try:
+    from lay_2_ypo import gera_poema
+except Exception:
+    st.error("Falha Crítica ao carregar o motor 'lay_2_ypo.py'")
+    st.code(traceback.format_exc()) # Isso vai mostrar o erro real escondido
+    st.stop()
 
 # =================================================================
 # ⚙️ CONFIGURAÇÕES & ESTILO
@@ -65,7 +71,6 @@ def main():
         if st.sidebar.button("Arte"):
             st.session_state.action = "draw"
 
-    # Carregamento de infos da pasta /base
     info_files = {
         "1": "INFO_MINI.md", "2": "INFO_YPOEMAS.md", "3": "INFO_EUREKA.md",
         "4": "INFO_OFF-MACHINA.md", "5": "INFO_BOOKS.md", "6": "INFO_POLY.md",
@@ -80,7 +85,6 @@ def main():
     tema_selecionado = menu[chosen_id]
     st.title(f"Modo: {tema_selecionado}")
     
-    # Parâmetro Eureka
     seed_eureka = ""
     if tema_selecionado == "Eureka":
         seed_eureka = st.text_input("Semente ➪ Coords:", value="")
@@ -88,9 +92,8 @@ def main():
     if st.button(f"Gerar {tema_selecionado}"):
         with st.spinner("Semeando versos..."):
             try:
-                # Chamada com os 2 parâmetros conforme exigido pelo motor
+                # Chamada com os 2 parâmetros
                 resultado = gera_poema(tema_selecionado, seed_eureka)
-                
                 if resultado:
                     st.markdown("---")
                     if isinstance(resultado, list):
@@ -100,7 +103,7 @@ def main():
                         st.write(resultado)
                     st.markdown("---")
             except Exception as e:
-                st.error(f"Erro na execução do motor: {e}")
+                st.error(f"Erro na execução: {e}")
 
 if __name__ == "__main__":
     main()
