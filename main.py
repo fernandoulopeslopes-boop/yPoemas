@@ -50,7 +50,7 @@ import streamlit as st
 
 from extra_streamlit_components import TabBar as stx
 from datetime import datetime
-from lay_2_ypo import gera_poema
+from lay_2_ypo import 
 
 ### bof: settings
 
@@ -599,7 +599,7 @@ def load_book_pages(book):  # Load Book pages for off_book
 
 
 def load_poema(nome_tema, seed_eureka):  # generate new yPoema
-    script = gera_poema(nome_tema, seed_eureka)
+    script = (nome_tema, seed_eureka)
     novo_ypoema = ""
     lypo_user = "LYPO_" + IPAddres
 
