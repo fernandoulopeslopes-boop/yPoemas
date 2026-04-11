@@ -1,116 +1,100 @@
 import streamlit as st
-import random
 import os
 
-# 1. ARQUITETURA DE INTERFACE (Refinamento v.30)
-st.set_page_config(page_title="a Máquina de Fazer Poesia", page_icon="ツ", layout="centered")
+# --- IMPORTAÇÃO DO MOTOR ---
+try:
+    from lay_2_ypo import gera_poema
+except ImportError:
+    st.error("Erro: Arquivo 'lay_2_ypo.py' não encontrado.")
 
+# =================================================================
+# ⚙️ CONFIGURAÇÕES & ESTILO
+# =================================================================
+
+st.set_page_config(
+    page_title="a Máquina de Fazer Poesia",
+    page_icon="ツ",
+    layout="centered",
+    initial_sidebar_state="expanded",
+)
+
+# Cache moderno para arquivos auxiliares
+@st.cache_data(show_spinner=False)
+def load_info(file_name):
+    path = os.path.join("./base", file_name)
+    if os.path.exists(path):
+        with open(path, "r", encoding="utf-8") as f:
+            return f.read()
+    return ""
+
+# CSS para manter o esmero visual
 st.markdown("""
     <style>
-    /* Reset de margens e centralização */
-    .block-container { padding-top: 2rem; }
-    
-    /* Botões Circulares Rosa (Identidade Visual) */
-    div.stButton > button {
-        background-color: #ff4b4b;
-        color: white;
-        border-radius: 50% !important;
-        width: 50px !important;
-        height: 50px !important;
-        border: none;
-        font-weight: bold;
-        font-size: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: auto;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        transition: 0.2s;
-    }
-    div.stButton > button:hover {
-        background-color: #ff3333;
-        transform: translateY(-2px);
-        box-shadow: 0 6px 8px rgba(0,0,0,0.2);
-    }
-    
-    /* Estilo dos Versos (Subheaders limpos) */
-    .stSubheader {
-        font-family: 'serif';
-        font-weight: 400;
-        text-align: center;
-        color: #1E1E1E;
-        padding: 0.2rem 0;
-    }
+    [data-testid="stSidebar"] { width: 310px; }
+    .main .block-container { padding-top: 1.5rem; }
+    div.stButton > button { width: 100%; border-radius: 5px; }
     </style>
-""", unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
-# 2. GESTÃO DE ESTADO (PTC: Persistent State)
-if "page" not in st.session_state: st.session_state.page = "Demo"
-if "tema_atual" not in st.session_state: st.session_state.tema_atual = "Mirante"
+# =================================================================
+# 🧭 NAVEGAÇÃO & SIDEBAR
+# =================================================================
 
-# 3. O MOTOR (Baseado nas análises de filtro de metadados)
-def motor_v30(tema):
-    try:
-        caminho = f"data/{tema}.ypo"
-        with open(caminho, "r", encoding="utf-8") as f:
-            linhas = f.read().splitlines()
-        
-        poema = []
-        for l in linhas:
-            txt = l.strip()
-            # Filtros aplicados conforme suas análises:
-            if (not txt or                     # Linhas vazias
-                txt.startswith("#") or         # Comentários
-                txt.startswith("*-") or        # Separadores de build
-                txt.startswith("<EOF>") or     # Fim de arquivo
-                txt == "F" or                  # Marcador F
-                txt.isdigit() or               # IDs numéricos (00, 02, 10...)
-                "_" in txt):                   # Tags de build (ex: Mirante_0402)
-                continue
-                
-            if "|" in txt:
-                poema.append(random.choice(txt.split("|")))
-            else:
-                poema.append(txt)
-        return poema
-    except Exception as e:
-        return [f"Erro: {e}"]
-
-# 4. SIDEBAR (Talk, Arte, Share)
-with st.sidebar:
-    st.title("ツ Machina")
-    try:
-        arquivos = [f.replace(".ypo", "") for f in os.listdir("data") if f.endswith(".ypo")]
-        st.session_state.tema_atual = st.selectbox("Selecione o Palco", arquivos, 
-                                                   index=arquivos.index(st.session_state.tema_atual) if st.session_state.tema_atual in arquivos else 0)
-    except:
-        st.error("Diretório /data não encontrado.")
+def main():
+    st.sidebar.title("ツ Machina")
     
-    st.markdown("---")
-    c1, c2 = st.columns(2)
-    with c1: st.button("Talk")
-    with c2: st.button("Arte")
-    st.button("Share", use_container_width=True)
+    # Menu Nativo (Substituindo o TabBar problemático)
+    menu = {
+        "1": "Mini",
+        "2": "yPoemas",
+        "3": "Eureka",
+        "4": "Off-Machina",
+        "5": "Books",
+        "6": "Poly",
+        "7": "About"
+    }
+    
+    chosen_id = st.sidebar.radio(
+        "Navegação", 
+        options=list(menu.keys()), 
+        format_func=lambda x: menu[x].upper(),
+        index=1
+    )
 
-# 5. NAVEGAÇÃO SUPERIOR ( + < * > ? )
-nav = st.columns(5)
-btns = ["+", "<", "*", ">", "?"]
-pgs = ["Demo", "yPoemas", "Eureka", "Off-Machina", "About"]
+    st.sidebar.markdown("---")
+    
+    # Botões de Ação solicitados
+    col1, col2 = st.sidebar.columns(2)
+    with col1:
+        if st.sidebar.button("Talk"):
+            st.session_state.action = "talk"
+    with col2:
+        if st.sidebar.button("Arte"):
+            st.session_state.action = "draw"
 
-for i, col in enumerate(nav):
-    with col:
-        if st.button(btns[i]):
-            st.session_state.page = pgs[i]
+    # Exibição automática de informações do tema na Sidebar
+    info_files = {
+        "1": "INFO_MINI.md", "2": "INFO_YPOEMAS.md", "3": "INFO_EUREKA.md",
+        "4": "INFO_OFF-MACHINA.md", "5": "INFO_BOOKS.md", "6": "INFO_POLY.md",
+        "7": "INFO_ABOUT.md"
+    }
+    
+    info_content = load_info(info_files.get(chosen_id, ""))
+    if info_content:
+        st.sidebar.info(info_content)
 
-# 6. RENDERIZAÇÃO DO PALCO
-st.markdown("---")
+    # --- RENDERIZAÇÃO PRINCIPAL ---
+    tema_selecionado = menu[chosen_id]
+    st.title(f"Modo: {tema_selecionado}")
+    
+    if st.button(f"Gerar {tema_selecionado}"):
+        with st.spinner("Semeando versos..."):
+            poema = gera_poema(tema_selecionado)
+            if poema:
+                st.markdown("---")
+                for linha in poema:
+                    st.write(linha)
+                st.markdown("---")
 
-if st.session_state.page == "Demo":
-    versos = motor_v30(st.session_state.tema_atual)
-    for v in versos:
-        st.subheader(v)
-else:
-    st.write(f"### Seção {st.session_state.page}")
-    st.info("Em desenvolvimento...")
-
-st.markdown("---")
+if __name__ == "__main__":
+    main()
