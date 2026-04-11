@@ -1,37 +1,58 @@
+import streamlit as st
 import os
-import random
+import time
 
-def gera_poema(nome_tema, seed_eureka=""):
-    """
-    Motor lógico: Recebe o tema e a semente, sorteia os versos
-    e devolve a lista para a interface.
-    """
-    
-    # 1. Localização da base de dados (exemplo)
-    # Supondo que seus versos estejam em arquivos dentro de /base
-    caminho_base = os.path.join("./base", f"{nome_tema}.txt")
-    
-    # --- AQUI ENTRA A SUA LÓGICA ORIGINAL DE SORTEIO ---
-    # Se o arquivo não existir, retornamos um aviso ou um sorteio padrão
-    if not os.path.exists(caminho_base):
-        poema_gerado = [f"Iniciando versos sobre {nome_tema}...", "O silêncio precede a criação."]
-    else:
-        with open(caminho_base, "r", encoding="utf-8") as f:
-            linhas = f.readlines()
-            # Sorteia, por exemplo, 5 versos aleatórios
-            poema_gerado = random.sample(linhas, min(len(linhas), 5))
-            poema_gerado = [l.strip() for l in poema_gerado]
+# --- IMPORTAÇÃO ---
+try:
+    from lay_2_ypo import gera_poema
+except ImportError:
+    st.error("Erro: O motor 'lay_2_ypo.py' não foi encontrado ou está corrompido.")
+    st.stop()
 
-    # 2. Gravação do histórico (.ypo)
-    try:
-        if not os.path.exists("./data"):
-            os.makedirs("./data")
+# --- CONFIGURAÇÃO ---
+st.set_page_config(page_title="a Máquina de Fazer Poesia", page_icon="ツ")
+
+# --- ESTADO INICIAL ---
+if "auto_run" not in st.session_state:
+    st.session_state.auto_run = False
+if "mini_idx" not in st.session_state:
+    st.session_state.mini_idx = 0
+
+# --- SIDEBAR ---
+st.sidebar.title("ツ Machina")
+menu = {"1": "Mini", "2": "yPoemas", "3": "Eureka"}
+escolha = st.sidebar.radio("Navegação", list(menu.keys()), format_func=lambda x: menu[x].upper())
+tema_selecionado = menu[escolha]
+
+st.sidebar.markdown("---")
+col1, col2 = st.sidebar.columns(2)
+if col1.button("Talk"): st.session_state.action = "talk"
+if col2.button("Arte"): st.session_state.action = "draw"
+
+# --- LÓGICA MODO AUTO (Sem Loop While) ---
+if tema_selecionado == "Mini":
+    st.sidebar.subheader("Modo Automático")
+    st.session_state.auto_run = st.sidebar.checkbox("Ativar Auto", value=st.session_state.auto_run)
+    intervalo = st.sidebar.slider("Segundos entre versos", 5, 60, 10)
+
+# --- BOTÃO DE GERAÇÃO ---
+st.title(f"Modo: {tema_selecionado}")
+
+if st.button(f"Gerar {tema_selecionado}") or st.session_state.auto_run:
+    with st.spinner("Semeando..."):
+        # Se for Eureka, poderia pedir input, aqui simplificamos:
+        resultado = gera_poema(tema_selecionado, "")
         
-        caminho_save = os.path.join("./data", f"{nome_tema}.ypo")
-        with open(caminho_save, "w", encoding="utf-8") as f_save:
-            for verso in poema_gerado:
-                f_save.write(str(verso) + "\n")
-    except Exception:
-        pass # Silencioso conforme o protocolo
+        if resultado:
+            st.markdown("---")
+            for linha in resultado:
+                st.write(linha)
+            st.markdown("---")
+            
+    # Se o Auto estiver ligado, ele espera e recarrega a página sozinho
+    if st.session_state.auto_run:
+        time.sleep(intervalo)
+        st.rerun() 
 
-    return poema_gerado
+# --- RODAPÉ ---
+st.sidebar.info("Aguardando comando...")
