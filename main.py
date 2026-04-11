@@ -2,6 +2,7 @@ import streamlit as st
 import random
 import os
 
+
 # 1. ARQUITETURA DE HARDWARE VIRTUAL (Layout Fixo)
 st.set_page_config(page_title="a Máquina de Fazer Poesia", page_icon="ツ", layout="centered")
 
