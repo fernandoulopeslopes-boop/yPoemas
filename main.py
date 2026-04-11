@@ -1,13 +1,8 @@
 import streamlit as st
 import os
 
-# --- IMPORTAÇÃO DO MOTOR ---
-try:
-    from lay_2_ypo import gera_poema
-except ImportError:
-    st.error("Erro: Arquivo 'lay_2_ypo.py' não encontrado.")
-except SyntaxError as e:
-    st.error(f"Erro de Sintaxe no motor: {e}")
+# Importação direta e obrigatória
+from lay_2_ypo import gera_poema
 
 # =================================================================
 # ⚙️ CONFIGURAÇÕES & ESTILO
@@ -20,7 +15,6 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# Cache moderno para arquivos auxiliares
 @st.cache_data(show_spinner=False)
 def load_info(file_name):
     path = os.path.join("./base", file_name)
@@ -29,7 +23,6 @@ def load_info(file_name):
             return f.read()
     return ""
 
-# CSS para manter o esmero visual
 st.markdown("""
     <style>
     [data-testid="stSidebar"] { width: 310px; }
@@ -45,7 +38,6 @@ st.markdown("""
 def main():
     st.sidebar.title("ツ Machina")
     
-    # Menu Nativo (Substituindo o TabBar problemático)
     menu = {
         "1": "Mini",
         "2": "yPoemas",
@@ -65,7 +57,6 @@ def main():
 
     st.sidebar.markdown("---")
     
-    # Botões de Ação solicitados
     col1, col2 = st.sidebar.columns(2)
     with col1:
         if st.sidebar.button("Talk"):
@@ -74,7 +65,7 @@ def main():
         if st.sidebar.button("Arte"):
             st.session_state.action = "draw"
 
-    # Exibição automática de informações do tema na Sidebar
+    # Carregamento de infos da pasta /base
     info_files = {
         "1": "INFO_MINI.md", "2": "INFO_YPOEMAS.md", "3": "INFO_EUREKA.md",
         "4": "INFO_OFF-MACHINA.md", "5": "INFO_BOOKS.md", "6": "INFO_POLY.md",
@@ -89,18 +80,27 @@ def main():
     tema_selecionado = menu[chosen_id]
     st.title(f"Modo: {tema_selecionado}")
     
+    # Parâmetro Eureka
+    seed_eureka = ""
+    if tema_selecionado == "Eureka":
+        seed_eureka = st.text_input("Semente ➪ Coords:", value="")
+    
     if st.button(f"Gerar {tema_selecionado}"):
         with st.spinner("Semeando versos..."):
-            # Adicionado tratamento para o motor
             try:
-                poema = gera_poema(tema_selecionado)
-                if poema:
+                # Chamada com os 2 parâmetros conforme exigido pelo motor
+                resultado = gera_poema(tema_selecionado, seed_eureka)
+                
+                if resultado:
                     st.markdown("---")
-                    for linha in poema:
-                        st.write(linha)
+                    if isinstance(resultado, list):
+                        for linha in resultado:
+                            st.write(linha)
+                    else:
+                        st.write(resultado)
                     st.markdown("---")
             except Exception as e:
-                st.error(f"Erro na geração: {e}")
+                st.error(f"Erro na execução do motor: {e}")
 
 if __name__ == "__main__":
     main()
