@@ -6,6 +6,8 @@ try:
     from lay_2_ypo import gera_poema
 except ImportError:
     st.error("Erro: Arquivo 'lay_2_ypo.py' não encontrado.")
+except SyntaxError as e:
+    st.error(f"Erro de Sintaxe no motor: {e}")
 
 # =================================================================
 # ⚙️ CONFIGURAÇÕES & ESTILO
@@ -89,12 +91,16 @@ def main():
     
     if st.button(f"Gerar {tema_selecionado}"):
         with st.spinner("Semeando versos..."):
-            poema = gera_poema(tema_selecionado)
-            if poema:
-                st.markdown("---")
-                for linha in poema:
-                    st.write(linha)
-                st.markdown("---")
+            # Adicionado tratamento para o motor
+            try:
+                poema = gera_poema(tema_selecionado)
+                if poema:
+                    st.markdown("---")
+                    for linha in poema:
+                        st.write(linha)
+                    st.markdown("---")
+            except Exception as e:
+                st.error(f"Erro na geração: {e}")
 
 if __name__ == "__main__":
     main()
