@@ -1,5 +1,5 @@
 setuptools
-streamlit>=1.31.0
+streamlit
 deep-translator
 edge-tts
 streamlit-antd-components
