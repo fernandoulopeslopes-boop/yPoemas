@@ -1,7 +1,5 @@
+setuptools
+streamlit>=1.31.0
 deep-translator
-edge-tts
-streamlit
-streamlit-antd-components
+gTTS
 extra-streamlit-components
-streamlit-autorefresh
-matplotlib
