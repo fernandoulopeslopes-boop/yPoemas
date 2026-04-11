@@ -248,6 +248,7 @@ def gera_poema(nome_tema, seed_eureka):
 
             for linha in lista_finais:
                 file.write(linha)
+            file.write("Changed by lay_2ypo em " + dtoc(date()) 
 
         file.close()
 
