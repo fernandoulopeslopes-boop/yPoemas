@@ -1,12 +1,13 @@
 import streamlit as st
 import os
 
-# --- MOTOR DE BUSCA (v.33.9 - CASE INSENSITIVE & MULTI-AMBIENTE) ---
+# --- MOTOR DE BUSCA (v.33.9 - CASE INSENSITIVE & SEQUÊNCIA ORIGINAL) ---
 
 def load_md_file(file_name):
     """
     Motor v.33.9 - Busca Inteligente.
-    Resolve o conflito entre .MD (HD) e .md (GitHub).
+    Localiza arquivos em md_files independente de extensão .md ou .MD.
+    Compatível com C:\ypo\md_files e Streamlit Cloud.
     """
     base_dir = os.path.dirname(os.path.abspath(__file__))
     
@@ -45,11 +46,13 @@ def write_ypoema(texto, imagem):
 # --- PÁGINA SOBRE (ABOUT) ---
 
 def page_abouts():
-    """Lógica de Navegação da Documentação Completa da Machina"""
+    """Lógica de Navegação com Sequência Original Preservada"""
+    
+    # SEQUÊNCIA ORIGINAL RESTAURADA
     abouts_list = [
-        "index", "comments", "prefácio", "machina", "off-machina", 
-        "outros", "traduttore", "bibliografia", "imagens", 
-        "samizdát", "notes", "license"
+        "prefácio", "machina", "off-machina", "outros", 
+        "traduttore", "bibliografia", "imagens", "samizdát", 
+        "comments", "notes", "license", "index"
     ]
 
     sobrios = "↓  SOBRE" 
@@ -82,7 +85,7 @@ def page_abouts():
                 
                 st.markdown(load_md_file("ABOUT_MACHINA_D.MD"))
             else:
-                # Carregamento Dinâmico para as demais seções
+                # Carregamento Dinâmico respeitando a sequência original
                 arquivo_alvo = f"ABOUT_{nome_base}.MD"
                 st.markdown(load_md_file(arquivo_alvo))
 
@@ -110,7 +113,6 @@ def main():
         st.title("yPoemas")
         st.write("v.33.9")
         st.divider()
-        # Espaço reservado para seletores de Idioma e Tema
 
     # 4. Renderização do Conteúdo
     page_abouts()
