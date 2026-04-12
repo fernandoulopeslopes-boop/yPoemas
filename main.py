@@ -1,38 +1,47 @@
 import streamlit as st
 import os
 
-# --- FUNÇÕES DE SUPORTE (O Motor) ---
+# --- MOTOR DE BUSCA DE ARQUIVOS (Blindagem v.33.9) ---
 
 def load_md_file(file_name):
-    """Carregador Universal: Busca na pasta \md_files"""
-    base_path = "./md_files/"
-    full_path = os.path.join(base_path, file_name)
+    """
+    Busca absoluta na pasta /md_files. 
+    Lógica: Raiz do Projeto -> md_files -> ARQUIVO.MD
+    """
+    # Define o caminho absoluto para evitar erros de servidor Linux
+    base_path = os.path.dirname(os.path.abspath(__file__))
+    full_path = os.path.join(base_path, "md_files", file_name)
+    
     try:
         with open(full_path, "r", encoding="utf-8") as f:
             return f.read()
     except FileNotFoundError:
-        return f"⚠️ Arquivo {file_name} não encontrado."
+        # Se falhar, o erro imprimirá o caminho exato que o sistema tentou ler
+        return f"⚠️ ERRO DE PATH: {file_name} não encontrado em {full_path}"
+
+# --- COMPONENTE DE INTERFACE ---
 
 def write_ypoema(texto, imagem):
-    """Renderiza a Matriz respeitando a lateralidade da v.33.9"""
-    col1, col2 = st.columns([2, 1])
-    with col1:
+    """Layout Lateralidade: Texto(2) | Imagem(1)"""
+    col_txt, col_img = st.columns([2, 1])
+    with col_txt:
         st.markdown(texto)
-    with col2:
+    with col_img:
         st.image(imagem, use_container_width=True)
 
-# --- PÁGINAS DE CONTEÚDO ---
+# --- PÁGINA SOBRE (ABOUT) ---
 
 def page_abouts():
-    """Interface de Suporte: Engenharia Reversa (Finais -> Iniciais)"""
+    # Lista com grafia exata para o .upper()
     abouts_list = [
         "comments", "prefácio", "machina", "off-machina", 
         "outros", "traduttore", "bibliografia", "imagens", 
         "samizdát", "notes", "license", "index"
     ]
 
+    # Label do Seletor
+    sobrios = "↓  SOBRE" 
     options = list(range(len(abouts_list)))
-    sobrios = "↓  " + "SOBRE" # Aqui entraria sua função translate("sobre")
     
     opt_abouts = st.selectbox(
         sobrios,
@@ -41,48 +50,46 @@ def page_abouts():
         key="opt_abouts",
     )
 
-    # BATISMO FUNCIONAL
+    # Batismo funcional: lnew foi substituído
     permitir_exibicao_texto = True 
 
     if st.session_state.get('vydo', False):
         permitir_exibicao_texto = False 
-        # show_video("about") -> Chamar sua função de vídeo aqui
+        # show_video("about")
         st.session_state.vydo = False
 
     if permitir_exibicao_texto:
-        nome_arquivo = abouts_list[opt_abouts].upper()
+        # Construção da query de busca
+        nome_upper = abouts_list[opt_abouts].upper()
+        arquivo_alvo = f"ABOUT_{nome_upper}.MD"
+        
         with st.expander("", expanded=True):
-            if nome_arquivo == "MACHINA":
+            if nome_upper == "MACHINA":
+                # Renderização da Página Coração
                 st.markdown(load_md_file("ABOUT_MACHINA_A.MD"))
                 
-                # Dados da Matriz Viva
-                tema = st.session_state.get('tema', 'default')
-                # LOGO_TEXTO = load_info(tema) -> Chamar sua função load_info aqui
-                LOGO_IMAGE = f"./images/matrix/{tema}.jpg"
-                
-                # write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
+                # Interface Viva (Matriz)
+                tema_ativo = st.session_state.get('tema', 'default')
+                path_imagem = f"./images/matrix/{tema_ativo}.jpg"
+                # write_ypoema(load_info(tema_ativo), path_imagem)
                 
                 st.markdown(load_md_file("ABOUT_MACHINA_D.MD"))
             else:
-                st.markdown(load_md_file(f"ABOUT_{nome_arquivo}.MD"))
+                # Renderização das demais páginas .MD
+                st.markdown(load_md_file(arquivo_alvo))
 
 # --- MOTOR PRINCIPAL ---
 
 def main():
-    st.set_page_config(layout="wide", page_title="Machina de Fazer Poesia v.33.9")
+    st.set_page_config(layout="wide", page_title="Machina v.33.9")
 
-    # Inicialização de Estados
+    # Inicialização de Session State
     if 'tema' not in st.session_state:
         st.session_state.tema = "default"
     if 'vydo' not in st.session_state:
         st.session_state.vydo = False
 
-    # Sidebar / Navegação
-    with st.sidebar:
-        st.title("A MÁCHINA")
-        # Aqui entram seus seletores de língua e navegação principal
-    
-    # Execução da página selecionada (Exemplo: About)
+    # Execução do módulo ABOUT
     page_abouts()
 
 if __name__ == "__main__":
