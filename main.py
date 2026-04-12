@@ -1,45 +1,34 @@
 import streamlit as st
 import os
 
-# --- MOTOR DE BUSCA (v.33.9 - CASE INSENSITIVE & MULTI-AMBIENTE) ---
+# --- MOTOR DE BUSCA (v.33.12 - ORIGINALISMO) ---
 
 def load_md_file(file_name):
-    """
-    Motor v.33.9 - Busca Inteligente.
-    Resolve o conflito entre .MD (HD) e .md (GitHub).
-    """
+    """Localiza e lê arquivos na pasta md_files (Local/Cloud)."""
     base_dir = os.path.dirname(os.path.abspath(__file__))
+    folder = r"C:\ypo\md_files" if os.path.exists(r"C:\ypo") else os.path.join(base_dir, "md_files")
     
-    if os.path.exists(r"C:\ypo"):
-        folder = r"C:\ypo\md_files"
-    else:
-        folder = os.path.join(base_dir, "md_files")
-
     target_upper = file_name.upper()
-    
     if os.path.exists(folder):
         try:
-            arquivos_reais = os.listdir(folder)
-            for arquivo in arquivos_reais:
+            for arquivo in os.listdir(folder):
                 if arquivo.upper() == target_upper:
                     with open(os.path.join(folder, arquivo), "r", encoding="utf-8") as f:
                         return f.read()
         except Exception as e:
-            return f"⚠️ Erro de leitura: {str(e)}"
-            
-    return f"⚠️ {target_upper} não localizado em {folder}"
+            return f"⚠️ Erro: {str(e)}"
+    return f"⚠️ {target_upper} não localizado."
 
 # --- COMPONENTES DE INTERFACE ---
 
 def page_abouts():
-    """Navegação da Documentação Técnica"""
+    """Navegação da Documentação conforme o original."""
     abouts_list = [
         "prefácio", "machina", "off-machina", "outros", 
         "traduttore", "bibliografia", "imagens", "samizdát", 
         "comments", "notes", "license", "index"
     ]
     
-    # Seletor com persistência de estado
     opt_abouts = st.selectbox(
         "↓ DETALHES", 
         abouts_list, 
@@ -47,62 +36,62 @@ def page_abouts():
     )
     st.session_state.sub_page = opt_abouts
     
-    nome_base = opt_abouts.upper()
-    
-    # Container limpo para exibição
-    with st.expander(f"DOCUMENTAÇÃO: {nome_base}", expanded=True):
-        if nome_base == "MACHINA":
+    with st.expander(f"{opt_abouts.upper()}", expanded=True):
+        if opt_abouts.upper() == "MACHINA":
             st.markdown(load_md_file("ABOUT_MACHINA_A.MD"))
             st.markdown(load_md_file("ABOUT_MACHINA_D.MD"))
         else:
-            st.markdown(load_md_file(f"ABOUT_{nome_base}.MD"))
+            st.markdown(load_md_file(f"ABOUT_{opt_abouts.upper()}.MD"))
 
-# --- ESTRUTURA MESTRE (LAYOUT HORIZONTAL) ---
+# --- MOTOR PRINCIPAL ---
 
 def main():
     st.set_page_config(
-        page_title="yPoemas - A Máquina de Fazer Poesia",
-        page_icon="🤖",
-        layout="wide",
-        initial_sidebar_state="collapsed" # Foco total no conteúdo central
+        page_title="yPoemas",
+        layout="wide"
     )
 
-    # Inicialização de Estados (Consolidado)
+    # Inicialização de Estados
+    if 'tema' not in st.session_state: st.session_state.tema = "padrão"
+    if 'lang' not in st.session_state: st.session_state.lang = "PT"
     if 'sub_page' not in st.session_state: st.session_state.sub_page = "prefácio"
 
-    # --- MENU HORIZONTAL DE ALTO NÍVEL ---
-    tab_ypoemas, tab_eureka, tab_off, tab_comments, tab_about = st.tabs([
-        "📜 Modo yPoemas", 
-        "💡 Modo Eureka", 
-        "🔌 Off-Machina", 
-        "💬 Comments", 
-        "ℹ️ About"
+    # --- MENU HORIZONTAL (NOMES ORIGINAIS) ---
+    tab_ypoemas, tab_eureka, tab_demo, tab_off, tab_comments, tab_about = st.tabs([
+        "yPoemas", 
+        "Eureka", 
+        "Demo",
+        "Off-Machina", 
+        "Comments", 
+        "About"
     ])
 
-    # --- DISTRIBUIÇÃO DE CONTEÚDO ---
-    
+    # --- RENDERIZAÇÃO ---
     with tab_ypoemas:
         st.markdown(load_md_file("MANUAL_YPOEMAS.MD"))
 
     with tab_eureka:
         st.markdown(load_md_file("MANUAL_EUREKA.MD"))
 
+    with tab_demo:
+        st.markdown(load_md_file("INFO_DEMO.MD"))
+
     with tab_off:
         st.markdown(load_md_file("MANUAL_OFF-MACHINA.MD"))
 
     with tab_comments:
-        # Exibição direta dos comentários (sequência preservada nos MDs)
         st.markdown(load_md_file("ABOUT_COMMENTS.MD"))
 
     with tab_about:
         page_abouts()
 
-    # --- SIDEBAR (MÍNIMA) ---
+    # SIDEBAR
     with st.sidebar:
         st.title("yPoemas")
-        st.caption("v.33.9 | Linha Zero")
+        st.write("v.33.12")
         st.divider()
-        st.markdown("Cura e algoritmos poéticos em Western ABC.")
+        st.session_state.lang = st.selectbox("IDIOMA", ["PT", "ES", "EN", "FR", "IT"])
+        st.session_state.tema = st.select_slider("TEMA", options=["padrão", "caos", "matrix"])
 
 if __name__ == "__main__":
     main()
