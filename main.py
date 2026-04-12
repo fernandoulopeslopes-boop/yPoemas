@@ -42,4 +42,52 @@ def page_abouts():
             st.markdown(load_md_file("ABOUT_MACHINA_A.MD"))
             st.markdown(load_md_file("ABOUT_MACHINA_D.MD"))
         else:
-            st.markdown(load_md
+            st.markdown(load_md_file(f"ABOUT_{nome_base}.MD"))
+
+# --- MOTOR PRINCIPAL (LAYOUT HORIZONTAL COMPLETO) ---
+
+def main():
+    st.set_page_config(
+        page_title="yPoemas - A Máquina de Fazer Poesia",
+        page_icon="🤖",
+        layout="wide",
+        initial_sidebar_state="expanded"
+    )
+
+    # Inicialização de Estados
+    if 'tema' not in st.session_state: st.session_state.tema = "default"
+    if 'vydo' not in st.session_state: st.session_state.vydo = False
+
+    # --- MENU HORIZONTAL (ABAS) ---
+    tab_ypoemas, tab_eureka, tab_off, tab_comments, tab_about = st.tabs([
+        "📜 Modo yPoemas", 
+        "💡 Modo Eureka", 
+        "🔌 Off-Machina", 
+        "💬 Comments", 
+        "ℹ️ About"
+    ])
+
+    # --- RENDERIZAÇÃO POR TAB ---
+    with tab_ypoemas:
+        st.markdown(load_md_file("MANUAL_YPOEMAS.MD"))
+
+    with tab_eureka:
+        st.markdown(load_md_file("MANUAL_EUREKA.MD"))
+
+    with tab_off:
+        st.markdown(load_md_file("MANUAL_OFF-MACHINA.MD"))
+
+    with tab_comments:
+        st.markdown(load_md_file("ABOUT_COMMENTS.MD"))
+
+    with tab_about:
+        page_abouts()
+
+    # --- SIDEBAR (IDENTIDADE E CONTROLE) ---
+    with st.sidebar:
+        st.title("yPoemas")
+        st.write("v.33.9")
+        st.divider()
+
+if __name__ == "__main__":
+    main()
