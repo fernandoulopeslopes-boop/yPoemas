@@ -4,7 +4,7 @@ import os
 # --- MOTOR DE BUSCA (ESTÁVEL) ---
 
 def load_md_file(file_name):
-    """Localiza e lê arquivos na pasta md_files (Local/Cloud)."""
+    """Localiza e lê arquivos na pasta md_files."""
     base_dir = os.path.dirname(os.path.abspath(__file__))
     folder = r"C:\ypo\md_files" if os.path.exists(r"C:\ypo") else os.path.join(base_dir, "md_files")
     
@@ -19,74 +19,53 @@ def load_md_file(file_name):
             return f"⚠️ Erro: {str(e)}"
     return f"⚠️ {target_upper} não localizado."
 
-# --- PÁGINA ABOUT (ESTÁVEL) ---
-
-def page_abouts():
-    """Navegação interna da página About."""
-    abouts_list = [
-        "prefácio", "machina", "off-machina", "outros", 
-        "traduttore", "bibliografia", "imagens", "samizdát", 
-        "comments", "notes", "license", "index"
-    ]
-    
-    opt_abouts = st.selectbox(
-        "↓ DETALHES", 
-        abouts_list, 
-        index=abouts_list.index(st.session_state.get('sub_page', 'prefácio'))
-    )
-    st.session_state.sub_page = opt_abouts
-    
-    with st.expander(f"{opt_abouts.upper()}", expanded=True):
-        if opt_abouts.upper() == "MACHINA":
-            st.markdown(load_md_file("ABOUT_MACHINA_A.MD"))
-            st.markdown(load_md_file("ABOUT_MACHINA_D.MD"))
-        else:
-            st.markdown(load_md_file(f"ABOUT_{opt_abouts.upper()}.MD"))
-
 # --- MOTOR PRINCIPAL ---
 
 def main():
     st.set_page_config(
         page_title="yPoemas",
-        layout="wide",
-        initial_sidebar_state="expanded"
+        layout="wide"
     )
 
-    # Inicialização de Estados
-    if 'tema' not in st.session_state: st.session_state.tema = "default"
-    if 'lang' not in st.session_state: st.session_state.lang = "PT"
-    if 'sub_page' not in st.session_state: st.session_state.sub_page = "prefácio"
+    # Injeção de CSS para os botões redondos com fundo suave
+    st.markdown("""
+        <style>
+        div.stButton > button {
+            border-radius: 20px;
+            background-color: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            padding: 5px 15px;
+            transition: all 0.3s;
+        }
+        div.stButton > button:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.2);
+        }
+        </style>
+    """, unsafe_allow_html=True)
 
-    # --- SIDEBAR (RESTALRADA AO ORIGINAL) ---
+    # 1. SIDEBAR: APENAS FUNÇÕES TÉCNICAS (Idioma no Topo)
     with st.sidebar:
         st.title("yPoemas")
-        st.write("v.33.17")
+        st.write("v.33.19")
         st.divider()
 
-        st.session_state.lang = st.selectbox(
-            "IDIOMA", 
-            ["PT", "ES", "EN", "FR", "IT"],
-            index=["PT", "ES", "EN", "FR", "IT"].index(st.session_state.lang)
-        )
-
-        st.session_state.tema = st.select_slider(
-            "TEMA", 
-            options=["default", "caos", "matrix"],
-            value=st.session_state.tema
-        )
+        # Lista expandida Western ABC
+        idiomas_abc = [
+            "Português", "Español", "English", "Français", "Italiano", "Deutsch",
+            "Català", "Galego", "Latin", "Română"
+        ]
+        st.session_state.lang = st.selectbox("🌐 IDIOMA", options=idiomas_abc)
+        
         st.divider()
+        st.session_state.tema = st.select_slider("🎨 MATRIZ", options=["default", "caos", "matrix"])
 
-    # --- MENU HORIZONTAL (ABAS ORIGINAIS) ---
+    # 2. TOPO DO PALCO: NAVEGAÇÃO DE PÁGINAS (Tabs Limpas)
     tab_demo, tab_ypoemas, tab_eureka, tab_off, tab_comments, tab_about = st.tabs([
-        "Demo",
-        "yPoemas", 
-        "Eureka", 
-        "Off-Machina", 
-        "Comments", 
-        "About"
+        "Demo", "yPoemas", "Eureka", "Off-Machina", "Comments", "About"
     ])
 
-    # --- RENDERIZAÇÃO DE CONTEÚDO ---
+    # 3. CONTEÚDO E BOTÕES DE SUB-NAVEGAÇÃO
     with tab_demo:
         st.markdown(load_md_file("INFO_DEMO.MD"))
 
@@ -103,7 +82,16 @@ def main():
         st.markdown(load_md_file("ABOUT_COMMENTS.MD"))
 
     with tab_about:
-        page_abouts()
+        # Botões redondos para navegar nos temas de About
+        col1, col2, col3, col4 = st.columns(4)
+        if col1.button("Prefácio"): st.session_state.sub = "prefácio"
+        if col2.button("Machina"): st.session_state.sub = "machina"
+        if col3.button("Imagens"): st.session_state.sub = "imagens"
+        if col4.button("Index"): st.session_state.sub = "index"
+        
+        st.divider()
+        sub = st.session_state.get('sub', 'prefácio')
+        st.markdown(load_md_file(f"ABOUT_{sub.upper()}.MD"))
 
 if __name__ == "__main__":
     main()
