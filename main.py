@@ -6,6 +6,7 @@ import os
 def load_md_file(file_name):
     """Localiza arquivos em md_files independente de extensão .md ou .MD."""
     base_dir = os.path.dirname(os.path.abspath(__file__))
+    # Verifica ambiente: Local (C:\ypo) vs Cloud
     if os.path.exists(r"C:\ypo"):
         folder = r"C:\ypo\md_files"
     else:
@@ -23,23 +24,35 @@ def load_md_file(file_name):
             return f"⚠️ Erro ao acessar pasta: {str(e)}"
     return f"⚠️ ERRO: {target_upper} não encontrado."
 
+# --- COMPONENTES DE INTERFACE ---
+
+def write_ypoema(texto, imagem):
+    """Layout Lateralidade: Texto (2/3) | Imagem (1/3)"""
+    col_txt, col_img = st.columns([2, 1])
+    with col_txt:
+        st.markdown(texto)
+    with col_img:
+        if os.path.exists(imagem):
+            st.image(imagem, use_container_width=True)
+
 # --- PÁGINA SOBRE (ABOUT) ---
 
 def page_abouts():
-    # Lista de páginas (Removi o 'index' da lista interna para usá-lo como padrão)
+    """Lógica de Navegação da Documentação Completa"""
+    # Lista completa baseada no que o servidor revelou
     abouts_list = [
-        "INÍCIO", "comments", "prefácio", "machina", "off-machina", 
+        "index", "comments", "prefácio", "machina", "off-machina", 
         "outros", "traduttore", "bibliografia", "imagens", 
         "samizdát", "notes", "license"
     ]
 
     sobrios = "↓  SOBRE" 
     
-    # Seletor de sub-páginas
+    # Sidebar ou Main Selectbox (Mantendo no Main por enquanto)
     opt_abouts = st.selectbox(
         sobrios,
         abouts_list,
-        index=0, # Garante que comece no "INÍCIO"
+        index=0,
         key="opt_abouts",
     )
 
@@ -52,31 +65,34 @@ def page_abouts():
         nome_base = opt_abouts.upper()
         
         with st.expander("", expanded=True):
-            if nome_base == "INÍCIO":
-                # Carrega o índice geral ou introdução
-                st.markdown(load_md_file("ABOUT_INDEX.MD"))
-            
-            elif nome_base == "MACHINA":
+            if nome_base == "MACHINA":
+                # Renderização Bipartida da Machina
                 st.markdown(load_md_file("ABOUT_MACHINA_A.MD"))
-                # Espaço para imagem da matriz
+                
+                # Interface Viva: Matriz Visual
+                tema_atual = st.session_state.get('tema', 'default')
+                path_img = f"./images/matrix/{tema_atual}.jpg"
+                # Aqui o código renderizaria o load_info(tema_atual)
+                
                 st.markdown(load_md_file("ABOUT_MACHINA_D.MD"))
             
             else:
-                # Carrega a página selecionada (comments, prefácio, etc)
+                # Carregamento Dinâmico para as demais páginas
                 arquivo_alvo = f"ABOUT_{nome_base}.MD"
                 st.markdown(load_md_file(arquivo_alvo))
 
 # --- MOTOR PRINCIPAL ---
 
 def main():
-    st.set_page_config(layout="wide", page_title="A Máquina de Fazer Poesia")
+    # 1. Configuração de Página (Wide)
+    st.set_page_config(
+        page_title="yPoemas - A Máquina de Fazer Poesia",
+        page_icon="🤖",
+        layout="wide",
+        initial_sidebar_state="expanded"
+    )
 
+    # 2. Inicialização de Estados do Sistema
     if 'tema' not in st.session_state:
         st.session_state.tema = "default"
-    if 'vydo' not in st.session_state:
-        st.session_state.vydo = False
-
-    page_abouts()
-
-if __name__ == "__main__":
-    main()
+    if 'vydo' not in st.session
