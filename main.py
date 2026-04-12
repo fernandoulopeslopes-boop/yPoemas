@@ -63,7 +63,6 @@ def page_abouts():
     )
 
     # --- CONTAINER ANTI-RESÍDUO ---
-    # O st.empty() garante que ao trocar de página, o conteúdo anterior seja destruído
     placeholder = st.empty()
 
     permitir_exibicao_texto = True 
@@ -82,7 +81,6 @@ def page_abouts():
                     
                     tema_atual = st.session_state.get('tema', 'default')
                     path_img = f"./images/matrix/{tema_atual}.jpg"
-                    # write_ypoema(load_info(tema_atual), path_img)
                     
                     st.markdown(load_md_file("ABOUT_MACHINA_D.MD"))
                 else:
