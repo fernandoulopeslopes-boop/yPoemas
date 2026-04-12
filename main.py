@@ -1,10 +1,9 @@
 import streamlit as st
 import os
 
-# --- MOTOR DE BUSCA (v.33.12 - ORIGINALISMO) ---
+# --- MOTOR DE BUSCA ---
 
 def load_md_file(file_name):
-    """Localiza e lê arquivos na pasta md_files (Local/Cloud)."""
     base_dir = os.path.dirname(os.path.abspath(__file__))
     folder = r"C:\ypo\md_files" if os.path.exists(r"C:\ypo") else os.path.join(base_dir, "md_files")
     
@@ -19,10 +18,9 @@ def load_md_file(file_name):
             return f"⚠️ Erro: {str(e)}"
     return f"⚠️ {target_upper} não localizado."
 
-# --- COMPONENTES DE INTERFACE ---
+# --- COMPONENTES ---
 
 def page_abouts():
-    """Navegação da Documentação conforme o original."""
     abouts_list = [
         "prefácio", "machina", "off-machina", "outros", 
         "traduttore", "bibliografia", "imagens", "samizdát", 
@@ -43,7 +41,7 @@ def page_abouts():
         else:
             st.markdown(load_md_file(f"ABOUT_{opt_abouts.upper()}.MD"))
 
-# --- MOTOR PRINCIPAL ---
+# --- MAIN ---
 
 def main():
     st.set_page_config(
@@ -51,12 +49,11 @@ def main():
         layout="wide"
     )
 
-    # Inicialização de Estados
     if 'tema' not in st.session_state: st.session_state.tema = "padrão"
     if 'lang' not in st.session_state: st.session_state.lang = "PT"
     if 'sub_page' not in st.session_state: st.session_state.sub_page = "prefácio"
 
-    # --- MENU HORIZONTAL (NOMES ORIGINAIS) ---
+    # --- ABAS ---
     tab_ypoemas, tab_eureka, tab_demo, tab_off, tab_comments, tab_about = st.tabs([
         "yPoemas", 
         "Eureka", 
@@ -66,7 +63,6 @@ def main():
         "About"
     ])
 
-    # --- RENDERIZAÇÃO ---
     with tab_ypoemas:
         st.markdown(load_md_file("MANUAL_YPOEMAS.MD"))
 
@@ -88,7 +84,7 @@ def main():
     # SIDEBAR
     with st.sidebar:
         st.title("yPoemas")
-        st.write("v.33.12")
+        st.write("v.33.13")
         st.divider()
         st.session_state.lang = st.selectbox("IDIOMA", ["PT", "ES", "EN", "FR", "IT"])
         st.session_state.tema = st.select_slider("TEMA", options=["padrão", "caos", "matrix"])
