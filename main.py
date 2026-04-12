@@ -1,12 +1,12 @@
 import streamlit as st
 import os
 
-# --- MOTOR DE BUSCA (ESTÁVEL) ---
+# --- MOTOR DE BUSCA (v.33.22 - DIRETÓRIOS PRECISOS) ---
 
 def load_md_file(file_name):
     """Localiza e lê arquivos na pasta md_files ou na raiz."""
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    # Verifica primeiro em md_files, depois na raiz
+    # Busca na pasta md_files e na raiz do projeto
     paths = [os.path.join(base_dir, "md_files"), base_dir]
     
     target_upper = file_name.upper()
@@ -49,8 +49,6 @@ def main():
     tabs = ["Demo", "yPoemas", "Eureka", "Off-Machina", "Comments", "About"]
     tab_objs = st.tabs(tabs)
 
-    # Lógica para identificar a aba ativa e carregar o contexto
-    # Como o Streamlit executa o script todo, usamos uma variável de estado
     if "current_tab" not in st.session_state:
         st.session_state.current_tab = "Demo"
 
@@ -58,8 +56,6 @@ def main():
     for i, tab in enumerate(tab_objs):
         with tab:
             nome_aba = tabs[i]
-            # Atualiza o estado da aba atual para a Sidebar
-            # (O Streamlit atualiza isso conforme o clique do usuário)
             
             if nome_aba == "About":
                 col1, col2, col3, col4 = st.columns(4)
@@ -69,16 +65,13 @@ def main():
                 if col4.button("Index"): st.session_state.sub = "index"
                 sub = st.session_state.get('sub', 'prefácio')
                 st.markdown(load_md_file(f"ABOUT_{sub.upper()}.MD"))
-                # Quando clica na tab, define o contexto para a Sidebar
                 st.session_state.current_tab = "About"
             
             elif nome_aba == "Demo":
-                # Vídeo Central da Demo (conforme sua nota)
-                video_path = "video_DEMO.mp4" # ou .mov, conforme estiver na raiz
+                # Vídeo na raiz do projeto
+                video_path = "video_DEMO.mp4" 
                 if os.path.exists(video_path):
                     st.video(video_path)
-                else:
-                    st.info("Vídeo DEMO não localizado na raiz.")
                 st.session_state.current_tab = "Demo"
             
             else:
@@ -95,14 +88,16 @@ def main():
         st.selectbox("🌐 IDIOMA", options=idiomas_abc)
         st.divider()
 
-        # ARTE DA PÁGINA (Ex: logo_demo.jpg para a aba Demo)
+        # ARTE DA PÁGINA (Pasta: yPoemas/images/)
         current = st.session_state.current_tab
-        if current == "Demo":
-            if os.path.exists("logo_demo.jpg"):
-                st.image("logo_demo.jpg", use_container_width=True)
+        img_path = f"images/img_{current.lower()}.jpg"
+        
+        if os.path.exists(img_path):
+            st.image(img_path, use_container_width=True)
         else:
-            # Placeholder para artes das outras páginas
-            st.write(f"🎨 [ARTE: {current.upper()}]")
+            # Fallback para logo_demo se img_demo não existir
+            if current == "Demo" and os.path.exists("logo_demo.jpg"):
+                st.image("logo_demo.jpg", use_container_width=True)
         
         st.divider()
 
