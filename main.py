@@ -57,14 +57,12 @@ def main():
     if 'lang' not in st.session_state: st.session_state.lang = "PT"
     if 'sub_page' not in st.session_state: st.session_state.sub_page = "prefácio"
 
-    # --- SIDEBAR (CONFIGURAÇÃO ORIGINAL) ---
+    # --- SIDEBAR (RESTALRADA AO ORIGINAL) ---
     with st.sidebar:
-        # Título e Versão
         st.title("yPoemas")
         st.write("v.33.17")
         st.divider()
 
-        # Seletores Técnicos
         st.session_state.lang = st.selectbox(
             "IDIOMA", 
             ["PT", "ES", "EN", "FR", "IT"],
@@ -76,9 +74,7 @@ def main():
             options=["default", "caos", "matrix"],
             value=st.session_state.tema
         )
-        
         st.divider()
-        st.caption("Western ABC Mode")
 
     # --- MENU HORIZONTAL (ABAS ORIGINAIS) ---
     tab_demo, tab_ypoemas, tab_eureka, tab_off, tab_comments, tab_about = st.tabs([
