@@ -1,7 +1,7 @@
 import streamlit as st
 import os
 
-# --- MOTOR DE BUSCA (v.33.16 - REFLEXO DA RENOMEAÇÃO) ---
+# --- MOTOR DE BUSCA (ESTÁVEL) ---
 
 def load_md_file(file_name):
     """Localiza e lê arquivos na pasta md_files (Local/Cloud)."""
@@ -19,7 +19,7 @@ def load_md_file(file_name):
             return f"⚠️ Erro: {str(e)}"
     return f"⚠️ {target_upper} não localizado."
 
-# --- PÁGINA SOBRE (ABOUT) ---
+# --- PÁGINA ABOUT (ESTÁVEL) ---
 
 def page_abouts():
     """Navegação interna da página About."""
@@ -48,7 +48,8 @@ def page_abouts():
 def main():
     st.set_page_config(
         page_title="yPoemas",
-        layout="wide"
+        layout="wide",
+        initial_sidebar_state="expanded"
     )
 
     # Inicialização de Estados
@@ -56,7 +57,30 @@ def main():
     if 'lang' not in st.session_state: st.session_state.lang = "PT"
     if 'sub_page' not in st.session_state: st.session_state.sub_page = "prefácio"
 
-    # --- MENU HORIZONTAL (ORDEM: DEMO EM 1º, YPOEMAS EM 2º) ---
+    # --- SIDEBAR (CONFIGURAÇÃO ORIGINAL) ---
+    with st.sidebar:
+        # Título e Versão
+        st.title("yPoemas")
+        st.write("v.33.17")
+        st.divider()
+
+        # Seletores Técnicos
+        st.session_state.lang = st.selectbox(
+            "IDIOMA", 
+            ["PT", "ES", "EN", "FR", "IT"],
+            index=["PT", "ES", "EN", "FR", "IT"].index(st.session_state.lang)
+        )
+
+        st.session_state.tema = st.select_slider(
+            "TEMA", 
+            options=["default", "caos", "matrix"],
+            value=st.session_state.tema
+        )
+        
+        st.divider()
+        st.caption("Western ABC Mode")
+
+    # --- MENU HORIZONTAL (ABAS ORIGINAIS) ---
     tab_demo, tab_ypoemas, tab_eureka, tab_off, tab_comments, tab_about = st.tabs([
         "Demo",
         "yPoemas", 
@@ -66,9 +90,8 @@ def main():
         "About"
     ])
 
-    # --- RENDERIZAÇÃO ---
+    # --- RENDERIZAÇÃO DE CONTEÚDO ---
     with tab_demo:
-        # Arquivo renomeado de INFO_MINI.MD para INFO_DEMO.MD
         st.markdown(load_md_file("INFO_DEMO.MD"))
 
     with tab_ypoemas:
@@ -85,14 +108,6 @@ def main():
 
     with tab_about:
         page_abouts()
-
-    # --- SIDEBAR ---
-    with st.sidebar:
-        st.title("yPoemas")
-        st.write("v.33.16")
-        st.divider()
-        st.session_state.lang = st.selectbox("IDIOMA", ["PT", "ES", "EN", "FR", "IT"])
-        st.session_state.tema = st.select_slider("TEMA", options=["default", "caos", "matrix"])
 
 if __name__ == "__main__":
     main()
