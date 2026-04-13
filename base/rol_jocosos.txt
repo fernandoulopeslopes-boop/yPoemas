@@ -11,6 +11,7 @@ Meteoro
 Ocio
 Oficio
 Reinos
+Vozes
 Remedeio
 Rito
 Sos
