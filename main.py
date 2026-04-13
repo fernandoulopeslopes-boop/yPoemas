@@ -19,29 +19,34 @@ def get_md(p):
             return f.read()
     return ""
 
-# --- 3. CSS: REFINAMENTO TIPOGRÁFICO ---
+# --- 3. CSS: O ESQUADRO REFINADO ---
 st.markdown("""<style>
     [data-testid="stHeader"] {display: none !important;}
     
-    section[data-testid="stSidebar"] { width: 300px !important; }
+    /* FORÇAR VISIBILIDADE DA SIDEBAR */
+    [data-testid="stSidebar"] {
+        background-color: #f8f9fa;
+        min-width: 300px !important;
+        z-index: 999999 !important;
+    }
 
-    /* NAV: FONTE REDUZIDA PARA 11PX (ELEGÂNCIA E ESPAÇO) */
+    /* CENTRALIZAÇÃO DOS BOTÕES DE NAVEGAÇÃO */
     .stButton>button {
         width: 100% !important;
-        height: 38px !important; /* Reduzi levemente a altura acompanhando a fonte */
+        height: 38px !important;
         border-radius: 20px !important;
         font-family: 'Georgia', serif !important;
         font-size: 11px !important; 
         font-weight: 400 !important;
         white-space: nowrap !important; 
-        text-transform: uppercase; /* Pequena caixa alta para compensar o tamanho */
+        text-transform: uppercase;
         letter-spacing: 0.5px;
     }
     
     .st-key-on button {background-color: #000 !important; color: #fff !important;}
     .st-key-off button {background-color: #f8f9fa !important; color: #888 !important; border: 1px solid #eee !important;}
     
-    /* RÉGUA: COMANDOS FIXOS */
+    /* BOTÕES DE COMANDO CENTRALIZADOS */
     .st-key-cmd button {
         border-radius: 8px !important;
         width: 50px !important;
@@ -51,10 +56,11 @@ st.markdown("""<style>
         border: 1px solid #ccc !important;
     }
 
-    /* SELETORES (LIVROS/TEMAS): FONTE 12PX */
-    div[data-baseweb="select"] {
+    /* CABEÇALHOS E SELETORES (HARMONIA 12PX) */
+    div[data-baseweb="select"], label {
         font-family: 'Georgia', serif !important;
         font-size: 12px !important;
+        font-weight: normal !important;
     }
 
     .info-box {
@@ -69,6 +75,9 @@ st.markdown("""<style>
     .main .block-container {
         max-width: 95% !important;
         margin: 0 auto !important;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
 </style>""", unsafe_allow_html=True)
 
@@ -87,8 +96,10 @@ with st.sidebar:
     st.divider()
     st.markdown(f"<div class='info-box'>{get_md(st.session_state.page)}</div>", unsafe_allow_html=True)
 
-# --- 5. NAVEGAÇÃO: TOP ---
+# --- 5. NAVEGAÇÃO SUPERIOR: CENTRALIZADA ---
 menu = ["Demo", "yPoemas", "Eureka", "Off-Machina", "Comments", "About"]
+# Colunas vazias nas pontas para forçar o centro se necessário, 
+# mas o CSS já está cuidando do alinhamento.
 c_nav = st.columns(6)
 for i, item in enumerate(menu):
     with c_nav[i]:
@@ -101,14 +112,17 @@ for i, item in enumerate(menu):
 
 st.divider()
 
-# --- 6. RÉGUA DE CONTROLE: SIMETRIA COM FONTE LEVE ---
-c_regua = st.columns([3.5, 6, 3.5])
+# --- 6. RÉGUA DE CONTROLE: LIVROS (2.8) | COMANDOS (6.4) | TEMAS (2.8) ---
+# Ajuste de ~20% nas laterais para reduzir a largura (de 3.5 para 2.8)
+c_regua = st.columns([2.8, 6.4, 2.8])
 
-with c_regua[0]: # LIVROS
+with c_regua[0]: # LISTA DE LIVROS
     livros = sorted([f[4:-4] for f in os.listdir("base") if f.startswith("rol_")])
-    st.selectbox("LIVROS", livros, key="s_g", label_visibility="collapsed")
+    st.selectbox("LIVROS", livros, key="s_g", 
+                 help="Selecione o livro que deseja explorar")
 
-with c_regua[1]: # COMANDOS (CENTRO 7.5)
+with c_regua[1]: # COMANDOS (CENTRO)
+    # Colunas internas para centralizar os ícones entre as listas
     cc_nav = st.columns([1, 1, 1, 1, 1, 7.5])
     icones = ["＋", "＜", "＊", "＞", "？"]
     for i, icone in enumerate(icones):
@@ -117,11 +131,12 @@ with c_regua[1]: # COMANDOS (CENTRO 7.5)
             st.button(icone, key=f"cmd_{i}")
             st.markdown("</div>", unsafe_allow_html=True)
 
-with c_regua[2]: # TEMAS
+with c_regua[2]: # LISTA DE TEMAS
     g_sel = st.session_state.s_g
     path_txt = f"base/rol_{g_sel}.txt"
     temas = open(path_txt, "r", encoding="utf-8").read().splitlines() if os.path.exists(path_txt) else ["..."]
-    st.selectbox("TEMAS", temas, key="s_t", label_visibility="collapsed")
+    st.selectbox("TEMAS", temas, key="s_t", 
+                 help="Escolha um tema específico dentro do livro selecionado")
 
 st.divider()
 
