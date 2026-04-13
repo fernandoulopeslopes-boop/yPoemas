@@ -19,41 +19,43 @@ def get_md(p):
             return f.read()
     return ""
 
-# --- 3. CSS: AJUSTE DE PROPORÇÃO E FLUIDEZ ---
+# --- 3. CSS: O ESQUADRO FINAL ---
 st.markdown("""<style>
     [data-testid="stHeader"] {display: none !important;}
     
-    /* SIDEBAR: PERMITE EXPANSÃO DO PALCO AO RECOLHER */
+    /* SIDEBAR: DINÂMICA */
     section[data-testid="stSidebar"] {
         max-width: 300px !important;
     }
 
-    /* NAV: AJUSTE PARA NOMES COMPLETOS E CENTRALIZAÇÃO */
+    /* NAV: RESOLVENDO O ENCAVALAMENTO */
+    /* Forçamos os containers a não colidirem */
+    [data-testid="column"] {
+        display: flex !important;
+        justify-content: center !important;
+        padding: 0 5px !important;
+    }
+
     .stButton>button {
-        width: auto !important;
-        min-width: 120px !important;
-        padding: 0 15px !important;
+        width: 100% !important; /* Ocupa a coluna, mas a coluna tem padding */
+        min-width: 100px !important; 
         height: 42px !important;
         border-radius: 20px !important;
         font-family: 'Georgia', serif !important;
         font-size: 13px !important;
         font-weight: 400 !important;
-    }
-    
-    /* GARANTE QUE O CONTEÚDO FIQUE NO CENTRO */
-    .stHorizontalBlock {
-        align-items: center !important;
-        justify-content: center !important;
+        white-space: nowrap !important; /* Impede quebra de texto dentro do botão */
     }
 
     .st-key-on button {background-color: #000 !important; color: #fff !important;}
     .st-key-off button {background-color: #f8f9fa !important; color: #888 !important; border: 1px solid #eee !important;}
     
-    /* RÉGUA: QUADRADOS 52PX */
+    /* RÉGUA: QUADRADOS 52PX FIXOS */
     .st-key-cmd button {
         border-radius: 8px !important;
         width: 52px !important;
         height: 52px !important;
+        min-width: 52px !important;
         font-size: 24px !important;
         font-weight: 900 !important;
         background: #fff !important;
@@ -93,20 +95,20 @@ with st.sidebar:
     st.divider()
     
     if os.path.exists("img_demo.jpg"):
+        # Ajuste de parâmetro solicitado pelo sistema
         st.image("img_demo.jpg", width='stretch')
     
     st.divider()
     st.markdown(f"<div class='info-box'>{get_md(st.session_state.page)}</div>", unsafe_allow_html=True)
 
-# --- 5. NAVEGAÇÃO: CENTRALIZADA ---
+# --- 5. NAVEGAÇÃO: AS 6 COLUNAS (COM ESPAÇAMENTO) ---
 menu = ["Demo", "yPoemas", "Eureka", "Off-Machina", "Comments", "About"]
-# Usamos colunas vazias nas pontas para centralizar o menu
-c_nav = st.columns([1, 1, 1, 1, 1, 1])
+c_nav = st.columns(6)
 
 for i, item in enumerate(menu):
     with c_nav[i]:
         tag = 'on' if st.session_state.page == item else 'off'
-        st.markdown(f"<div class='st-key-{tag}' style='text-align: center;'>", unsafe_allow_html=True)
+        st.markdown(f"<div class='st-key-{tag}' style='width:100%'>", unsafe_allow_html=True)
         if st.button(item, key=f"nav_{i}"):
             st.session_state.page = item
             st.rerun()
@@ -125,8 +127,8 @@ for i, icone in enumerate(icones):
 
 st.write("") 
 
-# RÉGUA DE SELEÇÃO: MAIS ESPAÇO PARA OS TÍTULOS (G e T)
-c_sel = st.columns([3, 7])
+# RÉGUA DE SELEÇÃO: DISTRIBUIÇÃO LIMPA PARA LIVROS
+c_sel = st.columns([4, 8])
 
 with c_sel[0]: # GRUPO
     grupos = sorted([f[4:-4] for f in os.listdir("base") if f.startswith("rol_")])
@@ -134,8 +136,11 @@ with c_sel[0]: # GRUPO
 
 with c_sel[1]: # TEMA
     path_txt = f"base/rol_{g_sel}.txt"
-    with open(path_txt, "r", encoding="utf-8") as f:
-        temas = [l.strip() for l in f.readlines() if l.strip()]
+    if os.path.exists(path_txt):
+        with open(path_txt, "r", encoding="utf-8") as f:
+            temas = [l.strip() for l in f.readlines() if l.strip()]
+    else:
+        temas = ["..."]
     st.selectbox("T", temas, key="s_t", label_visibility="collapsed")
 
 st.divider()
