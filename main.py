@@ -1,45 +1,49 @@
 import streamlit as st
 import os
 
-# --- 1. BOOT: HARDWARE VIRTUAL (RESTAURO INTEGRAL 13/ABRIL) ---
+# --- 1. CONFIGURAÇÃO DE HARDWARE (RESTAURO RIGOROSO) ---
 st.set_page_config(
     page_title="a máquina de fazer Poesia - yPoemas",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
+# Bússola de Estado
 if 'page' not in st.session_state:
     st.session_state.page = 'DEMO'
 
-def get_md_content(page_name):
-    """Resgate fiel do conteúdo dos arquivos INFO_*.md"""
-    path = f"md_files/INFO_{page_name.upper()}.md"
-    if os.path.exists(path):
-        with open(path, "r", encoding="utf-8") as f:
-            return f.read()
+def get_md_safe(page_name):
+    """Leitura direta do acervo INFO_*.md em md_files"""
+    try:
+        path = f"md_files/INFO_{page_name.upper()}.md"
+        if os.path.exists(path):
+            with open(path, "r", encoding="utf-8") as f:
+                return f.read()
+    except:
+        pass
     return "Aguardando pulso da Machina..."
 
-# --- 2. CSS: TRADUÇÃO DA ELEGÂNCIA (DETALHE POR DETALHE) ---
+# --- 2. CSS: ARQUITETURA DE SIMETRIA (LAST_SCREENSHOT) ---
 st.markdown("""
     <style>
-    /* REMOVER LIXO NATIVO */
+    /* ELIMINA LIXO NATIVO */
     [data-testid="stHeader"] { display: none !important; }
     
-    /* SIDEBAR COCKPIT (320px) */
+    /* SIDEBAR BLINDADA (310px - 320px) */
     section[data-testid="stSidebar"] {
-        min-width: 320px !important;
-        max-width: 320px !important;
-        background-color: #fdfdfd !important;
+        min-width: 310px !important;
+        max-width: 310px !important;
+        background-color: #fcfcfc !important;
         border-right: 1px solid #eee !important;
     }
 
-    /* NAV TOGGLES (ABAS DO TOPO) */
-    .st-key-nav_active button {
+    /* NAV TOGGLES: ABAS CENTRALIZADAS */
+    .st-key-nav_on button {
         background-color: #000 !important;
         color: #fff !important;
         border-radius: 20px !important;
         font-weight: 900 !important;
-        height: 38px !important;
+        height: 40px !important;
     }
     .st-key-nav_off button {
         background-color: #f8f9fa !important;
@@ -47,10 +51,10 @@ st.markdown("""
         border: 1px solid #ddd !important;
         border-radius: 20px !important;
         font-weight: 900 !important;
-        height: 38px !important;
+        height: 40px !important;
     }
 
-    /* A RÉGUA: OS 5 BOTÕES QUADRADOS */
+    /* A RÉGUA: OS 5 BOTÕES QUADRADOS DA IMAGEM */
     .st-key-cmd_btn button {
         border-radius: 8px !important;
         border: 1px solid #ccc !important;
@@ -58,22 +62,11 @@ st.markdown("""
         width: 52px !important;
         height: 52px !important;
         font-size: 26px !important;
-        font-weight: bold !important;
-        box-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+        font-weight: 900 !important;
+        box-shadow: 1px 1px 3px rgba(0,0,0,0.1) !important;
     }
 
-    /* ALINHAMENTO HORIZONTAL DOS TOGGLES (ARTE / SOM) */
-    .toggle-container {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-family: sans-serif;
-        font-size: 13px;
-        font-weight: 900;
-        text-transform: uppercase;
-    }
-
-    /* INFO BOX (ESTÉTICA DICIONÁRIO GEORGIA) */
+    /* INFO BOX: ESTÉTICA DICIONÁRIO GEORGIA */
     .info-box {
         font-family: 'Georgia', serif;
         font-size: 13px;
@@ -85,15 +78,15 @@ st.markdown("""
         margin-top: 10px;
     }
 
-    /* CONTAINER CENTRAL */
+    /* CONTAINER DO PALCO */
     .main .block-container { 
-        max-width: 1000px !important; 
+        max-width: 950px !important; 
         margin: 0 auto !important; 
         padding-top: 2rem !important; 
     }
-
-    /* AJUSTE DE SELECTBOXES NA RÉGUA */
-    div[data-testid="stSelectbox"] > div { min-height: 32px !important; }
+    
+    /* ALINHAMENTO DAS SELECTBOXES E TOGGLES */
+    div[data-testid="stHorizontalBlock"] { align-items: center !important; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -101,8 +94,8 @@ st.markdown("""
 with st.sidebar:
     st.markdown("<br>", unsafe_allow_html=True)
     
-    # IDIOMA (Lista Radical Western ABC)
-    langs = ["Português", "Español", "English", "Français", "Italiano", "Català", "Latin", "German"]
+    # IDIOMA: Radical Western ABC
+    langs = ["Português", "Español", "English", "Français", "Italiano", "Català", "Latin"]
     st.selectbox("🌐 IDIOMA", langs, key="sb_lang")
     
     st.divider()
@@ -113,8 +106,8 @@ with st.sidebar:
     
     st.divider()
 
-    # INFO BOX (CONTEXTO REAL MD)
-    content = get_md_content(st.session_state.page)
+    # INFO BOX (CONTEÚDO REAL DOS .md)
+    content = get_md_safe(st.session_state.page)
     st.markdown(f"<div class='info-box'>{content}</div>", unsafe_allow_html=True)
 
 # --- 4. PALCO CENTRAL: NAVEGAÇÃO SUPERIOR ---
@@ -123,20 +116,20 @@ cols_nav = st.columns(len(menu))
 
 for i, item in enumerate(menu):
     is_active = st.session_state.page == item
-    style = "nav_active" if is_active else "nav_off"
+    style = "nav_on" if is_active else "nav_off"
     with cols_nav[i]:
         st.markdown(f"<div class='st-key-{style}'>", unsafe_allow_html=True)
-        if st.button(item.upper(), key=f"btn_{item}"):
+        if st.button(item.upper(), key=f"nav_{item}"):
             st.session_state.page = item
             st.rerun()
         st.markdown("</div>", unsafe_allow_html=True)
 
 st.divider()
 
-# --- 5. A RÉGUA DE COMANDO (DETALHE POR DETALHE) ---
+# --- 5. A RÉGUA DE COMANDO (SIMETRIA ABSOLUTA) ---
 
 # Linha 1: Comandos (Os 5 Quadrados)
-c1, c2, c3, c4, c5, _ = st.columns([1, 1, 1, 1, 1, 5])
+c1, c2, c3, c4, c5, _ = st.columns([1, 1, 1, 1, 1, 6])
 icons = ["＋", "＜", "＊", "＞", "？"]
 for i, col in enumerate([c1, c2, c3, c4, c5]):
     with col:
@@ -144,18 +137,16 @@ for i, col in enumerate([c1, c2, c3, c4, c5]):
         st.button(icons[i], key=f"cmd_{i}")
         st.markdown("</div>", unsafe_allow_html=True)
 
-st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
+st.markdown("<div style='margin-top: 20px;'></div>", unsafe_allow_html=True)
 
-# Linha 2: Seletores (Alinhamento Horizontal Rigoroso)
+# Linha 2: Seletores (Alinhamento Horizontal como na Last Screenshot)
 row_sel = st.columns([1, 1.5, 1.5, 2, 1])
 
 # Arte
 with row_sel[0]:
-    st.markdown('<div class="toggle-container">', unsafe_allow_html=True)
     c_t, c_l = st.columns([1, 2])
     c_t.toggle("", value=True, key="t_arte", label_visibility="collapsed")
-    c_l.markdown("ARTE", unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+    c_l.markdown("<span style='font-size:12px; font-weight:900;'>ARTE</span>", unsafe_allow_html=True)
 
 # Idioma
 with row_sel[1]:
@@ -163,9 +154,9 @@ with row_sel[1]:
 
 # Grupo
 with row_sel[2]:
-    st.selectbox("Grupo", ["Todos os Temas", "Livros"], key="s_group", label_visibility="collapsed")
+    st.selectbox("Grupo", ["todos os temas", "livros"], key="s_group", label_visibility="collapsed")
 
-# Tema (Varredura real .ypo)
+# Tema (Varredura do acervo real)
 with row_sel[3]:
     try:
         acervo = [f.replace(".ypo", "") for f in os.listdir("data") if f.endswith(".ypo")]
@@ -175,13 +166,11 @@ with row_sel[3]:
 
 # Som
 with row_sel[4]:
-    st.markdown('<div class="toggle-container">', unsafe_allow_html=True)
     c_t_s, c_l_s = st.columns([1, 2])
     c_t_s.toggle("", value=False, key="t_som", label_visibility="collapsed")
-    c_l_s.markdown("SOM", unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+    c_l_s.markdown("<span style='font-size:12px; font-weight:900;'>SOM</span>", unsafe_allow_html=True)
 
 st.divider()
 
-# --- 6. DISPLAY CENTRAL ---
+# --- 6. DISPLAY ---
 st.markdown(f"<h1 style='text-align: center; font-family: Georgia;'>{st.session_state.page}</h1>", unsafe_allow_html=True)
