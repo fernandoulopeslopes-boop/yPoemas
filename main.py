@@ -1,7 +1,7 @@
 import streamlit as st
 import os
 
-# --- 1. BOOT: ESTADO DO HARDWARE ---
+# --- 1. BOOT: HARDWARE ORIGINAL ---
 st.set_page_config(
     page_title="a máquina de fazer Poesia - yPoemas",
     layout="wide",
@@ -11,27 +11,26 @@ st.set_page_config(
 if 'page' not in st.session_state:
     st.session_state.page = 'Demo'
 
-@st.cache_data
 def get_md_content(page_name):
-    """Resgate de conteúdo sem alteração de string."""
+    """Resgate direto do conteúdo original."""
     path = f"md_files/INFO_{page_name.upper()}.md"
     if os.path.exists(path):
         with open(path, "r", encoding="utf-8") as f:
             return f.read()
     return "Aguardando pulso da Machina..."
 
-# --- 2. CSS: PRESERVAÇÃO DO LAYOUT (INTOCÁVEL) ---
+# --- 2. CSS: PRESERVAÇÃO RIGOROSA DO LAYOUT ---
 st.markdown("""
     <style>
     [data-testid="stHeader"] { display: none !important; }
     
-    /* SIDEBAR: LARGURA EXATA */
+    /* SIDEBAR: CHASSI FIXO */
     section[data-testid="stSidebar"] {
         min-width: 320px !important;
         max-width: 320px !important;
     }
 
-    /* BOTÕES DE NAVEGAÇÃO: SIMETRIA */
+    /* NAV: BOTÕES IGUAIS (6 COLUNAS) */
     .stButton > button {
         width: 100% !important;
         height: 42px !important;
@@ -43,7 +42,7 @@ st.markdown("""
     .st-key-nav_on button { background-color: #000 !important; color: #fff !important; border: 2px solid #000 !important; }
     .st-key-nav_off button { background-color: #f8f9fa !important; color: #888 !important; border: 1px solid #ddd !important; }
 
-    /* RÉGUA: BOTÕES QUADRADOS */
+    /* RÉGUA: OS 5 QUADRADOS ORIGINAIS */
     .st-key-cmd_btn button {
         border-radius: 8px !important;
         border: 1px solid #ccc !important;
@@ -53,7 +52,6 @@ st.markdown("""
         font-weight: 900 !important;
     }
 
-    /* CAIXA DE INFORMAÇÃO */
     .info-box {
         font-family: 'Georgia', serif; font-size: 13px; line-height: 1.6;
         background: #fff; padding: 15px; border-left: 5px solid #000;
@@ -64,7 +62,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- 3. SIDEBAR (CONTEÚDO E ORDEM PRESERVADOS) ---
+# --- 3. SIDEBAR (FIDELIDADE TOTAL) ---
 with st.sidebar:
     st.markdown("<br>", unsafe_allow_html=True)
     idiomas = ["Português", "Español", "English", "Français", "Italiano", "Català", "German", "Latin"]
@@ -77,22 +75,21 @@ with st.sidebar:
     st.divider()
     st.markdown(f"<div class='info-box'>{get_md_content(st.session_state.page)}</div>", unsafe_allow_html=True)
 
-# --- 4. NAVEGAÇÃO SUPERIOR ---
+# --- 4. NAVEGAÇÃO SUPERIOR (6 ABAS) ---
 menu = ["Demo", "yPoemas", "Eureka", "Off-Machina", "Comments", "About"]
 cols_nav = st.columns(len(menu))
 for i, item in enumerate(menu):
-    is_active = st.session_state.page == item
-    tag = "nav_on" if is_active else "nav_off"
+    tag = "nav_on" if st.session_state.page == item else "nav_off"
     with cols_nav[i]:
         st.markdown(f"<div class='st-key-{tag}'>", unsafe_allow_html=True)
-        if st.button(item, key=f"nav_{item}", use_container_width=True):
+        if st.button(item, key=f"nav_{item}"):
             st.session_state.page = item
             st.rerun()
         st.markdown("</div>", unsafe_allow_html=True)
 
 st.divider()
 
-# --- 5. RÉGUA DE COMANDO (FUNCIONALIDADE SEM RUÍDO) ---
+# --- 5. RÉGUA DE COMANDO (PAINEL DO CARRO) ---
 c_cmd = st.columns([1, 1, 1, 1, 1, 7.5])
 icons = ["＋", "＜", "＊", "＞", "？"]
 for i, icon in enumerate(icons):
@@ -103,6 +100,7 @@ for i, icon in enumerate(icons):
 
 st.write("") 
 
+# SELETORES DA RÉGUA
 row_sel = st.columns([1.1, 1.4, 1.8, 2, 1.1])
 with row_sel[0]:
     c_t, c_l = st.columns([1, 2])
@@ -113,22 +111,15 @@ with row_sel[1]:
     st.selectbox("L", idiomas[:3], key="s_lang", label_visibility="collapsed")
 
 with row_sel[2]:
-    # Lógica de bastidores: Varredura de arquivos reais
-    try:
-        grupos = [f.replace("rol_", "").replace(".txt", "") for f in os.listdir("base") if f.startswith("rol_")]
-        grupo_sel = st.selectbox("G", sorted(grupos), key="s_group", label_visibility="collapsed")
-    except:
-        grupo_sel = "todos os temas"
-        st.selectbox("G", ["todos os temas"], key="s_group_fail", label_visibility="collapsed")
+    # Lógica de bastidores: Varredura de arquivos reais (folder 'base')
+    grupos = sorted([f.replace("rol_", "").replace(".txt", "") for f in os.listdir("base") if f.startswith("rol_")])
+    grupo_sel = st.selectbox("G", grupos, key="s_group", label_visibility="collapsed")
 
 with row_sel[3]:
-    # Lógica de bastidores: Temas reais
-    try:
-        with open(f"base/rol_{grupo_sel}.txt", "r", encoding="utf-8") as f:
-            temas = [l.strip() for l in f.readlines() if l.strip()]
-        st.selectbox("T", temas, key="s_tema", label_visibility="collapsed")
-    except:
-        st.selectbox("T", ["Amaré"], key="s_tema_fail", label_visibility="collapsed")
+    # Lógica de bastidores: Leitura do rol_*.txt
+    with open(f"base/rol_{grupo_sel}.txt", "r", encoding="utf-8") as f:
+        temas = [l.strip() for l in f.readlines() if l.strip()]
+    st.selectbox("T", temas, key="s_tema", label_visibility="collapsed")
 
 with row_sel[4]:
     c_t_s, c_l_s = st.columns([1, 2])
