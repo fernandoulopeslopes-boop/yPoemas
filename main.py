@@ -1,16 +1,27 @@
 import streamlit as st
 import os
 
-# --- 1. CONFIGURAÇÃO DE HARDWARE (BEST_VERSION RECOVERED) ---
+# --- 1. CONFIGURAÇÃO DE HARDWARE VIRTUAL (RESTAURO TOTAL) ---
 st.set_page_config(
     page_title="a máquina de fazer Poesia - yPoemas",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
-# Navegação persistente por Toggle Logic
+# Navegação por Estado (Bússola Central)
 if 'page' not in st.session_state:
-    st.session_state.page = 'DEMO'
+    st.session_state.page = 'Demo'
+
+def get_info_content(page_name):
+    """Resgate dinâmico dos arquivos de ajuda"""
+    try:
+        path = os.path.join("md_files", f"INFO_{page_name.upper()}.md")
+        if os.path.exists(path):
+            with open(path, "r", encoding="utf-8") as f:
+                return f.read()
+    except:
+        pass
+    return ""
 
 st.markdown("""
     <style>
@@ -19,21 +30,16 @@ st.markdown("""
     /* SIDEBAR FIEL (320px) */
     [data-testid="stSidebar"] { min-width: 320px !important; max-width: 320px !important; }
 
-    /* ESTILO TOGGLE BUTTONS (Navegação Superior) */
-    .st-key-nav_toggle div.stButton > button {
-        border-radius: 0px !important;
-        border: none !important;
-        border-bottom: 3px solid transparent !important;
-        font-weight: 900 !important;
-        background-color: transparent !important;
-        font-size: 14px !important;
-        color: #888 !important;
-    }
-    
-    /* Simulação de Estado Ativo para o Toggle */
-    .st-key-nav_active div.stButton > button {
-        border-bottom: 3px solid #000 !important;
-        color: #000 !important;
+    /* INFO BOX (Estética Dicionário) */
+    .info-box {
+        font-family: 'Georgia', serif;
+        font-size: 13px;
+        line-height: 1.6;
+        color: #1a1a1a;
+        background: #fdfdfd;
+        padding: 15px;
+        border-left: 4px solid #000;
+        margin-top: 10px;
     }
 
     /* CONSOLE DE COMANDO (Os 5 Círculos Pretos) */
@@ -46,33 +52,32 @@ st.markdown("""
         border: 2px solid #000 !important;
         font-size: 22px !important;
         font-weight: 900 !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         padding: 0px !important;
     }
 
-    /* INFO BOX (Estética Dicionário) */
-    .info-box {
-        font-family: 'Georgia', serif;
-        font-size: 13px;
-        line-height: 1.6;
-        background: #fdfdfd;
-        padding: 15px;
-        border-left: 4px solid #000;
-        margin-top: 10px;
+    /* PALCO CENTRALIZADO */
+    .main .block-container {
+        max-width: 900px !important;
+        margin: 0 auto !important;
+        padding-top: 1.5rem !important;
     }
 
-    .main .block-container { max-width: 900px !important; margin: 0 auto !important; }
-    hr { border: 0; height: 1px; background: #ddd; }
+    hr { border: 0; height: 1px; background: #ddd; margin: 15px 0 !important; }
+    label { font-weight: 900 !important; font-size: 11px !important; text-transform: uppercase; color: #555; }
     </style>
 """, unsafe_allow_html=True)
 
-# --- 2. SIDEBAR (COCKPIT DE PREFERÊNCIAS) ---
+# --- 2. SIDEBAR (O COCKPIT REAL) ---
 with st.sidebar:
     st.markdown("<div style='margin-top: 20px;'></div>", unsafe_allow_html=True)
     
-    # IDIOMA: Lista Radical Western ABC
+    # IDIOMA: Radical Western ABC
     elite = ["Português", "Español", "English", "Français", "Italiano", "Català"]
-    others = ["German", "Latin", "Norwegian", "Polish", "Swedish"]
-    st.selectbox("🌐 IDIOMA", elite + others, key="sb_lang")
+    western_ext = ["German", "Latin", "Norwegian", "Polish", "Swedish", "Turkish", "Romanian"]
+    st.selectbox("🌐 IDIOMA", elite + western_ext, key="sb_lang")
     
     st.divider()
 
@@ -82,34 +87,33 @@ with st.sidebar:
     
     st.divider()
 
-    # INFO BOX (Dinâmico: lê de \md_files)
-    try:
-        path = os.path.join("md_files", f"INFO_{st.session_state.page}.md")
-        with open(path, "r", encoding="utf-8") as f:
-            st.markdown(f"<div class='info-box'>{f.read()}</div>", unsafe_allow_html=True)
-    except:
-        st.markdown("<div class='info-box'>Aguardando contexto da Machina...</div>", unsafe_allow_html=True)
+    # INFO BOX (Lógica INFO_PAGINA.md)
+    info_md = get_info_content(st.session_state.page)
+    st.markdown(f"<div class='info-box'>{info_md}</div>", unsafe_allow_html=True)
+    
+    st.divider()
+    st.markdown("<div style='text-align:center; font-weight:900; font-size:11px;'>INSTAGRAM • GITHUB • LINKEDIN</div>", unsafe_allow_html=True)
 
-# --- 3. PALCO SOBERANO (NAVEGAÇÃO TOGGLE) ---
+# --- 3. PALCO CENTRAL: NAVEGAÇÃO POR TOGGLE BUTTONS ---
 
-# Menu Superior com Lógica de Toggle (Botão Ativo vs Inativo)
-menu = ["DEMO", "yPOEMAS", "EUREKA", "OFF-MACHINA", "COMMENTS", "ABOUT"]
-cols = st.columns(len(menu))
+# O resgate da lógica de botões de estado que agem como abas
+menu_options = ["Demo", "yPoemas", "Eureka", "Off-Machina", "Comments", "About"]
 
-for i, item in enumerate(menu):
-    # Aplica classe 'nav_active' se for a página atual, senão 'nav_toggle'
-    key_type = "nav_active" if st.session_state.page == item else "nav_toggle"
-    with cols[i]:
-        st.markdown(f"<div class='st-key-{key_type}'>", unsafe_allow_html=True)
-        if st.button(item, key=f"btn_{item}"):
-            st.session_state.page = item
-            st.rerun()
-        st.markdown("</div>", unsafe_allow_html=True)
+# Implementação robusta de Toggle Buttons (Segmented Control se disponível, ou loop de colunas)
+# Aqui usamos o segmented_control para garantir o estado "pressionado" visual
+st.session_state.page = st.segmented_control(
+    "NAVEGAÇÃO", 
+    options=menu_options, 
+    default="Demo",
+    label_visibility="collapsed",
+    key="nav_toggle"
+)
 
 st.divider()
 
-# --- 4. CONSOLE DE COMANDO E EXIBIÇÃO ---
+# --- 4. CONSOLE DE COMANDO (DINÂMICO) ---
 c_btns, c_tema, c_som = st.columns([1.8, 1.5, 0.8])
+
 with c_btns:
     st.markdown("<div class='st-key-cmd_btns'>", unsafe_allow_html=True)
     n1, n2, n3, n4, n5 = st.columns(5)
@@ -121,12 +125,23 @@ with c_btns:
     st.markdown("</div>", unsafe_allow_html=True)
 
 with c_tema:
-    st.selectbox("TEMAS", ["Proust", "Metafísica"], key="p_tema")
+    # FIM DA VERSÃO PREGUIÇA: Varredura real da pasta data
+    try:
+        temas_reais = [f.replace(".ypo", "") for f in os.listdir("data") if f.endswith(".ypo")]
+        if not temas_reais: temas_reais = ["Nenhum tema encontrado"]
+        st.selectbox("LIVROS / TEMAS", sorted(temas_reais), key="p_tema")
+    except:
+        st.selectbox("LIVROS / TEMAS", ["Erro na pasta data"], key="p_tema_err")
 
 with c_som:
-    st.selectbox("SOM", ["Mudo", "Voz 1"], key="p_som")
+    st.selectbox("SOM / VOZ", ["Mudo", "Voz 1", "Voz 2"], key="p_som")
 
 st.markdown("<hr>", unsafe_allow_html=True)
 
-# Área de Texto/Imagem do Palco
-st.markdown(f"<h2 style='text-align: center; font-family: Georgia;'>{st.session_state.page}</h2>", unsafe_allow_html=True)
+# --- 5. ÁREA DE EXIBIÇÃO ---
+st.markdown(f"<div style='text-align: center; font-family: Georgia; font-size: 24px;'>{st.session_state.page}</div>", unsafe_allow_html=True)
+
+col_img, col_txt = st.columns([1, 1.2])
+with col_img:
+    if os.path.exists("img_demo.jpg"):
+        st.image("img_demo.jpg", use_container_width=True)
