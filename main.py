@@ -8,38 +8,32 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# FUNÇÃO AUXILIAR DE CARREGAMENTO (Busca em md_files ou raiz)
-def load_content(file_name):
-    paths = [os.path.join(os.path.dirname(__file__), "md_files"), os.path.dirname(__file__)]
-    for p in paths:
-        full_path = os.path.join(p, file_name)
-        if os.path.exists(full_path):
-            with open(full_path, "r", encoding="utf-8") as f:
-                return f.read()
-    return f"⚠️ {file_name} não localizado."
-
 st.markdown("""
     <style>
     /* DESATIVAR HEADER PADRÃO E FIXAR SIDEBAR */
     [data-testid="stHeader"] { display: none !important; }
     [data-testid="stSidebar"] { min-width: 320px !important; max-width: 320px !important; }
 
+    /* ESTILO DOS TOGGLES (Cores e Alinhamento) */
+    div[data-testid="stCheckbox"] { margin-bottom: 5px !important; }
+    
     /* BOTÕES CIRCULARES DO PALCO (Negrito Profundo) */
     .st-key-palco_btns div.stButton > button {
         background-color: #f0f2f6 !important;
         color: #000000 !important;
         border-radius: 50% !important;
-        width: 38px !important;
-        height: 38px !important;
+        width: 36px !important;
+        height: 36px !important;
         border: 2px solid #000000 !important;
         font-size: 20px !important;
         font-weight: 900 !important;
         display: flex;
         align-items: center;
         justify-content: center;
+        padding: 0px !important;
     }
 
-    /* INFO BOX: Estética de Dicionário */
+    /* INFO BOX: Estética de Nota de Rodapé ou Dicionário */
     .info-box {
         font-family: 'Georgia', serif;
         font-size: 13px;
@@ -49,9 +43,10 @@ st.markdown("""
         padding: 12px;
         border-left: 4px solid #000;
         margin: 15px 0;
+        box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
     }
 
-    /* FOOTER REDES: Negrito 900 */
+    /* REDES SOCIAIS: Negrito e Espaçamento */
     .social-links { 
         font-size: 11px; 
         font-weight: 900; 
@@ -61,14 +56,17 @@ st.markdown("""
     }
     .social-links a { color: #000; text-decoration: none; margin: 0 8px; }
 
-    /* PALCO: Centralização */
+    /* PALCO: Centralização dinâmica */
     .main .block-container {
-        max-width: 900px !important;
+        max-width: 800px !important;
         margin: 0 auto !important;
+        padding-top: 1.5rem !important;
     }
     
+    hr { border: 0; height: 1px; background: #ddd; margin: 15px 0 !important; }
+    
+    /* Ajuste para o selectbox não ter label */
     label { display: none !important; }
-    hr { border: 0; height: 1px; background: #ddd; margin: 20px 0 !important; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -76,7 +74,7 @@ st.markdown("""
 with st.sidebar:
     st.markdown("<div style='margin-top: 20px;'></div>", unsafe_allow_html=True)
     
-    # A. IDIOMAS (Elite List no topo)
+    # A. IDIOMAS: Elite List no topo
     elite_langs = ["Português", "Español", "Italiano", "Français", "English", "Català"]
     outros_langs = ["Deutsch", "Nederlands", "Polski", "Svenska", "Dansk", "Suomi"]
     st.selectbox("Idiomas", elite_langs + outros_langs, key="sb_idiomas")
@@ -90,12 +88,17 @@ with st.sidebar:
 
     st.markdown("---")
 
-    # C. ARTE DA PÁGINA (Conforme seu Screenshot: img_demo.jpg)
-    if os.path.exists("img_demo.jpg"):
-        st.image("img_demo.jpg", use_container_width=True)
+    # C. INFO PÁGINA (Contexto Dinâmico)
+    st.markdown("""
+    <div class='info-box'>
+        <b>Status da Página:</b><br>
+        Processando matriz rítmica. Sincronia de tradução ativa para os idiomas de elite.
+    </div>
+    """, unsafe_allow_html=True)
     
-    # D. INFO PÁGINA (Texto do INFO_DEMO.md)
-    st.markdown(f"<div class='info-box'>{load_content('INFO_DEMO.md')}</div>", unsafe_allow_html=True)
+    # D. ARTE DA PÁGINA (Identidade)
+    # Aqui entra o componente que carrega a arte do ypo_seguro
+    st.image("https://via.placeholder.com/300x200.png?text=ARTE+DA+PÁGINA", use_container_width=True)
 
     st.markdown("---")
 
@@ -106,40 +109,34 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
 
-# --- 3. PALCO: NAVEGAÇÃO SUPERIOR ---
-# Espaço para o menu de botões de página (Demo, yPoemas, etc.)
-paginas = ["DEMO", "yPoemas", "Eureka", "Off-Machina", "About"]
-cols_pg = st.columns(len(paginas))
-for i, pg in enumerate(paginas):
-    cols_pg[i].button(pg, key=f"btn_nav_{pg}")
-
-st.divider()
-
-# --- 4. BARRA DE COMANDO CENTRALIZADA ---
-_, col_barra, _ = st.columns([0.5, 3.0, 0.5])
+# --- 3. PALCO: BARRA DE COMANDO CENTRALIZADA ---
+_, col_barra, _ = st.columns([0.6, 2.8, 0.6])
 
 with col_barra:
-    c_btns, c_lista = st.columns([2.0, 1.2])
+    c_btns, c_lista = st.columns([2.0, 1.0])
     
     with c_btns:
         st.markdown("<div class='st-key-palco_btns'>", unsafe_allow_html=True)
         n1, n2, n3, n4, n5 = st.columns(5)
-        n1.button("＋", key="p_add")   # Novo texto
+        n1.button("＋", key="p_add") 
         n2.button("＜", key="p_prev")
-        n3.button("＊", key="p_star")  # Aleatório
+        n3.button("＊", key="p_star")
         n4.button("＞", key="p_next")
         n5.button("？", key="p_help")
         st.markdown("</div>", unsafe_allow_html=True)
 
     with c_lista:
-        # Placeholder para o seletor de temas
-        st.selectbox("Temas", ["Selecione um Tema", "Amor", "Morte", "Tempo"], key="p_temas")
+        try:
+            arquivos = [f.replace(".ypo", "") for f in os.listdir("data") if f.endswith(".ypo")]
+            st.selectbox("Temas", arquivos, key="p_temas")
+        except:
+            st.write("data/")
 
 st.markdown("<hr>", unsafe_allow_html=True)
 
-# --- 5. ÁREA DE EXIBIÇÃO ---
+# --- 4. ÁREA DE CONTEÚDO ---
 st.markdown("""
-<div style='text-align: center; color: #333; font-family: Georgia; margin-top: 50px;'>
-    <i>O Palco aguarda o processamento da Máquina.</i>
+<div style='text-align: center; color: #888; font-family: Georgia; margin-top: 40px; font-style: italic;'>
+    O Palco está centralizado e aguarda a entrada dos versos.
 </div>
 """, unsafe_allow_html=True)
