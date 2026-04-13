@@ -5,7 +5,7 @@ import os
 st.set_page_config(
     page_title="a máquina de fazer Poesia - yPoemas",
     layout="wide", 
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="expanded" # O leitor decide se recolhe (<<)
 )
 
 if 'page' not in st.session_state:
@@ -19,50 +19,39 @@ def get_md(p):
             return f.read()
     return ""
 
-# --- 3. CSS: O ESQUADRO FINAL ---
+# --- 3. CSS: O ESQUADRO DINÂMICO ---
 st.markdown("""<style>
     [data-testid="stHeader"] {display: none !important;}
     
-    /* SIDEBAR: DINÂMICA */
+    /* SIDEBAR: DINÂMICA (RECOLHÍVEL) MAS COM LARGURA DEFINIDA QUANDO ATIVA */
     section[data-testid="stSidebar"] {
         max-width: 300px !important;
     }
 
-    /* NAV: RESOLVENDO O ENCAVALAMENTO */
-    /* Forçamos os containers a não colidirem */
-    [data-testid="column"] {
-        display: flex !important;
-        justify-content: center !important;
-        padding: 0 5px !important;
-    }
-
+    /* BOTÕES DE PÁGINA: GEORGIA 13PX */
     .stButton>button {
-        width: 100% !important; /* Ocupa a coluna, mas a coluna tem padding */
-        min-width: 100px !important; 
+        width: 100% !important;
         height: 42px !important;
         border-radius: 20px !important;
         font-family: 'Georgia', serif !important;
         font-size: 13px !important;
         font-weight: 400 !important;
-        white-space: nowrap !important; /* Impede quebra de texto dentro do botão */
     }
-
     .st-key-on button {background-color: #000 !important; color: #fff !important;}
     .st-key-off button {background-color: #f8f9fa !important; color: #888 !important; border: 1px solid #eee !important;}
     
-    /* RÉGUA: QUADRADOS 52PX FIXOS */
+    /* BOTÕES DE COMANDO (OS 5 QUADRADOS) */
     .st-key-cmd button {
         border-radius: 8px !important;
         width: 52px !important;
         height: 52px !important;
-        min-width: 52px !important;
         font-size: 24px !important;
         font-weight: 900 !important;
         background: #fff !important;
         border: 1px solid #ccc !important;
     }
 
-    /* INFO BOX GEORGIA */
+    /* INFO BOX */
     .info-box {
         font-family: 'Georgia', serif;
         font-size: 13px;
@@ -72,13 +61,14 @@ st.markdown("""<style>
         background-color: #ffffff;
     }
 
+    /* PALCO CENTRAL FLUIDO */
     .main .block-container {
-        max-width: 1200px !important;
-        margin: 0 auto !important;
+        max-width: 95% !important;
+        padding-top: 2rem !important;
     }
 </style>""", unsafe_allow_html=True)
 
-# --- 4. SIDEBAR: COCKPIT ---
+# --- 4. SIDEBAR: COCKPIT RETRÁTIL ---
 with st.sidebar:
     st.markdown("<br>", unsafe_allow_html=True)
     idiomas = ["Português", "Español", "English", "Français", "Italiano", "Català", "German", "Latin"]
@@ -95,20 +85,19 @@ with st.sidebar:
     st.divider()
     
     if os.path.exists("img_demo.jpg"):
-        # Ajuste de parâmetro solicitado pelo sistema
         st.image("img_demo.jpg", width='stretch')
     
     st.divider()
     st.markdown(f"<div class='info-box'>{get_md(st.session_state.page)}</div>", unsafe_allow_html=True)
 
-# --- 5. NAVEGAÇÃO: AS 6 COLUNAS (COM ESPAÇAMENTO) ---
+# --- 5. NAVEGAÇÃO: TOP ---
 menu = ["Demo", "yPoemas", "Eureka", "Off-Machina", "Comments", "About"]
 c_nav = st.columns(6)
 
 for i, item in enumerate(menu):
     with c_nav[i]:
         tag = 'on' if st.session_state.page == item else 'off'
-        st.markdown(f"<div class='st-key-{tag}' style='width:100%'>", unsafe_allow_html=True)
+        st.markdown(f"<div class='st-key-{tag}'>", unsafe_allow_html=True)
         if st.button(item, key=f"nav_{i}"):
             st.session_state.page = item
             st.rerun()
@@ -116,34 +105,34 @@ for i, item in enumerate(menu):
 
 st.divider()
 
-# --- 6. RÉGUA DE COMANDO (PROPORÇÃO 7.5) ---
-c_cmd = st.columns([1, 1, 1, 1, 1, 7.5])
-icones = ["＋", "＜", "＊", "＞", "？"]
-for i, icone in enumerate(icones):
-    with c_cmd[i]:
-        st.markdown("<div class='st-key-cmd'>", unsafe_allow_html=True)
-        st.button(icone, key=f"cmd_{i}")
-        st.markdown("</div>", unsafe_allow_html=True)
+# --- 6. RÉGUA DE CONTROLE: LIVROS | COMANDOS | TEMAS ---
+# Três blocos principais: Esquerda (Livros), Centro (Comandos), Direita (Temas)
+c_regua = st.columns([3, 6, 3])
 
-st.write("") 
+with c_regua[0]: # LIVROS DISPONÍVEIS
+    livros = sorted([f[4:-4] for f in os.listdir("base") if f.startswith("rol_")])
+    livro_sel = st.selectbox("LIVROS", livros, key="s_g", label_visibility="collapsed")
 
-# RÉGUA DE SELEÇÃO: DISTRIBUIÇÃO LIMPA PARA LIVROS
-c_sel = st.columns([4, 8])
+with c_regua[1]: # COMANDOS (Centralizados com o vão 7.5)
+    cc_nav = st.columns([1, 1, 1, 1, 1, 7.5])
+    icones = ["＋", "＜", "＊", "＞", "？"]
+    for i, icone in enumerate(icones):
+        with cc_nav[i]:
+            st.markdown("<div class='st-key-cmd'>", unsafe_allow_html=True)
+            st.button(icone, key=f"cmd_{i}")
+            st.markdown("</div>", unsafe_allow_html=True)
 
-with c_sel[0]: # GRUPO
-    grupos = sorted([f[4:-4] for f in os.listdir("base") if f.startswith("rol_")])
-    g_sel = st.selectbox("G", grupos, key="s_g", label_visibility="collapsed")
-
-with c_sel[1]: # TEMA
-    path_txt = f"base/rol_{g_sel}.txt"
+with c_regua[2]: # TEMAS
+    path_txt = f"base/rol_{livro_sel}.txt"
     if os.path.exists(path_txt):
         with open(path_txt, "r", encoding="utf-8") as f:
             temas = [l.strip() for l in f.readlines() if l.strip()]
     else:
         temas = ["..."]
-    st.selectbox("T", temas, key="s_t", label_visibility="collapsed")
+    st.selectbox("TEMAS", temas, key="s_t", label_visibility="collapsed")
 
 st.divider()
 
-# --- 7. DISPLAY ---
+# --- 7. PALCO LIVRE PARA YPOEMAS ---
+# O título é apenas o marcador, o espaço abaixo está limpo para a geração.
 st.markdown(f"<h1 style='text-align: center; font-family: Georgia;'>{st.session_state.page}</h1>", unsafe_allow_html=True)
