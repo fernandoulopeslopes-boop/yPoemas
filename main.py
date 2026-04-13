@@ -1,14 +1,14 @@
 import streamlit as st
 import os
 
-# --- 1. HARDWARE VIRTUAL (BEST_VERSION RECOVERED) ---
+# --- 1. CONFIGURAÇÃO DE HARDWARE (BEST_VERSION RECOVERED) ---
 st.set_page_config(
     page_title="a máquina de fazer Poesia - yPoemas",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
-# Navegação por estado (Toggle Logic)
+# Navegação persistente por Toggle Logic
 if 'page' not in st.session_state:
     st.session_state.page = 'DEMO'
 
@@ -16,21 +16,27 @@ st.markdown("""
     <style>
     [data-testid="stHeader"] { display: none !important; }
     
-    /* SIDEBAR COCKPIT (320px) */
+    /* SIDEBAR FIEL (320px) */
     [data-testid="stSidebar"] { min-width: 320px !important; max-width: 320px !important; }
 
-    /* TOGGLE BUTTONS (Navegação Superior) */
-    .st-key-nav_btns div.stButton > button {
-        border-radius: 20px !important;
+    /* ESTILO TOGGLE BUTTONS (Navegação Superior) */
+    .st-key-nav_toggle div.stButton > button {
+        border-radius: 0px !important;
+        border: none !important;
+        border-bottom: 3px solid transparent !important;
         font-weight: 900 !important;
-        background-color: #f8f9fa !important;
-        border: 1px solid #ddd !important;
-        padding: 0px 18px !important;
-        height: 32px !important;
-        font-size: 13px !important;
+        background-color: transparent !important;
+        font-size: 14px !important;
+        color: #888 !important;
+    }
+    
+    /* Simulação de Estado Ativo para o Toggle */
+    .st-key-nav_active div.stButton > button {
+        border-bottom: 3px solid #000 !important;
+        color: #000 !important;
     }
 
-    /* CONSOLE DE COMANDO (Os 5 Círculos do Last Screenshot) */
+    /* CONSOLE DE COMANDO (Os 5 Círculos Pretos) */
     .st-key-cmd_btns div.stButton > button {
         background-color: #f0f2f6 !important;
         color: #000 !important;
@@ -40,9 +46,6 @@ st.markdown("""
         border: 2px solid #000 !important;
         font-size: 22px !important;
         font-weight: 900 !important;
-        display: flex;
-        align-items: center;
-        justify-content: center;
         padding: 0px !important;
     }
 
@@ -51,7 +54,6 @@ st.markdown("""
         font-family: 'Georgia', serif;
         font-size: 13px;
         line-height: 1.6;
-        color: #1a1a1a;
         background: #fdfdfd;
         padding: 15px;
         border-left: 4px solid #000;
@@ -67,40 +69,46 @@ st.markdown("""
 with st.sidebar:
     st.markdown("<div style='margin-top: 20px;'></div>", unsafe_allow_html=True)
     
-    # Idioma (Lista Radical)
-    langs = ["Português", "Español", "English", "Français", "Italiano", "Català", "Latin", "German"]
-    st.selectbox("🌐 IDIOMA", langs, key="sb_lang")
+    # IDIOMA: Lista Radical Western ABC
+    elite = ["Português", "Español", "English", "Français", "Italiano", "Català"]
+    others = ["German", "Latin", "Norwegian", "Polish", "Swedish"]
+    st.selectbox("🌐 IDIOMA", elite + others, key="sb_lang")
     
     st.divider()
 
-    # Arte da Página (Identidade)
+    # ARTE DA PÁGINA
     if os.path.exists("img_demo.jpg"):
         st.image("img_demo.jpg", use_container_width=True)
     
     st.divider()
 
-    # Info Box Dinâmico (Lê de \md_files)
+    # INFO BOX (Dinâmico: lê de \md_files)
     try:
-        with open(f"md_files/INFO_{st.session_state.page}.md", "r", encoding="utf-8") as f:
+        path = os.path.join("md_files", f"INFO_{st.session_state.page}.md")
+        with open(path, "r", encoding="utf-8") as f:
             st.markdown(f"<div class='info-box'>{f.read()}</div>", unsafe_allow_html=True)
     except:
-        st.markdown("<div class='info-box'>Aguardando contexto...</div>", unsafe_allow_html=True)
+        st.markdown("<div class='info-box'>Aguardando contexto da Machina...</div>", unsafe_allow_html=True)
 
-# --- 3. PALCO SOBERANO ---
+# --- 3. PALCO SOBERANO (NAVEGAÇÃO TOGGLE) ---
 
-# A. TOGGLE NAVIGATION (Menu Superior)
-menu = ["Demo", "yPoemas", "Eureka", "Off-Machina", "Comments", "About"]
+# Menu Superior com Lógica de Toggle (Botão Ativo vs Inativo)
+menu = ["DEMO", "yPOEMAS", "EUREKA", "OFF-MACHINA", "COMMENTS", "ABOUT"]
 cols = st.columns(len(menu))
-st.markdown("<div class='st-key-nav_btns'>", unsafe_allow_html=True)
+
 for i, item in enumerate(menu):
-    if cols[i].button(item.upper(), key=f"nav_{item}"):
-        st.session_state.page = item.upper()
-        st.rerun()
-st.markdown("</div>", unsafe_allow_html=True)
+    # Aplica classe 'nav_active' se for a página atual, senão 'nav_toggle'
+    key_type = "nav_active" if st.session_state.page == item else "nav_toggle"
+    with cols[i]:
+        st.markdown(f"<div class='st-key-{key_type}'>", unsafe_allow_html=True)
+        if st.button(item, key=f"btn_{item}"):
+            st.session_state.page = item
+            st.rerun()
+        st.markdown("</div>", unsafe_allow_html=True)
 
 st.divider()
 
-# B. CONSOLE (Os 5 botões funcionais)
+# --- 4. CONSOLE DE COMANDO E EXIBIÇÃO ---
 c_btns, c_tema, c_som = st.columns([1.8, 1.5, 0.8])
 with c_btns:
     st.markdown("<div class='st-key-cmd_btns'>", unsafe_allow_html=True)
@@ -113,12 +121,12 @@ with c_btns:
     st.markdown("</div>", unsafe_allow_html=True)
 
 with c_tema:
-    st.selectbox("LIVROS / TEMAS", ["Geral"], key="p_tema")
+    st.selectbox("TEMAS", ["Proust", "Metafísica"], key="p_tema")
 
 with c_som:
-    st.selectbox("SOM", ["Mudo", "Voz 1", "Voz 2"], key="p_som")
+    st.selectbox("SOM", ["Mudo", "Voz 1"], key="p_som")
 
 st.markdown("<hr>", unsafe_allow_html=True)
 
-# C. ÁREA DE EXIBIÇÃO (Exemplo: DEMO)
+# Área de Texto/Imagem do Palco
 st.markdown(f"<h2 style='text-align: center; font-family: Georgia;'>{st.session_state.page}</h2>", unsafe_allow_html=True)
