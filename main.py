@@ -174,8 +174,8 @@ if "book" not in st.session_state:  #  index for books_list
     st.session_state.book = "livro vivo"
 if "take" not in st.session_state:  #  index for selected tema in books_list
     st.session_state.take = 0
-if "mini" not in st.session_state:  #  index for selected tema in page_mini
-    st.session_state.mini = 0
+if "demo" not in st.session_state:  #  index for selected tema in page_demo
+    st.session_state.demo = 0
 if "tema" not in st.session_state:  #  selected tema for all pages
     st.session_state.tema = "Fatos"
 
@@ -753,8 +753,8 @@ if st.session_state.visy:  # check visitor once; rand initial temas
     st.session_state.take = random.randrange(0, maxy_ypoemas)
 
     temas_list = load_temas("todos os temas")
-    maxy_mini = len(temas_list)
-    st.session_state.mini = random.randrange(0, maxy_mini)
+    maxy_demo = len(temas_list)
+    st.session_state.demo = random.randrange(0, maxy_demo)
 
     st.success(translate("bem vindo à **máquina de fazer Poesia...**"))
     st.session_state.draw = True
@@ -764,12 +764,12 @@ if st.session_state.visy:  # check visitor once; rand initial temas
 st.session_state.last_lang = st.session_state.lang
 
 
-def page_mini():
+def page_demo():
     temas_list = load_temas("todos os temas")
-    maxy_mini = len(temas_list)
+    maxy_demo = len(temas_list)
 
-    if st.session_state.mini > maxy_mini:  # just in case
-        st.session_state.mini = 0
+    if st.session_state.demo > maxy_demo:  # just in case
+        st.session_state.demo = 0
 
     foo1, more, rand, auto, foo2 = st.columns([4, 1, 1, 1, 4])
 
@@ -787,11 +787,11 @@ def page_mini():
 
     if rand:
         st.session_state.rand = True
-        st.session_state.mini = random.randrange(0, maxy_mini)
+        st.session_state.demo = random.randrange(0, maxy_demo)
     else:
         st.session_state.rand = False
 
-    st.session_state.tema = temas_list[st.session_state.mini]
+    st.session_state.tema = temas_list[st.session_state.demo]
     analise = say_number(st.session_state.tema)
     more = more.button("✚", help=help_more + " • " + analise)
 
@@ -801,14 +801,14 @@ def page_mini():
     lnew = True
     if st.session_state.vydo:
         lnew = False
-        show_video("mini")
-        update_readings("video_mini")
+        show_video("demo")
+        update_readings("video_demo")
         st.session_state.vydo = False
 
     if lnew or st.session_state.auto:
         if st.session_state.rand:
-            st.session_state.mini = random.randrange(0, maxy_mini)
-            st.session_state.tema = temas_list[st.session_state.mini]
+            st.session_state.demo = random.randrange(0, maxy_demo)
+            st.session_state.tema = temas_list[st.session_state.demo]
 
         if st.session_state.lang != st.session_state.last_lang:
             curr_ypoema = load_lypo()  # changes in lang, keep LYPO
@@ -833,12 +833,12 @@ def page_mini():
         if st.session_state.draw:
             LOGO_IMAGE = load_arts(st.session_state.tema)
 
-        mini_place_holder = st.empty()
-        mini_place_holder.empty()
+        demo_place_holder = st.empty()
+        demo_place_holder.empty()
         st.write("")
 
         if st.session_state.auto == False:
-            with mini_place_holder:
+            with demo_place_holder:
                 write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
 
             if st.session_state.talk:
@@ -847,8 +847,8 @@ def page_mini():
         else:
             while st.session_state.auto:
                 if st.session_state.rand:
-                    st.session_state.mini = random.randrange(0, maxy_mini)
-                    st.session_state.tema = temas_list[st.session_state.mini]
+                    st.session_state.demo = random.randrange(0, maxy_demo)
+                    st.session_state.tema = temas_list[st.session_state.demo]
 
                 if st.session_state.lang != st.session_state.last_lang:
                     curr_ypoema = load_lypo()  # changes in lang, keep LYPO
@@ -873,8 +873,8 @@ def page_mini():
                 if st.session_state.draw:
                     LOGO_IMAGE = load_arts(st.session_state.tema)
 
-                with mini_place_holder:
-                    mini_place_holder.empty()
+                with demo_place_holder:
+                    demo_place_holder.empty()
                     write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
                     secs = wait_time
                     while secs >= 0:
@@ -1440,7 +1440,7 @@ def page_abouts():
 def main():
     chosen_id = stx.tab_bar(
         data=[
-            stx.TabBarItemData(id=1, title="mini", description=""),
+            stx.TabBarItemData(id=1, title="demo", description=""),
             stx.TabBarItemData(id=2, title="yPoemas", description=""),
             stx.TabBarItemData(id=3, title="eureka", description=""),
             stx.TabBarItemData(id=4, title="off-machina", description=""),
@@ -1455,9 +1455,9 @@ def main():
     draw_check_buttons()
 
     if chosen_id == "1":
-        st.sidebar.info(load_md_file("INFO_MINI.md"))
-        magy = "img_mini.jpg"
-        page_mini()
+        st.sidebar.info(load_md_file("INFO_DEMO.md"))
+        magy = "img_demo.jpg"
+        page_demo()
     elif chosen_id == "2":
         st.sidebar.info(load_md_file("INFO_YPOEMAS.md"))
         magy = "img_ypoemas.jpg"
