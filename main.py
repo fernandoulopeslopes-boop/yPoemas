@@ -1,112 +1,142 @@
 import streamlit as st
 import os
 
-# --- MOTOR DE BUSCA (ESTÁVEL & COERENTE) ---
-def load_md_file(file_name):
-    """Localiza arquivos MD priorizando /md_files e depois a raiz."""
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    search_paths = [os.path.join(base_dir, "md_files"), base_dir]
+# --- 1. CONFIGURAÇÃO DE HARDWARE VIRTUAL ---
+st.set_page_config(
+    page_title="a máquina de fazer Poesia - yPoemas",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
+
+st.markdown("""
+    <style>
+    /* DESATIVAR HEADER PADRÃO E FIXAR SIDEBAR */
+    [data-testid="stHeader"] { display: none !important; }
+    [data-testid="stSidebar"] { min-width: 320px !important; max-width: 320px !important; }
+
+    /* ESTILO DOS TOGGLES (Cores e Alinhamento) */
+    div[data-testid="stCheckbox"] { margin-bottom: 5px !important; }
     
-    target = file_name.upper()
-    for folder in search_paths:
-        if os.path.exists(folder):
-            try:
-                for arquivo in os.listdir(folder):
-                    if arquivo.upper() == target:
-                        with open(os.path.join(folder, arquivo), "r", encoding="utf-8") as f:
-                            return f.read()
-            except Exception: continue
-    return f"⚠️ {target} não localizado."
-
-# --- INTERFACE PRINCIPAL ---
-def main():
-    st.set_page_config(page_title="yPoemas", layout="wide")
-
-    # CSS: Limpeza, Largura da Sidebar e Botões Suaves
-    st.markdown("""
-        <style>
-        [data-testid="stSidebar"] { min-width: 300px; max-width: 300px; }
-        div.stButton > button { 
-            border-radius: 20px; 
-            background-color: rgba(0, 0, 0, 0.05); 
-            border: 1px solid rgba(0, 0, 0, 0.1);
-        }
-        </style>
-    """, unsafe_allow_html=True)
-
-    # 1. NAVEGAÇÃO DO PALCO (TABS NO TOPO)
-    # A ordem que você definiu como original e funcional
-    tabs_labels = ["Demo", "yPoemas", "Eureka", "Off-Machina", "Comments", "About"]
-    tab_demo, tab_ypo, tab_eur, tab_off, tab_com, tab_abt = st.tabs(tabs_labels)
-
-    # Dicionário de Imagens (Arquivos na raiz confirmados por você)
-    img_map = {
-        "Demo": "img_demo.jpg",
-        "yPoemas": "img_ypoemas.jpg",
-        "Eureka": "img_eureka.jpg",
-        "Off-Machina": "img_off-machina.jpg",
-        "Comments": "img_about.jpg",
-        "About": "img_about.jpg"
+    /* BOTÕES CIRCULARES DO PALCO (Negrito Profundo) */
+    .st-key-palco_btns div.stButton > button {
+        background-color: #f0f2f6 !important;
+        color: #000000 !important;
+        border-radius: 50% !important;
+        width: 36px !important;
+        height: 36px !important;
+        border: 2px solid #000000 !important;
+        font-size: 20px !important;
+        font-weight: 900 !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0px !important;
     }
 
-    # 2. RENDERIZAÇÃO DO CONTEÚDO (PALCO)
-    # Usamos o contexto de cada aba para setar o que a Sidebar deve mostrar
-    with tab_demo:
-        st.session_state.active = "Demo"
-        video_path = "video_DEMO.mp4"
-        if os.path.exists(video_path): st.video(video_path)
-        else: st.write(" ") # Espaço da Máquina
+    /* INFO BOX: Estética de Nota de Rodapé ou Dicionário */
+    .info-box {
+        font-family: 'Georgia', serif;
+        font-size: 13px;
+        line-height: 1.5;
+        color: #222;
+        background: #fdfdfd;
+        padding: 12px;
+        border-left: 4px solid #000;
+        margin: 15px 0;
+        box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
+    }
 
-    with tab_ypo:
-        st.session_state.active = "yPoemas"
-        st.markdown(load_md_file("MANUAL_YPOEMAS.MD"))
+    /* REDES SOCIAIS: Negrito e Espaçamento */
+    .social-links { 
+        font-size: 11px; 
+        font-weight: 900; 
+        text-align: center; 
+        margin-top: 20px;
+        letter-spacing: 1px;
+    }
+    .social-links a { color: #000; text-decoration: none; margin: 0 8px; }
 
-    with tab_eur:
-        st.session_state.active = "Eureka"
-        st.markdown(load_md_file("MANUAL_EUREKA.MD"))
+    /* PALCO: Centralização dinâmica */
+    .main .block-container {
+        max-width: 800px !important;
+        margin: 0 auto !important;
+        padding-top: 1.5rem !important;
+    }
+    
+    hr { border: 0; height: 1px; background: #ddd; margin: 15px 0 !important; }
+    
+    /* Ajuste para o selectbox não ter label */
+    label { display: none !important; }
+    </style>
+""", unsafe_allow_html=True)
 
-    with tab_off:
-        st.session_state.active = "Off-Machina"
-        st.markdown(load_md_file("MANUAL_OFF-MACHINA.MD"))
+# --- 2. SIDEBAR: CONSOLE DE COMANDO ---
+with st.sidebar:
+    st.markdown("<div style='margin-top: 20px;'></div>", unsafe_allow_html=True)
+    
+    # A. IDIOMAS: Elite List no topo
+    elite_langs = ["Português", "Español", "Italiano", "Français", "English", "Català"]
+    outros_langs = ["Deutsch", "Nederlands", "Polski", "Svenska", "Dansk", "Suomi"]
+    st.selectbox("Idiomas", elite_langs + outros_langs, key="sb_idiomas")
+    
+    st.markdown("---")
 
-    with tab_com:
-        st.session_state.active = "Comments"
-        st.markdown(load_md_file("ABOUT_COMMENTS.MD"))
+    # B. TOGGLES: Talk, Draw, Vídeo
+    st.toggle("TALK (Voz)", key="tg_talk")
+    st.toggle("DRAW (Imagem)", key="tg_draw")
+    st.toggle("VÍDEO (Motion)", key="tg_video")
 
-    with tab_abt:
-        st.session_state.active = "About"
-        c1, c2, c3, c4 = st.columns(4)
-        if c1.button("Prefácio"): st.session_state.sub = "prefácio"
-        if c2.button("Machina"): st.session_state.sub = "machina"
-        if c3.button("Imagens"): st.session_state.sub = "imagens"
-        if c4.button("Index"): st.session_state.sub = "index"
-        sub = st.session_state.get('sub', 'prefácio')
-        st.markdown(load_md_file(f"ABOUT_{sub.upper()}.MD"))
+    st.markdown("---")
 
-    # 3. SIDEBAR (A VERSÃO PRONTA)
-    with st.sidebar:
-        # Idiomas (Western ABC)
-        idiomas = ["Português", "Español", "English", "Français", "Italiano", "Deutsch", "Català", "Galego", "Latin", "Română"]
-        st.selectbox("🌐 IDIOMA", options=idiomas)
-        st.divider()
+    # C. INFO PÁGINA (Contexto Dinâmico)
+    st.markdown("""
+    <div class='info-box'>
+        <b>Status da Página:</b><br>
+        Processando matriz rítmica. Sincronia de tradução ativa para os idiomas de elite.
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # D. ARTE DA PÁGINA (Identidade)
+    # Aqui entra o componente que carrega a arte do ypo_seguro
+    st.image("https://via.placeholder.com/300x200.png?text=ARTE+DA+PÁGINA", use_container_width=True)
 
-        # ARTE (Sincronizada com o Palco)
-        current = st.session_state.get("active", "Demo")
-        target_img = img_map.get(current)
-        if target_img and os.path.exists(target_img):
-            st.image(target_img, use_container_width=True)
-        
-        st.divider()
+    st.markdown("---")
 
-        # INFO (Sincronizado via /md_files/)
-        st.markdown(load_md_file(f"INFO_{current.upper()}.MD"))
-        
-        st.divider()
-        
-        # CONTATOS
-        st.markdown("### Contatos")
-        st.markdown("🌐 [GitHub](https://github.com/)")
-        st.markdown("✉️ [Email](mailto:contato@exemplo.com)")
+    # E. FOOTER: Redes Sociais
+    st.markdown("""
+    <div class='social-links'>
+        <a href='#'>INSTAGRAM</a> • <a href='#'>GITHUB</a> • <a href='#'>LINKEDIN</a>
+    </div>
+    """, unsafe_allow_html=True)
 
-if __name__ == "__main__":
-    main()
+# --- 3. PALCO: BARRA DE COMANDO CENTRALIZADA ---
+_, col_barra, _ = st.columns([0.6, 2.8, 0.6])
+
+with col_barra:
+    c_btns, c_lista = st.columns([2.0, 1.0])
+    
+    with c_btns:
+        st.markdown("<div class='st-key-palco_btns'>", unsafe_allow_html=True)
+        n1, n2, n3, n4, n5 = st.columns(5)
+        n1.button("＋", key="p_add") 
+        n2.button("＜", key="p_prev")
+        n3.button("＊", key="p_star")
+        n4.button("＞", key="p_next")
+        n5.button("？", key="p_help")
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    with c_lista:
+        try:
+            arquivos = [f.replace(".ypo", "") for f in os.listdir("data") if f.endswith(".ypo")]
+            st.selectbox("Temas", arquivos, key="p_temas")
+        except:
+            st.write("data/")
+
+st.markdown("<hr>", unsafe_allow_html=True)
+
+# --- 4. ÁREA DE CONTEÚDO ---
+st.markdown("""
+<div style='text-align: center; color: #888; font-family: Georgia; margin-top: 40px; font-style: italic;'>
+    O Palco está centralizado e aguarda a entrada dos versos.
+</div>
+""", unsafe_allow_html=True)
