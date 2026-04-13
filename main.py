@@ -94,14 +94,14 @@ with st.sidebar:
 
     st.markdown("---")
 
-    # ATUALIZAÇÃO SINTÁTICA: width='stretch'
     current = st.session_state.active_page
     target_img = img_map.get(current, "img_demo.jpg")
     if os.path.exists(target_img):
         st.image(target_img, width='stretch')
     
+    # LINHA CORRIGIDA ABAIXO:
     info_text = load_content(f"INFO_{current.upper()}.MD")
-    st.markdown(f<div class='info-box'>{info_text}</div>, unsafe_allow_html=True)
+    st.markdown(f"<div class='info-box'>{info_text}</div>", unsafe_allow_html=True)
 
     st.markdown("---")
 
@@ -127,11 +127,11 @@ with col_barra:
     with c_btns:
         st.markdown("<div class='st-key-palco_btns'>", unsafe_allow_html=True)
         n1, n2, n3, n4, n5 = st.columns(5)
-        n1.button("＋") 
-        n2.button("＜") 
-        n3.button("＊") 
-        n4.button("＞") 
-        n5.button("？") 
+        n1.button("＋", key="cmd_add") 
+        n2.button("＜", key="cmd_prev") 
+        n3.button("＊", key="cmd_star") 
+        n4.button("＞", key="cmd_next") 
+        n5.button("？", key="cmd_help") 
         st.markdown("</div>", unsafe_allow_html=True)
 
     with c_lista:
