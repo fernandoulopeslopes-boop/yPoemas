@@ -19,26 +19,33 @@ def get_md(p):
             return f.read()
     return ""
 
-# --- 3. CSS: O ESQUADRO REFINADO ---
+# --- 3. CSS: AJUSTE DE PROPORÇÃO E FLUIDEZ ---
 st.markdown("""<style>
     [data-testid="stHeader"] {display: none !important;}
     
-    /* SIDEBAR FIXA */
+    /* SIDEBAR: PERMITE EXPANSÃO DO PALCO AO RECOLHER */
     section[data-testid="stSidebar"] {
-        min-width: 300px !important;
         max-width: 300px !important;
     }
 
-    /* NAV: BOTÕES PADRONIZADOS (FONTE GEORGIA 13PX) */
+    /* NAV: AJUSTE PARA NOMES COMPLETOS E CENTRALIZAÇÃO */
     .stButton>button {
-        width: 100% !important;
+        width: auto !important;
+        min-width: 120px !important;
+        padding: 0 15px !important;
         height: 42px !important;
         border-radius: 20px !important;
         font-family: 'Georgia', serif !important;
         font-size: 13px !important;
         font-weight: 400 !important;
-        text-transform: none !important;
     }
+    
+    /* GARANTE QUE O CONTEÚDO FIQUE NO CENTRO */
+    .stHorizontalBlock {
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
     .st-key-on button {background-color: #000 !important; color: #fff !important;}
     .st-key-off button {background-color: #f8f9fa !important; color: #888 !important; border: 1px solid #eee !important;}
     
@@ -64,12 +71,12 @@ st.markdown("""<style>
     }
 
     .main .block-container {
-        max-width: 1100px !important;
+        max-width: 1200px !important;
         margin: 0 auto !important;
     }
 </style>""", unsafe_allow_html=True)
 
-# --- 4. SIDEBAR: COCKPIT COMPLETO ---
+# --- 4. SIDEBAR: COCKPIT ---
 with st.sidebar:
     st.markdown("<br>", unsafe_allow_html=True)
     idiomas = ["Português", "Español", "English", "Français", "Italiano", "Català", "German", "Latin"]
@@ -77,7 +84,6 @@ with st.sidebar:
     
     st.divider()
     
-    # CONTROLES DE ARTE E SOM MUDARAM PARA CÁ
     col_a, col_s = st.columns(2)
     with col_a:
         st.toggle("ARTE", value=True, key="t_a")
@@ -87,19 +93,20 @@ with st.sidebar:
     st.divider()
     
     if os.path.exists("img_demo.jpg"):
-        st.image("img_demo.jpg", use_container_width=True)
+        st.image("img_demo.jpg", width='stretch')
     
     st.divider()
     st.markdown(f"<div class='info-box'>{get_md(st.session_state.page)}</div>", unsafe_allow_html=True)
 
-# --- 5. NAVEGAÇÃO: PALCO SUPERIOR ---
+# --- 5. NAVEGAÇÃO: CENTRALIZADA ---
 menu = ["Demo", "yPoemas", "Eureka", "Off-Machina", "Comments", "About"]
-c_nav = st.columns(6)
+# Usamos colunas vazias nas pontas para centralizar o menu
+c_nav = st.columns([1, 1, 1, 1, 1, 1])
 
 for i, item in enumerate(menu):
     with c_nav[i]:
         tag = 'on' if st.session_state.page == item else 'off'
-        st.markdown(f"<div class='st-key-{tag}'>", unsafe_allow_html=True)
+        st.markdown(f"<div class='st-key-{tag}' style='text-align: center;'>", unsafe_allow_html=True)
         if st.button(item, key=f"nav_{i}"):
             st.session_state.page = item
             st.rerun()
@@ -118,9 +125,8 @@ for i, icone in enumerate(icones):
 
 st.write("") 
 
-# RÉGUA DE SELEÇÃO (L-idioma removido, Arte/Som movidos)
-# Proporção ajustada para os seletores centrais G e T
-c_sel = st.columns([1.5, 3.5, 6.0])
+# RÉGUA DE SELEÇÃO: MAIS ESPAÇO PARA OS TÍTULOS (G e T)
+c_sel = st.columns([3, 7])
 
 with c_sel[0]: # GRUPO
     grupos = sorted([f[4:-4] for f in os.listdir("base") if f.startswith("rol_")])
