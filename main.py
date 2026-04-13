@@ -1,62 +1,68 @@
 import streamlit as st
 import os
 
-# 1. HARDWARE: BOOT SEM INTERFERÊNCIA
+# 1. HARDWARE: BOOT SEM CACHE DE ESTADO
 st.set_page_config(layout="wide", initial_sidebar_state="expanded")
 
 if 'page' not in st.session_state:
     st.session_state.page = 'Demo'
 
-# 2. CSS: FORÇANDO A PRESENÇA FÍSICA DA SIDEBAR
+# 2. CSS: O SEGREDO ESTÁ NO SELETOR DE ATRIBUTO
 st.markdown("""<style>
-    /* Esconde o Header nativo */
+    /* REMOVER LIXO NATIVO */
     [data-testid="stHeader"] {display: none !important;}
     
-    /* FORÇA A SIDEBAR A APARECER E MANTER 300PX */
-    [data-testid="stSidebar"] {
+    /* FORÇAR SIDEBAR: O Streamlit usa data-collapsed para esconder */
+    section[data-testid="stSidebar"][aria-expanded="false"] {
+        margin-left: 0px !important;
+    }
+    
+    section[data-testid="stSidebar"] {
         min-width: 300px !important;
         max-width: 300px !important;
-        visibility: visible !important;
-        display: block !important;
+        border-right: 1px solid #eee !important;
     }
 
-    /* NAV: BOTÕES ARREDONDADOS */
+    /* NAV: BOTÕES ARREDONDADOS SIMÉTRICOS */
     .stButton>button {
         width: 100%; height: 42px; border-radius: 20px; 
         font-weight: 900; font-size: 11px; text-transform: uppercase;
     }
-    .st-key-on button {background-color: #000 !important; color: #fff !important;}
+    .st-key-on button {background-color: #000 !important; color: #fff !important; border: 2px solid #000 !important;}
     .st-key-off button {background-color: #f8f9fa !important; color: #888 !important; border: 1px solid #eee !important;}
     
-    /* RÉGUA: QUADRADOS */
+    /* RÉGUA: QUADRADOS DA IMAGEM */
     .st-key-cmd button {
         border-radius: 8px !important; width: 52px !important; height: 52px !important; 
         font-size: 24px !important; font-weight: 900; background: #fff !important; border: 1px solid #ccc !important;
     }
 
-    /* INFO BOX */
+    /* INFO BOX GEORGIA */
     .info-box {
         font-family: 'Georgia', serif; font-size: 13px; line-height: 1.6; 
         padding: 15px; border-left: 5px solid #000; background: #fff;
     }
 
+    /* PALCO CENTRAL */
     .main .block-container {max-width: 1100px !important; margin: 0 auto !important;}
 </style>""", unsafe_allow_html=True)
 
-# 3. SIDEBAR (CONTEÚDO)
+# 3. SIDEBAR (O COCKPIT REAL)
 with st.sidebar:
     st.markdown("<br>", unsafe_allow_html=True)
     langs = ["Português", "Español", "English", "Français", "Italiano", "Català", "German", "Latin"]
     st.selectbox("🌐 IDIOMA", langs, key="sb_lang")
+    
     st.divider()
     if os.path.exists("img_demo.jpg"): 
         st.image("img_demo.jpg", use_container_width=True)
+    
     st.divider()
     path_md = f"md_files/INFO_{st.session_state.page.upper()}.md"
-    info = open(path_md, "r", encoding="utf-8").read() if os.path.exists(path_md) else ""
+    info = open(path_md, "r", encoding="utf-8").read() if os.path.exists(path_md) else "Aguardando..."
     st.markdown(f"<div class='info-box'>{info}</div>", unsafe_allow_html=True)
 
-# 4. NAVEGAÇÃO
+# 4. NAVEGAÇÃO (6 COLUNAS)
 menu = ["Demo", "yPoemas", "Eureka", "Off-Machina", "Comments", "About"]
 c_nav = st.columns(6)
 for i, item in enumerate(menu):
@@ -70,7 +76,7 @@ for i, item in enumerate(menu):
 
 st.divider()
 
-# 5. RÉGUA
+# 5. RÉGUA (SIMETRIA DO PAINEL)
 c_cmd = st.columns([1, 1, 1, 1, 1, 7.5])
 icons = ["＋", "＜", "＊", "＞", "？"]
 for i, icon in enumerate(icons):
