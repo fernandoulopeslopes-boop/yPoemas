@@ -13,32 +13,36 @@ if 'page' not in st.session_state:
 
 # --- 2. MOTOR: RESGATE (RIGOR UPPERCASE) ---
 def get_content(p):
-    path = f"md_files/ABOUT_{p.upper()}.MD"
+    # Ajuste interno para buscar o arquivo correto mesmo com o label reduzido
+    file_key = "OFF-MACHINA" if p == "off-mach" else p.upper()
+    path = f"md_files/ABOUT_{file_key}.MD"
     if os.path.exists(path):
         with open(path, "r", encoding="utf-8") as f:
             return f.read()
     return ""
 
-# --- 3. CSS: ESTRUTURA E SIMETRIA ---
+# --- 3. CSS: ESTRUTURA RÍGIDA E SIMETRIA ---
 st.markdown("""
 <style>
     [data-testid="stHeader"] {display: none !important;}
     
-    /* FORÇAR SIDEBAR ABERTA */
-    section[data-testid="stSidebar"] {
-        min-width: 320px !important;
+    /* FORÇAR VISIBILIDADE DA SIDEBAR VIA CSS */
+    [data-testid="stSidebar"] {
         background-color: #ffffff !important;
         border-right: 1px solid #f0f0f0 !important;
+        min-width: 320px !important;
     }
 
-    /* BOTÕES: LARGURA TOTAL PARA GARANTIR ESPAÇAMENTO IGUAL */
+    /* BOTÕES: WIDTH FIXO E ALINHAMENTO MILIMÉTRICO */
     .stButton>button {
         border-radius: 20px !important;
         font-family: 'Georgia', serif !important;
-        font-size: 14px !important;
-        width: 100% !important;
+        font-size: 13px !important;
+        width: 120px !important; /* Tamanho fixo para todos */
+        height: 35px !important;
+        margin: 0 auto !important;
+        display: block !important;
         text-transform: none !important;
-        padding: 5px 0px !important;
     }
     
     .st-key-on button {background-color: #000 !important; color: #fff !important; border: none !important;}
@@ -70,22 +74,24 @@ with st.sidebar:
     with c2: st.toggle("som", key="t_s")
     
     st.divider()
-    img_path = f"img_{st.session_state.page.lower()}.jpg"
+    # Imagem lateral
+    img_key = "off-machina" if st.session_state.page == "off-mach" else st.session_state.page.lower()
+    img_path = f"img_{img_key}.jpg"
     if os.path.exists(img_path):
         st.image(img_path, use_container_width=True)
     
     st.divider()
     st.markdown(f"<div class='info-box'>{get_content(st.session_state.page)}</div>", unsafe_allow_html=True)
 
-# --- 5. NAVEGAÇÃO: DISTRIBUIÇÃO MILIMÉTRICA ---
-# demo (esq) | yPoemas | eureka | off-machina | comments | sobre (dir)
-# Usando pesos iguais para garantir que os espaços entre eles sejam idênticos
-menu = ["demo", "yPoemas", "eureka", "off-machina", "comments", "sobre"]
-cols_nav = st.columns([1, 1, 1, 1, 1, 1]) 
+# --- 5. NAVEGAÇÃO: BOTÕES UNIFORMES ---
+# Redução do nome conforme solicitado: off-mach
+menu = ["demo", "yPoemas", "eureka", "off-mach", "comments", "sobre"]
+cols_nav = st.columns(len(menu)) 
 
 for i, item in enumerate(menu):
     with cols_nav[i]:
         tag = 'on' if st.session_state.page == item else 'off'
+        # Label visual
         label = "yPoemas" if item == "yPoemas" else item.lower()
         st.markdown(f"<div class='st-key-{tag}'>", unsafe_allow_html=True)
         if st.button(label, key=f"nav_{i}"):
@@ -106,14 +112,14 @@ if p == "demo":
     with auto: st.button("？", key="d3")
 
 elif p == "yPoemas":
-    f1, more, last, rand, nest, manu, f2 = st.columns([3, 1, 1, 1, 1, 1, 3])
+    f1, more, last, rand, nest, manu, f2 = st.columns([2.5, 1, 1, 1, 1, 1, 2.5])
     with more: st.button("＋", key="y1")
     with last: st.button("＜", key="y2")
     with rand: st.button("＊", key="y3")
     with nest: st.button("＞", key="y4")
     with manu: st.button("？", key="y5")
 
-# Exibição do conteúdo das páginas
+# Conteúdo Central
 if conteudo_principal:
     st.markdown(conteudo_principal)
 
