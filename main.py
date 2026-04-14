@@ -1,48 +1,52 @@
 import streamlit as st
 import os
 
-# --- 1. BOOT (FIEL AO SEGURO) ---
+# --- 1. BOOT (A FORÇA DO SEGURO) ---
 st.set_page_config(
-    page_title="a máquina de fazer Poesia - yPoemas",
-    page_icon=":star:",
+    page_title="yPoemas",
     layout="centered",
-    initial_sidebar_state="auto",
+    initial_sidebar_state="expanded" 
 )
 
 if 'page' not in st.session_state:
     st.session_state.page = 'demo'
 
-# --- 2. MOTOR DE CARGA (COM VERIFICAÇÃO DE EXISTÊNCIA) ---
+# --- 2. MOTOR DE CARGA ---
 def load_md_file(file_name):
-    # Procura na pasta md_files
     path = os.path.join("md_files", file_name)
     if os.path.exists(path):
         with open(path, "r", encoding="utf-8") as f:
             return f.read()
-    return f""
+    return ""
 
-# --- 3. CSS ESSENCIAL ---
+# --- 3. CSS (VERNIZ ESSENCIAL) ---
 st.markdown("""
 <style>
     [data-testid="stHeader"] {display: none !important;}
+    
+    /* Botões Superiores */
     .stButton>button {
         border-radius: 20px !important;
         font-family: 'Georgia', serif !important;
         width: 100px !important; height: 35px !important;
     }
+
+    /* Botões do Palco */
     .nav-symbol button {
-        width: 40px !important; height: 40px !important;
+        width: 42px !important; height: 42px !important;
         font-size: 18px !important; border-radius: 50% !important;
     }
+    
     .st-key-on button {background-color: #000 !important; color: #fff !important;}
     .st-key-off button {background-color: #fff !important; color: #aaa !important; border: 1px solid #eee !important;}
 </style>
 """, unsafe_allow_html=True)
 
-# --- 4. SIDEBAR (PROTEGIDA CONTRA CRASH) ---
+# --- 4. SIDEBAR (O COCKPIT) ---
 with st.sidebar:
-    st.markdown("### 🌐 idioma")
-    st.selectbox("", ["português", "español", "english", "italiano"], key="lang_v34", label_visibility="collapsed")
+    # Resolvido: Label mínimo para não gerar erro, invisível para o usuário
+    st.selectbox("id", ["português", "español", "english", "italiano"], 
+                 key="lang_v34", label_visibility="collapsed")
     
     st.divider()
     cl, cr = st.columns(2)
@@ -51,15 +55,15 @@ with st.sidebar:
     
     st.divider()
     
-    # PROTEÇÃO CONTRA O ERRO DE IMAGEM:
+    # Imagem Lateral
     p_atual = st.session_state.page.lower()
     img_name = "off-machina" if p_atual == "off-mach" else p_atual
     img_file = f"img_{img_name}.jpg"
-    
     if os.path.exists(img_file):
         st.image(img_file)
-    else:
-        st.warning(f"Imagem {img_file} não encontrada na raiz.")
+    
+    # Resumo Sidebar
+    st.markdown(f"<div style='font-size:12px;'>{load_md_file(f'ABOUT_{st.session_state.page.upper()}.MD')}</div>", unsafe_allow_html=True)
 
 # --- 5. NAVEGAÇÃO SUPERIOR ---
 menu = ["demo", "yPoemas", "eureka", "off-mach", "opinião", "sobre"]
@@ -74,7 +78,7 @@ for i, item in enumerate(menu):
 
 st.divider()
 
-# --- 6. RÉGUA DO PALCO (MATEMÁTICA DO 10) ---
+# --- 6. RÉGUA DO PALCO (SOMA 10) ---
 p = st.session_state.page
 if p == "demo":
     f1, b1, b2, b3, f2 = st.columns([3.5, 1, 1, 1, 3.5])
