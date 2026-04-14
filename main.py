@@ -1,7 +1,7 @@
 import streamlit as st
 import os
 
-# --- 1. BOOT: HARDWARE ---
+# --- 1. BOOT: HARDWARE (SINTAXE 2026) ---
 st.set_page_config(
     page_title="yPoemas", 
     layout="wide", 
@@ -13,7 +13,6 @@ if 'page' not in st.session_state:
 
 # --- 2. MOTOR: RESGATE (RIGOR UPPERCASE) ---
 def get_content(p):
-    # Mapeamento para garantir o arquivo correto
     mapping = {
         "off-mach": "OFF-MACHINA",
         "opinião": "COMMENTS",
@@ -26,19 +25,12 @@ def get_content(p):
             return f.read()
     return ""
 
-# --- 3. CSS: SIMETRIA E VISIBILIDADE ---
+# --- 3. CSS: ESTRUTURA LIMPA ---
 st.markdown("""
 <style>
     [data-testid="stHeader"] {display: none !important;}
     
-    /* RESET DA SIDEBAR PARA FORÇAR EXIBIÇÃO */
-    [data-testid="stSidebar"] {
-        background-color: #ffffff !important;
-        border-right: 1px solid #f0f0f0 !important;
-        min-width: 280px !important;
-    }
-
-    /* BOTÕES: WIDTH FIXO E ALINHAMENTO MILIMÉTRICO */
+    /* BOTÕES: SIMETRIA TOTAL */
     .stButton>button {
         border-radius: 20px !important;
         font-family: 'Georgia', serif !important;
@@ -68,18 +60,14 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# --- 4. SIDEBAR: COCKPIT (HIERARQUIA DE IDIOMAS) ---
+# --- 4. SIDEBAR: COCKPIT (SEM OBSTRUÇÕES) ---
 with st.sidebar:
     st.markdown("<br>", unsafe_allow_html=True)
     
-    # Os 6 fundamentais primeiro + a expansão radical
     idiomas_ptc = [
         "português", "español", "english", "français", "italiano", "català",
-        "afrikaans", "shqip", "deutsch", "aragonés", "asturianu", 
-        "brezhoneg", "corsu", "dansk", "esperanto", "euskara", "suomi", 
-        "frysk", "galego", "isizulu", "idunnu", "latina", "lingua franca nova", 
-        "lombard", "magyar", "norsk", "occitan", "polski", "română", 
-        "turkce", "viettel"
+        "afrikaans", "deutsch", "aragonés", "asturianu", "dansk", "esperanto", 
+        "latina", "norsk", "polski", "română", "turkce"
     ]
     
     st.selectbox("🌐 idioma", idiomas_ptc, key="sb_lang")
@@ -93,7 +81,8 @@ with st.sidebar:
     img_key = "off-machina" if st.session_state.page == "off-mach" else st.session_state.page.lower()
     img_path = f"img_{img_key}.jpg"
     if os.path.exists(img_path):
-        st.image(img_path, use_container_width=True)
+        # ATUALIZADO: width='stretch' substitui use_container_width
+        st.image(img_path, width="stretch")
     
     st.divider()
     st.markdown(f"<div class='info-box'>{get_content(st.session_state.page)}</div>", unsafe_allow_html=True)
@@ -116,15 +105,16 @@ st.divider()
 
 # --- 6. RÉGUA E PALCO (A MATEMÁTICA DO 10) ---
 p = st.session_state.page
-conteudo_principal = get_content(p)
 
 if p == "demo":
+    # Soma = 3.5 + 1 + 1 + 1 + 3.5 = 10
     f1, more, rand, auto, f2 = st.columns([3.5, 1, 1, 1, 3.5])
     with more: st.button("＋", key="d1")
     with rand: st.button("＊", key="d2")
     with auto: st.button("？", key="d3")
 
 elif p == "yPoemas":
+    # Soma = 2.5 + 1 + 1 + 1 + 1 + 1 + 2.5 = 10
     f1, more, last, rand, nest, manu, f2 = st.columns([2.5, 1, 1, 1, 1, 1, 2.5])
     with more: st.button("＋", key="y1")
     with last: st.button("＜", key="y2")
@@ -132,9 +122,13 @@ elif p == "yPoemas":
     with nest: st.button("＞", key="y4")
     with manu: st.button("？", key="y5")
 
+# Conteúdo principal
+conteudo_principal = get_content(p)
 if conteudo_principal:
     st.markdown(conteudo_principal)
 
 st.divider()
+
+# --- 7. TÍTULO ---
 titulo = "yPoemas" if p == "yPoemas" else p.lower()
 st.markdown(f"<h1 style='text-align: center; font-family: Georgia; font-weight: 200;'>{titulo}</h1>", unsafe_allow_html=True)
