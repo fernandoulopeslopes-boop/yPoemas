@@ -85,7 +85,7 @@ with st.sidebar:
 
 # --- 5. NAVEGAÇÃO: BOTÕES UNIFORMES ---
 # Redução do nome conforme solicitado: off-mach
-menu = ["demo", "yPoemas", "eureka", "off-mach", "comments", "sobre"]
+menu = ["demo", "yPoemas", "eureka", "off-mach", "opinião", "sobre"]
 cols_nav = st.columns(len(menu)) 
 
 for i, item in enumerate(menu):
