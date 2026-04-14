@@ -1,37 +1,39 @@
 import streamlit as st
 import os
 
-# --- 1. BOOT: IGUAL AO SEGURO (MÁXIMA PRIORIDADE) ---
+# --- 1. CONFIGURAÇÃO (O DNA DO SEGURO) ---
 st.set_page_config(
     page_title="yPoemas",
-    layout="centered",
-    initial_sidebar_state="expanded" # Forçamos a expansão aqui
+    layout="centered", # Mantendo seu padrão
+    initial_sidebar_state="expanded" # Forçando a abertura
 )
 
-# Garantia de Estado
+# Inicialização do Estado
 if 'page' not in st.session_state:
     st.session_state.page = 'demo'
 
-# --- 2. MOTOR: CARGA SEM SUPOSIÇÕES ---
-def load_md_final(p):
-    # Mapeamento exato dos seus arquivos testados
-    mapping = {
-        "opinião": "COMMENTS",
-        "sobre": "SOBRE",
-        "off-mach": "OFF-MACHINA",
-        "eureka": "EUREKA",
-        "ypoemas": "YPOEMAS",
-        "demo": "DEMO"
+# --- 2. MOTOR DE CARGA (SEM INDIREÇÃO) ---
+def resgate_texto(pagina):
+    # Pasta md_files conforme sua instrução
+    # Mapeamento literal para evitar erros de minúscula/maiúscula
+    arquivos = {
+        "opinião": "ABOUT_COMMENTS.MD",
+        "sobre": "ABOUT_SOBRE.MD",
+        "off-mach": "ABOUT_OFF-MACHINA.MD",
+        "eureka": "ABOUT_EUREKA.MD",
+        "ypoemas": "ABOUT_YPOEMAS.MD",
+        "demo": "ABOUT_DEMO.MD"
     }
-    file_key = mapping.get(p.lower(), p.upper())
-    path = f"md_files/ABOUT_{file_key}.MD"
     
-    if os.path.exists(path):
-        with open(path, "r", encoding="utf-8") as f:
+    nome_arquivo = arquivos.get(pagina.lower(), f"ABOUT_{pagina.upper()}.MD")
+    caminho = os.path.join("md_files", nome_arquivo)
+    
+    if os.path.exists(caminho):
+        with open(caminho, "r", encoding="utf-8") as f:
             return f.read()
-    return ""
+    return f"Busca falhou: {caminho}"
 
-# --- 3. CSS: APENAS O QUE NÃO MATA A SIDEBAR ---
+# --- 3. CSS MÍNIMO (SÓ O VERNIZ DOS BOTÕES) ---
 st.markdown("""
 <style>
     [data-testid="stHeader"] {display: none !important;}
@@ -39,59 +41,63 @@ st.markdown("""
     /* Botões Superiores */
     .stButton>button {
         border-radius: 20px !important;
-        font-family: 'Georgia', serif !important;
-        text-transform: none !important;
         width: 100px !important;
         height: 35px !important;
+        font-family: 'Georgia', serif !important;
     }
-
-    /* Redução de 60% nos botões de controle (Símbolos) */
+    
+    /* Botões de Navegação do Palco (60% menores) */
     .nav-symbol button {
         width: 40px !important; 
         height: 40px !important;
         font-size: 18px !important;
         border-radius: 50% !important;
     }
-    
+
     .st-key-on button {background-color: #000 !important; color: #fff !important;}
     .st-key-off button {background-color: #fff !important; color: #aaa !important; border: 1px solid #eee !important;}
 </style>
 """, unsafe_allow_html=True)
 
-# --- 4. SIDEBAR: COCKPIT (NATIVO E SEGURO) ---
+# --- 4. SIDEBAR (O COCKPIT) ---
+# Se a sidebar não aparecer aqui, o problema é o Host/Cache
 with st.sidebar:
-    st.markdown("### 🌐 idioma")
-    # Simplificado para garantir que nada trave a renderização
-    idioma = st.selectbox("", ["português", "español", "english", "italiano"], label_visibility="collapsed")
+    st.title("Cockpit")
+    
+    # Seletor de Idiomas
+    st.selectbox("🌐 idioma", ["português", "español", "english", "italiano"], key="lang_final")
     
     st.divider()
     
-    # Controles de Direção (<< e >>)
-    c_l, c_r = st.columns(2)
-    with c_l: st.button("<<", key="s_prev")
-    with c_r: st.button(">>", key="s_next")
+    # Navegação Interna (<< e >>)
+    cl, cr = st.columns(2)
+    with cl: st.button("<<", key="nav_prev_sidebar")
+    with cr: st.button(">>", key="nav_next_sidebar")
     
     st.divider()
     
     # Imagem Lateral
-    img_name = "off-machina" if st.session_state.page == "off-mach" else st.session_state.page.lower()
-    img_path = f"img_{img_name}.jpg"
+    p_atual = st.session_state.page.lower()
+    img_path = f"img_{'off-machina' if p_atual == 'off-mach' else p_atual}.jpg"
     if os.path.exists(img_path):
         st.image(img_path)
     
-    # Resumo da Página na Sidebar
-    st.markdown(f"<div style='font-size:12px;'>{load_md_final(st.session_state.page)}</div>", unsafe_allow_html=True)
+    # Texto de apoio na Sidebar
+    st.info(f"Página: {st.session_state.page}")
 
-# --- 5. NAVEGAÇÃO SUPERIOR ---
+# --- 5. NAVEGAÇÃO SUPERIOR (MENU 6) ---
 menu = ["demo", "yPoemas", "eureka", "off-mach", "opinião", "sobre"]
-cols = st.columns(6)
+cols = st.columns(len(menu))
 
 for i, item in enumerate(menu):
     with cols[i]:
+        # Estilo ativo/inativo
         tag = 'on' if st.session_state.page == item else 'off'
-        if st.button(item.lower() if item != "yPoemas" else "yPoemas", key=f"m_{i}"):
+        st.markdown(f"<div class='st-key-{tag}'>", unsafe_allow_html=True)
+        if st.button(item.lower() if item != "yPoemas" else "yPoemas", key=f"bt_nav_{i}"):
             st.session_state.page = item
             st.rerun()
+        st.markdown("</div>", unsafe_allow_html=True)
 
 st.divider()
 
@@ -99,21 +105,22 @@ st.divider()
 p = st.session_state.page
 if p == "demo":
     f1, b1, b2, b3, f2 = st.columns([3.5, 1, 1, 1, 3.5])
-    with b1: st.markdown("<div class='nav-symbol'>", unsafe_allow_html=True); st.button("＋", key="d1")
-    with b2: st.markdown("<div class='nav-symbol'>", unsafe_allow_html=True); st.button("＊", key="d2")
-    with b3: st.markdown("<div class='nav-symbol'>", unsafe_allow_html=True); st.button("？", key="d3")
+    with b1: st.markdown("<div class='nav-symbol'>", unsafe_allow_html=True); st.button("＋", key="ctrl_d1")
+    with b2: st.markdown("<div class='nav-symbol'>", unsafe_allow_html=True); st.button("＊", key="ctrl_d2")
+    with b3: st.markdown("<div class='nav-symbol'>", unsafe_allow_html=True); st.button("？", key="ctrl_d3")
 
 elif p == "yPoemas":
     f1, b1, b2, b3, b4, b5, f2 = st.columns([2.5, 1, 1, 1, 1, 1, 2.5])
-    with b1: st.markdown("<div class='nav-symbol'>", unsafe_allow_html=True); st.button("＋", key="y1")
-    with b2: st.markdown("<div class='nav-symbol'>", unsafe_allow_html=True); st.button("＜", key="y2")
-    with b3: st.markdown("<div class='nav-symbol'>", unsafe_allow_html=True); st.button("＊", key="y3")
-    with b4: st.markdown("<div class='nav-symbol'>", unsafe_allow_html=True); st.button("＞", key="y4")
-    with b5: st.markdown("<div class='nav-symbol'>", unsafe_allow_html=True); st.button("？", key="y5")
+    with b1: st.markdown("<div class='nav-symbol'>", unsafe_allow_html=True); st.button("＋", key="ctrl_y1")
+    with b2: st.markdown("<div class='nav-symbol'>", unsafe_allow_html=True); st.button("＜", key="ctrl_y2")
+    with b3: st.markdown("<div class='nav-symbol'>", unsafe_allow_html=True); st.button("＊", key="ctrl_y3")
+    with b4: st.markdown("<div class='nav-symbol'>", unsafe_allow_html=True); st.button("＞", key="ctrl_y4")
+    with b5: st.markdown("<div class='nav-symbol'>", unsafe_allow_html=True); st.button("？", key="ctrl_y5")
 
-# --- 7. PALCO CENTRAL (OPINIÃO / SOBRE) ---
-# Aqui o conteúdo das páginas deve aparecer por inteiro
-st.markdown(load_md_final(p))
+# --- 7. PALCO CENTRAL (OPINIÃO E SOBRE) ---
+# Renderiza o conteúdo das páginas
+conteudo_palco = resgate_texto(p)
+st.markdown(conteudo_palco)
 
 st.divider()
-st.markdown(f"<h1 style='text-align: center; font-family: Georgia; font-weight: 200;'>{p.lower()}</h1>", unsafe_allow_html=True)
+st.markdown(f"<h3 style='text-align: center;'>{p.lower()}</h3>", unsafe_allow_html=True)
