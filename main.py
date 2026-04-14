@@ -33,7 +33,7 @@ st.markdown("""
 
     /* Botões do Palco */
     .nav-symbol button {
-        width: 42px !important; height: 42px !important;
+        width: 30px !important; height: 42px !important;
         font-size: 18px !important; border-radius: 50% !important;
     }
     
