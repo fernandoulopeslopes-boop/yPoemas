@@ -22,27 +22,29 @@ def get_md(p):
             return ""
     return ""
 
-# --- 3. CSS: EQUILÍBRIO E FLUIDEZ ---
+# --- 3. CSS: AJUSTE DE PRECISÃO ---
 st.markdown("""
 <style>
     [data-testid="stHeader"] {display: none !important;}
     
-    /* SIDEBAR: RESTAURAÇÃO DO FLUXO */
-    section[data-testid="stSidebar"] {
+    /* SIDEBAR: FORÇAR VISIBILIDADE */
+    [data-testid="stSidebar"] {
+        visibility: visible !important;
         background-color: #ffffff !important;
-        border-right: 1px solid #f0f0f0 !important;
     }
 
-    /* NAV SUPERIOR: EVITAR QUEBRA DE LINHAS */
+    /* NAV SUPERIOR: COLUNAS IGUAIS E BOTÕES REDUZIDOS */
     .stButton>button {
+        width: 80% !important; /* Redução de 20% conforme solicitado */
+        margin: 0 auto !important;
+        display: block !important;
         border-radius: 20px !important;
         font-family: 'Georgia', serif !important;
-        font-size: 13px !important; /* Unificado */
+        font-size: 13px !important;
         text-transform: uppercase;
         letter-spacing: 0.5px;
-        white-space: nowrap !important; /* Impede a quebra em 3 linhas */
-        padding: 0px 15px !important;
-        min-width: 100px !important;
+        white-space: nowrap !important;
+        padding: 2px 10px !important;
     }
     
     .st-key-on button {background-color: #000 !important; color: #fff !important; border: none !important;}
@@ -51,28 +53,28 @@ st.markdown("""
     /* RÉGUA: COMANDOS */
     .st-key-cmd button {
         border-radius: 4px !important;
-        width: 42px !important;
-        height: 42px !important;
-        font-size: 18px !important;
+        width: 40px !important;
+        height: 40px !important;
+        font-size: 16px !important;
         background: #fff !important;
         border: 1px solid #ddd !important;
-        min-width: 42px !important;
     }
 
-    /* LISTAS: CORPO 13PX E LARGURA ÚTIL */
+    /* LISTAS */
     div[data-baseweb="select"] {
         font-family: 'Georgia', serif !important;
-        font-size: 13px !important; /* Unificado com os botões */
+        font-size: 13px !important;
     }
 
     .main .block-container {
-        max-width: 1000px !important; /* Aumentado levemente para acomodar as listas */
+        max-width: 1000px !important;
         margin: 0 auto !important;
+        padding-top: 1rem !important;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# --- 4. SIDEBAR: COCKPIT DINÂMICO ---
+# --- 4. SIDEBAR: COCKPIT ---
 with st.sidebar:
     st.markdown("<br>", unsafe_allow_html=True)
     idiomas = ["Português", "Español", "English", "Français", "Italiano", "Català", "German", "Latin"]
@@ -91,11 +93,12 @@ with st.sidebar:
         st.image("img_demo.jpg", use_container_width=True)
     
     st.divider()
-    st.markdown(f"<div class='info-box' style='font-size:12px; font-family:Georgia; padding:10px; border-left:3px solid #000; background:#fafafa;'>{get_md(st.session_state.page)}</div>", unsafe_allow_html=True)
+    st.markdown(f"<div style='font-size:12px; font-family:Georgia; padding:10px; border-left:3px solid #000; background:#fafafa;'>{get_md(st.session_state.page)}</div>", unsafe_allow_html=True)
 
-# --- 5. NAVEGAÇÃO: TOP EM LINHA ÚNICA ---
+# --- 5. NAVEGAÇÃO: ESPAÇAMENTO IDÊNTICO ---
 menu = ["Demo", "yPoemas", "Eureka", "Off-Machina", "Comments", "About"]
-cols_nav = st.columns(len(menu))
+# Criando 6 colunas rigorosamente iguais
+cols_nav = st.columns([1, 1, 1, 1, 1, 1])
 for i, item in enumerate(menu):
     with cols_nav[i]:
         tag = 'on' if st.session_state.page == item else 'off'
@@ -107,17 +110,17 @@ for i, item in enumerate(menu):
 
 st.divider()
 
-# --- 6. RÉGUA: LARGURA PARA LIVROS E TEMAS ---
-# Proporção ajustada: [Livros 3] [Comandos 4] [Temas 3]
+# --- 6. RÉGUA: LARGURA ÚTIL ---
 c_regua = st.columns([3, 4, 3])
 
 with c_regua[0]: # LIVROS
-    livros = sorted([f[4:-4] for f in os.listdir("base") if f.startswith("rol_")]) if os.path.exists("base") else ["vazio"]
-    st.selectbox("L", livros, key="s_g", 
-                 label_visibility="collapsed", 
-                 help="Livros disponíveis")
+    try:
+        livros = sorted([f[4:-4] for f in os.listdir("base") if f.startswith("rol_")])
+    except:
+        livros = ["vazio"]
+    st.selectbox("L", livros, key="s_g", label_visibility="collapsed", help="Livros disponíveis")
 
-with c_regua[1]: # COMANDOS CENTRALIZADOS
+with c_regua[1]: # COMANDOS
     cc = st.columns(5)
     icones = ["＋", "＜", "＊", "＞", "？"]
     for i, icone in enumerate(icones):
@@ -126,20 +129,15 @@ with c_regua[1]: # COMANDOS CENTRALIZADOS
             st.button(icone, key=f"cmd_{i}")
             st.markdown("</div>", unsafe_allow_html=True)
 
-with c_regua[2]: # TEMAS (FOLHAS)
+with c_regua[2]: # TEMAS
     g_sel = st.session_state.get('s_g', "")
     temas = ["..."]
     if g_sel:
         path_txt = f"base/rol_{g_sel}.txt"
         if os.path.exists(path_txt):
-            try:
-                with open(path_txt, "r", encoding="utf-8") as f:
-                    temas = [l.strip() for l in f.readlines() if l.strip()]
-            except: pass
-    
-    st.selectbox("T", temas, key="s_t", 
-                 label_visibility="collapsed", 
-                 help=f"Folhas -> {g_sel}")
+            with open(path_txt, "r", encoding="utf-8") as f:
+                temas = [l.strip() for l in f.readlines() if l.strip()]
+    st.selectbox("T", temas, key="s_t", label_visibility="collapsed", help=f"Folhas -> {g_sel}")
 
 st.divider()
 
