@@ -1,7 +1,7 @@
 import streamlit as st
 import os
 
-# --- 1. CONFIGURAÇÃO (IDÊNTICA AO SEGURO) ---
+# --- 1. BOOT (FIEL AO SEGURO) ---
 st.set_page_config(
     page_title="a máquina de fazer Poesia - yPoemas",
     page_icon=":star:",
@@ -12,56 +12,54 @@ st.set_page_config(
 if 'page' not in st.session_state:
     st.session_state.page = 'demo'
 
-# --- 2. FUNÇÃO DE CARGA (LITERAL) ---
+# --- 2. MOTOR DE CARGA (COM VERIFICAÇÃO DE EXISTÊNCIA) ---
 def load_md_file(file_name):
-    # Usando a pasta que você validou
+    # Procura na pasta md_files
     path = os.path.join("md_files", file_name)
     if os.path.exists(path):
         with open(path, "r", encoding="utf-8") as f:
             return f.read()
-    return f"Busca falhou: {path}"
+    return f""
 
-# --- 3. CSS (APENAS O ESSENCIAL PARA OS BOTÕES) ---
+# --- 3. CSS ESSENCIAL ---
 st.markdown("""
 <style>
     [data-testid="stHeader"] {display: none !important;}
-    
     .stButton>button {
         border-radius: 20px !important;
         font-family: 'Georgia', serif !important;
-        width: 100px !important; 
-        height: 35px !important;
+        width: 100px !important; height: 35px !important;
     }
-
     .nav-symbol button {
-        width: 40px !important; 
-        height: 40px !important;
-        font-size: 18px !important;
-        border-radius: 50% !important;
+        width: 40px !important; height: 40px !important;
+        font-size: 18px !important; border-radius: 50% !important;
     }
-    
     .st-key-on button {background-color: #000 !important; color: #fff !important;}
     .st-key-off button {background-color: #fff !important; color: #aaa !important; border: 1px solid #eee !important;}
 </style>
 """, unsafe_allow_html=True)
 
-# --- 4. SIDEBAR (O COCKPIT) ---
+# --- 4. SIDEBAR (PROTEGIDA CONTRA CRASH) ---
 with st.sidebar:
     st.markdown("### 🌐 idioma")
     st.selectbox("", ["português", "español", "english", "italiano"], key="lang_v34", label_visibility="collapsed")
     
     st.divider()
-    
-    c_l, c_r = st.columns(2)
-    with c_l: st.button("<<", key="sb_prev")
-    with c_r: st.button(">>", key="sb_next")
+    cl, cr = st.columns(2)
+    with cl: st.button("<<", key="sb_prev")
+    with cr: st.button(">>", key="sb_next")
     
     st.divider()
     
-    # Imagem Lateral
+    # PROTEÇÃO CONTRA O ERRO DE IMAGEM:
     p_atual = st.session_state.page.lower()
     img_name = "off-machina" if p_atual == "off-mach" else p_atual
-    st.image(f"img_{img_name}.jpg")
+    img_file = f"img_{img_name}.jpg"
+    
+    if os.path.exists(img_file):
+        st.image(img_file)
+    else:
+        st.warning(f"Imagem {img_file} não encontrada na raiz.")
 
 # --- 5. NAVEGAÇÃO SUPERIOR ---
 menu = ["demo", "yPoemas", "eureka", "off-mach", "opinião", "sobre"]
@@ -92,13 +90,11 @@ elif p == "yPoemas":
     with b5: st.markdown("<div class='nav-symbol'>", unsafe_allow_html=True); st.button("？", key="y5")
 
 # --- 7. PALCO CENTRAL ---
-# Mapeamento manual para garantir o conteúdo das 2 páginas
 if p == "opinião":
     st.markdown(load_md_file("ABOUT_COMMENTS.MD"))
 elif p == "sobre":
     st.markdown(load_md_file("ABOUT_SOBRE.MD"))
 else:
-    # Para as outras, tenta o padrão
     st.markdown(load_md_file(f"ABOUT_{p.upper()}.MD"))
 
 st.divider()
