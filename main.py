@@ -11,11 +11,11 @@ st.set_page_config(
 if 'page' not in st.session_state:
     st.session_state.page = 'demo'
 
-# --- 2. MOTOR DE RESGATE (PADRÃO: about_[assunto].md) ---
+# --- 2. MOTOR DE RESGATE (ZERO EXCEÇÃO: TUDO UPPERCASE) ---
 def get_md_content(p):
-    # Ajuste para a grafia correta informada: about_ + página + .md
-    filename = "yPoemas" if p == "yPoemas" else p.lower()
-    path = f"md_files/about_{filename}.md"
+    # O hardware busca sempre em UPPERCASE, independente da página
+    # demo -> ABOUT_DEMO.MD | yPoemas -> ABOUT_YPOEMAS.MD
+    path = f"md_files/ABOUT_{p.upper()}.MD"
     
     if os.path.exists(path):
         try:
@@ -23,21 +23,20 @@ def get_md_content(p):
                 return f.read()
         except Exception:
             return ""
-    return ""
+    return f""
 
-# --- 3. CSS: RESGATE DA SIDEBAR E ESTÉTICA ---
+# --- 3. CSS: VERNIZ E FIXAÇÃO ---
 st.markdown("""
 <style>
     [data-testid="stHeader"] {display: none !important;}
     
-    /* FORÇAR EXIBIÇÃO DA SIDEBAR (FIXA) */
+    /* SIDEBAR: FORÇAR EXIBIÇÃO FIXA */
     [data-testid="stSidebar"] {
         background-color: #ffffff !important;
         border-right: 1px solid #f0f0f0 !important;
-        min-width: 320px !important;
+        visibility: visible !important;
     }
 
-    /* BOTÕES DE NAVEGAÇÃO: ESTILO LOWER E yPOEMAS */
     .stButton>button {
         border-radius: 20px !important;
         font-family: 'Georgia', serif !important;
@@ -63,12 +62,11 @@ st.markdown("""
     .main .block-container {
         max-width: 1050px !important;
         margin: 0 auto !important;
-        padding-top: 1.5rem !important;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# --- 4. SIDEBAR: COCKPIT FIXO ---
+# --- 4. SIDEBAR: COCKPIT ---
 with st.sidebar:
     st.markdown("<br>", unsafe_allow_html=True)
     st.selectbox("🌐 idioma", ["português", "español", "english", "français", "italiano", "català"], key="sb_lang")
@@ -79,18 +77,17 @@ with st.sidebar:
     with c2: st.toggle("som", key="t_s")
     
     st.divider()
-    # Carregamento dinâmico da imagem conforme a página
-    img_name = "ypoemas" if st.session_state.page == "yPoemas" else st.session_state.page.lower()
+    # Imagens costumam seguir o lower() do sistema
+    img_name = st.session_state.page.lower()
     img_path = f"img_{img_name}.jpg"
     if os.path.exists(img_path):
         st.image(img_path, use_container_width=True)
     
     st.divider()
-    # Exibição do conteúdo da sidebar (se houver arquivo INFO_ ou similar)
-    # Aqui mantive a lógica de ler o conteúdo explicativo
+    # Info lateral puxada do arquivo MD rigoroso
     st.markdown(f"<div class='info-box'>{get_md_content(st.session_state.page)}</div>", unsafe_allow_html=True)
 
-# --- 5. NAVEGAÇÃO: ANCORAGEM CALIBRADA [1, 1, 1, 1.7, 1.1, 1] ---
+# --- 5. NAVEGAÇÃO: ANCORAGEM [1, 1, 1, 1.7, 1.1, 1] ---
 menu = ["demo", "yPoemas", "eureka", "off-machina", "comments", "sobre"]
 cols_nav = st.columns([1, 1, 1, 1.7, 1.1, 1]) 
 
@@ -98,15 +95,18 @@ for i, item in enumerate(menu):
     with cols_nav[i]:
         tag = 'on' if st.session_state.page == item else 'off'
         st.markdown(f"<div class='st-key-{tag}'>", unsafe_allow_html=True)
-        if st.button(item, key=f"nav_{i}"):
+        # Regra Estética: yPoemas no botão, outros em lower
+        label = item if item == "yPoemas" else item.lower()
+        if st.button(label, key=f"nav_{i}"):
             st.session_state.page = item
             st.rerun()
         st.markdown("</div>", unsafe_allow_html=True)
 
 st.divider()
 
-# --- 6. RÉGUA E PALCO CENTRAL ---
+# --- 6. RÉGUA E CONTEÚDO ---
 p = st.session_state.page
+conteudo = get_md_content(p)
 
 if p == "demo":
     f1, more, rand, auto, f2 = st.columns([4, 1, 1, 1, 4])
@@ -114,11 +114,14 @@ if p == "demo":
     with rand: st.button("＊", key="cmd_2")
     with auto: st.button("？", key="cmd_3")
 
-# Mostra o conteúdo vindo dos arquivos .md para as páginas selecionadas
-conteudo_principal = get_md_content(st.session_state.page)
-if conteudo_principal:
-    st.markdown(conteudo_principal)
+elif p == "eureka":
+    seed, more, rand, manu, occ = st.columns([2.5, 1.5, 1.5, 0.7, 4])
+    with seed: st.text_input("seed", label_visibility="collapsed", placeholder="semente...")
+
+# Exibição do conteúdo MD no palco central
+if conteudo and "não localizado" not in conteudo:
+    st.markdown(conteudo)
 
 st.divider()
-titulo = p if p == "yPoemas" else p.lower()
+titulo = "yPoemas" if p == "yPoemas" else p.lower()
 st.markdown(f"<h1 style='text-align: center; font-family: Georgia; font-weight: 200;'>{titulo}</h1>", unsafe_allow_html=True)
