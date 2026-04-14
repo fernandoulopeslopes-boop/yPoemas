@@ -86,7 +86,7 @@ if p == "demo":
     with b2: st.markdown("<div class='nav-symbol'>", unsafe_allow_html=True); st.button("＊", key="d2")
     with b3: st.markdown("<div class='nav-symbol'>", unsafe_allow_html=True); st.button("？", key="d3")
 elif p == "yPoemas":
-    f1, b1, b2, b3, b4, b5, f2 = st.columns([2.5, 1, 1, 1, 1, 1, 2.5])
+    f1, b1, b2, b3, b4, b5, f2 = st.columns([3.5, .6, .6, .6, .6, .6, 3.5])
     with b1: st.markdown("<div class='nav-symbol'>", unsafe_allow_html=True); st.button("＋", key="y1")
     with b2: st.markdown("<div class='nav-symbol'>", unsafe_allow_html=True); st.button("＜", key="y2")
     with b3: st.markdown("<div class='nav-symbol'>", unsafe_allow_html=True); st.button("＊", key="y3")
