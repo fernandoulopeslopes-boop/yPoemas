@@ -21,18 +21,20 @@ def get_md(p):
         except: return ""
     return ""
 
-# --- 3. CSS: VERNIZ SOBRE O NATIVO ---
+# --- 3. CSS: VERNIZ E RESGATE DA SIDEBAR ---
 st.markdown("""
 <style>
     [data-testid="stHeader"] {display: none !important;}
     
-    /* RESGATE DA SIDEBAR */
+    /* FORÇAR SIDEBAR A REAPARECER */
     section[data-testid="stSidebar"] {
+        display: block !important;
+        visibility: visible !important;
         background-color: #ffffff !important;
         border-right: 1px solid #f0f0f0 !important;
     }
 
-    /* BOTÕES: ESTILO SEM FORÇAR LARGURA (DEIXAR O COLUMNS AGIR) */
+    /* BOTÕES: ESTILO UNIFICADO 13PX */
     .stButton>button {
         border-radius: 20px !important;
         font-family: 'Georgia', serif !important;
@@ -46,7 +48,7 @@ st.markdown("""
     .st-key-on button {background-color: #000 !important; color: #fff !important; border: none !important;}
     .st-key-off button {background-color: #fff !important; color: #aaa !important; border: 1px solid #eee !important;}
     
-    /* RÉGUA E LISTAS */
+    /* RÉGUA E COMANDOS QUADRADOS */
     .st-key-cmd button {
         border-radius: 4px !important;
         width: 42px !important;
@@ -54,13 +56,8 @@ st.markdown("""
         font-size: 18px !important;
     }
 
-    div[data-baseweb="select"] {
-        font-family: 'Georgia', serif !important;
-        font-size: 13px !important;
-    }
-
     .main .block-container {
-        max-width: 1050px !important;
+        max-width: 1100px !important;
         margin: 0 auto !important;
     }
 </style>
@@ -81,9 +78,8 @@ with st.sidebar:
     st.divider()
     st.markdown(f"<div style='font-size:12px; font-family:Georgia; padding:10px; border-left:3px solid #000; background:#fafafa;'>{get_md(st.session_state.page)}</div>", unsafe_allow_html=True)
 
-# --- 5. NAVEGAÇÃO: O RETORNO DA PROPORÇÃO 1.7 ---
+# --- 5. NAVEGAÇÃO: TOP (PROPORÇÃO CALIBRADA) ---
 menu = ["Demo", "yPoemas", "Eureka", "Off-Machina", "Comments", "About"]
-# Recuperando a sua calibração exata
 cols_nav = st.columns([1, 1, 1, 1.7, 1.1, 1]) 
 
 for i, item in enumerate(menu):
@@ -97,24 +93,38 @@ for i, item in enumerate(menu):
 
 st.divider()
 
-# --- 6. RÉGUA: SIMETRIA ---
-c_regua = st.columns([3, 4, 3])
+# --- 6. RÉGUA: COMANDOS POR PÁGINA (ESTÉTICA ORIGINAL) ---
+p = st.session_state.page
 
-with c_regua[0]:
-    livros = sorted([f[4:-4] for f in os.listdir("base") if f.startswith("rol_")]) if os.path.exists("base") else ["vazio"]
-    st.selectbox("L", livros, key="s_g", label_visibility="collapsed", help="Livros")
+if p == "Demo":
+    foo1, more, rand, auto, foo2 = st.columns([4, 1, 1, 1, 4])
+    with more: st.button("＋", key="cmd_more")
+    with rand: st.button("＊", key="cmd_rand")
+    with auto: st.button("？", key="cmd_auto")
 
-with c_regua[1]:
-    cc = st.columns(5)
-    icones = ["＋", "＜", "＊", "＞", "？"]
-    for i, icone in enumerate(icones):
-        with cc[i]:
-            st.markdown("<div class='st-key-cmd'>", unsafe_allow_html=True)
-            st.button(icone, key=f"cmd_{i}")
-            st.markdown("</div>", unsafe_allow_html=True)
+elif p == "yPoemas":
+    foo1, more, last, rand, nest, manu, foo2 = st.columns([3, 1, 1, 1, 1, 1, 3])
+    with more: st.button("＋", key="y_more")
+    with last: st.button("＜", key="y_last")
+    with rand: st.button("＊", key="y_rand")
+    with nest: st.button("＞", key="y_next")
+    with manu: st.button("？", key="y_manu")
 
-with c_regua[2]:
-    st.selectbox("T", ["..."], key="s_t", label_visibility="collapsed", help="Temas")
+elif p == "Eureka":
+    seed, more, rand, manu, occurrences = st.columns([2.5, 1.5, 1.5, 0.7, 4])
+    with seed: st.text_input("SEED", label_visibility="collapsed", placeholder="Semente...")
+    with more: st.button("CULTIVAR", key="e_more")
+    with occurrences: st.markdown("*Ocorrências da Semente*")
+
+elif p == "Off-Machina":
+    foo1, last, rand, nest, love, manu, foo2 = st.columns([2.5, 1, 1, 1, 1, 1, 2.5])
+    with last: st.button("＜", key="o_last")
+    with rand: st.button("＊", key="o_rand")
+    with nest: st.button("＞", key="o_next")
+    with love: st.button("♥", key="o_love")
+    with manu: st.button("？", key="o_manu")
 
 st.divider()
+
+# --- 7. PALCO CENTRAL ---
 st.markdown(f"<h1 style='text-align: center; font-family: Georgia; font-weight: 200;'>{st.session_state.page}</h1>", unsafe_allow_html=True)
