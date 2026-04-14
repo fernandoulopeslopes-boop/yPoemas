@@ -107,9 +107,9 @@ conteudo_principal = get_content(p)
 
 if p == "demo":
     f1, more, rand, auto, f2 = st.columns([3.5, 1, 1, 1, 3.5])
-    with more: st.button("＋", key="d1")
-    with rand: st.button("＊", key="d2")
-    with auto: st.button("？", key="d3")
+    with more: st.button(**"＋"**, key="d1")
+    with rand: st.button(**"＊"**, key="d2")
+    with auto: st.button(**"？"**, key="d3")
 
 elif p == "yPoemas":
     f1, more, last, rand, nest, manu, f2 = st.columns([2.5, 1, 1, 1, 1, 1, 2.5])
