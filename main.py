@@ -13,23 +13,29 @@ if 'page' not in st.session_state:
 
 # --- 2. MOTOR: RESGATE (RIGOR UPPERCASE) ---
 def get_content(p):
-    file_key = "OFF-MACHINA" if p == "off-mach" else p.upper()
+    # Mapeamento para garantir o arquivo correto
+    mapping = {
+        "off-mach": "OFF-MACHINA",
+        "opinião": "COMMENTS",
+        "sobre": "SOBRE"
+    }
+    file_key = mapping.get(p, p.upper())
     path = f"md_files/ABOUT_{file_key}.MD"
     if os.path.exists(path):
         with open(path, "r", encoding="utf-8") as f:
             return f.read()
     return ""
 
-# --- 3. CSS: ESTRUTURA RÍGIDA E SIMETRIA ---
+# --- 3. CSS: SIMETRIA E VISIBILIDADE ---
 st.markdown("""
 <style>
     [data-testid="stHeader"] {display: none !important;}
     
-    /* FORÇAR VISIBILIDADE DA SIDEBAR */
-    section[data-testid="stSidebar"] {
+    /* RESET DA SIDEBAR PARA FORÇAR EXIBIÇÃO */
+    [data-testid="stSidebar"] {
         background-color: #ffffff !important;
         border-right: 1px solid #f0f0f0 !important;
-        min-width: 320px !important;
+        min-width: 280px !important;
     }
 
     /* BOTÕES: WIDTH FIXO E ALINHAMENTO MILIMÉTRICO */
@@ -37,7 +43,7 @@ st.markdown("""
         border-radius: 20px !important;
         font-family: 'Georgia', serif !important;
         font-size: 13px !important;
-        width: 120px !important; 
+        width: 100px !important; 
         height: 35px !important;
         margin: 0 auto !important;
         display: block !important;
@@ -62,16 +68,16 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# --- 4. SIDEBAR: COCKPIT (EXPANSÃO DE IDIOMAS RADICAL) ---
+# --- 4. SIDEBAR: COCKPIT (HIERARQUIA DE IDIOMAS) ---
 with st.sidebar:
     st.markdown("<br>", unsafe_allow_html=True)
     
-    # Lista expandida conforme o novo protocolo de integração multi-idioma
+    # Os 6 fundamentais primeiro + a expansão radical
     idiomas_ptc = [
-        "português", "afrikaans", "shqip", "deutsch", "aragonés", "asturianu", 
-        "brezhoneg", "català", "corsu", "dansk", "español", "esperanto", 
-        "euskara", "suomi", "français", "frysk", "galego", "isizulu", 
-        "idunnu", "english", "italiano", "latina", "lingua franca nova", 
+        "português", "español", "english", "français", "italiano", "català",
+        "afrikaans", "shqip", "deutsch", "aragonés", "asturianu", 
+        "brezhoneg", "corsu", "dansk", "esperanto", "euskara", "suomi", 
+        "frysk", "galego", "isizulu", "idunnu", "latina", "lingua franca nova", 
         "lombard", "magyar", "norsk", "occitan", "polski", "română", 
         "turkce", "viettel"
     ]
@@ -93,7 +99,7 @@ with st.sidebar:
     st.markdown(f"<div class='info-box'>{get_content(st.session_state.page)}</div>", unsafe_allow_html=True)
 
 # --- 5. NAVEGAÇÃO: BOTÕES UNIFORMES ---
-menu = ["demo", "yPoemas", "eureka", "off-mach", "comments", "sobre"]
+menu = ["demo", "yPoemas", "eureka", "off-mach", "opinião", "sobre"]
 cols_nav = st.columns(len(menu)) 
 
 for i, item in enumerate(menu):
@@ -108,12 +114,12 @@ for i, item in enumerate(menu):
 
 st.divider()
 
-# --- 6. RÉGUA E PALCO ---
+# --- 6. RÉGUA E PALCO (A MATEMÁTICA DO 10) ---
 p = st.session_state.page
 conteudo_principal = get_content(p)
 
 if p == "demo":
-    f1, more, rand, auto, f2 = st.columns([4, 1, 1, 1, 4])
+    f1, more, rand, auto, f2 = st.columns([3.5, 1, 1, 1, 3.5])
     with more: st.button("＋", key="d1")
     with rand: st.button("＊", key="d2")
     with auto: st.button("？", key="d3")
