@@ -38,7 +38,7 @@ st.markdown("""
         border-radius: 20px !important;
         font-family: 'Georgia', serif !important;
         font-size: 12px !important;
-        width: 70px !important; /* Tamanho fixo para todos */
+        width: 100px !important; /* Tamanho fixo para todos */
         height: 35px !important;
         margin: 0 auto !important;
         display: block !important;
