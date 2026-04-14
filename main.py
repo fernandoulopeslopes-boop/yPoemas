@@ -17,7 +17,7 @@ def load_md_file(file_name):
     if os.path.exists(path):
         with open(path, "r", encoding="utf-8") as f:
             return f.read()
-    else
+    else:
         print(path)
     return ""
 
