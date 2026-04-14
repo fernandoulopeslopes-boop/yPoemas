@@ -30,14 +30,14 @@ st.markdown("""
     [data-testid="stSidebar"] {
         background-color: #ffffff !important;
         border-right: 1px solid #f0f0f0 !important;
-        min-width: 320px !important;
+        min-width: 280px !important;
     }
 
     /* BOTÕES: WIDTH FIXO E ALINHAMENTO MILIMÉTRICO */
     .stButton>button {
         border-radius: 20px !important;
         font-family: 'Georgia', serif !important;
-        font-size: 13px !important;
+        font-size: 12px !important;
         width: 100px !important; /* Tamanho fixo para todos */
         height: 35px !important;
         margin: 0 auto !important;
