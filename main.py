@@ -10,7 +10,17 @@ if 'page' not in st.session_state:
 # --- 2. MOTOR DE RESGATE ---
 def get_content(p):
     path = f"md_files/ABOUT_{p.upper()}.MD"
-    return open(path, "r", encoding="utf-8").read() if os.path.exists(path) else ""
+    if os.path.exists(path):
+        with open(path, "r", encoding="utf-8") as f:
+            return f.read()
+    return ""
+
+def safe_image(file_path, w=30):
+    """Exibe a imagem apenas se o arquivo existir, evitando o MediaFileStorageError"""
+    if os.path.exists(file_path):
+        st.image(file_path, width=w)
+    else:
+        st.write("—") # Placeholder discreto se a imagem falhar
 
 # --- 3. VERNIZ ---
 st.markdown("""
@@ -24,16 +34,6 @@ st.markdown("""
     }
     .st-key-on button {background-color: #000 !important; color: #fff !important;}
     .st-key-off button {background-color: #fff !important; color: #aaa !important; border: 1px solid #eee !important;}
-    
-    /* Moldura de Pergaminho para o Texto */
-    .pergaminho-container {
-        background-image: url('app/static/Pergaminho.jpg');
-        background-size: cover;
-        padding: 60px;
-        font-family: 'Georgia', serif;
-        min-height: 400px;
-        color: #2c1e11;
-    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -64,22 +64,32 @@ for i, item in enumerate(menu):
 
 st.divider()
 
-# --- 6. RÉGUA COM AS NOVAS IMAGENS ---
+# --- 6. RÉGUA (INTEGRAÇÃO SEGURA DAS IMAGENS) ---
 p = st.session_state.page
 
 if p == "yPoemas":
+    # Proporções originais mantidas
     f1, more, last, rand, nest, manu, f2 = st.columns([3, 1, 1, 1, 1, 1, 3])
     with more: st.button("＋", key="y1")
-    with last: st.image("Seta_Esquerda.bmp", width=30)
-    with rand: st.image("Random_24.ico", width=30)
-    with nest: st.image("Seta_Direita.bmp", width=30)
+    with last: 
+        if st.button(" ", key="btn_L"): st.write("Voltar") # Botão invisível sobre a imagem ou apenas ícone
+        safe_image("Seta_Esquerda.bmp")
+    with rand: 
+        st.button(" ", key="btn_R")
+        safe_image("Random_24.ico")
+    with nest: 
+        st.button(" ", key="btn_N")
+        safe_image("Seta_Direita.bmp")
     with manu: st.button("？", key="y5")
 
-# --- 7. PALCO (O PERGAMINHO) ---
-st.markdown(f"""
-<div class="pergaminho-container">
-    <h1 style='text-align: center; font-weight: 200;'>{p if p == "yPoemas" else p.lower()}</h1>
-    <br>
-    {get_content(p)}
-</div>
-""", unsafe_allow_html=True)
+# --- 7. PALCO ---
+st.markdown(f"<h1 style='text-align: center; font-weight: 200;'>{p if p == "yPoemas" else p.lower()}</h1>", unsafe_allow_html=True)
+
+# O Pergaminho como fundo do conteúdo
+content = get_content(p)
+if content:
+    if os.path.exists("Pergaminho.jpg"):
+        st.image("Pergaminho.jpg", use_container_width=True) # Exibe o pergaminho
+        st.markdown(content) # Texto abaixo ou sobreposto via CSS se preferir
+    else:
+        st.markdown(content)
