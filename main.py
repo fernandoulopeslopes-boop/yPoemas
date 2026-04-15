@@ -11,22 +11,18 @@ try:
 except Exception: 
     def gera_poema(t, p=""): return ["A precisão dança conforme o instinto.", "O labirinto aguarda."]
 
-# Inicialização de Estados
 for key, val in {
     'page': 'demo', 'show_help': False, 'idx_tema': 0, 
     'temas_atuais': [], 'som': False, 'arte': False, 'video': False
 }.items():
     if key not in st.session_state: st.session_state[key] = val
 
-# --- 2. CSS: REFINO DE SCROLL E ESTÉTICA (CC: NO_EMPTY) ---
+# --- 2. CSS: REFINO ESTÉTICO ---
 st.markdown("""
 <style>
     [data-testid="stHeader"], [data-testid="stSidebar"] {display: none !important;}
-    
-    /* SCROLL INTEGRAL: Removemos o estouro de container */
     .main .block-container { max-width: 95%; padding-top: 1rem !important; }
     
-    /* TIPOGRAFIA */
     .typo-title {
         font-family: 'Georgia', serif; font-size: 1.3rem; font-weight: bold;
         text-decoration: underline; text-align: left; margin-bottom: 20px; color: #333;
@@ -36,16 +32,13 @@ st.markdown("""
         line-height: 1.35; color: #1a1a1a; margin-bottom: 8px;
     }
 
-    /* FIOS FINOS ALINHADOS */
     hr { margin: 1.5rem 0 !important; border: 0; border-top: 1px solid #ddd !important; }
 
-    /* NAVEGAÇÃO REDONDA */
     .st-key-nav_p button, .st-key-nav_a button, .st-key-nav_r button, .st-key-nav_n button {
         border-radius: 50% !important; width: 48px !important; height: 48px !important;
         background-color: #f8f9fa !important; border: 1px solid #e0e0e0 !important;
     }
 
-    /* MD CONTAINER: Leitura imersiva */
     .md-container { 
         font-family: 'Georgia', serif; line-height: 1.65; color: #222; 
         font-size: 1.15rem; padding-bottom: 50px;
@@ -53,25 +46,25 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# --- 3. MOTOR DE BUSCA ROBUSTO (md_files) ---
-def busca_documento(nome_pagina):
+# --- 3. MOTOR DE BUSCA "CASSA-EXTENSÃO" ---
+def busca_documento_agnostico(nome_pagina):
     pasta = "md_files"
     if not os.path.exists(pasta): return None
     
-    # Lista todos os arquivos para busca insensível a maiúsculas
-    arquivos_na_pasta = os.listdir(pasta)
+    arquivos = os.listdir(pasta)
     
-    # 1. Prioridade Máxima: INFO_ABOUT para a página 'sobre'
+    # Lista de possíveis nomes para a página atual
+    alvos = []
     if nome_pagina.lower() == "sobre":
-        for f in arquivos_na_pasta:
-            if f.upper() == "INFO_ABOUT.MD":
-                with open(os.path.join(pasta, f), "r", encoding="utf-8") as file:
-                    return file.read()
-    
-    # 2. Busca padrão About_Pagina.md
-    prefixo_alvo = f"About_{nome_pagina}".lower()
-    for f in arquivos_na_pasta:
-        if f.lower().startswith(prefixo_alvo) and f.lower().endswith(".md"):
+        alvos.append("info_about")
+        alvos.append("about_sobre")
+    else:
+        alvos.append(f"about_{nome_pagina}")
+
+    # Varre a pasta buscando match de nome (ignorando caixa e extensão)
+    for f in arquivos:
+        nome_base = os.path.splitext(f)[0].lower()
+        if nome_base in alvos:
             with open(os.path.join(pasta, f), "r", encoding="utf-8") as file:
                 return file.read()
                 
@@ -81,15 +74,12 @@ def busca_documento(nome_pagina):
 c1, _, c2 = st.columns([2.5, 0.4, 7.1])
 
 with c1:
-    # MÍDIA
     m_cols = st.columns(3)
-    if m_cols[0].button("🔊", key="m_s"): st.toast("Som: Frequência captada")
-    if m_cols[1].button("🎨", key="m_a"): st.toast("Arte: Paleta carregada")
-    if m_cols[2].button("🎬", key="m_v"): st.toast("Vídeo: Frame pronto")
-    
+    if m_cols[0].button("🔊", key="m_s"): st.toast("Som: Ativo")
+    if m_cols[1].button("🎨", key="m_a"): st.toast("Arte: Ativa")
+    if m_cols[2].button("🎬", key="m_v"): st.toast("Vídeo: Ativo")
     st.divider()
     
-    # ACERVO
     if os.path.exists("base"):
         files = sorted([f for f in os.listdir("base") if f.startswith("rol_")])
         acervo = {f.replace("rol_", "").replace(".txt", "").replace("_", " ").title(): f for f in files}
@@ -107,7 +97,6 @@ with c1:
     st.selectbox("Idioma", ["Português", "English", "Español", "Latin"], key="l_sel")
 
 with c2:
-    # MENU SUPERIOR
     pgs = ["demo", "yPoemas", "eureka", "off-mach", "opinião", "sobre"]
     t_cols = st.columns([1, 1, 1, 0.5, 1, 1, 1])
     for i, p in enumerate(pgs[:3]):
@@ -117,17 +106,14 @@ with c2:
     for i, p in enumerate(pgs[3:]):
         if t_cols[i+4].button(p, key=f"btn_{p}"): st.session_state.page = p
 
-    # NAVEGAÇÃO
     st.write("") 
     n_cols = st.columns([2.5, 0.7, 0.7, 0.7, 0.7, 2.5])
     if n_cols[1].button("❮", key="nav_p"): st.session_state.idx_tema -= 1
     if n_cols[2].button("✚", key="nav_a"): st.toast("Semente guardada")
     if n_cols[3].button("✱", key="nav_r"): st.session_state.idx_tema = random.randint(0, 100)
     if n_cols[4].button("❯", key="nav_n"): st.session_state.idx_tema += 1
-    
     st.divider()
 
-    # PALCO
     if st.session_state.show_help:
         st.info("A precisão agora dança conforme o instinto.")
     elif st.session_state.page == "demo" and 'temas_atuais' in st.session_state:
@@ -136,11 +122,10 @@ with c2:
         for v in gera_poema(tema, ""):
             st.markdown(f'<div class="typo-verse">{v}</div>', unsafe_allow_html=True)
     else:
-        # Busca dinâmica na pasta /md_files
-        conteudo = busca_documento(st.session_state.page)
+        conteudo = busca_documento_agnostico(st.session_state.page)
         if conteudo:
             st.markdown('<div class="md-container">', unsafe_allow_html=True)
             st.markdown(conteudo)
             st.markdown('</div>', unsafe_allow_html=True)
         else:
-            st.warning(f"O arquivo para '{st.session_state.page}' ainda não foi colhido no labirinto.")
+            st.warning(f"O arquivo para '{st.session_state.page}' ainda não foi colhido no labirinto de /md_files.")
