@@ -5,10 +5,11 @@ import random
 # --- 1. BOOT & ESTADO (PTC) ---
 st.set_page_config(page_title="yPoemas", layout="wide", initial_sidebar_state="collapsed")
 
+# Importação protegida da lógica de poemas
 try: 
     from lay_2_ypo import gera_poema
-except Exception: 
-    def gera_poema(t, p=""): return ["A precisão dança conforme o instinto.", "O labirinto aguarda."]
+except Exception as e: 
+    def gera_poema(t, p=""): return [f"Erro na Engrenagem Poética: {e}", "O labirinto aguarda."]
 
 # Inicialização de estados
 for key, val in {
@@ -17,7 +18,7 @@ for key, val in {
 }.items():
     if key not in st.session_state: st.session_state[key] = val
 
-# --- 2. CSS: DUALIDADE ESTÉTICA (POESIA vs. ENGENHARIA) ---
+# --- 2. CSS: DUALIDADE ESTÉTICA ---
 st.markdown("""
 <style>
     [data-testid="stHeader"], [data-testid="stSidebar"] {display: none !important;}
@@ -43,7 +44,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# --- 3. MOTOR DE BUSCA ROBUSTO (CHAVE MESTRA) ---
+# --- 3. MOTOR DE BUSCA ROBUSTO (DOCS) ---
 def busca_documento_robusto(nome_pagina):
     pasta = "md_files"
     if not os.path.exists(pasta): return f"ERRO: Pasta '{pasta}' não encontrada."
@@ -103,7 +104,6 @@ with c2:
         if t_cols[i+4].button(p, key=f"btn_{p}"): st.session_state.page = p
 
     st.write("") 
-    # Correção do n_cols aqui
     n_cols = st.columns([2.5, 0.7, 0.7, 0.7, 0.7, 2.5])
     if n_cols[1].button("❮", key="nav_p"): st.session_state.idx_tema -= 1
     if n_cols[2].button("✚", key="nav_a"): st.toast("Semente salva")
@@ -114,10 +114,15 @@ with c2:
     if st.session_state.show_help:
         st.info("A precisão agora dança conforme o instinto.")
     elif st.session_state.page == "demo" and st.session_state.temas_atuais:
-        tema = st.session_state.temas_atuais[st.session_state.idx_tema % len(st.session_state.temas_atuais)]
-        st.markdown(f'<div class="typo-title">{tema.upper()}</div>', unsafe_allow_html=True)
-        for v in gera_poema(tema, ""):
-            st.markdown(f'<div class="typo-verse">{v}</div>', unsafe_allow_html=True)
+        try:
+            tema = st.session_state.temas_atuais[st.session_state.idx_tema % len(st.session_state.temas_atuais)]
+            st.markdown(f'<div class="typo-title">{tema.upper()}</div>', unsafe_allow_html=True)
+            # Chamada protegida para evitar NameError/FileNotFound vindo do lay_2_ypo
+            versos = gera_poema(tema, "")
+            for v in versos:
+                st.markdown(f'<div class="typo-verse">{v}</div>', unsafe_allow_html=True)
+        except Exception as e:
+            st.error(f"Erro ao processar o tema: {e}")
     else:
         conteudo = busca_documento_robusto(st.session_state.page)
         if conteudo and not conteudo.startswith("DEBUG_NOT_FOUND"):
