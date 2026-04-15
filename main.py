@@ -10,8 +10,58 @@ except Exception:
     def gera_poema(t, p=""): 
         return ["Erro: motor não encontrado."]
 
-# --- 1. BOOT & ESTADO (LIMPEZA TOTAL) ---
+# --- 1. BOOT & ESTADO ---
 st.set_page_config(page_title="yPoemas", layout="wide", initial_sidebar_state="collapsed")
+
+# Injeção de Material Symbols e Estilo de Trava de Scroll
+st.markdown("""
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+    <style>
+        /* Trava o scroll global */
+        [data-testid="stHeader"], [data-testid="stSidebar"] {display: none !important;}
+        html, body, [data-testid="stAppViewContainer"] { 
+            overflow: hidden !important; 
+            height: 100vh;
+        }
+        .block-container {padding: 1.5rem !important;}
+        
+        /* Palco com Scroll Independente */
+        .palco-scroll {
+            height: calc(100vh - 220px);
+            overflow-y: auto !important;
+            padding-right: 15px;
+            scrollbar-width: thin;
+        }
+
+        /* Botões Estilizados */
+        div.stButton > button {
+            width: 100% !important;
+            height: 48px !important;
+        }
+
+        /* Star Mestra */
+        .star-mestra-wrapper {
+            display: flex; justify-content: center; align-items: center; height: 100%;
+        }
+        .star-mestra-wrapper button {
+            background: transparent !important; border: none !important;
+            color: #f1c40f !important; font-size: 2.2rem !important;
+            box-shadow: none !important;
+        }
+
+        /* Texto do Poema */
+        .typo-verse { 
+            font-family: 'Georgia', serif; font-size: 1.65rem; 
+            line-height: 1.7; color: #1a1a1a; margin-bottom: 6px;
+        }
+        
+        /* Ajuste de ícones dentro dos botões (Material Symbols) */
+        .material-symbols-outlined {
+            font-size: 24px;
+            vertical-align: middle;
+        }
+    </style>
+""", unsafe_allow_html=True)
 
 for key, val in {
     'page': 'demo', 
@@ -39,51 +89,18 @@ def sorteio_tema():
     if st.session_state.temas_atuais:
         st.session_state.idx_tema = random.randint(0, len(st.session_state.temas_atuais) - 1)
 
-# --- 2. CSS: ESTÉTICA E SCROLL ---
-st.markdown("""
-<style>
-    [data-testid="stHeader"], [data-testid="stSidebar"] {display: none !important;}
-    .block-container {padding: 1.5rem !important;}
-    
-    /* Scroll Interno do Palco */
-    .lypo-scroll-box {
-        max-height: 60vh;
-        overflow-y: auto !important;
-        padding-right: 20px;
-    }
-
-    /* Star Mestra centralizada e sem bordas */
-    .star-mestra-wrapper {
-        display: flex; justify-content: center; align-items: center; height: 100%;
-    }
-    .star-mestra-wrapper button {
-        background: transparent !important; border: none !important;
-        color: #f1c40f !important; font-size: 2rem !important;
-        padding: 0 !important;
-    }
-
-    /* Versos */
-    .typo-verse { 
-        font-family: 'Georgia', serif; font-size: 1.65rem; 
-        line-height: 1.7; color: #1a1a1a; margin-bottom: 5px;
-    }
-</style>
-""", unsafe_allow_html=True)
-
-# --- 3. DADOS & TRADUÇÃO ---
+# --- 2. DADOS & TRADUÇÃO ---
 @st.cache_data
 def traduzir(texto, lang_destino):
     mapeamento = {"Português": "pt", "English": "en", "Español": "es", "Deutsch": "de", "Français": "fr"}
     if not texto.strip() or lang_destino == "Português": return texto
-    try:
-        return GoogleTranslator(source='auto', target=mapeamento[lang_destino]).translate(texto)
-    except:
-        return texto
+    try: return GoogleTranslator(source='auto', target=mapeamento[lang_destino]).translate(texto)
+    except: return texto
 
 @st.cache_data
 def get_help_text(id_clic):
     path = f"docs/help_{id_clic}.txt"
-    return open(path, "r", encoding="utf-8").read() if os.path.exists(path) else f"Contexto: {id_clic}"
+    return open(path, "r", encoding="utf-8").read() if os.path.exists(path) else f"Instruções para: {id_clic}"
 
 @st.cache_data
 def get_acervo():
@@ -93,15 +110,15 @@ def get_acervo():
 
 ACERVO = get_acervo()
 
-# --- 4. INTERFACE ---
+# --- 3. INTERFACE ---
 c1, _, c2 = st.columns([2.5, 0.5, 7])
 
 with c1:
-    st.write("### 🎛️ CONTROLES")
+    # Controles sem rótulo, apenas curiosidade
     ic = st.columns(3)
-    ic[0].button("🔊", help="Som", use_container_width=True)
-    ic[1].button("🎨", help="Arte", use_container_width=True)
-    ic[2].button("🎬", help="Vídeo", use_container_width=True)
+    ic[0].button("volume_up", help="Som", use_container_width=True)
+    ic[1].button("palette", help="Arte", use_container_width=True)
+    ic[2].button("movie", help="Vídeo", use_container_width=True)
     st.divider()
     
     livro_sel = st.selectbox("Livros", list(ACERVO.keys()) if ACERVO else ["-"])
@@ -116,46 +133,47 @@ with c1:
                  index=min(st.session_state.idx_tema, len(st.session_state.temas_atuais)-1),
                  key="st_combo", on_change=lambda: st.session_state.update({"idx_tema": st.session_state.temas_atuais.index(st.session_state.st_combo)}))
     
-    idioma_alvo = st.selectbox("Tradução", ["Português", "English", "Español", "Deutsch", "Français"], key="si")
+    idioma_alvo = st.selectbox("Idioma", ["Português", "English", "Español", "Deutsch", "Français"], key="si")
 
 with c2:
-    # TOPO BALANCEADO (3 + Star + 3)
+    # Menu Superior
     pgs = ["demo", "yPoemas", "eureka", "off-mach", "opinião", "sobre"]
-    t_cols = st.columns([1, 1, 1, 0.5, 1, 1, 1])
+    t_cols = st.columns([1, 1, 1, 0.4, 1, 1, 1])
     
-    if t_cols[0].button(pgs[0], use_container_width=True): nav_to(pgs[0])
-    if t_cols[1].button(pgs[1], use_container_width=True): nav_to(pgs[1])
-    if t_cols[2].button(pgs[2], use_container_width=True): nav_to(pgs[2])
+    for i in range(3):
+        if t_cols[i].button(pgs[i], use_container_width=True): nav_to(pgs[i])
     
     with t_cols[3]:
         st.markdown('<div class="star-mestra-wrapper">', unsafe_allow_html=True)
         if st.button("★", key="m_star"): st.session_state.show_help = not st.session_state.show_help
         st.markdown('</div>', unsafe_allow_html=True)
         
-    if t_cols[4].button(pgs[3], use_container_width=True): nav_to(pgs[3])
-    if t_cols[5].button(pgs[4], use_container_width=True): nav_to(pgs[4])
-    if t_cols[6].button(pgs[5], use_container_width=True): nav_to(pgs[5])
+    for i in range(3, 6):
+        if t_cols[i+1].button(pgs[i], use_container_width=True): nav_to(pgs[i])
 
-    # NAVEGAÇÃO [ < + * > ]
+    # Navegação [ < + * > ]
     _, n_box, _ = st.columns([2.5, 5, 2.5])
     with n_box:
         nb = st.columns(4)
-        if nb[0].button("◀", help="Anterior", use_container_width=True): ante_tema()
-        if nb[1].button("➕", help="Mais", use_container_width=True): pass
-        if nb[2].button("🎲", help="Sorteio", use_container_width=True): sorteio_tema()
-        if nb[3].button("▶", help="Próximo", use_container_width=True): prox_tema()
+        if nb[0].button("arrow_back_ios", help="Anterior", use_container_width=True): ante_tema()
+        if nb[1].button("add", help="Novo", use_container_width=True): pass
+        if nb[2].button("auto_awesome", help="Sorteio", use_container_width=True): sorteio_tema()
+        if nb[3].button("arrow_forward_ios", help="Próximo", use_container_width=True): prox_tema()
     st.divider()
 
     # PALCO DE RENDERIZAÇÃO
+    st.markdown('<div class="palco-scroll">', unsafe_allow_html=True)
     if st.session_state.show_help:
-        st.markdown(f"### ℹ️ AJUDA: {st.session_state.ID_CLIC.upper()}")
+        st.markdown(f"### ⚡ CONTEXTO: {st.session_state.ID_CLIC.upper()}")
         st.info(get_help_text(st.session_state.ID_CLIC))
-        if st.button("Fechar"): 
+        if st.button("RETORNAR"): 
             st.session_state.show_help = False
             st.rerun()
     else:
-        st.markdown('<div class="lypo-scroll-box">', unsafe_allow_html=True)
-        if st.session_state.page == "demo" and st.session_state.temas_atuais:
+        p = st.session_state.page
+        st.session_state.ID_CLIC = p
+        
+        if p == "demo" and st.session_state.temas_atuais:
             try:
                 tema_alvo = st.session_state.temas_atuais[st.session_state.idx_tema]
                 poema = gera_poema(tema_alvo, "")
@@ -164,6 +182,6 @@ with c2:
                     st.markdown(f'<div class="typo-verse">{v_trad}</div>', unsafe_allow_html=True)
             except Exception as e: st.error(f"Erro no Motor: {e}")
         else:
-            st.write(f"### AMBIENTE: {st.session_state.page.upper()}")
-            st.info(f"O ID_CLIC está capturando o contexto '{st.session_state.page}'. Clique na Estrela para detalhes.")
-        st.markdown('</div>', unsafe_allow_html=True)
+            st.write(f"### {p.upper()}")
+            st.markdown("Exploração em andamento. Use a ★ para orientar-se.")
+    st.markdown('</div>', unsafe_allow_html=True)
