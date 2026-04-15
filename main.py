@@ -2,117 +2,135 @@ import streamlit as st
 import os
 import random
 
-# --- 1. BOOT & ESTADO ---
+# --- 1. CONFIGURAÇÃO DE BASE (RESTAURAÇÃO V.45) ---
 st.set_page_config(page_title="yPoemas", layout="wide", initial_sidebar_state="collapsed")
 
+# Motor Poético
 try: 
     from lay_2_ypo import gera_poema
 except Exception as e: 
-    def gera_poema(t, p=""): return [f"Erro no motor: {e}"]
+    def gera_poema(t, p=""): return [f"Erro de conexão com o motor: {e}"]
 
+# Estados de Sessão - Limpeza Total
 if 'page' not in st.session_state: st.session_state.page = 'demo'
 if 'idx_tema' not in st.session_state: st.session_state.idx_tema = 0
 if 'temas_atuais' not in st.session_state: st.session_state.temas_atuais = []
 
-# --- 2. CSS DE PRECISÃO (O FIM DO LIXO) ---
+# --- 2. CSS ESTÁVEL (SEM INTERFERÊNCIAS) ---
 st.markdown("""
 <style>
     [data-testid="stHeader"], [data-testid="stSidebar"] {display: none !important;}
     .main .block-container { max-width: 95%; padding-top: 1rem !important; }
     
-    /* Fontes e Textos */
     .md-humanista { font-family: 'Georgia', serif; line-height: 1.6; color: #222; font-size: 1.15rem; }
     .typo-title { font-family: 'Georgia', serif; font-size: 1.3rem; font-weight: bold; text-decoration: underline; margin-bottom: 20px; }
     .typo-verse { font-family: 'Georgia', serif; font-size: 1.32rem; line-height: 1.35; margin-bottom: 8px; }
-
-    /* RESET DE BOTÕES: Apenas os botões de navegação serão circulares */
-    /* Usamos o seletor de chave específica para não afetar o menu superior */
-    div[st-marker="nav_button"] button {
-        border-radius: 50% !important;
-        width: 48px !important;
-        height: 48px !important;
-        padding: 0px !important;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
     
-    /* Botões do Menu Superior e Status (Retangulares e Alinhados) */
-    div[st-marker="menu_button"] button {
-        border-radius: 4px !important;
-        width: 100% !important;
-        height: auto !important;
+    /* Botões de Navegação Inferior: Circulares por classe específica */
+    .stButton > button { border-radius: 4px; } /* Padrão para menu */
+    
+    /* Identificador visual para os botões circulares da base */
+    div.nav-circles button {
+        border-radius: 50% !important;
+        width: 50px !important;
+        height: 50px !important;
+        padding: 0px !important;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# --- 3. INTERFACE ---
+# --- 3. LÓGICA DE NAVEGAÇÃO ---
+def mudar_indice(delta):
+    if st.session_state.temas_atuais:
+        st.session_state.idx_tema = (st.session_state.idx_tema + delta) % len(st.session_state.temas_atuais)
+
+def set_random():
+    if st.session_state.temas_atuais:
+        st.session_state.idx_tema = random.randint(0, len(st.session_state.temas_atuais) - 1)
+
+# --- 4. INTERFACE ---
 c1, _, c2 = st.columns([2.5, 0.4, 7.1])
 
 with c1:
-    # Botões de Status (Retangulares)
-    m_cols = st.columns(3)
-    with m_cols[0]: st.markdown('<div st-marker="menu_button">', unsafe_allow_html=True); st.button("🔊", key="s_on"); st.markdown('</div>', unsafe_allow_html=True)
-    with m_cols[1]: st.markdown('<div st-marker="menu_button">', unsafe_allow_html=True); st.button("🎨", key="a_on"); st.markdown('</div>', unsafe_allow_html=True)
-    with m_cols[2]: st.markdown('<div st-marker="menu_button">', unsafe_allow_html=True); st.button("🎬", key="v_on"); st.markdown('</div>', unsafe_allow_html=True)
+    # Status/Mídia
+    col_m = st.columns(3)
+    col_m[0].button("🔊", key="m_som")
+    col_m[1].button("🎨", key="m_art")
+    col_m[2].button("🎬", key="m_vid")
     st.divider()
     
+    # Carregamento de Dados
     if os.path.exists("base"):
-        files = sorted([f for f in os.listdir("base") if f.startswith("rol_")])
-        if files:
-            acervo = {f.replace("rol_", "").replace(".txt", "").replace("_", " ").title(): f for f in files}
-            sel_l = st.selectbox("Livros", list(acervo.keys()), key="livro_box")
-            with open(os.path.join("base", acervo[sel_l]), "r", encoding="utf-8") as f:
+        arquivos = sorted([f for f in os.listdir("base") if f.startswith("rol_")])
+        if arquivos:
+            acervo = {f.replace("rol_", "").replace(".txt", "").replace("_", " ").title(): f for f in arquivos}
+            livro_sel = st.selectbox("Livros", list(acervo.keys()), key="sb_livro")
+            
+            with open(os.path.join("base", acervo[livro_sel]), "r", encoding="utf-8") as f:
                 st.session_state.temas_atuais = [line.strip() for line in f if line.strip()]
             
-            idx = st.session_state.idx_tema % len(st.session_state.temas_atuais) if st.session_state.temas_atuais else 0
-            st.selectbox("Temas", st.session_state.temas_atuais, index=idx, key="tema_box")
+            # Selectbox de temas sincronizado com o idx_tema
+            def on_tema_change():
+                st.session_state.idx_tema = st.session_state.temas_atuais.index(st.session_state.new_tema)
+
+            if st.session_state.temas_atuais:
+                idx_atual = st.session_state.idx_tema % len(st.session_state.temas_atuais)
+                st.selectbox("Temas", st.session_state.temas_atuais, index=idx_atual, key="new_tema", on_change=on_tema_change)
     
-    st.selectbox("Idioma", ["Português", "English", "Español", "Latin"], key="lang_box")
+    st.selectbox("Idioma", ["Português", "English", "Español", "Latin"], key="sb_idioma")
 
 with c2:
-    # Menu Superior (Retangulares)
+    # Menu Superior
     pgs = ["demo", "yPoemas", "eureka", "off-mach", "opinião", "about"]
     t_cols = st.columns([1, 1, 1, 0.5, 1, 1, 1])
     
     for i, p in enumerate(pgs[:3]):
-        with t_cols[i]:
-            st.markdown('<div st-marker="menu_button">', unsafe_allow_html=True)
-            if st.button(p, key=f"p_{p}"): st.session_state.page = p
-            st.markdown('</div>', unsafe_allow_html=True)
-            
-    with t_cols[3]:
-        st.markdown('<div st-marker="menu_button">', unsafe_allow_html=True)
-        if st.button("?", key="h_mark"): st.toast("A precisão agora dança conforme o instinto.")
-        st.markdown('</div>', unsafe_allow_html=True)
-        
+        if t_cols[i].button(p, key=f"pg_{p}"): st.session_state.page = p
+    
+    if t_cols[3].button("?", key="pg_h"): st.toast("A precisão agora dança conforme o instinto.")
+    
     for i, p in enumerate(pgs[3:]):
-        with t_cols[i+4]:
-            st.markdown('<div st-marker="menu_button">', unsafe_allow_html=True)
-            if st.button(p, key=f"p_{p}"): st.session_state.page = p
-            st.markdown('</div>', unsafe_allow_html=True)
+        if t_cols[i+4].button(p, key=f"pg_{p}"): st.session_state.page = p
 
     st.write("") 
-    # Navegação Inferior (CIRCULARES)
+    
+    # Navegação de Temas (Botões Circulares)
     n_cols = st.columns([2.5, 0.7, 0.7, 0.7, 0.7, 2.5])
     
-    with n_cols[1]: st.markdown('<div st-marker="nav_button">', unsafe_allow_html=True); st.button("❮", key="go_p"); st.markdown('</div>', unsafe_allow_html=True)
-    with n_cols[2]: st.markdown('<div st-marker="nav_button">', unsafe_allow_html=True); st.button("✚", key="go_s"); st.markdown('</div>', unsafe_allow_html=True)
-    with n_cols[3]: st.markdown('<div st-marker="nav_button">', unsafe_allow_html=True); st.button("✱", key="go_r"); st.markdown('</div>', unsafe_allow_html=True)
-    with n_cols[4]: st.markdown('<div st-marker="nav_button">', unsafe_allow_html=True); st.button("❯", key="go_n"); st.markdown('</div>', unsafe_allow_html=True)
+    with n_cols[1]:
+        st.markdown('<div class="nav-circles">', unsafe_allow_html=True)
+        if st.button("❮", key="nav_p"): mudar_indice(-1)
+        st.markdown('</div>', unsafe_allow_html=True)
+    
+    with n_cols[2]:
+        st.markdown('<div class="nav-circles">', unsafe_allow_html=True)
+        if st.button("✚", key="nav_s"): st.toast("Semente Salva")
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+    with n_cols[3]:
+        st.markdown('<div class="nav-circles">', unsafe_allow_html=True)
+        if st.button("✱", key="nav_r"): set_random()
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+    with n_cols[4]:
+        st.markdown('<div class="nav-circles">', unsafe_allow_html=True)
+        if st.button("❯", key="nav_n"): mudar_indice(1)
+        st.markdown('</div>', unsafe_allow_html=True)
+
     st.divider()
 
-    # Renderização
+    # Renderização de Conteúdo
     if st.session_state.page == "demo":
         if st.session_state.temas_atuais:
-            tema = st.session_state.temas_atuais[st.session_state.idx_tema % len(st.session_state.temas_atuais)]
-            st.markdown(f'<div class="typo-title">{tema.upper()}</div>', unsafe_allow_html=True)
-            for v in gera_poema(tema, ""):
-                st.markdown(f'<div class="typo-verse">{v}</div>', unsafe_allow_html=True)
+            tema_final = st.session_state.temas_atuais[st.session_state.idx_tema % len(st.session_state.temas_atuais)]
+            st.markdown(f'<div class="typo-title">{tema_final.upper()}</div>', unsafe_allow_html=True)
+            for verso in gera_poema(tema_final, ""):
+                st.markdown(f'<div class="typo-verse">{verso}</div>', unsafe_allow_html=True)
     else:
+        # Busca de MD de forma direta
         path_md = os.path.join("md_files", f"{st.session_state.page.upper()}.md")
         if os.path.exists(path_md):
             with open(path_md, "r", encoding="utf-8") as f:
                 st.markdown(f'<div class="md-humanista">{f.read()}</div>', unsafe_allow_html=True)
         else:
-            st.warning(f"Aguardando: {st.session_state.page}")
+            st.warning(f"Aguardando conteúdo: {st.session_state.page}")
