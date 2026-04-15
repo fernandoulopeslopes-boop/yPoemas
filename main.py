@@ -10,8 +10,9 @@ st.set_page_config(page_title="yPoemas", layout="wide", initial_sidebar_state="c
 try: 
     from lay_2_ypo import gera_poema
 except Exception: 
-    def gera_poema(t, p=""): return ["Atitude Adiada: Motor em Falha."]
+    def gera_poema(t, p=""): return ["Erro no motor: Judia dele!"]
 
+# Inicialização de Estados
 for key, val in {
     'page': 'demo', 
     'show_help': False, 
@@ -25,7 +26,6 @@ def sorteio_tema():
     if st.session_state.temas_atuais:
         st.session_state.idx_tema = random.randint(0, len(st.session_state.temas_atuais) - 1)
 
-# Função para converter ícone em Base64
 def get_base64_bin(file_path):
     if os.path.exists(file_path):
         with open(file_path, "rb") as f:
@@ -34,51 +34,37 @@ def get_base64_bin(file_path):
 
 STAR_B64 = get_base64_bin("Star_yes.ico")
 
-# --- 2. CSS: O ATAQUE FINAL AO RODAPÉ ---
+# --- 2. CSS: O MARTELO NO RODAPÉ & ESTILO ---
 st.markdown("""
 <style>
-    /* Trava Global */
+    /* Trava de Scroll e Header */
     html, body, [data-testid="stAppViewContainer"], [data-testid="stMainViewContainer"], .main {
         overflow: hidden !important; height: 100vh !important;
     }
     [data-testid="stHeader"], [data-testid="stSidebar"] {display: none !important;}
     .block-container {padding: 1rem !important;}
 
-    /* FORÇAR ALINHAMENTO AO TOPO EM NÍVEL DE ENGINE */
-    [data-testid="stVerticalBlock"] > div {
-        vertical-align: top !important;
+    /* FORÇAR ALINHAMENTO AO TOPO */
+    [data-testid="stVerticalBlock"] {
         justify-content: flex-start !important;
     }
 
-    /* PALCO: O VOO DAS ARESTAS */
+    /* PALCO: O ESPAÇO DA POESIA */
     .palco-wrapper {
         height: calc(100vh - 280px);
         width: 100%;
         overflow-y: auto !important;
         display: block !important;
-        position: relative;
+        padding-top: 5px !important;
     }
     
-    .palco-content {
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start !important;
-        min-height: 100%; /* Garante que o container ocupe o palco todo */
-    }
-
     .typo-verse { 
         font-family: 'Georgia', serif; font-size: 1.65rem; 
-        line-height: 1.6; color: #1a1a1a; margin-bottom: 5px;
+        line-height: 1.6; color: #1a1a1a; margin-bottom: 8px;
         text-align: left;
     }
 
-    /* Ícone da Estrela Mestra */
-    .star-icon {
-        width: 32px; height: 32px; cursor: pointer;
-    }
-    
-    /* Espaçador Fantasma (Empurra o conteúdo para cima) */
-    .ghost-filler { flex-grow: 1; }
+    .star-icon { width: 32px; height: 32px; }
 
     div.stButton > button { width: 100% !important; height: 42px !important; }
 </style>
@@ -110,10 +96,17 @@ with c1:
     livro_sel = st.selectbox("Livros", list(ACERVO.keys()) if ACERVO else ["-"])
     if ACERVO:
         with open(os.path.join("base", ACERVO[livro_sel]), "r", encoding="utf-8") as f:
-            st.session_state.temas_atuais = [l.strip() for l in f if l.strip()]
+            temas = [l.strip() for l in f if l.strip()]
+            if temas != st.session_state.temas_atuais:
+                st.session_state.temas_atuais = temas
+                st.session_state.idx_tema = 0
+    
+    # PROTEÇÃO CONTRA ÍNDICE NEGATIVO (O FIM DA JUDIARIA)
+    total_temas = len(st.session_state.temas_atuais)
+    safe_index = st.session_state.idx_tema % total_temas if total_temas > 0 else 0
     
     st.selectbox("Temas", st.session_state.temas_atuais, 
-                 index=min(st.session_state.idx_tema, len(st.session_state.temas_atuais)-1) if st.session_state.temas_atuais else 0,
+                 index=safe_index,
                  key="st_combo")
     
     idioma_alvo = st.selectbox("Idioma", ["Português", "English", "Español", "Deutsch", "Français"], key="lang_sel")
@@ -126,11 +119,9 @@ with c2:
         if t_cols[i].button(p, key=f"t_{p}"): st.session_state.page = p
     
     with t_cols[3]:
-        # Estrela Mestra como Gatilho
         if STAR_B64:
             st.markdown(f'<center><img src="data:image/x-icon;base64,{STAR_B64}" class="star-icon"></center>', unsafe_allow_html=True)
-        if st.button("★", key="m_star", help="Ajuda"): 
-            st.session_state.show_help = not st.session_state.show_help
+        if st.button("★", key="m_star"): st.session_state.show_help = not st.session_state.show_help
 
     for i, p in enumerate(pgs[3:]):
         if t_cols[i+4].button(p, key=f"t_{p}"): st.session_state.page = p
@@ -143,22 +134,18 @@ with c2:
     if n_cols[4].button("❯", key="next"): st.session_state.idx_tema += 1
     st.divider()
 
-    # PALCO DE RENDERIZAÇÃO: Com Atitude e Ancoragem
-    st.markdown('<div class="palco-wrapper"><div class="palco-content">', unsafe_allow_html=True)
+    # PALCO DE RENDERIZAÇÃO
+    st.markdown('<div class="palco-wrapper">', unsafe_allow_html=True)
     if not st.session_state.show_help:
         if st.session_state.page == "demo" and st.session_state.temas_atuais:
-            idx = st.session_state.idx_tema % len(st.session_state.temas_atuais)
-            tema = st.session_state.temas_atuais[idx]
+            tema_atual = st.session_state.temas_atuais[st.session_state.idx_tema % total_temas]
             try:
-                for v in gera_poema(tema, ""):
+                for v in gera_poema(tema_atual, ""):
                     v_t = traduzir(v, idioma_alvo)
                     st.markdown(f'<div class="typo-verse">{v_t}</div>', unsafe_allow_html=True)
-            except: st.error("Arestas em conflito no motor.")
+            except: st.error("Erro na geração poética.")
         else:
             st.markdown(f"### {st.session_state.page.upper()}")
-        
-        # O GHOST FILLER: Empurra tudo para cima
-        st.markdown('<div class="ghost-filler"></div>', unsafe_allow_html=True)
     else:
-        st.info("Afoita, à Antiga: Ajuda da Machina.")
-    st.markdown('</div></div>', unsafe_allow_html=True)
+        st.info("Ajuda da Machina: Aqui Agora Absoluta.")
+    st.markdown('</div>', unsafe_allow_html=True)
