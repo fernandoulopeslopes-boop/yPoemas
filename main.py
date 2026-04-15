@@ -2,82 +2,75 @@ import streamlit as st
 import os
 import random
 
-# --- 1. CONFIGURAÇÃO DE BASE (RESTAURAÇÃO V.45) ---
+# --- 1. BOOT & ESTADO (RIGOR TOTAL) ---
 st.set_page_config(page_title="yPoemas", layout="wide", initial_sidebar_state="collapsed")
 
-# Motor Poético
 try: 
     from lay_2_ypo import gera_poema
 except Exception as e: 
-    def gera_poema(t, p=""): return [f"Erro de conexão com o motor: {e}"]
+    def gera_poema(t, p=""): return [f"Erro no motor: {e}"]
 
-# Estados de Sessão - Limpeza Total
+# Inicialização de estados sem ambiguidades
 if 'page' not in st.session_state: st.session_state.page = 'demo'
 if 'idx_tema' not in st.session_state: st.session_state.idx_tema = 0
 if 'temas_atuais' not in st.session_state: st.session_state.temas_atuais = []
 
-# --- 2. CSS ESTÁVEL (SEM INTERFERÊNCIAS) ---
+# --- 2. CSS: O DESIGN ANALISADO ---
 st.markdown("""
 <style>
     [data-testid="stHeader"], [data-testid="stSidebar"] {display: none !important;}
     .main .block-container { max-width: 95%; padding-top: 1rem !important; }
     
+    /* Tipografia Humanista */
     .md-humanista { font-family: 'Georgia', serif; line-height: 1.6; color: #222; font-size: 1.15rem; }
     .typo-title { font-family: 'Georgia', serif; font-size: 1.3rem; font-weight: bold; text-decoration: underline; margin-bottom: 20px; }
     .typo-verse { font-family: 'Georgia', serif; font-size: 1.32rem; line-height: 1.35; margin-bottom: 8px; }
-    
-    /* Botões de Navegação Inferior: Circulares por classe específica */
-    .stButton > button { border-radius: 4px; } /* Padrão para menu */
-    
-    /* Identificador visual para os botões circulares da base */
+
+    /* Botões Menu Superior (Retangulares) */
+    .stButton > button { width: 100%; border-radius: 4px; height: 38px; border: 1px solid #ccc; }
+
+    /* Botões de Navegação (Circulares) */
     div.nav-circles button {
         border-radius: 50% !important;
-        width: 50px !important;
-        height: 50px !important;
+        width: 48px !important;
+        height: 48px !important;
         padding: 0px !important;
+        font-size: 1.2rem !important;
+        display: flex; align-items: center; justify-content: center;
+        border: 1px solid #333 !important;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# --- 3. LÓGICA DE NAVEGAÇÃO ---
-def mudar_indice(delta):
-    if st.session_state.temas_atuais:
-        st.session_state.idx_tema = (st.session_state.idx_tema + delta) % len(st.session_state.temas_atuais)
-
-def set_random():
-    if st.session_state.temas_atuais:
-        st.session_state.idx_tema = random.randint(0, len(st.session_state.temas_atuais) - 1)
-
-# --- 4. INTERFACE ---
+# --- 3. INTERFACE ---
 c1, _, c2 = st.columns([2.5, 0.4, 7.1])
 
 with c1:
-    # Status/Mídia
-    col_m = st.columns(3)
-    col_m[0].button("🔊", key="m_som")
-    col_m[1].button("🎨", key="m_art")
-    col_m[2].button("🎬", key="m_vid")
+    m_cols = st.columns(3)
+    m_cols[0].button("🔊", key="ctrl_s")
+    m_cols[1].button("🎨", key="ctrl_a")
+    m_cols[2].button("🎬", key="ctrl_v")
     st.divider()
     
-    # Carregamento de Dados
     if os.path.exists("base"):
-        arquivos = sorted([f for f in os.listdir("base") if f.startswith("rol_")])
+        # Filtro rigoroso de arquivos
+        arquivos = sorted([f for f in os.listdir("base") if f.startswith("rol_") and f.endswith(".txt")])
         if arquivos:
             acervo = {f.replace("rol_", "").replace(".txt", "").replace("_", " ").title(): f for f in arquivos}
-            livro_sel = st.selectbox("Livros", list(acervo.keys()), key="sb_livro")
+            lista_livros = list(acervo.keys())
             
-            with open(os.path.join("base", acervo[livro_sel]), "r", encoding="utf-8") as f:
+            sel_livro = st.selectbox("Livros", lista_livros, key="sb_livros")
+            
+            # Carregamento seguro da lista de temas
+            with open(os.path.join("base", acervo[sel_livro]), "r", encoding="utf-8") as f:
                 st.session_state.temas_atuais = [line.strip() for line in f if line.strip()]
             
-            # Selectbox de temas sincronizado com o idx_tema
-            def on_tema_change():
-                st.session_state.idx_tema = st.session_state.temas_atuais.index(st.session_state.new_tema)
-
             if st.session_state.temas_atuais:
-                idx_atual = st.session_state.idx_tema % len(st.session_state.temas_atuais)
-                st.selectbox("Temas", st.session_state.temas_atuais, index=idx_atual, key="new_tema", on_change=on_tema_change)
+                # Sincronia do índice com o selectbox
+                idx_v = st.session_state.idx_tema % len(st.session_state.temas_atuais)
+                st.selectbox("Temas", st.session_state.temas_atuais, index=idx_v, key="sb_temas")
     
-    st.selectbox("Idioma", ["Português", "English", "Español", "Latin"], key="sb_idioma")
+    st.selectbox("Idioma", ["Português", "English", "Español", "Latin"], key="sb_lang")
 
 with c2:
     # Menu Superior
@@ -85,52 +78,59 @@ with c2:
     t_cols = st.columns([1, 1, 1, 0.5, 1, 1, 1])
     
     for i, p in enumerate(pgs[:3]):
-        if t_cols[i].button(p, key=f"pg_{p}"): st.session_state.page = p
+        if t_cols[i].button(p, key=f"nav_{p}"): st.session_state.page = p
     
-    if t_cols[3].button("?", key="pg_h"): st.toast("A precisão agora dança conforme o instinto.")
+    if t_cols[3].button("?", key="nav_help"): st.toast("A precisão agora dança conforme o instinto.")
     
     for i, p in enumerate(pgs[3:]):
-        if t_cols[i+4].button(p, key=f"pg_{p}"): st.session_state.page = p
+        if t_cols[i+4].button(p, key=f"nav_{p}"): st.session_state.page = p
 
     st.write("") 
-    
-    # Navegação de Temas (Botões Circulares)
+    # Navegação Inferior (Design de Círculos)
     n_cols = st.columns([2.5, 0.7, 0.7, 0.7, 0.7, 2.5])
     
     with n_cols[1]:
         st.markdown('<div class="nav-circles">', unsafe_allow_html=True)
-        if st.button("❮", key="nav_p"): mudar_indice(-1)
+        if st.button("❮", key="nav_prev"): st.session_state.idx_tema -= 1
         st.markdown('</div>', unsafe_allow_html=True)
     
     with n_cols[2]:
         st.markdown('<div class="nav-circles">', unsafe_allow_html=True)
-        if st.button("✚", key="nav_s"): st.toast("Semente Salva")
+        if st.button("✚", key="nav_save"): st.toast("Salvo")
         st.markdown('</div>', unsafe_allow_html=True)
         
     with n_cols[3]:
         st.markdown('<div class="nav-circles">', unsafe_allow_html=True)
-        if st.button("✱", key="nav_r"): set_random()
+        if st.button("✱", key="nav_rand"): st.session_state.idx_tema = random.randint(0, 9999)
         st.markdown('</div>', unsafe_allow_html=True)
         
     with n_cols[4]:
         st.markdown('<div class="nav-circles">', unsafe_allow_html=True)
-        if st.button("❯", key="nav_n"): mudar_indice(1)
+        if st.button("❯", key="nav_next"): st.session_state.idx_tema += 1
         st.markdown('</div>', unsafe_allow_html=True)
-
     st.divider()
 
-    # Renderização de Conteúdo
+    # --- RENDERIZAÇÃO ---
     if st.session_state.page == "demo":
         if st.session_state.temas_atuais:
-            tema_final = st.session_state.temas_atuais[st.session_state.idx_tema % len(st.session_state.temas_atuais)]
-            st.markdown(f'<div class="typo-title">{tema_final.upper()}</div>', unsafe_allow_html=True)
-            for verso in gera_poema(tema_final, ""):
-                st.markdown(f'<div class="typo-verse">{verso}</div>', unsafe_allow_html=True)
+            # Proteção contra erro de arquivo: garantimos que o nome do tema seja limpo
+            tema_nome = st.session_state.temas_atuais[st.session_state.idx_tema % len(st.session_state.temas_atuais)]
+            st.markdown(f'<div class="typo-title">{tema_nome.upper()}</div>', unsafe_allow_html=True)
+            
+            try:
+                # O motor gera_poema é chamado. O erro de FileNotFoundError indica
+                # que ele espera arquivos que não estão mapeados corretamente.
+                versos = gera_poema(tema_nome, "")
+                for v in versos:
+                    st.markdown(f'<div class="typo-verse">{v}</div>', unsafe_allow_html=True)
+            except Exception as e:
+                st.error(f"O motor poético encontrou um obstáculo: {e}")
     else:
-        # Busca de MD de forma direta
-        path_md = os.path.join("md_files", f"{st.session_state.page.upper()}.md")
-        if os.path.exists(path_md):
-            with open(path_md, "r", encoding="utf-8") as f:
+        # Busca de documentos MD
+        nome_doc = f"{st.session_state.page.upper()}.md"
+        caminho_doc = os.path.join("md_files", nome_doc)
+        if os.path.exists(caminho_doc):
+            with open(caminho_doc, "r", encoding="utf-8") as f:
                 st.markdown(f'<div class="md-humanista">{f.read()}</div>', unsafe_allow_html=True)
         else:
-            st.warning(f"Aguardando conteúdo: {st.session_state.page}")
+            st.warning(f"Aguardando o arquivo: {nome_doc}")
