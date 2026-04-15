@@ -153,4 +153,30 @@ with c2:
     _, n_box, _ = st.columns([2, 6, 2])
     with n_box:
         nb = st.columns(4)
-        if nb[0].
+        if nb[0].button("❮", key="prev"): ante_tema()
+        nb[1].button("✚", key="add")
+        if nb[2].button("*", key="rand"): sorteio_tema()
+        if nb[3].button("❯", key="next"): prox_tema()
+    st.divider()
+
+    # PALCO DE RENDERIZAÇÃO
+    st.markdown('<div class="palco-wrapper"><div class="palco-content">', unsafe_allow_html=True)
+    if st.session_state.show_help:
+        st.markdown(f"### ⚡ AJUDA: {st.session_state.ID_CLIC.upper()}")
+        st.info(get_help_text(st.session_state.ID_CLIC))
+    else:
+        p = st.session_state.page
+        st.session_state.ID_CLIC = p
+        
+        if p == "demo" and st.session_state.temas_atuais:
+            tema_alvo = st.session_state.temas_atuais[st.session_state.idx_tema]
+            try:
+                poema = gera_poema(tema_alvo, "")
+                for v in poema:
+                    v_trad = traduzir(v, idioma_alvo)
+                    st.markdown(f'<div class="typo-verse">{v_trad}</div>', unsafe_allow_html=True)
+            except Exception as e:
+                st.error(f"Erro no tema '{tema_alvo}': {e}")
+        else:
+            st.write(f"### {p.upper()}")
+    st.markdown('</div></div>', unsafe_allow_html=True)
