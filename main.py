@@ -1,7 +1,6 @@
 import streamlit as st
 import os
 import random
-import base64
 from deep_translator import GoogleTranslator
 
 # --- 1. BOOT & ESTADO (PROTOCOLO PTC) ---
@@ -24,7 +23,6 @@ for key, val in {
 }.items():
     if key not in st.session_state: st.session_state[key] = val
 
-# Funções de Navegação
 def nav_to(p):
     st.session_state.page = p
     st.session_state.show_help = False
@@ -45,12 +43,10 @@ def sorteio_tema():
 # --- 2. CSS: ATAQUE AO RODAPÉ E TRAVA DE SCROLL ---
 st.markdown("""
 <style>
-    /* TRAVA DE SCROLL GLOBAL DEFINITIVA (FORÇADA) */
-    html, body, [data-testid="stAppViewContainer"], [data-testid="stMainViewContainer"], .main, .stMain {
+    /* TRAVA DE SCROLL GLOBAL */
+    html, body, [data-testid="stAppViewContainer"], [data-testid="stMainViewContainer"], .main {
         overflow: hidden !important;
         height: 100vh !important;
-        position: fixed !important;
-        width: 100vw !important;
     }
     
     [data-testid="stHeader"], [data-testid="stSidebar"] {display: none !important;}
@@ -59,15 +55,14 @@ st.markdown("""
     /* PALCO: ANCORAGEM NO TOPO ABSOLUTO */
     .palco-wrapper {
         position: relative;
-        height: calc(100vh - 260px); /* Ajuste de altura para não bater no rodapé */
+        height: calc(100vh - 260px); 
         width: 100%;
         margin-top: 10px;
-        background: transparent;
     }
     
     .palco-content {
         position: absolute;
-        top: 0 !important; /* Força o início no topo */
+        top: 0 !important;
         left: 0;
         right: 0;
         bottom: 0;
@@ -76,13 +71,11 @@ st.markdown("""
         text-align: left;
     }
 
-    /* Botões Simétricos */
     div.stButton > button {
         width: 100% !important;
         height: 45px !important;
     }
 
-    /* Star Mestra Transparente */
     .star-mestra-wrapper {
         display: flex; justify-content: center; align-items: center;
     }
@@ -92,7 +85,6 @@ st.markdown("""
         box-shadow: none !important; margin-top: 5px !important;
     }
 
-    /* Tipografia Poética */
     .typo-verse { 
         font-family: 'Georgia', serif; font-size: 1.65rem; 
         line-height: 1.7; color: #1a1a1a; margin-bottom: 8px;
@@ -126,9 +118,9 @@ c1, _, c2 = st.columns([2.5, 0.5, 7])
 
 with c1:
     ic = st.columns(3)
-    ic[0].button("🔊", use_container_width=True)
-    ic[1].button("🎨", use_container_width=True)
-    ic[2].button("📽️", use_container_width=True)
+    ic[0].button("🔊", key="b_som")
+    ic[1].button("🎨", key="b_arte")
+    ic[2].button("📽️", key="b_vid")
     st.divider()
     
     livro_sel = st.selectbox("Livros", list(ACERVO.keys()) if ACERVO else ["-"])
@@ -140,36 +132,25 @@ with c1:
                 st.session_state.idx_tema = 0
     
     st.selectbox("Temas", st.session_state.temas_atuais, 
-                 index=min(st.session_state.idx_tema, len(st.session_state.temas_atuais)-1),
+                 index=min(st.session_state.idx_tema, len(st.session_state.temas_atuais)-1) if st.session_state.temas_atuais else 0,
                  key="st_combo", on_change=lambda: st.session_state.update({"idx_tema": st.session_state.temas_atuais.index(st.session_state.st_combo)}))
     
     idioma_alvo = st.selectbox("Idioma", ["Português", "English", "Español", "Deutsch", "Français"], key="si")
 
 with c2:
-    # Menu Superior
     pgs = ["demo", "yPoemas", "eureka", "off-mach", "opinião", "sobre"]
     t_cols = st.columns([1, 1, 1, 0.4, 1, 1, 1])
     
     for i in range(3):
-        if t_cols[i].button(pgs[i], use_container_width=True): nav_to(pgs[i])
+        if t_cols[i].button(pgs[i], key=f"btn_{pgs[i]}"): nav_to(pgs[i])
     with t_cols[3]:
         st.markdown('<div class="star-mestra-wrapper">', unsafe_allow_html=True)
         if st.button("★", key="m_star"): st.session_state.show_help = not st.session_state.show_help
         st.markdown('</div>', unsafe_allow_html=True)
     for i in range(3, 6):
-        if t_cols[i+1].button(pgs[i], use_container_width=True): nav_to(pgs[i])
+        if t_cols[i+1].button(pgs[i], key=f"btn_{pgs[i]}"): nav_to(pgs[i])
 
-    # Navegação [ ❮ ✚ * ❯ ]
     _, n_box, _ = st.columns([2, 6, 2])
     with n_box:
         nb = st.columns(4)
-        if nb[0].button("❮", use_container_width=True): ante_tema()
-        nb[1].button("✚", use_container_width=True)
-        if nb[2].button("*", use_container_width=True): sorteio_tema() # Conforme solicitado: '*'
-        if nb[3].button("❯", use_container_width=True): prox_tema()
-    st.divider()
-
-    # PALCO DE RENDERIZAÇÃO
-    st.markdown('<div class="palco-wrapper"><div class="palco-content">', unsafe_allow_html=True)
-    if st.session_state.show_help:
-        st.markdown(f"### ⚡ AJUDA: {st
+        if nb[0].
