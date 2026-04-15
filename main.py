@@ -1,19 +1,20 @@
 import streamlit as st
 import os
 import random
+import base64
 from deep_translator import GoogleTranslator
 
-# --- 1. BOOT & ESTADO (LIMPEZA CC) ---
+# --- 1. BOOT & ESTADO (PROTOCOLO PTC) ---
 st.set_page_config(page_title="yPoemas", layout="wide", initial_sidebar_state="collapsed")
 
 # MOTOR REAL: Carregamento Protegido
 try: 
     from lay_2_ypo import gera_poema
 except Exception as e: 
-    st.error(f"Falha Crítica no Motor Real: {e}")
+    st.error(f"Erro no Motor: {e}")
     def gera_poema(t, p=""): return ["Erro: motor inoperante."]
 
-# Inicialização de Estados
+# Estados de Sessão
 for key, val in {
     'page': 'demo', 
     'show_help': False, 
@@ -23,6 +24,7 @@ for key, val in {
 }.items():
     if key not in st.session_state: st.session_state[key] = val
 
+# Funções de Navegação
 def nav_to(p):
     st.session_state.page = p
     st.session_state.show_help = False
@@ -40,36 +42,49 @@ def sorteio_tema():
     if st.session_state.temas_atuais:
         st.session_state.idx_tema = random.randint(0, len(st.session_state.temas_atuais) - 1)
 
-# --- 2. CSS: RIGOR VISUAL E ISOLAMENTO DE SCROLL ---
+# --- 2. CSS: ATAQUE AO RODAPÉ E TRAVA DE SCROLL ---
 st.markdown("""
 <style>
-    /* Trava Scroll Global */
-    [data-testid="stHeader"], [data-testid="stSidebar"] {display: none !important;}
-    html, body, [data-testid="stAppViewContainer"], [data-testid="stMainViewContainer"] { 
-        overflow: hidden !important; 
+    /* TRAVA DE SCROLL GLOBAL DEFINITIVA (FORÇADA) */
+    html, body, [data-testid="stAppViewContainer"], [data-testid="stMainViewContainer"], .main, .stMain {
+        overflow: hidden !important;
         height: 100vh !important;
+        position: fixed !important;
+        width: 100vw !important;
     }
+    
+    [data-testid="stHeader"], [data-testid="stSidebar"] {display: none !important;}
     .block-container {padding: 1rem !important;}
     
-    /* PALCO COM SCROLL EXCLUSIVO E TOPO FORÇADO */
-    .palco-container {
-        height: calc(100vh - 240px);
+    /* PALCO: ANCORAGEM NO TOPO ABSOLUTO */
+    .palco-wrapper {
+        position: relative;
+        height: calc(100vh - 260px); /* Ajuste de altura para não bater no rodapé */
+        width: 100%;
+        margin-top: 10px;
+        background: transparent;
+    }
+    
+    .palco-content {
+        position: absolute;
+        top: 0 !important; /* Força o início no topo */
+        left: 0;
+        right: 0;
+        bottom: 0;
         overflow-y: auto !important;
-        padding: 10px 20px 60px 0px;
-        display: block !important; /* Força renderização em bloco */
-        margin-top: 0px !important; /* Garante início no topo */
+        padding-right: 15px;
+        text-align: left;
     }
 
     /* Botões Simétricos */
     div.stButton > button {
         width: 100% !important;
         height: 45px !important;
-        font-size: 1.1rem !important;
     }
 
     /* Star Mestra Transparente */
     .star-mestra-wrapper {
-        display: flex; justify-content: center; align-items: center; height: 100%;
+        display: flex; justify-content: center; align-items: center;
     }
     .star-mestra-wrapper button {
         background: transparent !important; border: none !important;
@@ -77,10 +92,10 @@ st.markdown("""
         box-shadow: none !important; margin-top: 5px !important;
     }
 
-    /* Versos */
+    /* Tipografia Poética */
     .typo-verse { 
         font-family: 'Georgia', serif; font-size: 1.65rem; 
-        line-height: 1.7; color: #1a1a1a; margin-bottom: 6px;
+        line-height: 1.7; color: #1a1a1a; margin-bottom: 8px;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -111,9 +126,9 @@ c1, _, c2 = st.columns([2.5, 0.5, 7])
 
 with c1:
     ic = st.columns(3)
-    ic[0].button("🔊", help="Som", use_container_width=True)
-    ic[1].button("🎨", help="Arte", use_container_width=True)
-    ic[2].button("📽️", help="Vídeo", use_container_width=True)
+    ic[0].button("🔊", use_container_width=True)
+    ic[1].button("🎨", use_container_width=True)
+    ic[2].button("📽️", use_container_width=True)
     st.divider()
     
     livro_sel = st.selectbox("Livros", list(ACERVO.keys()) if ACERVO else ["-"])
@@ -137,50 +152,24 @@ with c2:
     
     for i in range(3):
         if t_cols[i].button(pgs[i], use_container_width=True): nav_to(pgs[i])
-    
     with t_cols[3]:
         st.markdown('<div class="star-mestra-wrapper">', unsafe_allow_html=True)
         if st.button("★", key="m_star"): st.session_state.show_help = not st.session_state.show_help
         st.markdown('</div>', unsafe_allow_html=True)
-        
     for i in range(3, 6):
         if t_cols[i+1].button(pgs[i], use_container_width=True): nav_to(pgs[i])
 
-    # Navegação [ ❮ ✚ * ❯ ] (Random como *)
+    # Navegação [ ❮ ✚ * ❯ ]
     _, n_box, _ = st.columns([2, 6, 2])
     with n_box:
         nb = st.columns(4)
         if nb[0].button("❮", use_container_width=True): ante_tema()
-        if nb[1].button("✚", use_container_width=True): pass
-        if nb[2].button("*", help="Sorteio", use_container_width=True): sorteio_tema()
+        nb[1].button("✚", use_container_width=True)
+        if nb[2].button("*", use_container_width=True): sorteio_tema() # Conforme solicitado: '*'
         if nb[3].button("❯", use_container_width=True): prox_tema()
     st.divider()
 
     # PALCO DE RENDERIZAÇÃO
-    st.markdown('<div class="palco-container">', unsafe_allow_html=True)
+    st.markdown('<div class="palco-wrapper"><div class="palco-content">', unsafe_allow_html=True)
     if st.session_state.show_help:
-        st.markdown(f"### ⚡ AJUDA: {st.session_state.ID_CLIC.upper()}")
-        st.info(get_help_text(st.session_state.ID_CLIC))
-        if st.button("Retornar"): 
-            st.session_state.show_help = False
-            st.rerun()
-    else:
-        p = st.session_state.page
-        st.session_state.ID_CLIC = p
-        
-        if p == "demo" and st.session_state.temas_atuais:
-            tema_alvo = st.session_state.temas_atuais[st.session_state.idx_tema]
-            
-            # --- ZONA PROTEGIDA CONTRA FALHAS DO MOTOR ---
-            try:
-                poema = gera_poema(tema_alvo, "")
-                for v in poema:
-                    v_trad = traduzir(v, idioma_alvo)
-                    st.markdown(f'<div class="typo-verse">{v_trad}</div>', unsafe_allow_html=True)
-            except Exception as e:
-                st.error(f"Erro ao processar o tema '{tema_alvo}'. O arquivo correspondente pode estar ausente na pasta 'base'. Detalhes: {e}")
-            # -----------------------------------------------
-        else:
-            st.write(f"### {p.upper()}")
-            st.info("Desbrave a Machina. A Estrela revela o caminho.")
-    st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown(f"### ⚡ AJUDA: {st
