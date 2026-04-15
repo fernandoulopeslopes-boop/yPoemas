@@ -3,17 +3,15 @@ import os
 import random
 from deep_translator import GoogleTranslator
 
-# --- 1. BOOT & ESTADO (PROTOCOLO PTC) ---
+# --- 1. BOOT & ESTADO ---
 st.set_page_config(page_title="yPoemas", layout="wide", initial_sidebar_state="collapsed")
 
-# MOTOR REAL: Carregamento Protegido
 try: 
     from lay_2_ypo import gera_poema
 except Exception as e: 
     st.error(f"Erro no Motor: {e}")
     def gera_poema(t, p=""): return ["Erro: motor inoperante."]
 
-# Estados de Sessão
 for key, val in {
     'page': 'demo', 
     'show_help': False, 
@@ -40,7 +38,7 @@ def sorteio_tema():
     if st.session_state.temas_atuais:
         st.session_state.idx_tema = random.randint(0, len(st.session_state.temas_atuais) - 1)
 
-# --- 2. CSS: ATAQUE AO RODAPÉ E TRAVA DE SCROLL ---
+# --- 2. CSS: ANCORAGEM NO TOPO E TRAVA DE SCROLL ---
 st.markdown("""
 <style>
     /* TRAVA DE SCROLL GLOBAL */
@@ -52,22 +50,19 @@ st.markdown("""
     [data-testid="stHeader"], [data-testid="stSidebar"] {display: none !important;}
     .block-container {padding: 1rem !important;}
     
-    /* PALCO: ANCORAGEM NO TOPO ABSOLUTO */
+    /* PALCO: FORÇAR INÍCIO NO TOPO */
     .palco-wrapper {
-        position: relative;
         height: calc(100vh - 260px); 
+        overflow-y: auto !important;
         width: 100%;
-        margin-top: 10px;
+        display: block !important;
+        vertical-align: top !important;
     }
     
     .palco-content {
-        position: absolute;
-        top: 0 !important;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        overflow-y: auto !important;
-        padding-right: 15px;
+        display: block !important;
+        margin-top: 0 !important;
+        padding-top: 0 !important;
         text-align: left;
     }
 
@@ -82,13 +77,16 @@ st.markdown("""
     .star-mestra-wrapper button {
         background: transparent !important; border: none !important;
         color: #f1c40f !important; font-size: 2.2rem !important;
-        box-shadow: none !important; margin-top: 5px !important;
+        box-shadow: none !important;
     }
 
     .typo-verse { 
         font-family: 'Georgia', serif; font-size: 1.65rem; 
         line-height: 1.7; color: #1a1a1a; margin-bottom: 8px;
     }
+    
+    /* Espaçador para empurrar conteúdo para cima */
+    .spacer-bottom { height: 100vh; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -179,4 +177,8 @@ with c2:
                 st.error(f"Erro no tema '{tema_alvo}': {e}")
         else:
             st.write(f"### {p.upper()}")
+    
+    # O PULO DO GATO: Empurrador de Conteúdo para o Topo
+    st.markdown('<div class="spacer-bottom"></div>', unsafe_allow_html=True)
     st.markdown('</div></div>', unsafe_allow_html=True)
+    
