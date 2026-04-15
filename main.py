@@ -3,25 +3,31 @@ import os
 import random
 from deep_translator import GoogleTranslator
 
-# MOTOR REAL: Importação mandatória do motor da Machina
-try:
+# MOTOR REAL: Conexão direta com lay_2_ypo
+try: 
     from lay_2_ypo import gera_poema
-except ImportError:
-    def gera_poema(tema, p=""): return ["Erro: lay_2_ypo.py não encontrado."]
+except ImportError: 
+    def gera_poema(t, p=""): return ["Erro: motor lay_2_ypo não encontrado."]
 
-# --- 1. BOOT & ESTADO (CONTROLE DE INDEX) ---
+# --- 1. BOOT & ESTADO (ID_CLIC ÚNICO) ---
 st.set_page_config(page_title="yPoemas", layout="wide", initial_sidebar_state="collapsed")
 
-if 'page' not in st.session_state: st.session_state.page = 'demo'
-if 'show_help' not in st.session_state: st.session_state.show_help = False
-if 'idx_tema' not in st.session_state: st.session_state.idx_tema = 0
-if 'temas_atuais' not in st.session_state: st.session_state.temas_atuais = []
+# Inicialização limpa de estados essenciais
+for key, val in {
+    'page': 'demo', 
+    'show_help': False, 
+    'ID_CLIC': 'demo', 
+    'idx_tema': 0, 
+    'temas_atuais': []
+}.items():
+    if key not in st.session_state: st.session_state[key] = val
 
-def nav_to(p, h):
+def nav_to(p):
     st.session_state.page = p
-    st.session_state.show_help = h
+    st.session_state.show_help = False
+    st.session_state.ID_CLIC = p
 
-# Funções de Navegação de Índice
+# Callbacks de Navegação (Sem lógica duplicada)
 def prox_tema():
     if st.session_state.temas_atuais:
         st.session_state.idx_tema = (st.session_state.idx_tema + 1) % len(st.session_state.temas_atuais)
@@ -34,75 +40,73 @@ def sorteio_tema():
     if st.session_state.temas_atuais:
         st.session_state.idx_tema = random.randint(0, len(st.session_state.temas_atuais) - 1)
 
-# --- 2. CSS: ALINHAMENTO E LYPO-TYPO ---
+# --- 2. CSS: ARQUITETURA DE PALCO FIXO E SCROLL INTERNO ---
 st.markdown("""
 <style>
+    /* Limpeza de elementos padrão do Streamlit */
     [data-testid="stHeader"], [data-testid="stSidebar"] {display: none !important;}
+    html, body, [data-testid="stAppViewContainer"] { overflow: hidden !important; }
     .block-container {padding: 1rem !important;}
     
-    /* Painel Lateral Fixo */
-    [data-testid="column"]:nth-child(1) {
-        position: fixed !important; top: 1rem; left: 1rem; width: 210px !important; z-index: 1000;
+    /* Painel Lateral Fixo (Esquerda) */
+    [data-testid="column"]:nth-child(1) { 
+        position: fixed !important; top: 1rem; left: 1.5rem; width: 220px !important; z-index: 1000; 
     }
     
-    /* Palco de Conteúdo */
-    [data-testid="column"]:nth-child(3) { margin-left: 250px !important; }
-
-    /* LYPO & TYPO */
-    .lypo-container { margin-top: 15px; }
-    .typo-verse { 
-        font-family: 'Georgia', serif; 
-        font-size: 1.65rem; 
-        line-height: 1.7; 
-        color: #1a1a1a; 
-        min-height: 1.5rem;
+    /* Palco de Conteúdo com Scroll Independente (Direita) */
+    [data-testid="column"]:nth-child(3) { 
+        margin-left: 260px !important; 
+        height: 95vh !important;
+        overflow-y: auto !important;
+        padding-right: 20px;
     }
 
-    /* Régua de Navegação Inferior */
-    .nav-rim-box button {
-        background: transparent !important;
-        border: none !important;
-        font-size: 1.4rem !important;
-        color: #777 !important;
+    /* Star Mestra: Alinhamento Centralizado e Estética Limpa */
+    .star-mestra-container {
+        display: flex; justify-content: center; align-items: center; height: 100%;
+    }
+    .star-mestra-container button {
+        background: transparent !important; border: none !important;
+        color: #f1c40f !important; font-size: 1.4rem !important;
+        margin-top: 5px !important;
+    }
+
+    /* Régua de Navegação [ + < * > ] */
+    .nav-rim-box button { 
+        background: transparent !important; border: none !important; 
+        font-size: 1.4rem !important; color: #777 !important; 
     }
     .nav-rim-box button:hover { color: #000 !important; }
     
-    .stButton button { width: 100% !important; height: 38px !important; }
+    /* LYPO & TYPO: A alma do Poema */
+    .lypo-container { margin-top: 10px; padding-bottom: 60px; }
+    .typo-verse { 
+        font-family: 'Georgia', serif; font-size: 1.65rem; 
+        line-height: 1.7; color: #1a1a1a; min-height: 1.5rem; 
+    }
 </style>
 """, unsafe_allow_html=True)
 
-# --- 3. DADOS & TRADUÇÃO ---
+# --- 3. DADOS ---
 @st.cache_data
 def get_acervo():
-    if not os.path.exists("base"): return {}
-    files = sorted([f for f in os.listdir("base") if f.startswith("rol_")])
+    path = "base"
+    if not os.path.exists(path): return {}
+    files = sorted([f for f in os.listdir(path) if f.startswith("rol_")])
     return {f.replace("rol_", "").replace(".txt", "").replace("_", " ").title(): f for f in files}
 
-def traduzir_poema(lista_versos, destino):
-    mapa = {"Português": "pt", "Español": "es", "English": "en", "Deutsch": "de", "Français": "fr", "Italiano": "it"}
-    target = mapa.get(destino, "pt")
-    if target == "pt": return lista_versos
-    try:
-        translator = GoogleTranslator(source='auto', target=target)
-        return [translator.translate(v) if v.strip() and v != '\n' else v for v in lista_versos]
-    except: return lista_versos
-
 ACERVO = get_acervo()
-IDIOMAS = ["Português", "Español", "English", "Deutsch", "Français", "Italiano"]
 
-# --- 4. INTERFACE ---
+# --- 4. INTERFACE: ESTRUTURA DE COLUNAS ---
 c1, _, c2 = st.columns([2, 0.1, 7.9])
 
 with c1:
     st.write("### controles")
     ic = st.columns(3)
-    ic[0].button("🔈", key="v_on")
-    ic[1].button("🎨", key="a_on")
-    ic[2].button("🎬", key="m_on")
+    ic[0].button("🔈"); ic[1].button("🎨"); ic[2].button("🎬")
     st.divider()
     
     livro_sel = st.selectbox("livros", list(ACERVO.keys()) if ACERVO else ["-"], key="sl")
-    
     if ACERVO:
         with open(os.path.join("base", ACERVO[livro_sel]), "r", encoding="utf-8") as f:
             temas_disco = [l.strip() for l in f if l.strip()]
@@ -110,57 +114,64 @@ with c1:
                 st.session_state.temas_atuais = temas_disco
                 st.session_state.idx_tema = 0
     
-    # Selectbox sincronizado bidirecionalmente pelo índice
-    def on_change_combo():
-        st.session_state.idx_tema = st.session_state.temas_atuais.index(st.session_state.st_combo)
-
-    tema_atual = st.selectbox("temas", st.session_state.temas_atuais, 
-                              index=min(st.session_state.idx_tema, len(st.session_state.temas_atuais)-1),
-                              key="st_combo", on_change=on_change_combo)
+    st.selectbox("temas", st.session_state.temas_atuais, 
+                 index=min(st.session_state.idx_tema, len(st.session_state.temas_atuais)-1),
+                 key="st_combo", on_change=lambda: st.session_state.update({"idx_tema": st.session_state.temas_atuais.index(st.session_state.st_combo)}))
     
-    i_sel = st.selectbox("idioma", IDIOMAS, key="si")
+    st.selectbox("idioma", ["Português", "English", "Español", "Deutsch", "Français"], key="si")
 
 with c2:
-    pesos = [0.8, 0.9, 0.8, 1.2, 1.0, 0.8]
+    # Topo: 6 Páginas e a Star Mestra (Eixo Central)
+    cols = st.columns([1, 1, 1, 0.4, 1, 1, 1])
     pgs = ["demo", "yPoemas", "eureka", "off-mach", "opinião", "sobre"]
     
-    # Navegação Superior
-    cn = st.columns(pesos); cs = st.columns(pesos)
-    for i, p in enumerate(pgs):
-        cn[i].button(p.lower() if p != "yPoemas" else p, key=f"n_{i}", on_click=nav_to, args=(p, False))
-        cs[i].button("★", key=f"s_{i}", on_click=nav_to, args=(p, True))
+    cols[0].button(pgs[0], on_click=nav_to, args=(pgs[0],))
+    cols[1].button(pgs[1], on_click=nav_to, args=(pgs[1],))
+    cols[2].button(pgs[2], on_click=nav_to, args=(pgs[2],))
+    
+    with cols[3]: # A STAR MESTRA ÚNICA
+        st.markdown('<div class="star-mestra-container">', unsafe_allow_html=True)
+        if st.button("★", key="master_star"):
+            st.session_state.show_help = not st.session_state.show_help
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+    cols[4].button(pgs[3], on_click=nav_to, args=(pgs[3],))
+    cols[5].button(pgs[4], on_click=nav_to, args=(pgs[4],))
+    cols[6].button(pgs[5], on_click=nav_to, args=(pgs[5],))
 
-    # RÉGUA [ + < * > ? ] CENTRADA (Sob Eureka/Off-Mach)
+    # Régua Centralizada de Navegação
     st.markdown('<div class="nav-rim-box">', unsafe_allow_html=True)
-    _, col_cent, _ = st.columns([2.5, 5, 2.5])
+    _, col_cent, _ = st.columns([3, 4, 3])
     with col_cent:
-        bn = st.columns(5)
-        bn[0].button("+", key="c_add")
-        bn[1].button("<", key="c_prev", on_click=ante_tema)
-        bn[2].button("*", key="c_rand", on_click=sorteio_tema)
-        bn[3].button(">", key="c_next", on_click=prox_tema)
-        bn[4].button("?", key="c_help", on_click=nav_to, args=(st.session_state.page, True))
+        bn = st.columns(4)
+        bn[0].button("+")
+        bn[1].button("<", on_click=ante_tema)
+        bn[2].button("*", on_click=sorteio_tema)
+        bn[3].button(">", on_click=prox_tema)
     st.markdown('</div>', unsafe_allow_html=True)
-
     st.divider()
 
-    # --- 5. RENDERIZAÇÃO LYPO-TYPO ---
-    p_atual = st.session_state.page
-    h_mode = st.session_state.show_help
-
-    if p_atual == "demo" and not h_mode:
-        # Recupera o tema pelo índice governado pelos botões
-        tema_alvo = st.session_state.temas_atuais[st.session_state.idx_tema]
+    # --- 5. RENDERIZAÇÃO: PALCO CONTEXTUAL ---
+    if st.session_state.show_help:
+        ctx = st.session_state.ID_CLIC
+        st.markdown(f"### Ajuda: {ctx.upper()}")
+        st.info(f"O sensor de contexto ID_CLIC está focado em: {ctx}.")
+    else:
+        p = st.session_state.page
+        st.session_state.ID_CLIC = p # Declaração de Identidade Automática
         
-        # Executa a Machina
-        poema_bruto = gera_poema(tema_alvo, "")
-        versos_exibicao = traduzir_poema(poema_bruto, i_sel)
-
-        # LYPO-TYPO
-        st.markdown('<div class="lypo-container">', unsafe_allow_html=True)
-        for verso in versos_exibicao:
-            if verso == '\n':
-                st.write("") 
-            else:
-                st.markdown(f'<div class="typo-verse">{verso}</div>', unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
+        if p == "demo":
+            if st.session_state.temas_atuais:
+                try:
+                    tema_alvo = st.session_state.temas_atuais[st.session_state.idx_tema]
+                    poema = gera_poema(tema_alvo, "")
+                    st.markdown('<div class="lypo-container">', unsafe_allow_html=True)
+                    for v in poema:
+                        if v == '\n': st.write("")
+                        else: st.markdown(f'<div class="typo-verse">{v}</div>', unsafe_allow_html=True)
+                    st.markdown('</div>', unsafe_allow_html=True)
+                except Exception as e:
+                    st.error(f"Erro na geração: {e}")
+        else:
+            st.write(f"### {p.lower()}")
+            st.write(f"Ambiente ativo. O ID_CLIC '{st.session_state.ID_CLIC}' está pronto para o Help.")
