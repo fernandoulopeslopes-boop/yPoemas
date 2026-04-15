@@ -181,4 +181,3 @@ with c2:
     # O PULO DO GATO: Empurrador de Conteúdo para o Topo
     st.markdown('<div class="spacer-bottom"></div>', unsafe_allow_html=True)
     st.markdown('</div></div>', unsafe_allow_html=True)
-    
