@@ -12,24 +12,41 @@ def nav_to(p, h):
     st.session_state.page = p
     st.session_state.show_help = h
 
-# --- 2. CSS: PRUMO E ESTRUTURA ---
+# --- 2. CSS: CORREÇÃO DE POSICIONAMENTO ---
 st.markdown("""
 <style>
     [data-testid="stHeader"], [data-testid="stSidebar"] {display: none !important;}
     .block-container {padding: 1rem !important;}
     
-    /* Painel Lateral Fixo */
+    /* Painel Lateral Fixo - Sem invadir o espaço do palco */
     [data-testid="column"]:nth-child(1) {
-        position: fixed !important; top: 1rem; left: 1rem; width: 190px !important; z-index: 1001;
+        position: fixed !important; 
+        top: 1rem; 
+        left: 1rem; 
+        width: 200px !important; 
+        z-index: 1000;
+        background: white;
     }
-    [data-testid="column"]:nth-child(3) { margin-left: 220px !important; }
+    
+    /* Palco de Conteúdo - Ajustado para visibilidade total */
+    [data-testid="column"]:nth-child(3) { 
+        margin-left: 240px !important; 
+        width: calc(100% - 260px) !important;
+    }
 
-    .scroll-stage { height: 75vh; overflow-y: auto; border-top: 1px solid #eee; padding-top: 15px; }
+    .scroll-stage { 
+        height: 80vh; 
+        overflow-y: auto; 
+        border-top: 1px solid #eee; 
+        padding-top: 20px;
+        font-family: 'Georgia', serif;
+    }
+    
     .stButton button { width: 100% !important; height: 38px !important; }
 </style>
 """, unsafe_allow_html=True)
 
-# --- 3. DADOS & MOTOR DE TRADUÇÃO ---
+# --- 3. MOTOR DE DADOS & TRADUÇÃO ---
 @st.cache_data
 def get_acervo():
     if not os.path.exists("base"): return {}
@@ -42,12 +59,12 @@ def traduzir_seguro(texto, destino):
         "Nederlands": "nl", "Français": "fr", "Italiano": "it", "Català": "ca", 
         "Ελληνικά": "el", "Türkçe": "tr", "العربية": "ar", "ע Hebrew": "he", "हिन्दी": "hi"
     }
-    target = mapa.get(destino, "en")
+    target = mapa.get(destino, "pt")
     if target == "pt": return texto
     try:
         return GoogleTranslator(source='auto', target=target).translate(texto)
-    except Exception:
-        return f"{texto} [Tradução indisponível]"
+    except:
+        return f"{texto} [offline]"
 
 ACERVO = get_acervo()
 IDIOMAS = ["Português", "Español", "English", "Deutsch", "Nederlands", "Français", "Italiano", "Català", "Ελληνικά", "Türkçe", "العربية", "ע Hebrew", "हिन्दी"]
@@ -57,7 +74,6 @@ c1, _, c2 = st.columns([2, 0.1, 7.9])
 
 with c1:
     st.write("### controles")
-    # Botões de Arte, Som e Vídeo
     ic1, ic2, ic3 = st.columns(3)
     som = ic1.button("🔈", key="t_btn")
     art = ic2.button("🎨", key="a_btn")
@@ -77,6 +93,7 @@ with c2:
     pesos = [0.8, 0.9, 0.8, 1.2, 1.0, 0.8]
     pgs = ["demo", "yPoemas", "eureka", "off-mach", "opinião", "sobre"]
     
+    # Navegação Superior
     cp = st.columns(pesos)
     for i, p in enumerate(pgs):
         cp[i].button(p.lower() if p != "yPoemas" else p, key=f"n_{i}", on_click=nav_to, args=(p, False))
@@ -85,33 +102,25 @@ with c2:
     for i, p in enumerate(pgs):
         cs[i].button("★", key=f"s_{i}", on_click=nav_to, args=(p, True))
 
-    st.divider()
-
     # --- 5. PALCO DE RENDERIZAÇÃO ---
     st.markdown('<div class="scroll-stage">', unsafe_allow_html=True)
-    p_atual = st.session_state.page
-    h_mode = st.session_state.show_help
+    p_atual, h_mode = st.session_state.page, st.session_state.show_help
 
-    if p_atual == "demo":
-        st.subheader("Módulo de Demonstração")
+    if p_atual == "demo" and not h_mode:
         demo_txt = "A Máquina de Fazer Poesia habita o espaço entre o código e o verbo."
-        
-        # Execução da Tradução
         texto_final = traduzir_seguro(demo_txt, i_sel)
         
-        st.info(f"Idioma atual: {i_sel}")
-        st.markdown(f"> {texto_final}")
+        st.markdown(f"## {i_sel}")
+        st.markdown(f"### {texto_final}")
         
-        # Feedback dos Botões de Mídia
-        if som: st.success("🔊 TTS (Som) acionado.")
-        if art: st.success("🖼️ Arts (Imagem) acionado.")
-        if vid: st.success("🎞️ Video (Motion) acionado.")
+        if som: st.toast("Som ativado")
+        if art: st.toast("Arte ativada")
+        if vid: st.toast("Vídeo ativado")
 
     elif h_mode:
-        st.write(f"### Ajuda: {p_atual.upper()}")
-        st.write("Conteúdo da documentação em construção.")
+        st.markdown(f"### Documentação: {p_atual.upper()}")
+        st.write("Modo manual ativo.")
     else:
-        st.write(f"### {p_atual.lower()}")
-        st.write("Aguardando parametrização.")
+        st.write(f"Página {p_atual.lower()} em prontidão.")
         
     st.markdown('</div>', unsafe_allow_html=True)
