@@ -48,16 +48,14 @@ def busca_documento_robusto(nome_pagina):
     pasta = "md_files"
     if not os.path.exists(pasta): return f"ERRO: Pasta '{pasta}' não encontrada."
     
-    # Alvo principal em UPPER
     alvo = nome_pagina.upper()
-    # Lista de possibilidades para cobrir renames e padrões (ABOUT, INFO, YPOEMAS)
-    tentativas = [alvo, f"ABOUT_{alvo}", f"INFO_{alvo}", f"INFO_SOBRE" if alvo == "ABOUT" else alvo]
+    # Tenta o nome direto, com ABOUT_, com INFO_ e o caso especial INFO_SOBRE
+    tentativas = [alvo, f"ABOUT_{alvo}", f"INFO_{alvo}"]
+    if alvo == "ABOUT": tentativas.append("INFO_SOBRE")
     
     arquivos_locais = os.listdir(pasta)
     for f in arquivos_locais:
-        # Normalização: extrai nome, remove ext e joga para UPPER
         nome_puro = os.path.splitext(f)[0].upper()
-        
         if nome_puro in tentativas:
             try:
                 with open(os.path.join(pasta, f), "r", encoding="utf-8") as file:
@@ -65,7 +63,6 @@ def busca_documento_robusto(nome_pagina):
             except Exception as e:
                 return f"ERRO ao ler {f}: {e}"
     
-    # Se falhar, retorna log para diagnóstico
     return f"DEBUG_NOT_FOUND: Tentativas {tentativas} | Arquivos na pasta: {arquivos_locais}"
 
 # --- 4. INTERFACE ---
@@ -93,6 +90,18 @@ with c1:
     st.selectbox("Idioma", ["Português", "English", "Español", "Latin"], key="l_sel")
 
 with c2:
-    # Menu Superior
+    # Menu Superior - Sintaxe Corrigida aqui
     pgs = ["demo", "yPoemas", "eureka", "off-mach", "opinião", "about"]
-    t_cols = st.columns([1, 1, 1, 0.5, 1, 1,
+    t_cols = st.columns([1, 1, 1, 0.5, 1, 1, 1])
+    
+    for i, p in enumerate(pgs[:3]):
+        if t_cols[i].button(p, key=f"btn_{p}"): st.session_state.page = p
+    
+    with t_cols[3]:
+        if st.button("?", key="h_btn"): st.session_state.show_help = not st.session_state.show_help
+    
+    for i, p in enumerate(pgs[3:]):
+        if t_cols[i+4].button(p, key=f"btn_{p}"): st.session_state.page = p
+
+    st.write("") 
+    n_
