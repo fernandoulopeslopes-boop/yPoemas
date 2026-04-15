@@ -49,7 +49,6 @@ def busca_documento_robusto(nome_pagina):
     if not os.path.exists(pasta): return f"ERRO: Pasta '{pasta}' não encontrada."
     
     alvo = nome_pagina.upper()
-    # Tenta o nome direto, com ABOUT_, com INFO_ e o caso especial INFO_SOBRE
     tentativas = [alvo, f"ABOUT_{alvo}", f"INFO_{alvo}"]
     if alvo == "ABOUT": tentativas.append("INFO_SOBRE")
     
@@ -90,7 +89,7 @@ with c1:
     st.selectbox("Idioma", ["Português", "English", "Español", "Latin"], key="l_sel")
 
 with c2:
-    # Menu Superior - Sintaxe Corrigida aqui
+    # Menu Superior
     pgs = ["demo", "yPoemas", "eureka", "off-mach", "opinião", "about"]
     t_cols = st.columns([1, 1, 1, 0.5, 1, 1, 1])
     
@@ -104,4 +103,30 @@ with c2:
         if t_cols[i+4].button(p, key=f"btn_{p}"): st.session_state.page = p
 
     st.write("") 
-    n_
+    # Correção do n_cols aqui
+    n_cols = st.columns([2.5, 0.7, 0.7, 0.7, 0.7, 2.5])
+    if n_cols[1].button("❮", key="nav_p"): st.session_state.idx_tema -= 1
+    if n_cols[2].button("✚", key="nav_a"): st.toast("Semente salva")
+    if n_cols[3].button("✱", key="nav_r"): st.session_state.idx_tema = random.randint(0, 100)
+    if n_cols[4].button("❯", key="nav_n"): st.session_state.idx_tema += 1
+    st.divider()
+
+    if st.session_state.show_help:
+        st.info("A precisão agora dança conforme o instinto.")
+    elif st.session_state.page == "demo" and st.session_state.temas_atuais:
+        tema = st.session_state.temas_atuais[st.session_state.idx_tema % len(st.session_state.temas_atuais)]
+        st.markdown(f'<div class="typo-title">{tema.upper()}</div>', unsafe_allow_html=True)
+        for v in gera_poema(tema, ""):
+            st.markdown(f'<div class="typo-verse">{v}</div>', unsafe_allow_html=True)
+    else:
+        conteudo = busca_documento_robusto(st.session_state.page)
+        if conteudo and not conteudo.startswith("DEBUG_NOT_FOUND"):
+            classe_css = "md-tecnico" if st.session_state.page == "yPoemas" else "md-humanista"
+            st.markdown(f'<div class="{classe_css}">', unsafe_allow_html=True)
+            st.markdown(conteudo)
+            st.markdown('</div>', unsafe_allow_html=True)
+        else:
+            st.warning(f"O labirinto ainda guarda o segredo de '{st.session_state.page.upper()}'.")
+            if conteudo and "DEBUG" in conteudo:
+                with st.expander("Verificar engrenagens"):
+                    st.code(conteudo)
