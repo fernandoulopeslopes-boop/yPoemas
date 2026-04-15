@@ -17,7 +17,7 @@ for key, val in {
 }.items():
     if key not in st.session_state: st.session_state[key] = val
 
-# --- 2. CSS: ESTÉTICA E SCROLL ---
+# --- 2. CSS: REFINO ESTÉTICO ---
 st.markdown("""
 <style>
     [data-testid="stHeader"], [data-testid="stSidebar"] {display: none !important;}
@@ -33,24 +33,27 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# --- 3. MOTOR DE BUSCA: NORMALIZAÇÃO PURA (CC: PRECISÃO) ---
-def busca_documento_normalizado(nome_pagina):
+# --- 3. MOTOR DE BUSCA UNIFICADO (INFO_SOBRE E ABOUT_*) ---
+def busca_documento_final(nome_pagina):
     pasta = "md_files"
     if not os.path.exists(pasta): return None
     
-    # Define o alvo em UPPER (Ex: 'INFO_ABOUT' ou 'ABOUT_EUREKA')
-    alvo = "INFO_ABOUT" if nome_pagina.lower() == "sobre" else f"ABOUT_{nome_pagina.upper()}"
+    # Mapeamento dinâmico: se a página é 'sobre', ele busca o novo nome ou o antigo
+    alvos = []
+    if nome_pagina.lower() == "sobre":
+        alvos = ["INFO_SOBRE", "INFO_ABOUT", "ABOUT_SOBRE"]
+    else:
+        alvos = [f"ABOUT_{nome_pagina.upper()}", nome_pagina.upper()]
     
-    for f in os.listdir(pasta):
-        # Separa o nome da extensão e converte para UPPER
+    arquivos = os.listdir(pasta)
+    for f in arquivos:
         nome_puro = os.path.splitext(f)[0].upper()
-        
-        if nome_puro == alvo:
+        if nome_puro in alvos:
             try:
                 with open(os.path.join(pasta, f), "r", encoding="utf-8") as file:
                     return file.read()
             except:
-                return f"Erro ao acessar {f}"
+                continue
     return None
 
 # --- 4. INTERFACE ---
@@ -80,6 +83,7 @@ with c1:
     st.selectbox("Idioma", ["Português", "English", "Español", "Latin"], key="l_sel")
 
 with c2:
+    # Menu Superior - Mantendo os nomes de batismo originais na UI
     pgs = ["demo", "yPoemas", "eureka", "off-mach", "opinião", "sobre"]
     t_cols = st.columns([1, 1, 1, 0.5, 1, 1, 1])
     for i, p in enumerate(pgs[:3]):
@@ -92,24 +96,24 @@ with c2:
     st.write("") 
     n_cols = st.columns([2.5, 0.7, 0.7, 0.7, 0.7, 2.5])
     if n_cols[1].button("❮", key="nav_p"): st.session_state.idx_tema -= 1
-    if n_cols[2].button("✚", key="nav_a"): st.toast("Semente guardada")
+    if n_cols[2].button("✚", key="nav_a"): st.toast("Semente salva")
     if n_cols[3].button("✱", key="nav_r"): st.session_state.idx_tema = random.randint(0, 100)
     if n_cols[4].button("❯", key="nav_n"): st.session_state.idx_tema += 1
     st.divider()
 
     if st.session_state.show_help:
         st.info("A precisão agora dança conforme o instinto.")
-    elif st.session_state.page == "demo":
-        if st.session_state.temas_atuais:
-            tema = st.session_state.temas_atuais[st.session_state.idx_tema % len(st.session_state.temas_atuais)]
-            st.markdown(f'<div class="typo-title">{tema.upper()}</div>', unsafe_allow_html=True)
-            for v in gera_poema(tema, ""):
-                st.markdown(f'<div class="typo-verse">{v}</div>', unsafe_allow_html=True)
+    elif st.session_state.page == "demo" and st.session_state.temas_atuais:
+        tema = st.session_state.temas_atuais[st.session_state.idx_tema % len(st.session_state.temas_atuais)]
+        st.markdown(f'<div class="typo-title">{tema.upper()}</div>', unsafe_allow_html=True)
+        for v in gera_poema(tema, ""):
+            st.markdown(f'<div class="typo-verse">{v}</div>', unsafe_allow_html=True)
     else:
-        conteudo = busca_documento_normalizado(st.session_state.page)
+        # Busca normalizada com suporte ao novo rename
+        conteudo = busca_documento_final(st.session_state.page)
         if conteudo:
             st.markdown('<div class="md-container">', unsafe_allow_html=True)
             st.markdown(conteudo)
             st.markdown('</div>', unsafe_allow_html=True)
         else:
-            st.warning(f"O documento para '{st.session_state.page.upper()}' ainda não emergiu de /md_files.")
+            st.warning(f"O labirinto ainda guarda o segredo de '{st.session_state.page.upper()}'.")
