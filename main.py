@@ -1,7 +1,8 @@
 import streamlit as st
 import os
+from deep_translator import GoogleTranslator
 
-# --- 1. CORE CONFIG & STATE ---
+# --- 1. BOOT & ESTADO ---
 st.set_page_config(page_title="yPoemas", layout="wide", initial_sidebar_state="collapsed")
 
 if 'page' not in st.session_state: st.session_state.page = 'demo'
@@ -11,7 +12,7 @@ def nav_to(p, h):
     st.session_state.page = p
     st.session_state.show_help = h
 
-# --- 2. CSS DE ALTA ESPECIFICIDADE (GOLD & FIX) ---
+# --- 2. CSS: ESTRUTURA E PRUMO ---
 st.markdown("""
 <style>
     [data-testid="stHeader"], [data-testid="stSidebar"] {display: none !important;}
@@ -23,31 +24,29 @@ st.markdown("""
     }
     [data-testid="column"]:nth-child(3) { margin-left: 220px !important; }
 
-    /* ESTRELAS OURO (#FFD700) - Força Bruta por Atributo */
-    button[key^="star_"] div[data-testid="stMarkdownContainer"] p {
-        color: #FFD700 !important;
-        font-size: 35px !important;
-        font-weight: 900 !important;
-        line-height: 1 !important;
-        -webkit-text-fill-color: #FFD700 !important;
-    }
-    
-    button[key^="star_"] {
-        background: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
-    }
-
     .scroll-stage { height: 75vh; overflow-y: auto; border-top: 1px solid #eee; padding-top: 15px; }
+    .stButton button { width: 100% !important; }
 </style>
 """, unsafe_allow_html=True)
 
-# --- 3. DADOS ---
+# --- 3. DADOS & TRADUÇÃO ---
 @st.cache_data
 def get_acervo():
     if not os.path.exists("base"): return {}
     files = sorted([f for f in os.listdir("base") if f.startswith("rol_")])
     return {f.replace("rol_", "").replace(".txt", "").replace("_", " ").title(): f for f in files}
+
+def traduzir(texto, destino):
+    mapa_idiomas = {
+        "Português": "pt", "Español": "es", "English": "en", "Deutsch": "de", 
+        "Nederlands": "nl", "Français": "fr", "Italiano": "it", "Català": "ca", 
+        "Ελληνικά": "el", "Türkçe": "tr", "العربية": "ar", "ע Hebrew": "he", "हिन्दी": "hi"
+    }
+    sigla = mapa_idiomas.get(destino, "en")
+    try:
+        return GoogleTranslator(source='auto', target=sigla).translate(texto)
+    except:
+        return texto
 
 ACERVO = get_acervo()
 IDIOMAS = ["Português", "Español", "English", "Deutsch", "Nederlands", "Français", "Italiano", "Català", "Ελληνικά", "Türkçe", "العربية", "ע Hebrew", "हिन्दी"]
@@ -57,10 +56,12 @@ c1, _, c2 = st.columns([2, 0.1, 7.9])
 
 with c1:
     st.write("### controles")
-    i1, i2, i3 = st.columns(3)
-    i1.button("🔈", key="v_on")
-    i2.button("🎨", key="c_on")
-    i3.button("💬", key="m_on")
+    # Botões de Arte, Som e Vídeo (Habilitados)
+    ic1, ic2, ic3 = st.columns(3)
+    btn_som = ic1.button("🔈", key="talk_btn", help="Som (TTS)")
+    btn_arte = ic2.button("🎨", key="arts_btn", help="Arte (Imagem)")
+    btn_video = ic3.button("🎬", key="video_btn", help="Vídeo")
+    
     st.divider()
     
     livro_sel = st.selectbox("livros", list(ACERVO.keys()) if ACERVO else ["-"], key="sel_l")
@@ -68,44 +69,50 @@ with c1:
         with open(os.path.join("base", ACERVO[livro_sel]), "r", encoding="utf-8") as f:
             temas = [l.strip() for l in f if l.strip()]
         st.selectbox("temas", temas, key="sel_t")
-    st.selectbox("idioma", IDIOMAS, key="sel_i")
+    
+    lang_sel = st.selectbox("idioma", IDIOMAS, key="sel_i")
 
 with c2:
     pesos = [0.8, 0.9, 0.8, 1.2, 1.0, 0.8]
     paginas = ["demo", "yPoemas", "eureka", "off-mach", "opinião", "sobre"]
     
-    # Linha 1: Texto
+    # Navegação
     cp = st.columns(pesos)
     for i, p in enumerate(paginas):
         cp[i].button(p.lower() if p != "yPoemas" else p, key=f"btn_{i}", 
-                     on_click=nav_to, args=(p, False), use_container_width=True)
+                     on_click=nav_to, args=(p, False))
 
-    # Linha 2: Estrelas
     cs = st.columns(pesos)
     for i, p in enumerate(paginas):
-        cs[i].button("★", key=f"star_{i}", 
-                     on_click=nav_to, args=(p, True), use_container_width=True)
+        cs[i].button("★", key=f"star_{i}", on_click=nav_to, args=(p, True))
 
     st.divider()
 
-    # --- 5. RENDERIZAÇÃO ---
+    # --- 5. RENDERIZAÇÃO: PÁGINA DEMO ---
     st.markdown('<div class="scroll-stage">', unsafe_allow_html=True)
     p_cur, h_cur = st.session_state.page, st.session_state.show_help
-    tag = "COMMENTS" if p_cur == "opinião" else p_cur.upper()
 
-    if h_cur:
-        for pre in ["ABOUT", "INFO", "MANUAL"]:
-            path = f"md_files/{pre}_{tag}.md"
-            if os.path.exists(path):
-                with open(path, "r", encoding="utf-8") as f: st.markdown(f.read())
-                st.divider()
-    else:
-        if p_cur in ["opinião", "sobre"]:
-            path = f"md_files/ABOUT_{tag}.md"
-            if os.path.exists(path):
-                with open(path, "r", encoding="utf-8") as f: st.markdown(f.read())
-        elif p_cur == "off-mach":
-            st.subheader(f"{st.session_state.sel_l} / {st.session_state.get('sel_t', '')}")
+    if p_cur == "demo":
+        st.subheader("Módulo de Demonstração")
+        texto_base = """A Máquina de Fazer Poesia processa o tempo em versos. 
+        Cada permutação é um universo que nasce e morre em silêncio."""
+        
+        if lang_sel != "Português":
+            with st.spinner(f"Traduzindo para {lang_sel}..."):
+                texto_exibicao = traduzir(texto_base, lang_sel)
         else:
-            st.write(f"### {p_cur.lower()} ativa")
+            texto_exibicao = texto_base
+            
+        st.markdown(f"### {lang_sel}")
+        st.write(texto_exibicao)
+        
+        if btn_som: st.toast("Preparando áudio...")
+        if btn_arte: st.toast("Gerando representação visual...")
+        if btn_video: st.toast("Iniciando renderização de vídeo...")
+
+    elif h_cur:
+        st.write(f"Documentação para {p_cur.upper()}")
+    else:
+        st.write(f"Página {p_cur.lower()} ativa.")
+        
     st.markdown('</div>', unsafe_allow_html=True)
