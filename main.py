@@ -4,19 +4,18 @@ import random
 import base64
 from deep_translator import GoogleTranslator
 
-# --- 1. BOOT & ESTADO (PROTOCOLO PTC) ---
+# --- 1. BOOT & SOBERANIA (PROTOCOLO PTC) ---
 st.set_page_config(page_title="yPoemas", layout="wide", initial_sidebar_state="collapsed")
 
 try: 
     from lay_2_ypo import gera_poema
 except Exception: 
-    def gera_poema(t, p=""): return ["Erro no motor: Judia dele!"]
+    def gera_poema(t, p=""): return ["Soberania Abalada: Motor em Falha."]
 
-# Inicialização de Estados
+# Inicialização de Estados (O Destino da Machina)
 for key, val in {
     'page': 'demo', 
     'show_help': False, 
-    'ID_CLIC': 'demo', 
     'idx_tema': 0, 
     'temas_atuais': []
 }.items():
@@ -34,38 +33,42 @@ def get_base64_bin(file_path):
 
 STAR_B64 = get_base64_bin("Star_yes.ico")
 
-# --- 2. CSS: O MARTELO NO RODAPÉ & ESTILO ---
+# --- 2. CSS: O DECRETO DA SOBERANIA (ANCORAGEM TOTAL) ---
 st.markdown("""
 <style>
-    /* Trava de Scroll e Header */
+    /* Trava de Scroll e Reset de Padding */
     html, body, [data-testid="stAppViewContainer"], [data-testid="stMainViewContainer"], .main {
         overflow: hidden !important; height: 100vh !important;
     }
     [data-testid="stHeader"], [data-testid="stSidebar"] {display: none !important;}
     .block-container {padding: 1rem !important;}
 
-    /* FORÇAR ALINHAMENTO AO TOPO */
-    [data-testid="stVerticalBlock"] {
+    /* ATAQUE AO CORAÇÃO DO STREAMLIT: FORÇAR TOPO */
+    [data-testid="stVerticalBlock"] > div {
+        vertical-align: top !important;
         justify-content: flex-start !important;
     }
 
-    /* PALCO: O ESPAÇO DA POESIA */
+    /* PALCO: SÓLIDO E SOBERANO */
     .palco-wrapper {
-        height: calc(100vh - 280px);
+        height: calc(100vh - 290px);
         width: 100%;
         overflow-y: auto !important;
         display: block !important;
-        padding-top: 5px !important;
+        border-top: 1px solid rgba(250, 250, 250, 0.1);
+        padding-top: 0px !important;
+        margin-top: 0px !important;
     }
     
     .typo-verse { 
         font-family: 'Georgia', serif; font-size: 1.65rem; 
-        line-height: 1.6; color: #1a1a1a; margin-bottom: 8px;
+        line-height: 1.65; color: #1a1a1a; margin-bottom: 10px;
         text-align: left;
     }
 
-    .star-icon { width: 32px; height: 32px; }
+    .star-icon { width: 34px; height: 34px; margin-bottom: 2px; }
 
+    /* Botões Uniformes */
     div.stButton > button { width: 100% !important; height: 42px !important; }
 </style>
 """, unsafe_allow_html=True)
@@ -101,12 +104,11 @@ with c1:
                 st.session_state.temas_atuais = temas
                 st.session_state.idx_tema = 0
     
-    # PROTEÇÃO CONTRA ÍNDICE NEGATIVO (O FIM DA JUDIARIA)
-    total_temas = len(st.session_state.temas_atuais)
-    safe_index = st.session_state.idx_tema % total_temas if total_temas > 0 else 0
+    total = len(st.session_state.temas_atuais)
+    safe_idx = st.session_state.idx_tema % total if total > 0 else 0
     
     st.selectbox("Temas", st.session_state.temas_atuais, 
-                 index=safe_index,
+                 index=safe_idx,
                  key="st_combo")
     
     idioma_alvo = st.selectbox("Idioma", ["Português", "English", "Español", "Deutsch", "Français"], key="lang_sel")
@@ -134,18 +136,18 @@ with c2:
     if n_cols[4].button("❯", key="next"): st.session_state.idx_tema += 1
     st.divider()
 
-    # PALCO DE RENDERIZAÇÃO
+    # PALCO SOBERANO: Renderização sem Desvios
     st.markdown('<div class="palco-wrapper">', unsafe_allow_html=True)
     if not st.session_state.show_help:
         if st.session_state.page == "demo" and st.session_state.temas_atuais:
-            tema_atual = st.session_state.temas_atuais[st.session_state.idx_tema % total_temas]
+            tema_atual = st.session_state.temas_atuais[st.session_state.idx_tema % total]
             try:
                 for v in gera_poema(tema_atual, ""):
                     v_t = traduzir(v, idioma_alvo)
                     st.markdown(f'<div class="typo-verse">{v_t}</div>', unsafe_allow_html=True)
-            except: st.error("Erro na geração poética.")
+            except: st.error("Sina Interrompida: Erro no motor.")
         else:
             st.markdown(f"### {st.session_state.page.upper()}")
     else:
-        st.info("Ajuda da Machina: Aqui Agora Absoluta.")
+        st.info("Soberania em Modo Ajuda. Sigo Sendo Somente Sine Die.")
     st.markdown('</div>', unsafe_allow_html=True)
