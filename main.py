@@ -17,7 +17,7 @@ for key, val in {
 }.items():
     if key not in st.session_state: st.session_state[key] = val
 
-# --- 2. CSS: REFINO ESTÉTICO ---
+# --- 2. CSS: ESTÉTICA E SCROLL ---
 st.markdown("""
 <style>
     [data-testid="stHeader"], [data-testid="stSidebar"] {display: none !important;}
@@ -33,26 +33,24 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# --- 3. MOTOR DE BUSCA NORMALIZADO (CC: PRECISÃO) ---
-def busca_documento_blindado(nome_pagina):
+# --- 3. MOTOR DE BUSCA: NORMALIZAÇÃO PURA (CC: PRECISÃO) ---
+def busca_documento_normalizado(nome_pagina):
     pasta = "md_files"
-    if not os.path.exists(pasta): 
-        return f"Erro: Pasta '{pasta}' não encontrada."
+    if not os.path.exists(pasta): return None
     
-    # 1. Normalizamos a página que queremos (ex: 'SOBRE' ou 'EUREKA')
-    alvo_upper = "INFO_ABOUT" if nome_pagina.lower() == "sobre" else f"ABOUT_{nome_pagina}".upper()
+    # Define o alvo em UPPER (Ex: 'INFO_ABOUT' ou 'ABOUT_EUREKA')
+    alvo = "INFO_ABOUT" if nome_pagina.lower() == "sobre" else f"ABOUT_{nome_pagina.upper()}"
     
-    # 2. Varremos a pasta normalizando os nomes dos arquivos encontrados
     for f in os.listdir(pasta):
-        nome_arquivo_upper = os.path.splitext(f)[0].upper() # Pega apenas o nome, sem .md, em UPPER
+        # Separa o nome da extensão e converte para UPPER
+        nome_puro = os.path.splitext(f)[0].upper()
         
-        if nome_arquivo_upper == alvo_upper:
+        if nome_puro == alvo:
             try:
                 with open(os.path.join(pasta, f), "r", encoding="utf-8") as file:
                     return file.read()
-            except Exception as e:
-                return f"Erro ao ler {f}: {e}"
-                
+            except:
+                return f"Erro ao acessar {f}"
     return None
 
 # --- 4. INTERFACE ---
@@ -75,7 +73,8 @@ with c1:
         with open(os.path.join("base", acervo[sel_l]), "r", encoding="utf-8") as f:
             st.session_state.temas_atuais = [line.strip() for line in f if line.strip()]
         
-        idx = st.session_state.idx_tema % len(st.session_state.temas_atuais) if st.session_state.temas_atuais else 0
+        tot = len(st.session_state.temas_atuais)
+        idx = st.session_state.idx_tema % tot if tot > 0 else 0
         st.selectbox("Temas", st.session_state.temas_atuais, index=idx)
     
     st.selectbox("Idioma", ["Português", "English", "Español", "Latin"], key="l_sel")
@@ -93,7 +92,7 @@ with c2:
     st.write("") 
     n_cols = st.columns([2.5, 0.7, 0.7, 0.7, 0.7, 2.5])
     if n_cols[1].button("❮", key="nav_p"): st.session_state.idx_tema -= 1
-    if n_cols[2].button("✚", key="nav_a"): st.toast("Semente salva")
+    if n_cols[2].button("✚", key="nav_a"): st.toast("Semente guardada")
     if n_cols[3].button("✱", key="nav_r"): st.session_state.idx_tema = random.randint(0, 100)
     if n_cols[4].button("❯", key="nav_n"): st.session_state.idx_tema += 1
     st.divider()
@@ -107,11 +106,10 @@ with c2:
             for v in gera_poema(tema, ""):
                 st.markdown(f'<div class="typo-verse">{v}</div>', unsafe_allow_html=True)
     else:
-        # Busca normalizada: não importa se é .md, .MD ou About_Sobre ou info_about
-        conteudo = busca_documento_blindado(st.session_state.page)
+        conteudo = busca_documento_normalizado(st.session_state.page)
         if conteudo:
             st.markdown('<div class="md-container">', unsafe_allow_html=True)
             st.markdown(conteudo)
             st.markdown('</div>', unsafe_allow_html=True)
         else:
-            st.warning(f"O labirinto ainda não revelou o documento para '{st.session_state.page}'.")
+            st.warning(f"O documento para '{st.session_state.page.upper()}' ainda não emergiu de /md_files.")
