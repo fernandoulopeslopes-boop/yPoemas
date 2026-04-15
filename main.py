@@ -9,7 +9,7 @@ st.set_page_config(page_title="yPoemas", layout="wide", initial_sidebar_state="c
 try: 
     from lay_2_ypo import gera_poema
 except Exception: 
-    def gera_poema(t, p=""): return ["Erro no motor real."]
+    def gera_poema(t, p=""): return ["Alegria Acuada: Motor em Falha."]
 
 for key, val in {
     'page': 'demo', 
@@ -24,7 +24,7 @@ def sorteio_tema():
     if st.session_state.temas_atuais:
         st.session_state.idx_tema = random.randint(0, len(st.session_state.temas_atuais) - 1)
 
-# --- 2. CSS: RECUPERAÇÃO E ANCORAGEM TOPO ---
+# --- 2. CSS: ANCORAGEM ABSOLUTA (CONTRA O RODAPÉ) ---
 st.markdown("""
 <style>
     /* Trava de Scroll Global */
@@ -34,37 +34,40 @@ st.markdown("""
     [data-testid="stHeader"], [data-testid="stSidebar"] {display: none !important;}
     .block-container {padding: 1rem !important;}
 
-    /* PALCO: ANCORAGEM ABSOLUTA AO TOPO */
+    /* ATAQUE DIRETO AO ALINHAMENTO DA COLUNA */
+    [data-testid="stVerticalBlock"] {
+        justify-content: flex-start !important;
+        vertical-align: top !important;
+    }
+
+    /* PALCO: O ESPAÇO ABSOLUTO */
     .palco-wrapper {
         height: calc(100vh - 280px);
         width: 100%;
         overflow-y: auto !important;
-        display: block !important; /* Sai do flexbox que centraliza */
-        position: relative;
+        display: block !important;
+        padding-top: 0px !important;
     }
     
-    .palco-content {
-        position: absolute;
-        top: 0 !important;
-        left: 0;
-        width: 100%;
-        padding-top: 0 !important;
-        margin-top: 0 !important;
-    }
-
     .typo-verse { 
         font-family: 'Georgia', serif; font-size: 1.65rem; 
         line-height: 1.6; color: #1a1a1a; margin-bottom: 5px;
         text-align: left;
     }
 
-    /* Botões e Selectbox (Garantir visibilidade) */
-    div.stButton > button { width: 100% !important; height: 42px !important; }
-    div[data-testid="stSelectbox"] { margin-bottom: 10px !important; }
+    /* Estrela Mestra Superior */
+    .star-mestra-wrapper {
+        display: flex; justify-content: center; align-items: center; height: 100%;
+    }
+    .star-mestra-wrapper button {
+        background: transparent !important; border: none !important;
+        color: #f1c40f !important; font-size: 2rem !important;
+        box-shadow: none !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
-# --- 3. LOGICA DE DADOS ---
+# --- 3. DADOS & TRADUÇÃO ---
 @st.cache_data
 def traduzir(texto, lang_destino):
     mapeamento = {"Português": "pt", "English": "en", "Español": "es", "Deutsch": "de", "Français": "fr"}
@@ -96,7 +99,7 @@ with c1:
                  index=min(st.session_state.idx_tema, len(st.session_state.temas_atuais)-1) if st.session_state.temas_atuais else 0,
                  key="st_combo")
     
-    # RECURSO RECUPERADO: Lista de Idiomas
+    # Aliada Recuperada: Idiomas
     idioma_alvo = st.selectbox("Idioma", ["Português", "English", "Español", "Deutsch", "Français"], key="lang_sel")
 
 with c2:
@@ -106,11 +109,13 @@ with c2:
     for i, p in enumerate(pgs[:3]):
         if t_cols[i].button(p, key=f"t_{p}"): st.session_state.page = p
     with t_cols[3]:
+        st.markdown('<div class="star-mestra-wrapper">', unsafe_allow_html=True)
         if st.button("★", key="m_star"): st.session_state.show_help = not st.session_state.show_help
+        st.markdown('</div>', unsafe_allow_html=True)
     for i, p in enumerate(pgs[3:]):
         if t_cols[i+4].button(p, key=f"t_{p}"): st.session_state.page = p
 
-    # Navegação
+    # Navegação [ ❮ ✚ * ❯ ]
     n_cols = st.columns([2, 1.5, 1.5, 1.5, 1.5, 2])
     if n_cols[1].button("❮", key="prev"): st.session_state.idx_tema -= 1
     n_cols[2].button("✚", key="add")
@@ -119,17 +124,18 @@ with c2:
     st.divider()
 
     # PALCO DE RENDERIZAÇÃO
-    st.markdown('<div class="palco-wrapper"><div class="palco-content">', unsafe_allow_html=True)
+    st.markdown('<div class="palco-wrapper">', unsafe_allow_html=True)
     if not st.session_state.show_help:
         if st.session_state.page == "demo" and st.session_state.temas_atuais:
-            tema = st.session_state.temas_atuais[st.session_state.idx_tema % len(st.session_state.temas_atuais)]
+            idx = st.session_state.idx_tema % len(st.session_state.temas_atuais)
+            tema = st.session_state.temas_atuais[idx]
             try:
                 for v in gera_poema(tema, ""):
                     v_t = traduzir(v, idioma_alvo)
                     st.markdown(f'<div class="typo-verse">{v_t}</div>', unsafe_allow_html=True)
-            except: st.error("Erro na geração.")
+            except: st.error("Erro na Aliada Alegria.")
         else:
             st.markdown(f"### {st.session_state.page.upper()}")
     else:
-        st.info("Modo Ajuda.")
-    st.markdown('</div></div>', unsafe_allow_html=True)
+        st.info("Aqui Agora Absoluta: Ajuda.")
+    st.markdown('</div>', unsafe_allow_html=True)
