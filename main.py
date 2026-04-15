@@ -38,7 +38,7 @@ def sorteio_tema():
     if st.session_state.temas_atuais:
         st.session_state.idx_tema = random.randint(0, len(st.session_state.temas_atuais) - 1)
 
-# --- 2. CSS: ANCORAGEM NO TOPO E TRAVA DE SCROLL ---
+# --- 2. CSS: ATAQUE TOTAL AO ALINHAMENTO ---
 st.markdown("""
 <style>
     /* TRAVA DE SCROLL GLOBAL */
@@ -50,19 +50,27 @@ st.markdown("""
     [data-testid="stHeader"], [data-testid="stSidebar"] {display: none !important;}
     .block-container {padding: 1rem !important;}
     
-    /* PALCO: FORÇAR INÍCIO NO TOPO */
-    .palco-wrapper {
-        height: calc(100vh - 260px); 
-        overflow-y: auto !important;
-        width: 100%;
-        display: block !important;
+    /* PALCO: FORÇAR TOPO ABSOLUTO DENTRO DA COLUNA */
+    [data-testid="stVerticalBlock"] > div:has(div.palco-wrapper) {
         vertical-align: top !important;
+        justify-content: flex-start !important;
+    }
+
+    .palco-wrapper {
+        display: block !important;
+        height: calc(100vh - 270px); 
+        width: 100%;
+        overflow-y: auto !important;
+        position: relative !important;
+        background: transparent;
     }
     
     .palco-content {
-        display: block !important;
-        margin-top: 0 !important;
-        padding-top: 0 !important;
+        position: absolute !important;
+        top: 0 !important; /* Âncora no topo */
+        left: 0 !important;
+        width: 100%;
+        padding-bottom: 100px;
         text-align: left;
     }
 
@@ -84,9 +92,6 @@ st.markdown("""
         font-family: 'Georgia', serif; font-size: 1.65rem; 
         line-height: 1.7; color: #1a1a1a; margin-bottom: 8px;
     }
-    
-    /* Espaçador para empurrar conteúdo para cima */
-    .spacer-bottom { height: 100vh; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -136,6 +141,7 @@ with c1:
     idioma_alvo = st.selectbox("Idioma", ["Português", "English", "Español", "Deutsch", "Français"], key="si")
 
 with c2:
+    # Menu Superior
     pgs = ["demo", "yPoemas", "eureka", "off-mach", "opinião", "sobre"]
     t_cols = st.columns([1, 1, 1, 0.4, 1, 1, 1])
     
@@ -148,6 +154,7 @@ with c2:
     for i in range(3, 6):
         if t_cols[i+1].button(pgs[i], key=f"btn_{pgs[i]}"): nav_to(pgs[i])
 
+    # Navegação [ ❮ ✚ * ❯ ]
     _, n_box, _ = st.columns([2, 6, 2])
     with n_box:
         nb = st.columns(4)
@@ -157,7 +164,7 @@ with c2:
         if nb[3].button("❯", key="next"): prox_tema()
     st.divider()
 
-    # PALCO DE RENDERIZAÇÃO
+    # PALCO DE RENDERIZAÇÃO: Envelopamento de topo
     st.markdown('<div class="palco-wrapper"><div class="palco-content">', unsafe_allow_html=True)
     if st.session_state.show_help:
         st.markdown(f"### ⚡ AJUDA: {st.session_state.ID_CLIC.upper()}")
@@ -177,7 +184,5 @@ with c2:
                 st.error(f"Erro no tema '{tema_alvo}': {e}")
         else:
             st.write(f"### {p.upper()}")
-    
-    # O PULO DO GATO: Empurrador de Conteúdo para o Topo
-    st.markdown('<div class="spacer-bottom"></div>', unsafe_allow_html=True)
+            st.info("A Machina aguarda o sopro poético.")
     st.markdown('</div></div>', unsafe_allow_html=True)
