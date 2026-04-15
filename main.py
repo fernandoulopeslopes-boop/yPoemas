@@ -10,78 +10,73 @@ st.set_page_config(page_title="yPoemas", layout="wide", initial_sidebar_state="c
 try: 
     from lay_2_ypo import gera_poema
 except Exception: 
-    def gera_poema(t, p=""): return ["Erro: Engine não localizada."]
+    def gera_poema(t, p=""): return ["Erro: Engine Machina não encontrada."]
 
-# Estados Iniciais (Regra de Fidelidade)
-for key, val in {
-    'page': 'demo', 'show_help': False, 'idx_tema': 0, 'temas_atuais': []
-}.items():
-    if key not in st.session_state: st.session_state[key] = val
+# Inicialização de Estados
+if 'page' not in st.session_state: st.session_state.page = 'demo'
+if 'show_help' not in st.session_state: st.session_state.show_help = False
+if 'idx_tema' not in st.session_state: st.session_state.idx_tema = 0
+if 'temas_atuais' not in st.session_state: st.session_state.temas_atuais = []
 
-# --- 2. CSS: HARMONIA & REDUÇÃO (REGRA NO_EMPTY) ---
+# --- 2. CSS: HARMONIA E REDUÇÃO VISUAL ---
 st.markdown("""
 <style>
     [data-testid="stHeader"], [data-testid="stSidebar"] {display: none !important;}
     .block-container {padding: 1rem !important;}
 
-    /* 4 e 7. REDUÇÃO DE FONTE E ESPAÇAMENTO */
+    /* TÍTULO DO POEMA (Ajuste 6) */
     .typo-title {
-        font-family: 'Georgia', serif; font-size: 1.4rem; font-weight: bold;
-        text-decoration: underline; text-align: center; margin-bottom: 15px;
-        color: #333;
+        font-family: 'Georgia', serif; font-size: 1.3rem; font-weight: bold;
+        text-decoration: underline; text-align: center; margin-bottom: 20px;
+        color: #444; letter-spacing: 1px;
     }
+
+    /* TEXTO GERADO (Ajustes 4 e 7) */
     .typo-verse { 
-        font-family: 'Georgia', serif; font-size: 1.32rem; /* -20% de 1.65rem */
-        line-height: 1.4; /* Redução de entrelinha */
-        color: #1a1a1a; margin-bottom: 6px; text-align: left;
+        font-family: 'Georgia', serif; font-size: 1.35rem; 
+        line-height: 1.35; color: #1a1a1a; margin-bottom: 5px; text-align: left;
     }
 
-    /* 2.1 HARMONIA DOS BOTÕES */
+    /* HARMONIA DOS BOTÕES (Ajuste 2.1) */
     div.stButton > button {
-        width: 100% !important; 
-        min-width: 80px; 
-        height: 38px !important;
-        padding: 0px !important;
+        width: 100% !important; height: 38px !important;
+        padding: 0px !important; font-size: 0.9rem !important;
     }
-
-    /* 3. NAVEGAÇÃO AGRUPADA */
-    .nav-box { display: flex; justify-content: center; gap: 10px; margin-bottom: 10px; }
 
     .star-icon { width: 30px; height: 30px; }
-    
-    .palco-wrapper {
-        height: calc(100vh - 320px);
-        overflow-y: auto;
-        padding-top: 10px;
-    }
 </style>
 """, unsafe_allow_html=True)
 
-# --- 3. DADOS (FIDELIDADE) ---
+# --- 3. DADOS & TRADUÇÃO (FIDELIDADE) ---
+@st.cache_data
+def traduzir(texto, lang_destino):
+    mapeamento = {
+        "Português": "pt", "English": "en", "Español": "es", 
+        "Deutsch": "de", "Français": "fr", "Italiano": "it", "Latin": "la"
+    }
+    if not texto or lang_destino == "Português": return texto
+    try: 
+        return GoogleTranslator(source='auto', target=mapeamento.get(lang_destino, 'en')).translate(texto)
+    except: 
+        return texto
+
 @st.cache_data
 def get_acervo():
     if not os.path.exists("base"): return {}
     files = sorted([f for f in os.listdir("base") if f.startswith("rol_")])
     return {f.replace("rol_", "").replace(".txt", "").replace("_", " ").title(): f for f in files}
 
-def get_base64_bin(file_path):
-    if os.path.exists(file_path):
-        with open(file_path, "rb") as f:
-            return base64.b64encode(f.read()).decode()
-    return None
-
 ACERVO = get_acervo()
-STAR_B64 = get_base64_bin("Star_yes.ico")
 
 # --- 4. INTERFACE ---
-c1, _, c2 = st.columns([2.5, 0.5, 7])
+c1, _, c2 = st.columns([2.5, 0.4, 7.1])
 
 with c1:
-    # 1. Botões Som, Arte, Vídeo (Placeholders para futura config)
-    sc1, sc2, sc3 = st.columns(3)
-    sc1.button("🔊", help="Som")
-    sc2.button("🎨", help="Arte")
-    sc3.button("🎬", help="Vídeo")
+    # 1. BOTÕES DE MÍDIA (CONFIGURAÇÃO INICIAL)
+    m_cols = st.columns(3)
+    m_cols[0].button("🔊", key="b_som")
+    m_cols[1].button("🎨", key="b_arte")
+    m_cols[2].button("🎬", key="b_video")
     st.divider()
     
     livro_sel = st.selectbox("Livros", list(ACERVO.keys()) if ACERVO else ["-"])
@@ -96,53 +91,53 @@ with c1:
     idx_seguro = st.session_state.idx_tema % total if total > 0 else 0
     st.selectbox("Temas", st.session_state.temas_atuais, index=idx_seguro, key="st_combo")
     
-    # 5. LISTA DE IDIOMAS COMPLETA
-    idiomas_fiei = ["Português", "English", "Español", "Deutsch", "Français", "Italiano", "Latin"]
-    idioma_alvo = st.selectbox("Idioma", idiomas_fiei, key="lang_sel")
+    # 5. LISTA DE IDIOMAS (FIDELIDADE)
+    idiomas = ["Português", "English", "Español", "Deutsch", "Français", "Italiano", "Latin"]
+    idioma_alvo = st.selectbox("Idioma", idiomas, key="lang_sel")
 
 with c2:
-    # 2. MENU SUPERIOR DESALINHADO -> HARMONIZADO
+    # 2. MENU SUPERIOR HARMONIZADO
+    t_cols = st.columns([1, 1, 1, 0.5, 1, 1, 1])
     pgs = ["demo", "yPoemas", "eureka", "off-mach", "opinião", "sobre"]
-    t_cols = st.columns([1]*3 + [0.5] + [1]*3) # 2. Proporção ajustada
     
     for i, p in enumerate(pgs[:3]):
-        if t_cols[i].button(p): st.session_state.page = p
+        if t_cols[i].button(p, key=f"btn_{p}"): st.session_state.page = p
     
     with t_cols[3]:
-        if STAR_B64:
-            st.markdown(f'<center><img src="data:image/x-icon;base64,{STAR_B64}" class="star-icon"></center>', unsafe_allow_html=True)
-        if st.button("★", key="m_star"): st.session_state.show_help = not st.session_state.show_help
+        # Estrela Mestra centralizada
+        st.markdown('<div style="text-align:center; margin-top:-5px;">★</div>', unsafe_allow_html=True)
+        if st.button("?", key="m_star"): st.session_state.show_help = not st.session_state.show_help
 
     for i, p in enumerate(pgs[3:]):
-        if t_cols[i+4].button(p): st.session_state.page = p
+        if t_cols[i+4].button(p, key=f"btn_{p}"): st.session_state.page = p
 
-    # 3. NAVEGAÇÃO CENTRADA E AGRUPADA
-    st.markdown('<div class="nav-box">', unsafe_allow_html=True)
-    nb1, nb2, nb3, nb4 = st.columns([1.5, 1, 1, 1.5])[1:3] # Truque de centralização por colunas
-    # Aqui usamos colunas Streamlit para manter a funcionalidade do clique (8)
-    n_cols = st.columns([3, 1, 1, 1, 1, 3])
-    if n_cols[1].button("❮"): st.session_state.idx_tema -= 1
-    n_cols[2].button("✚")
-    if n_cols[3].button("*"): st.session_state.idx_tema = random.randint(0, total-1) if total > 0 else 0
-    if n_cols[4].button("❯"): st.session_state.idx_tema += 1
+    # 3. NAVEGAÇÃO AGRUPADA E CENTRADA (Ajuste Corrigido)
+    st.write("") # Espaçador funcional
+    n_cols = st.columns([2.5, 1, 1, 1, 1, 2.5])
+    if n_cols[1].button("❮", key="nav_prev"): st.session_state.idx_tema -= 1
+    n_cols[2].button("✚", key="nav_add")
+    if n_cols[3].button("*", key="nav_rand"): 
+        st.session_state.idx_tema = random.randint(0, total-1) if total > 0 else 0
+    if n_cols[4].button("❯", key="nav_next"): st.session_state.idx_tema += 1
     st.divider()
 
-    # PALCO (no_empty)
+    # 4, 6, 7 e 9. PALCO DE RENDERIZAÇÃO
     palco = st.container()
     with palco:
         if st.session_state.show_help:
-            st.info("Ajuda da Machina: Navegação restaurada e texto otimizado.")
+            st.info("Ajuda da Machina: Navegação restaurada. O texto agora é mais denso e o título é obrigatório.")
         elif st.session_state.page == "demo" and total > 0:
             tema_atual = st.session_state.temas_atuais[st.session_state.idx_tema % total]
-            # 6. TÍTULO NO TOPO
+            
+            # Título Centrado e Underlined (6)
             st.markdown(f'<div class="typo-title">{tema_atual.upper()}</div>', unsafe_allow_html=True)
             
             try:
                 for v in gera_poema(tema_atual, ""):
-                    # Tradução (simulação para fidelidade estrutural)
-                    st.markdown(f'<div class="typo-verse">{v}</div>', unsafe_allow_html=True)
+                    v_t = traduzir(v, idioma_alvo)
+                    st.markdown(f'<div class="typo-verse">{v_t}</div>', unsafe_allow_html=True)
             except Exception as e:
-                # 9. MENSAGEM DE ERRO DETALHADA
-                st.error(f"Falha na geração poética. Tema: '{tema_atual}' | Pág: {st.session_state.page} | Erro: {str(e)}")
+                # Mensagem detalhada de falha (9)
+                st.error(f"Falha na geração poética. | Tema: {tema_atual} | Erro: {str(e)}")
         else:
             st.markdown(f"### {st.session_state.page.upper()}")
