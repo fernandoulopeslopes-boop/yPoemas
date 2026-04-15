@@ -2,7 +2,7 @@ import streamlit as st
 import os
 from deep_translator import GoogleTranslator
 
-# Importação mandatória do motor da Machina
+# Motor Real da Machina
 from lay_2_ypo import gera_poema
 
 # --- 1. BOOT & ESTADO ---
@@ -15,14 +15,35 @@ def nav_to(p, h):
     st.session_state.page = p
     st.session_state.show_help = h
 
-# --- 2. CSS: ARQUITETURA DE PALCO ---
+# --- 2. CSS: LYPO-TYPO & ESTRUTURA ---
 st.markdown("""
 <style>
     [data-testid="stHeader"], [data-testid="stSidebar"] {display: none !important;}
     .block-container {padding: 1rem !important;}
+    
+    /* Painel Fixo */
     [data-testid="column"]:nth-child(1) {position: fixed !important; top: 1rem; left: 1rem; width: 200px !important; z-index: 1000;}
     [data-testid="column"]:nth-child(3) {margin-left: 240px !important;}
-    .md-render { font-family: 'Georgia', serif; font-size: 1.6rem; line-height: 1.6; color: #1a1a1a; margin-top: 20px; }
+
+    /* LYPO & TYPO */
+    .lypo-container { margin-top: 10px; }
+    .typo-verse { 
+        font-family: 'Georgia', serif; 
+        font-size: 1.65rem; 
+        line-height: 1.5; 
+        color: #1a1a1a; 
+        min-height: 1.2rem;
+    }
+
+    /* Navegação Inferior [ + < * > ? ] */
+    .nav-rim button {
+        background: transparent !important;
+        border: none !important;
+        font-size: 1.2rem !important;
+        color: #888 !important;
+    }
+    .nav-rim button:hover { color: #000 !important; }
+    
     .stButton button { width: 100% !important; }
 </style>
 """, unsafe_allow_html=True)
@@ -30,78 +51,35 @@ st.markdown("""
 # --- 3. DADOS & TRADUÇÃO ---
 @st.cache_data
 def get_acervo():
-    p = "base"
-    if not os.path.exists(p): return {}
-    files = sorted([f for f in os.listdir(p) if f.startswith("rol_")])
+    if not os.path.exists("base"): return {}
+    files = sorted([f for f in os.listdir("base") if f.startswith("rol_")])
     return {f.replace("rol_", "").replace(".txt", "").replace("_", " ").title(): f for f in files}
 
-def traduzir_resultado(texto, destino):
-    mapa = {
-        "Português": "pt", "Español": "es", "English": "en", "Deutsch": "de", 
-        "Nederlands": "nl", "Français": "fr", "Italiano": "it", "Català": "ca", 
-        "Ελληνικά": "el", "Türkçe": "tr", "العربية": "ar", "ע Hebrew": "he", "हिन्दी": "hi"
-    }
+def traduzir_poema(lista_versos, destino):
+    mapa = {"Português": "pt", "Español": "es", "English": "en", "Deutsch": "de", "Nederlands": "nl", "Français": "fr", "Italiano": "it", "Català": "ca", "Ελληνικά": "el", "Türkçe": "tr", "العربية": "ar", "ע Hebrew": "he", "हिन्दी": "hi"}
     target = mapa.get(destino, "pt")
-    if target == "pt": return texto
+    if target == "pt": return lista_versos
     try:
-        return GoogleTranslator(source='auto', target=target).translate(texto)
-    except:
-        return texto
+        translator = GoogleTranslator(source='auto', target=target)
+        return [translator.translate(v) if v.strip() and v != '\n' else v for v in lista_versos]
+    except: return lista_versos
 
 ACERVO = get_acervo()
 IDIOMAS = ["Português", "Español", "English", "Deutsch", "Nederlands", "Français", "Italiano", "Català", "Ελληνικά", "Türkçe", "العربية", "ע Hebrew", "हिन्दी"]
 
-# --- 4. INTERFACE DE CONTROLE ---
+# --- 4. INTERFACE ---
 c1, _, c2 = st.columns([2, 0.1, 7.9])
 
 with c1:
-    ic1, ic2, ic3 = st.columns(3)
-    som = ic1.button("🔈", key="t_btn")
-    art = ic2.button("🎨", key="a_btn")
-    vid = ic3.button("🎬", key="v_btn")
+    ic = st.columns(3)
+    som = ic[0].button("🔈", key="v_on")
+    art = ic[1].button("🎨", key="a_on")
+    vid = ic[2].button("🎬", key="m_on")
     st.divider()
-    
     l_sel = st.selectbox("livros", list(ACERVO.keys()) if ACERVO else ["-"], key="sl")
-    tema_escolhido = "-"
+    tema_sel = "-"
     if ACERVO:
         with open(os.path.join("base", ACERVO[l_sel]), "r", encoding="utf-8") as f:
-            ts = [line.strip() for line in f if line.strip()]
-        tema_escolhido = st.selectbox("temas", ts, key="st")
-    
-    i_sel = st.selectbox("idioma", IDIOMAS, key="si")
-
-with c2:
-    pesos = [0.8, 0.9, 0.8, 1.2, 1.0, 0.8]
-    pgs = ["demo", "yPoemas", "eureka", "off-mach", "opinião", "sobre"]
-    cp = st.columns(pesos); cs = st.columns(pesos)
-    for i, p in enumerate(pgs):
-        cp[i].button(p.lower() if p != "yPoemas" else p, key=f"n_{i}", on_click=nav_to, args=(p, False))
-        cs[i].button("★", key=f"s_{i}", on_click=nav_to, args=(p, True))
-
-    st.divider()
-
-    # --- 5. EXECUÇÃO DA MÁQUINA (PÁGINA DEMO) ---
-    p_atual = st.session_state.page
-    h_mode = st.session_state.show_help
-
-    if p_atual == "demo" and not h_mode:
-        # CHAMADA REAL: Importada de lay_2_ypo.py
-        poema_original = gera_poema(tema_escolhido, "")
-        
-        # Tradução imediata do que a Machina gerou
-        poema_final = traduzir_resultado(poema_original, i_sel)
-        
-        # Renderização limpa e centralizada
-        st.markdown(f'<div class="md-render">{poema_final}</div>', unsafe_allow_html=True)
-        
-        # Feedback visual silencioso dos botões de controle
-        if som: st.toast("🔉")
-        if art: st.toast("🎨")
-        if vid: st.toast("🎬")
-
-    elif h_mode:
-        # Espaço reservado para documentação (stars)
-        pass
-    else:
-        # Outras páginas (yPoemas, Eureka, etc.) aguardam implementação
-        pass
+            ts = [l.strip() for l in f if l.strip()]
+        tema_sel = st.selectbox("temas", ts, key="st")
+    i_sel = st.selectbox
