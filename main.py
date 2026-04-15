@@ -3,11 +3,14 @@ import os
 import random
 from deep_translator import GoogleTranslator
 
-# MOTOR REAL
-try: from lay_2_ypo import gera_poema
-except: def gera_poema(t, p=""): return ["Erro: motor não encontrado."]
+# MOTOR REAL: Correção de sintaxe (Indentação obrigatória)
+try: 
+    from lay_2_ypo import gera_poema
+except Exception: 
+    def gera_poema(t, p=""): 
+        return ["Erro: motor não encontrado."]
 
-# --- 1. BOOT & ESTADO (LIMPEZA TOTAL) ---
+# --- 1. BOOT & ESTADO (CC: LIMPEZA DE RESÍDUOS) ---
 st.set_page_config(page_title="yPoemas", layout="wide", initial_sidebar_state="collapsed")
 
 for key, val in {
@@ -17,20 +20,23 @@ for key, val in {
     'idx_tema': 0, 
     'temas_atuais': []
 }.items():
-    if key not in st.session_state: st.session_state[key] = val
+    if key not in st.session_state: 
+        st.session_state[key] = val
 
 def nav_to(p):
     st.session_state.page = p
     st.session_state.show_help = False
     st.session_state.ID_CLIC = p
 
-# Navegação de Temas
+# Callbacks de Navegação
 def prox_tema():
     if st.session_state.temas_atuais:
         st.session_state.idx_tema = (st.session_state.idx_tema + 1) % len(st.session_state.temas_atuais)
+
 def ante_tema():
     if st.session_state.temas_atuais:
         st.session_state.idx_tema = (st.session_state.idx_tema - 1) % len(st.session_state.temas_atuais)
+
 def sorteio_tema():
     if st.session_state.temas_atuais:
         st.session_state.idx_tema = random.randint(0, len(st.session_state.temas_atuais) - 1)
@@ -42,7 +48,10 @@ st.markdown("""
     html, body, [data-testid="stAppViewContainer"] { overflow: hidden !important; }
     .block-container {padding: 1rem !important;}
     
-    [data-testid="column"]:nth-child(1) { position: fixed !important; top: 1rem; left: 1.5rem; width: 220px !important; z-index: 1000; }
+    [data-testid="column"]:nth-child(1) { 
+        position: fixed !important; top: 1.5rem; left: 1.5rem; width: 220px !important; z-index: 1000; 
+    }
+    
     [data-testid="column"]:nth-child(3) { 
         margin-left: 260px !important; height: 95vh !important; overflow-y: auto !important; padding-right: 20px;
     }
@@ -59,15 +68,14 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# --- 3. DADOS & HELP (A CORREÇÃO) ---
+# --- 3. DADOS & HELP ---
 @st.cache_data
 def get_help_text(id_clic):
-    # Procura o arquivo .txt ou .md correspondente ao ID_CLIC na pasta 'docs'
     path = f"docs/help_{id_clic}.txt"
     if os.path.exists(path):
         with open(path, "r", encoding="utf-8") as f:
             return f.read()
-    return "Texto de ajuda ainda não redigido para este ambiente."
+    return f"Aguardando redação: docs/help_{id_clic}.txt"
 
 @st.cache_data
 def get_acervo():
@@ -100,22 +108,31 @@ with c1:
     st.selectbox("idioma", ["Português", "English", "Español", "Deutsch", "Français"], key="si")
 
 with c2:
-    # Navegação com Star Mestra Centralizada
+    # Topo: Star Mestra entre Eureka e Off-Mach
     cols = st.columns([1, 1, 1, 0.4, 1, 1, 1])
     pgs = ["demo", "yPoemas", "eureka", "off-mach", "opinião", "sobre"]
     
-    for i, p in enumerate(pgs[:3]): cols[i].button(p, on_click=nav_to, args=(p,))
+    for i, p in enumerate(pgs[:3]): 
+        cols[i].button(p, key=f"btn_{p}", on_click=nav_to, args=(p,))
+    
     with cols[3]:
         st.markdown('<div class="star-mestra-wrapper">', unsafe_allow_html=True)
-        if st.button("★", key="master_star"): st.session_state.show_help = not st.session_state.show_help
+        if st.button("★", key="master_star"): 
+            st.session_state.show_help = not st.session_state.show_help
         st.markdown('</div>', unsafe_allow_html=True)
-    for i, p in enumerate(pgs[3:]): cols[i+4].button(p, on_click=nav_to, args=(p,))
+        
+    for i, p in enumerate(pgs[3:]): 
+        cols[i+4].button(p, key=f"btn_{p}", on_click=nav_to, args=(p,))
 
     # Régua [ + < * > ]
     st.markdown('<div class="nav-rim-box">', unsafe_allow_html=True)
     _, col_cent, _ = st.columns([3, 4, 3])
     with col_cent:
-        bn = st.columns(4); bn[0].button("+"); bn[1].button("<", on_click=ante_tema); bn[2].button("*", on_click=sorteio_tema); bn[3].button(">", on_click=prox_tema)
+        bn = st.columns(4)
+        bn[0].button("+")
+        bn[1].button("<", on_click=ante_tema)
+        bn[2].button("*", on_click=sorteio_tema)
+        bn[3].button(">", on_click=prox_tema)
     st.markdown('</div>', unsafe_allow_html=True)
     st.divider()
 
@@ -123,15 +140,13 @@ with c2:
     if st.session_state.show_help:
         ctx = st.session_state.ID_CLIC
         st.markdown(f"### Ajuda: {ctx.upper()}")
-        # CORREÇÃO: Busca o texto real do arquivo
-        texto_help = get_help_text(ctx)
-        st.markdown(texto_help) 
-        if st.button("Fechar Ajuda"): 
+        st.markdown(get_help_text(ctx)) 
+        if st.button("Fechar"): 
             st.session_state.show_help = False
             st.rerun()
     else:
         p = st.session_state.page
-        st.session_state.ID_CLIC = p # Garante o contexto atualizado
+        st.session_state.ID_CLIC = p 
         
         if p == "demo":
             if st.session_state.temas_atuais:
@@ -143,7 +158,8 @@ with c2:
                         if v == '\n': st.write("")
                         else: st.markdown(f'<div class="typo-verse">{v}</div>', unsafe_allow_html=True)
                     st.markdown('</div>', unsafe_allow_html=True)
-                except Exception as e: st.error(f"Erro: {e}")
+                except Exception as e: 
+                    st.error(f"Erro: {e}")
         else:
             st.write(f"### {p.lower()}")
-            st.info(f"O ambiente '{p}' está ativo. Clique na estrela acima para ver as instruções deste contexto.")
+            st.info(f"Contexto '{p}' pronto. Clique na ★ para instruções.")
