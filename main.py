@@ -1,16 +1,15 @@
 import streamlit as st
 import os
 import random
-from deep_translator import GoogleTranslator
 
-# MOTOR REAL: Correção de sintaxe (Indentação obrigatória)
+# MOTOR REAL
 try: 
     from lay_2_ypo import gera_poema
 except Exception: 
     def gera_poema(t, p=""): 
         return ["Erro: motor não encontrado."]
 
-# --- 1. BOOT & ESTADO (CC: LIMPEZA DE RESÍDUOS) ---
+# --- 1. BOOT & ESTADO ---
 st.set_page_config(page_title="yPoemas", layout="wide", initial_sidebar_state="collapsed")
 
 for key, val in {
@@ -28,7 +27,6 @@ def nav_to(p):
     st.session_state.show_help = False
     st.session_state.ID_CLIC = p
 
-# Callbacks de Navegação
 def prox_tema():
     if st.session_state.temas_atuais:
         st.session_state.idx_tema = (st.session_state.idx_tema + 1) % len(st.session_state.temas_atuais)
@@ -37,34 +35,46 @@ def ante_tema():
     if st.session_state.temas_atuais:
         st.session_state.idx_tema = (st.session_state.idx_tema - 1) % len(st.session_state.temas_atuais)
 
-def sorteio_tema():
-    if st.session_state.temas_atuais:
-        st.session_state.idx_tema = random.randint(0, len(st.session_state.temas_atuais) - 1)
-
-# --- 2. CSS: ARQUITETURA E SCROLL INTERNO ---
+# --- 2. CSS: LIMPEZA E RIGOR VISUAL ---
 st.markdown("""
 <style>
+    /* Bloqueia scroll na página inteira */
+    html, body, [data-testid="stAppViewContainer"] { 
+        overflow: hidden !important; 
+        height: 100vh;
+    }
     [data-testid="stHeader"], [data-testid="stSidebar"] {display: none !important;}
-    html, body, [data-testid="stAppViewContainer"] { overflow: hidden !important; }
     .block-container {padding: 1rem !important;}
     
+    /* Painel Lateral Estático */
     [data-testid="column"]:nth-child(1) { 
         position: fixed !important; top: 1.5rem; left: 1.5rem; width: 220px !important; z-index: 1000; 
     }
     
-    [data-testid="column"]:nth-child(3) { 
-        margin-left: 260px !important; height: 95vh !important; overflow-y: auto !important; padding-right: 20px;
+    /* PALCO COM SCROLL EXCLUSIVO */
+    .palco-scroll {
+        margin-left: 260px !important; 
+        height: calc(100vh - 160px); 
+        overflow-y: auto !important;
+        padding-right: 20px;
+        scrollbar-width: thin;
     }
 
-    .star-mestra-wrapper { display: flex; justify-content: center; align-items: center; height: 100%; }
-    .star-mestra-wrapper button {
+    /* Alinhamento da Star Mestra */
+    .star-mestra-box {
+        display: flex; justify-content: center; align-items: center; 
+        height: 100%; padding-top: 5px;
+    }
+    .star-mestra-box button {
         background: transparent !important; border: none !important;
-        color: #f1c40f !important; font-size: 1.4rem !important; margin-top: 4px !important;
+        color: #f1c40f !important; font-size: 1.5rem !important;
     }
 
-    .nav-rim-box button { background: transparent !important; border: none !important; font-size: 1.4rem !important; color: #777 !important; }
-    .lypo-container { margin-top: 10px; padding-bottom: 50px; }
-    .typo-verse { font-family: 'Georgia', serif; font-size: 1.65rem; line-height: 1.7; color: #1a1a1a; min-height: 1.5rem; }
+    /* Tipografia do Poema */
+    .typo-verse { 
+        font-family: 'Georgia', serif; font-size: 1.65rem; 
+        line-height: 1.7; color: #1a1a1a; margin-bottom: 0.5rem;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -73,9 +83,8 @@ st.markdown("""
 def get_help_text(id_clic):
     path = f"docs/help_{id_clic}.txt"
     if os.path.exists(path):
-        with open(path, "r", encoding="utf-8") as f:
-            return f.read()
-    return f"Aguardando redação: docs/help_{id_clic}.txt"
+        with open(path, "r", encoding="utf-8") as f: return f.read()
+    return f"Manual em construção para: {id_clic}"
 
 @st.cache_data
 def get_acervo():
@@ -108,58 +117,51 @@ with c1:
     st.selectbox("idioma", ["Português", "English", "Español", "Deutsch", "Français"], key="si")
 
 with c2:
-    # Topo: Star Mestra entre Eureka e Off-Mach
+    # TOPO: Alinhamento da Star entre Eureka e Off-Mach
     cols = st.columns([1, 1, 1, 0.4, 1, 1, 1])
     pgs = ["demo", "yPoemas", "eureka", "off-mach", "opinião", "sobre"]
     
-    for i, p in enumerate(pgs[:3]): 
-        cols[i].button(p, key=f"btn_{p}", on_click=nav_to, args=(p,))
+    cols[0].button(pgs[0], key="b1", on_click=nav_to, args=(pgs[0],))
+    cols[1].button(pgs[1], key="b2", on_click=nav_to, args=(pgs[1],))
+    cols[2].button(pgs[2], key="b3", on_click=nav_to, args=(pgs[2],))
     
-    with cols[3]:
-        st.markdown('<div class="star-mestra-wrapper">', unsafe_allow_html=True)
-        if st.button("★", key="master_star"): 
+    with cols[3]: # A Estrela no centro exato
+        st.markdown('<div class="star-mestra-box">', unsafe_allow_html=True)
+        if st.button("★", key="master_star"):
             st.session_state.show_help = not st.session_state.show_help
         st.markdown('</div>', unsafe_allow_html=True)
         
-    for i, p in enumerate(pgs[3:]): 
-        cols[i+4].button(p, key=f"btn_{p}", on_click=nav_to, args=(p,))
+    cols[4].button(pgs[3], key="b4", on_click=nav_to, args=(pgs[3],))
+    cols[5].button(pgs[4], key="b5", on_click=nav_to, args=(pgs[4],))
+    cols[6].button(pgs[5], key="b6", on_click=nav_to, args=(pgs[5],))
 
-    # Régua [ + < * > ]
-    st.markdown('<div class="nav-rim-box">', unsafe_allow_html=True)
-    _, col_cent, _ = st.columns([3, 4, 3])
-    with col_cent:
-        bn = st.columns(4)
-        bn[0].button("+")
-        bn[1].button("<", on_click=ante_tema)
-        bn[2].button("*", on_click=sorteio_tema)
-        bn[3].button(">", on_click=prox_tema)
-    st.markdown('</div>', unsafe_allow_html=True)
     st.divider()
 
-    # --- 5. RENDERIZAÇÃO (MAPEAMENTO ID_CLIC) ---
+    # --- 5. PALCO DE RENDERIZAÇÃO (SCROLL ISOLADO) ---
+    st.markdown('<div class="palco-scroll">', unsafe_allow_html=True)
+    
     if st.session_state.show_help:
         ctx = st.session_state.ID_CLIC
         st.markdown(f"### Ajuda: {ctx.upper()}")
-        st.markdown(get_help_text(ctx)) 
+        st.markdown(get_help_text(ctx))
         if st.button("Fechar"): 
             st.session_state.show_help = False
             st.rerun()
     else:
         p = st.session_state.page
-        st.session_state.ID_CLIC = p 
+        st.session_state.ID_CLIC = p
         
         if p == "demo":
             if st.session_state.temas_atuais:
                 try:
                     tema_alvo = st.session_state.temas_atuais[st.session_state.idx_tema]
                     poema = gera_poema(tema_alvo, "")
-                    st.markdown('<div class="lypo-container">', unsafe_allow_html=True)
                     for v in poema:
                         if v == '\n': st.write("")
                         else: st.markdown(f'<div class="typo-verse">{v}</div>', unsafe_allow_html=True)
-                    st.markdown('</div>', unsafe_allow_html=True)
-                except Exception as e: 
-                    st.error(f"Erro: {e}")
+                except Exception as e: st.error(f"Erro: {e}")
         else:
             st.write(f"### {p.lower()}")
-            st.info(f"Contexto '{p}' pronto. Clique na ★ para instruções.")
+            st.info(f"Ambiente ativo. O ID_CLIC registra '{p}'.")
+            
+    st.markdown('</div>', unsafe_allow_html=True)
