@@ -10,6 +10,7 @@ try:
 except Exception: 
     def gera_poema(t, p=""): return ["A precisão dança conforme o instinto.", "O labirinto aguarda."]
 
+# Inicialização de estados
 for key, val in {
     'page': 'demo', 'show_help': False, 'idx_tema': 0, 
     'temas_atuais': [], 'som': False, 'arte': False, 'video': False
@@ -22,16 +23,14 @@ st.markdown("""
     [data-testid="stHeader"], [data-testid="stSidebar"] {display: none !important;}
     .main .block-container { max-width: 95%; padding-top: 1rem !important; }
     
-    /* Estilo para About/Info (Humanista) */
     .md-humanista { 
         font-family: 'Georgia', serif; line-height: 1.65; color: #222; 
         font-size: 1.15rem; padding-bottom: 50px; 
     }
     
-    /* Estilo para yPoemas (Engenharia/Científico) */
     .md-tecnico { 
-        font-family: 'Courier New', monospace; background-color: #f4f4f4; 
-        padding: 20px; border-left: 4px solid #333; font-size: 1rem;
+        font-family: 'Courier New', monospace; background-color: #f9f9f9; 
+        padding: 25px; border-left: 5px solid #444; font-size: 1rem;
         line-height: 1.4; color: #111;
     }
 
@@ -44,85 +43,56 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# --- 3. MOTOR DE BUSCA CATEGORIZADO ---
+# --- 3. MOTOR DE BUSCA ROBUSTO (CHAVE MESTRA) ---
 def busca_documento_robusto(nome_pagina):
     pasta = "md_files"
-    if not os.path.exists(pasta): return None
+    if not os.path.exists(pasta): return f"ERRO: Pasta '{pasta}' não encontrada."
     
-    # Mapeamento de Alvos por Categoria
-    if nome_pagina.lower() == "about":
-        alvos = ["ABOUT", "INFO_ABOUT", "INFO_SOBRE"]
-    elif nome_pagina.lower() == "ypoemas":
-        alvos = ["YPOEMAS"]
-    else:
-        alvos = [f"ABOUT_{nome_pagina.upper()}", f"INFO_{nome_pagina.upper()}", nome_pagina.upper()]
+    # Alvo principal em UPPER
+    alvo = nome_pagina.upper()
+    # Lista de possibilidades para cobrir renames e padrões (ABOUT, INFO, YPOEMAS)
+    tentativas = [alvo, f"ABOUT_{alvo}", f"INFO_{alvo}", f"INFO_SOBRE" if alvo == "ABOUT" else alvo]
     
-    for f in os.listdir(pasta):
+    arquivos_locais = os.listdir(pasta)
+    for f in arquivos_locais:
+        # Normalização: extrai nome, remove ext e joga para UPPER
         nome_puro = os.path.splitext(f)[0].upper()
-        if nome_puro in alvos:
+        
+        if nome_puro in tentativas:
             try:
                 with open(os.path.join(pasta, f), "r", encoding="utf-8") as file:
                     return file.read()
-            except: continue
-    return None
+            except Exception as e:
+                return f"ERRO ao ler {f}: {e}"
+    
+    # Se falhar, retorna log para diagnóstico
+    return f"DEBUG_NOT_FOUND: Tentativas {tentativas} | Arquivos na pasta: {arquivos_locais}"
 
 # --- 4. INTERFACE ---
 c1, _, c2 = st.columns([2.5, 0.4, 7.1])
 
 with c1:
     m_cols = st.columns(3)
-    for i, (icon, key) in enumerate([("🔊", "m_s"), ("🎨", "m_a"), ("🎬", "m_v")]):
-        if m_cols[i].button(icon, key=key): st.toast(f"{icon} Atualizado")
+    if m_cols[0].button("🔊", key="m_s"): st.toast("Som")
+    if m_cols[1].button("🎨", key="m_a"): st.toast("Arte")
+    if m_cols[2].button("🎬", key="m_v"): st.toast("Vídeo")
     st.divider()
     
     if os.path.exists("base"):
         files = sorted([f for f in os.listdir("base") if f.startswith("rol_")])
         acervo = {f.replace("rol_", "").replace(".txt", "").replace("_", " ").title(): f for f in files}
         lista_l = list(acervo.keys())
-        sel_l = st.selectbox("Livros", lista_l)
-        
-        with open(os.path.join("base", acervo[sel_l]), "r", encoding="utf-8") as f:
-            st.session_state.temas_atuais = [line.strip() for line in f if line.strip()]
-        
-        idx = st.session_state.idx_tema % len(st.session_state.temas_atuais) if st.session_state.temas_atuais else 0
-        st.selectbox("Temas", st.session_state.temas_atuais, index=idx)
+        if lista_l:
+            sel_l = st.selectbox("Livros", lista_l)
+            with open(os.path.join("base", acervo[sel_l]), "r", encoding="utf-8") as f:
+                st.session_state.temas_atuais = [line.strip() for line in f if line.strip()]
+            
+            idx = st.session_state.idx_tema % len(st.session_state.temas_atuais) if st.session_state.temas_atuais else 0
+            st.selectbox("Temas", st.session_state.temas_atuais, index=idx)
     
     st.selectbox("Idioma", ["Português", "English", "Español", "Latin"], key="l_sel")
 
 with c2:
-    # Menu Superior - Coerência e Intencionalidade
+    # Menu Superior
     pgs = ["demo", "yPoemas", "eureka", "off-mach", "opinião", "about"]
-    t_cols = st.columns([1, 1, 1, 0.5, 1, 1, 1])
-    for i, p in enumerate(pgs[:3]):
-        if t_cols[i].button(p, key=f"btn_{p}"): st.session_state.page = p
-    with t_cols[3]:
-        if st.button("?", key="h_btn"): st.session_state.show_help = not st.session_state.show_help
-    for i, p in enumerate(pgs[3:]):
-        if t_cols[i+4].button(p, key=f"btn_{p}"): st.session_state.page = p
-
-    st.write("") 
-    n_cols = st.columns([2.5, 0.7, 0.7, 0.7, 0.7, 2.5])
-    if n_cols[1].button("❮", key="nav_p"): st.session_state.idx_tema -= 1
-    if n_cols[2].button("✚", key="nav_a"): st.toast("Semente salva")
-    if n_cols[3].button("✱", key="nav_r"): st.session_state.idx_tema = random.randint(0, 100)
-    if n_cols[4].button("❯", key="nav_n"): st.session_state.idx_tema += 1
-    st.divider()
-
-    if st.session_state.show_help:
-        st.info("A precisão agora dança conforme o instinto.")
-    elif st.session_state.page == "demo":
-        if st.session_state.temas_atuais:
-            tema = st.session_state.temas_atuais[st.session_state.idx_tema % len(st.session_state.temas_atuais)]
-            st.markdown(f'<div class="typo-title">{tema.upper()}</div>', unsafe_allow_html=True)
-            for v in gera_poema(tema, ""):
-                st.markdown(f'<div class="typo-verse">{v}</div>', unsafe_allow_html=True)
-    else:
-        conteudo = busca_documento_robusto(st.session_state.page)
-        if conteudo:
-            # Seleção de CSS baseada na página
-            classe_css = "md-tecnico" if st.session_state.page == "yPoemas" else "md-humanista"
-            st.markdown(f'<div class="{classe_css}">', unsafe_allow_html=True)
-            st.markdown(conteudo)
-            st.markdown('</div>', unsafe_allow_html=True)
-        else:
-            st.warning(f"O labirinto ainda guarda o segredo de '{st.session_state.page.upper()}'.")
+    t_cols = st.columns([1, 1, 1, 0.5, 1, 1,
