@@ -54,8 +54,8 @@ Lato
 Leituras
 Liberta
 Loremipsum
-Machbeth
-Machbrait
+MachBeth
+MachBrait
 Manifesto
 Manusgrite
 Manusgrito
@@ -103,6 +103,7 @@ Sonoro
 Sopros
 Sos
 Tempo
+Tempus
 Tiro
 Tolero
 Usinas
