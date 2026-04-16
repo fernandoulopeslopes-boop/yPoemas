@@ -85,6 +85,7 @@ Psiu : persona
 Reger : anima
 Reinos : joco
 Remedeio : joco
+Restos : anima
 Rever : anima
 Rito : joco
 Salute : machina
@@ -102,6 +103,7 @@ Sonoro : anima
 Sopros : anima
 Sos : joco
 Tempo : machina
+Tempus : machina
 Tiro : author
 Tolero : anima
 Usinas : anima
