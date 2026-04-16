@@ -22,6 +22,8 @@ Clandestino : anima
 Clarice : persona
 Conto : anima
 Cordel : joco
+Crítico : anima
+Críticas : joco
 Cromossomo : joco
 Cuores : persona
 Destinos : anima
