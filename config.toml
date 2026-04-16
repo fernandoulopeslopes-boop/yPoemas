@@ -4,3 +4,9 @@ backgroundColor="#ffffff"
 secondaryBackgroundColor="#e8eef9"
 textColor="#000000"
 font="Monospace"
+
+[server]
+fileWatcherType = "none"
+
+[browser]
+gatherUsageStats = false
