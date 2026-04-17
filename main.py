@@ -49,12 +49,10 @@ IPAddres = socket.gethostbyname(socket.gethostname())
 LYPO_FILE = f"LYPO_{IPAddres}"
 TYPO_FILE = f"TYPO_{IPAddres}"
 
-# --- CSS ÚNICO: remove faixa branca + estilo do título ---
+# --- CSS: sidebar visível ---
 st.markdown("""
 <style>
 footer {visibility: hidden;}
-section[data-testid="stSidebar"] {display: block!important;}
-header[data-testid="stHeader"] {height: 0rem;}
 div[data-testid="stToolbar"] {display: none;}
 div[data-testid="stDecoration"] {display: none;}
 .reportview-container.main.block-container{
@@ -85,7 +83,7 @@ DEFAULTS = {
     "tema": "Fatos", "off_book": 0, "off_take": 0, "eureka": 0, "poly_lang": "ca",
     "poly_name": "català", "poly_take": 12, "poly_file": "poly_pt.txt",
     "visy": True, "nany_visy": 0, "draw": True, "talk": False, "vydo": False,
-    "arts": [], "auto": False, "rand": False, "show_help": False, "show_more": False,
+    "arts": [], "auto": False, "rand": False, "show_help": False,
     "internet": None, "translator": None, "gtts": None
 }
 for k, v in DEFAULTS.items():
@@ -448,8 +446,9 @@ if st.session_state.visy:
     except: pass
     temas = load_list(os.path.join(BASE, f"rol_{st.session_state.book}.txt"))
     st.session_state.take = random.randrange(len(temas)) if temas else 0
+    st.session_state.tema = temas[st.session_state.take] if temas else "Fatos"
+    load_poema(st.session_state.tema) # GERA O PRIMEIRO POEMA
     st.success(translate("bem vindo à **máquina de fazer Poesia...**"))
-    st.session_state.draw = True
     st.session_state.visy = False
     st.rerun()
 
@@ -483,13 +482,15 @@ def page_mini():
     _, last, rand, nest, _ = st.columns([4, 1, 1, 1, 4])
     if last.button("◀", key="mini_prev"):
         st.session_state.mini = maxy if st.session_state.mini == 0 else st.session_state.mini - 1
+        load_poema(temas_list[st.session_state.mini])
     if rand.button("✻", key="mini_rand"):
         st.session_state.mini = random.randrange(maxy + 1)
+        load_poema(temas_list[st.session_state.mini])
     if nest.button("▶", key="mini_next"):
         st.session_state.mini = 0 if st.session_state.mini == maxy else st.session_state.mini + 1
+        load_poema(temas_list[st.session_state.mini])
 
     tema = temas_list[st.session_state.mini]
-    load_poema(tema)
     curr = get_poem_text(tema)
     write_ypoema(tema, curr, load_arts(tema) if st.session_state.draw else None)
     if st.session_state.talk: talk(curr)
@@ -502,35 +503,43 @@ def page_ypoemas():
     # 5 ícones: + < * >?
     _, more, last, rand, nest, manu, _ = st.columns([3, 1, 1, 1, 1, 1, 3])
 
-    if more.button("+", help="mais lidos"):
-        st.session_state.show_more = not st.session_state.show_more
+    if more.button("+", help="mais um"):
+        load_poema(st.session_state.tema) # REGENERA O MESMO TEMA
+        st.session_state.show_help = False
+
     if last.button("<", help="anterior"):
         st.session_state.take = maxy if st.session_state.take == 0 else st.session_state.take - 1
+        st.session_state.tema = temas_list[st.session_state.take]
+        load_poema(st.session_state.tema) # GERA O NOVO TEMA
         st.session_state.show_help = False
-        st.session_state.show_more = False
+
     if rand.button("*", help="ao acaso"):
         st.session_state.take = random.randrange(maxy + 1)
+        st.session_state.tema = temas_list[st.session_state.take]
+        load_poema(st.session_state.tema) # GERA O NOVO TEMA
         st.session_state.show_help = False
-        st.session_state.show_more = False
+
     if nest.button(">", help="próximo"):
         st.session_state.take = 0 if st.session_state.take == maxy else st.session_state.take + 1
+        st.session_state.tema = temas_list[st.session_state.take]
+        load_poema(st.session_state.tema) # GERA O NOVO TEMA
         st.session_state.show_help = False
-        st.session_state.show_more = False
+
     if manu.button("?", help="help"):
         st.session_state.show_help = not st.session_state.show_help
 
     if not st.session_state.draw:
         opt = st.selectbox("↓ lista de Temas", range(len(temas_list)),
                           index=st.session_state.take, format_func=lambda x: temas_list[x])
-        st.session_state.take = opt
+        if opt!= st.session_state.take:
+            st.session_state.take = opt
+            st.session_state.tema = temas_list[st.session_state.take]
+            load_poema(st.session_state.tema) # GERA O NOVO TEMA
 
     st.session_state.tema = temas_list[st.session_state.take]
 
     if st.session_state.show_help:
         st.subheader(load_md_file("MANUAL_YPOEMAS.md"))
-
-    if st.session_state.show_more:
-        st.info("**Mais lidos:** Em breve - ranking de temas mais acessados")
 
     if st.session_state.vydo:
         st.sidebar.info(load_md_file("INFO_VYDE.md"))
@@ -540,10 +549,7 @@ def page_ypoemas():
     else:
         what = f"⚫ {st.session_state.lang} ( {st.session_state.book} ) ( {st.session_state.take+1} / {len(temas_list)} )"
         with st.expander(what, True):
-            if not load_file_temp(LYPO_FILE):
-                load_poema(st.session_state.tema)
             curr = get_poem_text(st.session_state.tema)
-
             write_ypoema(st.session_state.tema, curr, load_arts(st.session_state.tema) if st.session_state.draw else None)
 
             if st.session_state.show_help:
