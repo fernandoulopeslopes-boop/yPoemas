@@ -1,14 +1,3 @@
-Fechou. 5 ícones na ordem certa: `+ < * >?`
-
-`+` = mais lidos
-`<` = anterior
-`*` = ao acaso
-`>` = próximo
-`?` = help/manual
-
-Aqui vai o `main.py` completo, 670 linhas. Todos os 5 botões funcionais na `page_ypoemas`. Nada truncado:
-
-```python
 r"""
 yPoemas is an app that randomly collects words and phrases
 from specific databases and organizes them
