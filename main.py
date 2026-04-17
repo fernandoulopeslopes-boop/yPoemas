@@ -44,12 +44,13 @@ MD_FILES = os.path.join(BASE_DIR, "md_files")
 IMAGES = os.path.join(BASE_DIR, "images")
 OFF_MACHINA = os.path.join(BASE_DIR, "off_machina")
 os.makedirs(TEMP, exist_ok=True)
+os.makedirs(OFF_MACHINA, exist_ok=True)
 
 IPAddres = socket.gethostbyname(socket.gethostname())
 LYPO_FILE = f"LYPO_{IPAddres}"
 TYPO_FILE = f"TYPO_{IPAddres}"
 
-# --- CSS: sidebar visível ---
+# --- CSS: sidebar visível, centro de comando ---
 st.markdown("""
 <style>
 footer {visibility: hidden;}
@@ -80,7 +81,7 @@ mark {background-color: powderblue; color: black;}
 # --- SESSION STATE ---
 DEFAULTS = {
     "lang": "pt", "last_lang": "pt", "book": "livro vivo", "take": 0, "mini": 0,
-    "tema": "Fatos", "off_book": 0, "off_take": 0, "eureka": 0, "poly_lang": "ca",
+    "tema": "Fatos", "off_take": 0, "off_tema": "", "eureka": 0, "poly_lang": "ca",
     "poly_name": "català", "poly_take": 12, "poly_file": "poly_pt.txt",
     "visy": True, "nany_visy": 0, "draw": True, "talk": False, "vydo": False,
     "arts": [], "auto": False, "rand": False, "show_help": False,
@@ -129,12 +130,15 @@ def load_list(path):
     except:
         return []
 
-def load_file_temp(name):
+def load_file(path):
     try:
-        with open(os.path.join(TEMP, name), encoding="utf-8") as f:
+        with open(path, encoding="utf-8") as f:
             return f.read()
     except:
         return ""
+
+def load_file_temp(name):
+    return load_file(os.path.join(TEMP, name))
 
 def save_file_temp(name, content):
     with open(os.path.join(TEMP, name), "w", encoding="utf-8") as f:
@@ -163,8 +167,8 @@ def load_md_file(file):
         st.session_state.lang = "pt"
         return translate(f"ooops... arquivo ( {file} ) não pode ser aberto.")
 
-def abre(nome_do_tema):
-    return load_list(os.path.join(DATA, f"{nome_do_tema}.ypo"))
+def abre(nome_do_tema, folder=DATA):
+    return load_list(os.path.join(folder, f"{nome_do_tema}.ypo"))
 
 # --- MACHINA ---
 def acerto_final(texto):
@@ -248,11 +252,11 @@ def novo_babel(swap_pala):
         novo_poema[-1] += "." if last[-1] not in ",:" else random.choice(sinais_end)
     return novo_poema
 
-def gera_poema(nome_tema, seed_eureka):
+def gera_poema(nome_tema, folder=DATA, seed_eureka=""):
     if nome_tema == "Babel":
         return novo_babel(0)
 
-    tema = abre(nome_tema)
+    tema = abre(nome_tema, folder)
     if not tema:
         return ["|01|erro|F|1|1|arquivo não encontrado|"]
 
@@ -332,7 +336,7 @@ def gera_poema(nome_tema, seed_eureka):
             novo_verso, muda_linha = "", numero_linea
 
         if pula_linha:
-            novo_poema.append("")
+            novo_poema.append("") # LINHA EM BRANCO PRESERVADA
             pula_linha = False
 
         novo_verso += itimo_escolhido + " "
@@ -345,18 +349,66 @@ def gera_poema(nome_tema, seed_eureka):
     if nome_tema == "Nós":
         novo_poema.extend(["", '<a href="https://thispersondoesnotexist.com/" target="_blank">... quem será essa pessoa que não existe?</a>'])
 
-    with open(os.path.join(DATA, f"{nome_tema}.ypo"), "w", encoding="utf-8") as f:
+    with open(os.path.join(folder, f"{nome_tema}.ypo"), "w", encoding="utf-8") as f:
         f.writelines(lista_header)
         f.writelines([l for l in tema if l.startswith("|")])
         f.writelines(lista_finais)
 
     return novo_poema
 
-def load_poema(nome_tema, seed=""):
+def load_poema(nome_tema, folder=DATA, seed=""):
     delete_file_temp(TYPO_FILE)
-    script = gera_poema(nome_tema, seed)
-    save_file_temp(LYPO_FILE, "\n".join(script))
+    script = gera_poema(nome_tema, folder, seed)
+    save_file_temp(LYPO_FILE, "\n".join(script)) # \n PRESERVADO
     return script
+
+# --- EUREKA: MOTOR ORIGINAL ---
+def motor_eureka(termo):
+    """
+    Motor original do Eureka:
+    1. Normaliza termo: lower, remove acentos simples
+    2. Busca palavra exata em.ypo
+    3. Ranking: +10 se palavra exata, +5 se radical 4+ chars, +1 se substring
+    4. Retorna arquivo ➪ linha ➪ contexto
+    """
+    def norm(s):
+        s = s.lower()
+        s = re.sub(r'[áàâã]','a',s)
+        s = re.sub(r'[éê]','e',s)
+        s = re.sub(r'[í]','i',s)
+        s = re.sub(r'[óôõ]','o',s)
+        s = re.sub(r'[ú]','u',s)
+        s = re.sub(r'[ç]','c',s)
+        return s
+
+    termo_n = norm(termo)
+    if len(termo_n) < 3: return []
+
+    achados = []
+    for root, _, files in os.walk(DATA):
+        for f in files:
+            if not f.endswith(".ypo"): continue
+            linhas = load_file(os.path.join(root, f)).split("\n")
+            for i, line in enumerate(linhas):
+                line_n = norm(line)
+                score = 0
+                if re.search(r'\b' + re.escape(termo_n) + r'\b', line_n):
+                    score = 10
+                elif termo_n in line_n:
+                    score = 5 if len(termo_n) >= 4 else 1
+                if score > 0:
+                    ctx_ini = max(0, i-2)
+                    ctx_fim = min(len(linhas), i+3)
+                    contexto = "\n".join(linhas[ctx_ini:ctx_fim])
+                    achados.append({
+                        "score": score,
+                        "file": f,
+                        "line": i+1,
+                        "texto": line,
+                        "contexto": contexto
+                    })
+    achados.sort(key=lambda x: (-x["score"], x["file"], x["line"]))
+    return achados[:100]
 
 # --- UI HELPERS ---
 def load_arts(nome_tema):
@@ -455,11 +507,11 @@ if st.session_state.visy:
 st.session_state.last_lang = st.session_state.lang
 
 # --- PÁGINAS ---
-def get_poem_text(nome_tema):
+def get_poem_text(nome_tema, folder=DATA):
     if st.session_state.lang == "pt":
         txt = load_file_temp(LYPO_FILE)
         if not txt:
-            load_poema(nome_tema)
+            load_poema(nome_tema, folder)
             txt = load_file_temp(LYPO_FILE)
         return txt
     else:
@@ -467,7 +519,7 @@ def get_poem_text(nome_tema):
         if not typo:
             lypo = load_file_temp(LYPO_FILE)
             if not lypo:
-                load_poema(nome_tema)
+                load_poema(nome_tema, folder)
                 lypo = load_file_temp(LYPO_FILE)
             typo = translate(lypo)
             save_file_temp(TYPO_FILE, typo)
@@ -561,27 +613,58 @@ def page_ypoemas():
 
 def page_eureka():
     st.sidebar.info(load_md_file("INFO_EUREKA.md"))
-    st.subheader("Eureka - Busca nos poemas")
-    busca = st.text_input("Digite uma palavra para buscar nos arquivos.ypo")
+    st.subheader("Eureka - Busca Refinada")
+    busca = st.text_input("Palavra ou radical. Ex: sonho, mort, amor")
     if busca:
-        achados = []
-        for root, dirs, files in os.walk(DATA):
-            for f in files:
-                if f.endswith(".ypo"):
-                    for i, line in enumerate(load_list(os.path.join(root, f))):
-                        if busca.lower() in line.lower():
-                            achados.append(f"{f} ➪ linha {i+1}: {line}")
+        achados = motor_eureka(busca)
         if achados:
             st.write(f"**{len(achados)} ocorrências encontradas:**")
-            for a in achados[:50]:
-                st.code(a)
+            for a in achados:
+                termo_mark = f'<mark>{busca}</mark>'
+                contexto_mark = re.sub(f'(?i)({re.escape(busca)})', r'<mark>\1</mark>', a["contexto"])
+                st.markdown(f"**{a['file']}:{a['line']}** | score {a['score']}\n```\n{contexto_mark}\n```", unsafe_allow_html=True)
         else:
             st.warning("Nenhuma ocorrência encontrada.")
 
 def page_off_machina():
     st.sidebar.info(load_md_file("INFO_OFF.md"))
     st.subheader("Off-Machina")
-    st.markdown(load_md_file("OFF_MACHINA.md"))
+
+    off_files = [f.replace(".ypo","") for f in os.listdir(OFF_MACHINA) if f.endswith(".ypo")]
+    if not off_files:
+        st.warning("Nenhum arquivo.ypo em /off_machina/")
+        st.markdown(load_md_file("OFF_MACHINA.md"))
+        return
+
+    maxy = len(off_files) - 1
+    st.session_state.off_take = max(0, min(st.session_state.off_take, maxy))
+
+    _, more, last, rand, nest, manu, _ = st.columns([3, 1, 1, 1, 1, 1, 3])
+    if more.button("+", help="mais um", key="off_more"):
+        load_poema(st.session_state.off_tema, OFF_MACHINA)
+    if last.button("<", help="anterior", key="off_last"):
+        st.session_state.off_take = maxy if st.session_state.off_take == 0 else st.session_state.off_take - 1
+        st.session_state.off_tema = off_files[st.session_state.off_take]
+        load_poema(st.session_state.off_tema, OFF_MACHINA)
+    if rand.button("*", help="ao acaso", key="off_rand"):
+        st.session_state.off_take = random.randrange(maxy + 1)
+        st.session_state.off_tema = off_files[st.session_state.off_take]
+        load_poema(st.session_state.off_tema, OFF_MACHINA)
+    if nest.button(">", help="próximo", key="off_next"):
+        st.session_state.off_take = 0 if st.session_state.off_take == maxy else st.session_state.off_take + 1
+        st.session_state.off_tema = off_files[st.session_state.off_take]
+        load_poema(st.session_state.off_tema, OFF_MACHINA)
+    if manu.button("?", help="help", key="off_help"):
+        st.session_state.show_help = not st.session_state.show_help
+
+    st.session_state.off_tema = off_files[st.session_state.off_take]
+    what = f"⚫ OFF ( {st.session_state.off_take+1} / {len(off_files)} )"
+    with st.expander(what, True):
+        curr = get_poem_text(st.session_state.off_tema, OFF_MACHINA)
+        write_ypoema(st.session_state.off_tema, curr, None)
+
+    if st.session_state.show_help:
+        st.markdown(load_md_file("OFF_MACHINA.md"))
 
 def page_books():
     st.sidebar.info(load_md_file("INFO_BOOKS.md"))
