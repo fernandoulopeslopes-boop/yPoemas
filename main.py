@@ -2,7 +2,8 @@
 
 import streamlit as st
 import os
-from ypo import gera_poema
+# RETIFICAÇÃO ABSOLUTA: O motor reside em lay_2_ypo.py
+from lay_2_ypo import gera_poema
 
 # 1. CONFIGURAÇÃO DE PÁGINA
 st.set_page_config(
@@ -17,12 +18,11 @@ if 'poema_atual' not in st.session_state:
 if 'tema_selecionado' not in st.session_state:
     st.session_state.tema_selecionado = "FATOS"
 
-# 3. SIDEBAR (Design Nativo - Calibrado)
+# 3. SIDEBAR (Design Nativo - 300px)
 with st.sidebar:
     st.title("yPoemas @ Machina")
     
     with st.container():
-        # Listas de definição
         lista_livros = ["Vivo", "Poesia", "Ensaios", "Jocosos", "Muerte", "Poly"]
         idiomas_opcoes = {
             'Português': 'pt', 'Español': 'es', 'Italiano': 'it', 
@@ -33,7 +33,6 @@ with st.sidebar:
         
         livro_escolhido = st.selectbox("Escolha o iLivro", lista_livros)
         
-        # Carregamento Dinâmico de Temas
         pasta_data = "./data/"
         try:
             temas = [f.replace(".ypo", "") for f in os.listdir(pasta_data) if f.endswith(".ypo")]
@@ -57,6 +56,7 @@ with st.sidebar:
     
     if st.button("Gerar yPoema", use_container_width=True, type="primary"):
         st.session_state.tema_selecionado = tema_escolhido
+        # Chamada ao motor lay_2_ypo
         st.session_state.poema_atual = gera_poema(tema_escolhido, seed)
         st.rerun()
 
@@ -72,9 +72,11 @@ col_l, col_main, col_r = st.columns([1, 4, 1])
 with col_main:
     if st.session_state.poema_atual:
         with st.container(border=True):
-            # Renderização limpa respeitando os versos e tags HTML
-            poema_texto = "\n".join(st.session_state.poema_atual)
-            st.markdown(poema_texto, unsafe_allow_html=True)
+            for verso in st.session_state.poema_atual:
+                if verso == "\n":
+                    st.write("")
+                else:
+                    st.markdown(verso, unsafe_allow_html=True)
             
             st.write("")
             st.markdown("**Defesa de José Maria dos Santos:**")
