@@ -94,7 +94,7 @@ for k, v in DEFAULTS.items():
 # --- INTERNET + IMPORTS PESADOS ---
 @st.cache_resource
 def check_deps():
-    def have_net(host="8.8", port=53, timeout=2):
+    def have_net(host="8.8.8.8", port=53, timeout=2):
         try:
             socket.setdefaulttimeout(timeout)
             socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
@@ -163,7 +163,7 @@ def abre(nome_do_tema):
 
 # --- MACHINA ---
 def acerto_final(texto):
-    replaces = {".":".", ",":",", "?":"?", "!":"!", " :":":", "...":"...", " -":"-", "- ":"-", " #":"", "#":""}
+    replaces = {".":".", ",":",", "?":"?", "!":"!", " :":", "...":"...", " -":"-", "- ":"-", " #":"", "#":""}
     for k, v in replaces.items():
         texto = texto.replace(k, v)
     if "< pCity >" in texto: texto = texto.replace("< pCity >", fala_cidade_fato())
@@ -294,80 +294,3 @@ def gera_poema(nome_tema, seed_eureka):
             find_eureka = f"{nome_tema}_{numero_linea}{ideia_numero}"
             if find_eureka == find_coords and look_for_seed:
                 for itimo in array_itimos:
-                    if this_seed.lower() in itimo.lower():
-                        itimo_escolhido = itimo
-                        lista_unicos.append(itimo.upper())
-                        itimo_escolhido = itimo_escolhido.replace(this_seed, f"<mark>{this_seed}</mark>")
-                        look_for_seed = False
-                        break
-
-            if (itimo_escolhido.upper() not in
-                "_E_A_AS_O_OS_NO_NOS_NA_NAS_ME_DE_SE_QUE_NÃO_SO_SEM_NEM_EM_UM_UMA_POR_MEU_VE_TE_TÃO_DA_SER_TER_PRA_PARA_QUANDO_..._._,_:_!_?"):
-                if itimo_escolhido.upper() not in lista_unicos:
-                    lista_unicos.append(itimo_escolhido.upper())
-                    break
-                else:
-                    tentativas += 1
-                    if tentativas > total_itimos:
-                        lista_unicos.append(itimo_escolhido.upper())
-                        lista_duplos.append(itimo_escolhido.upper())
-                        break
-                    if itimo_escolhido.upper() in lista_duplos and len(itimo_escolhido) > 3:
-                        continue
-                    if tentativas > 30: break
-            else:
-                break
-
-        if numero_linea!= muda_linha:
-            if novo_verso:
-                novo_poema.append(acerto_final(novo_verso))
-            novo_verso, muda_linha = "", numero_linea
-
-        if pula_linha:
-            novo_poema.append("")
-            pula_linha = False
-
-        novo_verso += itimo_escolhido + " "
-        if tabs > 0:
-            novo_verso = '&emsp;' * tabs + novo_verso
-
-    if novo_verso:
-        novo_poema.append(acerto_final(novo_verso))
-
-    if nome_tema == "Nós":
-        novo_poema.extend(["", '<a href="https://thispersondoesnotexist.com/" target="_blank">... quem será essa pessoa que não existe?</a>'])
-
-    with open(os.path.join(DATA, f"{nome_tema}.ypo"), "w", encoding="utf-8") as f:
-        f.writelines(lista_header)
-        f.writelines([l for l in tema if l.startswith("|")])
-        f.writelines(lista_finais)
-
-    return novo_poema
-
-def load_poema(nome_tema, seed=""):
-    script = gera_poema(nome_tema, seed)
-    save_file_temp(f"LYPO_{IPAddres}", "\n".join(script))
-    return "<br>".join(script)
-
-# --- UI HELPERS ---
-def load_arts(nome_tema):
-    path = os.path.join(IMAGES, "machina")
-    for line in load_list(os.path.join(BASE, "images.txt")):
-        if line.startswith(f"{nome_tema} :"):
-            path = os.path.join(IMAGES, line.split(" : ")[1])
-            break
-    try:
-        arts = [f for f in os.listdir(path) if f.endswith(".jpg")]
-        if not arts: return None
-        img = random.choice([a for a in arts if a not in st.session_state.arts] or arts)
-        st.session_state.arts.append(img)
-        if len(st.session_state.arts) > 36: del st.session_state.arts[0]
-        return os.path.join(path, img)
-    except:
-        return None
-
-def write_ypoema(titulo, LOGO_TEXTO, LOGO_IMAGE):
-    if LOGO_IMAGE:
-        st.markdown(
-            f"""<div class='container'>
-            <img class='logo-img' src='data:image/jpg;base64,{base64.b64encode(open(LOGO_IMAGE,
