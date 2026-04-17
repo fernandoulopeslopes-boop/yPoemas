@@ -1,13 +1,13 @@
 *- 
 *- Crítico.ypo
 *- 
-|01|01|Crítico_0101|F|1|1|Por sugestão de um amigo há tempos,|Flanando ao acaso pelas redes|Conversando com alunos amigos|
+|01|01|Crítico_0101|F|1|1|Por sugestão de um amigo há tempos,|Flanando ao acaso pelas redes|Conversando com alunos amigos,|
 |01|02|Crítico_0102|F|1|1|fiz um primeiro contato com|chegou ao meu conhecimento|descobri a existência de|
 |01|03|Crítico_0103|F|1|1|uma tal Machina de fazer Poesia, vulgo yPoemas.|
 
 |02|00|
-|02|01|Crítico_0201|F|1|1|Confesso que|De início, |À primeira vista|de cara pareceu-me|
-|02|02|Crítico_0202|F|1|1|não me agradou|achei descabido|
+|02|01|Crítico_0201|F|1|1|Confesso que|De início, |À primeira vista|de cara|
+|02|02|Crítico_0202|F|1|1|não me agradou|achei descabidas|
 |02|03|Crítico_0203|F|1|1|a soberba|a arrogância|a pretensão|a ousadia|
 |02|04|Crítico_0204|F|1|1|e|
 |02|05|Crítico_0203|T|1|1|a soberba|a arrogância|a pretensão|a ousadia|
@@ -35,6 +35,7 @@
 |07|02|Crítico_0702|F|1|1|é pouco|não basta|
 |07|03|Crítico_0703|F|1|1|...|
 |08|01|Crítico_0801|F|1|1|Entrem. A porta do infinito está aberta...|Sejam bem-vindos a esse novo Uni-Verso!|Percam-se !!!|
+|09|00|
 |09|01|Crítico_0801|F|1|1|José Maria dos Santos,|
 |10|01|Crítico_0802|F|1|1|Crítico Literário... ao seu dispor.|
 <EOF>
