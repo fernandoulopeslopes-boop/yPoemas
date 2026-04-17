@@ -94,7 +94,7 @@ for k, v in DEFAULTS.items():
 # --- INTERNET + IMPORTS PESADOS ---
 @st.cache_resource
 def check_deps():
-    def have_net(host="8.8.8.8", port=53, timeout=2):
+    def have_net(host="8.8", port=53, timeout=2):
         try:
             socket.setdefaulttimeout(timeout)
             socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
@@ -102,7 +102,272 @@ def check_deps():
         except:
             return False
     internet = have_net()
-    translator = gtts = None
+    translator = None
+    gtts = None
     if internet:
         try:
-            from
+            from deep_translator import GoogleTranslator
+            translator = GoogleTranslator
+        except:
+            pass
+        try:
+            from gtts import gTTS
+            gtts = gTTS
+        except:
+            pass
+    return internet, translator, gtts
+
+st.session_state.internet, st.session_state.translator, st.session_state.gtts = check_deps()
+if not st.session_state.internet:
+    st.warning("Internet não conectada. Traduções não disponíveis no momento.")
+
+# --- HELPERS ARQUIVO ---
+@st.cache_data
+def load_list(path):
+    try:
+        with open(path, encoding="utf-8") as f:
+            return [line.strip() for line in f if line.strip()]
+    except:
+        return []
+
+def load_file_temp(name):
+    try:
+        with open(os.path.join(TEMP, name), encoding="utf-8") as f:
+            return f.read()
+    except:
+        return ""
+
+def save_file_temp(name, content):
+    with open(os.path.join(TEMP, name), "w", encoding="utf-8") as f:
+        f.write(content)
+
+def translate(txt):
+    if st.session_state.lang == "pt" or not st.session_state.translator:
+        return txt
+    try:
+        out = st.session_state.translator(source="pt", target=st.session_state.lang).translate(text=txt)
+        return re.sub(r"<\s*br\s*>", "<br>", out)
+    except:
+        return "Arquivo muito grande para ser traduzido."
+
+def load_md_file(file):
+    try:
+        txt = open(os.path.join(MD_FILES, file), encoding="utf-8").read()
+        return txt if "rol_" in file.lower() else translate(txt)
+    except:
+        st.session_state.lang = "pt"
+        return translate(f"ooops... arquivo ( {file} ) não pode ser aberto.")
+
+def abre(nome_do_tema):
+    return load_list(os.path.join(DATA, f"{nome_do_tema}.ypo"))
+
+# --- MACHINA ---
+def acerto_final(texto):
+    replaces = {".":".", ",":",", "?":"?", "!":"!", " :":":", "...":"...", " -":"-", "- ":"-", " #":"", "#":""}
+    for k, v in replaces.items():
+        texto = texto.replace(k, v)
+    if "< pCity >" in texto: texto = texto.replace("< pCity >", fala_cidade_fato())
+    if "< pCidadeOficio >" in texto: texto = texto.replace("< pCidadeOficio >", fala_cidade_oficio())
+    if "< gCelcius >" in texto: texto = texto.replace("< gCelcius >", fala_celsius())
+    if "< pUmido >" in texto: texto = texto.replace("< pUmido >", fala_umidade())
+    if "< pAbnp >" in texto: texto = texto.replace("< pAbnp >", fala_abnp())
+    if "< dNormas >" in texto: texto = texto.replace("< dNormas >", fala_norma_abnp())
+    if "< dPublic >" in texto:
+        hoje = datetime.datetime.now().date()
+        ontem = hoje - datetime.timedelta(days=randrange(0, hoje.year * 30))
+        texto = texto.replace("< dPublic >", fala_data(ontem))
+    if "< dOficio >" in texto:
+        hoje = datetime.datetime.now().date()
+        demain = hoje + datetime.timedelta(days=randrange(0, hoje.year * 30))
+        texto = texto.replace("< dOficio >", fala_data(demain))
+    return texto
+
+def fala_cidade_fato():
+    cidades = load_list(os.path.join(BASE, "fatos_cidades.txt"))
+    return random.choice(cidades) if cidades else "Cidade"
+
+def fala_cidade_oficio():
+    return fala_cidade_fato()
+
+def fala_celsius():
+    ini, fim = sorted([randrange(1, 50), randrange(1, 50)])
+    return f"{ini}º e {fim}º"
+
+def fala_umidade():
+    return f"{randrange(1, 99)}%"
+
+def fala_data(dref):
+    meses = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"]
+    return f"{dref.day} de {meses[dref.month-1]} de {dref.year}"
+
+def fala_norma_abnp():
+    hoje = datetime.datetime.now().date()
+    ontem = hoje - datetime.timedelta(days=randrange(0, hoje.year * 30))
+    return f"{ontem.day}/{ontem.year}"
+
+def fala_abnp():
+    lista = []
+    for line in load_list(os.path.join(BASE, "abnp.txt")):
+        lista.extend(line.split("|"))
+    return random.choice(lista) if lista else "ABNP"
+
+@st.cache_data
+def load_babel():
+    return load_list(os.path.join(BASE, "babel.txt")) or ["ba","be","bi","bo","bu"]
+
+def novo_babel(swap_pala):
+    lista_silabas = load_babel()
+    sinais_ini = [".", ",", ":", "!", "?", "...", " "]
+    sinais_end = [".", "!", "?", "..."]
+    qtd_versos = random.randrange(5, 15)
+    novo_poema = [""]
+    for nQtdLin in range(1, qtd_versos):
+        qtd_palas = random.randrange(3, 7) if swap_pala == 0 else swap_pala
+        novo_babel = " ".join(
+            "".join(random.choice(lista_silabas) for _ in range(random.randrange(2, 4))).replace("aa","a").replace("ee","e").replace("ii","i").replace("uu","u")
+            for _ in range(1, qtd_palas)
+        ).strip()
+        if nQtdLin == 1:
+            novo_poema.append(novo_babel + random.choice(sinais_ini))
+        else:
+            if random.randrange(100) <= 50:
+                novo_babel += random.choice(sinais_ini)
+            novo_poema.append(novo_babel)
+            if random.randrange(100) <= 50 and not novo_babel.endswith(","):
+                novo_poema.append("")
+    last = novo_poema[-1]
+    if len(last) > 1 and last[-1] not in sinais_ini:
+        novo_poema[-1] += "." if last[-1] not in ",:" else random.choice(sinais_end)
+    return novo_poema
+
+def gera_poema(nome_tema, seed_eureka):
+    if nome_tema == "Babel":
+        return novo_babel(0)
+
+    tema = abre(nome_tema)
+    if not tema:
+        return ["|01|erro|F|1|1|arquivo não encontrado|"]
+
+    lista_header = [l for l in tema if l.startswith("*")]
+    lista_linhas = [l for l in tema if l.startswith("|")]
+    lista_finais = [l for l in tema if not l.startswith("*") and not l.startswith("|")]
+
+    novo_poema, novo_verso, muda_linha = [], "", "00"
+    pula_linha = False
+    lista_unicos, lista_duplos = [], []
+
+    look_for_seed = bool(seed_eureka)
+    this_seed, find_coords = "", ""
+    if look_for_seed:
+        part = seed_eureka.partition(" ➪ ")
+        this_seed, find_coords = part[0], part[2]
+
+    for line in lista_linhas:
+        p = line.split("|")
+        if len(p) < 8: continue
+        numero_linea, ideia_numero, fonte_itimos, se_randomico = p[1], p[2], p[3], p[4]
+        total_itimos, itimos_atual = int(p[5]), int(p[6])
+        array_itimos = p[7:-1] if p[-1] == "\n" else p[7:]
+
+        if ideia_numero == "00":
+            pula_linha = True
+            continue
+
+        tabs = array_itimos[0].count('$')
+        if tabs > 0: array_itimos = array_itimos[1:]
+
+        if total_itimos!= len(array_itimos): total_itimos = len(array_itimos)
+        if total_itimos == 1: se_randomico = "F"
+
+        tentativas = 0
+        while True:
+            if total_itimos > 1:
+                if se_randomico == "F":
+                    itimos_atual = total_itimos - 1 if itimos_atual <= 0 else itimos_atual - 1
+                else:
+                    itimos_atual = randrange(0, total_itimos)
+            else:
+                itimos_atual = 0
+
+            itimo_escolhido = array_itimos[itimos_atual] if 0 <= itimos_atual < len(array_itimos) else "_Erro_"
+
+            find_eureka = f"{nome_tema}_{numero_linea}{ideia_numero}"
+            if find_eureka == find_coords and look_for_seed:
+                for itimo in array_itimos:
+                    if this_seed.lower() in itimo.lower():
+                        itimo_escolhido = itimo
+                        lista_unicos.append(itimo.upper())
+                        itimo_escolhido = itimo_escolhido.replace(this_seed, f"<mark>{this_seed}</mark>")
+                        look_for_seed = False
+                        break
+
+            if (itimo_escolhido.upper() not in
+                "_E_A_AS_O_OS_NO_NOS_NA_NAS_ME_DE_SE_QUE_NÃO_SO_SEM_NEM_EM_UM_UMA_POR_MEU_VE_TE_TÃO_DA_SER_TER_PRA_PARA_QUANDO_..._._,_:_!_?"):
+                if itimo_escolhido.upper() not in lista_unicos:
+                    lista_unicos.append(itimo_escolhido.upper())
+                    break
+                else:
+                    tentativas += 1
+                    if tentativas > total_itimos:
+                        lista_unicos.append(itimo_escolhido.upper())
+                        lista_duplos.append(itimo_escolhido.upper())
+                        break
+                    if itimo_escolhido.upper() in lista_duplos and len(itimo_escolhido) > 3:
+                        continue
+                    if tentativas > 30: break
+            else:
+                break
+
+        if numero_linea!= muda_linha:
+            if novo_verso:
+                novo_poema.append(acerto_final(novo_verso))
+            novo_verso, muda_linha = "", numero_linea
+
+        if pula_linha:
+            novo_poema.append("")
+            pula_linha = False
+
+        novo_verso += itimo_escolhido + " "
+        if tabs > 0:
+            novo_verso = '&emsp;' * tabs + novo_verso
+
+    if novo_verso:
+        novo_poema.append(acerto_final(novo_verso))
+
+    if nome_tema == "Nós":
+        novo_poema.extend(["", '<a href="https://thispersondoesnotexist.com/" target="_blank">... quem será essa pessoa que não existe?</a>'])
+
+    with open(os.path.join(DATA, f"{nome_tema}.ypo"), "w", encoding="utf-8") as f:
+        f.writelines(lista_header)
+        f.writelines([l for l in tema if l.startswith("|")])
+        f.writelines(lista_finais)
+
+    return novo_poema
+
+def load_poema(nome_tema, seed=""):
+    script = gera_poema(nome_tema, seed)
+    save_file_temp(f"LYPO_{IPAddres}", "\n".join(script))
+    return "<br>".join(script)
+
+# --- UI HELPERS ---
+def load_arts(nome_tema):
+    path = os.path.join(IMAGES, "machina")
+    for line in load_list(os.path.join(BASE, "images.txt")):
+        if line.startswith(f"{nome_tema} :"):
+            path = os.path.join(IMAGES, line.split(" : ")[1])
+            break
+    try:
+        arts = [f for f in os.listdir(path) if f.endswith(".jpg")]
+        if not arts: return None
+        img = random.choice([a for a in arts if a not in st.session_state.arts] or arts)
+        st.session_state.arts.append(img)
+        if len(st.session_state.arts) > 36: del st.session_state.arts[0]
+        return os.path.join(path, img)
+    except:
+        return None
+
+def write_ypoema(titulo, LOGO_TEXTO, LOGO_IMAGE):
+    if LOGO_IMAGE:
+        st.markdown(
+            f"""<div class='container'>
+            <img class='logo-img' src='data:image/jpg;base64,{base64.b64encode(open(LOGO_IMAGE,
