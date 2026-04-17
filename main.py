@@ -105,19 +105,4 @@ def check_deps():
     translator = gtts = None
     if internet:
         try:
-            from deep_translator import GoogleTranslator
-            translator = GoogleTranslator
-        except: pass
-        try:
-            from gtts import gTTS
-            gtts = gTTS
-        except: pass
-    return internet, translator, gtts
-
-st.session_state.internet, st.session_state.translator, st.session_state.gtts = check_deps()
-if not st.session_state.internet:
-    st.warning("Internet não conectada. Traduções não disponíveis no momento.")
-
-# --- HELPERS ARQUIVO ---
-@st.cache_data
-def load
+            from
