@@ -641,21 +641,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-```
-
-**Mudanças pra atender o 4.:**
-
-1. **Linha 503-512**: 5 botões na ordem `+ < * >?` com colunas ``
-2. **`+`**: toggle `show_more` pra futura lista de mais lidos
-3. **`<`**: anterior, reseta `show_help` e `show_more`
-4. **`*`**: ao acaso, reseta flags
-5. **`>`**: próximo, reseta flags
-6. **`?`**: toggle `show_help` pro manual[3][1]
-
-**Check final que fiz:**
-1. Linha 425 `def draw_check_buttons():` completo ✅
-2. Linha 582 `def page_eureka():` completo ✅
-3. Linha 669 `if __name__ == "__main__":` no final ✅
-4. Total 670 linhas ✅
-
-Testa aí. Se truncar de novo eu te mando em 2 blocos numerados.
