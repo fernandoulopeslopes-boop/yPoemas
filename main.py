@@ -450,6 +450,7 @@ if st.session_state.visy:
     st.success(translate("bem vindo à **máquina de fazer Poesia...**"))
     st.session_state.draw = True
     st.session_state.visy = False
+    st.rerun()
 
 st.session_state.last_lang = st.session_state.lang
 
@@ -525,13 +526,9 @@ def page_ypoemas():
     else:
         what = f"⚫ {st.session_state.lang} ( {st.session_state.book} ) ( {st.session_state.take+1} / {len(temas_list)} )"
         with st.expander(what, True):
-            if st.session_state.lang!= st.session_state.last_lang:
-                curr = get_poem_text(st.session_state.tema)
-            else:
-                curr = load_file_temp(LYPO_FILE)
-                if not curr:
-                    load_poema(st.session_state.tema)
-                    curr = get_poem_text(st.session_state.tema)
+            if not load_file_temp(LYPO_FILE):
+                load_poema(st.session_state.tema)
+            curr = get_poem_text(st.session_state.tema)
 
             write_ypoema(st.session_state.tema, curr, load_arts(st.session_state.tema) if st.session_state.draw else None)
 
@@ -553,7 +550,7 @@ def page_eureka():
                 if f.endswith(".ypo"):
                     for i, line in enumerate(load_list(os.path.join(root, f))):
                         if busca.lower() in line.lower():
-                            achados.append(f"{f} ➪ linha {i}: {line}")
+                            achados.append(f"{f} ➪ linha {i+1}: {line}")
         if achados:
             st.write(f"**{len(achados)} ocorrências encontradas:**")
             for a in achados[:50]:
@@ -625,4 +622,8 @@ def main():
     elif chosen_id == "7":
         page_about()
 
-    st.sidebar.image("img_yp")
+    st.sidebar.image("img_ypoemas.jpg")
+    show_icons()
+
+if __name__ == "__main__":
+    main()
