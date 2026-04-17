@@ -25,8 +25,6 @@
 |04|02|Crítico_0402|F|1|1|galardia|clareza|elegância|harmonia|nobreza|anima|
 |04|03|Crítico_0403|F|1|1|deslumbrante|inédita|cristalina|
 |04|04|Crítico_0404|F|1|1|,|
-
-|05|00|
 |05|01|Crítico_0501|F|1|1|Um sopro de|Uma pitada de|
 |05|02|Crítico_0502|F|1|1|brio|alegria|magia|essência|vida|espírito|garbo|impacto|lirismo|
 |05|03|Crítico_0503|F|1|1|e|
@@ -41,5 +39,6 @@
 |07|03|Crítico_0703|F|1|1|...|
 |07|04|Crítico_0704|F|1|1|Entrem. A porta do infinito está aberta...|Sejam bem-vindos a esse novo Uni-Verso!|Percam-se !!!|
 
-|08|01|Crítico_0801|F|1|1|José Maria dos Santos, Crítico Literário... ao seu dispor.|
+|08|01|Crítico_0801|F|1|1|José Maria dos Santos,|
+|08|02|Crítico_0802|F|1|1|Crítico Literário... ao seu dispor.|
 <EOF>
