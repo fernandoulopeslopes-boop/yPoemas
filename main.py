@@ -625,4 +625,4 @@ def main():
     elif chosen_id == "7":
         page_about()
 
-    st.sidebar.image("img_yp
+    st.sidebar.image("img_yp)
