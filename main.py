@@ -354,7 +354,6 @@ def gera_poema(nome_tema, seed_eureka):
     return novo_poema
 
 def load_poema(nome_tema, seed=""):
-    # Apaga tradução antiga quando gera novo poema
     delete_file_temp(TYPO_FILE)
     script = gera_poema(nome_tema, seed)
     save_file_temp(LYPO_FILE, "\n".join(script))
@@ -378,7 +377,6 @@ def load_arts(nome_tema):
         return None
 
 def write_ypoema(titulo, LOGO_TEXTO, LOGO_IMAGE):
-    # LOGO_TEXTO vem com \n, converte pra <br> pro HTML
     LOGO_TEXTO = LOGO_TEXTO.replace("\n", "<br>")
     if LOGO_IMAGE:
         img_b64 = base64.b64encode(open(LOGO_IMAGE, 'rb').read()).decode()
@@ -424,4 +422,207 @@ def pick_lang():
     if st.session_state.lang!= st.session_state.last_lang:
         st.success(translate("idioma atual") + " ➪ " + st.session_state.lang)
 
-def draw
+def draw_check_buttons():
+    c1, c2, c3 = st.sidebar.columns([3.8, 3.2, 3])
+    st.session_state.draw = c1.checkbox("imagem", st.session_state.draw)
+    st.session_state.talk = c2.checkbox("áudio", st.session_state.talk)
+    st.session_state.vydo = c3.checkbox("vídeo", st.session_state.vydo)
+
+def show_icons():
+    st.sidebar.markdown(
+        f"""<nav>
+        <a href='https://www.facebook.com/nandoulopes' target='_blank'>• facebook</a> |
+        <a href='mailto:lopes.fernando@hotmail.com' target='_blank'>e-mail</a> |
+        <a href='https://www.instagram.com/fernando.lopes.942/' target='_blank'>instagram</a> |
+        <a href='https://web.whatsapp.com/send?phone=+5512991368181' target='_blank'>whatsapp</a>
+        </nav>""", unsafe_allow_html=True,
+    )
+
+# --- VISITOR ---
+if st.session_state.visy:
+    try:
+        v = int(load_file_temp("visitors.txt") or "0") + 1
+        st.session_state.nany_visy = v
+        save_file_temp("visitors.txt", str(v))
+    except: pass
+    temas = load_list(os.path.join(BASE, f"rol_{st.session_state.book}.txt"))
+    st.session_state.take = random.randrange(len(temas)) if temas else 0
+    st.success(translate("bem vindo à **máquina de fazer Poesia...**"))
+    st.session_state.draw = True
+    st.session_state.visy = False
+
+st.session_state.last_lang = st.session_state.lang
+
+# --- PÁGINAS ---
+def get_poem_text(nome_tema):
+    if st.session_state.lang == "pt":
+        txt = load_file_temp(LYPO_FILE)
+        if not txt:
+            load_poema(nome_tema)
+            txt = load_file_temp(LYPO_FILE)
+        return txt
+    else:
+        typo = load_file_temp(TYPO_FILE)
+        if not typo:
+            lypo = load_file_temp(LYPO_FILE)
+            if not lypo:
+                load_poema(nome_tema)
+                lypo = load_file_temp(LYPO_FILE)
+            typo = translate(lypo)
+            save_file_temp(TYPO_FILE, typo)
+        return typo
+
+def page_mini():
+    st.sidebar.info(load_md_file("INFO_MINI.md"))
+    temas_list = load_list(os.path.join(BASE, "rol_mini.txt")) or ["Haikai"]
+    maxy = len(temas_list) - 1
+    st.session_state.mini = max(0, min(st.session_state.mini, maxy))
+
+    _, last, rand, nest, _ = st.columns([4, 1, 1, 1, 4])
+    if last.button("◀", key="mini_prev"):
+        st.session_state.mini = maxy if st.session_state.mini == 0 else st.session_state.mini - 1
+    if rand.button("✻", key="mini_rand"):
+        st.session_state.mini = random.randrange(maxy + 1)
+    if nest.button("▶", key="mini_next"):
+        st.session_state.mini = 0 if st.session_state.mini == maxy else st.session_state.mini + 1
+
+    tema = temas_list[st.session_state.mini]
+    load_poema(tema)
+    curr = get_poem_text(tema)
+    write_ypoema(tema, curr, load_arts(tema) if st.session_state.draw else None)
+    if st.session_state.talk: talk(curr)
+
+def page_ypoemas():
+    temas_list = load_list(os.path.join(BASE, f"rol_{st.session_state.book}.txt")) or ["Fatos"]
+    maxy = len(temas_list) - 1
+    st.session_state.take = max(0, min(st.session_state.take, maxy))
+
+    _, more, last, rand, nest, manu, _ = st.columns([3, 1, 1, 1, 1, 1, 3])
+    if last.button("◀", help="anterior"):
+        st.session_state.take = maxy if st.session_state.take == 0 else st.session_state.take - 1
+    if rand.button("✻", help="ao acaso"):
+        st.session_state.take = random.randrange(maxy + 1)
+    if nest.button("▶", help="próximo"):
+        st.session_state.take = 0 if st.session_state.take == maxy else st.session_state.take + 1
+    more = more.button("✚", help="mais lidos...")
+    manu = manu.button("?", help="help!!!")
+
+    if not st.session_state.draw:
+        opt = st.selectbox("↓ lista de Temas", range(len(temas_list)),
+                          index=st.session_state.take, format_func=lambda x: temas_list[x])
+        st.session_state.take = opt
+
+    st.session_state.tema = temas_list[st.session_state.take]
+
+    if manu:
+        st.subheader(load_md_file("MANUAL_YPOEMAS.md"))
+
+    if st.session_state.vydo:
+        st.sidebar.info(load_md_file("INFO_VYDE.md"))
+        v = os.path.join(BASE, "video_ypoemas.webm")
+        if os.path.exists(v): st.video(open(v, "rb").read(), format="webm")
+        st.session_state.vydo = False
+    else:
+        what = f"⚫ {st.session_state.lang} ( {st.session_state.book} ) ( {st.session_state.take+1} / {len(temas_list)} )"
+        with st.expander(what, True):
+            if st.session_state.lang!= st.session_state.last_lang:
+                curr = get_poem_text(st.session_state.tema)
+            else:
+                curr = load_file_temp(LYPO_FILE)
+                if not curr:
+                    load_poema(st.session_state.tema)
+                    curr = get_poem_text(st.session_state.tema)
+
+            write_ypoema(st.session_state.tema, curr, load_arts(st.session_state.tema) if st.session_state.draw else None)
+
+            if manu:
+                info = translate("\n".join(load_list(os.path.join(BASE, "info.txt"))))
+                img = os.path.join(IMAGES, "matrix", st.session_state.tema.capitalize() + ".jpg")
+                write_ypoema("Sobre " + st.session_state.tema, info, img if os.path.exists(img) else None)
+
+        if st.session_state.talk: talk(curr)
+
+def page_eureka():
+    st.sidebar.info(load_md_file("INFO_EUREKA.md"))
+    st.subheader("Eureka - Busca nos poemas")
+    busca = st.text_input("Digite uma palavra para buscar nos arquivos.ypo")
+    if busca:
+        achados = []
+        for root, dirs, files in os.walk(DATA):
+            for f in files:
+                if f.endswith(".ypo"):
+                    for i, line in enumerate(load_list(os.path.join(root, f))):
+                        if busca.lower() in line.lower():
+                            achados.append(f"{f} ➪ linha {i}: {line}")
+        if achados:
+            st.write(f"**{len(achados)} ocorrências encontradas:**")
+            for a in achados[:50]:
+                st.code(a)
+        else:
+            st.warning("Nenhuma ocorrência encontrada.")
+
+def page_off_machina():
+    st.sidebar.info(load_md_file("INFO_OFF.md"))
+    st.subheader("Off-Machina")
+    st.markdown(load_md_file("OFF_MACHINA.md"))
+
+def page_books():
+    st.sidebar.info(load_md_file("INFO_BOOKS.md"))
+    st.subheader("Books - Livros gerados")
+    books = [f for f in os.listdir(TEMP) if f.startswith("BOOK_")]
+    if not books:
+        st.info("Nenhum livro gerado ainda.")
+        return
+    sel = st.selectbox("Selecione um livro", books)
+    st.text_area("Conteúdo", load_file_temp(sel), height=400)
+
+def page_poly():
+    st.sidebar.info(load_md_file("INFO_POLY.md"))
+    st.subheader("Poly - Poliglotas")
+    poly_files = [f for f in os.listdir(BASE) if f.startswith("poly_")]
+    if not poly_files:
+        st.warning("Nenhum arquivo poly encontrado.")
+        return
+    sel = st.selectbox("Arquivo poly", poly_files)
+    st.text_area("Conteúdo", "\n".join(load_list(os.path.join(BASE, sel))), height=400)
+
+def page_about():
+    st.sidebar.info(load_md_file("INFO_ABOUT.md"))
+    st.subheader("About")
+    st.markdown(load_md_file("ABOUT.md"))
+
+# --- MAIN ---
+def main():
+    chosen_id = stx.tab_bar(
+        data=[
+            stx.TabBarItemData(id=1, title="mini", description=""),
+            stx.TabBarItemData(id=2, title="yPoemas", description=""),
+            stx.TabBarItemData(id=3, title="eureka", description=""),
+            stx.TabBarItemData(id=4, title="off-machina", description=""),
+            stx.TabBarItemData(id=5, title="books", description=""),
+            stx.TabBarItemData(id=6, title="poly", description=""),
+            stx.TabBarItemData(id=7, title="about", description=""),
+        ],
+        default=2,
+    )
+
+    pick_lang()
+    draw_check_buttons()
+
+    if chosen_id == "1":
+        page_mini()
+    elif chosen_id == "2":
+        st.sidebar.info(load_md_file("INFO_YPOEMAS.md"))
+        page_ypoemas()
+    elif chosen_id == "3":
+        page_eureka()
+    elif chosen_id == "4":
+        page_off_machina()
+    elif chosen_id == "5":
+        page_books()
+    elif chosen_id == "6":
+        page_poly()
+    elif chosen_id == "7":
+        page_about()
+
+    st.sidebar.image("img_yp
