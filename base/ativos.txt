@@ -15,6 +15,7 @@ Blablabla : metalinguagem
 Bolero : poesia
 Brado : joco
 Bula : joco
+Cadência : metalinguagem
 Cartaz : joco
 Circular : poesia
 Ciuminho : poesia
@@ -22,6 +23,8 @@ Clandestino : poesia
 Clarice : poesia
 Conto : poesia
 Cordel : metalinguagem
+Critico : poesia
+Críticas : joco
 Cromossomo : joco
 Cuores : poesia
 Destinos : poesia
