@@ -1,80 +1,127 @@
 import streamlit as st
-from deep_translator import GoogleTranslator
-from gtts import gTTS
 import os
+from lay_2_ypo import gera_poema
 
-# Configuração da página
-st.set_page_config(page_title="a Máquina de Fazer Poesia", layout="wide")
+# 1. CONFIGURAÇÃO DE PÁGINA
+st.set_page_config(
+    page_title="a Máquina de Fazer Poesia",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
-# CSS para customização da Sidebar (300px, texto justificado e centralizado)
+# CSS: Fixar largura da sidebar (300px) e customização técnica
 st.markdown("""
     <style>
-    [data-testid="stSidebar"] {
-        width: 300px;
-    }
-    [data-testid="stSidebar"] .stMarkdown {
-        text-align: justify;
-    }
-    .stButton button {
-        width: 100%;
-        border-radius: 5px;
-    }
+        [data-testid="stSidebar"] {
+            min-width: 300px;
+            max-width: 300px;
+        }
+        .stMarkdown p {
+            text-align: justify;
+        }
+        .stButton button {
+            width: 100%;
+        }
     </style>
-""", unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
-# 1. SIDEBAR (TODO [TEST] - REVISADO)
+# 2. ESTADO DA SESSÃO
+if 'poema_atual' not in st.session_state:
+    st.session_state.poema_atual = []
+if 'tema_selecionado' not in st.session_state:
+    st.session_state.tema_selecionado = "FATOS"
+if 'pagina_ativa' not in st.session_state:
+    st.session_state.pagina_ativa = "yPoemas"
+
+# 3. NAVEGAÇÃO SUPERIOR (As 6 Páginas)
+t1, t2, t3, t4, t5, t6 = st.columns(6)
+with t1:
+    if st.button("Mini"): st.session_state.pagina_ativa = "mini"
+with t2:
+    if st.button("yPoemas"): st.session_state.pagina_ativa = "yPoemas"
+with t3:
+    if st.button("Eureka"): st.session_state.pagina_ativa = "eureka"
+with t4:
+    if st.button("Books"): st.session_state.pagina_ativa = "books"
+with t5:
+    if st.button("Comments"): st.session_state.pagina_ativa = "comments"
+with t6:
+    if st.button("About"): st.session_state.pagina_ativa = "about"
+
+st.divider()
+
+# 4. SIDEBAR (TODO [TEST] CUMPRIDO)
 with st.sidebar:
-    # ITEM 1: Dropdown list com os idiomas do PCC no topo
-    idiomas_pcc = [
-        "Português", "Español", "Italiano", "Français", "English", 
-        "Català", "Deutsch", "Nederlands", "Dansk", "Svenska", "Norsk"
-    ]
-    st.selectbox("PCC - Idioma", idiomas_pcc, label_visibility="collapsed")
+    # ITEM 1: Dropdown list com os idiomas PCC (Topo Esquerdo/Largura Total)
+    idiomas_pcc = ["Português", "Español", "Italiano", "Français", "English", "Català", "Deutsch", "Nederlands", "Dansk", "Svenska", "Norsk"]
+    st.selectbox("Selecione o Idioma", idiomas_pcc, label_visibility="collapsed")
     
-    st.markdown("---")
+    # ITEM 2: (Botoes de idiomas antigos eliminados conforme solicitado)
     
-    # ITEM 3: radio_chk []som []arte []vídeo
-    # Nota: Substitui os antigos botões de áudio, imagem e vídeo
-    modo_exibicao = st.radio(
-        "Modo",
-        ["[]som", "[]arte", "[]vídeo"],
-        label_visibility="collapsed"
-    )
+    st.divider()
     
-    st.markdown("---")
+    with st.container():
+        # Listagem dinâmica de livros em ./base/
+        try:
+            arquivos_base = os.listdir("./base/")
+            livros_lista = sorted([f.replace("Rol_", "").replace(".TXT", "") for f in arquivos_base if f.startswith("Rol_") and f.endswith(".TXT")])
+        except FileNotFoundError:
+            livros_lista = []
+
+        st.selectbox("selecione o livro", livros_lista)
+        
+        # Temas em ./data/
+        try:
+            arquivos_data = os.listdir("./data/")
+            temas = sorted([f.replace(".ypo", "") for f in arquivos_data if f.endswith(".ypo")])
+        except FileNotFoundError:
+            temas = ["FATOS"]
+
+        st.selectbox(
+            "Escolha o Tema", 
+            temas, 
+            index=temas.index(st.session_state.tema_selecionado) if st.session_state.tema_selecionado in temas else 0
+        )
+        
+        st.divider()
+        
+        # ITEM 3: radio_chk []som []arte []vídeo
+        st.radio("Modo", ["[]som", "[]arte", "[]vídeo"], label_visibility="collapsed")
+        
+        st.divider()
+        st.text_input("Semente", placeholder="")
+
+    # ITEM 4: Restante da sidebar preservado
+    st.divider()
+    st.caption("Copyright © 1983-2026 Nando Lopes")
+
+# 5. RENDERIZAÇÃO (PPP)
+def main():
+    pagina = st.session_state.pagina_ativa
+    col_l, col_main, col_r = st.columns([1, 4, 1])
     
-    # ITEM 4: Navegação (Restante da sidebar)
-    if st.button("mini"):
-        st.session_state.page = "mini"
-    if st.button("yPoemas"):
-        st.session_state.page = "ypoemas"
-    if st.button("eureka"):
-        st.session_state.page = "eureka"
-    if st.button("books"):
-        st.session_state.page = "books"
-    if st.button("comments"):
-        st.session_state.page = "comments"
-    if st.button("about"):
-        st.session_state.page = "about"
+    with col_main:
+        if pagina == "mini":
+            import mini as pg_mini
+            pg_mini.exibir()
+        elif pagina == "yPoemas":
+            if st.session_state.poema_atual:
+                with st.container(border=True):
+                    for v in st.session_state.poema_atual:
+                        if v == "\n": st.write("")
+                        else: st.markdown(v, unsafe_allow_html=True)
+        elif pagina == "eureka":
+            import eureka as pg_eureka
+            pg_eureka.exibir()
+        elif pagina == "books":
+            import books as pg_books
+            pg_books.exibir()
+        elif pagina == "comments":
+            import comments as pg_comments
+            pg_comments.exibir()
+        elif pagina == "about":
+            import about as pg_about
+            pg_about.exibir()
 
-# 2. ÁREA PRINCIPAL
-# Botões de interação no topo da tela conforme planejado
-col1, col2 = st.columns(2)
-with col1:
-    if st.button("💬 Talk"):
-        st.write("Iniciando interação por voz...")
-with col2:
-    if st.button("🎨 Arts"):
-        st.write("Exibindo galeria de artes...")
-
-st.title("a Máquina de Fazer Poesia")
-
-# Lógica de conteúdo (Removendo elementos de vídeo conforme instrução)
-if modo_exibicao == "[]vídeo":
-    st.info("O suporte a vídeo foi removido para manter a interface leve.")
-elif modo_exibicao == "[]arte":
-    st.write("Área de visualização artística.")
-else:
-    st.write("Área de áudio/poesia.")
-
-# O restante do código de processamento de tradução e gTTS segue aqui...
+if __name__ == "__main__":
+    main()
