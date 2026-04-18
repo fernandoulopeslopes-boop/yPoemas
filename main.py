@@ -1,5 +1,7 @@
 r"""
 
+https://ypoemas-mxzvate9zattkypcouvnfs.streamlit.app/
+
 yPoemas is an app that randomly collects words and phrases
 from specific databases and organizes them
 in different new poems or poetic texts.
@@ -17,11 +19,7 @@ Não vivo no meu tempo.
 
 ツpoemas
 
-AlfaBetaAção == C:\WINDOWS\new.ini
 config.toml  == C:\Users\dkvece\.streamlit
-
-https://ypoemas-mxzvate9zattkypcouvnfs.streamlit.app/
-
 share : https://share.streamlit.io/
 deploy: https://share.streamlit.io/nandoulopes/ypoemas/main/ypo.py
 runnin: https://nandoulopes-ypoemas-ypo-gf4z3l.streamlitapp.com/
