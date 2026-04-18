@@ -50,18 +50,18 @@ with t6:
 
 st.divider()
 
-# 4. SIDEBAR (TODO [TEST] CUMPRIDO)
+# 4. SIDEBAR (TODO [TEST] - REVISÃO FINAL)
 with st.sidebar:
-    # ITEM 1: Dropdown list com os idiomas PCC (Topo Esquerdo/Largura Total)
+    # 1. TOPO ABSOLUTO: Dropdown list com os idiomas do PCC
     idiomas_pcc = ["Português", "Español", "Italiano", "Français", "English", "Català", "Deutsch", "Nederlands", "Dansk", "Svenska", "Norsk"]
-    st.selectbox("Selecione o Idioma", idiomas_pcc, label_visibility="collapsed")
+    st.selectbox("Idioma", idiomas_pcc, label_visibility="collapsed")
     
-    # ITEM 2: (Botoes de idiomas antigos eliminados conforme solicitado)
+    # 2. (BOTÕES DE IDIOMAS ANTIGOS TOTALMENTE REMOVIDOS DAQUI)
     
     st.divider()
     
     with st.container():
-        # Listagem dinâmica de livros em ./base/
+        # Listagem dinâmica de livros
         try:
             arquivos_base = os.listdir("./base/")
             livros_lista = sorted([f.replace("Rol_", "").replace(".TXT", "") for f in arquivos_base if f.startswith("Rol_") and f.endswith(".TXT")])
@@ -70,7 +70,7 @@ with st.sidebar:
 
         st.selectbox("selecione o livro", livros_lista)
         
-        # Temas em ./data/
+        # Temas
         try:
             arquivos_data = os.listdir("./data/")
             temas = sorted([f.replace(".ypo", "") for f in arquivos_data if f.endswith(".ypo")])
@@ -85,17 +85,17 @@ with st.sidebar:
         
         st.divider()
         
-        # ITEM 3: radio_chk []som []arte []vídeo
+        # 3. MUDANÇA PARA RADIO_CHK
         st.radio("Modo", ["[]som", "[]arte", "[]vídeo"], label_visibility="collapsed")
         
         st.divider()
         st.text_input("Semente", placeholder="")
 
-    # ITEM 4: Restante da sidebar preservado
+    # 4. RESTANTE DA SIDEBAR (Copyright)
     st.divider()
     st.caption("Copyright © 1983-2026 Nando Lopes")
 
-# 5. RENDERIZAÇÃO (PPP)
+# 5. RENDERIZAÇÃO
 def main():
     pagina = st.session_state.pagina_ativa
     col_l, col_main, col_r = st.columns([1, 4, 1])
