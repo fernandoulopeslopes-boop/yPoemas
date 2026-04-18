@@ -2,13 +2,14 @@
 *- Cadência.ypo
 *- 
 |01|01|Cadência_0101|F|1|1|A|
-|01|02|Cadência_0102|F|1|1|influência|ausência|ocorrência|consequência|anuência|essência|potência|pendência|importância|irrelevância|decorrência|transcendência|dependência|ascendência|abrangência|dissidência|exigência|vigência|consistência|prevalência, contundência|envolvência|imponência|incidência|improcedência|inferência|ingerência|permanência|precedência|procedência|saliência|veemência|ambivalência|eficiência|impermanência|intercorrência|interferência|premência|
+|01|02|Cadência_0102|T|1|1|influência|ausência|ocorrência|consequência|anuência|essência|potência|pendência|importância|irrelevância|decorrência|transcendência|dependência|ascendência|abrangência|dissidência|exigência|vigência|consistência|prevalência, contundência|envolvência|imponência|incidência|improcedência|inferência|ingerência|permanência|precedência|procedência|saliência|veemência|ambivalência|eficiência|impermanência|intercorrência|interferência|premência|
 |01|03|Cadência_0103|F|1|1|da|
-|01|04|Cadência_0104|F|1|1|prepotência|cadência|competência|imprudência|impotência|frequência|eloquência|prudência|complacência|sequência|emergência|insistência|pertinência|inexistência|
+|01|04|Cadência_0104|T|1|1|prepotência|cadência|competência|imprudência|impotência|frequência|eloquência|prudência|complacência|sequência|emergência|insistência|pertinência|inexistência|
 |02|00|
 |02|01|Cadência_0201|F|1|1|sobre a|
-|02|02|Cadência_0202|F|1|1||irreverência|urgência|referência|existência|resistência|carência|decência|concorrência|querência|vivência|coerência|confidência|delinquência|transparência|consciência|convivência|desistência|displicência|inteligência|persistência|paciência|preferência|providência|sapiência|truculência|coexistência|experiência|equivalência|decadência|
+|02|02|Cadência_0202|T|1|1|irreverência|urgência|referência|existência|resistência|carência|decência|concorrência|querência|vivência|coerência|confidência|delinquência|transparência|consciência|convivência|desistência|displicência|inteligência|persistência|paciência|preferência|providência|sapiência|truculência|coexistência|experiência|equivalência|decadência|
 |03|00|
 |03|01|Cadência_0301|F|1|1|não é mera|nunca foi só|não passa de uma|talvez seja|tangencia a|é maior que a|
-|03|02|Cadência_0302|F|1|1|coincidência|tendência|aparência|divergência|recorrência|reverência|insolência|deficiência|advertência|deferência|irreverência|clemência|adjacência|incoerência|vidência|assistência|confluência|congruência|convergência|contingência|descendência|evidência|incumbência|indulgência|negligência|sucumbência|transferência|turbulência|clarividência|condescendência|impaciência|incompetência|incongruência|independência|intransigência|
+|03|02|Cadência_0302|T|1|1|coincidência|tendência|aparência|divergência|recorrência|reverência|insolência|deficiência|advertência|deferência|irreverência|clemência|adjacência|incoerência|vidência|assistência|confluência|congruência|convergência|contingência|descendência|evidência|incumbência|indulgência|negligência|sucumbência|transferência|turbulência|clarividência|condescendência|impaciência|incompetência|incongruência|independência|intransigência|
+|03|03|Cadência_0303|F|1|1|.|...|!|
 <EOF>
