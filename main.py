@@ -1,6 +1,7 @@
 r"""
 
 https://ypoemas-mxzvate9zattkypcouvnfs.streamlit.app/
+https://github.com/fernandoulopeslopes-boop/yPoemas
 
 yPoemas is an app that randomly collects words and phrases
 from specific databases and organizes them
