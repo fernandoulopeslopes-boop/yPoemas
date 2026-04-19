@@ -47,10 +47,9 @@ with st.sidebar:
     idiomas_pcc = ["Português", "Español", "Italiano", "Français", "English", "Català", "Deutsch", "Nederlands", "Dansk", "Svenska", "Norsk"]
     st.selectbox("Idioma", idiomas_pcc, label_visibility="collapsed")
     
-#    st.divider()
     with st.container():
         # ITEM 3: radio_chk (Sem botões extras)
-        st.radio(["[]som", "[]arte", "[]vídeo"], label_visibility="expanded")
+        st.radio(["[]som", "[]arte", "[]vídeo"], label_visibility="collapsed")
         
     st.caption("Copyright © 1983-2026 Nando Lopes")
 
