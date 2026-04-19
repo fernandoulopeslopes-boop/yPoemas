@@ -13,7 +13,7 @@ st.set_page_config(
 st.markdown("""
     <style>
         [data-testid="stSidebar"] { min-width: 300px; max-width: 300px; }
-        .stMarkdown p { text-align: center; }
+        .stMarkdown p { text-align: justify; }
         .stButton button { width: 100%; }
     </style>
     """, unsafe_allow_html=True)
@@ -41,16 +41,29 @@ with t5:
 with t6:
     if st.button("About"): st.session_state.pagina_ativa = "about"
 
-# 4. SIDEBAR (TODO [TEST] - REVISÃO FINAL)
+st.divider()
+
+# 4. SIDEBAR (Padrão Engenharia)
 with st.sidebar:
-    # ITEM 1: Dropdown de Idiomas (Topo Absoluto)
-    idiomas_pcc = ["Português", "Español", "Italiano", "Français", "English", "Català", "Deutsch", "Nederlands", "Dansk", "Svenska", "Norsk"]
+    # ITEM 1: Dropdown de Idiomas (Lista externa conforme solicitado)
+    try:
+        with open(os.path.join("ypo", "lista_idiomas.TXT"), "r", encoding="utf-8") as f:
+            idiomas_pcc = [linha.strip() for linha in f.readlines() if linha.strip()]
+    except FileNotFoundError:
+        # Fallback de segurança caso o arquivo não seja encontrado no deploy
+        idiomas_pcc = ["Português", "Español", "Italiano", "Français", "English", "Català", "Deutsch", "Nederlands", "Dansk", "Svenska", "Norsk"]
+
     st.selectbox("Idioma", idiomas_pcc, label_visibility="collapsed")
     
+    st.divider()
+
     with st.container():
-        # ITEM 3: radio_chk (Sem botões extras)
-        st.radio("[]som", "[]arte", "[]vídeo", label_visibility="collapsed")
+        # ITEM 3: radio_chk
+        st.radio("Modo", ["[]som", "[]arte", "[]vídeo"], label_visibility="collapsed")
         
+        # LIXO REMOVIDO: (Semente e Input eliminados aqui)
+
+    st.divider()
     st.caption("Copyright © 1983-2026 Nando Lopes")
 
 # 5. RENDERIZAÇÃO
@@ -60,7 +73,9 @@ def main():
     
     with col_main:
         if pagina == "mini":
-            try: import mini as pg_mini; pg_mini.exibir()
+            try:
+                import mini as pg_mini
+                pg_mini.exibir()
             except ImportError: st.error("Módulo 'mini' não encontrado.")
             
         elif pagina == "yPoemas":
@@ -71,11 +86,12 @@ def main():
                         else: st.markdown(v, unsafe_allow_html=True)
                         
         elif pagina == "eureka":
-            try: import eureka as pg_eureka; pg_eureka.exibir()
+            try:
+                import eureka as pg_eureka
+                pg_eureka.exibir()
             except ImportError: st.error("Módulo 'eureka' não encontrado.")
             
         elif pagina == "books":
-            # Lógica interna para Books (Substitui o arquivo books.py inexistente)
             st.subheader("Biblioteca de Temas")
             confirmar = st.toggle("confirmar escolha do leitor")
             
@@ -93,11 +109,15 @@ def main():
                 st.error(f"Erro ao carregar biblioteca: {e}")
 
         elif pagina == "comments":
-            try: import comments as pg_comments; pg_comments.exibir()
+            try:
+                import comments as pg_comments
+                pg_comments.exibir()
             except ImportError: st.error("Módulo 'comments' não encontrado.")
             
         elif pagina == "about":
-            try: import about as pg_about; pg_about.exibir()
+            try:
+                import about as pg_about
+                pg_about.exibir()
             except ImportError: st.error("Módulo 'about' não encontrado.")
 
 if __name__ == "__main__":
