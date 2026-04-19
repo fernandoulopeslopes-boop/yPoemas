@@ -52,14 +52,10 @@ with st.sidebar:
     st.divider()
     
     with st.container():
-        st.divider()
-        
+       
         # ITEM 3: radio_chk (Sem botões extras)
-        st.radio("Modo", ["[]som", "[]arte", "[]vídeo"], label_visibility="collapsed")
+        st.radio(["[]som", "[]arte", "[]vídeo"], label_visibility="collapsed")
         
-        st.divider()
-        st.text_input("Semente", placeholder="")
-
     st.divider()
     st.caption("Copyright © 1983-2026 Nando Lopes")
 
