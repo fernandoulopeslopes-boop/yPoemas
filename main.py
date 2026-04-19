@@ -43,26 +43,29 @@ with t6:
 
 st.divider()
 
-# 4. SIDEBAR (Padrão Engenharia)
+# 4. SIDEBAR (CORREÇÃO TÉCNICA)
 with st.sidebar:
-    # ITEM 1: Dropdown de Idiomas (Lista externa conforme solicitado)
-    try:
-        with open(os.path.join("ypo", "lista_idiomas.TXT"), "r", encoding="utf-8") as f:
+    # ITEM 1: Dropdown de Idiomas (Leitura direta do arquivo)
+    path_idiomas = os.path.join("ypo", "lista_idiomas.TXT")
+    if os.path.exists(path_idiomas):
+        with open(path_idiomas, "r", encoding="utf-8") as f:
             idiomas_pcc = [linha.strip() for linha in f.readlines() if linha.strip()]
-    except FileNotFoundError:
-        # Fallback de segurança caso o arquivo não seja encontrado no deploy
-        idiomas_pcc = ["Português", "Español", "Italiano", "Français", "English", "Català", "Deutsch", "Nederlands", "Dansk", "Svenska", "Norsk"]
+    else:
+        idiomas_pcc = ["Português", "Español", "Italiano"] # Fallback mínimo
 
     st.selectbox("Idioma", idiomas_pcc, label_visibility="collapsed")
     
     st.divider()
 
     with st.container():
-        # ITEM 3: radio_chk
-        st.radio("Modo", ["[]som", "[]arte", "[]vídeo"], label_visibility="collapsed")
+        # ITEM 3: Radio Modo Horizontal e Sem Lixo
+        st.radio(
+            "Modo", 
+            ["[]som", "[]arte", "[]vídeo"], 
+            label_visibility="collapsed", 
+            horizontal=True
+        )
         
-        # LIXO REMOVIDO: (Semente e Input eliminados aqui)
-
     st.divider()
     st.caption("Copyright © 1983-2026 Nando Lopes")
 
@@ -93,20 +96,18 @@ def main():
             
         elif pagina == "books":
             st.subheader("Biblioteca de Temas")
-            confirmar = st.toggle("confirmar escolha do leitor")
-            
-            try:
-                arquivos_base = os.listdir("./base/")
-                livros = [f for f in arquivos_base if f.startswith("Rol_") and f.endswith(".TXT")]
-                if confirmar:
+            if st.toggle("confirmar escolha do leitor"):
+                try:
+                    arquivos_base = os.listdir("./base/")
+                    livros = [f for f in arquivos_base if f.startswith("Rol_") and f.endswith(".TXT")]
                     for livro in livros:
                         with st.expander(livro.replace("Rol_", "").replace(".TXT", "")):
                             with open(f"./base/{livro}", "r", encoding="utf-8") as f:
                                 st.text(f.read())
-                else:
-                    st.info("Ative o toggle para visualizar o conteúdo dos livros.")
-            except Exception as e:
-                st.error(f"Erro ao carregar biblioteca: {e}")
+                except Exception as e:
+                    st.error(f"Erro: {e}")
+            else:
+                st.info("Ative o toggle para ler.")
 
         elif pagina == "comments":
             try:
