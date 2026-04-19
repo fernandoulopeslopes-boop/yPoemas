@@ -13,7 +13,7 @@ st.set_page_config(
 st.markdown("""
     <style>
         [data-testid="stSidebar"] { min-width: 300px; max-width: 300px; }
-        .stMarkdown p { text-align: justify; }
+        .stMarkdown p { text-align: center; }
         .stButton button { width: 100%; }
     </style>
     """, unsafe_allow_html=True)
