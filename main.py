@@ -18,6 +18,35 @@ def main():
         initial_sidebar_state="expanded"
     )
 
+    # CSS pra deszonear o palco
+    st.markdown("""
+    <style>
+    /* 1. Botões de página: evita quebra do título */
+   .stButton button {
+        white-space: nowrap;
+        padding: 0.25rem 0.75rem;
+        font-size: 14px;
+    }
+
+    /* 2. Radio buttons em linha, não coluna */
+    div[data-testid="stRadio"] > div {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    /* 3. Remove espaço extra do topo */
+   .block-container {
+        padding-top: 1rem;
+    }
+
+    /* Ajusta colunas do palco */
+    div[data-testid="column"] {
+        padding: 0 0.5rem;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
     if 'pagina_atual' not in st.session_state:
         st.session_state.pagina_atual = "yPoemas"
     if 'temas_ativos' not in st.session_state:
@@ -31,9 +60,16 @@ def main():
         st.selectbox("Idioma", options=list(IDIOMAS.keys()), key="sel_idioma")
         st.divider()
         st.subheader("Controles do Palco")
-        st.checkbox("Arte", value=True, key="chk_arte")
-        st.checkbox("Som", value=True, key="chk_som")
-        st.checkbox("Vídeo", value=True, key="chk_video")
+
+        # 3. Controles na horizontal com texto curto
+        c1, c2, c3 = st.columns(3)
+        with c1:
+            st.checkbox("Art", value=True, key="chk_arte")
+        with c2:
+            st.checkbox("Som", value=True, key="chk_som")
+        with c3:
+            st.checkbox("Wyd", value=True, key="chk_video")
+
         st.divider()
         st.subheader("Info")
         st.caption(INFO_AUTOR)
