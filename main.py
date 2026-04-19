@@ -4,6 +4,30 @@
 from tools import load_temas_ativos, zay_number
 import sys
 
+IDIOMAS = {
+    'Português': 'pt',
+    'Espanhol': 'es',
+    'Italiano': 'it',
+    'Francês': 'fr',
+    'Inglês': 'en',
+    'Catalão': 'ca',
+    'Córsico': 'co',
+    'Galego': 'gl',
+    'Basco': 'eu',
+    'Esperanto': 'eo',
+    'Latin': 'la',
+    'Galês': 'cy',
+    'Sueco': 'sv',
+    'Polonês': 'pl',
+    'Holandês': 'nl',
+    'Norueguês': 'no',
+    'Finlandês': 'fi',
+    'Dinamarquês': 'da',
+    'Irlandês': 'ga',
+    'Romeno': 'ro',
+    'Russo': 'ru'
+}
+
 def main():
     ativos = load_temas_ativos()
 
