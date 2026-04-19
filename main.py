@@ -49,7 +49,7 @@ with st.sidebar:
     
     with st.container():
         # ITEM 3: radio_chk (Sem botões extras)
-        st.radio(["[]som", "[]arte", "[]vídeo"], label_visibility="collapsed")
+        st.radio("[]som", "[]arte", "[]vídeo", label_visibility="collapsed")
         
     st.caption("Copyright © 1983-2026 Nando Lopes")
 
