@@ -9,7 +9,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# CSS: Trava largura e justificativa
+# CSS: Justificativa correta e largura fixa
 st.markdown("""
     <style>
         [data-testid="stSidebar"] { min-width: 300px; max-width: 300px; }
@@ -21,8 +21,6 @@ st.markdown("""
 # 2. ESTADO DA SESSÃO
 if 'poema_atual' not in st.session_state:
     st.session_state.poema_atual = []
-if 'tema_selecionado' not in st.session_state:
-    st.session_state.tema_selecionado = "FATOS"
 if 'pagina_ativa' not in st.session_state:
     st.session_state.pagina_ativa = "yPoemas"
 
@@ -43,28 +41,28 @@ with t6:
 
 st.divider()
 
-# 4. SIDEBAR (CORREÇÃO TÉCNICA)
+# 4. SIDEBAR (AUDITADA)
 with st.sidebar:
-    # ITEM 1: Dropdown de Idiomas (Leitura direta do arquivo)
+    # MUDANÇA 1: Leitura obrigatória da lista externa
     path_idiomas = os.path.join("ypo", "lista_idiomas.TXT")
-    if os.path.exists(path_idiomas):
+    try:
         with open(path_idiomas, "r", encoding="utf-8") as f:
             idiomas_pcc = [linha.strip() for linha in f.readlines() if linha.strip()]
-    else:
-        idiomas_pcc = ["Português", "Español", "Italiano"] # Fallback mínimo
+    except:
+        idiomas_pcc = ["Erro ao ler TXT"]
 
     st.selectbox("Idioma", idiomas_pcc, label_visibility="collapsed")
     
     st.divider()
 
-    with st.container():
-        # ITEM 3: Radio Modo Horizontal e Sem Lixo
-        st.radio(
-            "Modo", 
-            ["[]som", "[]arte", "[]vídeo"], 
-            label_visibility="collapsed", 
-            horizontal=True
-        )
+    # MUDANÇA 2: Radio buttons HORIZONTAIS
+    # MUDANÇA 3: Expurgo total do lixo (Semente/Input sumiram)
+    st.radio(
+        "Modo", 
+        ["[]som", "[]arte", "[]vídeo"], 
+        label_visibility="collapsed", 
+        horizontal=True
+    )
         
     st.divider()
     st.caption("Copyright © 1983-2026 Nando Lopes")
@@ -72,14 +70,14 @@ with st.sidebar:
 # 5. RENDERIZAÇÃO
 def main():
     pagina = st.session_state.pagina_ativa
-    col_l, col_main, col_r = st.columns([1, 4, 1])
+    _, col_main, _ = st.columns([1, 4, 1])
     
     with col_main:
         if pagina == "mini":
             try:
                 import mini as pg_mini
                 pg_mini.exibir()
-            except ImportError: st.error("Módulo 'mini' não encontrado.")
+            except: st.error("Módulo 'mini' ausente.")
             
         elif pagina == "yPoemas":
             if st.session_state.poema_atual:
@@ -92,20 +90,18 @@ def main():
             try:
                 import eureka as pg_eureka
                 pg_eureka.exibir()
-            except ImportError: st.error("Módulo 'eureka' não encontrado.")
+            except: st.error("Módulo 'eureka' ausente.")
             
         elif pagina == "books":
             st.subheader("Biblioteca de Temas")
             if st.toggle("confirmar escolha do leitor"):
                 try:
-                    arquivos_base = os.listdir("./base/")
-                    livros = [f for f in arquivos_base if f.startswith("Rol_") and f.endswith(".TXT")]
+                    livros = [f for f in os.listdir("./base/") if f.startswith("Rol_") and f.endswith(".TXT")]
                     for livro in livros:
                         with st.expander(livro.replace("Rol_", "").replace(".TXT", "")):
                             with open(f"./base/{livro}", "r", encoding="utf-8") as f:
                                 st.text(f.read())
-                except Exception as e:
-                    st.error(f"Erro: {e}")
+                except: st.error("Erro ao ler diretório base.")
             else:
                 st.info("Ative o toggle para ler.")
 
@@ -113,13 +109,13 @@ def main():
             try:
                 import comments as pg_comments
                 pg_comments.exibir()
-            except ImportError: st.error("Módulo 'comments' não encontrado.")
+            except: st.error("Módulo 'comments' ausente.")
             
         elif pagina == "about":
             try:
                 import about as pg_about
                 pg_about.exibir()
-            except ImportError: st.error("Módulo 'about' não encontrado.")
+            except: st.error("Módulo 'about' ausente.")
 
 if __name__ == "__main__":
     main()
