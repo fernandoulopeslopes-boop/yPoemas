@@ -13,7 +13,7 @@ st.markdown("""
     <style>
         [data-testid="stSidebar"] { min-width: 300px; max-width: 300px; }
         .stMarkdown p { text-align: justify; }
-        .stButton button { width: 100%; }
+        .stButton button { width: 100%; padding: 0px; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -21,9 +21,8 @@ st.markdown("""
 if 'poema_atual' not in st.session_state: st.session_state.poema_atual = []
 if 'pagina_ativa' not in st.session_state: st.session_state.pagina_ativa = "yPoemas"
 
-# Interruptores de Modo (Som, Arte, Pic)
 if 'sw_som' not in st.session_state: st.session_state.sw_som = False
-if 'sw_arte' not in st.session_state: st.session_state.sw_arte = False
+if 'sw_art' not in st.session_state: st.session_state.sw_art = False
 if 'sw_pic' not in st.session_state: st.session_state.sw_pic = False
 
 # 3. NAV SUPERIOR
@@ -35,9 +34,9 @@ for i, col in enumerate([t1, t2, t3, t4, t5, t6]):
 
 st.divider()
 
-# 4. SIDEBAR (CONTAINER PIC)
+# 4. SIDEBAR (MINIMALISTA: som, art, pic)
 with st.sidebar:
-    # IDIOMAS (Path: ypo/)
+    # IDIOMAS
     path_idiomas = os.path.join("ypo", "lista_idiomas.TXT")
     idiomas_pcc = ["Português"]
     if os.path.exists(path_idiomas):
@@ -48,27 +47,27 @@ with st.sidebar:
     
     st.divider()
 
-    # COCKPIT: SOM | ARTE | PIC
+    # CONTAINER COCKPIT (BOTÕES CURTOS PARA EVITAR QUEBRA)
     with st.container(border=True):
         c1, c2, c3 = st.columns(3)
         
         with c1:
-            lbl_som = "Som [ON]" if st.session_state.sw_som else "Som"
-            if st.button(lbl_som):
+            if st.button("som"):
                 st.session_state.sw_som = not st.session_state.sw_som
                 st.rerun()
+            if st.session_state.sw_som: st.caption("·on·")
 
         with c2:
-            lbl_arte = "Arte [ON]" if st.session_state.sw_arte else "Arte"
-            if st.button(lbl_arte):
-                st.session_state.sw_arte = not st.session_state.sw_arte
+            if st.button("art"):
+                st.session_state.sw_art = not st.session_state.sw_art
                 st.rerun()
+            if st.session_state.sw_art: st.caption("·on·")
 
         with c3:
-            lbl_pic = "PIC [ON]" if st.session_state.sw_pic else "PIC"
-            if st.button(lbl_pic):
+            if st.button("pic"):
                 st.session_state.sw_pic = not st.session_state.sw_pic
                 st.rerun()
+            if st.session_state.sw_pic: st.caption("·on·")
 
     st.divider()
     st.caption("Copyright © 1983-2026 Nando Lopes")
@@ -85,8 +84,6 @@ def main():
                     for v in st.session_state.poema_atual:
                         if v == "\n": st.write("")
                         else: st.markdown(v, unsafe_allow_html=True)
-            
-            # As camadas agem conforme os estados sw_som, sw_arte e sw_pic
 
         elif pagina == "books":
             st.subheader("Biblioteca")
