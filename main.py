@@ -29,7 +29,7 @@ if 'pagina_ativa' not in st.session_state:
 # 3. NAVEGAÇÃO SUPERIOR
 t1, t2, t3, t4, t5, t6 = st.columns(6)
 with t1:
-    if st.button("Mini"): st.session_state.pagina_ativa = "mini"
+    if st.button("mini"): st.session_state.pagina_ativa = "mini"
 with t2:
     if st.button("yPoemas"): st.session_state.pagina_ativa = "yPoemas"
 with t3:
@@ -40,8 +40,6 @@ with t5:
     if st.button("Comments"): st.session_state.pagina_ativa = "comments"
 with t6:
     if st.button("About"): st.session_state.pagina_ativa = "about"
-
-st.divider()
 
 # 4. SIDEBAR (TODO [TEST] - REVISÃO FINAL)
 with st.sidebar:
