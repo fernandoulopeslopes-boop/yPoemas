@@ -9,7 +9,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# CSS: Justificativa correta e largura fixa
+# CSS: Trava largura e justificativa
 st.markdown("""
     <style>
         [data-testid="stSidebar"] { min-width: 300px; max-width: 300px; }
@@ -41,29 +41,32 @@ with t6:
 
 st.divider()
 
-# 4. SIDEBAR (AUDITADA)
+# 4. SIDEBAR (SEM LIXO E COM CAMINHO CORRETO)
 with st.sidebar:
-    # MUDANÇA 1: Leitura obrigatória da lista externa
+    # ITEM 1: Dropdown de Idiomas (Path: ypo/)
     path_idiomas = os.path.join("ypo", "lista_idiomas.TXT")
+    
     try:
         with open(path_idiomas, "r", encoding="utf-8") as f:
             idiomas_pcc = [linha.strip() for linha in f.readlines() if linha.strip()]
-    except:
-        idiomas_pcc = ["Erro ao ler TXT"]
+    except Exception:
+        idiomas_pcc = ["Português", "Español", "Italiano", "Français", "English"]
 
     st.selectbox("Idioma", idiomas_pcc, label_visibility="collapsed")
     
     st.divider()
 
-    # MUDANÇA 2: Radio buttons HORIZONTAIS
-    # MUDANÇA 3: Expurgo total do lixo (Semente/Input sumiram)
-    st.radio(
-        "Modo", 
-        ["[]som", "[]arte", "[]vídeo"], 
-        label_visibility="collapsed", 
-        horizontal=True
-    )
+    with st.container():
+        # ITEM 2: Radio Modo Horizontal
+        st.radio(
+            "Modo", 
+            ["[]som", "[]arte", "[]vídeo"], 
+            label_visibility="collapsed", 
+            horizontal=True
+        )
         
+        # O campo 'Semente' e o input branco foram eliminados daqui.
+
     st.divider()
     st.caption("Copyright © 1983-2026 Nando Lopes")
 
@@ -77,7 +80,7 @@ def main():
             try:
                 import mini as pg_mini
                 pg_mini.exibir()
-            except: st.error("Módulo 'mini' ausente.")
+            except: st.error("Módulo 'mini' não encontrado.")
             
         elif pagina == "yPoemas":
             if st.session_state.poema_atual:
@@ -90,7 +93,7 @@ def main():
             try:
                 import eureka as pg_eureka
                 pg_eureka.exibir()
-            except: st.error("Módulo 'eureka' ausente.")
+            except: st.error("Módulo 'eureka' não encontrado.")
             
         elif pagina == "books":
             st.subheader("Biblioteca de Temas")
@@ -101,7 +104,7 @@ def main():
                         with st.expander(livro.replace("Rol_", "").replace(".TXT", "")):
                             with open(f"./base/{livro}", "r", encoding="utf-8") as f:
                                 st.text(f.read())
-                except: st.error("Erro ao ler diretório base.")
+                except: st.error("Erro ao acessar pasta base.")
             else:
                 st.info("Ative o toggle para ler.")
 
@@ -109,13 +112,13 @@ def main():
             try:
                 import comments as pg_comments
                 pg_comments.exibir()
-            except: st.error("Módulo 'comments' ausente.")
+            except: st.error("Módulo 'comments' não encontrado.")
             
         elif pagina == "about":
             try:
                 import about as pg_about
                 pg_about.exibir()
-            except: st.error("Módulo 'about' ausente.")
+            except: st.error("Módulo 'about' não encontrado.")
 
 if __name__ == "__main__":
     main()
