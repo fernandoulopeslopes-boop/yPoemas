@@ -2,14 +2,13 @@ import streamlit as st
 import os
 from lay_2_ypo import gera_poema
 
-# 1. CONFIGURAÇÃO DE PÁGINA
+# 1. SETUP & CSS
 st.set_page_config(
     page_title="a Machina de Fazer Poesia",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# CSS: Trava largura e justificativa
 st.markdown("""
     <style>
         [data-testid="stSidebar"] { min-width: 300px; max-width: 300px; }
@@ -18,58 +17,58 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# 2. ESTADO DA SESSÃO
-if 'poema_atual' not in st.session_state:
-    st.session_state.poema_atual = []
-if 'pagina_ativa' not in st.session_state:
-    st.session_state.pagina_ativa = "yPoemas"
+# 2. ESTADOS
+if 'poema_atual' not in st.session_state: st.session_state.poema_atual = []
+if 'pagina_ativa' not in st.session_state: st.session_state.pagina_ativa = "yPoemas"
 
-# Interruptores de Modo
+# Interruptores de Modo (Som, Arte, Pic)
 if 'sw_som' not in st.session_state: st.session_state.sw_som = False
 if 'sw_arte' not in st.session_state: st.session_state.sw_arte = False
-if 'sw_video' not in st.session_state: st.session_state.sw_video = False
+if 'sw_pic' not in st.session_state: st.session_state.sw_pic = False
 
-# 3. NAVEGAÇÃO SUPERIOR
+# 3. NAV SUPERIOR
 t1, t2, t3, t4, t5, t6 = st.columns(6)
-paginas = ["mini", "yPoemas", "Eureka", "Books", "Comments", "About"]
+btns = ["mini", "yPoemas", "Eureka", "Books", "Comments", "About"]
 for i, col in enumerate([t1, t2, t3, t4, t5, t6]):
-    if col.button(paginas[i]):
-        st.session_state.pagina_ativa = paginas[i].lower()
+    if col.button(btns[i]):
+        st.session_state.pagina_ativa = btns[i].lower()
 
 st.divider()
 
-# 4. SIDEBAR (COM CONTAINER PARA OS BOTÕES)
+# 4. SIDEBAR (CONTAINER PIC)
 with st.sidebar:
-    # IDIOMAS (Caminho: ypo/)
+    # IDIOMAS (Path: ypo/)
     path_idiomas = os.path.join("ypo", "lista_idiomas.TXT")
-    try:
+    idiomas_pcc = ["Português"]
+    if os.path.exists(path_idiomas):
         with open(path_idiomas, "r", encoding="utf-8") as f:
             idiomas_pcc = [l.strip() for l in f.readlines() if l.strip()]
-    except:
-        idiomas_pcc = ["Português", "Español", "Italiano"]
 
     st.selectbox("Idioma", idiomas_pcc, label_visibility="collapsed")
     
     st.divider()
 
-    # CONTAINER DOS MODOS
+    # COCKPIT: SOM | ARTE | PIC
     with st.container(border=True):
         c1, c2, c3 = st.columns(3)
         
         with c1:
-            if st.button("Som"):
+            lbl_som = "Som [ON]" if st.session_state.sw_som else "Som"
+            if st.button(lbl_som):
                 st.session_state.sw_som = not st.session_state.sw_som
-            st.caption("✅" if st.session_state.sw_som else "❌")
+                st.rerun()
 
         with c2:
-            if st.button("Arte"):
+            lbl_arte = "Arte [ON]" if st.session_state.sw_arte else "Arte"
+            if st.button(lbl_arte):
                 st.session_state.sw_arte = not st.session_state.sw_arte
-            st.caption("✅" if st.session_state.sw_arte else "❌")
+                st.rerun()
 
         with c3:
-            if st.button("Vídeo"):
-                st.session_state.sw_video = not st.session_state.sw_video
-            st.caption("✅" if st.session_state.sw_video else "❌")
+            lbl_pic = "PIC [ON]" if st.session_state.sw_pic else "PIC"
+            if st.button(lbl_pic):
+                st.session_state.sw_pic = not st.session_state.sw_pic
+                st.rerun()
 
     st.divider()
     st.caption("Copyright © 1983-2026 Nando Lopes")
@@ -87,12 +86,18 @@ def main():
                         if v == "\n": st.write("")
                         else: st.markdown(v, unsafe_allow_html=True)
             
-            # Feedback Visual das Camadas
-            if st.session_state.sw_som or st.session_state.sw_arte or st.session_state.sw_video:
-                with st.status("Camadas Ativas"):
-                    if st.session_state.sw_som: st.write("Som ativado.")
-                    if st.session_state.sw_arte: st.write("Arte ativada.")
-                    if st.session_state.sw_video: st.write("Vídeo ativado.")
+            # As camadas agem conforme os estados sw_som, sw_arte e sw_pic
+
+        elif pagina == "books":
+            st.subheader("Biblioteca")
+            if st.toggle("confirmar leitura"):
+                try:
+                    livros = [f for f in os.listdir("./base/") if f.startswith("Rol_") and f.endswith(".TXT")]
+                    for livro in livros:
+                        with st.expander(livro.replace("Rol_", "").replace(".TXT", "")):
+                            with open(f"./base/{livro}", "r", encoding="utf-8") as f:
+                                st.text(f.read())
+                except: st.error("Erro na pasta /base")
 
 if __name__ == "__main__":
     main()
