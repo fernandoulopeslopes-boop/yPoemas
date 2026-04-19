@@ -4,7 +4,7 @@ from lay_2_ypo import gera_poema
 
 # 1. CONFIGURAÇÃO DE PÁGINA
 st.set_page_config(
-    page_title="a Máquina de Fazer Poesia",
+    page_title="a Machina de Fazer Poesia",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -50,11 +50,9 @@ with st.sidebar:
     st.selectbox("Idioma", idiomas_pcc, label_visibility="collapsed")
     
     st.divider()
-    
     with st.container():
-       
         # ITEM 3: radio_chk (Sem botões extras)
-        st.radio(["[]som", "[]arte", "[]vídeo"], label_visibility="collapsed")
+        st.radio(["[]som", "[]arte", "[]vídeo"], label_visibility="expanded")
         
     st.divider()
     st.caption("Copyright © 1983-2026 Nando Lopes")
