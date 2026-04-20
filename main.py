@@ -4,12 +4,15 @@ from deep_translator import GoogleTranslator
 from gtts import gTTS
 from io import BytesIO
 import random
+import json # [PRO]
 
 st.set_page_config(page_title="Machina", layout="wide", initial_sidebar_state="expanded")
 
 BASE_DIR = Path(__file__).parent / "base"
 YPO_DIR = Path(__file__).parent / "ypo"
 IMG_DIR = Path(__file__).parent / "images"
+LYSTAS_PATH = Path(__file__).parent / "lystas.txt" # [PRO]
+PLACEHOLDER_IMG = IMG_DIR / "placeholder.jpg" # [PRO]
 
 IDIOMAS = {
     'Português': 'pt', 'Espanhol': 'es', 'Italiano': 'it', 'Francês': 'fr',
@@ -65,41 +68,39 @@ def ler_arquivo_rol(nome_livro):
 
     return temas, paginas
 
-def ler_mapeamento_imagens():
-    mapa = {}
-    arq = YPO_DIR / "images.txt"
-    if not arq.exists():
-        return mapa
-    try:
-        with open(arq, "r", encoding="utf-8") as f:
-            for linha in f:
-                linha = linha.strip()
-                if " : " in linha:
-                    tema, pasta = linha.split(" : ", 1)
-                    mapa[tema.strip()] = pasta.strip()
-    except:
-        pass
-    return mapa
+@st.cache_data # [PRO]
+def ler_mapeamento_imagens(): # [PRO]
+    mapa = {} # [PRO]
+    if not LYSTAS_PATH.exists(): # [PRO]
+        return mapa # [PRO]
+    try: # [PRO]
+        with open(LYSTAS_PATH, "r", encoding="utf-8") as f: # [PRO]
+            mapa = json.load(f) # [PRO]
+    except: # [PRO]
+        pass # [PRO]
+    return mapa # [PRO]
 
 def buscar_imagem_tema(tema):
     mapa = ler_mapeamento_imagens()
-    subpasta = mapa.get(tema, "Machina")
+    subpasta = mapa.get(tema, "Machina") # [PRO]
+    if tema == "sem temas": # [PRO]
+        subpasta = "Machina" # [PRO]
     caminho_pasta = IMG_DIR / subpasta
 
     if not caminho_pasta.exists() or not caminho_pasta.is_dir():
         caminho_pasta = IMG_DIR / "Machina"
 
     if not caminho_pasta.exists():
-        return None
+        return str(PLACEHOLDER_IMG) if PLACEHOLDER_IMG.exists() else None # [PRO]
 
     imagens = [p for p in caminho_pasta.iterdir() if p.suffix.lower() in EXT_IMG]
     if not imagens:
         caminho_pasta = IMG_DIR / "Machina"
         if not caminho_pasta.exists():
-            return None
+            return str(PLACEHOLDER_IMG) if PLACEHOLDER_IMG.exists() else None # [PRO]
         imagens = [p for p in caminho_pasta.iterdir() if p.suffix.lower() in EXT_IMG]
         if not imagens:
-            return None
+            return str(PLACEHOLDER_IMG) if PLACEHOLDER_IMG.exists() else None # [PRO]
 
     return str(random.choice(imagens))
 
@@ -155,11 +156,15 @@ with st.sidebar:
     if st.session_state.tema_selecionado not in TEMAS:
         st.session_state.tema_selecionado = TEMAS[0]
 
+    tema_anterior = st.session_state.tema_selecionado # [PRO]
     st.session_state.tema_selecionado = st.selectbox(
         "Temas",
         options=TEMAS,
         index=TEMAS.index(st.session_state.tema_selecionado)
     )
+    if tema_anterior!= st.session_state.tema_selecionado: # [PRO]
+        st.session_state.pagina_atual = 0 # [PRO]
+        st.rerun() # [PRO]
 
     col1, col2 = st.columns(2)
     with col1:
