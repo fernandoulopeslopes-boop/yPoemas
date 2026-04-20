@@ -1,7 +1,8 @@
 *- 
-*- Críticas.ypo
 *- 
-*- tentativas de 
+*- Críticas.ypo
+*- essas tentativas de ruptura|
+*- 
 *- destruição |enjaular os valores|
 *-
 |01|01|Críticas_0101|F|16|3|Abraham|Neovais|Advindo|Virgulin|Arturo|Hermés|Klauss|Bastyan|Ananiz|Icaro|Mathaeus|Libero|Theobardus|Oblitério|Darmihão|Homenino|
@@ -10,11 +11,11 @@
 
 |02|01|Críticas_0201|F|6|3|Senhor|Senhor Vice-|Doutor|Senhor Pré-|Senhor Doutor|Senhor Sub|
 |02|02|Críticas_0202|F|42|10|Diretor|Presidente|Reitor|Conselheiro|Porteiro|Inventor|Manobrista|Gestor|Ascensorista|Auditor|Editor|Coletor|Locutor|Condutor|Consultor|Instrutor|Preletor|Produtor|Corretor|Secretário|Administrador|Inspetor|Interventor|Mediador|Mentor|Monitor|Preceptor|Promotor|Professor|Tesoureiro|Bibliotecário|Guarda Mor|Proprietário|Porta-voz|Superintendente|Mantenedor|Orador|Embaixador|Agenciador|Alfabetizador|Pregador|Articulador|
-|02|03|Críticas_0203|F|11|5|Geral|Adjunto|Honorário|Temporário|Vitalício|Substituto|em Chefe|Interino|em Exercício|Itinerante|Biônico|HONORIS CAUSA|
-|02|04|Críticas_0204|F|4|3|da Associação|da Academia|da Agência|da Assembleia|
-|02|05|Críticas_0205|F|1|1|< pAbnp >|
+|02|03|Críticas_0203|T|11|5|Geral|Adjunto|Honorário|Temporário|Vitalício|Substituto|em Chefe|Interino|em Exercício|Itinerante|Biônico|HONORIS CAUSA|
+|02|04|Críticas_0204|F|4|3|da Associação|da Academia|da Agência|da Assembleia|da Agremiação|da Associação|da Assembleia| do Ateneu|da Arcádia|
+|02|05|Críticas_0205|T|1|1|Brasileira|Binacional|Britânica|Bilateral|Bilíngue|Binomial|Babilônica|Berlinense|Biodegradável|Brasilianista|Bolchevique|Bostoniana|Biopoética|Booleana|Biônica|Barroca|Babélica|Bibliótica|Bonfinense|Bonifaciana|Birmanesa|Barbárica|
 |02|06|Críticas_0206|F|6|3|de Normas Poéticas|de Não-Poetas|de Novas Poéticas|de Nanoengenharia Poética|da Nova Palavra|do Neo Português|
-|02|07|Críticas_0207|F|1|1|, ABNP.|
+|02|07|Críticas_0207|F|1|1|, ABNP, |
 
 |04|01|Críticas_0401|F|1|1|vem a público|tem o desprazer de|
 |04|02|Críticas_0402|F|1|1|denunciar os|dar ciência aos|
@@ -24,7 +25,7 @@
 
 |06|01|Críticas_0601|F|1|1|Não podemos nos furtar à|Pesa sobre nossos ombros a|
 |06|02|Críticas_0602|F|1|1|defesa sistemática|garantia de continuidade|
-|06|03|Críticas_0603|F|1|1|dos padrões vigentes|das normas seculares|do simbolismo secular|das regras reguladoras|dos esteios que embasam|
+|06|03|Críticas_0603|T|1|1|dos padrões vigentes|das normas seculares|do simbolismo secular|das regras reguladoras|dos esteios que embasam|
 |06|04|Críticas_0604|F|1|1|.|
 
 |08|01|Críticas_0801|F|1|1|Somos os|É nossa função sermos os|
@@ -33,8 +34,8 @@
 |08|04|Críticas_0804|F|1|1|do fazer literário|do fazer poético|das boas normas|
 |08|05|Críticas_0805|F|1|1|prezando pela Ordem.|
 
-|10|01|Críticas_1001|F|1|1|A origem desses ataques|
-|10|02|Críticas_1002|T|1|1|tem um só endereço:|é sempre recorrente:|não é desconhecida:
+|10|01|Críticas_1001|F|1|1|a origem desses ataques|
+|10|02|Críticas_1002|F|1|1|tem um só endereço:|é sempre recorrente:|
 
 |12|03|Críticas_1201|F|1|1|** a Machina de fazer Poesia **|
 |12|04|Críticas_1202|F|1|1|vulgo yPoemas.|
@@ -44,24 +45,23 @@
 |14|03|Críticas_1403|F|1|1|por essa|
 |14|04|Críticas_1404|F|1|1|excrecência|Medusa|serpente|
 |14|05|Críticas_1405|F|1|1|informática|binária|programática|codificada|artificial|mecânica|postiça|
-|14|06|Críticas_1406|F|1|1|pode ser e será|deve ser e será|há de ser para todo o sempre|
+|14|06|Críticas_1406|F|1|1|pode ser e será|deve ser e será|
 |14|07|Críticas_1407|F|1|1|amputado|estancado|confinado|enjaulado|extirpado|esterilizado|higienizado|desmascarado|
 |14|08|Críticas_1408|F|1|1|.|
 
-|16|01|Críticas_1601|F|1|1|O simulacro|O vácuo|o resíduo|O rastro|O deserto|O ruído|
+|16|01|Críticas_1601|F|1|1|O simulacro|O vácuo|o resíduo|O rastro|O deserto|O ruído|O estrabismo|
 |16|02|Críticas_1602|F|1|1|oco|inerte|esdrúxulo|opaco|mímico|pálido|flácido|
 |16|03|Críticas_1603|F|1|1|gerado por ela|
 
-|18|01|Críticas_1801|T|1|1|também deve ser e será|também pode ser e será|há de ser para todo o sempre|
-|18|02|Críticas_1802|F|1|1|corroído.|extinguido.|banido.|reprimido.|removido.|despido.|lançado no olvido.|
+|18|01|Críticas_1801|F|1|1|também pode ser e será|Há de ser para todo o sempre|também deve ser e será|
+|18|02|Críticas_1802|F|1|1|corroído.|extinguido.|banido.|reprimido.|
 
-|20|01|Críticas_0204|F|4|3|A Associação|A Academia|A Agência|A Assembleia|
-|20|02|Críticas_0205|F|1|1|< pAbnp >|
-|20|03|Críticas_0206|F|6|3|de Normas Poéticas|de Não-Poetas|de Novas Poéticas|de Nanoengenharia Poética|da Nova Palavra|do Neo Português|
+|20|01|Críticas_0204|F|4|3|a Associação|a Academia|a Agência|a Assembleia|a Agremiação|a Associação|a Assembleia|o Ateneu|a Arcádia|
+|20|02|Críticas_0204|T|4|3|Brasileira|Binacional|Britânica|Bilateral|Bilíngue|Binomial|Babilônica|Berlinense|Biodegradável|Brasilianista|Bolchevique|Bostoniana|Biopoética|Booleana|Biônica|Barroca|Babélica|Bibliótica|Bonfinense|Bonifaciana|Birmanesa|Barbárica|
+|20|03|Críticas_0203|F|6|3|de Normas Poéticas|de Não-Poetas|de Novas Poéticas|de Nanoengenharia Poética|da Nova Palavra|do Neo-Português|de Normas Proféticas|
 
 |22|01|Críticas_2201|F|1|1|também será|
 |22|02|Críticas_2202|F|1|1|informada|cientificada|notariada|conscientizada|
 |22|03|Críticas_2203|F|1|1|dos Fatos.|
-|24|00|
 |24|01|Críticas_2401|F|1|1|< pCidadeOficio >, < dOficio >.|
 <EOF>
