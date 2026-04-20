@@ -4,9 +4,29 @@
 import streamlit as st
 from tools import load_temas_ativos, zay_number
 
+# LISTA OFICIAL PTC - NÃO ALTERAR
 IDIOMAS = {
-    'Português': 'pt', 'Espanhol': 'es', 'Italiano': 'it',
-    'Francês': 'fr', 'Inglês': 'en', 'Catalão': 'ca'
+    'Português': 'pt',
+    'Espanhol': 'es',
+    'Italiano': 'it',
+    'Francês': 'fr',
+    'Inglês': 'en',
+    'Catalão': 'ca',
+    'Córsico': 'co',
+    'Galego': 'gl',
+    'Basco': 'eu',
+    'Esperanto': 'eo',
+    'Latin': 'la',
+    'Galês': 'cy',
+    'Sueco': 'sv',
+    'Polonês': 'pl',
+    'Holandês': 'nl',
+    'Norueguês': 'no',
+    'Finlandês': 'fi',
+    'Dinamarquês': 'da',
+    'Irlandês': 'ga',
+    'Romeno': 'ro',
+    'Russo': 'ru'
 }
 
 INFO_AUTOR = "Machina Ypoemas: escultura de texto, som e imagem. Autor: Zay."
@@ -18,31 +38,50 @@ def main():
         initial_sidebar_state="expanded"
     )
 
-    # CSS pra deszonear o palco
+    # CSS Machina: PTC compliant
     st.markdown("""
     <style>
-    /* 1. Botões de página: evita quebra do título */
-   .stButton button {
-        white-space: nowrap;
-        padding: 0.25rem 0.75rem;
-        font-size: 14px;
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Roboto+Mono:wght@300;400&display=swap');
+
+    html, body, [class*="css"] {
+        font-family: 'Roboto Mono', monospace!important;
+        font-size: 14px!important;
+        font-weight: 300!important;
     }
 
-    /* 2. Radio buttons em linha, não coluna */
-    div[data-testid="stRadio"] > div {
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 1rem;
+    h1, h2, h3,.stTitle {
+        font-family: 'Orbitron', sans-serif!important;
+        font-weight: 500!important;
+        letter-spacing: 1px!important;
+    }
+    h1 { font-size: 24px!important; }
+    h2 { font-size: 18px!important; }
+    h3 { font-size: 16px!important; }
+
+    button[kind="secondary"], button[kind="primary"] {
+        white-space: nowrap!important;
+        padding: 0.2rem 0.6rem!important;
+        font-size: 13px!important;
+        font-family: 'Orbitron', sans-serif!important;
+        font-weight: 400!important;
+        letter-spacing: 0.5px!important;
     }
 
-    /* 3. Remove espaço extra do topo */
-   .block-container {
-        padding-top: 1rem;
+  .stSelectbox > div > div {
+        font-size: 13px!important;
     }
 
-    /* Ajusta colunas do palco */
-    div[data-testid="column"] {
-        padding: 0 0.5rem;
+ .stCheckbox label {
+        font-size: 12px!important;
+    }
+
+.main.block-container {
+        padding-top: 0.5rem!important;
+        padding-bottom: 0rem!important;
+    }
+
+    section[data-testid="stSidebar"] {
+        background-color: #0e1117!important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -51,17 +90,18 @@ def main():
         st.session_state.pagina_atual = "yPoemas"
     if 'temas_ativos' not in st.session_state:
         st.session_state.temas_ativos = load_temas_ativos()
+    if 'livro_atual' not in st.session_state:
+        st.session_state.livro_atual = "Livro_01"
+    if 'tema_atual' not in st.session_state:
+        st.session_state.tema_atual = list(st.session_state.temas_ativos.keys())[0] if st.session_state.temas_ativos else ""
 
     temas = list(st.session_state.temas_ativos.keys())
 
-    # Sidebar = Cockpit
     with st.sidebar:
-        st.title("Cockpit")
-        st.selectbox("Idioma", options=list(IDIOMAS.keys()), key="sel_idioma")
+        # Idiomas PTC: 21 opções visíveis ao abrir
+        st.selectbox("", options=list(IDIOMAS.keys()), key="sel_idioma", label_visibility="collapsed")
         st.divider()
-        st.subheader("Controles do Palco")
 
-        # 3. Controles na horizontal com texto curto
         c1, c2, c3 = st.columns(3)
         with c1:
             st.checkbox("Art", value=True, key="chk_arte")
@@ -71,12 +111,9 @@ def main():
             st.checkbox("Wyd", value=True, key="chk_video")
 
         st.divider()
-        st.subheader("Info")
         st.caption(INFO_AUTOR)
-        st.divider()
-        st.caption(f"Página: {st.session_state.pagina_atual}")
+        st.caption(f"{st.session_state.pagina_atual} | {IDIOMAS[st.session_state.sel_idioma]}")
 
-    # Botões das 6 páginas
     paginas = ["mini", "yPoemas", "Eureka", "off-mach", "Comments", "About"]
     cols = st.columns(6)
     for i, pagina in enumerate(paginas):
@@ -101,15 +138,21 @@ def main():
             b5.button("?", key="btn_help")
 
         col_livros, col_palco, col_temas = st.columns([1,3,1])
+
         with col_livros:
-            st.subheader("Livros")
-            st.radio(" ", ["Livro_01"], key="radio_livros", label_visibility="collapsed")
+            st.button("Livro_01", key="btn_livro_01", use_container_width=True,
+                      type="primary" if st.session_state.livro_atual == "Livro_01" else "secondary")
+
         with col_palco:
-            st.subheader("Palco")
-            st.write(f"Zay: {zay_number(temas[0]) if temas else '---'}")
+            st.write(f"Zay: {zay_number(st.session_state.tema_atual) if st.session_state.tema_atual else '---'}")
+            st.caption(f"Livro: {st.session_state.livro_atual} | Tema: {st.session_state.tema_atual}")
+
         with col_temas:
-            st.subheader("Temas")
-            st.radio(" ", temas, key="radio_temas", label_visibility="collapsed")
+            for tema in temas:
+                if st.button(tema, key=f"btn_tema_{tema}", use_container_width=True,
+                             type="primary" if st.session_state.tema_atual == tema else "secondary"):
+                    st.session_state.tema_atual = tema
+                    st.rerun()
 
     elif st.session_state.pagina_atual == "Eureka":
         st.title("Eureka")
