@@ -4,14 +4,12 @@ from deep_translator import GoogleTranslator
 from gtts import gTTS
 from io import BytesIO
 import random
-import json # [PRO]
 
 st.set_page_config(page_title="Machina", layout="wide", initial_sidebar_state="expanded")
 
 BASE_DIR = Path(__file__).parent / "base"
 YPO_DIR = Path(__file__).parent / "ypo"
 IMG_DIR = Path(__file__).parent / "images"
-LYSTAS_PATH = Path(__file__).parent / "lystas.txt" # [PRO]
 PLACEHOLDER_IMG = IMG_DIR / "placeholder.jpg" # [PRO]
 
 IDIOMAS = {
@@ -28,6 +26,45 @@ LIVROS = [
     "metalinguagem", "sociais", "outros autores", "todos os temas",
     "todos os signos", "signos_fem", "signos_mas"
 ]
+
+MAPA_TEMAS = { # [PRO]
+    "Ais": "ensaio", "Amaré": "poesia", "Anjos": "author", "Aolero": "ensaio", # [PRO]
+    "Arerir": "ensaio", "Astros": "ensaio", "Atido": "poesia", "Augusto": "author", # [PRO]
+    "Avevida": "poesia", "Babel": "ensaio", "Batismo": "metalinguagem", "Beaba": "metalinguagem", # [PRO]
+    "Becos": "poesia", "Blablabla": "metalinguagem", "Bolero": "poesia", "Brado": "joco", # [PRO]
+    "Bula": "joco", "Cadência": "metalinguagem", "Cartaz": "joco", "Circular": "poesia", # [PRO]
+    "Ciuminho": "poesia", "Clandestino": "poesia", "Clarice": "poesia", "Conto": "poesia", # [PRO]
+    "Cordel": "metalinguagem", "Críticas": "joco", "Crítico": "author", "Cromossomo": "joco", # [PRO]
+    "Cuores": "poesia", "Destinos": "poesia", "Distintos": "poesia", "Dolores": "poesia", # [PRO]
+    "Duralex": "joco", "Elogio": "poesia", "Enfrente": "ensaio", "Epitafiando": "poesia", # [PRO]
+    "Escriba": "poesia", "Essa": "metalinguagem", "Essas": "ensaio", "Esses": "ensaio", # [PRO]
+    "Estudo": "joco", "Fatos": "poesia", "Feiras": "metalinguagem", "Festim": "poesia", # [PRO]
+    "Finalmentes": "joco", "Frases": "joco", "Fugaz": "poesia", "Gula": "joco", # [PRO]
+    "HaiKai": "poesia", "i-Mundo": "poesia", "Impar": "ensaio", "Indolor": "poesia", # [PRO]
+    "Inhos": "poesia", "Insano": "joco", "Joker": "joco", "Lato": "poesia", # [PRO]
+    "Leituras": "metalinguagem", "Liberta": "poesia", "Loremipsum": "ensaio", "Machbeth": "poesia", # [PRO]
+    "Machbrait": "poesia", "Manifesto": "poesia", "Manusgrite": "metalinguagem", "Manusgrito": "metalinguagem", # [PRO]
+    "Meteoro": "joco", "Minuto": "joco", "Mirante": "poesia", "Nonono": "ensaio", # [PRO]
+    "Nós": "poesia", "Oca": "poesia", "Ocio": "joco", "Oco": "poesia", # [PRO]
+    "Oficio": "joco", "Ogiva": "poesia", "Olhares": "poesia", "Palyndro": "ensaio", # [PRO]
+    "Papilio": "poesia", "Paroles": "metalinguagem", "Passagens": "poesia", "Pedidos": "poesia", # [PRO]
+    "Perfil": "joco", "Pessoa": "poesia", "Portal": "poesia", "Posfácio": "poesia", # [PRO]
+    "Preciso": "poesia", "Prefácil": "poesia", "Psiu": "poesia", "Reger": "poesia", # [PRO]
+    "Reinos": "joco", "Remedeio": "joco", "Rever": "poesia", "Restos": "poesia", # [PRO]
+    "Rito": "joco", "Salute": "joco", "Saudades": "poesia", "Seguro": "joco", # [PRO]
+    "Sentença": "joco", "Ser": "poesia", "Silente": "poesia", "Sinais": "poesia", # [PRO]
+    "Sinas": "ensaio", "Sn6=ball": "ensaio", "Sn8=ball": "ensaio", "SnowBall": "ensaio", # [PRO]
+    "Sonoro": "poesia", "Sopros": "poesia", "Sos": "joco", "Tempo": "poesia", # [PRO]
+    "Tiro": "metalinguagem", "Tolero": "poesia", "Usinas": "poesia", "Veio": "poesia", # [PRO]
+    "Victor": "poesia", "Vozes": "joco", "Zelo": "poesia", "Zodiacaos": "zodíaco", # [PRO]
+    "Zoia": "poesia", "Aquarius=f": "zodíaco", "Aquarius=m": "zodíaco", "Aries=f": "zodíaco", # [PRO]
+    "Aries=m": "zodíaco", "Cancer=f": "zodíaco", "Cancer=m": "zodíaco", "Caprico=f": "zodíaco", # [PRO]
+    "Caprico=m": "zodíaco", "Escorpio=f": "zodíaco", "Escorpio=m": "zodíaco", "Gemeos=f": "zodíaco", # [PRO]
+    "Gemeos=m": "zodíaco", "Leao=f": "zodíaco", "Leao=m": "zodíaco", "Libra=f": "zodíaco", # [PRO]
+    "Libra=m": "zodíaco", "Peixes=f": "zodíaco", "Peixes=m": "zodíaco", "Sagitari=f": "zodíaco", # [PRO]
+    "Sagitari=m": "zodíaco", "Touro=f": "zodíaco", "Touro=m": "zodíaco", "Virgem=f": "zodíaco", # [PRO]
+    "Virgem=m": "zodíaco" # [PRO]
+} # [PRO]
 
 EXT_IMG = {'.jpg', '.jpeg', '.png', '.webp'}
 
@@ -68,41 +105,23 @@ def ler_arquivo_rol(nome_livro):
 
     return temas, paginas
 
-@st.cache_data # [PRO]
-def ler_mapeamento_imagens(): # [PRO]
-    mapa = {} # [PRO]
-    if not LYSTAS_PATH.exists(): # [PRO]
-        return mapa # [PRO]
-    try: # [PRO]
-        with open(LYSTAS_PATH, "r", encoding="utf-8") as f: # [PRO]
-            mapa = json.load(f) # [PRO]
-    except: # [PRO]
-        pass # [PRO]
-    return mapa # [PRO]
-
-def buscar_imagem_tema(tema):
-    mapa = ler_mapeamento_imagens()
-    subpasta = mapa.get(tema, "Machina") # [PRO]
+def buscar_imagem_tema(tema): # [PRO]
+    subpasta = MAPA_TEMAS.get(tema, "Machina") # [PRO]
     if tema == "sem temas": # [PRO]
         subpasta = "Machina" # [PRO]
-    caminho_pasta = IMG_DIR / subpasta
+    caminho_pasta = IMG_DIR / subpasta # [PRO]
 
-    if not caminho_pasta.exists() or not caminho_pasta.is_dir():
-        caminho_pasta = IMG_DIR / "Machina"
+    if not caminho_pasta.exists() or not caminho_pasta.is_dir(): # [PRO]
+        caminho_pasta = IMG_DIR / "Machina" # [PRO]
 
-    if not caminho_pasta.exists():
+    if not caminho_pasta.exists(): # [PRO]
         return str(PLACEHOLDER_IMG) if PLACEHOLDER_IMG.exists() else None # [PRO]
 
-    imagens = [p for p in caminho_pasta.iterdir() if p.suffix.lower() in EXT_IMG]
-    if not imagens:
-        caminho_pasta = IMG_DIR / "Machina"
-        if not caminho_pasta.exists():
-            return str(PLACEHOLDER_IMG) if PLACEHOLDER_IMG.exists() else None # [PRO]
-        imagens = [p for p in caminho_pasta.iterdir() if p.suffix.lower() in EXT_IMG]
-        if not imagens:
-            return str(PLACEHOLDER_IMG) if PLACEHOLDER_IMG.exists() else None # [PRO]
+    imagens = [p for p in caminho_pasta.iterdir() if p.suffix.lower() in EXT_IMG] # [PRO]
+    if not imagens: # [PRO]
+        return str(PLACEHOLDER_IMG) if PLACEHOLDER_IMG.exists() else None # [PRO]
 
-    return str(random.choice(imagens))
+    return str(random.choice(imagens)) # [PRO]
 
 def traduzir_texto(texto, idioma_destino):
     if idioma_destino == "pt" or not texto.strip():
@@ -153,18 +172,23 @@ with st.sidebar:
         st.session_state.tema_selecionado = None
         st.rerun()
 
-    if st.session_state.tema_selecionado not in TEMAS:
-        st.session_state.tema_selecionado = TEMAS[0]
+    temas_validos = [t for t in TEMAS if t!= "sem temas"] # [PRO]
+    if not temas_validos: # [PRO]
+        temas_validos = [TEMAS[0]] # [PRO]
 
-    tema_anterior = st.session_state.tema_selecionado # [PRO]
-    st.session_state.tema_selecionado = st.selectbox(
-        "Temas",
-        options=TEMAS,
-        index=TEMAS.index(st.session_state.tema_selecionado)
-    )
-    if tema_anterior!= st.session_state.tema_selecionado: # [PRO]
-        st.session_state.pagina_atual = 0 # [PRO]
-        st.rerun() # [PRO]
+    if st.session_state.tema_selecionado not in temas_validos: # [PRO]
+        st.session_state.tema_selecionado = temas_validos[0] # [PRO]
+
+    if len(temas_validos) > 1 or temas_validos[0]!= "sem temas": # [PRO]
+        tema_anterior = st.session_state.tema_selecionado # [PRO]
+        st.session_state.tema_selecionado = st.selectbox( # [PRO]
+            "Temas", # [PRO]
+            options=temas_validos, # [PRO]
+            index=temas_validos.index(st.session_state.tema_selecionado) # [PRO]
+        ) # [PRO]
+        if tema_anterior!= st.session_state.tema_selecionado: # [PRO]
+            st.session_state.pagina_atual = 0 # [PRO]
+            st.rerun() # [PRO]
 
     col1, col2 = st.columns(2)
     with col1:
