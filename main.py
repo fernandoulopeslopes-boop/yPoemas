@@ -1339,7 +1339,6 @@ def page_polys():  # available languages
         with poly_expander:
             st.subheader(load_md_file("MANUAL_POLY.md"))
 
-o
 def page_abouts():
     abouts_list = [
         "comments",
