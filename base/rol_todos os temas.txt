@@ -105,6 +105,7 @@ Sonoro
 Sopros
 Sos
 Tempo
+Time
 Tiro
 Tolero
 Usinas
