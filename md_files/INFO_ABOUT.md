@@ -1,6 +1,6 @@
-Um pouco de teoria sobre
+Um pouco de teoria sobre  
 a Machina de fazer Poesia.
 Suas páginas, origens, histórias,
-modo de funcionamento,     
+modo de funcionamento,      
 possibilidades e o ambiente
-que gira em torno dela.
+que gira em torno dela.    
