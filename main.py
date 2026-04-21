@@ -2,20 +2,27 @@ import streamlit as st
 import os
 import json
 
-# 1. SETUP & CSS (Palco Fluido e Sidebar Estrita)
+# 1. SETUP & CSS (Palco Fluido, Sidebar Estrita 300px e Balanceamento)
 st.set_page_config(page_title="a Machina de Fazer Poesia", layout="wide")
 
 st.markdown("""
     <style>
-        /* Sidebar fixa em 300px */
+        /* Expansão total do palco quando a sidebar recolhe */
         [data-testid="stSidebar"] { min-width: 300px; max-width: 300px; }
+        section[data-testid="stMain"] { width: 100%; padding-left: 1rem; padding-right: 1rem; }
         
-        /* Força o palco a ocupar 100% da largura útil */
-        section[data-testid="stMain"] { width: 100%; padding: 0rem; }
+        /* Balanceamento e largura fixa para os botões de página */
+        .stButton button { 
+            width: 100%; 
+            padding: 0px; 
+            font-size: 14px; 
+            height: 40px; 
+            white-space: nowrap;
+        }
         
-        /* Estilização de interface */
-        .stMarkdown p { text-align: justify; font-size: 14px; }
-        .stButton button { width: 100%; padding: 0px; font-size: 14px; height: 40px; }
+        /* Ajuste fino da sidebar e links pessoais */
+        .stMarkdown p { text-align: justify; font-size: 13px; line-height: 1.2; }
+        .stCaption { font-size: 11px; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -26,16 +33,15 @@ def main():
     if 'idioma_sel' not in st.session_state: 
         st.session_state.idioma_sel = "pt"
     
-    # Som e Arte apenas (pic removido)
-    for sw in ['sw_som', 'sw_art']:
+    for sw in ['sw_som', 'sw_arte']:
         if sw not in st.session_state: 
             st.session_state[sw] = False
 
-    # 3. NAVEGAÇÃO SUPERIOR (Grafia Corrigida)
-    t1, t2, t3, t4, t5, t6 = st.columns(6)
+    # 3. NAVEGAÇÃO SUPERIOR (Botões Balanceados)
+    cols = st.columns(6)
     btns = ["mini", "yPoemas", "eureka", "off-mach", "comments", "about"]
-    for i, col in enumerate([t1, t2, t3, t4, t5, t6]):
-        if col.button(btns[i]):
+    for i, col in enumerate(cols):
+        if col.button(btns[i], key=f"btn_{btns[i]}"):
             st.session_state.pagina_ativa = btns[i]
             st.rerun()
 
@@ -43,20 +49,20 @@ def main():
 
     # 4. SIDEBAR (SALA DE CONTROLE)
     with st.sidebar:
-        # 4.1 Idiomas
+        # 4.1 Idiomas (Carregamento completo do JSON)
         path_idiomas = os.path.join("ypo", "idiomas.json")
         dic_idiomas = {"Português": "pt"}
         if os.path.exists(path_idiomas):
             with open(path_idiomas, "r", encoding="utf-8") as f:
                 try:
-                    content = json.load(f)
-                    if content: dic_idiomas = content
+                    loaded = json.load(f)
+                    if loaded: dic_idiomas = loaded
                 except: pass
         
         sel_nome = st.selectbox("Idioma", list(dic_idiomas.keys()), label_visibility="collapsed")
         st.session_state.idioma_sel = dic_idiomas[sel_nome]
 
-        # 4.2 Som e Arte
+        # 4.2 Som e Arte (Botões balanceados e rótulo corrigido)
         st.write("")
         with st.container(border=True):
             c1, c2 = st.columns(2)
@@ -66,17 +72,15 @@ def main():
                     st.rerun()
                 if st.session_state.sw_som: st.caption("·on·")
             with c2:
-                if st.button("art"): 
-                    st.session_state.sw_art = not st.session_state.sw_art
+                if st.button("arte"): 
+                    st.session_state.sw_arte = not st.session_state.sw_arte
                     st.rerun()
-                if st.session_state.sw_art: st.caption("·on·")
+                if st.session_state.sw_arte: st.caption("·on·")
 
         st.divider()
 
-        # 4.3 & 4.4 Arte e INFO (Mapeamento Dinâmico)
+        # 4.3 & 4.4 Arte e INFO (Mapeamento de Caminho)
         p_at = st.session_state.pagina_ativa
-        
-        # Mapeamento para arquivos físicos
         ref_file = p_at.upper() if p_at != "off-mach" else "OFF-MACHINA"
         img_name = f"img_{p_at.lower() if p_at != 'off-mach' else 'off-machina'}.jpg"
         
@@ -92,13 +96,13 @@ def main():
 
         st.divider()
 
-        # 4.5 Rodapé
+        # 4.5 Rodapé e Copyright (Sem ícone)
         path_media = os.path.join("md_files", "INFO_MEDIA.md")
         if os.path.exists(path_media):
             with open(path_media, "r", encoding="utf-8") as f:
                 st.markdown(f.read())
         
-        st.caption("Copyright © 1983-2026 Nando Lopes")
+        st.caption("Copyright 1983-2026 Nando Lopes")
 
     # 5. PALCO
     col_main = st.container()
