@@ -55,7 +55,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- FUNÇÕES DE SUPORTE (Resgate de Caminhos Reais) ---
+# --- FUNÇÕES DE SUPORTE (Caminhos Reais e Case-Sensitivity) ---
 def load_sidebar_info(tag):
     path = os.path.join("md_files", f"INFO_{tag}.md")
     if os.path.exists(path):
@@ -65,9 +65,10 @@ def load_sidebar_info(tag):
 
 def get_random_tema():
     """
-    Lê o rol oficial de temas conforme a estrutura informada: \base\rol_todos os temas.TXT
+    Lê o rol oficial de temas na pasta base. 
+    Ajustado para .txt (minúsculo) para compatibilidade com o GitHub/Linux.
     """
-    path_temas = os.path.join("base", "rol_todos os temas.TXT")
+    path_temas = os.path.join("base", "rol_todos os temas.txt")
     try:
         with open(path_temas, "r", encoding="utf-8") as f:
             temas = [line.strip() for line in f if line.strip()]
