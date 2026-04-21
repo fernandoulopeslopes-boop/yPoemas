@@ -10,23 +10,37 @@ os.chdir(dname)
 if dname not in sys.path:
     sys.path.insert(0, dname)
 
-# --- CONEXÃO COM O MOTOR E FERRAMENTAS ---
-# O motor (lay_2_ypo) é o coração; tools fornece a infraestrutura de interface.
+# --- CONEXÃO COM A ESTRUTURA DA MACHINA ---
 try:
+    # Se o motor é o coração, tentamos buscar as ferramentas nele primeiro
+    # ou no tools.py caso existam lá.
     from lay_2_ypo import gera_poema
-    from tools import load_md_file, show_icons, pick_lang, draw_check_buttons
+    
+    # Tentativa de importação flexível das ferramentas de interface
+    try:
+        from lay_2_ypo import load_md_file, show_icons, pick_lang, draw_check_buttons
+    except ImportError:
+        try:
+            from tools import load_md_file, show_icons, pick_lang, draw_check_buttons
+        except ImportError:
+            # Fallback silencioso para não travar a abertura da página
+            def load_md_file(x): return ""
+            def show_icons(): pass
+            def pick_lang(): pass
+            def draw_check_buttons(): pass
+            
 except ImportError as e:
-    st.error(f"Erro de conexão com os módulos da Machina: {e}")
+    st.error(f"Erro Crítico: O motor lay_2_ypo.py não foi encontrado: {e}")
     st.stop()
 
-# --- CONFIGURAÇÃO DA INTERFACE (IDENTIDADE PRESERVADA) ---
+# --- CONFIGURAÇÃO DA INTERFACE ---
 st.set_page_config(
     page_title="yPoemas - a Machina de fazer Poesia", 
     layout="wide", 
     initial_sidebar_state="expanded"
 )
 
-# Estilização da Sidebar (300px) e botões de comando
+# Estilização da Sidebar (300px)
 st.markdown(
     """
     <style>
@@ -49,10 +63,9 @@ st.markdown(
 if "tema" not in st.session_state: st.session_state.tema = "amor"
 if "eureka_word" not in st.session_state: st.session_state.eureka_word = ""
 
-# --- ESTRUTURA DE NAVEGAÇÃO PRINCIPAL ---
+# --- ESTRUTURA DE NAVEGAÇÃO ---
 
 def main():
-    # Componente de Abas Horizontal
     chosen_id = stx.tab_bar(data=[
         stx.TabBarItemData(id="1", title="mini", description=""),
         stx.TabBarItemData(id="2", title="yPoemas", description=""),
@@ -63,61 +76,42 @@ def main():
         stx.TabBarItemData(id="7", title="about", description=""),
     ], default="2")
 
-    # Sidebar: O Painel de Controlo da Machina
     with st.sidebar:
         pick_lang()
         draw_check_buttons()
         st.divider()
         
-        # Mapeamento para carregar as informações certas de cada página
         menu_map = {
             "1":"MINI", "2":"YPOEMAS", "3":"EUREKA", 
             "4":"OFF-MACHINA", "5":"BOOKS", "6":"POLY", "7":"ABOUT"
         }
         tag = menu_map.get(chosen_id, "YPOEMAS")
         
-        # Arte e Info correspondente à aba selecionada
         try:
             st.image(f"img_{tag.lower()}.jpg")
         except:
             pass
         
-        st.info(load_md_file(f"INFO_{tag}.md"))
+        info_content = load_md_file(f"INFO_{tag}.md")
+        if info_content:
+            st.info(info_content)
 
-    # --- ACIONAMENTO DO MOTOR (INTERAÇÃO COM lay_2_ypo.py) ---
-    
-    # Área central onde o motor irá renderizar a arte e a poesia
-    container_machina = st.container()
-
-    with container_machina:
-        if chosen_id == "3":
-            # Página EUREKA: O utilizador define a seed para busca no léxico
-            st.session_state.eureka_word = st.text_input(
-                "Léxico (digite o sufixo ou radical):", 
-                st.session_state.eureka_word,
-                placeholder="ex: oço, osso, alma..."
-            )
-            if st.button("Acionar Engenharia Eureka"):
-                # Chama o motor passando a palavra de busca
-                gera_poema(st.session_state.tema, st.session_state.eureka_word)
+    # --- PALCO DA MACHINA ---
+    if chosen_id == "3":
+        st.session_state.eureka_word = st.text_input(
+            "Léxico:", 
+            st.session_state.eureka_word,
+            placeholder="sufixo ou radical..."
+        )
+        if st.button("Acionar Eureka"):
+            gera_poema(st.session_state.tema, st.session_state.eureka_word)
                 
-        elif chosen_id == "2":
-            # Página yPoemas: Geração fluida por tema
-            if st.button("Gerar Novo yPoema"):
-                # Chama o motor com seed vazia para geração padrão
-                gera_poema(st.session_state.tema, "")
+    elif chosen_id == "2":
+        if st.button("Gerar Novo yPoema"):
+            gera_poema(st.session_state.tema, "")
+    else:
+        st.write(f"Interface {tag} ativa.")
 
-        elif chosen_id == "1":
-            st.info("Página MINI: A carregar estrutura do motor...")
-            if st.button("Gerar Mini"):
-                gera_poema("mini", "")
-
-        else:
-            # Para as demais abas (off-machina, books, etc), 
-            # mantemos a moldura pronta para o motor assumir.
-            st.write(f"Interface {tag} conectada ao motor.")
-
-    # Rodapé de ícones e créditos (tools.py)
     show_icons()
 
 if __name__ == "__main__":
