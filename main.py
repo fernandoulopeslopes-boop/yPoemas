@@ -2,12 +2,18 @@ import streamlit as st
 import os
 import json
 
-# 1. SETUP & CSS (Cockpit Estrito 300px)
+# 1. SETUP & CSS (Palco Fluido e Sidebar Estrita)
 st.set_page_config(page_title="a Machina de Fazer Poesia", layout="wide")
 
 st.markdown("""
     <style>
+        /* Sidebar fixa em 300px */
         [data-testid="stSidebar"] { min-width: 300px; max-width: 300px; }
+        
+        /* Força o palco a ocupar 100% da largura útil */
+        section[data-testid="stMain"] { width: 100%; padding: 0rem; }
+        
+        /* Estilização de interface */
         .stMarkdown p { text-align: justify; font-size: 14px; }
         .stButton button { width: 100%; padding: 0px; font-size: 14px; height: 40px; }
     </style>
@@ -19,13 +25,15 @@ def main():
         st.session_state.pagina_ativa = "yPoemas"
     if 'idioma_sel' not in st.session_state: 
         st.session_state.idioma_sel = "pt"
-    for sw in ['sw_som', 'sw_art', 'sw_pic']:
+    
+    # Som e Arte apenas (pic removido)
+    for sw in ['sw_som', 'sw_art']:
         if sw not in st.session_state: 
             st.session_state[sw] = False
 
-    # 3. NAVEGAÇÃO SUPERIOR
+    # 3. NAVEGAÇÃO SUPERIOR (Grafia Corrigida)
     t1, t2, t3, t4, t5, t6 = st.columns(6)
-    btns = ["mini", "yPoemas", "eureka", "off-mach", "commnets", "about"]
+    btns = ["mini", "yPoemas", "eureka", "off-mach", "comments", "about"]
     for i, col in enumerate([t1, t2, t3, t4, t5, t6]):
         if col.button(btns[i]):
             st.session_state.pagina_ativa = btns[i]
@@ -40,7 +48,10 @@ def main():
         dic_idiomas = {"Português": "pt"}
         if os.path.exists(path_idiomas):
             with open(path_idiomas, "r", encoding="utf-8") as f:
-                dic_idiomas = json.load(f)
+                try:
+                    content = json.load(f)
+                    if content: dic_idiomas = content
+                except: pass
         
         sel_nome = st.selectbox("Idioma", list(dic_idiomas.keys()), label_visibility="collapsed")
         st.session_state.idioma_sel = dic_idiomas[sel_nome]
@@ -48,7 +59,7 @@ def main():
         # 4.2 Som e Arte
         st.write("")
         with st.container(border=True):
-            c1, c2, c3 = st.columns(3)
+            c1, c2 = st.columns(2)
             with c1:
                 if st.button("som"): 
                     st.session_state.sw_som = not st.session_state.sw_som
@@ -59,27 +70,15 @@ def main():
                     st.session_state.sw_art = not st.session_state.sw_art
                     st.rerun()
                 if st.session_state.sw_art: st.caption("·on·")
-            with c3:
-                if st.button("pic"): 
-                    st.session_state.sw_pic = not st.session_state.sw_pic
-                    st.rerun()
-                if st.session_state.sw_pic: st.caption("·on·")
 
         st.divider()
 
-        # 4.3 & 4.4 Arte e INFO
-        p_atual = st.session_state.pagina_ativa
+        # 4.3 & 4.4 Arte e INFO (Mapeamento Dinâmico)
+        p_at = st.session_state.pagina_ativa
         
-        # Mapeamento de nomes de ficheiros
-        if p_atual == "off-mach":
-            ref_file = "OFF-MACHINA"
-            img_name = "img_off-machina.jpg"
-        elif p_atual == "commnets":
-            ref_file = "MEDIA" # Ou o correspondente ao seu arquivo INFO_MEDIA.md se for o caso
-            img_name = "img_demo.jpg" # Fallback para commnets ou ajuste conforme sua lista
-        else:
-            ref_file = p_atual.upper()
-            img_name = f"img_{p_atual.lower()}.jpg"
+        # Mapeamento para arquivos físicos
+        ref_file = p_at.upper() if p_at != "off-mach" else "OFF-MACHINA"
+        img_name = f"img_{p_at.lower() if p_at != 'off-mach' else 'off-machina'}.jpg"
         
         path_img = os.path.join("ypo", img_name)
         path_info = os.path.join("md_files", f"INFO_{ref_file}.md")
@@ -102,8 +101,7 @@ def main():
         st.caption("Copyright © 1983-2026 Nando Lopes")
 
     # 5. PALCO
-    _, col_main, _ = st.columns([0.5, 5, 0.5])
-
+    col_main = st.container()
     with col_main:
         p = st.session_state.pagina_ativa
         if p == "mini":
@@ -116,13 +114,13 @@ def main():
         elif p == "off-mach":
             st.title("off-machina")
             if os.path.exists("off_machina"):
-                arqs = [f for f in os.listdir("off_machina") if f.endswith(".TXT")]
+                arqs = sorted([f for f in os.listdir("off_machina") if f.endswith(".TXT")])
                 for a in arqs:
                     with st.expander(a.replace(".TXT", "")):
                         with open(os.path.join("off_machina", a), "r", encoding="utf-8") as f:
                             st.text(f.read())
-        elif p == "commnets":
-            st.title("commnets")
+        elif p == "comments":
+            st.title("comments")
         elif p == "about":
             st.title("about")
 
