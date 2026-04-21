@@ -1,7 +1,7 @@
 sobre os livros **off-machina**  
 ___
 > Os textos e poemas dos livros **off-machina** foram escritos  
-> em algum lugar no tempo entre os anos 1968 e 2022.  
+> em algum lugar no tempo entre os anos 1968 e a data atual.  
 > Não há precisão pois não tenho o hábito de datar meus escritos.  
 > Assim como os textos da **máquina**, também são únicos.  
 > Porém, não imutáveis.  
