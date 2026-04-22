@@ -1,3 +1,13 @@
+### Prefácio por Victor Leonardi
+___
+Fernando Lopes e eu temos algo em comum: a poesia, o hábito de ler e escrever poesia.
+Este livro-vivo é excelente e contém poemas originais, instigantes e 
+sutilmente impregnados de humor.
+
+A máquina está ao serviço do autor, é uma ferramenta de trabalho moderna.
+A criatividade literária não é uma via de mão única; tudo depende do poeta.
+
+
 a **máquina** segundo **Victor Leonardi:**  
 ---
 > Fernando Lopes e eu já conversamos inúmeras vezes sobre temas que nos aproximam.  
@@ -13,8 +23,9 @@ a **máquina** segundo **Victor Leonardi:**
 > E, finalmente, temos algo mais em comum: a poesia, o hábito de ler poesia  
 > e de escrever poesia. Fiz isso a vida toda e Fernando Lopes também.  
 
-> No entanto, apesar dessas afinidades, tive uma dúvida no dia em que fui convidado,  
-> por ele, para escrever o prefácio destes **yPoemas**:  
+> No entanto, apesar dessas afinidades, tive uma dúvida  
+> no dia em que fui convidado, por ele, para escrever  
+> o prefácio destes **yPoemas**:  
 > “Serei eu a pessoa mais indicada?”.  
 
 > Trata-se de uma pergunta aparentemente incompreensível,  
@@ -72,6 +83,6 @@ a **máquina** segundo **Victor Leonardi:**
 > São segredos da máquina, sobre os quais eu nada sei.  
 > Sou apenas um leitor de seus poemas.  
 
-[saber mais...](https://www.facebook.com/victor.leonardi.18)
+[saber mais...](https://www.facebook.com/victor.leonardi.18)  
 ___
-Copyright © 1983-2022 Nando Lopes - **yPoemas @ máquina de fazer Poesia**
+Copyright © 1983-Hoje Nando Lopes - **yPoemas @ máquina de fazer Poesia**
