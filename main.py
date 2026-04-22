@@ -35,7 +35,7 @@ st.markdown(
         max-width: 320px;
     }
     
-    /* UNIFICAÇÃO TOTAL: Sidebar e Palco com a mesma tipografia */
+    /* UNIFICAÇÃO TOTAL: Sidebar e Palco com a mesma tipografia Courier */
     html, body, [class*="css"], .stMarkdown, p, div, [data-testid="stSidebar"] * {
         font-family: 'Courier New', Courier, monospace !important;
         font-size: 15px;
@@ -51,7 +51,7 @@ st.markdown(
         background-color: #fcfcfc;
     }
 
-    /* Centralização de Checkboxes na Sidebar */
+    /* Ajuste de alinhamento dos Checkboxes na Sidebar */
     [data-testid="stSidebar"] .stCheckbox {
         display: flex;
         justify-content: center;
@@ -120,7 +120,7 @@ def main():
     
     chosen_id = stx.tab_bar(data=tabs, default="2")
 
-    # --- SIDEBAR (UNIFICADA) ---
+    # --- SIDEBAR ---
     with st.sidebar:
         idiomas_dict = {
             "pt": "Português", "en": "English", "es": "Español", "fr": "Français", "it": "Italiano",
@@ -136,10 +136,12 @@ def main():
             "vi": "Tiếng Việt", "wa": "Walon", "cy": "Cymraeg", "zu": "isiZulu"
         }
         
+        # CORREÇÃO DO INDEX: Agora passa o inteiro correto
+        keys_list = list(idiomas_dict.keys())
         st.session_state.lang = st.selectbox(
             "Idioma", 
-            list(idiomas_dict.keys()), 
-            index=list(idiomas_dict.keys()),
+            keys_list, 
+            index=keys_list.index(st.session_state.lang),
             format_func=lambda x: f"{x} - {idiomas_dict[x]}"
         )
         
@@ -166,7 +168,7 @@ def main():
         
         st.divider()
 
-    # --- PALCO CENTRAL (PAGINAÇÃO CENTRALIZADA) ---
+    # --- PALCO CENTRAL ---
     if chosen_id == "2": # YPOEMAS
         _, col_mid, _ = st.columns([1, 8, 1])
         with col_mid:
