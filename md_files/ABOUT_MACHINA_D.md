@@ -2,7 +2,6 @@
 **O eixo Z e os ítimos**  
 > O trabalho criativo está na escolha das palavras  
   que em algum momento farão parte dos **ítimos**.
-> ### O Eixo Z e os Ítimos
 ___
 O trabalho criativo está na escolha das palavras que farão parte dos ítimos.  
 Cada ítimo deve ser pertinente ao tema e fazer sentido para o que vem antes e depois dele.  
