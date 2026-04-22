@@ -1,7 +1,15 @@
 **∞**  
 **O eixo Z e os ítimos**  
 > O trabalho criativo está na escolha das palavras  
-  que em algum momento farão parte dos **ítimos**.  
+  que em algum momento farão parte dos **ítimos**.
+> ### O Eixo Z e os Ítimos
+___
+O trabalho criativo está na escolha das palavras que farão parte dos ítimos.  
+Cada ítimo deve ser pertinente ao tema e fazer sentido para o que vem antes e depois dele.  
+
+**Características** Efêmero, inesperado, impermanente, imprevisível e aberto. Não existe "leitura anterior" do tema. Cada yPoema gerado é substituído pelo próximo. 
+
+**Por que é único?** A possibilidade matemática de repetição depende das opções no "Banco de Ítimos", variando de milhões a valores astronômicos. 
 
 >> Cada ítimo deve, além de ser pertinente ao tema,  
    fazer sentido para o que vem **antes** e para o que vem **depois** dele.  
@@ -11,7 +19,7 @@
     e contempla as ideias, os estados de alma, os sentimentos,  
     a musicalidade, as aliterações, as rimas, a imagética,  
     a visão de mundo de quem escreve...  
-    além, é claro, de todas as concordâncias formais e necessárias  
+    além, é claro, de todas as concordâncias formais e necessárias   
     à criação de um texto consistente e condizente com o tema.  
 
 > O texto é composto a partir do **Banco de Ítimos** do tema.  
@@ -46,8 +54,8 @@
   O número varia de alguns milhões a valores quase astronômicos.  
 
 > Na página **mini** o botão '✚' mostra essas variações.  
-> Na página **yPoemas** o botão **[ ? ]** mostra essas variações.  
-> Na página **eureka**  o botão **[ ? ]** mostra essas variações.  
+> Na página **yPoemas** o botão **[ ✚ ]** mostra essas variações.  
+> Na página **eureka**  o botão **[ ✚ ]** mostra essas variações.  
 
 **[obs.]** - cerca de 12.800 verbetes únicos  
 > foram excluídos dessa contagem:  
