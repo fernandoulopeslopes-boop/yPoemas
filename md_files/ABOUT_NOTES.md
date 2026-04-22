@@ -1,4 +1,4 @@
-notas & curiosidades sobre alguns temas  
+### notas & curiosidades sobre alguns temas  
 ___
 - Cada **yPoema** foi milimetricamente programado para acontecer **al-atzar**.  
 - **Prefácil** é uma brincadeira óbvia com Prefácio.  
@@ -41,4 +41,4 @@ ___
   Ou, use **Ctrl F** para localizar as ocorrências da palavra na página atual.  
 - Pode-se também usar a combinação **Ctrl C** e **Ctrl V** para copiar e colar o texto.  
 ___
-Copyright © 1983-2022 Nando Lopes - **yPoemas @ máquina de fazer Poesia**
+Copyright © 1983-Hoje Nando Lopes - **yPoemas @ Machina de Fazer Poesia**
