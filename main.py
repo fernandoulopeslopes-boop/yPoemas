@@ -86,7 +86,7 @@ def page_abouts():
     """Hub de navegação baseado no ypo_seguro.py"""
     abouts_list = [
         "comments", "prefácio", "machina", "off-machina", "outros", 
-        "traduttore", "bibliografia", "imagens", "samizdát", 
+        "traduttore", "bibliografia", "imagens", "samizdát", "pensares",  
         "notes", "license", "index"
     ]
     
