@@ -1210,6 +1210,7 @@ def page_off_machina():  # available off_machina_books
                         LOGO_CAPA = load_arts("livro_vivo")
                         st.image(LOGO_CAPA, use_column_width=True)
                     else:
+                        st.warning( off_book_name )
                         st.image(
                             "./off_machina/capa_" + off_book_name + ".jpg",
                             use_column_width=True,
