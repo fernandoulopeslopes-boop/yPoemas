@@ -3,12 +3,17 @@
 > O trabalho criativo está na escolha das palavras  
   que em algum momento farão parte dos **ítimos**.
 ___
-O trabalho criativo está na escolha das palavras que farão parte dos ítimos.  
-Cada ítimo deve ser pertinente ao tema e fazer sentido para o que vem antes e depois dele.  
+Cada ítimo deve ser pertinente ao tema 
+e fazer sentido para o que vem antes e depois dele.  
 
-**Características** Efêmero, inesperado, impermanente, imprevisível e aberto. Não existe "leitura anterior" do tema. Cada yPoema gerado é substituído pelo próximo. 
+**Características**
+Efêmero, inesperado, impermanente, imprevisível e aberto.
+Não existe "leitura anterior" do tema.
+Cada yPoema gerado é substituído pelo próximo. 
 
-**Por que é único?** A possibilidade matemática de repetição depende das opções no "Banco de Ítimos", variando de milhões a valores astronômicos. 
+**Por que é único?**  
+A possibilidade matemática de repetição depende das opções no "Banco de Ítimos", 
+variando de milhões a valores astronômicos. 
 
 >> Cada ítimo deve, além de ser pertinente ao tema,  
    fazer sentido para o que vem **antes** e para o que vem **depois** dele.  
@@ -26,14 +31,6 @@ Cada ítimo deve ser pertinente ao tema e fazer sentido para o que vem antes e d
 > A **máquina** deixa de ser máquina quando,  
   a cada nova geração de um texto,  
   insere-se o **acaso** no sorteio das palavras que dele farão parte.  
-
-**Características**  
-> Efêmero, inesperado, impermanente, imprevisível e aberto.  
-
-> Não existe "leitura anterior" do tema.  
->> Cada yPoema gerado é substituído pelo próximo.  
->> O texto anterior é descartado e só se repetirá  
->> quando forem usadas todas as variações possíveis à ele.  
 
 > O objetivo não é esgotar o tema e sim explorar todas as suas nuanças,  
   sutilezas, matizes, possibilidades, mistérios e contrastes.  
@@ -73,4 +70,4 @@ Cada ítimo deve ser pertinente ao tema e fazer sentido para o que vem antes e d
 
 *Obviamente, os sinais de pontuação são parte muito importante dos ítimos.*
 ___
-Copyright © 1983-2022 Nando Lopes - **yPoemas @ máquina de fazer Poesia**
+Copyright © 1983-2026 Nando Lopes - **yPoemas @ máquina de fazer Poesia**
