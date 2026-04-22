@@ -24,8 +24,8 @@ ___
 - Os temas **Essa, Sinas, Sinais, Isso, Ss=1 e Ss=2**  
   são escritos apenas com palavras começadas por "S".  
   O tema **Ais**, apenas com palavras começadas por "A".  
-- Os temas **Zodiacaos e Finalmentes** foram criados com palavras extraídas  
-  de alguns horóscopos diários de jornais.  
+- Os temas **Zodiacaos e Finalmentes** foram criados  
+  com palavras extraídas de alguns horóscopos diários de jornais.  
 - O tema **Perfil** foi criado com palavras extraídas  
   de "sites de relacionamento" na internet.  
   Escrito no gênero feminino mas vale para todos.  
