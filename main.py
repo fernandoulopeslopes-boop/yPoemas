@@ -1,6 +1,6 @@
 import streamlit as st
 
-# --- 1. LISTA DE IDIOMAS OBRIGATÓRIA (PCP) ---
+# --- 1. LISTA DE IDIOMAS (PCP) ---
 IDIOMAS_MACHINA = {
     "Português": "pt", "Espanhol": "es", "Italiano": "it", "Francês": "fr",
     "Inglês": "en", "Catalão": "ca", "Córsico": "co", "Galego": "gl",
@@ -13,20 +13,29 @@ def configurar_estetica():
     st.set_page_config(layout="wide", initial_sidebar_state="expanded")
     st.markdown("""
         <style>
+        /* Ajuste radical para o palco encostar nas laterais */
+        .main .block-container { 
+            max-width: 100% !important; 
+            padding-top: 1rem !important; 
+            padding-left: 0rem !important; 
+            padding-right: 0rem !important; 
+        }
+        
         [data-testid="stSidebarNav"] {padding-top: 0rem;}
-        /* Palco sem bordas inúteis - 100% de aproveitamento */
-        .main .block-container { max-width: 100%; padding-top: 1rem; padding-left: 1rem; padding-right: 1rem; }
+        
         /* Botões do Navegador Central */
         .stButton > button { width: 100%; border-radius: 5px; font-weight: bold; height: 3rem; }
-        /* Alinhamento das listas laterais */
-        div[data-testid="stSelectbox"] { margin-top: -10px; }
-        /* LINHA FINA: Encostada nas laterais do palco */
+        
+        /* LINHA FINA: 100% de largura, sem margens laterais */
         .separador-palco {
             width: 100%; 
             margin: 10px 0px 20px 0px; 
             border: 0;
             border-top: 1px solid #ccc;
         }
+        
+        /* Padding interno apenas para os seletores, mantendo a linha solta */
+        .padd-lateral { padding-left: 1rem; padding-right: 1rem; }
         </style>
         """, unsafe_allow_html=True)
 
@@ -38,14 +47,14 @@ def carregar_sidebar():
         st.write("---")
         col_v1, col_v2 = st.columns(2)
         with col_v1: st.button("Arts")
-        with col_v2: st.button("Voice")
+        with col_v2: st.button("Voz") # Corrigido de Voice para Voz
     return sigla_traducao
 
 def main():
     configurar_estetica()
     sigla = carregar_sidebar()
 
-    # --- 2. BASE DE DADOS (ROLS) ---
+    # O dicionário de dados (ROLS) permanece o mesmo para preservar o conteúdo
     dicionario_dados = {
         "livro vivo": ["Prefácil", "Fatos", "Manifesto", "Manusgrite", "Beaba", "Paroles", "Essa", "Tiro", "Aolero", "Atido", "Lato", "Avevida", "Joker", "Feiras", "Cartaz", "Conto", "Festim", "I-Mundo", "Sos", "Meteoro", "Brado", "Inhos", "Astros", "Cromossomo", "Clandestino", "Pessoa", "Minuto", "Reger", "Preciso", "Pedidos", "Seguro", "Fugaz", "Nós", "Enfrente", "Leituras", "Rever", "Ocio", "Essas", "Mirante", "Indolor", "Elogio", "Distintos", "Gula", "Dolores", "Clarice", "Cuores", "Zoia", "Amaré", "Ciuminho", "Saudades", "Sentença", "Finalmentes", "Ser", "Rito", "Sonoro", "Anjos", "Epitafiando", "Tempo", "Usinas", "Veio", "Sopros", "Silente", "Oficio", "Posfácio"],
         "poemas": ["Amaré", "Atido", "Becos", "Ciuminho", "Clandestino", "Clarice", "Conto", "Cuores", "Elogio", "Festim", "Indolor", "Lato", "Machbeth", "Machbrait", "Mirante", "Oca", "Oco", "Ogiva", "Olhares", "Papilio", "Psiu", "Reger", "Rever", "Saudades", "Ser", "Silente", "Sinais", "Sonoro", "Sopros", "Tempo", "Usinas", "Veio", "Victor", "Zelo", "Zoia"],
@@ -60,27 +69,28 @@ def main():
         "todos os temas": ["Ais", "Amaré", "Anjos", "Aolero", "Arerir", "Astros", "Atido", "Augusto", "Avevida", "Babel", "Batismo", "Beaba", "Becos", "Blablabla", "Bolero", "Brado", "Bula", "Cadência", "Cartaz", "Circular", "Ciuminho", "Clandestino", "Clarice", "Conto", "Cordel", "Críticas", "Crítico", "Cromossomo", "Cuores", "Destinos", "Distintos", "Dolores", "Duralex", "Elogio", "Enfrente", "Epitafiando", "Escriba", "Essa", "Essas", "Esses", "Estudo", "Fatos", "Feiras", "Festim", "Finalmentes", "Frases", "Fugaz", "Gula", "Haikai", "i-Mundo", "Impar", "Indolor", "Inhos", "Insano", "Joker", "Lato", "Leituras", "Liberta", "Loremipsum", "Machbeth", "Machbrait", "Manifesto", "Manusgrite", "Manusgrito", "Meteoro", "Minuto", "Mirante", "Nonono", "Nós", "Oca", "Ocio", "Oco", "Oficio", "Ogiva", "Olhares", "Palyndro", "Papilio", "Paroles", "Passagens", "Pedidos", "Perfil", "Pessoa", "Portal", "Posfácio", "Preciso", "Prefácil", "Psiu", "Reger", "Reinos", "Remedeio", "Rever", "Rito", "Salute", "Saudades", "Seguro", "Sentença", "Ser", "Silente", "Sinais", "Sinas", "Sn6=ball", "Sn8=ball", "SnowBall", "Sonoro", "Sopros", "Sos", "Tempo", "Time", "Tiro", "Tolero", "Usinas", "Veio", "Victor", "Zelo", "Zodiacaos", "Zoia", "Aquarius=f", "Aquarius=m", "Aries=f", "Aries=m", "Cancer=f", "Cancer=m", "Caprico=f", "Caprico=m", "Escorpio=f", "Escorpio=m", "Gemeos=f", "Gemeos=m", "Leao=f", "Leao=m", "Libra=f", "Libra=m", "Peixes=f", "Peixes=m", "Sagitari=f", "Sagitari=m", "Touro=f", "Touro=m", "Virgem=f", "Virgem=m"]
     }
 
-    # --- 3. PALCO: LISTAS LARGAS E NAVEGADOR ---
-    # Proporções expandidas nas laterais para evitar nomes truncados
+    # --- 3. PALCO CORRIGIDO ---
+    st.markdown('<div class="padd-lateral">', unsafe_allow_html=True)
     col_l, col_nav, col_t = st.columns([2.0, 3.0, 2.0])
 
     with col_l:
         livro_sel = st.selectbox("livros", list(dicionario_dados.keys()), label_visibility="collapsed")
     
     with col_nav:
-        n1, n2, n3, n4, n5, n6 = st.columns(6)
+        # Apenas 5 botões: [ + < * > ? ]
+        n1, n2, n3, n4, n5 = st.columns(5)
         with n1: st.button("+") 
         with n2: st.button("<") 
-        with n3: st.button("*") # aleatório
+        with n3: st.button("*") 
         with n4: st.button(">") 
         with n5: st.button("?") 
-        with n6: st.button("i") # portal About
 
     with col_t:
         temas_disponiveis = dicionario_dados.get(livro_sel, ["..."])
         tema_sel = st.selectbox("temas", temas_disponiveis, label_visibility="collapsed")
+    st.markdown('</div>', unsafe_allow_html=True)
 
-    # Linha separadora sincronizada de ponta a ponta
+    # Linha separadora forçada a 100% de largura
     st.markdown('<div class="separador-palco"></div>', unsafe_allow_html=True)
 
 if __name__ == "__main__":
