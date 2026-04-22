@@ -2,28 +2,26 @@
 *- Time.ypo
 *-
 |01|01|Time_0101|F|1|1|O passado,|
-|01|02|Time_0102|F|11|11|estampado|emoldurado|ensimesmado|incrustado|enraizado|envolvido|mergulhado|afogado|engasgado|confinado|escancarado|
-|01|03|Time_0103|F|7|2|na carne,|no tempo,|na gente,|na memória,|em lembranças,|em sentidos,|em feridas,|
-|01|04|Time_0104|F|4|4|não volta.|passou.|nunca voltará|foi-se.|já era.|
+|01|02|Time_0102|F|11|11|estampado|emoldurado|ensimesmado|incrustado|enraizado|envolvido|mergulhado|afogado|engasgado|confinado|escancarado|esvaído|engessado|
+|01|03|Time_0103|F|7|2|na carne,|no tempo,|na gente,|na memória,|em lembranças,|em sentidos,|em feridas,|em si mesmo|nas gentes|em saudades|
+|01|04|Time_0104|F|4|4|não volta.|passou.|nunca voltará|foi-se.|já era.|ficou lá...|não tem retorno...|
+|01|05|Time_0105|F|1|1|...|.|?|
 |02|00|
 |02|01|Time_0201|F|1|1|O futuro,|
-|02|02|Time_0202|F|7|2|incerto|desigual|utópico|sonhado|impreciso|inventado|sublimado|infindo,|intermitente,|inexistente,|impaciente,|indefinido,|
+|02|02|Time_0202|F|7|2|incerto|desigual|utópico|sonhado|impreciso|inventado|sublimado|infindo|intermitente|inexistente|impaciente|indefinido|
 |02|03|Time_0203|F|1|1|,|
 |02|04|Time_0204|T|5|4|incerto|desigual|utópico|sonhado|impreciso|inventado|sublimado|infindo,|intermitente,|inexistente,|impaciente,|indefinido,|
-|02|05|Time_0205|T|4|3|não demora.|virá.|chegará.|não tem hora.|
+|02|05|Time_0205|T|4|3|não demora.|virá.|chegará.|não tem hora.|segue em frente.|
 |03|00|
 |03|01|Time_0301|T|1|1|O presente,|
-|03|02|Time_0302|F|4|1|pulsando|urgindo|rugindo|revirando|
-|03|03|Time_0303|F|4|4|no dia-a-dia,|à cada segundo,|em tic-tacs,|surpresas,|
-|03|04|Time_0304|F|4|2|é agora:|impera:|é quem manda:|indaga:|
+|03|02|Time_0302|F|4|1|pulsando|urgindo|rugindo|revirando|insurgindo|
+|03|03|Time_0303|F|4|4|segundos|no dia-a-dia|à cada segundo|em tic-tacs|surpresas|
+|03|04|Time_0304|F|4|2|, |... |
+|03|05|Time_0305|F|4|2|é agora:|impera:|é quem manda:|indaga:|se impõe:|manda o recado:|
 |04|00|
-|04|01|Time_0401|T|1|1|Sendo um dia|
-|05|01|Time_0501|F|1|1|do outro diferente,|equidistante do outro,|dos outros indiferente,|
+|04|01|Time_0401|F|1|1|Sendo um dia|Se cada dia é|
+|05|01|Time_0501|F|1|1|do outro diferente,|equidistante do outro,|dos outros indiferente,|do outro distinto,|
 |06|01|Time_0601|F|1|1|o quê|
-|06|02|Time_0602|F|1|1|na gente|aqui dentro|nas gentes|humana mente|
-|06|03|Time_0603|F|1|1|pensa igual?|
+|06|02|Time_0602|F|1|1|na gente|aqui dentro|nas gentes|na humana mente|nas pessoas|
+|06|03|Time_0603|F|1|1|pensa igual?|não acha sentido?|nunca muda?|não entende isso?|passa batido?|
 <EOF>
-VERBETES = 67
-PALAVRAS = 88
-VARIATIO = 2.759.680                                                                       
-Build_By_Lay_2_Ipo em 02/02/2021_11:21
