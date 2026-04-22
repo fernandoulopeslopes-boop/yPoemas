@@ -25,23 +25,34 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# CSS CUSTOMIZADO (Unificação de Fontes e Balanço de Widgets)
+# CSS CUSTOMIZADO (Unificação, Centralização e Ocultação de Resíduos)
 st.markdown(
     """
     <style>
-    /* Sidebar 320px Fixa */
+    /* Sidebar 300px Fixa */
     [data-testid="stSidebar"][aria-expanded="true"]{
-        min-width: 320px;
-        max-width: 320px;
+        min-width: 300px;
+        max-width: 300px;
     }
     
-    /* UNIFICAÇÃO TOTAL: Sidebar e Palco com a mesma tipografia Courier */
+    /* Tipografia Unificada Courier New (Palco e Sidebar) */
     html, body, [class*="css"], .stMarkdown, p, div, [data-testid="stSidebar"] * {
         font-family: 'Courier New', Courier, monospace !important;
         font-size: 15px;
     }
 
-    /* Estilização de Botões CPC */
+    /* Centralização Real e Balanço dos Botões Arte/Voz na Sidebar */
+    [data-testid="stSidebar"] [data-testid="column"] {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        text-align: center !important;
+    }
+    [data-testid="stSidebar"] .stCheckbox {
+        margin: 0 auto !important;
+    }
+
+    /* Estilização de Botões de Comando */
     .stButton>button {
         width: 100%;
         border-radius: 4px;
@@ -50,19 +61,20 @@ st.markdown(
         border: 1px solid #d1d1d1;
         background-color: #fcfcfc;
     }
-
-    /* Ajuste de alinhamento dos Checkboxes na Sidebar */
-    [data-testid="stSidebar"] .stCheckbox {
-        display: flex;
-        justify-content: center;
-        width: 100%;
+    
+    /* REMOÇÃO DO '<<' (Collapsed Control) E NAV RESIDUAL */
+    [data-testid="collapsedControl"] {
+        display: none;
+    }
+    [data-testid="stSidebarNav"] {
+        display: none;
     }
     </style>
     """,
     unsafe_allow_html=True,
 )
 
-# --- FUNÇÕES DE SUPORTE (Fidelidade ao ypo_seguro.py) ---
+# --- FUNÇÕES DE SUPORTE (Fidelidade Técnica) ---
 def get_random_tema():
     """Lê o rol oficial: base/rol_todos os temas.txt"""
     path_temas = os.path.join("base", "rol_todos os temas.txt")
@@ -79,19 +91,26 @@ def get_random_tema():
         st.stop()
 
 def render_md_page(tag):
-    """PAGINAÇÃO FIEL: Ocupação de palco centralizada com sangria [1, 4, 1]"""
-    path = os.path.join("md_files", f"INFO_{tag}.md")
-    if os.path.exists(path):
-        with open(path, "r", encoding="utf-8") as f:
+    """PAGINAÇÃO TEÓRICA (ypo_seguro.py): Ocupação de palco centralizada"""
+    # Busca o arquivo de conteúdo denso (Teoria/História)
+    path_page = os.path.join("md_files", f"PAGE_{tag}.md")
+    
+    # Se PAGE não existir, tenta o INFO como fallback de segurança
+    if not os.path.exists(path_page):
+        path_page = os.path.join("md_files", f"INFO_{tag}.md")
+        
+    if os.path.exists(path_page):
+        with open(path_page, "r", encoding="utf-8") as f:
             content = f.read()
+        # Sangria lateral padrão Machina [1, 4, 1]
         _, col_central, _ = st.columns([1, 4, 1])
         with col_central:
             st.markdown(content)
     else:
-        st.warning(f"Arquivo md_files/INFO_{tag}.md não encontrado.")
+        st.warning(f"Arquivo de conteúdo {tag} não localizado.")
 
 def load_sidebar_info(tag):
-    """Carrega o fragmento informativo para a sidebar."""
+    """Lê o fragmento rápido para a sidebar."""
     path = os.path.join("md_files", f"INFO_{tag}.md")
     if os.path.exists(path):
         with open(path, "r", encoding="utf-8") as f:
@@ -120,7 +139,7 @@ def main():
     
     chosen_id = stx.tab_bar(data=tabs, default="2")
 
-    # --- SIDEBAR ---
+    # --- SIDEBAR (ORDEM INVERTIDA E CENTRALIZADA) ---
     with st.sidebar:
         idiomas_dict = {
             "pt": "Português", "en": "English", "es": "Español", "fr": "Français", "it": "Italiano",
@@ -136,7 +155,6 @@ def main():
             "vi": "Tiếng Việt", "wa": "Walon", "cy": "Cymraeg", "zu": "isiZulu"
         }
         
-        # CORREÇÃO DO INDEX: Agora passa o inteiro correto
         keys_list = list(idiomas_dict.keys())
         st.session_state.lang = st.selectbox(
             "Idioma", 
@@ -145,7 +163,7 @@ def main():
             format_func=lambda x: f"{x} - {idiomas_dict[x]}"
         )
         
-        # Colunas Balanceadas para Arte e Voz
+        # Colunas com centralização forçada via CSS
         col_btn1, col_btn2 = st.columns(2)
         with col_btn1:
             st.session_state.draw = st.checkbox("Arte", value=True)
@@ -157,18 +175,19 @@ def main():
         menu_map = {"1":"MINI", "2":"YPOEMAS", "3":"EUREKA", "4":"OFF-MACH", "5":"BOOKS", "6":"COMMENTS", "7":"ABOUT"}
         tag = menu_map.get(chosen_id, "YPOEMAS")
         
-        # Arte e Info da Sidebar
-        img_name = f"img_{tag.lower()}.jpg"
-        if os.path.exists(img_name):
-            st.image(img_name)
-        
+        # 1. TEXTO INFORMATIVO (INFO_)
         info_side = load_sidebar_info(tag)
         if info_side:
             st.info(info_side)
         
         st.divider()
 
-    # --- PALCO CENTRAL ---
+        # 2. IMAGEM (Rodapé da Sidebar)
+        img_name = f"img_{tag.lower()}.jpg"
+        if os.path.exists(img_name):
+            st.image(img_name)
+
+    # --- PALCO CENTRAL (PAGINAÇÃO CENTRALIZADA) ---
     if chosen_id == "2": # YPOEMAS
         _, col_mid, _ = st.columns([1, 8, 1])
         with col_mid:
