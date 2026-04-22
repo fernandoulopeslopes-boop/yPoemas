@@ -1,184 +1,100 @@
-import os
-import sys
-import random
 import streamlit as st
-import extra_streamlit_components as stx
+import os
 
-# --- ANCORAGEM E IMPORTAÇÃO ---
-abspath = os.path.abspath(__file__)
-dname = os.path.dirname(abspath)
-os.chdir(dname)
-if dname not in sys.path:
-    sys.path.insert(0, dname)
+# --- 1. LISTA DE IDIOMAS OBRIGATÓRIA (PCP) ---
+IDIOMAS_MACHINA = {
+    "Português": "pt", "Espanhol": "es", "Italiano": "it", "Francês": "fr",
+    "Inglês": "en", "Catalão": "ca", "Córsico": "co", "Galego": "gl",
+    "Basco": "eu", "Esperanto": "eo", "Latin": "la", "Galês": "cy",
+    "Sueco": "sv", "Polonês": "pl", "Holandês": "nl", "Norueguês": "no",
+    "Finlandês": "fi", "Dinamarquês": "da", "Irlandês": "ga", "Romeno": "ro", "Russo": "ru"
+}
 
-try:
-    from lay_2_ypo import gera_poema
-except ImportError:
-    st.error("Erro: lay_2_ypo.py não encontrado.")
-    st.stop()
+def configurar_estetica():
+    """Define a identidade visual e o layout do palco."""
+    st.set_page_config(layout="wide", initial_sidebar_state="expanded")
+    st.markdown("""
+        <style>
+        [data-testid="stSidebarNav"] {padding-top: 0rem;}
+        .main .block-container { max-width: 95%; padding-top: 2rem; }
+        [data-testid="stSidebar"] [data-testid="column"] { display: flex; justify-content: center; }
+        .stButton > button { width: 100%; border-radius: 20px; }
+        </style>
+        """, unsafe_allow_html=True)
 
-# --- CONFIGURAÇÃO ---
-st.set_page_config(
-    page_title="yPoemas - a Machina de fazer Poesia", 
-    layout="wide", 
-    initial_sidebar_state="expanded"
-)
-
-# --- CSS: ESTERILIZAÇÃO E IDENTIDADE ---
-st.markdown(
-    """
-    <style>
-    /* Ocultar botão de colapsar (<<) e navegação padrão */
-    [data-testid="collapsedControl"], [data-testid="stSidebarNav"] {
-        display: none !important;
-    }
-    
-    /* Tipografia Courier New 15px */
-    html, body, [class*="css"], .stMarkdown, p, div, [data-testid="stSidebar"] * {
-        font-family: 'Courier New', Courier, monospace !important;
-        font-size: 15px;
-    }
-
-    /* Centralização dos controles Arte/Voz na Sidebar */
-    [data-testid="stSidebar"] [data-testid="column"] {
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center !important;
-        text-align: center !important;
-    }
-    
-    /* Ajuste de largura da Sidebar */
-    [data-testid="stSidebar"] {
-        min-width: 300px;
-        max-width: 300px;
-    }
-
-    /* Botões de comando */
-    .stButton>button {
-        width: 100%;
-        border-radius: 2px;
-        border: 1px solid #ccc;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-
-# --- FUNÇÕES DE APOIO ---
-def load_md_file(filename):
-    path = os.path.join("md_files", filename)
-    if os.path.exists(path):
-        with open(path, "r", encoding="utf-8") as f:
-            return f.read()
-    return f"Conteúdo de {filename} não localizado."
-
-def get_random_tema():
-    path = "rol_todos os temas.txt"
-    if os.path.exists(path):
-        with open(path, "r", encoding="utf-8") as f:
-            temas = [l.strip() for l in f if l.strip()]
-            return random.choice(temas) if temas else "Poesia"
-    return "Poesia"
-
-# --- LÓGICA DE PÁGINAS ---
-
-def page_abouts():
-    """Hub de navegação baseado no ypo_seguro.py"""
-    abouts_list = [
-        "comments", "prefácio", "machina", "off-machina", "outros", 
-        "traduttore", "bibliografia", "imagens", "samizdát", "pensares",  
-        "notes", "license", "index"
-    ]
-    
-    options = list(range(len(abouts_list)))
-    # Menu de seleção interno do About
-    opt_abouts = st.selectbox(
-        "↓ sobre",
-        options,
-        format_func=lambda x: abouts_list[x],
-        key="opt_abouts",
-    )
-
-    choice = abouts_list[opt_abouts].upper()
-    
-    # Palco central com sangria lateral
-    _, col_central, _ = st.columns([1, 4, 1])
-    
-    with col_central:
-        if choice == "MACHINA":
-            # Estrutura sanduíche da Machina
-            st.markdown(load_md_file("ABOUT_MACHINA_A.md"))
-            st.divider()
-            # O yPoema é gerado entre as explicações
-            gera_poema(st.session_state.tema, "")
-            st.divider()
-            st.markdown(load_md_file("ABOUT_MACHINA_D.md"))
-        else:
-            # Carregamento padrão
-            content = load_md_file(f"ABOUT_{choice}.md")
-            st.markdown(content)
-
-# --- ESTADO INICIAL ---
-if "tema" not in st.session_state: st.session_state.tema = get_random_tema()
-if "lang" not in st.session_state: st.session_state.lang = "pt"
-
-# --- MAIN ---
-def main():
-    tabs = [
-        stx.TabBarItemData(id="1", title="mini", description=""),
-        stx.TabBarItemData(id="2", title="yPoemas", description=""),
-        stx.TabBarItemData(id="3", title="eureka", description=""),
-        stx.TabBarItemData(id="4", title="off-mach", description=""),
-        stx.TabBarItemData(id="5", title="books", description=""),
-        stx.TabBarItemData(id="6", title="comments", description=""),
-        stx.TabBarItemData(id="7", title="about", description=""),
-    ]
-    
-    chosen_id = stx.tab_bar(data=tabs, default="2")
-
-    # --- SIDEBAR (Ordem: Seletores -> Info -> Imagem) ---
+def carregar_sidebar():
+    """Painel de Controle: Onde o leitor escolhe o 'como'."""
     with st.sidebar:
-        # 1. Seleção de Idioma
-        st.session_state.lang = st.selectbox("Idioma", ["pt", "en", "es", "fr", "it", "de"])
+        # Arco Narrativo: mini -> yPoemas -> eureka -> about
+        menu = ["mini", "yPoemas", "eureka", "about"]
+        choice = st.radio("navegação", menu, label_visibility="collapsed")
         
-        # 2. Checkboxes Centralizados
-        c1, c2 = st.columns(2)
-        with c1: st.checkbox("Arte", value=True, key="draw")
-        with c2: st.checkbox("Voz", value=False, key="talk")
+        st.write("---")
         
-        st.divider()
+        idioma_exibido = st.selectbox("idioma", list(IDIOMAS_MACHINA.keys()))
+        sigla_traducao = IDIOMAS_MACHINA[idioma_exibido]
         
-        # 3. Informação Contextual (INFO_*.md)
-        menu_map = {"1":"MINI", "2":"YPOEMAS", "3":"EUREKA", "4":"OFF-MACH", "5":"BOOKS", "6":"COMMENTS", "7":"ABOUT"}
-        tag = menu_map.get(chosen_id, "YPOEMAS")
+        st.write("---")
         
-        info_path = os.path.join("md_files", f"INFO_{tag}.md")
-        if os.path.exists(info_path):
-            with open(info_path, "r", encoding="utf-8") as f:
-                st.info(f.read())
-        
-        st.divider()
+        col_v1, col_v2 = st.columns(2)
+        with col_v1:
+            st.button("Arts")
+        with col_v2:
+            st.button("Voice")
+            
+    return choice, sigla_traducao
 
-        # 4. Imagem de Rodapé
-        img_path = f"img_{tag.lower()}.jpg"
-        if os.path.exists(img_path):
-            st.image(img_path)
-
-    # --- PALCO CENTRAL ---
-    if chosen_id == "7": # ABOUT
-        page_abouts()
+def carregar_palco(choice, sigla_traducao):
+    """Área de Exibição: Onde o leitor descobre o 'quê'."""
+    
+    if choice in ["mini", "yPoemas", "eureka"]:
+        col_livro, col_tema = st.columns(2)
         
-    elif chosen_id == "6": # COMMENTS (Atalho direto)
-        _, col, _ = st.columns([1, 4, 1])
-        with col: st.markdown(load_md_file("ABOUT_COMMENTS.md"))
+        with col_livro:
+            # lista_livros e dicionario_dados devem estar definidos no seu motor
+            livro_sel = st.selectbox("livros", lista_livros)
+        
+        with col_tema:
+            temas_disponiveis = dicionario_dados[livro_sel]
+            tema_sel = st.selectbox("temas", temas_disponiveis)
+        
+        st.write("---")
+        
+        # Direcionamento para os motores específicos da Machina
+        if choice == "mini":
+            # Ex: motor_mini(tema_sel, sigla_traducao)
+            pass
+        elif choice == "yPoemas":
+            # Ex: motor_ypoemas(tema_sel, sigla_traducao)
+            pass
+        elif choice == "eureka":
+            # Ex: motor_eureka(livro_sel, tema_sel)
+            pass
 
-    elif chosen_id == "2": # YPOEMAS
-        _, col, _ = st.columns([1, 6, 1])
-        with col:
-            if st.button("Gerar Novo yPoema"):
-                gera_poema(st.session_state.tema, "")
+    elif choice == "about":
+        about_map = {
+            "Prefácio": "ABOUT_PREFÁCIO.md",
+            "A Máquina (A)": "ABOUT_MACHINA_A.md",
+            "A Máquina (D)": "ABOUT_MACHINA_D.md",
+            "Traduttore": "ABOUT_TRADUTTORE.md",
+            "off-machina": "ABOUT_OFF-MACHINA.md",
+            "Outros Autores": "ABOUT_OUTROS.md",
+            "Samizdát": "ABOUT_SAMIZDÁT.md",
+            "Bibliografia": "ABOUT_BIBLIOGRAFIA.md",
+            "Comments": "ABOUT_COMMENTS.md"
+        }
+        
+        sel_about = st.selectbox("sobre", list(about_map.keys()))
+        path = os.path.join("md_files", about_map[sel_about])
+        
+        if os.path.exists(path):
+            with open(path, "r", encoding="utf-8") as f:
+                st.markdown(f.read())
 
-    # Adicionar lógica para MINI e EUREKA seguindo o padrão...
+def main():
+    configurar_estetica()
+    escolha, sigla = carregar_sidebar()
+    carregar_palco(escolha, sigla)
 
 if __name__ == "__main__":
     main()
