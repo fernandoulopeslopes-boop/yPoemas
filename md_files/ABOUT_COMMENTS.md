@@ -1,5 +1,5 @@
-alguns comentários sobre os **yPoemas**  
----  
+###alguns comentários sobre os **yPoemas**  
+___
 - **Prof. Rui Torres** (Porto - Portugal)  
 
 Caro Fernando Lopes,  
@@ -14,7 +14,7 @@ Foi uma surpresa muito agradável.
 Aqui fica o agradecimento e o reconhecimento.  
 Saudações cordiais,  
 [saber mais...](http://telepoesis.net/)  
----  
+___  
 - **Iacyr Anderson Freitas** (Patrocínio do Muriaé, MG - Brasil)  
 
 Li com prazer (e espanto, devo confessar)  
@@ -29,7 +29,7 @@ Há um caminho totalmente novo à frente.
 Daqui das Gerais, só me cabe lhe desejar sucesso.  
 Ah... e lhe parabenizar pelo feito notável  
 [saber mais...](http://www.algumapoesia.com.br/poesia3/poesianet373.htm)  
----  
+___  
 - **Beth Brait Alvim** (São José dos Campos, SP - Brasil)  
 
 Machina é o nome que seu criador lhe deu.  
@@ -52,7 +52,7 @@ inda mais num mundo plano, banal, destituído de encantos, como querem os boçai
 A Máquina veio para quebrar o feio, o pouco, o nada.  
 Que venham mais e mais poemas!  
 [saber mais...](https://www.editorapatua.com.br/produto/24326/a-febre-e-a-mariposa-de-beth-brait-alvim)
----  
+___  
 - **Prof. Luis Gonzaga Guimarães Pinheiro** (São José dos Campos, SP - Brasil)  
 
 Caro Fernando,  
@@ -81,7 +81,7 @@ porque discute, cria conflitos, estimula a reflexão, elabora-se o "outro lado".
 Muito sinceramente...  
 
 [in memoriam](https://www.youtube.com/watch?v=2uh8_Ge6wxY)  
----  
+___  
 - **Isaque de Carvalho** (Estocolmo, Suécia)  
 
 Fernando, um não-autor de um não-livro. Ou quase: a “machina”.  
@@ -101,7 +101,7 @@ Impermanência e o fundo-sem-fundo permanente. Um assombro!
 Pergunto: para onde os versos do Fernando que circunspecto acabei de ler na lonjura escandinava?  
 
 Apareceram e desapareceram. A “machina”. A Vida.  
----  
+___  
 - **Sílvio Ferreira Leite**  
 
 Esse grande trabalho de Fernando Lopes tem muito a acrescentar ao processo de criação.  
@@ -110,7 +110,7 @@ e que pode auxiliar principalmente os iniciantes na arte de escrever.
 O texto pode ser editado, modificado e recriado,  
 até que obra e autor se tornem uma unidade poética cheia de sentimentos e emoções.  
 [saber mais...](https://x.facebook.com/silvioferreiraleitee)  
----  
+___  
 - **Silvia Vasconcellos**  
 
 Querido poeta.  
@@ -131,19 +131,19 @@ apenas mudando a ordem das palavras.
 Seu talento continua sendo a base de tudo.  
 Sem sua escrita, a máquina não tem o que fazer.  
 Sensacional!!!  
----  
+___  
 - **Laila Nasser**  
 
 Sensacional! Espaço para o exercício democrático da criação. Parabéns!!!  
----  
+___  
 - **Mariangela Amendola**  
 
 Técnicas matemáticas?! Mineração de dados?!  
 Certamente que, sem o "especialista", não levam a nada!  
 Legal!  
----  
+___  
 - **MarieLou Miranda Camargo-Nash**  
 
 It’s brilliant! Well done you! I love words.  
----  
-Copyright © 1983-2022 Nando Lopes - **yPoemas @ máquina de fazer Poesia**
+___  
+Copyright © 1983-Hoje Nando Lopes - **yPoemas @ Machina de Fazer Poesia**
