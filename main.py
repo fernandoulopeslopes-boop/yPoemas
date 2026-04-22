@@ -15,16 +15,16 @@ def configurar_estetica():
     st.markdown("""
         <style>
         [data-testid="stSidebarNav"] {padding-top: 0rem;}
-        .main .block-container { max-width: 95%; padding-top: 2rem; }
-        [data-testid="stSidebar"] [data-testid="column"] { display: flex; justify-content: center; }
-        .stButton > button { width: 100%; border-radius: 20px; }
+        .main .block-container { max-width: 98%; padding-top: 1rem; }
+        /* Botões do Navegador Padrão */
+        .stButton > button { width: 100%; border-radius: 5px; font-weight: bold; height: 3rem; }
+        /* Ajuste fino selectboxes */
+        div[data-testid="stSelectbox"] { margin-top: -10px; }
         </style>
         """, unsafe_allow_html=True)
 
 def carregar_sidebar():
     with st.sidebar:
-        menu = ["mini", "yPoemas", "eureka", "about"]
-        choice = st.radio("navegação", menu, label_visibility="collapsed")
         st.write("---")
         idioma_exibido = st.selectbox("idioma", list(IDIOMAS_MACHINA.keys()))
         sigla_traducao = IDIOMAS_MACHINA[idioma_exibido]
@@ -32,37 +32,11 @@ def carregar_sidebar():
         col_v1, col_v2 = st.columns(2)
         with col_v1: st.button("Arts")
         with col_v2: st.button("Voice")
-    return choice, sigla_traducao
-
-def carregar_palco(choice, sigla, livros, dados):
-    if choice in ["mini", "yPoemas", "eureka"]:
-        col_livro, col_tema = st.columns(2)
-        with col_livro:
-            livro_sel = st.selectbox("livros", livros)
-        with col_tema:
-            temas_disponiveis = dados.get(livro_sel, ["..."])
-            tema_sel = st.selectbox("temas", temas_disponiveis)
-        st.write("---")
-        
-        # Placeholder para os motores da Machina
-        st.write(f"Modo: {choice} | Tema: {tema_sel} | Idioma: {sigla}")
-
-    elif choice == "about":
-        about_map = {
-            "Prefácio": "ABOUT_PREFÁCIO.md", "A Máquina (A)": "ABOUT_MACHINA_A.md",
-            "A Máquina (D)": "ABOUT_MACHINA_D.md", "Traduttore": "ABOUT_TRADUTTORE.md",
-            "off-machina": "ABOUT_OFF-MACHINA.md", "Outros Autores": "ABOUT_OUTROS.md",
-            "Samizdát": "ABOUT_SAMIZDÁT.md", "Bibliografia": "ABOUT_BIBLIOGRAFIA.md",
-            "Comments": "ABOUT_COMMENTS.md"
-        }
-        sel_about = st.selectbox("sobre", list(about_map.keys()))
-        path = os.path.join("md_files", about_map[sel_about])
-        if os.path.exists(path):
-            with open(path, "r", encoding="utf-8") as f:
-                st.markdown(f.read())
+    return sigla_traducao
 
 def main():
     configurar_estetica()
+    sigla = carregar_sidebar()
 
     # --- 2. BASE DE DADOS (ROLS) ---
     dicionario_dados = {
@@ -79,10 +53,27 @@ def main():
         "todos os temas": ["Ais", "Amaré", "Anjos", "Aolero", "Arerir", "Astros", "Atido", "Augusto", "Avevida", "Babel", "Batismo", "Beaba", "Becos", "Blablabla", "Bolero", "Brado", "Bula", "Cadência", "Cartaz", "Circular", "Ciuminho", "Clandestino", "Clarice", "Conto", "Cordel", "Críticas", "Crítico", "Cromossomo", "Cuores", "Destinos", "Distintos", "Dolores", "Duralex", "Elogio", "Enfrente", "Epitafiando", "Escriba", "Essa", "Essas", "Esses", "Estudo", "Fatos", "Feiras", "Festim", "Finalmentes", "Frases", "Fugaz", "Gula", "Haikai", "i-Mundo", "Impar", "Indolor", "Inhos", "Insano", "Joker", "Lato", "Leituras", "Liberta", "Loremipsum", "Machbeth", "Machbrait", "Manifesto", "Manusgrite", "Manusgrito", "Meteoro", "Minuto", "Mirante", "Nonono", "Nós", "Oca", "Ocio", "Oco", "Oficio", "Ogiva", "Olhares", "Palyndro", "Papilio", "Paroles", "Passagens", "Pedidos", "Perfil", "Pessoa", "Portal", "Posfácio", "Preciso", "Prefácil", "Psiu", "Reger", "Reinos", "Remedeio", "Rever", "Rito", "Salute", "Saudades", "Seguro", "Sentença", "Ser", "Silente", "Sinais", "Sinas", "Sn6=ball", "Sn8=ball", "SnowBall", "Sonoro", "Sopros", "Sos", "Tempo", "Time", "Tiro", "Tolero", "Usinas", "Veio", "Victor", "Zelo", "Zodiacaos", "Zoia", "Aquarius=f", "Aquarius=m", "Aries=f", "Aries=m", "Cancer=f", "Cancer=m", "Caprico=f", "Caprico=m", "Escorpio=f", "Escorpio=m", "Gemeos=f", "Gemeos=m", "Leao=f", "Leao=m", "Libra=f", "Libra=m", "Peixes=f", "Peixes=m", "Sagitari=f", "Sagitari=m", "Touro=f", "Touro=m", "Virgem=f", "Virgem=m"]
     }
 
-    lista_livros = list(dicionario_dados.keys())
+    # --- 3. PALCO: NAVEGADOR PADRÃO [ + < * > ? i ] ---
+    # Proporções: 1.2 (Laterais) e 4.0 (Central) para acomodar o navegador
+    col_l, col_nav, col_t = st.columns([1.2, 4.0, 1.2])
+
+    with col_l:
+        livro_sel = st.selectbox("livros", list(dicionario_dados.keys()), label_visibility="collapsed")
     
-    escolha, sigla = carregar_sidebar()
-    carregar_palco(escolha, sigla, lista_livros, dicionario_dados)
+    with col_nav:
+        n1, n2, n3, n4, n5, n6 = st.columns(6)
+        with n1: st.button("+")
+        with n2: st.button("<")
+        with n3: st.button("*")
+        with n4: st.button(">")
+        with n5: st.button("?")
+        with n6: st.button("i")
+
+    with col_t:
+        temas_disponiveis = dicionario_dados.get(livro_sel, ["..."])
+        tema_sel = st.selectbox("temas", temas_disponiveis, label_visibility="collapsed")
+
+    st.write("---")
 
 if __name__ == "__main__":
     main()
