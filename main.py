@@ -18,8 +18,15 @@ def configurar_estetica():
         .main .block-container { max-width: 98%; padding-top: 1rem; }
         /* Botões do Navegador Padrão */
         .stButton > button { width: 100%; border-radius: 5px; font-weight: bold; height: 3rem; }
-        /* Ajuste fino selectboxes */
+        /* Ajuste fino selectboxes e remoção de labels */
         div[data-testid="stSelectbox"] { margin-top: -10px; }
+        /* Estilização da linha separadora customizada */
+        .separador-palco {
+            width: 98%; 
+            margin: 10px auto 20px auto; 
+            border: 0;
+            border-top: 1px solid #ccc;
+        }
         </style>
         """, unsafe_allow_html=True)
 
@@ -53,9 +60,9 @@ def main():
         "todos os temas": ["Ais", "Amaré", "Anjos", "Aolero", "Arerir", "Astros", "Atido", "Augusto", "Avevida", "Babel", "Batismo", "Beaba", "Becos", "Blablabla", "Bolero", "Brado", "Bula", "Cadência", "Cartaz", "Circular", "Ciuminho", "Clandestino", "Clarice", "Conto", "Cordel", "Críticas", "Crítico", "Cromossomo", "Cuores", "Destinos", "Distintos", "Dolores", "Duralex", "Elogio", "Enfrente", "Epitafiando", "Escriba", "Essa", "Essas", "Esses", "Estudo", "Fatos", "Feiras", "Festim", "Finalmentes", "Frases", "Fugaz", "Gula", "Haikai", "i-Mundo", "Impar", "Indolor", "Inhos", "Insano", "Joker", "Lato", "Leituras", "Liberta", "Loremipsum", "Machbeth", "Machbrait", "Manifesto", "Manusgrite", "Manusgrito", "Meteoro", "Minuto", "Mirante", "Nonono", "Nós", "Oca", "Ocio", "Oco", "Oficio", "Ogiva", "Olhares", "Palyndro", "Papilio", "Paroles", "Passagens", "Pedidos", "Perfil", "Pessoa", "Portal", "Posfácio", "Preciso", "Prefácil", "Psiu", "Reger", "Reinos", "Remedeio", "Rever", "Rito", "Salute", "Saudades", "Seguro", "Sentença", "Ser", "Silente", "Sinais", "Sinas", "Sn6=ball", "Sn8=ball", "SnowBall", "Sonoro", "Sopros", "Sos", "Tempo", "Time", "Tiro", "Tolero", "Usinas", "Veio", "Victor", "Zelo", "Zodiacaos", "Zoia", "Aquarius=f", "Aquarius=m", "Aries=f", "Aries=m", "Cancer=f", "Cancer=m", "Caprico=f", "Caprico=m", "Escorpio=f", "Escorpio=m", "Gemeos=f", "Gemeos=m", "Leao=f", "Leao=m", "Libra=f", "Libra=m", "Peixes=f", "Peixes=m", "Sagitari=f", "Sagitari=m", "Touro=f", "Touro=m", "Virgem=f", "Virgem=m"]
     }
 
-    # --- 3. PALCO: NAVEGADOR PADRÃO [ + < * > ? i ] ---
-    # Proporções: 1.2 (Laterais) e 4.0 (Central) para acomodar o navegador
-    col_l, col_nav, col_t = st.columns([1.2, 4.0, 1.2])
+    # --- 3. PALCO: EXPANSÃO DAS LISTAS E LINHA ---
+    # Proporções ajustadas para aumentar a largura das listas laterais [2.0, 3.0, 2.0]
+    col_l, col_nav, col_t = st.columns([2.0, 3.0, 2.0])
 
     with col_l:
         livro_sel = st.selectbox("livros", list(dicionario_dados.keys()), label_visibility="collapsed")
@@ -73,7 +80,8 @@ def main():
         temas_disponiveis = dicionario_dados.get(livro_sel, ["..."])
         tema_sel = st.selectbox("temas", temas_disponiveis, label_visibility="collapsed")
 
-    st.write("---")
+    # Linha separadora extendida e sincronizada
+    st.markdown('<div class="separador-palco"></div>', unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
