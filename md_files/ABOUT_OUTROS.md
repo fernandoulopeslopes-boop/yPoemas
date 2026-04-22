@@ -35,4 +35,4 @@ ___
 - ☆ - Quando chorei no ombro do meu amor  
 ✔ **Elogio**  
 ___
-Copyright © 1983-2022 Nando Lopes - **yPoemas @ máquina de fazer Poesia**
+Copyright © 1983-Hoje Nando Lopes - **yPoemas @ máquina de fazer Poesia**
