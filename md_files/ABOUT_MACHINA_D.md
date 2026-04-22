@@ -2,18 +2,17 @@
 **O eixo Z e os ítimos**  
 > O trabalho criativo está na escolha das palavras  
   que em algum momento farão parte dos **ítimos**.
+  Cada ítimo deve ser pertinente ao tema 
+  e fazer sentido para o que vem antes e depois dele.  
 ___
-Cada ítimo deve ser pertinente ao tema 
-e fazer sentido para o que vem antes e depois dele.  
-
 **Características**
 Efêmero, inesperado, impermanente, imprevisível e aberto.
 Não existe "leitura anterior" do tema.
 Cada yPoema gerado é substituído pelo próximo. 
 
 **Por que é único?**  
-A possibilidade matemática de repetição depende das opções no "Banco de Ítimos", 
-variando de milhões a valores astronômicos. 
+A possibilidade matemática de repetição depende das opções 
+no "Banco de Ítimos", variando de milhões a valores astronômicos. 
 
 >> Cada ítimo deve, além de ser pertinente ao tema,  
    fazer sentido para o que vem **antes** e para o que vem **depois** dele.  
