@@ -1,12 +1,12 @@
-sobre as traduções  
+### Sobre as Traduções
 ___
-**Traduttore, traditore.**  
-> É um provérbio italiano que, literalmente, significa que o tradutor é traidor  
-> mas que na realidade quer dizer que toda a tradução  
-> não corresponde exatamente ao sentido original da frase.
 
-**Os textos aqui traduzidos usam o Google Translate**
-> Os textos originais foram escritos em "português".
+**Traduttore, traditore.**  
+Provérbio italiano que indica que toda tradução  
+não corresponde exatamente ao sentido original.  
+
+Os textos originais foram escritos em português.  
+Atualmente, o sistema utiliza o Google Translate.  
 
 > Existem 195 países no mundo hoje.   
 > Este total compreende 193 países integrantes da Organização das Nações Unidas  
