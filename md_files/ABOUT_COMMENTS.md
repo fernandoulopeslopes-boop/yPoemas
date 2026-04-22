@@ -1,4 +1,4 @@
-### alguns comentários sobre os **yPoemas**  
+### alguns comentários sobre os yPoemas  
 ___
 - **Prof. Rui Torres** (Porto - Portugal)  
 
