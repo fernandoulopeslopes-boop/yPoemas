@@ -1,9 +1,9 @@
-alguns Autores & Livros sobre...
+### Autores & Livros sobre...
 ___
-> **Acid-Free Bits; Autopoemas; Born-Again Bits; Ciberliteratura;**  
-> **Cibertexto; Digital An-archive; Digital Poetry; Electronic Literature;**  
-> **Hipertexto; Literatura Cibernética; Literatura Informacional;**  
-> **Metalivro; Motor Textual; Poesia Digital; Poesia Eletrônica; Poesia Experimental**  
+> Acid-Free Bits; Autopoemas; Born-Again Bits; Ciberliteratura;  
+> Cibertexto; Digital An-archive; Digital Poetry; Electronic Literature;  
+> Hipertexto; Literatura Cibernética; Literatura Informacional;  
+> Metalivro; Motor Textual; Poesia Digital; Poesia Eletrônica; Poesia Experimental  
 
 - Antonio, Jorge Luiz - “Poesia eletrônica no Brasil: Alguns exemplos” - Cibertextualidades
 
