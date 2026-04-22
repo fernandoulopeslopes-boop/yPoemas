@@ -1,4 +1,4 @@
-sobre os livros **off-machina**  
+### Livros Off-Machina  
 ___
 > Os textos e poemas dos livros **off-machina** foram escritos  
 > em algum lugar no tempo entre os anos 1968 e a data atual.  
@@ -8,9 +8,15 @@ ___
 > Posso, graças à tecnologia, trocar uma palavra aqui, outra ali...  
 > Não o faço constantemente mas quem escreve há de saber a delícia que é.  
 
+**Ladainha II (Cassiano Ricardo)** > Por que o raciocínio, os músculos, os ossos?  
+> A automação, ócio dourado.  
+> O cérebro eletrônico, o músculo mecânico...  
+> Por que fazer um poema? A máquina o fará por nós.  
+
+___
 > Coincidentemente(?),  
 > todos os **livros**(1), afora o "Torre de Papel", têm 48 páginas.  
-> São mínimos.
+> São mínimos.  
 
 > Não posso dizer que vivo da poesia mas, vivo de poesia.  
 >> No canto inferior esquerdo da tela, há **links** para  
@@ -52,8 +58,8 @@ ___
 (1) **livro**: substantivo masculino (Houaiss)  
 
 > Coleção de folhas de papel, impressas ou não, cortadas, dobradas  
-> e reunidas em cadernos cujos dorsos são unidos por meio de cola ou costura,  
-> formando um volume que se recobre com capa resistente.  
+> e reunidas em cadernos cujos dorsos são unidos por meio de cola  
+> ou costura, formando um volume que se recobre com capa resistente.  
 
 > Considerado do ponto de vista do seu conteúdo:  
 > obra de cunho literário, artístico, científico,  
@@ -61,11 +67,11 @@ ___
 
 > Segundo as normas de documentação da ABNT  
 > e organismos internacionais, o livro é a publicação  
-> com mais de 49 páginas, além da capa.  
+> com mais de 48 páginas, além da capa.  
 
 (1) **livro**: ABNT - NBR 6029: 3.31  
 
 > Publicação não periódica que contém acima de 49 páginas, excluídas as capas,  
 > e que é objeto de Número Internacional Normalizado para Livro (ISBN).  
 ___
-Copyright © 1983-2022 Nando Lopes - **yPoemas @ máquina de fazer Poesia**
+Copyright © 1983-hoje Nando Lopes - **yPoemas @ máquina de fazer Poesia**
