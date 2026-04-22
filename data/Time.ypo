@@ -4,7 +4,7 @@
 |01|01|Time_0101|F|1|1|O passado,|
 |01|02|Time_0102|F|11|11|estampado|emoldurado|ensimesmado|incrustado|enraizado|envolvido|mergulhado|afogado|engasgado|confinado|escancarado|esvaído|engessado|
 |01|03|Time_0103|F|7|2|na carne,|no tempo,|na gente,|na memória,|em lembranças,|em sentidos,|em feridas,|em si mesmo,|nas gentes,|em saudades,|
-|01|04|Time_0104|F|4|4|não volta.|passou.|nunca voltará|foi-se.|já era.|ficou lá...|não tem retorno...|
+|01|04|Time_0104|F|4|4|não volta|passou|nunca voltará|foi-se|já era|ficou lá|não tem retorno|
 |01|05|Time_0105|F|1|1|...|.|
 |02|00|
 |02|01|Time_0201|F|1|1|O futuro,|
@@ -16,9 +16,9 @@
 |03|00|
 |03|01|Time_0301|T|1|1|O presente,|
 |03|02|Time_0302|F|4|1|pulsando|urgindo|rugindo|revirando|insurgindo|
-|03|03|Time_0303|F|4|4|segundos|no dia-a-dia|à cada segundo|em tic-tacs|surpresas|
+|03|03|Time_0303|F|4|4|segundos|no dia-a-dia|à cada segundo|em "tic-tacs"|surpresas|
 |03|04|Time_0304|F|4|2|, |... |
-|03|05|Time_0305|F|4|2|é agora:|impera:|é quem manda:|indaga:|se impõe:|manda o recado:|
+|03|05|Time_0305|F|4|2|é agora:|impera:|é quem manda:|indaga:|se impõe:|manda o recado:|pergunta:|quer saber:|é o relógio:|
 |04|00|
 |04|01|Time_0401|F|1|1|Sendo um dia|Se cada dia é|
 |05|01|Time_0501|F|1|1|do outro diferente,|equidistante do outro,|dos outros indiferente,|do outro distinto,|
