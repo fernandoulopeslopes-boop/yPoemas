@@ -54,4 +54,4 @@ ___
 >> P.S. Em alguns idiomas (para o Google Translate?)  
 >> parece não haver distinção entre "língua" e "idioma".  
 ___  
-Copyright © 1983-2022 Nando Lopes - **yPoemas @ máquina de fazer Poesia**
+Copyright © 1983-Hoje Nando Lopes - **yPoemas @ Machina de Fazer Poesia**
