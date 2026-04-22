@@ -21,9 +21,9 @@ IDIOMAS = {
 }
 
 LIVROS = [
-    "livro vivo", "poemas", "ensaios", "jocosos", "variações",
-    "metalinguagem", "sociais", "outros autores", "todos os temas",
-    "todos os signos", "signos_fem", "signos_mas"
+    "todos os temas", "livro vivo", "poemas", "ensaios",
+    "jocosos", "variações", "metalinguagem", "sociais",
+    "outros autores", "todos os signos", "signos_fem", "signos_mas"
 ]
 
 EXT_IMG = {'.jpg', '.jpeg', '.png', '.webp'}
