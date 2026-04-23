@@ -1,11 +1,11 @@
 Ais : ensaio
 Amaré : poesia
-Anjos : poesia
+Anjos : author
 Aolero : ensaio
 Arerir : ensaio
 Astros : ensaio
 Atido : poesia
-Augusto : poesia
+Augusto : author
 Avevida : poesia
 Babel : ensaio
 Batismo : metalinguagem
@@ -23,8 +23,8 @@ Clandestino : poesia
 Clarice : poesia
 Conto : poesia
 Cordel : metalinguagem
-Critico : poesia
 Críticas : joco
+Crítico : author
 Cromossomo : joco
 Cuores : poesia
 Destinos : poesia
@@ -89,6 +89,7 @@ Reger : poesia
 Reinos : joco
 Remedeio : joco
 Rever : poesia
+Restos : poesia
 Rito : joco
 Salute : joco
 Saudades : poesia
@@ -110,6 +111,7 @@ Tolero : poesia
 Usinas : poesia
 Veio : poesia
 Victor : poesia
+Vozes : joco
 Zelo : poesia
 Zodiacaos : zodíaco
 Zoia : poesia
