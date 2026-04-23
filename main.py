@@ -1487,7 +1487,7 @@ def main():
         ##$ page_docs()
 
     with st.sidebar:
-        st.warning(magy)
+        st.write(magy)
         st.image(magy)
 
     show_icons()
