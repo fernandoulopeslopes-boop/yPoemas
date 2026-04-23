@@ -38,9 +38,9 @@ def carregar_sidebar():
         
         col_v1, col_v2 = st.columns(2)
         with col_v1:
-            st.button("Arts")
+            st.button("arte")
         with col_v2:
-            st.button("Voice")
+            st.button("voz")
             
     return choice, sigla_traducao
 
