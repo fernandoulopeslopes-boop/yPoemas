@@ -1470,7 +1470,7 @@ def main():
         page_eureka()
     elif chosen_id == "4":
         st.sidebar.info(load_md_file("INFO_OFF-MACHINA.md"))
-        magy = "img_off-machina.jpg"
+        magy = "img_off-mach.jpg"
         page_off_machina()
     elif chosen_id == "5":
         st.sidebar.info(load_md_file("INFO_BOOKS.md"))
