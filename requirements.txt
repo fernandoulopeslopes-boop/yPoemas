@@ -1,4 +1,6 @@
 streamlit
+numpy
+matplotlib
 extra-streamlit-components
 deep-translator
 gTTS
