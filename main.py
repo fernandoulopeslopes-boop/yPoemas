@@ -293,7 +293,8 @@ def show_icons():  # https://api.whatsapp.com/
         )
 
 
-@st.cache_datadef load_help_tips():
+@st.cache_data
+def load_help_tips():
     help_list = []
     with open(os.path.join("./base/helpers.txt"), encoding="utf-8") as file:
         for line in file:
