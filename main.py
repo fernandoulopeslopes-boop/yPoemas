@@ -1,6 +1,6 @@
 r"""
 
-yPoemas is an app that randomly collects words and phrases
+yPoemas is an app that randmly collects words and phrases
 from specific databases and organizes them
 in different new poems or poetic texts.
 
