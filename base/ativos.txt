@@ -46,7 +46,7 @@ Finalmentes : joco
 Frases : joco
 Fugaz : poesia
 Gula : joco
-HaiKai : poesia
+#HaiKai : poesia
 i-Mundo : poesia
 Impar : ensaio
 Indolor : poesia
