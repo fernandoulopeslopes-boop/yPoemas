@@ -22,31 +22,31 @@ st.markdown(
 )
 
 # --- Engine de Sincronização ---
-def executar_update(tema=None):
-    """
-    Variação: 
-    - Se tema: build_one (específico).
-    - Sem tema: build_all (update geral via ativos.txt).
-    """
-    start_time = time.time()
-    
-    if tema:
-        nome_tema = tema.strip().capitalize()
-        # Build individual
-        build_lexico(nome_tema)
-        build_matrix(nome_tema)
-    else:
-        # Build global (Independente)
-        gera_lexico()
-        gera_matrix()
-    
-    # Ambos os caminhos convergem na atualização do info.txt
-    gera_info()
-    
-    # Limpeza cirúrgica do cache do Streamlit
-    st.cache_data.clear()
-    
-    return time.time() - start_time
+#def executar_update(tema=None):
+#    """
+#    Variação: 
+#    - Se tema: build_one (específico).
+#    - Sem tema: build_all (update geral via ativos.txt).
+#    """
+#    start_time = time.time()
+#    
+#    if tema:
+#        nome_tema = tema.strip().capitalize()
+#        # Build individual
+#        build_lexico(nome_tema)
+#        build_matrix(nome_tema)
+#    else:
+#        # Build global (Independente)
+#        gera_lexico()
+#        gera_matrix()
+#    
+#    # Ambos os caminhos convergem na atualização do info.txt
+#    gera_info()
+#    
+#    # Limpeza cirúrgica do cache do Streamlit
+#    st.cache_data.clear()
+#    
+#    return time.time() - start_time
 
 def main():
     # --- Sidebar / Cockpit ---
