@@ -1,25 +1,23 @@
 import streamlit as st
 import os
-import lay_2_ypo as coração  # O motor combinatório
+import lay_2_ypo as coração
 
-# --- Configurações de UI ---
+# --- configurações de ui ---
 st.set_page_config(layout="wide", page_title="machina de fazer poesia")
 
-# CSS: lower case total e limpeza da sidebar
+# css: estética lower case e sidebar de 300px
 st.markdown(
     """
     <style>
-        /* Importante: forçando o lower case em elementos globais */
-        html, body, [class*="css"], .stButton button, p {
-            text-transform: lowercase;
+        html, body, [class*="css"], .stButton button, p, div, span {
+            text-transform: lowercase !important;
         }
         
         [data-testid="stSidebar"] { 
             width: 300px; 
             max-width: 300px; 
         }
-        
-        /* Estilo dos botões no palco */
+
         .stButton button { 
             width: 100%; 
             border-radius: 20px; 
@@ -28,20 +26,20 @@ st.markdown(
             border: 1px solid #ddd;
             background-color: transparent;
         }
-        
+
         .poema-container { 
-            font-family: 'Georgia', serif; 
+            font-family: 'georgia', serif; 
             line-height: 1.8; 
             font-size: 1.3rem; 
-            padding: 20px;
+            padding: 40px 20px;
         }
-        
-        /* Remove ruídos visuais extras da sidebar */
-        [data-testid="stSidebarNav"] { display: none; }
     </style>
     """,
     unsafe_allow_html=True,
 )
+
+def carregar_idiomas_cpc():
+    return ["português", "english", "español", "français", "italiano", "deutsch", "nederlands", "dansk"]
 
 def carregar_ativos():
     try:
@@ -51,26 +49,33 @@ def carregar_ativos():
         return ["machina"]
 
 def main():
-    temas = carregar_ativos()
+    lista_idiomas = carregar_idiomas_cpc()
+    lista_temas = carregar_ativos()
 
-    # --- sidebar (painel de controle silencioso) ---
+    # --- sidebar (apenas o essencial para o leitor) ---
     with st.sidebar:
         st.markdown("### machina")
         
-        # seletor sem labels, apenas a escolha
-        tema = st.selectbox(" ", options=temas, index=0, label_visibility="collapsed")
+        # seletor de idiomas (topo)
+        idioma = st.selectbox(" ", options=lista_idiomas, index=0, label_visibility="collapsed")
         
         st.divider()
-        st.write(f"🧬 {tema.lower()}")
         
-        # protocolo invisível
-        with st.expander(" ", expanded=False):
-            st.write("ptc: go")
+        # --- área reservada ---
+        # aqui entrarão: imagem_da_pagina, page_info e redes sociais
+        st.empty() 
 
-    # --- cockpit no palco (área principal) ---
+    # --- palco principal ---
+    
+    # seletor de temas (no palco por enquanto, até migrar totalmente)
+    tema = st.selectbox(" ", options=lista_temas, index=0, label_visibility="collapsed")
+    
+    st.write(f"🧬 {tema}")
+
+    # cockpit de sentidos
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("arte"): 
+        if st.button("arte"):
             st.session_state.modo = "arte"
     with col2:
         if st.button("som"):
@@ -80,15 +85,10 @@ def main():
 
     # --- área de impressão ---
     try:
-        # impressão da variação poética
         poema_gerado = coração.gera_poema(tema) 
         st.markdown(f'<div class="poema-container">{poema_gerado.lower()}</div>', unsafe_allow_html=True)
-        
     except Exception:
         st.write(f"a engrenagem {tema.lower()} está em manutenção.")
-
-    # --- TODO: lógica de fallback para imagens ---
-    # se não houver {tema}.jpg, carregar machina.jpg
 
 if __name__ == "__main__":
     main()
