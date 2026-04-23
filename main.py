@@ -3,27 +3,41 @@ import os
 import lay_2_ypo as coração  # O motor combinatório
 
 # --- Configurações de UI ---
-st.set_page_config(layout="wide", page_title="Machina de Fazer Poesia")
+st.set_page_config(layout="wide", page_title="machina de fazer poesia")
 
-# CSS: Foco na limpeza e na largura fixa de 300px
+# CSS: lower case total e limpeza da sidebar
 st.markdown(
     """
     <style>
-        [data-testid="stSidebar"] { width: 300px; max-width: 300px; }
+        /* Importante: forçando o lower case em elementos globais */
+        html, body, [class*="css"], .stButton button, p {
+            text-transform: lowercase;
+        }
+        
+        [data-testid="stSidebar"] { 
+            width: 300px; 
+            max-width: 300px; 
+        }
+        
+        /* Estilo dos botões no palco */
         .stButton button { 
             width: 100%; 
             border-radius: 20px; 
             height: 3em;
-            font-weight: bold;
-            text-transform: uppercase;
+            font-weight: normal;
+            border: 1px solid #ddd;
+            background-color: transparent;
         }
+        
         .poema-container { 
             font-family: 'Georgia', serif; 
             line-height: 1.8; 
             font-size: 1.3rem; 
             padding: 20px;
-            background-color: transparent;
         }
+        
+        /* Remove ruídos visuais extras da sidebar */
+        [data-testid="stSidebarNav"] { display: none; }
     </style>
     """,
     unsafe_allow_html=True,
@@ -34,46 +48,47 @@ def carregar_ativos():
         with open("./base/ativos.txt", "r", encoding="utf-8") as f:
             return [line.split(":")[0].strip() for line in f if line.strip() and not line.startswith("#")]
     except:
-        return ["Machina"]
+        return ["machina"]
 
 def main():
     temas = carregar_ativos()
 
-    # --- Sidebar (O Painel de Controle Silencioso) ---
+    # --- sidebar (painel de controle silencioso) ---
     with st.sidebar:
-        st.title("a Máquina")
-        # Descoberta pura: apenas o seletor, sem rótulos.
+        st.markdown("### machina")
+        
+        # seletor sem labels, apenas a escolha
         tema = st.selectbox(" ", options=temas, index=0, label_visibility="collapsed")
         
         st.divider()
-        st.write(f"🧬 {tema}")
+        st.write(f"🧬 {tema.lower()}")
         
-        # Protocolo invisível
+        # protocolo invisível
         with st.expander(" ", expanded=False):
             st.write("ptc: go")
 
-    # --- Cockpit Binário (Topo da Área Principal) ---
+    # --- cockpit no palco (área principal) ---
     col1, col2 = st.columns(2)
     with col1:
-        btn_arte = st.button("Arte") # Ajustado conforme CPC
+        if st.button("arte"): 
+            st.session_state.modo = "arte"
     with col2:
-        btn_som = st.button("Som")
+        if st.button("som"):
+            st.session_state.modo = "som"
 
     st.divider()
 
-    # --- Área de Impressão ---
+    # --- área de impressão ---
     try:
-        # A variação do poema surge aqui
+        # impressão da variação poética
         poema_gerado = coração.gera_poema(tema) 
-        st.markdown(f'<div class="poema-container">{poema_gerado}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="poema-container">{poema_gerado.lower()}</div>', unsafe_allow_html=True)
         
     except Exception:
-        st.error(f"A engrenagem {tema} está em manutenção.")
+        st.write(f"a engrenagem {tema.lower()} está em manutenção.")
 
-    # --- Lógica de Exibição de Arte (O Próximo Passo) ---
-    if btn_arte:
-        # Aqui injetaremos o try/except para carregar {tema}.jpg ou Machina.jpg
-        pass
+    # --- TODO: lógica de fallback para imagens ---
+    # se não houver {tema}.jpg, carregar machina.jpg
 
 if __name__ == "__main__":
     main()
