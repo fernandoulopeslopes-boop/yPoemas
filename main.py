@@ -1,59 +1,79 @@
 import streamlit as st
 import os
+import lay_2_ypo as coração  # O motor combinatório
 
 # --- Configurações de UI ---
 st.set_page_config(layout="wide", page_title="Machina de Fazer Poesia")
 
-# Mantendo o prumo dos 300px
+# CSS: Foco na limpeza e na largura fixa de 300px
 st.markdown(
     """
     <style>
         [data-testid="stSidebar"] { width: 300px; max-width: 300px; }
-        .stImage img { border-radius: 8px; }
+        .stButton button { 
+            width: 100%; 
+            border-radius: 20px; 
+            height: 3em;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .poema-container { 
+            font-family: 'Georgia', serif; 
+            line-height: 1.8; 
+            font-size: 1.3rem; 
+            padding: 20px;
+            background-color: transparent;
+        }
     </style>
     """,
     unsafe_allow_html=True,
 )
 
 def carregar_ativos():
-    """Lê o mapa da colmeia para montar o seletor"""
     try:
         with open("./base/ativos.txt", "r", encoding="utf-8") as f:
-            # Filtra linhas vazias e comentários (#)
             return [line.split(":")[0].strip() for line in f if line.strip() and not line.startswith("#")]
-    except FileNotFoundError:
-        return ["Machina"] # Fallback se o arquivo sumir
+    except:
+        return ["Machina"]
 
 def main():
-    # 1. Carregar a lista de temas
     temas = carregar_ativos()
 
-    # --- Sidebar (O Painel de Controle Geral) ---
+    # --- Sidebar (O Painel de Controle Silencioso) ---
     with st.sidebar:
         st.title("a Máquina")
-        st.subheader("Painel de Controle")
+        # Descoberta pura: apenas o seletor, sem rótulos.
+        tema = st.selectbox(" ", options=temas, index=0, label_visibility="collapsed")
         
-        # O Seletor Master
-        tema_selecionado = st.selectbox(
-            "Escolha o Tema",
-            options=temas,
-            index=0,
-            help="Selecione a engrenagem para iniciar a combinatória."
-        )
-        
-        # Espaço para o futuro Seletor de Idiomas (Google Translator)
         st.divider()
-        st.write(f"🧬 **Tema Ativo:** {tema_selecionado}")
+        st.write(f"🧬 {tema}")
         
-        # Mantendo o seu expander de engenharia (vazio por enquanto)
+        # Protocolo invisível
         with st.expander(" ", expanded=False):
-            st.write("Protocolo: go")
+            st.write("ptc: go")
 
-    # --- Área Principal (Área de Impressão) ---
-    st.header(f"Impressão: {tema_selecionado}")
-    
-    # Aqui é onde o lay_2_ypo entrará para 'imprimir' o poema
-    st.info(f"Aguardando conexão com o coração (lay_2_ypo) para processar {tema_selecionado}...")
+    # --- Cockpit Binário (Topo da Área Principal) ---
+    col1, col2 = st.columns(2)
+    with col1:
+        btn_arte = st.button("Arte") # Ajustado conforme CPC
+    with col2:
+        btn_som = st.button("Som")
+
+    st.divider()
+
+    # --- Área de Impressão ---
+    try:
+        # A variação do poema surge aqui
+        poema_gerado = coração.gera_poema(tema) 
+        st.markdown(f'<div class="poema-container">{poema_gerado}</div>', unsafe_allow_html=True)
+        
+    except Exception:
+        st.error(f"A engrenagem {tema} está em manutenção.")
+
+    # --- Lógica de Exibição de Arte (O Próximo Passo) ---
+    if btn_arte:
+        # Aqui injetaremos o try/except para carregar {tema}.jpg ou Machina.jpg
+        pass
 
 if __name__ == "__main__":
     main()
