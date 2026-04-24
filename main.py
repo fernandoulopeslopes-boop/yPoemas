@@ -924,7 +924,7 @@ def page_ypoemas():
 
     if not st.session_state.draw:
         options = list(range(len(temas_list)))
-        sobrios = "↓  " + translate("lista de Temas")
+        sobrios = "↓  " + "lista de Temas"
         opt_take = st.selectbox(
             sobrios,
             options,
