@@ -23,7 +23,7 @@
 |04|03|Críticas_0403|F|1|1|ataques|
 |05|01|Críticas_0501|F|1|1|e provocações|e disturbios|
 |05|02|Críticas_0502|F|1|1|contumazes|sistemáticos|diuturnos|sorrateiros|assíduos|
-|05|03|Críticas_0503|F|1|1|que vem sofrendo.|dos quais tem sido alvo.|
+|05|03|Críticas_0503|F|1|1|que vem sofrendo.|dos quais tem sido alvo.|que lhe tem sido dirigidos.|
 
 |06|00|
 |06|01|Críticas_0601|F|1|1|Não podemos nos furtar à|Pesa sobre nossos ombros a|
@@ -39,7 +39,7 @@
 |09|01|Críticas_0901|F|1|1|prezando pela Ordem.|garantindo a Instituição!|
 
 |10|00|
-|10|01|Críticas_1001|F|1|1|A origem desses ataques|
+|10|01|Críticas_1001|F|1|1|a origem desses ataques|
 |10|02|Críticas_1002|F|1|1|tem um só endereço:|é sempre recorrente:|
 |12|03|Críticas_1201|F|1|1|** a Machina de fazer Poesia ** ( vulgo yPoemas )|
 
@@ -58,12 +58,12 @@
 |16|01|Críticas_1601|F|1|1|O simulacro|O vácuo|o resíduo|O rastro|O deserto|O ruído|O estrabismo|
 |16|02|Críticas_1602|F|1|1|oco|inerte|esdrúxulo|opaco|mímico|pálido|flácido|romanesco|
 |16|03|Críticas_1603|F|1|1|gerado por ela|
-|18|01|Críticas_1801|F|1|1|também pode ser e será|Há de ser para todo o sempre|também deve ser e será|
+|18|01|Críticas_1801|F|1|1|também pode ser e será|há de ser para todo o sempre|também deve ser e será|
 |18|02|Críticas_1802|F|1|1|corroído.|extinguido.|banido.|reprimido.|contido.
 |20|00|
-|20|01|Críticas_0204|F|4|3|A Associação|A Academia|A Agência|A Assembleia|A Agremiação|A Associação|A Assembleia|o Ateneu|A Arcádia|
-|20|02|Críticas_0204|T|4|3|Brasileira|Binacional|Britânica|Bilateral|Bilíngue|Binomial|Babilônica|Berlinense|Biodegradável|Brasilianista|Bolchevique|Bostoniana|Biopoética|Booleana|Biônica|Barroca|Babélica|Bibliótica|Bonfinense|Bonifaciana|Birmanesa|Barbárica|
-|20|03|Críticas_0203|F|6|3|de Normas Poéticas|de Não-Poetas|de Novas Poéticas|de Nanoengenharia Poética|da Nova Palavra|do Neo-Português|de Normas Proféticas|
+|20|02|Críticas_0204|F|4|3|A Associação|A Academia|A Agência|A Assembleia|A Agremiação|A Associação|A Assembleia|o Ateneu|A Arcádia|
+|20|03|Críticas_0203|T|4|3|Brasileira|Binacional|Britânica|Bilateral|Bilíngue|Binomial|Babilônica|Berlinense|Biodegradável|Brasilianista|Bolchevique|Bostoniana|Biopoética|Booleana|Biônica|Barroca|Babélica|Bibliótica|Bonfinense|Bonifaciana|Birmanesa|Barbárica|
+|20|04|Críticas_0204|F|6|3|de Normas Poéticas|de Não-Poetas|de Novas Poéticas|de Nanoengenharia Poética|da Nova Palavra|do Neo-Português|de Normas Proféticas|
 
 |22|01|Críticas_2201|F|1|1|ha de ser|será|deve ser|
 |22|02|Críticas_2202|F|1|1|informada|cientificada|notariada|conscientizada|alertada|notificada|
