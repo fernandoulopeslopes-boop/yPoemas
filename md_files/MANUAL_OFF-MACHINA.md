@@ -1,6 +1,6 @@
 off-machina: modo de usar  
 ___  
-##selecione um livro da lista para ler...  
+selecione um livro da lista para ler...  
 ___  
 - ◀ = move para o tema anterior  
 - ★ = escolhe um tema aleatoriamente  
