@@ -458,7 +458,7 @@ def list_readings():
 def load_md_file(file):  # Open files for about's
     try:
         with open(os.path.join("./md_files/" + file), encoding="utf-8") as file_to_open:
-            file_text = file_to_open.read()
+            file_text = translate(file_to_open.read())
 
         if not "rol_" in file.lower():  # do not translate theme
             file_text = translate(file_text)
