@@ -822,14 +822,13 @@ def page_mini():
             curr_ypoema = load_poema(st.session_state.tema, "")
             curr_ypoema = load_lypo()
 
-        if st.session_state.lang != "pt":  # translate if idioma <> pt
-            curr_ypoema = translate(curr_ypoema)
-            typo_user = "TYPO_" + IPAddres
-            with open(
-                os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
-            ) as save_typo:
-                save_typo.write(curr_ypoema)
-                save_typo.close()
+        curr_ypoema = translate(curr_ypoema)
+        typo_user = "TYPO_" + IPAddres
+        with open(
+            os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
+        ) as save_typo:
+            save_typo.write(curr_ypoema)
+            save_typo.close()
             curr_ypoema = load_typo()  # to normalize line breaks in text
 
         update_readings(st.session_state.tema)
@@ -862,14 +861,13 @@ def page_mini():
                     curr_ypoema = load_poema(st.session_state.tema, "")
                     curr_ypoema = load_lypo()
 
-                if st.session_state.lang != "pt":  # translate if idioma <> pt
-                    curr_ypoema = translate(curr_ypoema)
-                    typo_user = "TYPO_" + IPAddres
-                    with open(
-                        os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
-                    ) as save_typo:
-                        save_typo.write(curr_ypoema)
-                        save_typo.close()
+                curr_ypoema = translate(curr_ypoema)
+                typo_user = "TYPO_" + IPAddres
+                with open(
+                    os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
+                ) as save_typo:
+                    save_typo.write(curr_ypoema)
+                    save_typo.close()
                     curr_ypoema = load_typo()  # to normalize line breaks in text
 
                 update_readings(st.session_state.tema)
@@ -971,15 +969,14 @@ def page_ypoemas():
                 curr_ypoema = load_poema(st.session_state.tema, "")
                 curr_ypoema = load_lypo()
 
-            if st.session_state.lang != "pt":  # translate if idioma <> pt
-                curr_ypoema = translate(curr_ypoema)
-                typo_user = "TYPO_" + IPAddres
-                with open(
-                    os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
-                ) as save_typo:
-                    save_typo.write(curr_ypoema)
-                    save_typo.close()
-                curr_ypoema = load_typo()  # to normalize line breaks in text
+            curr_ypoema = translate(curr_ypoema)
+            typo_user = "TYPO_" + IPAddres
+            with open(
+                os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
+            ) as save_typo:
+                save_typo.write(curr_ypoema)
+                save_typo.close()
+            curr_ypoema = load_typo()  # to normalize line breaks in text
 
             update_readings(st.session_state.tema)
             LOGO_TEXTO = curr_ypoema
@@ -991,8 +988,7 @@ def page_ypoemas():
 
             if manu:
                 LOGO_TEXTO = load_info(st.session_state.tema)
-                if st.session_state.lang != "pt":  # translate if idioma <> pt
-                    LOGO_TEXTO = translate(LOGO_TEXTO)
+                LOGO_TEXTO = translate(LOGO_TEXTO)
 
                 LOGO_IMAGE = (
                     "./images/matrix/" + st.session_state.tema.capitalize() + ".jpg"
@@ -1098,15 +1094,14 @@ def page_eureka():
                 curr_ypoema = load_poema(seed_tema, this_seed)
                 curr_ypoema = load_lypo()
 
-            if st.session_state.lang != "pt":  # translate if idioma <> pt
-                curr_ypoema = translate(curr_ypoema)
-                typo_user = "TYPO_" + IPAddres
-                with open(
-                    os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
-                ) as save_typo:
-                    save_typo.write(curr_ypoema)
-                    save_typo.close()
-                curr_ypoema = load_typo()  # to normalize line breaks in text
+            curr_ypoema = translate(curr_ypoema)
+            typo_user = "TYPO_" + IPAddres
+            with open(
+                os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
+            ) as save_typo:
+                save_typo.write(curr_ypoema)
+                save_typo.close()
+            curr_ypoema = load_typo()  # to normalize line breaks in text
 
             lnew = True
             if st.session_state.vydo:
@@ -1131,8 +1126,7 @@ def page_eureka():
             if manu:
                 lnew = False
                 LOGO_TEXTO = load_info(seed_tema)
-                if st.session_state.lang != "pt":  # translate if idioma <> pt
-                    LOGO_TEXTO = translate(LOGO_TEXTO)
+                LOGO_TEXTO = translate(LOGO_TEXTO)
 
                 LOGO_IMAGE = "./images/matrix/" + seed_tema.capitalize() + ".jpg"
                 write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
@@ -1273,9 +1267,7 @@ def page_off_machina():  # available off_machina_books
                         off_book_text, unsafe_allow_html=True
                     )  # finally... write it
             else:
-                if st.session_state.lang != "pt":
-                    off_book_text = translate(off_book_text)
-
+                off_book_text = translate(off_book_text)
                 LOGO_TEXTO = off_book_text
                 LOGO_IMAGE = None
                 if st.session_state.draw:
