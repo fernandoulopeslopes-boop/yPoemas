@@ -9,4 +9,3 @@ ___
 - ?  = Manual do Usuário   
 ___  
 Copyright © 1983-Hoje Nando Lopes - **yPoemas @ máquina de fazer Poesia**  
-  
