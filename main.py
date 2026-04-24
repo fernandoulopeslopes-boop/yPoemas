@@ -12,6 +12,7 @@ import streamlit as st
 import streamlit_antd_components as sac
 import extra_streamlit_components as stx
 from googletrans import Translator
+from lay_2_ypo import *
 import edge_tts
 import asyncio
 import os
