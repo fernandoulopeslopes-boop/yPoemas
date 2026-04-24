@@ -923,15 +923,18 @@ def page_ypoemas():
             st.session_state.take = 0
 
     if not st.session_state.draw:
+        
         options = list(range(len(temas_list)))
         sobrios = "↓  " + "lista de Temas"
-        opt_take = st.selectbox(
-            sobrios,
-            options,
-            index=st.session_state.take,
-            format_func=lambda z: temas_list[z],
-            key="opt_take",
-        )
+        
+        with st.columns([3, 4, 3])        
+            opt_take = st.selectbox(
+                sobrios,
+                options,
+                index=st.session_state.take,
+                format_func=lambda z: temas_list[z],
+                key="opt_take",
+            )
 
         if opt_take != st.session_state.take:
             st.session_state.take = opt_take
