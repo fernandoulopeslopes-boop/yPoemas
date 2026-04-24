@@ -39,7 +39,7 @@ if have_internet():
     try:
         from gtts import gTTS
     except ImportError as ex:
-        st.warning(translate("Google TTS não conectado"))
+        st.warning("Google TTS não conectado")
 else:
     st.warning("Internet não conectada. Traduções não disponíveis no momento.")
 
