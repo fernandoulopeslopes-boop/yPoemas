@@ -152,6 +152,7 @@ st.markdown(
     .logo-text {
         font-weight: 600;
         font-size: 18px;
+        font-size: 18px;
         font-family: 'IBM Plex Sans';
         color: #000000;
         padding-top: 0px;
@@ -893,7 +894,8 @@ def page_ypoemas():
     if (
         st.session_state.take > maxy_ypoemas or st.session_state.take < 0
     ):  # just in case
-        st.session_state.take = 0
+        # st.session_state.take = 0
+        st.session_state.take = random.randrange(0, maxy_ypoemas)
 
     foo1, more, last, rand, nest, manu, foo2 = st.columns([3, 1, 1, 1, 1, 1, 3])
 
