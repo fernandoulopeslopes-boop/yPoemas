@@ -222,29 +222,6 @@ if "rand" not in st.session_state:
 ### bof: tools
 
 
-def translate(input_text):
-    if st.session_state.lang == "pt":  # don't need translations here
-        return input_text
-
-    if not have_internet():
-        st.session_state.lang = "pt"
-        return input_text
-
-    try:
-        output_text = GoogleTranslator(
-            source="pt", target=st.session_state.lang
-        ).translate(text=input_text)
-
-        output_text = output_text.replace("<br>>", "<br>")
-        output_text = output_text.replace("< br>", "<br>")
-        output_text = output_text.replace("<br >", "<br>")
-        output_text = output_text.replace("<br ", "<br>")
-        output_text = output_text.replace(" br>", "<br>")
-        return output_text
-    except:
-        return translate("Arquivo muito grande para ser traduzido.")
-
-
 def pick_lang():  # define idioma
     btn_pt, btn_es, btn_it, btn_fr, btn_en, btn_xy = st.sidebar.columns(
 #        [1.1, 1.13, 1.04, 1.04, 1.17, 1.25]
@@ -293,6 +270,29 @@ def show_icons():  # https://api.whatsapp.com/
             """,
             unsafe_allow_html=True,
         )
+
+
+def translate(input_text):
+    if st.session_state.lang == "pt":  # don't need translations here
+        return input_text
+
+    if not have_internet():
+        st.session_state.lang = "pt"
+        return input_text
+
+    try:
+        output_text = GoogleTranslator(
+            source="pt", target=st.session_state.lang
+        ).translate(text=input_text)
+
+        output_text = output_text.replace("<br>>", "<br>")
+        output_text = output_text.replace("< br>", "<br>")
+        output_text = output_text.replace("<br >", "<br>")
+        output_text = output_text.replace("<br ", "<br>")
+        output_text = output_text.replace(" br>", "<br>")
+        return output_text
+    except:
+        return translate("Arquivo muito grande para ser traduzido.")
 
 
 @st.cache_data
@@ -494,7 +494,7 @@ def load_temas(book):  # List of themes inside a Book
             line = line.replace(" ", "")
             book_list.append(line.strip("\n"))
 
-    return book_list
+    return translate(book_list)
 
 
 @st.cache_data
@@ -527,7 +527,7 @@ def load_info(nome_tema):
                     result += "Notação Científica: " + qtd_cienti + "  " + "<br>"
                     result += "<br>"
 
-        return result
+        return translate(result)
 
 
 @st.cache_data
@@ -598,7 +598,7 @@ def load_off_book(book):  # Load selected off_book
             if line.startswith("|"):
                 book_full.append(line)
 
-    return book_full
+    return translate(book_full)
 
 
 def load_book_pages(book):  # Load Book pages for off_book
@@ -611,7 +611,7 @@ def load_book_pages(book):  # Load Book pages for off_book
             pipe_line = line.split("|")
             book_pages.append(pipe_line[1])
 
-    return book_pages
+    return translate(book_pages)
 
 
 def load_poema(nome_tema, seed_eureka):  # generate new yPoema
@@ -635,7 +635,7 @@ def load_poema(nome_tema, seed_eureka):  # generate new yPoema
 
     save_lypo.close()  # save last generated in LYPO
 
-    return novo_ypoema
+    return translate(novo_ypoema)
 
 
 def load_images():
