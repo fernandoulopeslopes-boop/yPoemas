@@ -927,7 +927,7 @@ def page_ypoemas():
         options = list(range(len(temas_list)))
         sobrios = "↓  " + "lista de Temas"
         
-        with st.columns([3, 4, 3])        
+        with st.columns([3, 4, 3]):     
             opt_take = st.selectbox(
                 sobrios,
                 options,
