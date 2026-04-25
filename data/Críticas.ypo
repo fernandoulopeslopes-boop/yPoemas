@@ -33,7 +33,7 @@
 |07|04|Críticas_0704|F|1|1|.|
 
 |08|01|Críticas_0801|F|1|1|Somos os|É nossa função sermos os|
-|08|02|Críticas_0802|F|1|1|bastiões|guardiões|fiscais|mantenedores|os esteios|
+|08|02|Críticas_0802|F|1|1|bastiões|guardiões|fiscais|mantenedores|esteios|
 |08|03|Críticas_0803|F|1|1|dos moldes|da cultura|da excelência|dos pilares|do Fardão e|da estrutura|dos valores|
 |08|04|Críticas_0804|F|1|1|do fazer literário,|do fazer poético,|das boas normas,|
 |09|01|Críticas_0901|F|1|1|prezando pela Ordem.|garantindo a Instituição!|
@@ -44,7 +44,7 @@
 |12|03|Críticas_1201|F|1|1|a Machina de Fazer Poesia, vulgo yPoemas.|
 
 |14|00|
-|14|01|Críticas_1401|F|1|1|O vandalismo poético|O alienismo|
+|14|01|Críticas_1401|F|1|1|O vandalismo poético|O alienismo|O simulacro|O vácuo|o resíduo|O deserto|O ruído|O estrabismo|
 |14|02|Críticas_1402|F|1|1|engessado|mimetizado|fabricado|pregado|
 |14|03|Críticas_1403|F|1|1|por essa|
 |14|04|Críticas_1404|F|1|1|excrecência|Medusa|serpente|
@@ -55,17 +55,17 @@
 |15|09|Críticas_1509|F|1|1|.|
 
 |16|00|
-|16|01|Críticas_1601|F|1|1|O simulacro|O vácuo|o resíduo|O rastro|O deserto|O ruído|O estrabismo|
-|16|02|Críticas_1602|F|1|1|oco|inerte|esdrúxulo|opaco|mímico|pálido|flácido|romanesco|
-|16|03|Críticas_1603|F|1|1|gerado por ela|
-|18|01|Críticas_1801|F|1|1|também pode ser e será|há de ser para todo o sempre|também deve ser e será|
-|18|02|Críticas_1802|F|1|1|corroído.|extinguido.|banido.|reprimido.|contido.
+|16|01|Críticas_1601|T|1|1|O simulacro|O vácuo|O resíduo|O rastro|O deserto|O ruído|O estrabismo|
+|16|02|Críticas_1602|F|1|1|oco|inerte|esdrúxulo|opaco|mímico|pálido|flácido|romanesco|cultural|
+|16|03|Críticas_1603|F|2|1|gerado por ela|que dela provém|
+|18|01|Críticas_1801|F|1|1|também pode ser e será|há de ser para todo o sempre|também deve ser e será|igulalmente será|
+|18|02|Críticas_1802|F|1|1|corroído.|extinguido.|banido.|reprimido.|contido.|
 |20|00|
 |20|02|Críticas_0204|F|4|3|A Associação|A Academia|A Agência|A Assembleia|A Agremiação|A Associação|A Assembleia|o Ateneu|A Arcádia|
 |20|03|Críticas_0203|T|4|3|Brasileira|Binacional|Britânica|Bilateral|Bilíngue|Binomial|Babilônica|Berlinense|Biodegradável|Brasilianista|Bolchevique|Bostoniana|Biopoética|Booleana|Biônica|Barroca|Babélica|Bibliótica|Bonfinense|Bonifaciana|Birmanesa|Barbárica|
 |20|04|Críticas_0204|F|6|3|de Normas Poéticas|de Não-Poetas|de Novas Poéticas|de Nanoengenharia Poética|da Nova Palavra|do Neo-Português|de Normas Proféticas|
 
-|22|01|Críticas_2201|F|1|1|ha de ser|será|deve ser|
+|22|01|Críticas_2201|F|1|1|há de ser|será|deve ser|
 |22|02|Críticas_2202|F|1|1|informada|cientificada|notariada|conscientizada|alertada|notificada|
 |22|03|Críticas_2203|F|1|1|dos Fatos.|
 |24|00|
