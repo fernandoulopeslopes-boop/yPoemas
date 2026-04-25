@@ -1,7 +1,7 @@
 streamlit
 streamlit-antd-components
 extra-streamlit-components
-googletrans==4.0.0-rc1
+deep-translator
 edge-tts
 numpy
 matplotlib
