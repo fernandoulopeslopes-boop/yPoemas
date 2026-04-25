@@ -1159,7 +1159,7 @@ def page_off_machina():  # available off_machina_books
     lnew = True
     if manu:
         lnew = False
-        st.subheader(load_md_file("MANUAL_OFF-MACHINA.md"))
+        st.subheader(load_md_file("MANUAL_MACHINA.md"))
 
     if love:
         lnew = False
@@ -1171,8 +1171,8 @@ def page_off_machina():  # available off_machina_books
 
     if st.session_state.vydo:
         lnew = False
-        show_video("off-machina")
-        update_readings("video_off-machina")
+        show_video("machina")
+        update_readings("video_machina")
         st.session_state.vydo = False
 
     if lnew:
@@ -1345,7 +1345,7 @@ def page_abouts():
         "comments",
         "prefácio",
         "machina",
-        "off-machina",
+        "machina",
         "outros",
         "traduttore",
         "bibliografia",
