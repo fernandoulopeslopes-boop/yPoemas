@@ -21,7 +21,6 @@ st.set_page_config(
     initial_sidebar_state="auto",
 )
 
-
 def have_internet(host="8.8.8.8", port=53, timeout=3):
     try:
         socket.setdefaulttimeout(timeout)
@@ -29,7 +28,6 @@ def have_internet(host="8.8.8.8", port=53, timeout=3):
         return True
     except socket.error as ex:
         return False
-
 
 if have_internet():
     try:
@@ -47,7 +45,6 @@ else:
 # the User IPAddres for LYPO, TYPO
 hostname = socket.gethostname()
 IPAddres = socket.gethostbyname(hostname)
-
 
 # hide Streamlit Menu and Footer
 st.markdown(
@@ -657,22 +654,13 @@ def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
             """,
             unsafe_allow_html=True,
         )
-
-
-def talk(text):  # text to speech( in session_state.lang )
-    text = text.replace("<br>", "\n")
-    text = text.replace("< br>", "")
-    text = text.replace("<br >", "")
-
-    tts = gTTS(text=text, lang=st.session_state.lang, slow=False)
-    nany_file = random.randint(1, 20000000)
-    file_name = os.path.join("./temp/" + "audio" + str(nany_file) + ".mp3")
-    tts.save(file_name)
-    audio_file = open(file_name, "rb")
-    audio_byts = audio_file.read()
-    st.audio(audio_byts, format="audio/ogg")
-    audio_file.close()
-    os.remove(file_name)
+#    text = text.replace("<br>", "\n")
+#    text = text.replace("< br>", "")
+#    text = text.replace("<br >", "")
+# --- Exemplo de uso do TTS (Edge-TTS) ---
+async def talk(text, voz="pt-BR-AntonioNeural"):
+    communicate = edge_tts.Communicate(text, voz)
+    await communicate.save("output.mp3")
 
 
 def show_video(pagina):  # vídeo-tutorial da página
@@ -682,7 +670,6 @@ def show_video(pagina):  # vídeo-tutorial da página
     video_byts = video_file.read()
     st.video(video_byts, format="webm")
     video_file.close()
-
 
 def say_number(tema):  # search index title for eureka
     analise = "nonono"
