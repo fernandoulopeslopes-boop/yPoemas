@@ -559,7 +559,7 @@ def load_book_pages(book):  # Load Book pages for off_book
 
         if line.startswith("|"):  # only valid lines in PIP
             pipe_line = line.split("|")
-            book_pages.append(pipe_line[1])
+            book_pages.append(pipe_line[2])
 
     return book_pages
 
