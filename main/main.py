@@ -537,6 +537,7 @@ def load_all_offs():
         "secreto",
     ]
 
+
     return all_books_off
 
 
