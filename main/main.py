@@ -530,6 +530,7 @@ def load_all_offs():
         "quase_que_eu_Poesia",
         "essencial",
         "desvoto",
+        "urbano",
         "um_romance",
         "livro_vivo",
         "linguafiada",
