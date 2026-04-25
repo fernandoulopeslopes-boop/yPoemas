@@ -35,8 +35,7 @@ if have_internet():
     try:
         from deep_translator import GoogleTranslator
     except ImportError as ex:
-        pass.
-        #st.write("Google Translator não conectado")
+        st.write("Google Translator não conectado")
     try:
         from gtts import gTTS
     except ImportError as ex:
