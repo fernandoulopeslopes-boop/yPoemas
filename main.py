@@ -35,11 +35,13 @@ if have_internet():
     try:
         from deep_translator import GoogleTranslator
     except ImportError as ex:
-        st.write("Google Translator não conectado")
+        pass.
+        #st.write("Google Translator não conectado")
     try:
         from gtts import gTTS
     except ImportError as ex:
-        st.write("Google TTS não conectado")
+        pass.
+        #st.write("Google TTS não conectado")
 else:
     st.warning("Internet não conectada. Traduções não disponíveis no momento.")
 
