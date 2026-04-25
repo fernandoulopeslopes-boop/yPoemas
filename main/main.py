@@ -32,15 +32,33 @@ def have_internet(host="8.8.8.8", port=53, timeout=3):
 if have_internet():
     try:
         from deep_translator import GoogleTranslator
-    except ImportError as ex:
-        st.warning("Google Translator não conectado")
-    try:
-        from gtts import gTTS
-    except ImportError as ex:
-        st.warning("Google TTS não conectado")
+        import edge_tts
+        import asyncio
+        # Sucesso: As ferramentas estão prontas para o combate
+    except ImportError as e:
+        st.error(f"Erro ao carregar dependências: {e}")
 else:
-    st.warning("Internet não conectada. Traduções não disponíveis no momento.")
+    st.warning("A Machina está operando Offline. Tradução e Voz desabilitadas.")
 
+
+# --- Exemplo de uso do Translator ---
+def translate(texto, destino=st.session_state.lang):
+    if st.session_state.lang == "pt"
+        return texto
+        
+    try:
+        return GoogleTranslator(source='auto', target=destino).translate(texto)
+    except Exception:
+        return "Erro na tradução."
+
+
+# --- Exemplo de uso do TTS (Edge-TTS) ---
+async def gerar_voz(texto, voz="pt-BR-AntonioNeural"):
+    communicate = edge_tts.Communicate(texto, voz)
+    await communicate.save("output.mp3")
+    
+
+####
 
 # the User IPAddres for LYPO, TYPO
 hostname = socket.gethostname()
@@ -269,8 +287,8 @@ def load_help(idiom):
         returns.append(translate("próximo"))
         returns.append(translate("mais lidos..."))
         returns.append(translate("gera novo yPoema"))
-        returns.append(translate("imagem"))
-        returns.append(translate("áudio"))
+        returns.append(translate("arte"))
+        returns.append(translate("som"))
         returns.append(translate("vídeo"))
 
     return returns
