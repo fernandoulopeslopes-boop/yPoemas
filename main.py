@@ -197,10 +197,10 @@ def pick_lang():  # define idioma
         [1.1, 1.13, 1.04, 1.04, 1.17, 1.25]
     )
     btn_pt = btn_pt.button("pt", key=1, help="Português")
-    btn_es = btn_es.button("es", key=2, help=translate("Espanhol", "es")
-    btn_it = btn_it.button("it", key=3, help=translate("Italiano", "it")
-    btn_fr = btn_fr.button("fr", key=4, help=translate("Français", "fr")
-    btn_en = btn_en.button("en", key=5, help=translate("English", "en")
+    btn_es = btn_es.button("es", key=2, help=translate("Espanhol", "es"))
+    btn_it = btn_it.button("it", key=3, help=translate("Italiano", "it"))
+    btn_fr = btn_fr.button("fr", key=4, help=translate("Français", "fr"))
+    btn_en = btn_en.button("en", key=5, help=translate("English",  "en"))
     btn_xy = btn_xy.button("⚒️", key=6, help=st.session_state.poly_name)
 
     if btn_pt:
