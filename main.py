@@ -180,7 +180,7 @@ def translate(input_text):
     try:
         output_text = GoogleTranslator(
             source="pt", target=st.session_state.lang
-        ).translate(text=input_text)
+        ).text=input_text
 
         output_text = output_text.replace("<br>>", "<br>")
         output_text = output_text.replace("< br>", "<br>")
@@ -197,10 +197,10 @@ def pick_lang():  # define idioma
         [1.1, 1.13, 1.04, 1.04, 1.17, 1.25]
     )
     btn_pt = btn_pt.button("pt", key=1, help="Português")
-    btn_es = btn_es.button("es", key=2, help="Español")
-    btn_it = btn_it.button("it", key=3, help="Italiano")
-    btn_fr = btn_fr.button("fr", key=4, help="Français")
-    btn_en = btn_en.button("en", key=5, help="English")
+    btn_es = btn_es.button("es", key=2, help=translate("Espanhol", "es")
+    btn_it = btn_it.button("it", key=3, help=translate("Italiano", "it")
+    btn_fr = btn_fr.button("fr", key=4, help=translate("Français", "fr")
+    btn_en = btn_en.button("en", key=5, help=translate("English", "en")
     btn_xy = btn_xy.button("⚒️", key=6, help=st.session_state.poly_name)
 
     if btn_pt:
