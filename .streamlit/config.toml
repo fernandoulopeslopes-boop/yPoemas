@@ -10,3 +10,6 @@ fileWatcherType = "none"
 
 [browser]
 gatherUsageStats = false
+
+[client]
+showSidebarNavigation = false
