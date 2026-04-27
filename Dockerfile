@@ -7,3 +7,4 @@ RUN pip install -r requirements.txt
 COPY . .
 ENTRYPOINT ["streamlit","run"]
 CMD [ "streamlit", "run", "ypo.py" ]
+
