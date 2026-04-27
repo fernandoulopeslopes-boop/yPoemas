@@ -1,15 +1,22 @@
-FROM python:3.8-slim-buster
-LABEL version="0.1.1" maintainer="Nando Lopes <lopes.fernando@hotmail.com>"
+FROM python:3.11-slim
 
-# 1. Define o diretório de trabalho (mais padrão e limpo)
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
 WORKDIR /app
 
-# 2. Instala as dependências primeiro para ganhar velocidade no deploy
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    curl \
+    software-properties-common \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 3. Copia todo o resto do projeto (incluindo o ypo.py e as pastas de temas)
 COPY . .
 
-# 4. O comando de execução sem o conflito de ENTRYPOINT
-CMD ["streamlit", "run", "ypo.py", "--server.port", "8501", "--server.address", "0.0.0.0"]
+EXPOSE 8501
+
+CMD ["streamlit", "run", "main.py", "--server.port=8501", "--server.address=0.0.0.0"]
