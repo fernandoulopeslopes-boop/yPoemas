@@ -617,12 +617,12 @@ st.markdown(
     }
     .logo-text {
         font-weight: 600;
-        font-size: 18px;
-        font-size: 18px;
+        font-size: 18;
+        font-size: 18;
         font-family: 'IBM Plex Sans';
         color: #000000;
         padding-top: 0px;
-        padding-left: 15px;
+        padding-left: 15;
     }
     .logo-img {
         float:right;
