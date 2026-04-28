@@ -35,9 +35,11 @@ def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo y
          itimos_atual = 1     # itimos_atual
          array_itimos = []    # array com todos os itimos da ideia na linha
     return: novo_poema
-
+    
+    """
     ToDo:
-       obs: the search for a seed acctualy only works in portuguese. Try to translate your search_seed into this language.
+       obs: the search for a seed acctualy only works in portuguese.
+       Try to translate your search_seed into this language.
     """
 
     lista_header = []
