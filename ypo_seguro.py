@@ -11,9 +11,31 @@ import edge_tts as gTTS
 # estejam acessíveis ou importadas aqui se estiverem em outro arquivo.
 
 # --- ESTILIZAÇÃO MÍNIMA E SEGURA ---
-st.set_page_config(page_title="Máquina de Fazer Poesia", layout="wide")
+st.set_page_config(page_title="a Machina de Fazer Poesia", layout="wide")
 
 # --- FUNÇÕES DE CARREGAMENTO (LOADERS) ---
+
+def translate(input_text):
+    if st.session_state.lang == "pt":  # don't need translations here
+        return input_text
+
+    if not have_internet():
+        st.session_state.lang = "pt"
+        return input_text
+
+    try:
+        output_text = GoogleTranslator(
+            source="pt", target=st.session_state.lang
+        ).translate(text=input_text)
+
+        output_text = output_text.replace("<br>>", "<br>")
+        output_text = output_text.replace("< br>", "<br>")
+        output_text = output_text.replace("<br >", "<br>")
+        output_text = output_text.replace("<br ", "<br>")
+        output_text = output_text.replace(" br>", "<br>")
+        return output_text
+    except:
+        return translate("Arquivo muito grande para ser traduzido.")
 
 @st.cache_data
 def load_temas(book):
