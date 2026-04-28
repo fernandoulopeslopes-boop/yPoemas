@@ -11,7 +11,7 @@ import random
 import base64
 import socket
 import streamlit as st
-from lay_2_ypo import gera_poema()
+from lay_2_ypo import gera_poema
 
 from extra_streamlit_components import TabBar as stx
 from datetime import datetime
