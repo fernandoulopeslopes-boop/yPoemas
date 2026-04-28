@@ -119,7 +119,7 @@ def load_book_pages(book_lines):
     return translate(book_pages)
 
 def gera_poema(nome_tema, seed_eureka):
-#    script = gera_poema(nome_tema, seed_eureka)
+    script = gera_poema(nome_tema, seed_eureka)
     novo_ypoema = ""
     path = os.path.join("./temp/LYPO_" + IPAddres)
     if not os.path.exists("./temp"): os.makedirs("./temp")
