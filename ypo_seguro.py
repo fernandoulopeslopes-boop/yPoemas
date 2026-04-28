@@ -595,9 +595,7 @@ st.markdown(
 st.markdown(
     """ 
     <style>
-    [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
-        width: 310px;
-    }
+    [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {width: 310px}
     </style> """,
     unsafe_allow_html=True,
 )
