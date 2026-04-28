@@ -206,7 +206,7 @@ def page_mini():
     placeholder = st.empty()
     while True:
         st.session_state.tema = temas_list[st.session_state.mini % maxy]
-        curr = load_poema(st.session_state.tema, "")
+        curr = gera_poema(st.session_state.tema, "")
         with placeholder.container():
             write_ypoema(curr, load_arts(st.session_state.tema) if st.session_state.draw else None)
         if not st.session_state.auto: break
@@ -224,7 +224,7 @@ def page_ypoemas():
     
     st.session_state.tema = temas_list[st.session_state.take]
     with st.expander(f"⚫ {st.session_state.lang} - {st.session_state.tema}", expanded=True):
-        curr = load_poema(st.session_state.tema, "")
+        curr = gera_poema(st.session_state.tema, "")
         write_ypoema(curr, load_arts(st.session_state.tema) if st.session_state.draw else None)
     if st.session_state.talk: talk(curr)
 
@@ -236,7 +236,7 @@ def page_eureka():
         if seeds:
             st.session_state.eureka = st.selectbox(f"Ocorrências: {len(seeds)}", range(len(seeds)), format_func=lambda x: seeds[x])
             tema = seeds[st.session_state.eureka].partition(" ➪ ")[2].replace(".txt", "")
-            write_ypoema(load_poema(tema, seeds[st.session_state.eureka]), load_arts(tema) if st.session_state.draw else None)
+            write_ypoema(gera_poema(tema, seeds[st.session_state.eureka]), load_arts(tema) if st.session_state.draw else None)
         else: st.warning("Nada encontrado.")
 
 def page_off_machina():
