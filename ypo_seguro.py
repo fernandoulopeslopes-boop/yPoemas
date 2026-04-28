@@ -58,7 +58,7 @@ import socket
 import streamlit as st
 
 from extra_streamlit_components import TabBar as stx
-from lay_2_ypo import gera_poema
+from lay_2_ypo.py import gera_poema
 from datetime import datetime
 
 ### bof: settings
