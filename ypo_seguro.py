@@ -24,6 +24,24 @@ POLY == Poliglot Idiom == Changed on Catalán
 
 """
 
+import os
+
+# Se não estiver no path, insere no topo da lista de busca (posição 0)
+if current_dir not in sys.path:
+    sys.path.insert(0, current_dir)
+
+# Força o Python a olhar também para a pasta de trabalho atual
+sys.path.insert(0, os.getcwd())
+
+# Tenta o import agora
+try:
+    from lay_2_ypo import gera_poema
+except ModuleNotFoundError:
+    # Se ainda assim falhar, vamos listar o que o Python está vendo para debugar
+    st.error(f"Diretório atual: {os.getcwd()}")
+    st.error(f"Arquivos na pasta: {os.listdir(current_dir)}")
+    raise
+
 import io
 import re
 import time
@@ -36,6 +54,7 @@ import os
 import sys
 # Força o Python a enxergar a pasta onde o script está rodando
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
 print(os.path.dirname)
 
 # Project Module
