@@ -791,7 +791,7 @@ def main():
         st.session_state.talk = st.checkbox("Voz", st.session_state.talk)
         
         img_map = {"mini": "mini", "yPoemas": "ypoemas", "eureka": "eureka", "off-machina": "off-machina", "books": "books", "poly": "poly", "about": "about"}
-        st.image(f"./images/img_{img_map[page]}.jpg")
+        st.image(f"./img_{img_map[page]}.jpg")
 
     if page == "mini": page_mini()
     elif page == "yPoemas": page_ypoemas()
