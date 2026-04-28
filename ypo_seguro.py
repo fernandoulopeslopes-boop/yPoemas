@@ -547,7 +547,7 @@ def translate(input_text):
         output_text = output_text.replace(" br>", "<br>")
         return output_text
     except:
-        return translate("Arquivo muito grande para ser traduzido.")
+        return "Arquivo muito grande para ser traduzido."
 
 if have_internet():
     try:
