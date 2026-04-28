@@ -11,7 +11,7 @@ import random
 import base64
 import socket
 import streamlit as st
-import lay_2_ypo.py
+import lay_2_ypo
 
 from extra_streamlit_components import TabBar as stx
 from datetime import datetime
