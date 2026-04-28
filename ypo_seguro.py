@@ -162,8 +162,6 @@ if "draw" not in st.session_state:
     st.session_state.draw = False
 if "talk" not in st.session_state:
     st.session_state.talk = False
-if "vydo" not in st.session_state:
-    st.session_state.vydo = False
 if "arts" not in st.session_state:
     st.session_state.arts = []
 if "auto" not in st.session_state:
@@ -277,25 +275,20 @@ def load_help(idiom):
         returns.append(translate("gera novo yPoema"))
         returns.append(translate("imagem"))
         returns.append(translate("áudio"))
-        returns.append(translate("vídeo"))
 
     return returns
 
 
 def draw_check_buttons():
-    draw_text, talk_text, vyde_text = st.sidebar.columns([3.8, 3.2, 3])
+    draw_text, talk_text = st.sidebar.columns([3, 3])
     help_tips = load_help(st.session_state.lang)
     help_draw = help_tips[5]
     help_talk = help_tips[6]
-    help_vyde = help_tips[7]
     st.session_state.draw = draw_text.checkbox(
         help_draw, st.session_state.draw, key="draw_machina"
     )
     st.session_state.talk = talk_text.checkbox(
         help_talk, st.session_state.talk, key="talk_machina"
-    )
-    st.session_state.vydo = vyde_text.checkbox(
-        help_vyde, st.session_state.vydo, key="vyde_machina"
     )
 
 
@@ -531,12 +524,12 @@ def load_typo():  # Load translated yPoema & clean translator returned bugs in t
 def load_all_offs():
     all_books_off = [
         "a_torre_de_papel",
-        "faz_de_conto",
+        "livro_vivo",
         "quase_que_eu_Poesia",
+        "faz_de_conto",
         "essencial",
         "desvoto",
         "um_romance",
-        "livro_vivo",
         "linguafiada",
         "secreto",
     ]
@@ -679,15 +672,6 @@ def talk(text):  # text to speech( in session_state.lang )
     os.remove(file_name)
 
 
-def show_video(pagina):  # vídeo-tutorial da página
-    st.sidebar.info(load_md_file("INFO_VYDE.md"))
-    video_name = os.path.join("./base/" + "video_" + pagina + ".webm")
-    video_file = open(video_name, "rb")
-    video_byts = video_file.read()
-    st.video(video_byts, format="webm")
-    video_file.close()
-
-
 def say_number(tema):  # search index title for eureka
     analise = "nonono"
     indexes = load_index()
@@ -741,7 +725,6 @@ def page_mini():
 
     if st.session_state.auto:
         st.session_state.talk = False
-        st.session_state.vydo = False
         with st.sidebar:
             wait_time = st.slider(translate("tempo de exibição (em segundos): "), 5, 60)
 
@@ -757,13 +740,6 @@ def page_mini():
 
     if more:
         st.session_state.rand = False
-
-    lnew = True
-    if st.session_state.vydo:
-        lnew = False
-        show_video("mini")
-        update_readings("video_mini")
-        st.session_state.vydo = False
 
     if lnew or st.session_state.auto:
         if st.session_state.rand:
@@ -897,12 +873,6 @@ def page_ypoemas():
     lnew = True
     if manu:
         st.subheader(load_md_file("MANUAL_YPOEMAS.md"))
-
-    if st.session_state.vydo:
-        lnew = False
-        show_video("ypoemas")
-        update_readings("video_ypoemas")
-        st.session_state.vydo = False
 
     if lnew:
         what_book = (
@@ -1060,13 +1030,6 @@ def page_eureka():
                 save_typo.close()
             curr_ypoema = load_typo()  # to normalize line breaks in text
 
-            lnew = True
-            if st.session_state.vydo:
-                lnew = False
-                show_video("eureka")
-                update_readings("video_eureka")
-                st.session_state.vydo = False
-
             if lnew:
                 eureka_expander = st.expander("", expanded=True)
                 with eureka_expander:
@@ -1174,12 +1137,6 @@ def page_off_machina():  # available off_machina_books
             unsafe_allow_html=True,
         )
 
-    if st.session_state.vydo:
-        lnew = False
-        show_video("off-machina")
-        update_readings("video_off-machina")
-        st.session_state.vydo = False
-
     if lnew:
         what_book = (
             "⚫  "
@@ -1269,11 +1226,6 @@ def page_books():  # available books
             doit = st.button("✔", help="confirm ?")
 
         lnew = True
-        if st.session_state.vydo:
-            lnew = False
-            show_video("books")
-            update_readings("video_books")
-            st.session_state.vydo = False
 
         if lnew:
             list_book = ""
@@ -1321,11 +1273,6 @@ def page_polys():  # available languages
         doit = st.button("✔", help="confirm ?")
 
     lnew = True
-    if st.session_state.vydo:
-        lnew = False
-        show_video("poly")
-        update_readings("video_poly")
-        st.session_state.vydo = False
 
     if doit:
         poly_pais = poly_pais[opt_poly]
@@ -1370,12 +1317,6 @@ def page_abouts():
     )
 
     lnew = True
-    if st.session_state.vydo:
-        lnew = False
-        show_video("about")
-        update_readings("video_about")
-        st.session_state.vydo = False
-
     if lnew:
         choice = abouts_list[opt_abouts].upper()
         about_expander = st.expander("", True)
