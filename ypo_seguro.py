@@ -529,6 +529,27 @@ def have_internet(host="8.8.8.8", port=53, timeout=3):
     except socket.error as ex:
         return False
 
+def translate(input_text):
+    if st.session_state.lang == "pt":  # don't need translations here
+        return input_text
+
+    if not have_internet():
+        st.session_state.lang = "pt"
+        return input_text
+
+    try:
+        output_text = GoogleTranslator(
+            source="pt", target=st.session_state.lang
+        ).(text=input_text)
+
+        output_text = output_text.replace("<br>>", "<br>")
+        output_text = output_text.replace("< br>", "<br>")
+        output_text = output_text.replace("<br >", "<br>")
+        output_text = output_text.replace("<br ", "<br>")
+        output_text = output_text.replace(" br>", "<br>")
+        return output_text
+    except:
+        return translate("Arquivo muito grande para ser traduzido.")
 
 if have_internet():
     try:
@@ -719,28 +740,6 @@ def show_icons():  # https://api.whatsapp.com/
         )
 
 
-def translate(input_text):
-    if st.session_state.lang == "pt":  # don't need translations here
-        return input_text
-
-    if not have_internet():
-        st.session_state.lang = "pt"
-        return input_text
-
-    try:
-        output_text = GoogleTranslator(
-            source="pt", target=st.session_state.lang
-        ).translate(text=input_text)
-
-        output_text = output_text.replace("<br>>", "<br>")
-        output_text = output_text.replace("< br>", "<br>")
-        output_text = output_text.replace("<br >", "<br>")
-        output_text = output_text.replace("<br ", "<br>")
-        output_text = output_text.replace(" br>", "<br>")
-        return output_text
-    except:
-        return translate("Arquivo muito grande para ser traduzido.")
-
 
 @st.cache_data
 def load_help_tips():
@@ -751,7 +750,6 @@ def load_help_tips():
     file.close()
 
     return help_list
-
 
 def load_help(idiom):
     returns = []
