@@ -253,7 +253,7 @@ def page_abouts():
 
 def main():
     if st.session_state.visy:
-        update_visy()
+        #update_visy()
         st.session_state.visy = False
 
     # Menu lateral padrão Streamlit (evita quebra de bibliotecas externas)
