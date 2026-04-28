@@ -595,11 +595,9 @@ st.markdown(
 st.markdown(
     """ 
     <style>
-    [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {width: 310px}
+    [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {width: 310}
     </style> """,
-    unsafe_allow_html=True,
-)
-
+    unsafe_allow_html=True)
 
 # load_poema settings
 st.markdown(
