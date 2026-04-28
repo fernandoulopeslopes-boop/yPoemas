@@ -1140,9 +1140,7 @@ def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
                 <img class='logo-img' src='data:image/jpg;base64,{base64.b64encode(open(LOGO_IMAGE, 'rb').read()).decode()}'>
                 <p class='logo-text'>{LOGO_TEXTO}</p>
             </div>
-            """,
-            unsafe_allow_html=True,
-        )
+            """, unsafe_allow_html=True )
 
 
 def talk(text):  # text to speech( in session_state.lang )
