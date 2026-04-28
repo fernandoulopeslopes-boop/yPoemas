@@ -50,7 +50,6 @@ One more test...
 """
 
 import os
-##$ import io
 import re
 import time
 import random
@@ -58,8 +57,8 @@ import base64
 import socket
 import streamlit as st
 
-from lay_2_ypo import gera_poema
 from extra_streamlit_components import TabBar as stx
+from lay_2_ypo import gera_poema
 from datetime import datetime
 
 ### bof: settings
