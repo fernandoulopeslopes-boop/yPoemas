@@ -5,6 +5,8 @@ import time
 import base64
 import edge_tts as gTTS
 
+from lay_2_ypo import gera_poema
+
 # from gtts import gTTS
 
 # Nota: Certifique-se de que suas funções personalizadas (translate, gera_poema, etc.) 
