@@ -26,6 +26,9 @@ POLY == Poliglot Idiom == Changed on Catalán
 
 import os
 
+# Pega o caminho absoluto da pasta onde este arquivo (ypo_seguro.py) está
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
 # Se não estiver no path, insere no topo da lista de busca (posição 0)
 if current_dir not in sys.path:
     sys.path.insert(0, current_dir)
