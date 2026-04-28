@@ -14,6 +14,7 @@ import streamlit as st
 
 from extra_streamlit_components import TabBar as stx
 from datetime import datetime
+from random import randrange
 
 ### bof: settings
 
@@ -23,13 +24,6 @@ st.set_page_config(
     layout="centered",
     initial_sidebar_state="auto",
 )
-
-import os
-import random
-import datetime
-import streamlit as st
-
-from random import randrange
 
 def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo yPoema
     """
