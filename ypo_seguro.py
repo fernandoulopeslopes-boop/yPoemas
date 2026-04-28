@@ -11,11 +11,10 @@ import random
 import base64
 import socket
 import streamlit as st
-import lay_2_ypo
+from lay_2_ypo import gera_poema
 
 from extra_streamlit_components import TabBar as stx
 from datetime import datetime
-from lay_2_ypo import gera_poema
 
 ### bof: settings
 
