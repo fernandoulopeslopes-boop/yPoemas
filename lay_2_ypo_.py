@@ -358,6 +358,20 @@ def fala_umidade():
     return str(ini) + "%"
 
 
+def cores_elogio():
+    """
+    pontilhar a escuridão de verde.
+    :return: último verso em "elogio"
+    """
+    verbo = "|espalhar|salpicar|pontilhar|"
+    verso := verbo[random(verbo)]
+    verso = "tons de "
+    cores = "|rosa|lilás|verde|"
+    verso += random(cores)
+    verso += "na escuridão."
+    return
+
+
 def fala_data(dref):
     """
     :param data de referência
@@ -429,6 +443,7 @@ def abre(nome_do_tema):
     return lista
 
 
+@st.cache(allow_output_mutation=True)
 def load_babel():
     lista = []
     with open(os.path.join("./base/babel.txt"), "r") as babel:
