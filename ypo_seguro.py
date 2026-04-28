@@ -11,7 +11,6 @@ import random
 import base64
 import socket
 import streamlit as st
-
 from extra_streamlit_components import TabBar as stx
 from datetime import datetime
 from random import randrange
@@ -539,8 +538,7 @@ def translate(input_text):
 
     try:
         output_text = GoogleTranslator(
-            source="pt", target=st.session_state.lang
-        ).(text=input_text)
+            source="pt", target=st.session_state.lang, text=input_text)
 
         output_text = output_text.replace("<br>>", "<br>")
         output_text = output_text.replace("< br>", "<br>")
