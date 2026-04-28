@@ -5,8 +5,6 @@ import streamlit as st
 
 from random import randrange
 
-# new deploy test
-
 def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo yPoema
     """
     :param = script, tema
