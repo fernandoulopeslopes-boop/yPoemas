@@ -24,7 +24,6 @@ POLY == Poliglot Idiom == Changed on Catalán
 
 """
 
-import os
 import io
 import re
 import time
@@ -33,9 +32,11 @@ import base64
 import datetime
 import streamlit as st
 
+import os
 import sys
 # Força o Python a enxergar a pasta onde o script está rodando
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+print(dirname(os.path.abspath(__file__)))
 
 # Project Module
 from lay_2_ypo import gera_poema
