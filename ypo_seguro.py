@@ -3,7 +3,9 @@ import os
 import random
 import time
 import base64
-from gtts import gTTS
+import edge_tts as gTTS
+
+# from gtts import gTTS
 
 # Nota: Certifique-se de que suas funções personalizadas (translate, gera_poema, etc.) 
 # estejam acessíveis ou importadas aqui se estiverem em outro arquivo.
