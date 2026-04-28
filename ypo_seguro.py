@@ -726,7 +726,7 @@ def show_icons():  # https://api.whatsapp.com/
         st.sidebar.markdown(
             f"""
             <nav>
-            <a href='https://www.facebook.com/nandoulopes' target='_blank'>• facebook</a> |
+            <a href='https://www.facebook.com/nandoulopes' target='_blank'> facebook</a> |
             <a href='mailto:lopes.fernando@hotmail.com' target='_blank'>e-mail</a> |
             <a href='https://www.instagram.com/fernando.lopes.942/' target='_blank'>instagram</a> |
             <a href='https://web.whatsapp.com/send?phone=+5512991368181' target='_blank'>whatsapp</a>
@@ -958,7 +958,7 @@ def load_info(nome_tema):
                     result += "Versos: " + qtd_versos + "  " + "<br>"
                     result += "Verbetes no texto: " + qtd_wordin + "  " + "<br>"
                     result += "Verbetes  do Tema: " + qtd_lexico + "  " + "<br>"
-                    result += "• Banco de Ítimos: " + qtd_itimos + "  " + "<br>"
+                    result += " Banco de Ítimos: " + qtd_itimos + "  " + "<br>"
                     result += "Análise : " + qtd_analiz + "  " + "<br>"
                     result += "Notação Científica: " + qtd_cienti + "  " + "<br>"
                     result += "<br>"
@@ -1225,7 +1225,7 @@ def page_mini():
 
     st.session_state.tema = temas_list[st.session_state.mini]
     analise = say_number(st.session_state.tema)
-    more = more.button("✚", help=help_more + " • " + analise)
+    more = more.button("✚", help=help_more + "  " + analise)
 
     if more:
         st.session_state.rand = False
