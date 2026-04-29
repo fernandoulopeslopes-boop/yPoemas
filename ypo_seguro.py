@@ -1,8 +1,3 @@
-###
-"""
-https://ypoemas-hhgsegowuhu5quv5k67ka8.streamlit.app/
-"""
-###
 """
 yPoemas is an app that randomly collects words and phrases
 from specific databases and organizes them
@@ -16,17 +11,20 @@ All texts are unique and will only be repeated
 after they are sold out the thourekasands  
 of combinations possible to each theme.
 
-[ToDo] - write_ypoema == write_text
-[ToDo] - st.subheader == write_ypoema(load_file(manual_))
+[Epitaph]
+Passei boa parte da minha vida escrevendo a "machina".
+A leitura fica para os amanhãs.
+Não vivo no meu tempo.
+
+deploys: https://share.streamlit.io/redirect
+sharing: https://share.streamlit.io/nandoulopes/ypoemas/main/ypo.py
+configs: chrome://settings/content/siteDetails?site=https%3A%2F%2Fauth.streamlit.io
 
 VISY == New Visitor
-NANY_VISY == Numbof Visitors
+NANY_VISY == Number of Visitors
 LYPO == Last YPOema created from curr_ypoema
 TYPO == Translated YPOema from LYPO
 POLY == Poliglot Idiom == Changed on Catalán
-
-✚ / ◀ / ✻ / ▶ / ? / ❤
-
 """
 
 import os
@@ -41,10 +39,6 @@ import streamlit as st
 # Project Module
 from lay_2_ypo import gera_poema
 
-# TagCloud
-# from wordcloud import WordCloud
-# import matplotlib.pyplot as plt
-
 # user_id: to create LYPO and TYPO for each hostname
 import socket
 
@@ -53,8 +47,10 @@ from gtts import gTTS
 
 from collections import deque
 
+### bof: settings
+
 st.set_page_config(
-    page_title='yPoemas - a Machina de fazer Poesia',
+    page_title='yPoemas - a "machina" de fazer Poesia',
     page_icon=":star:",
     layout="centered",
     initial_sidebar_state="auto",
@@ -131,13 +127,17 @@ st.markdown(
 st.markdown(
     """
     <style>
+    mark {
+      background-color: lightblue;
+      color: black;
+    }
     .container {
         display: flex;
     }
     .logo-text {
         /* padding-top: 10px !important; */
         font-weight: 700;
-        font-size: 16px;
+        font-size: 18px;
         font-family: 'IBM Plex Sans';
         color: #000000;
         padding-left: 15px;
@@ -182,45 +182,30 @@ if "nany_visy" not in st.session_state:
     st.session_state.nany_visy = 0
 
 if "find_word" not in st.session_state:
-    st.session_state.find_word = "mar"
+    st.session_state.find_word = "amor"
 
 if "draw" not in st.session_state:
     st.session_state.draw = False
 if "talk" not in st.session_state:
     st.session_state.talk = False
 
-if "fila" not in st.session_state:
-    st.session_state.fila = deque([])
+if "arts" not in st.session_state:
+    # st.session_state.arts = deque([])
+    st.session_state.arts = []
 
-
-def main():
-    pages = {
-        "mini": page_mini,
-        "yPoemas": page_ypoemas,
-        "eureka": page_eureka,
-        "off-machina": page_off_machina,
-        "poly": page_polys,
-        "books": page_books,
-        "comments": page_comments,
-        "about": page_abouts,
-    }
-
-    page = st.sidebar.selectbox("", tuple(pages.keys()))
-    pages[page]()
-    show_icons()
-    st.sidebar.state = True
-    st.write("")
-
-
+### eof: settings
 ### bof: tools
-# social media icons
+
+# social media links
 def show_icons():
     st.sidebar.markdown(
         f"""
-        <a href="https://www.facebook.com/nandoulopes" target="_blank"><button>facebook</button></a>
-        <a href="mailto:lopes.fernando@hotmail.com" target="_blank"><button>email</button></a>
-        <a href="https://www.instagram.com/fernando.lopes.942/" target="_blank"><button>insta</button></a>
-        <a href="https://api.whatsapp.com/send?phone=+5512991368181" target="_blank"><button>whatsapp</button></a>
+        <nav>
+        <a href="https://www.facebook.com/nandoulopes" target="_blank">facebook</a> |
+        <a href="mailto:lopes.fernando@hotmail.com" target="_blank">e-mail</a> |
+        <a href="https://www.instagram.com/fernando.lopes.942/" target="_blank">instagram</a> |
+        <a href="https://api.whatsapp.com/send?phone=+5512991368181" target="_blank">whatsapp</a>
+        </nav>
         """,
         unsafe_allow_html=True,
     )
@@ -312,8 +297,8 @@ def update_visy():
 
 
 # check visitor once
-if st.session_state.visy:  # used to random first text on yPoemas them, set to False
-    update_visy()
+# if st.session_state.visy:  # used to random first text on yPoemas them, set to False
+#     update_visy()
     # st.session_state.visy = False  # checked later, on random first yPoema
 
 
@@ -409,7 +394,6 @@ def status_readings():
         format_func=lambda x: read_days[x],
         key="opt_readings",
     )
-    # tag_cloud(tag_text)
 
 
 ### eof: update themes readings
@@ -431,6 +415,15 @@ def load_file(file):  # Open files for about's
 
 
 @st.cache(allow_output_mutation=True)
+def load_arts():
+    arts_list = []
+    with open(os.path.join("./base/arts_list.txt"), encoding="utf-8") as lista:
+        for line in lista:
+            arts_list.append(line)
+    return arts_list
+    
+
+@st.cache(allow_output_mutation=True)
 def load_eureka(part_of_word):  # Lexicon
     index_eureka = []
     with open(os.path.join("./base/lexico_pt.txt"), encoding="utf-8") as lista:
@@ -440,7 +433,6 @@ def load_eureka(part_of_word):  # Lexicon
             fonte = pipe_line[2]
             if part_of_word.lower() in palas.lower():
                 index_eureka.append(line)
-
     return index_eureka
 
 
@@ -508,16 +500,16 @@ def load_off_book(book):  # Load selected Book
 
 
 def load_book_pages(book):  # Load Book pages
-    page = 0
+    page_numer = 0
     book_pages = []
     for line in book:
         if line.startswith("<EOF>"):
             break
 
         if line.startswith("|"):  # only valid lines in PIP
-            page += 1
+            page_numer += 1
             pipe_line = line.split("|")
-            # book_pages.append(pipe_line[1]+" ( " + str(page) + " )")
+            # book_pages.append(pipe_line[1]+" ( " + str(page_numer) + " )")
             book_pages.append(pipe_line[1])
     return book_pages
 
@@ -543,20 +535,14 @@ def load_poema(nome_tema, seed_eureka):  # generate new yPoema
     return novo_ypoema
 
 
-def pick_arts(nome_tema):  # Select one image for arts
-    animas = "_Atido_Avevida_Biaba_Cartaz_Ciuminho_Clandestino_Destinos_Escriba_Essa_Feiras_Frases_Fugaz_Indolor_Inhos_Lato_Manusgrite_Meteoro_Ocio_Oficio_Oco_Prefácil_Reger_Remedeio_Rever_Ser_Silente_Sinais_Sonoro_Sopros_Veio_Victor"
-    esoteric = "_Astros_Distintos_Finalmentes_Rito_Zodiacaos"
-    personas = "_Amaré_Amores_Buscas_Clarice_Cuores_Distintos_Dolores_Elogio_Enfrente_Gula_Isso_MachBeth_MachBrait_Mirante_Oca_Ogiva_Olhares_Papilio_Saudades_Sua_Zelo_Zoia"
-    if (nome_tema in animas) or (
-        nome_tema == "off_machina"
-    ):  # primavera = teocrático = essa é a verdade.
-        path = "./images/anima/"
-    elif ("=" in nome_tema) or (nome_tema in esoteric):  # outono = aristocrático = a verdade pertence à...
-        path = "./images/esoteric/"
-    elif nome_tema in personas:  # verão = democrático = todos são donos da verdade!
-        path = "./images/persona/"
-    else:  # inverno = caótico == onde está a verdade? volta-se ao teocrático
-        path = "./images/machina/"
+def pick_arts(nome_tema):  # Select image for arts
+
+    path = "./images/machina/"
+    path_list = load_arts()
+    for line in path_list:
+        pipe_line = line.split("|")
+        if nome_tema == pipe_line[1]:
+            path = "./images/" + pipe_line[2] + "/"
 
     arts_list = []
     for file in os.listdir(path):
@@ -565,17 +551,22 @@ def pick_arts(nome_tema):  # Select one image for arts
 
     item = random.randrange(0, len(arts_list))
     image = arts_list[item]
-    if image in st.session_state.fila:  # insert new image in last 24
-        while not image in st.session_state.fila:
+
+    if image in st.session_state.arts:  # insert new image
+        while image in st.session_state.arts:
             item = random.randrange(0, len(arts_list))
             image = arts_list[item]
+        st.session_state.arts.append(image)
+        image = st.session_state.arts[-1]
+    else:
+        st.session_state.arts.append(image)
 
-    st.session_state.fila.append(image)
-    if len(st.session_state.fila) > 24:  # remove first
-        st.session_state.fila.popleft()
+    if len(st.session_state.arts) > 36:  # remove first
+        del st.session_state.arts[0]
 
-    logo = path + image
     print(image)
+    
+    logo = path + image
     return logo
 
 
@@ -677,43 +668,32 @@ def translate(input_text):
         return input_text
 
 
-#def tag_cloud(text):
-#    if text == "_ypo_":
-#        if st.session_state.lang == "pt":
-#            curr_ypoema = load_lypo()
-#        else:
-#            curr_ypoema = load_typo()
-#
-#        text = ""
-#        word = ""
-#        for line in curr_ypoema:
-#            if line == " ":
-#                word = word.replace("<br>", " ")
-#                if len(word) > 2:
-#                    text += word + " "
-#                word = ""
-#            else:
-#                word += line
-#
-#    wordcloud = WordCloud(collocations=False, background_color="white").generate(text)
-#    st.set_option("deprecation.showPyplotGlobalUse", False)
-#    plt.imshow(wordcloud, interpolation="bilinear")
-#    plt.axis("off")
-#    plt.margins(x=0, y=0)
-#
-#    clouds_expander = st.expander("", True)
-#    with clouds_expander:
-#        plt.show()
-#        st.pyplot()
-
-
 ### eof: functions
 ### bof: pages
 
 
+def main():
+    pages = {
+        "mini": page_mini,
+        "yPoemas": page_ypoemas,
+        "eureka": page_eureka,
+        "off-machina": page_off_machina,
+        "poly": page_polys,
+        "books": page_books,
+        "comments": page_comments,
+        "about": page_abouts,
+    }
+
+    page = st.sidebar.selectbox("menu", tuple(pages.keys()))
+    pages[page]()
+    show_icons()
+    st.sidebar.state = True
+    st.write("")
+
+
 def page_polys():  # available languages
-    st.sidebar.image("./images/img_poly.jpg")
     pick_lang()
+    # st.sidebar.image("./images/img_poly.jpg")
     st.sidebar.info(load_file("INFO_POLY.md"))
 
     poly_expander = st.expander("", True)
@@ -753,8 +733,8 @@ def page_polys():  # available languages
 
 
 def page_books():  # available books
-    st.sidebar.image("./images/img_books.jpg")
     pick_lang()
+    # st.sidebar.image("./images/img_books.jpg")
     st.sidebar.info(load_file("INFO_BOOKS.md"))
 
     books_expander = st.expander("", True)
@@ -802,8 +782,8 @@ def page_books():  # available books
 
 
 def page_comments():  # available comments
-    st.sidebar.image("./images/img_comments.jpg")
     pick_lang()
+    # st.sidebar.image("./images/img_comments.jpg")
     st.sidebar.info(load_file("INFO_COMMENTS.md"))
 
     comments_expander = st.expander("", True)
@@ -812,8 +792,8 @@ def page_comments():  # available comments
 
 
 def page_abouts():
-    st.sidebar.image("./images/img_about.jpg")
     pick_lang()
+    # st.sidebar.image("./images/img_about.jpg")
     st.sidebar.info(load_file("INFO_ABOUT.md"))
 
     abouts_list = [
@@ -852,50 +832,16 @@ if st.session_state.take > maxy:  # just in case
     st.session_state.take = 0
 
 if st.session_state.visy:  # random text at first entry
-    st.session_state.take = random.randrange(0, maxy, 1)
+    update_visy()
     st.session_state.visy = False
+    st.session_state.take = random.randrange(0, maxy, 1)
 
 
-def page_mine():
-    st.sidebar.image("./images/img_mini.jpg")
+def page_mini():  # F4C3S
     pick_lang()
     pick_draw()
-    st.sidebar.info(load_file("INFO_MINI.md"))
-
-    temas_list = load_temas(st.session_state.book)
-    maxy = len(temas_list) - 1
-
-    mini_expander = st.expander("", expanded=True)
-    with mini_expander:
-
-        foo1, more, rand, numb, foo2 = st.columns([3.5, 1, 1, 1, 3.5])
-        more = more.button("✔")
-        rand = rand.button("✴")
-        
-        if rand:
-            st.session_state.take = random.randrange(0, maxy, 1)
-        
-        curr_tema = temas_list[st.session_state.take]
-        analise = say_numeros(curr_tema)
-        # numb = numb.button("☁", help=analise)
-        # st.session_state.draw = numb.checkbox("imagens", help=analise)
-        st.session_state.draw = numb.button("☁", help=analise)
-
-        curr_ypoema = load_poema(curr_tema, "")
-        curr_ypoema = load_lypo()
-        update_readings(curr_tema)
-        LOGO_TEXT = curr_ypoema
-        LOGO_IMAGE = "none"
-        if st.session_state.draw:
-            LOGO_IMAGE = pick_arts(curr_tema)
-        
-        write_ypoema(LOGO_TEXT, LOGO_IMAGE)
-
-
-def page_mini():
-    st.sidebar.image("./images/img_mini.jpg")
-    pick_lang()
-    pick_draw()
+    # if st.session_state.draw:
+    #     st.sidebar.image("./images/img_mini.jpg")
     st.sidebar.info(load_file("INFO_MINI.md"))
 
     temas_list = load_temas(st.session_state.book)
@@ -913,14 +859,7 @@ def page_mini():
         curr_tema = temas_list[st.session_state.take]
         analise = say_numeros(curr_tema)
         more = more.button("✔", help=analise)
-        # numb = numb.button("☁", help=analise)
-        
-        # if numb:
-        #     st.subheader(analise)
-        #     # tag_cloud("_ypo_")
-        # else:
-            # mini_expander = st.expander("", expanded=True)
-            # with mini_expander:
+
         if st.session_state.lang != st.session_state.last_lang:
             curr_ypoema = load_lypo()  # changes in lang, keep LYPO
         else:
@@ -951,15 +890,16 @@ def page_mini():
 
 
 def page_ypoemas():
-    st.sidebar.image("./images/img_ypoemas.jpg")
     pick_lang()
     pick_draw()
+    # if st.session_state.draw:
+    #     st.sidebar.image("./images/img_ypoemas.jpg")
     st.sidebar.info(load_file("INFO_YPOEMAS.md"))
 
-    foo1, more, last, rand, nest, numb, manu, foo2 = st.columns(
-        [2, 1, 1, 1, 1, 1, 1, 2]
+    foo1, more, last, rand, nest, manu, foo2 = st.columns(
+        [2, 1, 1, 1, 1, 1, 2]
     )
-
+    
     help_me = load_help(st.session_state.lang)
     help_last = help_me[0]
     help_rand = help_me[1]
@@ -970,20 +910,20 @@ def page_ypoemas():
     last = last.button("◀", help=help_last)
     rand = rand.button("✴", help=help_rand)
     nest = nest.button("▶", help=help_nest)
-
+    
     if last:
         st.session_state.take -= 1
         if st.session_state.take < 0:
             st.session_state.take = maxy
-
+    
     if rand:
         st.session_state.take = random.randrange(0, maxy, 1)
-
+    
     if nest:
         st.session_state.take += 1
         if st.session_state.take > maxy:
             st.session_state.take = 0
-
+    
     options = list(range(len(temas_list)))
     opt_take = st.selectbox(
         "",
@@ -998,17 +938,9 @@ def page_ypoemas():
 
     curr_tema = temas_list[st.session_state.take]
     analise = say_numeros(curr_tema)
-    numb = numb.button("☁", help=analise)
-    manu = manu.button("?", help="help !!!")
+    manu = manu.button("?", help=analise)
 
     lnew = True
-#    if numb:
-#        lnew = False
-#        st.subheader(analise)
-#        tag_cloud("_ypo_")
-#    st.button("❤")
-#    st.button("✚"):
-#
     if manu:
         lnew = False
         st.subheader(load_file("MANUAL_YPOEMAS.md"))
@@ -1055,15 +987,14 @@ def page_ypoemas():
         if st.session_state.talk:
             talk(curr_ypoema)
         # st.markdown(get_binary_file_downloader_html('./temp/'+"LYPO_" + user_id, curr_tema), unsafe_allow_html=True)
-        # bin_file = base64.b64encode(open(LOGO_IMAGE, "rb").read()).decode()+LOGO_TEXT
-        # st.markdown(get_binary_file_downloader_html(bin_file, curr_tema), unsafe_allow_html=True)
 
 
 
 def page_eureka():
-    st.sidebar.image("./images/img_eureka.jpg")
     pick_lang()
     pick_draw()
+    # if st.session_state.draw:
+    #     st.sidebar.image("./images/img_eureka.jpg")
     st.sidebar.info(load_file("INFO_EUREKA.md"))
 
     help_me = load_help(st.session_state.lang)
@@ -1078,7 +1009,7 @@ def page_eureka():
         )
 
     with more:
-        more = more.button("✔", help=help_more)
+        more = more.button('✔', help=help_more)
 
     if len(find_what) < 3:
         st.warning("digite pelo menos 3 letras...")
@@ -1104,6 +1035,7 @@ def page_eureka():
                     info_find = "ocorrência"
                 else:
                     info_find = "ocorrências"
+                info_find += ' de "' + find_what + '"'
 
                 with occurrences:
                     opt_ocur = st.selectbox(
@@ -1157,9 +1089,10 @@ def page_eureka():
 
 
 def page_off_machina():  # available off_books
-    st.sidebar.image("./images/img_off_machina.jpg")
     pick_lang()
     pick_draw()
+    # if st.session_state.draw:
+    #     st.sidebar.image("./images/img_off_machina.jpg")
     st.sidebar.info(load_file("INFO_OFF-MACHINA.md"))
 
     off_books_list = load_all_offs()
@@ -1283,7 +1216,8 @@ def page_off_machina():  # available off_books
                 LOGO_TEXT = off_book_text
                 LOGO_IMAGE = "none"
                 if st.session_state.draw:
-                    LOGO_IMAGE = pick_arts("off_machina")
+                    # LOGO_IMAGE = pick_arts("off_machina")
+                    LOGO_IMAGE = pick_arts(off_book_name)
 
                 write_ypoema(LOGO_TEXT, LOGO_IMAGE)
                 update_readings(off_book_name)
@@ -1294,7 +1228,5 @@ def page_off_machina():  # available off_books
 
 ### eof: pages
 
-
 if __name__ == "__main__":
     main()
-
