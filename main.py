@@ -26,7 +26,7 @@ def init_session():
         if key not in st.session_state:
             st.session_state[key] = val
 
-# --- FUNÇÃO DE VOZ (EDGE-TTS) ---
+# --- FUNÇÃO DE VOZ (EDGE-TTS) MASCULINA ---
 def talk(text):
     async def speak():
         voices = {
@@ -48,18 +48,34 @@ def talk(text):
 
     if text: asyncio.run(speak())
 
-# --- CORREÇÃO DIRETA DO CARREGAMENTO DE TEMAS ---
+# --- CARREGAMENTO DE TEMAS (PADRÃO rol_*.txt) ---
 @st.cache_data
-def load_temas_corrigido(book):
-    """Lê os temas usando o padrão rol_nome.txt"""
-    # Se o nome vier com espaços ou sublinhados, o padrão do arquivo é o que vale
+def load_temas_seguro(book):
+    """Lê os índices seguindo o padrão rol_nome.txt"""
     file_path = os.path.join("./base", f"rol_{book}.txt")
     if os.path.exists(file_path):
         with open(file_path, "r", encoding="utf-8") as f:
             return [line.strip() for line in f.readlines() if line.strip()]
     return []
 
-# --- PÁGINAS ---
+# --- DEFINIÇÃO DAS PÁGINAS (Para evitar NameError) ---
+
+def page_mini():
+    st.write("### mini")
+    # Insira aqui a lógica da mini-machina se necessário
+
+def page_ypoemas():
+    st.write("### yPoemas")
+    # Insira aqui a lógica principal dos poemas
+
+def page_eureka():
+    # Lógica simplificada para garantir funcionamento
+    find_what = st.sidebar.text_input("Buscar na Machina", key="search_eureka")
+    if find_what:
+        st.write(f"Resultado para: {find_what}")
+
+def page_off_machina():
+    st.write("### off-machina")
 
 def page_books():
     books_list = [
@@ -74,25 +90,25 @@ def page_books():
             idx = books_list.index(st.session_state.book)
         except:
             idx = 0
-        opt_book = st.selectbox("↓ " + translate("lista de Livros"), range(len(books_list)), index=idx, format_func=lambda x: books_list[x])
+        opt_book = st.selectbox("↓ lista de Livros", range(len(books_list)), index=idx, format_func=lambda x: books_list[x])
     
-    with ok_col:
-        if st.button("✔", key="btn_book_ok"):
-            st.session_state.book = books_list[opt_book]
-            st.session_state.take = 0
-            st.rerun()
+    if ok_col.button("✔", key="btn_book_ok"):
+        st.session_state.book = books_list[opt_book]
+        st.rerun()
 
-    temas = load_temas_corrigido(st.session_state.book)
+    temas = load_temas_seguro(st.session_state.book)
     if temas:
-        st.write(", ".join(temas) + f" ▶ {len(temas)} temas")
+        st.write(", ".join(temas))
     else:
-        st.error(f"Arquivo rol_{st.session_state.book}.txt não encontrado em ./base")
+        st.error(f"rol_{st.session_state.book}.txt não encontrado.")
 
-def page_eureka():
-    # ... (mesma lógica anterior, mas garantindo o uso do load_temas_corrigido se necessário)
-    pass
+def page_polys():
+    st.write("### poly")
 
-# --- MAIN ---
+def page_abouts():
+    st.write("### about")
+
+# --- MAPEAMENTO DE NAVEGAÇÃO ---
 
 PAGES = {
     "1": {"func": page_mini, "img": "img_mini.jpg", "info": "INFO_MINI.md"},
@@ -106,6 +122,8 @@ PAGES = {
 
 def main():
     init_session()
+    
+    # Renderização da Tab Bar
     chosen_id = stx.tab_bar(
         data=[
             stx.TabBarItemData(id=1, title="mini", description=""),
@@ -118,17 +136,11 @@ def main():
         ], default=2,
     )
 
-    pick_lang()
-    draw_check_buttons()
-
+    # Execução segura da página selecionada
     page_data = PAGES.get(str(chosen_id))
     if page_data:
-        st.sidebar.info(load_md_file(page_data["info"]))
-        with st.sidebar: st.image(page_data["img"])
-        # Sobrescrita local para evitar que o erro no ypo_seguro.py bloqueie a execução
+        # Chama a função correspondente
         page_data["func"]()
-
-    show_icons()
 
 if __name__ == "__main__":
     main()
