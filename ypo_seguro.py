@@ -174,6 +174,28 @@ if "rand" not in st.session_state:
 ### eof: settings
 ### bof: tools
 
+def translate(input_text):
+    if st.session_state.lang == "pt":  # don't need translations here
+        return input_text
+
+    if not have_internet():
+        st.session_state.lang = "pt"
+        return input_text
+
+    try:
+        output_text = GoogleTranslator(
+            source="pt", target=st.session_state.lang
+        ).translate(text=input_text)
+
+        output_text = output_text.replace("<br>>", "<br>")
+        output_text = output_text.replace("< br>", "<br>")
+        output_text = output_text.replace("<br >", "<br>")
+        output_text = output_text.replace("<br ", "<br>")
+        output_text = output_text.replace(" br>", "<br>")
+        return output_text
+    except:
+        return translate("Arquivo muito grande para ser traduzido.")
+
 
 def pick_lang():  # define idioma
     btn_pt, btn_es, btn_it, btn_fr, btn_en, btn_xy = st.sidebar.columns(
@@ -225,27 +247,6 @@ def show_icons():  # https://api.whatsapp.com/
         )
 
 
-def translate(input_text):
-    if st.session_state.lang == "pt":  # don't need translations here
-        return input_text
-
-    if not have_internet():
-        st.session_state.lang = "pt"
-        return input_text
-
-    try:
-        output_text = GoogleTranslator(
-            source="pt", target=st.session_state.lang
-        ).translate(text=input_text)
-
-        output_text = output_text.replace("<br>>", "<br>")
-        output_text = output_text.replace("< br>", "<br>")
-        output_text = output_text.replace("<br >", "<br>")
-        output_text = output_text.replace("<br ", "<br>")
-        output_text = output_text.replace(" br>", "<br>")
-        return output_text
-    except:
-        return translate("Arquivo muito grande para ser traduzido.")
 
 
 @st.cache_data
