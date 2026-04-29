@@ -66,9 +66,6 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 # user_id: to create LYPO and TYPO for each hostname
 import socket
 
-# text-to-speech
-from gtts import gTTS
-
 from collections import deque
 
 st.set_page_config(
@@ -84,6 +81,8 @@ try:
 except ImportError as ex:
     st.warning("Google Translator não conectado. Traduções não disponíveis no momento.")
 
+# text-to-speech
+from gtts import gTTS
 
 def internet(host="8.8.8.8", port=53, timeout=3):  # ckeck internet
     """
