@@ -58,10 +58,8 @@ import sys
 # Força o Python a enxergar a pasta onde o script está rodando
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-print(os.path.dirname)
-
 # Project Module
-from lay_2_ypo import gera_poema
+#from lay_2_ypo import gera_poema
 
 # TagCloud
 # from wordcloud import WordCloud
