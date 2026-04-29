@@ -18,7 +18,7 @@ Bula : joco
 Cadência : metalinguagem
 Cartaz : joco
 Circular : poesia
-Ciuminho : poesia
+Ciuminho : beauty
 Clandestino : author
 Clarice : author
 Conto : poesia
@@ -28,10 +28,10 @@ Crítico : author
 Cromossomo : joco
 Cuores : poesia
 Destinos : poesia
-Distintos : poesia
+Distintos : beauty
 Dolores : poesia
 Duralex : joco
-Elogio : author
+Elogio : beauty
 Enfrente : ensaio
 Epitafiando : poesia
 Escriba : author
