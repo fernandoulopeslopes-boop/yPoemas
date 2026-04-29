@@ -82,7 +82,7 @@ except ImportError as ex:
     st.warning("Google Translator não conectado. Traduções não disponíveis no momento.")
 
 # text-to-speech
-from gtts import gTTS
+# from gtts import gTTS
 
 def internet(host="8.8.8.8", port=53, timeout=3):  # ckeck internet
     """
@@ -90,9 +90,19 @@ def internet(host="8.8.8.8", port=53, timeout=3):  # ckeck internet
     OpenPort: 53/tcp
     Service: domain (DNS/TCP)
     """
+
     try:
         socket.setdefaulttimeout(timeout)
         socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
+    try:
+        from deep_translator import GoogleTranslator
+    except ImportError as ex:
+        st.warning(translate("Google Translator não conectado"))
+    
+    try:
+        from gtts import gTTS
+    except ImportError as ex:
+        st.warning(translate("Google TTS não conectado"))
         return True
     except socket.error as ex:
         raise RuntimeError(
