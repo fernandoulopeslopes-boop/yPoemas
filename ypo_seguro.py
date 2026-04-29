@@ -181,11 +181,10 @@ def translate(input_text):
     if not have_internet():
         st.session_state.lang = "pt"
         return input_text
-
     try:
         output_text = GoogleTranslator(
             source="pt", target=st.session_state.lang
-        ).translate(text=input_text)
+        )(text=input_text)
 
         output_text = output_text.replace("<br>>", "<br>")
         output_text = output_text.replace("< br>", "<br>")
@@ -194,7 +193,7 @@ def translate(input_text):
         output_text = output_text.replace(" br>", "<br>")
         return output_text
     except:
-        return translate("Arquivo muito grande para ser traduzido.")
+        return "Arquivo muito grande para ser traduzido."
 
 
 def pick_lang():  # define idioma
