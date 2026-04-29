@@ -160,7 +160,7 @@ if "last_lang" not in st.session_state:
 if "book" not in st.session_state:  #  index for books_list
     st.session_state.book = "livro vivo"
 if "take" not in st.session_state:  #  index for selected tema in books_list
-    st.session_state.take = 0
+    st.session_state.take_tema = 0
 
 if "off_book" not in st.session_state:  #  index for off_books_list
     st.session_state.off_book = 0
@@ -776,7 +776,7 @@ def page_books():  # available books
         st.subheader(load_file("MANUAL_BOOKS.md"))
 
         if doit:
-            st.session_state.take = 0
+            st.session_state.take_tema = 0
             st.session_state.book = books_list[opt_book]
             return None
 
@@ -828,13 +828,13 @@ st.session_state.last_lang = st.session_state.lang
 temas_list = load_temas(st.session_state.book)
 maxy = len(temas_list) - 1
 
-if st.session_state.take > maxy:  # just in case
-    st.session_state.take = 0
+if st.session_state.take_tema > maxy:  # just in case
+    st.session_state.take_tema = 0
 
 if st.session_state.visy:  # random text at first entry
     update_visy()
     st.session_state.visy = False
-    st.session_state.take = random.randrange(0, maxy, 1)
+    st.session_state.take_tema = random.randrange(0, maxy, 1)
 
 
 def page_mini():  # F4C3S
@@ -854,9 +854,9 @@ def page_mini():  # F4C3S
         rand = rand.button("✴")
         
         if rand:
-            st.session_state.take = random.randrange(0, maxy, 1)
+            st.session_state.take_tema = random.randrange(0, maxy_temas, 1)
         
-        curr_tema = temas_list[st.session_state.take]
+        curr_tema = temas_list[st.session_state.take_tema]
         analise = say_numeros(curr_tema)
         more = more.button("✔", help=analise)
 
@@ -912,31 +912,31 @@ def page_ypoemas():
     nest = nest.button("▶", help=help_nest)
     
     if last:
-        st.session_state.take -= 1
-        if st.session_state.take < 0:
-            st.session_state.take = maxy
+        st.session_state.take_tema -= 1
+        if st.session_state.take_tema < 0:
+            st.session_state.take_tema = maxy_temas
     
     if rand:
-        st.session_state.take = random.randrange(0, maxy, 1)
+        st.session_state.take_tema = random.randrange(0, maxy_temas, 1)
     
     if nest:
-        st.session_state.take += 1
-        if st.session_state.take > maxy:
-            st.session_state.take = 0
+        st.session_state.take_tema_tema += 1
+        if st.session_state.take_tema_tema > maxy:
+            st.session_state.take_tema_tema = 0
     
     options = list(range(len(temas_list)))
     opt_take = st.selectbox(
         "",
         options,
-        index=st.session_state.take,
+        index=st.session_state.take_tema,
         format_func=lambda z: temas_list[z],
         key="opt_take",
     )
 
-    if opt_take != st.session_state.take:
-        st.session_state.take = opt_take
+    if opt_take != st.session_state.take_tema:
+        st.session_state.take_tema = opt_take
 
-    curr_tema = temas_list[st.session_state.take]
+    curr_tema = temas_list[st.session_state.take_tema]
     analise = say_numeros(curr_tema)
     manu = manu.button("?", help=analise)
 
@@ -952,7 +952,7 @@ def page_ypoemas():
             + " ( "
             + st.session_state.book
             + " ) ( "
-            + str(st.session_state.take + 1)
+            + str(st.session_state.take_tema + 1)
             + " / "
             + str(len(temas_list))
             + " )"
@@ -1227,6 +1227,5 @@ def page_off_machina():  # available off_books
 
 
 ### eof: pages
-
 if __name__ == "__main__":
     main()
