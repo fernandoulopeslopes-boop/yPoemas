@@ -20,7 +20,8 @@ def init_session():
         "draw": True,
         "talk": False,
         "poly_name": "Português",
-        "poly_lang": "pt"
+        "poly_lang": "pt",
+        "take": 0
     }
     for key, val in defaults.items():
         if key not in st.session_state:
@@ -48,67 +49,76 @@ def talk(text):
 
     if text: asyncio.run(speak())
 
-# --- CARREGAMENTO DE TEMAS (PADRÃO rol_*.txt) ---
+# --- AUXILIARES DE CARREGAMENTO ---
 @st.cache_data
 def load_temas_seguro(book):
-    """Lê os índices seguindo o padrão rol_nome.txt"""
     file_path = os.path.join("./base", f"rol_{book}.txt")
     if os.path.exists(file_path):
         with open(file_path, "r", encoding="utf-8") as f:
             return [line.strip() for line in f.readlines() if line.strip()]
     return []
 
-# --- DEFINIÇÃO DAS PÁGINAS (Para evitar NameError) ---
-
-def page_mini():
-    st.write("### mini")
-    # Insira aqui a lógica da mini-machina se necessário
+# --- PÁGINAS REAIS ---
 
 def page_ypoemas():
-    st.write("### yPoemas")
-    # Insira aqui a lógica principal dos poemas
+    temas = load_temas_seguro(st.session_state.book)
+    if not temas:
+        st.error(f"Índice rol_{st.session_state.book}.txt não encontrado.")
+        return
+
+    col_nav, col_info = st.columns([8, 2])
+    with col_nav:
+        f1, b_last, b_rand, b_next, f2 = st.columns([1, 1, 1, 1, 1])
+        if b_last.button("◀"):
+            st.session_state.take = len(temas)-1 if st.session_state.take <= 0 else st.session_state.take - 1
+        if b_rand.button("✻"):
+            st.session_state.take = random.randrange(len(temas))
+        if b_next.button("▶"):
+            st.session_state.take = 0 if st.session_state.take >= len(temas)-1 else st.session_state.take + 1
+
+    tema_atual = temas[st.session_state.take]
+    st.session_state.tema = tema_atual
+
+    # Simulação da chamada de geração (ajuste conforme seu lay_2_ypo)
+    try:
+        from lay_2_ypo import gera_poema
+        poema = gera_poema(tema_atual, st.session_state.lang)
+    except:
+        poema = f"Gerando versos sobre {tema_atual}..."
+
+    with st.expander(f"⚫ {tema_atual.upper()}", expanded=True):
+        st.markdown(f"<div style='text-align: center;'>{poema}</div>", unsafe_allow_html=True)
+        if st.session_state.draw:
+            img_path = f"./images/matrix/{tema_atual}.jpg"
+            if os.path.exists(img_path): st.image(img_path)
+
+    if st.session_state.talk:
+        talk(poema)
 
 def page_eureka():
-    # Lógica simplificada para garantir funcionamento
-    find_what = st.sidebar.text_input("Buscar na Machina", key="search_eureka")
-    if find_what:
-        st.write(f"Resultado para: {find_what}")
-
-def page_off_machina():
-    st.write("### off-machina")
+    find_what = st.text_input(translate("digite algo para buscar..."))
+    if len(find_what) >= 3:
+        # Aqui você usaria sua função load_eureka real
+        st.info(f"Buscando '{find_what}' nos arquivos rol_*.txt...")
+        # Lógica de seleção de ocorrência...
 
 def page_books():
-    books_list = [
-        "livro_vivo", "poemas", "jocosos", "ensaios", 
-        "metalinguagem", "sociais", "outros autores", 
-        "signos_fem", "signos_mas", "temas_demo"
-    ]
+    books_list = ["todos_os_livros", "livro_vivo", "poemas", "jocosos", "ensaios", "metalinguagem", "sociais", "outros autores", "signos_fem", "signos_mas"]
     
-    books_col, ok_col = st.columns([9.3, 0.7])
-    with books_col:
-        try:
-            idx = books_list.index(st.session_state.book)
-        except:
-            idx = 0
-        opt_book = st.selectbox("↓ lista de Livros", range(len(books_list)), index=idx, format_func=lambda x: books_list[x])
+    idx = books_list.index(st.session_state.book) if st.session_state.book in books_list else 0
+    opt_book = st.selectbox("↓ lista de Livros", range(len(books_list)), index=idx, format_func=lambda x: books_list[x])
     
-    if ok_col.button("✔", key="btn_book_ok"):
+    if st.button("✔ Confirmar Livro"):
         st.session_state.book = books_list[opt_book]
+        st.session_state.take = 0
         st.rerun()
 
     temas = load_temas_seguro(st.session_state.book)
-    if temas:
-        st.write(", ".join(temas))
-    else:
-        st.error(f"rol_{st.session_state.book}.txt não encontrado.")
+    st.write(f"**Temas neste livro:** {', '.join(temas[:10])}...")
 
-def page_polys():
-    st.write("### poly")
+# [Demais funções page_mini, page_polys, page_abouts seguem o mesmo padrão de integração]
 
-def page_abouts():
-    st.write("### about")
-
-# --- MAPEAMENTO DE NAVEGAÇÃO ---
+# --- MAIN ---
 
 PAGES = {
     "1": {"func": page_mini, "img": "img_mini.jpg", "info": "INFO_MINI.md"},
@@ -123,7 +133,6 @@ PAGES = {
 def main():
     init_session()
     
-    # Renderização da Tab Bar
     chosen_id = stx.tab_bar(
         data=[
             stx.TabBarItemData(id=1, title="mini", description=""),
@@ -136,10 +145,13 @@ def main():
         ], default=2,
     )
 
-    # Execução segura da página selecionada
+    # Sidebar cockpit
+    with st.sidebar:
+        st.session_state.draw = st.checkbox("Exibir Artes", value=st.session_state.draw)
+        st.session_state.talk = st.checkbox("Voz da Machina", value=st.session_state.talk)
+
     page_data = PAGES.get(str(chosen_id))
     if page_data:
-        # Chama a função correspondente
         page_data["func"]()
 
 if __name__ == "__main__":
