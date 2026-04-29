@@ -14,7 +14,7 @@ def init_session():
         "tema": "geral",
         "off_book": 0,
         "off_take": 0,
-        "book": "livro vivo",
+        "book": "livro_vivo", # Ajustado para bater com o ficheiro rol_livro_vivo.txt
         "poly_take": 0,
         "poly_file": "poly.txt",
         "draw": True,
@@ -28,9 +28,9 @@ def init_session():
 
 # --- FUNÇÃO DE VOZ (EDGE-TTS) ---
 def talk(text):
-    """Gera e reproduz áudio usando vozes neurais do Edge."""
+    """Gera e reproduz áudio usando vozes neurais masculinas do Edge."""
     async def speak():
-        # Mapeamento básico de vozes por idioma (pode ser expandido)
+        # Mapeamento de vozes masculinas para contraste com a Machina
         voices = {
             "pt": "pt-BR-AntonioNeural",
             "en": "en-US-GuyNeural",
@@ -40,13 +40,12 @@ def talk(text):
         }
         selected_voice = voices.get(st.session_state.lang, "pt-BR-AntonioNeural")
         
-        # Limpa HTML básico para a leitura não soletrar as tags
-        clean_text = text.replace("<br>", " ").replace("➪", "seta")
+        # Limpeza simples para leitura
+        clean_text = text.replace("<br>", " ").replace("➪", "seta").replace("|", " ")
         
         communicate = edge_tts.Communicate(clean_text, selected_voice)
         output_path = "./temp/output.mp3"
         
-        # Garante que a pasta temp existe
         if not os.path.exists("./temp"):
             os.makedirs("./temp")
             
@@ -142,7 +141,51 @@ def page_eureka():
     if st.session_state.talk:
         talk(curr_ypoema)
 
-# [As demais funções de página: page_off_machina, page_polys, page_books, page_abouts permanecem as mesmas do segura.py anterior]
+def page_books():
+    # Lista atualizada conforme os ficheiros rol_*.txt existentes
+    books_list = [
+        "livro_vivo", "poemas", "jocosos", "ensaios", 
+        "metalinguagem", "sociais", "outros autores", 
+        "signos_fem", "signos_mas", "temas_demo"
+    ]
+    
+    books_col, ok_col = st.columns([9.3, 0.7])
+    
+    with books_col:
+        try:
+            current_index = books_list.index(st.session_state.book)
+        except ValueError:
+            current_index = 0
+            
+        opt_book = st.selectbox(
+            "↓ " + translate("lista de Livros"), 
+            range(len(books_list)), 
+            index=current_index,
+            format_func=lambda x: books_list[x]
+        )
+    
+    with ok_col:
+        doit = st.button("✔", key="btn_book_ok")
+
+    nome_selecionado = books_list[opt_book]
+    # O padrão oficial: prefixo rol_ e extensão .txt
+    nome_arquivo = f"rol_{nome_selecionado}.txt"
+    caminho_completo = os.path.join("./base/", nome_arquivo)
+
+    if os.path.exists(caminho_completo):
+        with open(caminho_completo, "r", encoding="utf-8") as f:
+            temas_list = f.readlines()
+        st.write(", ".join([line.strip() for line in temas_list]) + f" ▶ {len(temas_list)} páginas")
+    else:
+        st.error(f"Índice não encontrado: {nome_arquivo}")
+
+    if doit:
+        st.session_state.take = 0
+        st.session_state.book = nome_selecionado
+        st.rerun()
+
+    with st.expander("", expanded=True):
+        st.subheader(load_md_file("MANUAL_BOOKS.md"))
 
 # --- MAPEAMENTO DE NAVEGAÇÃO ---
 
