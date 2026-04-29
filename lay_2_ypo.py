@@ -356,20 +356,6 @@ def fala_umidade():
     return str(ini) + "%"
 
 
-def cores_elogio():
-    """
-    pontilhar a escuridão de verde.
-    :return: último verso em "elogio"
-    """
-    verbo = "|espalhar|salpicar|pontilhar|"
-    verso := verbo[random(verbo)]
-    verso = "tons de "
-    cores = "|rosa|lilás|verde|"
-    verso += random(cores)
-    verso += "na escuridão."
-    return
-
-
 def fala_data(dref):
     """
     :param data de referência
