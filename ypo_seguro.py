@@ -94,7 +94,6 @@ def internet(host="8.8.8.8", port=53, timeout=3):  # ckeck internet
     try:
         socket.setdefaulttimeout(timeout)
         socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
-    try:
         from deep_translator import GoogleTranslator
     except ImportError as ex:
         st.warning(translate("Google Translator não conectado"))
