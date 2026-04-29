@@ -25,6 +25,7 @@ POLY == Poliglot Idiom == Changed on Catalán
 """
 
 import os
+import sys
 
 # Pega o caminho absoluto da pasta onde este arquivo (ypo_seguro.py) está
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -53,8 +54,6 @@ import base64
 import datetime
 import streamlit as st
 
-import os
-import sys
 # Força o Python a enxergar a pasta onde o script está rodando
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
