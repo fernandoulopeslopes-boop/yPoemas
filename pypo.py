@@ -90,7 +90,7 @@ def main():
             translate("Início"): "inicio",
             "Eureka": "eureka",
             translate("Livros"): "livros",
-            "Off-Machina": "off"
+            "Off-Machina": "off--Machina"
         }
         escolha_traduzida = st.radio("Menu", list(opcoes.keys()))
         escolha = opcoes[escolha_traduzida]
