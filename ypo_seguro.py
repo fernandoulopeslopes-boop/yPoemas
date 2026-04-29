@@ -25,7 +25,6 @@ POLY == Poliglot Idiom == Changed on Catalán
 """
 
 import os
-import sys
 import io
 import re
 import time
@@ -34,30 +33,8 @@ import base64
 import datetime
 import streamlit as st
 
-# Pega o caminho absoluto da pasta onde este arquivo (ypo_seguro.py) está
-current_dir = os.path.dirname(os.path.abspath(__file__))
-
-# Se não estiver no path, insere no topo da lista de busca (posição 0)
-if current_dir not in sys.path:
-    sys.path.insert(0, current_dir)
-
-# Força o Python a olhar também para a pasta de trabalho atual
-sys.path.insert(0, os.getcwd())
-
-# Tenta o import agora
-try:
-    from lay_2_ypo import gera_poema
-except ModuleNotFoundError:
-    # Se ainda assim falhar, vamos listar o que o Python está vendo para debugar
-    st.error(f"Diretório atual: {os.getcwd()}")
-    st.error(f"Arquivos na pasta: {os.listdir(current_dir)}")
-    raise
-
-# Força o Python a enxergar a pasta onde o script está rodando
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-
 # Project Module
-#from lay_2_ypo import gera_poema
+from lay_2_ypo import gera_poema
 
 # TagCloud
 # from wordcloud import WordCloud
@@ -65,6 +42,9 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 # user_id: to create LYPO and TYPO for each hostname
 import socket
+
+# text-to-speech
+from gtts import gTTS
 
 from collections import deque
 
@@ -81,8 +61,6 @@ try:
 except ImportError as ex:
     st.warning("Google Translator não conectado. Traduções não disponíveis no momento.")
 
-# text-to-speech
-# from gtts import gTTS
 
 def internet(host="8.8.8.8", port=53, timeout=3):  # ckeck internet
     """
@@ -90,18 +68,9 @@ def internet(host="8.8.8.8", port=53, timeout=3):  # ckeck internet
     OpenPort: 53/tcp
     Service: domain (DNS/TCP)
     """
-
     try:
         socket.setdefaulttimeout(timeout)
         socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
-        from deep_translator import GoogleTranslator
-    except ImportError as ex:
-        st.warning(translate("Google Translator não conectado"))
-    
-    try:
-        from gtts import gTTS
-    except ImportError as ex:
-        st.warning(translate("Google TTS não conectado"))
         return True
     except socket.error as ex:
         raise RuntimeError(
@@ -473,7 +442,7 @@ def load_eureka(part_of_word):  # Lexicon
 @st.cache(suppress_st_warning=True, allow_output_mutation=True)
 def load_temas(book):  # List of yPoemas themes inside a Book
     curr_temas_list = []
-    with open(os.path.join("./base/" "rol_" + book + ".txt"), "r", encoding="utf-8") as file:
+    with open(os.path.join("./base/" + book + ".rol"), "r", encoding="utf-8") as file:
         for line in file:
             curr_temas_list.append(line.strip("\n"))
     return curr_temas_list
