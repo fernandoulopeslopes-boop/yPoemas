@@ -4,7 +4,8 @@ import os
 import random
 import asyncio
 import edge_tts
-from lay_2_ypo import gera_poema, load_lypo, load_poema, write_ypoema, update_readings, load_arts
+from lay_2_ypo import gera_poema
+#, load_lypo, load_poema, write_ypoema, update_readings, load_arts
 # (Assumindo que estas funções residem nos seus módulos de suporte)
 
 # --- CONFIGURAÇÃO ---
