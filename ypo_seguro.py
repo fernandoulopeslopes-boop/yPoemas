@@ -42,9 +42,6 @@ from lay_2_ypo import gera_poema
 # user_id: to create LYPO and TYPO for each hostname
 import socket
 
-# text-to-speech
-from gtts import gTTS
-
 from collections import deque
 
 ### bof: settings
