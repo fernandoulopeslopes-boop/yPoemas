@@ -22,6 +22,7 @@ def main():
                 width: 98vw !important;
                 margin-left: auto !important;
                 margin-right: auto !important;
+                padding-top: 2rem !important;
                 padding-left: 1rem !important;
                 padding-right: 1rem !important;
                 transition: width 0.3s ease-in-out;
@@ -37,8 +38,10 @@ def main():
             [data-testid="stHeader"] {
                 background: transparent !important;
             }
+            /* Ajuste de fonte para manter a precisão do alinhamento */
             .stButton > button {
                 width: 100%;
+                font-size: 22px !important;
             }
         </style>
     """, unsafe_allow_html=True)
@@ -60,10 +63,12 @@ def main():
         st.markdown("### a Máquina de Fazer Poesia")
         st.caption("yPoemas / Machina")
 
+    # RECUPERAÇÃO DA REGRA DE PROPORÇÃO: BASE 4 E MULTIPLICADOR 1.2
     paginas = ["mini", "yPoemas", "eureka", "off-machina", "livros", "poly", "opiniões", "sobre"]
     big_page_atual = st.session_state.pagina_ativa
 
-    pesos = [len(pg)/4 * (1.25 if pg == big_page_atual else 1.0) for pg in paginas]
+    # Unidade de referência: 4 letras = peso 1.0. Foco = 1.2
+    pesos = [(len(pg)/4) * (1.2 if pg == big_page_atual else 1.0) for pg in paginas]
     
     cols = st.columns(pesos)
     for i, pg in enumerate(paginas):
