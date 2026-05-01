@@ -4,6 +4,7 @@ from deep_translator import GoogleTranslator
 import edge_tts
 import os
 
+# --- SISTEMA DE APOIO ---
 def t(texto, sigla_destino="pt"):
     protecao = {
         "arte": {"pt": "arte", "es": "arte", "it": "arte", "fr": "art", "en": "art", "ca": "art", "gl": "arte"},
@@ -30,25 +31,49 @@ async def gerar_audio(texto, voz):
         return None
 
 def main():
-    # Estados de Sessão Travados
+    # 1. ESTADOS E CONSTANTES
     if 'pagina_ativa' not in st.session_state: st.session_state.pagina_ativa = "mini"
     if 'som_ativo' not in st.session_state: st.session_state.som_ativo = False
     if 'sigla_atual' not in st.session_state: st.session_state.sigla_atual = "pt"
 
-    # CSS Rígido: Sidebar 300px e Palco 98vw
-    st.markdown("""
+    paginas = ["mini", "yPoemas", "eureka", "off-machina", "livros", "poly", "opiniões", "sobre"]
+    big_page_atual = st.session_state.pagina_ativa # A página em foco
+
+    # 2. ARQUITETURA CSS DINÂMICA (A solução estética)
+    # Aqui definimos que botões normais são 18px e o botão ativo é 24px
+    st.markdown(f"""
         <style>
-            [data-testid="stAppViewContainer"] { width: 100vw !important; }
-            .main .block-container { max-width: 98vw !important; width: 98vw !important; padding: 1rem !important; }
-            [data-testid="stSidebar"] { min-width: 300px !important; width: 300px !important; }
-            .sidebar-footer { text-align: center; font-size: 24px; padding-top: 20px; }
-            .sidebar-footer a { margin: 0 10px; color: white !important; text-decoration: none; cursor: pointer; }
+            [data-testid="stAppViewContainer"] {{ width: 100vw !important; }}
+            .main .block-container {{ max-width: 98vw !important; width: 98vw !important; padding: 1rem !important; }}
+            [data-testid="stSidebar"] {{ min-width: 300px !important; width: 300px !important; }}
+            
+            /* Estilo dos Botões de Navegação */
+            div.stButton > button {{
+                border: none !important;
+                background-color: transparent !important;
+                color: #888 !important;
+                font-size: 18px !important; /* Tamanho das outras páginas */
+                transition: all 0.3s ease;
+                width: auto !important;
+                padding: 0px 5px !important;
+            }}
+
+            /* Estilo Específico para a Página em Foco (Releitura) */
+            /* Usamos um seletor que identifica o botão ativo pelo estado da Machina */
+            div.stButton > button:has(div p:contains("{big_page_atual}")) {{
+                color: white !important;
+                font-size: 24px !important; /* Tamanho da página em foco */
+                font-weight: bold !important;
+                border-bottom: 2px solid white !important;
+            }}
+            
+            .sidebar-footer {{ text-align: center; font-size: 24px; padding-top: 20px; }}
         </style>
     """, unsafe_allow_html=True)
 
     base_path = os.getcwd()
     
-    # Hierarquia de Idiomas (Protocolo de Castas)
+    # 3. SIDEBAR (Control Center)
     mapa_linguas = {
         "Português": ("pt", "pt-BR-AntonioNeural"), "Espanhol": ("es", "es-ES-AlvaroNeural"),
         "Italiano": ("it", "it-IT-DiegoNeural"), "Francês": ("fr", "fr-FR-HenriNeural"),
@@ -66,8 +91,7 @@ def main():
     outros = sorted([k for k in mapa_linguas.keys() if k not in topo])
     lista_idiomas = topo + outros
 
-    # Sincronia de Index
-    sigla_para_nome = {v[0]: k for k, v in mapa_linguas.items()}
+    sigla_para_nome = {{v[0]: k for k, v in mapa_linguas.items()}}
     index_idioma = lista_idiomas.index(sigla_para_nome.get(st.session_state.sigla_atual, "Português"))
 
     with st.sidebar:
@@ -81,39 +105,36 @@ def main():
             if st.button(f"🔊 {t('som', sigla)}"): st.session_state.som_ativo = not st.session_state.som_ativo
 
         st.divider()
-        
-        # Injeção de Conteúdo (info_pagina.md)
-        nome_pg = st.session_state.pagina_ativa
-        path_md = os.path.join(base_path, "md_files", f"info_{nome_pg}.md")
+        path_md = os.path.join(base_path, "md_files", f"info_{big_page_atual}.md")
         if os.path.exists(path_md):
             with open(path_md, "r", encoding="utf-8") as f:
                 st.markdown(f.read())
         
         st.divider()
-
-        # Injeção de Imagem (img_pagina.JPG na raiz)
-        path_img = os.path.join(base_path, f"img_{nome_pg}.JPG")
+        path_img = os.path.join(base_path, f"img_{big_page_atual}.JPG")
         if os.path.exists(path_img):
             st.image(path_img, use_column_width=True)
 
         st.markdown('<div class="sidebar-footer"><a>📘</a><a>📸</a><a>🐦</a><a>📺</a></div>', unsafe_allow_html=True)
 
-    # Navegação: Foco na página 'sobre'
-    paginas = ["mini", "yPoemas", "eureka", "off-machina", "livros", "poly", "opiniões", "sobre"]
-    cols = st.columns(len(paginas))
+    # 4. PALCO: NAVEGAÇÃO COM FOCO TIPOGRÁFICO
+    # Criamos colunas dinâmicas para acomodar os diferentes tamanhos
+    cols = st.columns([1.5 if pg == big_page_atual else 1 for pg in paginas])
+    
     for i, pg in enumerate(paginas):
         with cols[i]:
-            if st.button(pg, key=f"p_{pg}"):
+            if st.button(pg, key=f"btn_{pg}"):
                 st.session_state.pagina_ativa = pg
                 st.rerun()
 
+    # 5. AUDIO E STATUS
     if st.session_state.som_ativo:
-        audio = asyncio.run(gerar_audio(t(nome_pg, sigla), voz_ativa))
+        audio = asyncio.run(gerar_audio(t(big_page_atual, sigla), voz_ativa))
         if audio: st.audio(audio, format='audio/mp3')
 
     with st.container(border=True):
-        status = "vida real" if nome_pg in ["off-machina", "sobre"] else t("em construção", sigla)
-        st.info(f"{nome_pg.upper()} — {status}")
+        status = "vida real" if big_page_atual in ["off-machina", "sobre"] else t("em construção", sigla)
+        st.info(f"{big_page_atual.upper()} — {status}")
 
 if __name__ == "__main__":
     main()
