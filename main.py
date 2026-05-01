@@ -4,6 +4,7 @@ from deep_translator import GoogleTranslator
 import edge_tts
 import os
 
+# 1. TRADUÇÃO COM TRAVA LÉXICA (Proteção do Projeto)
 def t(texto, sigla_destino="pt"):
     protecao = {
         "arte": {"pt": "arte", "es": "arte", "it": "arte", "fr": "art", "en": "art", "ca": "art", "gl": "arte"},
@@ -18,6 +19,7 @@ def t(texto, sigla_destino="pt"):
     except:
         return texto.lower()
 
+# 2. MOTOR DE VOZ
 async def gerar_audio(texto, voz):
     try:
         communicate = edge_tts.Communicate(texto, voz)
@@ -30,23 +32,25 @@ async def gerar_audio(texto, voz):
         return None
 
 def main():
-    # Persistência de Estado (Protocolo de Continuidade)
+    # ESTADOS CRÍTICIOS: A Identidade da Machina
     if 'pagina_ativa' not in st.session_state: st.session_state.pagina_ativa = "mini"
     if 'som_ativo' not in st.session_state: st.session_state.som_ativo = False
     if 'sigla_atual' not in st.session_state: st.session_state.sigla_atual = "pt"
 
-    # Domínio da Sidebar (300px) e Palco (98vw)
+    # CSS RÍGIDO: Domínio da Sidebar (300px) e Palco (98vw)
     st.markdown("""
         <style>
             [data-testid="stAppViewContainer"] { width: 100vw !important; }
             .main .block-container { max-width: 98vw !important; width: 98vw !important; padding: 1rem !important; }
             [data-testid="stSidebar"] { min-width: 300px !important; width: 300px !important; }
             .sidebar-footer { text-align: center; font-size: 24px; padding-top: 20px; }
-            .sidebar-footer a { margin: 0 10px; color: white !important; text-decoration: none; }
+            .sidebar-footer a { margin: 0 10px; color: white !important; text-decoration: none; cursor: pointer; }
         </style>
     """, unsafe_allow_html=True)
 
     base_path = os.getcwd()
+    
+    # HIERARQUIA DE IDIOMAS: As Castas do Projeto
     mapa_linguas = {
         "Português": ("pt", "pt-BR-AntonioNeural"), "Espanhol": ("es", "es-ES-AlvaroNeural"),
         "Italiano": ("it", "it-IT-DiegoNeural"), "Francês": ("fr", "fr-FR-HenriNeural"),
@@ -60,16 +64,16 @@ def main():
         "Romeno": ("ro", "ro-RO-EmilNeural"), "Russo": ("ru", "ru-RU-DmitryNeural"),
         "Sueco": ("sv", "sv-SE-MattiasNeural")
     }
-    # Hierarquia de Castas
     topo = ["Português", "Espanhol", "Italiano", "Francês", "Inglês", "Catalão"]
     outros = sorted([k for k in mapa_linguas.keys() if k not in topo])
     lista_idiomas = topo + outros
 
+    # TRAVA DE IDIOMA: Sem reset espontâneo
     sigla_para_nome = {v[0]: k for k, v in mapa_linguas.items()}
     index_idioma = lista_idiomas.index(sigla_para_nome.get(st.session_state.sigla_atual, "Português"))
 
     with st.sidebar:
-        # Controle de Idiomas sem reset espontâneo
+        # Seletor de Idioma
         selecao = st.selectbox(t("idiomas disponíveis", st.session_state.sigla_atual), lista_idiomas, index=index_idioma)
         sigla, voz_ativa = mapa_linguas[selecao]
         st.session_state.sigla_atual = sigla
@@ -81,7 +85,7 @@ def main():
 
         st.divider()
         
-        # O Pensamento (Leitura Silenciosa)
+        # PENSAMENTO (Arquivos MD): Fim da carcaça vazia
         nome_pg = st.session_state.pagina_ativa
         path_md = os.path.join(base_path, "md_files", f"info_{nome_pg}.md")
         if os.path.exists(path_md):
@@ -90,14 +94,15 @@ def main():
         
         st.divider()
 
-        # A Visão (Raiz \ypo)
+        # VISÃO (Imagens na Raiz): img_ + pagina + .JPG
         path_img = os.path.join(base_path, f"img_{nome_pg}.JPG")
         if os.path.exists(path_img):
             st.image(path_img, use_column_width=True)
 
+        # Rodapé Social (Protocolo Visual)
         st.markdown('<div class="sidebar-footer"><a>📘</a><a>📸</a><a>🐦</a><a>📺</a></div>', unsafe_allow_html=True)
 
-    # Navegação Purificada (Sobre/Vida Real)
+    # PALCO: Navegação Purificada (Sobre/Vida Real)
     paginas = ["mini", "yPoemas", "eureka", "off-machina", "livros", "poly", "opiniões", "sobre"]
     cols = st.columns(len(paginas))
     for i, pg in enumerate(paginas):
@@ -106,6 +111,7 @@ def main():
                 st.session_state.pagina_ativa = pg
                 st.rerun()
 
+    # AUDIO E STATUS: Vida Real vs Construção
     if st.session_state.som_ativo:
         audio = asyncio.run(gerar_audio(t(nome_pg, sigla), voz_ativa))
         if audio: st.audio(audio, format='audio/mp3')
