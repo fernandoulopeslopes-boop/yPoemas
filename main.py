@@ -4,40 +4,23 @@ from deep_translator import GoogleTranslator
 import edge_tts
 import os
 
-# 1. SISTEMA DE TRADUÇÃO COM PROTEÇÃO CONTRA O "INVASOR"
+# 1. SISTEMA DE TRADUÇÃO COM PROTEÇÃO LÉXICA
 def t(texto, sigla_destino="pt"):
-    # Dicionário de proteção para garantir que "Arte" nunca seja "Até"
-    # e que o nexo dos comandos do Centro de Controle seja absoluto.
     protecao_lexica = {
-        "arte": {
-            "pt": "arte", "es": "arte", "it": "arte", 
-            "fr": "art", "en": "art", "ca": "art", "gl": "arte"
-        },
-        "áudio": {
-            "pt": "áudio", "es": "audio", "it": "audio", 
-            "fr": "audio", "en": "audio"
-        },
-        "idiomas disponíveis": {
-            "pt": "idiomas disponíveis", "es": "idiomas disponibles",
-            "it": "lingue disponibili", "en": "available languages"
-        }
+        "arte": {"pt": "arte", "es": "arte", "it": "arte", "fr": "art", "en": "art", "ca": "art", "gl": "arte"},
+        "som": {"pt": "som", "es": "sonido", "it": "suono", "fr": "son", "en": "sound"},
+        "idiomas disponíveis": {"pt": "idiomas disponíveis", "es": "idiomas disponibles", "it": "lingue disponibili", "en": "available languages"}
     }
-    
     chave = texto.lower().strip()
-    
-    # Se o termo está no dicionário de proteção, usamos a tradução exata
-    if chave in protecao_lexica:
-        if sigla_destino in protecao_lexica[chave]:
-            return protecao_lexica[chave][sigla_destino]
-    
-    # Caso contrário, recorremos ao tradutor para o conteúdo poético
+    if chave in protecao_lexica and sigla_destino in protecao_lexica[chave]:
+        return protecao_lexica[chave][sigla_destino]
     try:
         tradutor = GoogleTranslator(source='auto', target=sigla_destino)
         return tradutor.translate(texto).lower()
     except:
         return texto.lower()
 
-# 2. MOTOR DE VOZ (EDGE-TTS)
+# 2. MOTOR DE VOZ
 async def gerar_audio(texto, voz):
     try:
         communicate = edge_tts.Communicate(texto, voz)
@@ -49,134 +32,113 @@ async def gerar_audio(texto, voz):
     except:
         return None
 
-# 3. INTERFACE E LÓGICA DA MACHINA
 def main():
-    if 'pagina_ativa' not in st.session_state:
-        st.session_state.pagina_ativa = "mini"
-    if 'som_ativo' not in st.session_state:
-        st.session_state.som_ativo = False
+    # Estados de Sessão: Mantêm a alma da Machina ativa
+    if 'pagina_ativa' not in st.session_state: st.session_state.pagina_ativa = "mini"
+    if 'som_ativo' not in st.session_state: st.session_state.som_ativo = False
+    if 'sigla_atual' not in st.session_state: st.session_state.sigla_atual = "pt"
 
-    # CSS: PALCO EXPANSIVO E SIDEBAR RÍGIDA DE 300px
+    # CSS: Palco expansivo e Sidebar de 300px
     st.markdown("""
         <style>
+            [data-testid="stAppViewContainer"] { width: 100vw !important; }
             .main .block-container { 
-                max-width: 100%; 
-                padding: 2rem 5rem; 
+                max-width: 98vw !important; 
+                width: 98vw !important;
+                padding: 1rem !important;
             }
-            [data-testid="stSidebar"] { 
-                min-width: 300px !important;
-                width: 300px !important; 
-            }
-            .stTitle { font-size: 2rem !important; }
-            .stButton button { width: 100%; }
-            .sidebar-footer {
-                text-align: center;
-                padding-top: 20px;
-                font-size: 24px;
-            }
-            .sidebar-footer a { margin: 0 10px; text-decoration: none; color: gray; }
+            [data-testid="stSidebar"] { min-width: 300px !important; width: 300px !important; }
+            .sidebar-footer { text-align: center; font-size: 24px; padding-top: 20px; }
+            .sidebar-footer a { margin: 0 10px; text-decoration: none; color: white !important; }
         </style>
     """, unsafe_allow_html=True)
 
-    # Nomes Criativos_Obvios para Pastas
-    pasta_md_files = "md_files"
-    pasta_jpg_files = "jpg_files"
-
-    # ORGANIZAÇÃO DAS LÍNGUAS (TOP 6 + ALFABÉTICA)
-    topo = ["Português", "Espanhol", "Italiano", "Francês", "Inglês", "Catalão"]
-    outros = sorted([
-        "Córsico", "Galego", "Basco", "Esperanto", "Latim", "Galês", "Sueco", 
-        "Polonês", "Holandês", "Norueguês", "Finlandês", "Dinamarquês", 
-        "Irlandês", "Romeno", "Russo"
-    ])
-    lista_idiomas = topo + [idioma for idioma in outros if idioma not in topo]
+    # Caminhos de Arquivos
+    pasta_md = "md_files"
+    base_path = os.getcwd()
 
     mapa_linguas = {
         "Português": ("pt", "pt-BR-AntonioNeural"), "Espanhol": ("es", "es-ES-AlvaroNeural"),
         "Italiano": ("it", "it-IT-DiegoNeural"), "Francês": ("fr", "fr-FR-HenriNeural"),
         "Inglês": ("en", "en-US-GuyNeural"), "Catalão": ("ca", "es-ES-AlvaroNeural"),
-        "Córsico": ("co", "fr-FR-HenriNeural"), "Galego": ("gl", "es-ES-AlvaroNeural"),
-        "Basco": ("eu", "es-ES-AlvaroNeural"), "Esperanto": ("eo", "en-US-GuyNeural"),
-        "Latim": ("la", "it-IT-DiegoNeural"), "Galês": ("cy", "en-GB-ThomasNeural"),
-        "Sueco": ("sv", "sv-SE-MattiasNeural"), "Polonês": ("pl", "pl-PL-MarekNeural"),
-        "Holandês": ("nl", "nl-NL-MaartenNeural"), "Norueguês": ("no", "nb-NO-FinnNeural"),
-        "Finlandês": ("fi", "fi-FI-HarriNeural"), "Dinamarquês": ("da", "da-DK-JeppeNeural"),
-        "Irlandês": ("ga", "en-IE-ConnorNeural"), "Romeno": ("ro", "ro-RO-EmilNeural"),
-        "Russo": ("ru", "ru-RU-DmitryNeural")
+        "Basco": ("eu", "es-ES-AlvaroNeural"), "Córsico": ("co", "fr-FR-HenriNeural"),
+        "Dinamarquês": ("da", "da-DK-JeppeNeural"), "Esperanto": ("eo", "en-US-GuyNeural"),
+        "Finlandês": ("fi", "fi-FI-HarriNeural"), "Galego": ("gl", "es-ES-AlvaroNeural"),
+        "Galês": ("cy", "en-GB-ThomasNeural"), "Holandês": ("nl", "nl-NL-MaartenNeural"),
+        "Irlandês": ("ga", "en-IE-ConnorNeural"), "Latim": ("la", "it-IT-DiegoNeural"),
+        "Norueguês": ("no", "nb-NO-FinnNeural"), "Polonês": ("pl", "pl-PL-MarekNeural"),
+        "Romeno": ("ro", "ro-RO-EmilNeural"), "Russo": ("ru", "ru-RU-DmitryNeural"),
+        "Sueco": ("sv", "sv-SE-MattiasNeural")
     }
+    topo = ["Português", "Espanhol", "Italiano", "Francês", "Inglês", "Catalão"]
+    outros = sorted([k for k in mapa_linguas.keys() if k not in topo])
+    lista_idiomas = topo + outros
 
-    # SIDEBAR: CENTRO DE CONTROLE
+    # Sincronização do Index para travar o idioma escolhido
+    sigla_para_nome = {v[0]: k for k, v in mapa_linguas.items()}
+    nome_atual = sigla_para_nome.get(st.session_state.sigla_atual, "Português")
+    index_idioma = lista_idiomas.index(nome_atual)
+
     with st.sidebar:
-        idioma_nome = st.selectbox(
-            t("idiomas disponíveis"), 
-            lista_idiomas,
-            help=t("selecione o idioma para tradução e áudio")
+        # 1. "idiomas disponíveis" traduzido no topo
+        selecao = st.selectbox(
+            t("idiomas disponíveis", st.session_state.sigla_atual), 
+            lista_idiomas, 
+            index=index_idioma
         )
-        sigla, voz_ativa = mapa_linguas[idioma_nome]
+        sigla, voz_ativa = mapa_linguas[selecao]
+        st.session_state.sigla_atual = sigla
 
-        col1, col2 = st.columns(2)
-        with col1: 
-            # Blindado contra o erro "Até"
-            st.button(f"🎨 {t('arte', sigla)}", help=t("visualizar mandalas e artes", sigla))
-        with col2:
-            label_audio = f"🔊 {t('áudio', sigla)}"
-            if st.button(label_audio, help=f"{t('ouvir o', sigla)} {t('yPoemas', sigla)}"):
+        c1, c2 = st.columns(2)
+        with c1: st.button(f"🎨 {t('arte', sigla)}")
+        with c2: 
+            if st.button(f"🔊 {t('som', sigla)}"): 
                 st.session_state.som_ativo = not st.session_state.som_ativo
 
         st.divider()
         
-        # Conteúdo MD (info_pagina.md em md_files)
+        # 3. Texto info_pagina.md
         nome_pg = st.session_state.pagina_ativa
-        nome_arquivo_md = f"info_{nome_pg}.md"
-        st.markdown(f"#### {nome_arquivo_md}")
+        st.caption(f"info_{nome_pg}.md")
         
-        base_path = os.path.dirname(__file__) if "__file__" in locals() else os.getcwd()
-        caminho_md = os.path.join(base_path, pasta_md_files, nome_arquivo_md)
-        
-        if os.path.exists(caminho_md):
-            with open(caminho_md, "r", encoding="utf-8") as f:
+        path_md = os.path.join(base_path, pasta_md, f"info_{nome_pg}.md")
+        if os.path.exists(path_md):
+            with open(path_md, "r", encoding="utf-8") as f:
                 st.markdown(f.read())
-        else:
-            st.caption(t(f"contexto de {nome_pg} em construção...", sigla))
         
         st.divider()
 
-        # Arte JPG (img_pagina.JPG em jpg_files)
-        nome_img = f"img_{nome_pg}.JPG"
-        caminho_img = os.path.join(base_path, pasta_jpg_files, nome_img)
-        if os.path.exists(caminho_img):
-            st.image(caminho_img, use_column_width=True)
-        else:
-            st.image(f"https://via.placeholder.com/260x260.png?text={nome_img}", use_column_width=True)
+        # 4. Imagem img_pagina.JPG na raiz \ypo
+        st.caption(f"img_{nome_pg}.JPG")
+        path_img = os.path.join(base_path, f"img_{nome_pg}.JPG")
+        if os.path.exists(path_img):
+            st.image(path_img, use_column_width=True)
 
-        # Rodapé Social
+        # 5. Ícones das Redes
         st.markdown("""
             <div class="sidebar-footer">
-                <a href="#">📘</a><a href="#">📸</a><a href="#">🐦</a><a href="#">📺</a>
+                <a title="Facebook">📘</a><a title="Instagram">📸</a>
+                <a title="X">🐦</a><a title="YouTube">📺</a>
             </div>
         """, unsafe_allow_html=True)
 
-    # PALCO: NOMES ORIGINAIS
-    st.title(f"{t('a Machina de fazer Poesia', sigla)} / {nome_pg}")
-    
+    # PALCO: Navegação limpa, sem títulos redundantes
     paginas = ["mini", "yPoemas", "eureka", "off-machina", "livros", "poly", "opiniões", "sobre"]
     cols = st.columns(len(paginas))
-    
     for i, pg in enumerate(paginas):
         with cols[i]:
-            if st.button(pg, key=f"palco_{pg}", help=t(pg, sigla)):
+            if st.button(pg, key=f"p_{pg}"):
                 st.session_state.pagina_ativa = pg
                 st.rerun()
 
-    # ÁUDIO
+    # Áudio e Status Vida Real (Ativada para 'sobre' e 'off-machina')
     if st.session_state.som_ativo:
-        texto_ouvir = t(nome_pg, sigla)
-        audio_bytes = asyncio.run(gerar_audio(texto_ouvir, voz_ativa))
-        if audio_bytes:
-            st.audio(audio_bytes, format='audio/mp3')
+        audio = asyncio.run(gerar_audio(t(nome_pg, sigla), voz_ativa))
+        if audio: st.audio(audio, format='audio/mp3')
 
     with st.container(border=True):
-        st.info(f"{nome_pg.upper()} — {t('em construção', sigla)}")
+        status = "vida real" if nome_pg in ["off-machina", "sobre"] else t("em construção", sigla)
+        st.info(f"{nome_pg.upper()} — {status}")
 
 if __name__ == "__main__":
     main()
