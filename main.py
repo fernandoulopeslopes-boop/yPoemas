@@ -2,7 +2,7 @@ import streamlit as st
 import asyncio
 from deep_translator import GoogleTranslator
 import edge_tts
-import io
+import os
 
 # 1. SISTEMA DE TRADUÇÃO (ESTRITAMENTE TEXTO PURO)
 def t(texto, sigla_destino="pt"):
@@ -41,21 +41,12 @@ def main():
             }
             .stTitle { font-size: 2rem !important; }
             .stButton button { width: 100%; }
-            
-            /* Estilização do rodapé da sidebar */
             .sidebar-footer {
-                position: fixed;
-                bottom: 10px;
-                width: 260px;
                 text-align: center;
-                padding: 10px;
-                font-size: 24px;
+                padding-top: 20px;
+                font-size: 20px;
             }
-            .sidebar-footer a {
-                margin: 0 10px;
-                text-decoration: none;
-                color: gray;
-            }
+            .sidebar-footer a { margin: 0 8px; text-decoration: none; }
         </style>
     """, unsafe_allow_html=True)
 
@@ -84,7 +75,7 @@ def main():
 
     # SIDEBAR: CENTRO DE CONTROLE
     with st.sidebar:
-        # Item 1: Tradução do label e do help context
+        # Idiomas e Help Context traduzidos
         idioma_nome = st.selectbox(
             t("idiomas disponíveis"), 
             lista_idiomas,
@@ -96,24 +87,28 @@ def main():
         with col1: 
             st.button(f"🎨 {t('arte', sigla)}", help=t("visualizar mandalas e artes", sigla))
         with col2:
-            # Item 4 (anterior): Botão "áudio"
             label_audio = f"🔊 {t('áudio', sigla)}"
             if st.button(label_audio, help=f"{t('ouvir o', sigla)} {t('yPoemas', sigla)}"):
                 st.session_state.som_ativo = not st.session_state.som_ativo
 
         st.divider()
         
-        # Item 2: Conteúdo Markdown dinâmico na sidebar
+        # Info dinâmico da página (.md)
         nome_pg = st.session_state.pagina_ativa
         st.markdown(f"#### info_{nome_pg}.md")
-        # Simulação de carregamento do arquivo .md
-        st.caption(t(f"carregando informações de info_{nome_pg}.md...", sigla))
         
-        # Item 3: Arte correspondente à página (JPG)
+        # Tenta ler o arquivo markdown real
+        if os.path.exists(f"info_{nome_pg}.md"):
+            with open(f"info_{nome_pg}.md", "r", encoding="utf-8") as f:
+                st.markdown(f.read())
+        else:
+            st.caption(t(f"contexto de {nome_pg} em construção...", sigla))
+        
+        # Arte correspondente à página (img_nome.JPG)
         nome_img = f"img_{nome_pg}.JPG"
         st.image(f"https://via.placeholder.com/260x260.png?text={nome_img}", use_column_width=True)
 
-        # Item 4: Ícones de redes sociais no rodapé
+        # Rodapé Social
         st.markdown("""
             <div class="sidebar-footer">
                 <a href="#">📘</a><a href="#">📸</a><a href="#">🐦</a><a href="#">📺</a>
@@ -128,7 +123,6 @@ def main():
     
     for i, pg in enumerate(paginas):
         with cols[i]:
-            # Nome original no botão, tradução no Help
             if st.button(pg, key=f"palco_{pg}", help=t(pg, sigla)):
                 st.session_state.pagina_ativa = pg
                 st.rerun()
@@ -148,6 +142,5 @@ def main():
     with st.container(border=True):
         st.info(f"{nome_pg.upper()} — {t('em construção', sigla)}")
 
-# PTC: VERIFICAÇÃO NO EOF()
 if __name__ == "__main__":
     main()
