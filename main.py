@@ -21,14 +21,14 @@ async def gerar_audio(texto, voz):
             audio_data += chunk["data"]
     return audio_data
 
-# 3. INTERFACE E LÓGICA
+# 3. INTERFACE E LÓGICA DA MACHINA
 def main():
     if 'pagina_ativa' not in st.session_state:
         st.session_state.pagina_ativa = "mini"
     if 'som_ativo' not in st.session_state:
         st.session_state.som_ativo = False
 
-    # CSS: PALCO EXPANSIVO, SIDEBAR 300px E RODAPÉ SOCIAL
+    # CSS: PALCO EXPANSIVO E SIDEBAR RÍGIDA DE 300px
     st.markdown("""
         <style>
             .main .block-container { 
@@ -44,9 +44,9 @@ def main():
             .sidebar-footer {
                 text-align: center;
                 padding-top: 20px;
-                font-size: 20px;
+                font-size: 24px;
             }
-            .sidebar-footer a { margin: 0 8px; text-decoration: none; }
+            .sidebar-footer a { margin: 0 10px; text-decoration: none; color: gray; }
         </style>
     """, unsafe_allow_html=True)
 
@@ -87,26 +87,34 @@ def main():
         with col1: 
             st.button(f"🎨 {t('arte', sigla)}", help=t("visualizar mandalas e artes", sigla))
         with col2:
+            # Botão Áudio e transmutação da marca yPoemas
             label_audio = f"🔊 {t('áudio', sigla)}"
             if st.button(label_audio, help=f"{t('ouvir o', sigla)} {t('yPoemas', sigla)}"):
                 st.session_state.som_ativo = not st.session_state.som_ativo
 
         st.divider()
         
-        # Info dinâmico da página (.md)
+        # Info dinâmico da página (Lendo de md_files)
         nome_pg = st.session_state.pagina_ativa
+        pasta_arquivos = "md_files"
         st.markdown(f"#### info_{nome_pg}.md")
         
-        # Tenta ler o arquivo markdown real
-        if os.path.exists(f"info_{nome_pg}.md"):
-            with open(f"info_{nome_pg}.md", "r", encoding="utf-8") as f:
+        caminho_md = os.path.join(pasta_arquivos, f"info_{nome_pg}.md")
+        if os.path.exists(caminho_md):
+            with open(caminho_md, "r", encoding="utf-8") as f:
                 st.markdown(f.read())
         else:
             st.caption(t(f"contexto de {nome_pg} em construção...", sigla))
         
-        # Arte correspondente à página (img_nome.JPG)
+        st.divider()
+
+        # Arte correspondente à página (img_nome.JPG em md_files)
         nome_img = f"img_{nome_pg}.JPG"
-        st.image(f"https://via.placeholder.com/260x260.png?text={nome_img}", use_column_width=True)
+        caminho_img = os.path.join(pasta_arquivos, nome_img)
+        if os.path.exists(caminho_img):
+            st.image(caminho_img, use_column_width=True)
+        else:
+            st.image(f"https://via.placeholder.com/260x260.png?text={nome_img}", use_column_width=True)
 
         # Rodapé Social
         st.markdown("""
@@ -115,7 +123,7 @@ def main():
             </div>
         """, unsafe_allow_html=True)
 
-    # PALCO: NOMES ORIGINAIS EM PORTUGUÊS
+    # PALCO: NOMES ORIGINAIS EM PORTUGUÊS (Expansivo quando sidebar recolhe)
     st.title(f"{t('a Machina de fazer Poesia', sigla)} / {nome_pg}")
     
     paginas = ["mini", "yPoemas", "eureka", "off-machina", "livros", "poly", "opiniões", "sobre/about"]
@@ -123,6 +131,7 @@ def main():
     
     for i, pg in enumerate(paginas):
         with cols[i]:
+            # Nome original no botão, tradução no Help Context
             if st.button(pg, key=f"palco_{pg}", help=t(pg, sigla)):
                 st.session_state.pagina_ativa = pg
                 st.rerun()
