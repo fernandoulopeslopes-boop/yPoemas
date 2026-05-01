@@ -96,7 +96,7 @@ def main():
         
         # Info dinâmico da página (Lendo de md_files)
         nome_pg = st.session_state.pagina_ativa
-        pasta_arquivos = "md_files"
+        pasta_arquivos = "\md_files"
         st.markdown(f"#### info_{nome_pg}.md")
         
         caminho_md = os.path.join(pasta_arquivos, f"info_{nome_pg}.md")
