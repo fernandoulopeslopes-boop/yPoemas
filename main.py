@@ -3,13 +3,16 @@ import streamlit as st
 # 1. CONFIGURAÇÃO DA PÁGINA (NOME OFICIAL)
 st.set_page_config(page_title="a Machina de fazer Poesia", layout="wide")
 
-# CSS para fixar a sidebar em 300px e garantir o equilíbrio estético
+# CSS: LARGURA DA SIDEBAR (300px), ALINHAMENTO E RODAPÉ FIXO
 st.markdown(
     """
     <style>
         [data-testid="stSidebar"] {
             width: 300px;
             max-width: 300px;
+        }
+        .stButton button {
+            width: 100%;
         }
         .footer-social {
             position: fixed;
@@ -18,49 +21,56 @@ st.markdown(
             text-align: center;
             font-size: 20px;
         }
+        /* Ajuste para centralizar o slider de som */
+        .centered-slider {
+            display: flex;
+            justify-content: center;
+        }
     </style>
     """,
     unsafe_allow_html=True,
 )
 
-# 2. ESTADO DA SESSÃO (DEFAULT = MINI)
+# 2. ESTADO DA SESSÃO
 if 'pagina_ativa' not in st.session_state:
     st.session_state.pagina_ativa = "mini"
+if 'som_ativo' not in st.session_state:
+    st.session_state.som_ativo = False
 
-# 3. SIDEBAR: O CENTRO DE CONTROLE
+# 3. SIDEBAR: CENTRO DE CONTROLE
 with st.sidebar:
-    # A. Topo: Lista Oficial de Idiomas (Sequência pt a ro)
+    # A. Topo: Lista Oficial Completa (incluindo o Russo: ru)
     idiomas_oficiais = [
         "Português : pt", "Espanhol : es", "Italiano : it", "Francês : fr", 
         "Inglês : en", "Catalão : ca", "Córsico : co", "Galego : gl", 
         "Basco : eu", "Esperanto : eo", "Latin : la", "Galês : cy", 
         "Sueco : sv", "Polonês : pl", "Holandês : nl", "Norueguês : no", 
-        "Finlandês : fi", "Dinamarquês : da", "Irlandês : ga", "Romeno : ro", "Russo : ru"
+        "Finlandês : fi", "Dinamarquês : da", "Irlandês : ga", "Romeno : ro",
+        "Russo : ru"
     ]
-    st.selectbox("Idiomas disponíveis", idiomas_oficiais, key="lang_selector")
+    st.selectbox("idiomas disponíveis", idiomas_oficiais, key="lang_selector")
     
-    # B. Controles de Mídia: conforme o manual oficial
+    # B. Arte e Som (Alinhados com a largura da lista)
     col_media_1, col_media_2 = st.columns(2)
     with col_media_1:
         st.button("🎨 arte")
     with col_media_2:
-        st.button("🔊 som")
+        if st.button("🔊 som"):
+            st.session_state.som_ativo = not st.session_state.som_ativo
 
     st.divider()
 
-    # C. Navegação (Lista em lower, sem rótulo intruso)
-    paginas = ["mini", "ypoemas", "eureka", "off-machina", "poly", "opiniões", "sobre/about"]
-    st.session_state.pagina_ativa = st.radio("", paginas)
+    # C. Controle Interno (Rádio oculto para sincronia com o palco)
+    paginas = ["mini", "yPoemas", "eureka", "off-machina", "livros", "poly", "opiniões", "sobre/about"]
+    # Radio mantido no palco para teste estético conforme solicitado
+    st.session_state.pagina_ativa = st.radio("navegação interna:", paginas, label_visibility="collapsed")
 
     st.divider()
 
-    # D. Info_About & Arte da Página Ativa
+    # D. Info e Arte (Traduzidos e em lower)
     st.markdown(f"### info: {st.session_state.pagina_ativa}")
-    
-    # Exibição do contexto (under construction)
     st.info(f"under construction: {st.session_state.pagina_ativa}")
     
-    # Arte da página ativa
     st.image("https://via.placeholder.com/260x260.png?text=arte+da+pagina", use_column_width=True)
 
     # E. Rodapé: Redes Sociais
@@ -74,31 +84,42 @@ with st.sidebar:
         unsafe_allow_html=True
     )
 
-# 4. O PALCO: AVALIAÇÃO VISUAL
-st.title(f"{st.session_state.pagina_ativa}")
+# 4. O PALCO: AVALIAÇÃO VISUAL E ESTÉTICA
+st.title(f"a machina / {st.session_state.pagina_ativa}")
 
-if st.session_state.pagina_ativa == "mini":
-    st.warning("⚠️ under construction")
+# Botões de navegação no palco para avaliação de estética
+cols_nav = st.columns(len(paginas))
+for idx, nome_pg in enumerate(paginas):
+    with cols_nav[idx]:
+        if st.button(nome_pg, key=f"btn_{nome_pg}"):
+            st.session_state.pagina_ativa = nome_pg
+            st.rerun()
 
-elif st.session_state.pagina_ativa == "yPoemas":
-    st.warning("⚠️ under construction")
+# Espaço do Som (Centralizado, entre botões e moldura)
+if st.session_state.som_ativo:
+    st.markdown("<br>", unsafe_allow_html=True)
+    _, col_slider, _ = st.columns([1, 2, 1]) # width = largura_do_palco/2
+    with col_slider:
+        st.slider("volume", 0, 100, 50, label_visibility="collapsed")
+    st.markdown("<br>", unsafe_allow_html=True)
 
-elif st.session_state.pagina_ativa == "eureka":
-    st.warning("⚠️ under construction")
+# Moldura do Palco (Conteúdo Ativo)
+with st.container(border=True):
+    if st.session_state.pagina_ativa == "yPoemas":
+        st.subheader("yPoemas")
+        st.warning("⚠️ under construction")
+    
+    elif st.session_state.pagina_ativa == "poly":
+        c1, c2, c3 = st.columns([1, 1, 1])
+        with c1: st.button("✔")
+        with c2: st.button("⭐") 
+        with c3: st.button("?")
+        st.warning("⚠️ under construction")
+    
+    else:
+        st.warning(f"⚠️ under construction: {st.session_state.pagina_ativa}")
 
-elif st.session_state.pagina_ativa == "off-machina":
-    st.warning("⚠️ under construction")
-
-elif st.session_state.pagina_ativa == "poly":
-    # A trindade de botões na Poly: Confirmar, Estrela Guia e Help Técnico
-    c1, c2, c3 = st.columns([1, 1, 1])
-    with c1: st.button("✔")
-    with c2: st.button("⭐")
-    with c3: st.button("?")
-    st.warning("⚠️ under construction")
-
-elif st.session_state.pagina_ativa == "opiniões":
-    st.warning("⚠️ under construction")
-
-elif st.session_state.pagina_ativa == "sobre":
-    st.warning("⚠️ under construction")
+# Radio no palco apenas para teste estético como solicitado
+st.divider()
+st.write("teste estético de radio no palco:")
+st.radio("", paginas, horizontal=True, key="radio_palco")
