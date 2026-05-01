@@ -4,23 +4,22 @@ from deep_translator import GoogleTranslator
 import edge_tts
 import os
 
-# 1. SISTEMA DE TRADUÇÃO COM PROTEÇÃO LÉXICA
+# 1. TRADUÇÃO CIRÚRGICA
 def t(texto, sigla_destino="pt"):
-    protecao_lexica = {
+    protecao = {
         "arte": {"pt": "arte", "es": "arte", "it": "arte", "fr": "art", "en": "art", "ca": "art", "gl": "arte"},
         "som": {"pt": "som", "es": "sonido", "it": "suono", "fr": "son", "en": "sound"},
         "idiomas disponíveis": {"pt": "idiomas disponíveis", "es": "idiomas disponibles", "it": "lingue disponibili", "en": "available languages"}
     }
     chave = texto.lower().strip()
-    if chave in protecao_lexica and sigla_destino in protecao_lexica[chave]:
-        return protecao_lexica[chave][sigla_destino]
+    if chave in protecao and sigla_destino in protecao[chave]:
+        return protecao[chave][sigla_destino]
     try:
-        tradutor = GoogleTranslator(source='auto', target=sigla_destino)
-        return tradutor.translate(texto).lower()
+        return GoogleTranslator(source='auto', target=sigla_destino).translate(texto).lower()
     except:
         return texto.lower()
 
-# 2. MOTOR DE VOZ
+# 2. MOTOR DE ÁUDIO EM SEGUNDO PLANO
 async def gerar_audio(texto, voz):
     try:
         communicate = edge_tts.Communicate(texto, voz)
@@ -33,30 +32,22 @@ async def gerar_audio(texto, voz):
         return None
 
 def main():
-    # Estados de Sessão: Mantêm a alma da Machina ativa
-    if 'pagina_ativa' not in st.session_state: st.session_state.pagina_ativa = "mini"
-    if 'som_ativo' not in st.session_state: st.session_state.som_ativo = False
-    if 'sigla_atual' not in st.session_state: st.session_state.sigla_atual = "pt"
+    # REINVENÇÃO DO ESTADO: Persistência absoluta
+    for chave, valor in {"pagina_ativa": "mini", "som_ativo": False, "sigla_atual": "pt"}.items():
+        if chave not in st.session_state: st.session_state[chave] = valor
 
-    # CSS: Palco expansivo e Sidebar de 300px
+    # ARQUITETURA GEOMÉTRICA (Sidebar 300px / Palco 98vw)
     st.markdown("""
         <style>
             [data-testid="stAppViewContainer"] { width: 100vw !important; }
-            .main .block-container { 
-                max-width: 98vw !important; 
-                width: 98vw !important;
-                padding: 1rem !important;
-            }
+            .main .block-container { max-width: 98vw !important; width: 98vw !important; padding: 1rem !important; }
             [data-testid="stSidebar"] { min-width: 300px !important; width: 300px !important; }
             .sidebar-footer { text-align: center; font-size: 24px; padding-top: 20px; }
-            .sidebar-footer a { margin: 0 10px; text-decoration: none; color: white !important; }
+            .sidebar-footer a { margin: 0 10px; color: white !important; text-decoration: none; cursor: pointer; }
         </style>
     """, unsafe_allow_html=True)
 
-    # Caminhos de Arquivos
-    pasta_md = "md_files"
-    base_path = os.getcwd()
-
+    # CURADORIA DE IDIOMAS (Hierarquia de Castas)
     mapa_linguas = {
         "Português": ("pt", "pt-BR-AntonioNeural"), "Espanhol": ("es", "es-ES-AlvaroNeural"),
         "Italiano": ("it", "it-IT-DiegoNeural"), "Francês": ("fr", "fr-FR-HenriNeural"),
@@ -70,59 +61,42 @@ def main():
         "Romeno": ("ro", "ro-RO-EmilNeural"), "Russo": ("ru", "ru-RU-DmitryNeural"),
         "Sueco": ("sv", "sv-SE-MattiasNeural")
     }
-    topo = ["Português", "Espanhol", "Italiano", "Francês", "Inglês", "Catalão"]
-    outros = sorted([k for k in mapa_linguas.keys() if k not in topo])
-    lista_idiomas = topo + outros
+    lista_idiomas = ["Português", "Espanhol", "Italiano", "Francês", "Inglês", "Catalão"] + sorted([k for k in mapa_linguas.keys() if k not in ["Português", "Espanhol", "Italiano", "Francês", "Inglês", "Catalão"]])
 
-    # Sincronização do Index para travar o idioma escolhido
+    # SINCRONIA LINGUÍSTICA
     sigla_para_nome = {v[0]: k for k, v in mapa_linguas.items()}
-    nome_atual = sigla_para_nome.get(st.session_state.sigla_atual, "Português")
-    index_idioma = lista_idiomas.index(nome_atual)
+    index_idioma = lista_idiomas.index(sigla_para_nome.get(st.session_state.sigla_atual, "Português"))
 
     with st.sidebar:
-        # 1. "idiomas disponíveis" traduzido no topo
-        selecao = st.selectbox(
-            t("idiomas disponíveis", st.session_state.sigla_atual), 
-            lista_idiomas, 
-            index=index_idioma
-        )
+        # Seletor sem reset
+        selecao = st.selectbox(t("idiomas disponíveis", st.session_state.sigla_atual), lista_idiomas, index=index_idioma)
         sigla, voz_ativa = mapa_linguas[selecao]
         st.session_state.sigla_atual = sigla
 
         c1, c2 = st.columns(2)
         with c1: st.button(f"🎨 {t('arte', sigla)}")
         with c2: 
-            if st.button(f"🔊 {t('som', sigla)}"): 
-                st.session_state.som_ativo = not st.session_state.som_ativo
+            if st.button(f"🔊 {t('som', sigla)}"): st.session_state.som_ativo = not st.session_state.som_ativo
 
         st.divider()
         
-        # 3. Texto info_pagina.md
+        # O PENSAMENTO: Injeção direta de conteúdo (Sem carcaças técnicas)
         nome_pg = st.session_state.pagina_ativa
-        st.caption(f"info_{nome_pg}.md")
-        
-        path_md = os.path.join(base_path, pasta_md, f"info_{nome_pg}.md")
+        path_md = os.path.join(os.getcwd(), "md_files", f"info_{nome_pg}.md")
         if os.path.exists(path_md):
             with open(path_md, "r", encoding="utf-8") as f:
                 st.markdown(f.read())
         
         st.divider()
 
-        # 4. Imagem img_pagina.JPG na raiz \ypo
-        st.caption(f"img_{nome_pg}.JPG")
-        path_img = os.path.join(base_path, f"img_{nome_pg}.JPG")
+        # A VISÃO: Raiz do projeto
+        path_img = os.path.join(os.getcwd(), f"img_{nome_pg}.JPG")
         if os.path.exists(path_img):
             st.image(path_img, use_column_width=True)
 
-        # 5. Ícones das Redes
-        st.markdown("""
-            <div class="sidebar-footer">
-                <a title="Facebook">📘</a><a title="Instagram">📸</a>
-                <a title="X">🐦</a><a title="YouTube">📺</a>
-            </div>
-        """, unsafe_allow_html=True)
+        st.markdown('<div class="sidebar-footer"><a>📘</a><a>📸</a><a>🐦</a><a>📺</a></div>', unsafe_allow_html=True)
 
-    # PALCO: Navegação limpa, sem títulos redundantes
+    # O PALCO: Navegação Purificada
     paginas = ["mini", "yPoemas", "eureka", "off-machina", "livros", "poly", "opiniões", "sobre"]
     cols = st.columns(len(paginas))
     for i, pg in enumerate(paginas):
@@ -131,7 +105,7 @@ def main():
                 st.session_state.pagina_ativa = pg
                 st.rerun()
 
-    # Áudio e Status Vida Real (Ativada para 'sobre' e 'off-machina')
+    # STATUS: Vida Real vs Construção
     if st.session_state.som_ativo:
         audio = asyncio.run(gerar_audio(t(nome_pg, sigla), voz_ativa))
         if audio: st.audio(audio, format='audio/mp3')
