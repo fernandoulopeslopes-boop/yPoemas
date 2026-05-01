@@ -1,145 +1,87 @@
 import streamlit as st
+from deep_translator import GoogleTranslator
+from gtts import gTTS
+import io
 
-# 1. CONFIGURAÇÃO DA PÁGINA (NOME OFICIAL)
-st.set_page_config(page_title="a Machina de fazer Poesia", layout="wide")
+# 1. SISTEMA DE TRADUÇÃO (LIBERDADE TOTAL PARA A MARCA)
+def t(texto, idioma_destino_sigla="pt"):
+    try:
+        # A marca yPoemas agora transmutada para outros idiomas
+        tradutor = GoogleTranslator(source='auto', target=idioma_destino_sigla)
+        resultado = tradutor.translate(texto)
+        return resultado.lower()
+    except:
+        return texto.lower()
 
-# 2. CSS PARA EXPANSÃO TOTAL E ESTÉTICA DA SIDEBAR
-st.markdown(
-    """
-    <style>
-        /* Expansão total do palco quando a sidebar é recolhida */
-        .main .block-container {
-            max-width: 100%;
-            padding-left: 2rem;
-            padding-right: 2rem;
+# 2. CONFIGURAÇÃO DA PÁGINA (TRADUZIDA)
+def configurar_pagina(sigla):
+    st.set_page_config(page_title=t("a Machina de fazer Poesia", sigla), layout="wide")
+
+# 3. INTERFACE E LÓGICA
+def main():
+    # Estado da Sessão
+    if 'pagina_ativa' not in st.session_state:
+        st.session_state.pagina_ativa = "mini"
+    if 'som_ativo' not in st.session_state:
+        st.session_state.som_ativo = False
+
+    # CSS para Expansão e Sidebar
+    st.markdown("""
+        <style>
+            .main .block-container { max-width: 100%; padding: 2rem; }
+            [data-testid="stSidebar"] { width: 300px; max-width: 300px; }
+            .stButton button { width: 100%; }
+            .footer-social { position: fixed; bottom: 20px; width: 260px; text-align: center; font-size: 20px; }
+        </style>
+    """, unsafe_allow_html=True)
+
+    # Sidebar: Centro de Controle
+    with st.sidebar:
+        idiomas = {
+            "Português": "pt", "Espanhol": "es", "Italiano": "it", "Francês": "fr", 
+            "Inglês": "en", "Catalão": "ca", "Córsico": "co", "Galego": "gl", 
+            "Basco": "eu", "Esperanto": "eo", "Latin": "la", "Galês": "cy", 
+            "Sueco": "sv", "Polonês": "pl", "Holandês": "nl", "Norueguês": "no", 
+            "Finlandês": "fi", "Dinamarquês": "da", "Irlandês": "ga", "Romeno": "ro",
+            "Russo": "ru"
         }
-        
-        /* Largura fixa da sidebar de 300px */
-        [data-testid="stSidebar"] {
-            width: 300px;
-            max-width: 300px;
-        }
-        
-        /* Botões ocupando toda a largura da sidebar */
-        .stButton button {
-            width: 100%;
-        }
+        escolha = st.selectbox(t("idiomas disponíveis"), list(idiomas.keys()))
+        sigla = idiomas[escolha]
 
-        /* Rodapé Fixo nas redes sociais */
-        .footer-social {
-            position: fixed;
-            bottom: 20px;
-            width: 260px;
-            text-align: center;
-            font-size: 20px;
-        }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
+        col1, col2 = st.columns(2)
+        with col1: st.button(t("🎨 arte", sigla), help=t("visualizar mandalas e artes", sigla))
+        with col2:
+            marca_ouvida = t("yPoemas", sigla)
+            if st.button(t("🔊 som", sigla), help=t(f"ouvir o {marca_ouvida} em {escolha}", sigla)):
+                st.session_state.som_ativo = not st.session_state.som_ativo
 
-# 3. SISTEMA DE TRADUÇÃO (MANDATÓRIO)
-def t(texto):
-    # Regra: yPoemas sempre preservado (exceção à regra lower)
-    if "yPoemas" in texto:
-        return texto
-    return texto.lower() # Todos os outros nomes traduzidos e em lower
+        st.divider()
+        st.markdown(f"### {t('info', sigla)}: {t(st.session_state.pagina_ativa, sigla)}")
+        st.image("https://via.placeholder.com/260x260.png?text=arte+da+pagina", use_column_width=True)
 
-# 4. ESTADO DA SESSÃO
-if 'pagina_ativa' not in st.session_state:
-    st.session_state.pagina_ativa = "mini" # Default = mini
-if 'som_ativo' not in st.session_state:
-    st.session_state.som_ativo = False
-
-# 5. SIDEBAR: CENTRO DE CONTROLE
-with st.sidebar:
-    # A. Topo: Lista Oficial Completa (incluindo Russo)
-    idiomas_oficiais = [
-        "Português : pt", "Espanhol : es", "Italiano : it", "Francês : fr", 
-        "Inglês : en", "Catalão : ca", "Córsico : co", "Galego : gl", 
-        "Basco : eu", "Esperanto : eo", "Latin : la", "Galês : cy", 
-        "Sueco : sv", "Polonês : pl", "Holandês : nl", "Norueguês : no", 
-        "Finlandês : fi", "Dinamarquês : da", "Irlandês : ga", "Romeno : ro",
-        "Russo : ru"
-    ]
+    # Palco
+    st.title(f"{t('a Machina de fazer Poesia', sigla)} / {t(st.session_state.pagina_ativa, sigla)}")
     
-    idioma_selecionado = st.selectbox(
-        t("idiomas disponíveis"), # Texto oficial: idiomas disponíveis
-        idiomas_oficiais, 
-        key="lang_selector", 
-        help=t("selecione o idioma da machina")
-    )
-    
-    # B. arte e som (alinhados horizontalmente)
-    col_media_1, col_media_2 = st.columns(2)
-    with col_media_1:
-        st.button(t("🎨 arte"), help=t("visualizar mandalas e artes"))
-    with col_media_2:
-        # Help tip dinâmico conforme regra específica
-        help_som = t(f"ouvir o yPoemas em {idioma_selecionado}")
-        if st.button(t("🔊 som"), help=help_som):
-            st.session_state.som_ativo = not st.session_state.som_ativo
+    paginas = ["mini", "yPoemas", "eureka", "off-machina", "livros", "poly", "opiniões", "sobre/about"]
+    cols = st.columns(len(paginas))
+    for i, pg in enumerate(paginas):
+        with cols[i]:
+            if st.button(t(pg, sigla), key=f"btn_{pg}"):
+                st.session_state.pagina_ativa = pg
+                st.rerun()
 
-    st.divider()
+    # Som Ativado
+    if st.session_state.som_ativo:
+        texto_som = t(st.session_state.pagina_ativa, sigla)
+        tts = gTTS(text=texto_som, lang=sigla)
+        fp = io.BytesIO()
+        tts.write_to_fp(fp)
+        st.audio(fp, format='audio/mp3')
 
-    # C. Info e Arte da Página Ativa na Sidebar
-    st.markdown(f"### {t('info')}: {st.session_state.pagina_ativa if st.session_state.pagina_ativa != 'yPoemas' else 'yPoemas'}")
-    st.info(t(f"under construction: {st.session_state.pagina_ativa}"))
-    st.image("https://via.placeholder.com/260x260.png?text=arte+da+pagina", use_column_width=True)
+    # Moldura
+    with st.container(border=True):
+        st.warning(t(f"under construction: {st.session_state.pagina_ativa}", sigla))
 
-    # D. Rodapé: Redes Sociais
-    st.markdown(
-        """
-        <div class="footer-social">
-            <hr>
-            🐦 &nbsp; 📸 &nbsp; 🐙 &nbsp; ✉️
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-# 6. O PALCO: EXPANSÃO E TESTE ESTÉTICO
-st.title(f"{t('a machina')} / {st.session_state.pagina_ativa if st.session_state.pagina_ativa != 'yPoemas' else 'yPoemas'}")
-
-# Navegação por Botões no Palco para avaliação estética
-paginas = ["mini", "yPoemas", "eureka", "off-machina", "livros", "poly", "opiniões", "sobre/about"]
-cols_nav = st.columns(len(paginas))
-for idx, nome_pg in enumerate(paginas):
-    with cols_nav[idx]:
-        nome_exibicao = "yPoemas" if nome_pg == "yPoemas" else t(nome_pg)
-        if st.button(nome_exibicao, key=f"palco_{nome_pg}"):
-            st.session_state.pagina_ativa = nome_pg
-            st.rerun()
-
-# Controle de Som (Centralizado acima da moldura)
-if st.session_state.som_ativo:
-    st.markdown("<br>", unsafe_allow_html=True)
-    _, col_slider, _ = st.columns([1, 2, 1]) # width = largura_do_palco/2
-    with col_slider:
-        st.slider(t("volume"), 0, 100, 50, label_visibility="collapsed")
-    st.markdown("<br>", unsafe_allow_html=True)
-
-# Teste Estético: Radio movido para o Palco conforme pedido
-st.write(t("teste estético de radio no palco:"))
-st.radio(
-    "", 
-    [("yPoemas" if p == "yPoemas" else t(p)) for p in paginas], 
-    horizontal=True, 
-    key="radio_palco_teste"
-)
-
-# Moldura do Palco (Conteúdo Ativo)
-with st.container(border=True):
-    if st.session_state.pagina_ativa == "yPoemas":
-        st.subheader("yPoemas")
-        st.warning(t("⚠️ under construction"))
-    
-    elif st.session_state.pagina_ativa == "poly":
-        c1, c2, c3 = st.columns([1, 1, 1])
-        with c1: st.button("✔")
-        with c2: st.button("⭐") 
-        with c3: st.button("?", help=t("informações sobre os idiomas")) # Help específico solicitado
-        st.warning(t("⚠️ under construction"))
-    
-    else:
-        st.warning(t(f"⚠️ under construction: {st.session_state.pagina_ativa}"))
+# VERIFICAÇÃO DO PTC NO EOF()
+if __name__ == "__main__":
+    main()
