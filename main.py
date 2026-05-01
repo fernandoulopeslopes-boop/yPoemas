@@ -1,7 +1,7 @@
 import streamlit as st
 
 # 1. CONFIGURAÇÃO DA PÁGINA (NOME OFICIAL)
-st.set_page_config(page_title=t("a Machina de fazer Poesia"), layout="wide")
+st.set_page_config(page_title="a Machina de fazer Poesia", layout="wide")
 
 # 2. CSS PARA EXPANSÃO TOTAL E ESTÉTICA DA SIDEBAR
 st.markdown(
