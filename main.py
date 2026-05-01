@@ -9,7 +9,7 @@ def t(texto, sigla_destino="pt"):
     protecao_lexica = {
         "arte": {"pt": "arte", "es": "arte", "it": "arte", "fr": "art", "en": "art", "ca": "art", "gl": "arte"},
         "áudio": {"pt": "áudio", "es": "audio", "it": "audio", "fr": "audio", "en": "audio"},
-        "idiomas disponíveis": {"pt": "idiomas disponíveis", "es": "idiomas disponibles", "it": "lingue disponíveis", "en": "available languages"}
+        "idiomas disponíveis": {"pt": "idiomas disponíveis", "es": "idiomas disponibles", "it": "lingue disponibili", "en": "available languages"}
     }
     chave = texto.lower().strip()
     if chave in protecao_lexica and sigla_destino in protecao_lexica[chave]:
@@ -40,7 +40,7 @@ def main():
     if 'sigla_atual' not in st.session_state:
         st.session_state.sigla_atual = "pt"
 
-    # CSS: PALCO EXPANSIVO E SIDEBAR RÍGIDA (300px)
+    # CSS: PALCO EXPANSIVO (98vw) E SIDEBAR RÍGIDA (300px)
     st.markdown("""
         <style>
             [data-testid="stAppViewContainer"] { width: 100vw !important; }
@@ -55,9 +55,8 @@ def main():
         </style>
     """, unsafe_allow_html=True)
 
-    # 3. DEFINIÇÃO DE CAMINHOS REAIS
+    # 3. CAMINHOS REAIS (Imagens na raiz \ypo)
     pasta_md = "md_files"
-    # Imagens das páginas estão na raiz \ypo
     base_path = os.path.dirname(__file__) if "__file__" in locals() else os.getcwd()
 
     topo = ["Português", "Espanhol", "Italiano", "Francês", "Inglês", "Catalão"]
@@ -79,8 +78,12 @@ def main():
     }
 
     with st.sidebar:
-        # Tradução do rótulo de idiomas
-        selecao = st.selectbox(t("idiomas disponíveis", st.session_state.sigla_atual), lista_idiomas)
+        # Tradução do seletor e do Help
+        selecao = st.selectbox(
+            t("idiomas disponíveis", st.session_state.sigla_atual), 
+            lista_idiomas,
+            help=t("selecione o idioma para tradução e áudio", st.session_state.sigla_atual)
+        )
         sigla, voz_ativa = mapa_linguas[selecao]
         st.session_state.sigla_atual = sigla
 
@@ -92,7 +95,7 @@ def main():
 
         st.divider()
         
-        # Exibição do Texto MD
+        # Exibição do Texto MD (Prefixado com info_)
         nome_pg = st.session_state.pagina_ativa
         st.caption(f"info_{nome_pg}.md")
         
@@ -116,7 +119,7 @@ def main():
             </div>
         """, unsafe_allow_html=True)
 
-    # PALCO: BOTÕES DE NAVEGAÇÃO (Sem títulos redundantes no topo)
+    # PALCO: NAVEGAÇÃO LIMPA
     paginas = ["mini", "yPoemas", "eureka", "off-machina", "livros", "poly", "opiniões", "sobre"]
     cols = st.columns(len(paginas))
     for i, pg in enumerate(paginas):
@@ -125,13 +128,14 @@ def main():
                 st.session_state.pagina_ativa = pg
                 st.rerun()
 
-    # Áudio e Status
+    # ÁUDIO E STATUS (VIDA REAL / CONSTRUÇÃO)
     if st.session_state.som_ativo:
         audio = asyncio.run(gerar_audio(t(nome_pg, sigla), voz_ativa))
         if audio: st.audio(audio, format='audio/mp3')
 
     with st.container(border=True):
-        status = "vida real" if nome_pg == "off-machina" else t("em construção", sigla)
+        # A página 'sobre' agora está ativa e funcional no nexo do sistema
+        status = "vida real" if nome_pg in ["off-machina", "sobre"] else t("em construção", sigla)
         st.info(f"{nome_pg.upper()} — {status}")
 
 if __name__ == "__main__":
