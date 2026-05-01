@@ -1,53 +1,55 @@
 import streamlit as st
+import os
 
 def main():
-    # 1. ESTADOS DA MACHINA
+    # 1. ESTADO DA MACHINA
     if 'pagina_ativa' not in st.session_state: 
         st.session_state.pagina_ativa = "mini"
 
-    # 2. CSS DE CONTROLE DE FLUXO (Sidebar vs Palco)
-    # Foco: Garantir que o palco ocupe o espaço quando a sidebar recolher
+    # 2. CSS DE DOMA E ELIMINAÇÃO DE RESÍDUOS
     st.markdown("""
         <style>
-            /* Container Total */
+            /* Eliminar limitações de largura do container pai */
             [data-testid="stAppViewContainer"] {
                 width: 100vw !important;
             }
 
-            /* O Palco: Ajusta-se dinamicamente ao espaço disponível */
+            /* O PALCO: Definido para ocupar 98% da largura da tela (Viewport Width) */
+            /* Isso garante que ele se expanda automaticamente quando a sidebar é recolhida */
             .main .block-container {
                 max-width: 98vw !important;
                 width: 98vw !important;
                 padding-left: 1rem !important;
                 padding-right: 1rem !important;
-                transition: all 0.3s ease;
+                transition: all 0.3s ease-in-out;
             }
 
-            /* A Sidebar: Travada em 300px quando visível */
+            /* A SIDEBAR: Travada em 300px para o controle ser estável */
             [data-testid="stSidebar"] {
                 min-width: 300px !important;
                 width: 300px !important;
             }
-            
-            /* Ajuste para o botão de colapso nativo não gerar lixo visual */
-            [data-testid="stSidebarCollapseButton"] {
-                right: 0;
+
+            /* Eliminar o fundo padrão do header para manter a limpeza visual */
+            [data-testid="stHeader"] {
+                background: transparent !important;
             }
         </style>
     """, unsafe_allow_html=True)
 
-    # 3. SIDEBAR (O Painel de Controle)
+    # 3. SIDEBAR (Painel de Controle Limpo)
     with st.sidebar:
-        st.write("### Painel de Controle")
+        st.markdown("### Painel de Controle")
         st.divider()
-        # Aqui serão inseridos os controles de idioma, arte e som
-        st.info("Sidebar Ativa (300px)")
+        # Eliminar informações desnecessárias e focar nos futuros controles
+        st.caption("Controle de Expansão Ativo")
 
-    # 4. O PALCO (Área Central Resolvida)
+    # 4. NAVEGAÇÃO PROPORCIONAL (Regra das Letras)
     paginas = ["mini", "yPoemas", "eureka", "off-machina", "livros", "poly", "opiniões", "sobre"]
     big_page_atual = st.session_state.pagina_ativa
 
-    # Regra Matemática de Proporções (Validada)
+    # Pesos baseados no comprimento das palavras (Matemática validada)
+    # 4 letras = 1.0 de peso base
     pesos = [len(pg)/4 * (1.25 if pg == big_page_atual else 1.0) for pg in paginas]
     
     cols = st.columns(pesos)
@@ -58,7 +60,8 @@ def main():
                 st.rerun()
 
     st.divider()
-    st.write(f"Palco expandido para a página: **{st.session_state.pagina_ativa.upper()}**")
+    # O palco agora reage à sidebar: se recolher a lateral, este texto e os botões ocupam a tela toda
+    st.write(f"Palco ativo em: **{big_page_atual.upper()}**")
 
 if __name__ == "__main__":
     main()
