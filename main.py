@@ -4,10 +4,9 @@ from deep_translator import GoogleTranslator
 import edge_tts
 import io
 
-# 1. SISTEMA DE TRADUÇÃO (TEXTO PURO APENAS)
+# 1. SISTEMA DE TRADUÇÃO (ESTRITAMENTE TEXTO PURO)
 def t(texto, sigla_destino="pt"):
     try:
-        # Blindagem: traduz apenas o núcleo do texto
         tradutor = GoogleTranslator(source='auto', target=sigla_destino)
         return tradutor.translate(texto).lower()
     except:
@@ -22,30 +21,52 @@ async def gerar_audio(texto, voz):
             audio_data += chunk["data"]
     return audio_data
 
-# 3. INTERFACE DA MACHINA
+# 3. INTERFACE E LÓGICA
 def main():
     if 'pagina_ativa' not in st.session_state:
         st.session_state.pagina_ativa = "mini"
     if 'som_ativo' not in st.session_state:
         st.session_state.som_ativo = False
 
+    # CSS: PALCO EXPANSIVO, SIDEBAR 300px E RODAPÉ SOCIAL
     st.markdown("""
         <style>
-            .main .block-container { max-width: 100%; padding: 2rem; }
-            [data-testid="stSidebar"] { width: 300px; max-width: 300px; }
+            .main .block-container { 
+                max-width: 100%; 
+                padding: 2rem 5rem; 
+            }
+            [data-testid="stSidebar"] { 
+                min-width: 300px !important;
+                width: 300px !important; 
+            }
+            .stTitle { font-size: 2rem !important; }
             .stButton button { width: 100%; }
-            .footer-social { position: fixed; bottom: 20px; width: 260px; text-align: center; }
+            
+            /* Estilização do rodapé da sidebar */
+            .sidebar-footer {
+                position: fixed;
+                bottom: 10px;
+                width: 260px;
+                text-align: center;
+                padding: 10px;
+                font-size: 24px;
+            }
+            .sidebar-footer a {
+                margin: 0 10px;
+                text-decoration: none;
+                color: gray;
+            }
         </style>
     """, unsafe_allow_html=True)
 
-    # Listas Blindadas
-    lista_idiomas = [
-        "Português", "Espanhol", "Italiano", "Francês", "Inglês", 
-        "Catalão", "Córsico", "Galego", "Basco", "Esperanto", 
-        "Latim", "Galês", "Sueco", "Polonês", "Holandês", 
-        "Norueguês", "Finlandês", "Dinamarquês", "Irlandês", 
-        "Romeno", "Russo"
-    ]
+    # 4. ORGANIZAÇÃO DAS LÍNGUAS (TOP 6 + ALFABÉTICA)
+    topo = ["Português", "Espanhol", "Italiano", "Francês", "Inglês", "Catalão"]
+    outros = sorted([
+        "Córsico", "Galego", "Basco", "Esperanto", "Latim", "Galês", "Sueco", 
+        "Polonês", "Holandês", "Norueguês", "Finlandês", "Dinamarquês", 
+        "Irlandês", "Romeno", "Russo"
+    ])
+    lista_idiomas = topo + outros
 
     mapa_linguas = {
         "Português": ("pt", "pt-BR-AntonioNeural"), "Espanhol": ("es", "es-ES-AlvaroNeural"),
@@ -61,42 +82,60 @@ def main():
         "Russo": ("ru", "ru-RU-DmitryNeural")
     }
 
+    # SIDEBAR: CENTRO DE CONTROLE
     with st.sidebar:
-        idioma_nome = st.selectbox(t("idiomas disponíveis"), lista_idiomas)
+        # Item 1: Tradução do label e do help context
+        idioma_nome = st.selectbox(
+            t("idiomas disponíveis"), 
+            lista_idiomas,
+            help=t("selecione o idioma para tradução e áudio")
+        )
         sigla, voz_ativa = mapa_linguas[idioma_nome]
 
         col1, col2 = st.columns(2)
         with col1: 
-            # Recomposição: Emoji + Tradução(Texto)
             st.button(f"🎨 {t('arte', sigla)}", help=t("visualizar mandalas e artes", sigla))
-        
         with col2:
-            # Recomposição: Emoji + Tradução(Texto)
-            label_som = f"🔊 {t('som', sigla)}"
-            marca_traduzida = t("yPoemas", sigla)
-            # Dica: Tradução(Texto base) + Variável traduzida
-            dica_som = f"{t('ouvir o', sigla)} {marca_traduzida}"
-            
-            if st.button(label_som, help=dica_som):
+            # Item 4 (anterior): Botão "áudio"
+            label_audio = f"🔊 {t('áudio', sigla)}"
+            if st.button(label_audio, help=f"{t('ouvir o', sigla)} {t('yPoemas', sigla)}"):
                 st.session_state.som_ativo = not st.session_state.som_ativo
 
         st.divider()
-        st.markdown(f"### {t('info', sigla)}: {t(st.session_state.pagina_ativa, sigla)}")
-        st.image("https://via.placeholder.com/260x260.png?text=arte+da+pagina", use_column_width=True)
+        
+        # Item 2: Conteúdo Markdown dinâmico na sidebar
+        nome_pg = st.session_state.pagina_ativa
+        st.markdown(f"#### info_{nome_pg}.md")
+        # Simulação de carregamento do arquivo .md
+        st.caption(t(f"carregando informações de info_{nome_pg}.md...", sigla))
+        
+        # Item 3: Arte correspondente à página (JPG)
+        nome_img = f"img_{nome_pg}.JPG"
+        st.image(f"https://via.placeholder.com/260x260.png?text={nome_img}", use_column_width=True)
 
-    # Palco Expansivo
-    st.title(f"{t('a Machina de fazer Poesia', sigla)} / {t(st.session_state.pagina_ativa, sigla)}")
+        # Item 4: Ícones de redes sociais no rodapé
+        st.markdown("""
+            <div class="sidebar-footer">
+                <a href="#">📘</a><a href="#">📸</a><a href="#">🐦</a><a href="#">📺</a>
+            </div>
+        """, unsafe_allow_html=True)
+
+    # PALCO: NOMES ORIGINAIS EM PORTUGUÊS
+    st.title(f"{t('a Machina de fazer Poesia', sigla)} / {nome_pg}")
     
-    paginas = ["mini", "yPoemas", "eureka", "off-machina", "livros", "poly", "opiniões", "sobre"]
+    paginas = ["mini", "yPoemas", "eureka", "off-machina", "livros", "poly", "opiniões", "sobre/about"]
     cols = st.columns(len(paginas))
+    
     for i, pg in enumerate(paginas):
         with cols[i]:
-            if st.button(t(pg, sigla), key=f"palco_{pg}"):
+            # Nome original no botão, tradução no Help
+            if st.button(pg, key=f"palco_{pg}", help=t(pg, sigla)):
                 st.session_state.pagina_ativa = pg
                 st.rerun()
 
+    # ÁUDIO (EDGE-TTS)
     if st.session_state.som_ativo:
-        texto_ouvir = t(st.session_state.pagina_ativa, sigla)
+        texto_ouvir = t(nome_pg, sigla)
         try:
             audio_bytes = asyncio.run(gerar_audio(texto_ouvir, voz_ativa))
             _, col_audio, _ = st.columns([1, 2, 1])
@@ -105,8 +144,10 @@ def main():
         except:
             pass
 
+    # MOLDURA DO PALCO
     with st.container(border=True):
-        st.warning(t(f"under construction: {st.session_state.pagina_ativa}", sigla))
+        st.info(f"{nome_pg.upper()} — {t('em construção', sigla)}")
 
+# PTC: VERIFICAÇÃO NO EOF()
 if __name__ == "__main__":
     main()
