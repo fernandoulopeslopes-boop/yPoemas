@@ -9,7 +9,7 @@ def t(texto, sigla_destino="pt"):
     protecao_lexica = {
         "arte": {"pt": "arte", "es": "arte", "it": "arte", "fr": "art", "en": "art", "ca": "art", "gl": "arte"},
         "áudio": {"pt": "áudio", "es": "audio", "it": "audio", "fr": "audio", "en": "audio"},
-        "idiomas disponíveis": {"pt": "idiomas disponíveis", "es": "idiomas disponibles", "it": "lingue disponibili", "en": "available languages"}
+        "idiomas disponíveis": {"pt": "idiomas disponíveis", "es": "idiomas disponibles", "it": "lingue disponíveis", "en": "available languages"}
     }
     chave = texto.lower().strip()
     if chave in protecao_lexica and sigla_destino in protecao_lexica[chave]:
@@ -40,22 +40,26 @@ def main():
     if 'sigla_atual' not in st.session_state:
         st.session_state.sigla_atual = "pt"
 
-    # CSS: PALCO EXPANSIVO E SIDEBAR
+    # CSS: PALCO EXPANSIVO E SIDEBAR RÍGIDA (300px)
     st.markdown("""
         <style>
-            .main .block-container { max-width: 98% !important; padding: 1.5rem 2rem; }
+            [data-testid="stAppViewContainer"] { width: 100vw !important; }
+            .main .block-container { 
+                max-width: 98vw !important; 
+                width: 98vw !important;
+                padding: 1rem 1rem !important;
+            }
             [data-testid="stSidebar"] { min-width: 300px !important; width: 300px !important; }
-            .sidebar-footer { text-align: center; font-size: 26px; padding-top: 20px; }
-            .sidebar-footer a { margin: 0 10px; text-decoration: none; }
+            .sidebar-footer { text-align: center; font-size: 24px; padding-top: 20px; }
+            .sidebar-footer a { margin: 0 10px; text-decoration: none; color: white !important; }
         </style>
     """, unsafe_allow_html=True)
 
-    # PASTAS CRIATIVOS_OBVIOS
+    # 3. DEFINIÇÃO DE CAMINHOS REAIS
     pasta_md = "md_files"
-    pasta_jpg = "jpg_files"
+    # Imagens das páginas estão na raiz \ypo
     base_path = os.path.dirname(__file__) if "__file__" in locals() else os.getcwd()
 
-    # IDIOMAS CURADOS
     topo = ["Português", "Espanhol", "Italiano", "Francês", "Inglês", "Catalão"]
     outros = sorted(["Basco", "Córsico", "Dinamarquês", "Esperanto", "Finlandês", "Galego", "Galês", "Holandês", "Irlandês", "Latim", "Norueguês", "Polonês", "Romeno", "Russo", "Sueco"])
     lista_idiomas = topo + [i for i in outros if i not in topo]
@@ -75,7 +79,7 @@ def main():
     }
 
     with st.sidebar:
-        # BOTÕES DE IDIOMAS
+        # Tradução do rótulo de idiomas
         selecao = st.selectbox(t("idiomas disponíveis", st.session_state.sigla_atual), lista_idiomas)
         sigla, voz_ativa = mapa_linguas[selecao]
         st.session_state.sigla_atual = sigla
@@ -88,8 +92,10 @@ def main():
 
         st.divider()
         
-        # INFO_PAGINA
+        # Exibição do Texto MD
         nome_pg = st.session_state.pagina_ativa
+        st.caption(f"info_{nome_pg}.md")
+        
         caminho_md = os.path.join(base_path, pasta_md, f"info_{nome_pg}.md")
         if os.path.exists(caminho_md):
             with open(caminho_md, "r", encoding="utf-8") as f:
@@ -97,16 +103,20 @@ def main():
         
         st.divider()
 
-        # IMG_PAGINA
-        caminho_img = os.path.join(base_path, pasta_jpg, f"img_{nome_pg}.JPG")
+        # Exibição da Imagem (Na raiz conforme instruído)
+        st.caption(f"img_{nome_pg}.JPG")
+        caminho_img = os.path.join(base_path, f"img_{nome_pg}.JPG")
         if os.path.exists(caminho_img):
             st.image(caminho_img, use_column_width=True)
 
-        # REDES SOCIAIS
-        st.markdown('<div class="sidebar-footer"><a>📘</a><a>📸</a><a>🐦</a><a>📺</a></div>', unsafe_allow_html=True)
+        # Ícones Sociais
+        st.markdown("""
+            <div class="sidebar-footer">
+                <a href="#">📘</a><a href="#">📸</a><a href="#">🐦</a><a href="#">📺</a>
+            </div>
+        """, unsafe_allow_html=True)
 
-    # PALCO
-    st.title(f"{t('a Machina de fazer Poesia', sigla)} / {nome_pg}")
+    # PALCO: BOTÕES DE NAVEGAÇÃO (Sem títulos redundantes no topo)
     paginas = ["mini", "yPoemas", "eureka", "off-machina", "livros", "poly", "opiniões", "sobre"]
     cols = st.columns(len(paginas))
     for i, pg in enumerate(paginas):
@@ -115,7 +125,7 @@ def main():
                 st.session_state.pagina_ativa = pg
                 st.rerun()
 
-    # VIDA REAL: FIM DA "CONSTRUÇÃO" PARA OFF-MACHINA
+    # Áudio e Status
     if st.session_state.som_ativo:
         audio = asyncio.run(gerar_audio(t(nome_pg, sigla), voz_ativa))
         if audio: st.audio(audio, format='audio/mp3')
