@@ -9,7 +9,7 @@ def t(texto, sigla_destino="pt"):
     protecao_lexica = {
         "arte": {"pt": "arte", "es": "arte", "it": "arte", "fr": "art", "en": "art", "ca": "art", "gl": "arte"},
         "áudio": {"pt": "áudio", "es": "audio", "it": "audio", "fr": "audio", "en": "audio"},
-        "idiomas disponíveis": {"pt": "idiomas disponíveis", "es": "idiomas disponibles", "it": "lingue disponibili", "en": "available languages"}
+        "idiomas disponíveis": {"pt": "idiomas disponíveis", "es": "idiomas disponibles", "it": "lingue disponíveis", "en": "available languages"}
     }
     chave = texto.lower().strip()
     if chave in protecao_lexica and sigla_destino in protecao_lexica[chave]:
@@ -33,29 +33,23 @@ async def gerar_audio(texto, voz):
         return None
 
 def main():
-    if 'pagina_ativa' not in st.session_state:
-        st.session_state.pagina_ativa = "mini"
-    if 'som_ativo' not in st.session_state:
-        st.session_state.som_ativo = False
-    if 'sigla_atual' not in st.session_state:
-        st.session_state.sigla_atual = "pt"
+    # Estados Críticos
+    if 'pagina_ativa' not in st.session_state: st.session_state.pagina_ativa = "mini"
+    if 'som_ativo' not in st.session_state: st.session_state.som_ativo = False
+    if 'sigla_atual' not in st.session_state: st.session_state.sigla_atual = "pt"
 
-    # CSS: PALCO EXPANSIVO (98vw) E SIDEBAR RÍGIDA (300px)
+    # CSS: PALCO EXPANSIVO
     st.markdown("""
         <style>
             [data-testid="stAppViewContainer"] { width: 100vw !important; }
-            .main .block-container { 
-                max-width: 98vw !important; 
-                width: 98vw !important;
-                padding: 1rem 1rem !important;
-            }
+            .main .block-container { max-width: 98vw !important; width: 98vw !important; padding: 1rem 1rem !important; }
             [data-testid="stSidebar"] { min-width: 300px !important; width: 300px !important; }
             .sidebar-footer { text-align: center; font-size: 24px; padding-top: 20px; }
             .sidebar-footer a { margin: 0 10px; text-decoration: none; color: white !important; }
         </style>
     """, unsafe_allow_html=True)
 
-    # 3. CAMINHOS REAIS (Imagens na raiz \ypo)
+    # Configuração de Pastas e Caminhos
     pasta_md = "md_files"
     base_path = os.path.dirname(__file__) if "__file__" in locals() else os.getcwd()
 
@@ -77,11 +71,17 @@ def main():
         "Sueco": ("sv", "sv-SE-MattiasNeural")
     }
 
+    # Cálculo do Index para evitar reset de idioma
+    sigla_para_nome = {v[0]: k for k, v in mapa_linguas.items()}
+    nome_atual = sigla_para_nome.get(st.session_state.sigla_atual, "Português")
+    index_idioma = lista_idiomas.index(nome_atual)
+
     with st.sidebar:
-        # Tradução do seletor e do Help
+        # 1. Seletor com Index Persistente
         selecao = st.selectbox(
             t("idiomas disponíveis", st.session_state.sigla_atual), 
-            lista_idiomas,
+            lista_idiomas, 
+            index=index_idioma,
             help=t("selecione o idioma para tradução e áudio", st.session_state.sigla_atual)
         )
         sigla, voz_ativa = mapa_linguas[selecao]
@@ -95,7 +95,7 @@ def main():
 
         st.divider()
         
-        # Exibição do Texto MD (Prefixado com info_)
+        # 2. Leitura de MD (Página sobre inclusiva)
         nome_pg = st.session_state.pagina_ativa
         st.caption(f"info_{nome_pg}.md")
         
@@ -106,20 +106,15 @@ def main():
         
         st.divider()
 
-        # Exibição da Imagem (Na raiz conforme instruído)
+        # Imagem na Raiz
         st.caption(f"img_{nome_pg}.JPG")
         caminho_img = os.path.join(base_path, f"img_{nome_pg}.JPG")
         if os.path.exists(caminho_img):
             st.image(caminho_img, use_column_width=True)
 
-        # Ícones Sociais
-        st.markdown("""
-            <div class="sidebar-footer">
-                <a href="#">📘</a><a href="#">📸</a><a href="#">🐦</a><a href="#">📺</a>
-            </div>
-        """, unsafe_allow_html=True)
+        st.markdown('<div class="sidebar-footer"><a>📘</a><a>📸</a><a>🐦</a><a>📺</a></div>', unsafe_allow_html=True)
 
-    # PALCO: NAVEGAÇÃO LIMPA
+    # PALCO SEM TÍTULOS GIGANTES
     paginas = ["mini", "yPoemas", "eureka", "off-machina", "livros", "poly", "opiniões", "sobre"]
     cols = st.columns(len(paginas))
     for i, pg in enumerate(paginas):
@@ -128,13 +123,12 @@ def main():
                 st.session_state.pagina_ativa = pg
                 st.rerun()
 
-    # ÁUDIO E STATUS (VIDA REAL / CONSTRUÇÃO)
+    # Áudio e Status Vida Real
     if st.session_state.som_ativo:
         audio = asyncio.run(gerar_audio(t(nome_pg, sigla), voz_ativa))
         if audio: st.audio(audio, format='audio/mp3')
 
     with st.container(border=True):
-        # A página 'sobre' agora está ativa e funcional no nexo do sistema
         status = "vida real" if nome_pg in ["off-machina", "sobre"] else t("em construção", sigla)
         st.info(f"{nome_pg.upper()} — {status}")
 
