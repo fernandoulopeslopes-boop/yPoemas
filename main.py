@@ -4,8 +4,33 @@ from deep_translator import GoogleTranslator
 import edge_tts
 import os
 
-# 1. SISTEMA DE TRADUÇÃO (ESTRITAMENTE TEXTO PURO)
+# 1. SISTEMA DE TRADUÇÃO COM PROTEÇÃO CONTRA O "INVASOR"
 def t(texto, sigla_destino="pt"):
+    # Dicionário de proteção para garantir que "Arte" nunca seja "Até"
+    # e que o nexo dos comandos do Centro de Controle seja absoluto.
+    protecao_lexica = {
+        "arte": {
+            "pt": "arte", "es": "arte", "it": "arte", 
+            "fr": "art", "en": "art", "ca": "art", "gl": "arte"
+        },
+        "áudio": {
+            "pt": "áudio", "es": "audio", "it": "audio", 
+            "fr": "audio", "en": "audio"
+        },
+        "idiomas disponíveis": {
+            "pt": "idiomas disponíveis", "es": "idiomas disponibles",
+            "it": "lingue disponibili", "en": "available languages"
+        }
+    }
+    
+    chave = texto.lower().strip()
+    
+    # Se o termo está no dicionário de proteção, usamos a tradução exata
+    if chave in protecao_lexica:
+        if sigla_destino in protecao_lexica[chave]:
+            return protecao_lexica[chave][sigla_destino]
+    
+    # Caso contrário, recorremos ao tradutor para o conteúdo poético
     try:
         tradutor = GoogleTranslator(source='auto', target=sigla_destino)
         return tradutor.translate(texto).lower()
@@ -14,12 +39,15 @@ def t(texto, sigla_destino="pt"):
 
 # 2. MOTOR DE VOZ (EDGE-TTS)
 async def gerar_audio(texto, voz):
-    communicate = edge_tts.Communicate(texto, voz)
-    audio_data = b""
-    async for chunk in communicate.stream():
-        if chunk["type"] == "audio":
-            audio_data += chunk["data"]
-    return audio_data
+    try:
+        communicate = edge_tts.Communicate(texto, voz)
+        audio_data = b""
+        async for chunk in communicate.stream():
+            if chunk["type"] == "audio":
+                audio_data += chunk["data"]
+        return audio_data
+    except:
+        return None
 
 # 3. INTERFACE E LÓGICA DA MACHINA
 def main():
@@ -50,14 +78,18 @@ def main():
         </style>
     """, unsafe_allow_html=True)
 
-    # 4. ORGANIZAÇÃO DAS LÍNGUAS (TOP 6 + ALFABÉTICA)
+    # Nomes Criativos_Obvios para Pastas
+    pasta_md_files = "md_files"
+    pasta_jpg_files = "jpg_files"
+
+    # ORGANIZAÇÃO DAS LÍNGUAS (TOP 6 + ALFABÉTICA)
     topo = ["Português", "Espanhol", "Italiano", "Francês", "Inglês", "Catalão"]
     outros = sorted([
         "Córsico", "Galego", "Basco", "Esperanto", "Latim", "Galês", "Sueco", 
         "Polonês", "Holandês", "Norueguês", "Finlandês", "Dinamarquês", 
         "Irlandês", "Romeno", "Russo"
     ])
-    lista_idiomas = topo + outros
+    lista_idiomas = topo + [idioma for idioma in outros if idioma not in topo]
 
     mapa_linguas = {
         "Português": ("pt", "pt-BR-AntonioNeural"), "Espanhol": ("es", "es-ES-AlvaroNeural"),
@@ -75,7 +107,6 @@ def main():
 
     # SIDEBAR: CENTRO DE CONTROLE
     with st.sidebar:
-        # Idiomas e Help Context traduzidos
         idioma_nome = st.selectbox(
             t("idiomas disponíveis"), 
             lista_idiomas,
@@ -85,21 +116,23 @@ def main():
 
         col1, col2 = st.columns(2)
         with col1: 
+            # Blindado contra o erro "Até"
             st.button(f"🎨 {t('arte', sigla)}", help=t("visualizar mandalas e artes", sigla))
         with col2:
-            # Botão Áudio e transmutação da marca yPoemas
             label_audio = f"🔊 {t('áudio', sigla)}"
             if st.button(label_audio, help=f"{t('ouvir o', sigla)} {t('yPoemas', sigla)}"):
                 st.session_state.som_ativo = not st.session_state.som_ativo
 
         st.divider()
         
-        # Info dinâmico da página (Lendo de md_files)
+        # Conteúdo MD (info_pagina.md em md_files)
         nome_pg = st.session_state.pagina_ativa
-        pasta_arquivos = "\md_files"
-        st.markdown(f"#### info_{nome_pg}.md")
+        nome_arquivo_md = f"info_{nome_pg}.md"
+        st.markdown(f"#### {nome_arquivo_md}")
         
-        caminho_md = os.path.join(pasta_arquivos, f"info_{nome_pg}.md")
+        base_path = os.path.dirname(__file__) if "__file__" in locals() else os.getcwd()
+        caminho_md = os.path.join(base_path, pasta_md_files, nome_arquivo_md)
+        
         if os.path.exists(caminho_md):
             with open(caminho_md, "r", encoding="utf-8") as f:
                 st.markdown(f.read())
@@ -108,9 +141,9 @@ def main():
         
         st.divider()
 
-        # Arte correspondente à página (img_nome.JPG em md_files)
+        # Arte JPG (img_pagina.JPG em jpg_files)
         nome_img = f"img_{nome_pg}.JPG"
-        caminho_img = os.path.join(pasta_arquivos, nome_img)
+        caminho_img = os.path.join(base_path, pasta_jpg_files, nome_img)
         if os.path.exists(caminho_img):
             st.image(caminho_img, use_column_width=True)
         else:
@@ -123,7 +156,7 @@ def main():
             </div>
         """, unsafe_allow_html=True)
 
-    # PALCO: NOMES ORIGINAIS EM PORTUGUÊS (Expansivo quando sidebar recolhe)
+    # PALCO: NOMES ORIGINAIS
     st.title(f"{t('a Machina de fazer Poesia', sigla)} / {nome_pg}")
     
     paginas = ["mini", "yPoemas", "eureka", "off-machina", "livros", "poly", "opiniões", "sobre/about"]
@@ -131,23 +164,17 @@ def main():
     
     for i, pg in enumerate(paginas):
         with cols[i]:
-            # Nome original no botão, tradução no Help Context
             if st.button(pg, key=f"palco_{pg}", help=t(pg, sigla)):
                 st.session_state.pagina_ativa = pg
                 st.rerun()
 
-    # ÁUDIO (EDGE-TTS)
+    # ÁUDIO
     if st.session_state.som_ativo:
         texto_ouvir = t(nome_pg, sigla)
-        try:
-            audio_bytes = asyncio.run(gerar_audio(texto_ouvir, voz_ativa))
-            _, col_audio, _ = st.columns([1, 2, 1])
-            with col_audio:
-                st.audio(audio_bytes, format='audio/mp3')
-        except:
-            pass
+        audio_bytes = asyncio.run(gerar_audio(texto_ouvir, voz_ativa))
+        if audio_bytes:
+            st.audio(audio_bytes, format='audio/mp3')
 
-    # MOLDURA DO PALCO
     with st.container(border=True):
         st.info(f"{nome_pg.upper()} — {t('em construção', sigla)}")
 
