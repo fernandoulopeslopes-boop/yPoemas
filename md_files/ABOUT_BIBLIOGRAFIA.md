@@ -29,7 +29,8 @@ ___
 
 - Kac, Eduardo - “A poesia da nova era” Luz e Letra. Ensaios de arte, literatura e comunicação. RJ: Contra, 2004
 
-- Lee, Kyong-ho et al - “The State of the Art and Practice in Digital Preservation” Journal Of Research Of The National Institute Of Standards And Technology (2002)
+- Lee, Kyong-ho et al - “The State of the Art and Practice in Digital Preservation” 
+  Journal Of Research Of The National Institute Of Standards And Technology (2002)
 
 - Liu, Alan et al - “Born-Again Bits: A Framework for Migrating Electronic Literature”
 
@@ -37,7 +38,8 @@ ___
 
 - Montfort, Nick, y Noah Wardrip -Fruin - “Acid-Free Bits: Recommendations for Long-Lasting Electronic Literature”
 
-- Pestana, Silvestre - “Apontamentos de Literatura informacional ou a poética dos anos 80” Poemografias. Ed. Fernando Aguiar y Silvestre Pestana. Lisboa: Ulmeiro, 1985
+- Pestana, Silvestre - “Apontamentos de Literatura informacional ou a poética dos anos 80” Poemografias.
+  Ed. Fernando Aguiar y Silvestre Pestana. Lisboa: Ulmeiro, 1985
 
 - Portela, Manuel - “Hipertexto como Metalivro” Ciberscópio (2003)
 
@@ -45,4 +47,4 @@ ___
 
 - Van Looy, Jan, y Jan Baetens - “Digitising Cultural Heritage”
 ---
-Copyright © 1983-2022 Nando Lopes - **yPoemas @ máquina de fazer Poesia**
+Copyright © 1983-Hoje Nando Lopes - **yPoemas @ Machina de fazer Poesia**
