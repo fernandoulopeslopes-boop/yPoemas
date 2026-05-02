@@ -38,10 +38,10 @@ def main():
             [data-testid="stHeader"] {
                 background: transparent !important;
             }
-            /* Ajuste de fonte para manter a precisão do alinhamento */
             .stButton > button {
                 width: 100%;
                 font-size: 22px !important;
+                padding: 0px !important;
             }
         </style>
     """, unsafe_allow_html=True)
@@ -55,20 +55,23 @@ def main():
         
         st.divider()
 
-        idiomas_ocidentais = ["Português", "English", "Español", "Français", "Deutsch", "Italiano"]
-        st.session_state.idioma = st.selectbox("Translator", idiomas_ocidentais)
+        # LISTA DE IDIOMAS OCIDENTAIS (SORTED ATÉ SV)
+        idiomas_base = ["Português", "English", "Español", "Français", "Deutsch", "Italiano"]
+        outros = sorted(["Dansk", "Suomi", "Norsk", "Svenska", "Nederlands", "Portuñol"])
+        lista_completa = idiomas_base + [i for i in outros if i not in idiomas_base]
+        
+        st.session_state.idioma = st.selectbox("Translator", lista_completa)
         
         st.divider()
 
         st.markdown("### a Máquina de Fazer Poesia")
-        st.caption("yPoemas / Machina")
+        st.caption("yPoema / Machina")
 
-    # RECUPERAÇÃO DA REGRA DE PROPORÇÃO: BASE 4 E MULTIPLICADOR 1.2
-    paginas = ["mini", "yPoemas", "eureka", "off-machina", "livros", "poly", "opiniões", "sobre"]
-    big_page_atual = st.session_state.pagina_ativa
-
-    # Unidade de referência: 4 letras = peso 1.0. Foco = 1.2
-    pesos = [(len(pg)/4) * (1.2 if pg == big_page_atual else 1.0) for pg in paginas]
+    # NAVEGAÇÃO: PROPORÇÃO EXATA PELA QUANTIDADE DE LETRAS
+    paginas = ["mini", "yPoema", "eureka", "off-machina", "livros", "poly", "opiniões", "sobre"]
+    
+    # PESO = NÚMERO DE CARACTERES (PROPORÇÃO PURA)
+    pesos = [len(pg) for pg in paginas]
     
     cols = st.columns(pesos)
     for i, pg in enumerate(paginas):
