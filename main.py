@@ -71,7 +71,7 @@ def main():
 
     # MAPEAMENTO: NOMES NEURAIS MASCULINOS
     vozes_neurais = {
-        "Português": "antonio_neural", "English": "brian_neural", "Español": "enrique_neural",
+        "Português": "francisca_neural", "English": "brian_neural", "Español": "enrique_neural",
         "Français": "mathieu_neural", "Deutsch": "hans_neural", "Italiano": "giorgio_neural",
         "Dansk": "mads_neural", "Suomi": "jari_neural", "Nederlands": "ruben_neural",
         "Norsk": "henrik_neural", "Suécia": "hugo_neural", "Polski": "jacek_neural",
