@@ -28,8 +28,8 @@ def page_sobre():
     Biblioteca documental consolidada.
     """
     sobre_list = [
-        "opinião", "machina", "off-machina", "prefácio", 
-        "outros", "traduttore", "imagens", "samizdát",
+        "comments", "machina", "off-machina", "prefácio", 
+        "outros", "imagens", "traduttore", "samizdát",
         "notes", "index", "bibliografia", "license",
     ]    
 
