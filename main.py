@@ -30,42 +30,43 @@ def load_md_file(filename):
 def translate_content(text, target_lang_code):
     if target_lang_code == "pt": return text
     try:
+        # Motor de tradução profunda
         return GoogleTranslator(source='auto', target=target_lang_code).translate(text)
     except: return text
 
 def set_style_machina():
-    """CSS Refinado: Alinhamento de alturas e Botão Elegante."""
+    """CSS: Alinhamento, Alturas e Botão 'Convite' (Cinza/Preto)."""
     st.markdown(
         """
         <style>
         [data-testid="stMainInternal"] { max-width: 95% !important; padding: 2rem !important; }
         
-        /* Tipografia */
         h1 { font-size: 1.8rem !important; font-weight: bold !important; }
         p { font-size: 1.05rem !important; line-height: 1.6; text-align: justify; }
 
-        /* Sincronização de Alturas (Selectbox e Button) */
+        /* Sincronização de Alturas */
         .stSelectbox div[data-baseweb="select"] > div {
             height: 3rem !important;
             display: flex;
             align-items: center;
         }
 
-        /* Botão Sair: De 'Vermelho Garrafal' para 'Elegância Minimalista' */
+        /* Botão Sair: De 'Proibido' (Vermelho) para 'Saída Elegante' (Cinza/Dark) */
         div.stButton > button {
             width: 100%;
-            height: 3rem !important; /* Igualando altura dos selectboxes */
+            height: 3rem !important;
             border-radius: 4px;
-            border: 1px solid #ff4b4b;
+            border: 1px solid #333;
             background-color: transparent;
-            color: #ff4b4b;
+            color: #333;
             font-weight: bold;
             transition: all 0.2s ease-in-out;
-            margin-top: 28px; /* Alinhamento visual com o label dos selectboxes */
+            margin-top: 28px;
         }
         div.stButton > button:hover {
-            background-color: #ff4b4b;
+            background-color: #333;
             color: white;
+            border: 1px solid #333;
         }
         </style>
         """,
@@ -101,7 +102,7 @@ def page_sobre():
     c1, c2, c3 = st.columns([1, 2, 1])
     
     with c1:
-        # Botão agora alinhado e com altura idêntica aos seletores
+        # Saída agora em tom neutro, removendo o alerta de "perigo"
         if st.button("← SAIR", use_container_width=True):
             st.session_state.pagina_ativa = "principal"
             st.rerun()
@@ -110,25 +111,31 @@ def page_sobre():
         try:
             curr_idx = sobre_list.index(st.session_state.sub_sobre.lower())
         except: curr_idx = 0
-        # 2. SOLUÇÃO UM CLIQUE: O selectbox atualiza o estado instantaneamente
-        choice_label = st.selectbox("↓ SEÇÃO", sobre_list, index=curr_idx, key="sel_secao")
+        # O 'on_change' não é estritamente necessário se usarmos a key correta e deixarmos o Streamlit rodar
+        choice_label = st.selectbox("↓ SEÇÃO", sobre_list, index=curr_idx, key="sel_secao_main")
         st.session_state.sub_sobre = choice_label.lower()
 
     with c3:
-        # 2. SOLUÇÃO UM CLIQUE: Mudou o idioma? O Streamlit processa na hora
-        sel_lang = st.selectbox("🌐 IDIOMA", idiomas_labels, index=st.session_state.lang_idx, key="sel_lang")
+        # FIX: Atribuindo o valor selecionado diretamente ao estado para forçar o rerun imediato
+        sel_lang = st.selectbox("🌐 IDIOMA", idiomas_labels, index=st.session_state.lang_idx, key="sel_lang_main")
         st.session_state.lang_idx = idiomas_labels.index(sel_lang)
         lang_code = idiomas_dict[sel_lang]
 
     st.divider()
 
-    with st.container():
+    # BLOCO DE RENDERIZAÇÃO
+    container_exposicao = st.container()
+    
+    with container_exposicao:
+        # Recalcula o arquivo com base no estado atualizado
         choice_file = st.session_state.sub_sobre.upper()
+        
         if choice_file == "MACHINA":
             raw_text = load_md_file("ABOUT_MACHINA_A") + "\n\n" + load_md_file("ABOUT_MACHINA_D")
         else:
             raw_text = load_md_file(f"ABOUT_{choice_file}")
         
+        # A tradução agora é disparada porque sel_lang mudou no topo do script
         with st.spinner(f"Traduzindo para {sel_lang}..."):
             translated_text = translate_content(raw_text, lang_code)
             st.markdown(sanitize_links(translated_text))
