@@ -13,6 +13,7 @@ def translate(texto):
 def load_md_file(filename):
     """Carrega arquivos md respeitando a extensão informada."""
     path = os.path.join("md_files", filename)
+    msgAlert(path)
     if os.path.exists(path):
         with open(path, "r", encoding="utf-8") as f:
             return f.read()
