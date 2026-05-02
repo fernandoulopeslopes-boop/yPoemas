@@ -3,7 +3,6 @@ import os
 
 # --- 0. MOTORES DA MACHINA (SUPORTE) ---
 def translate(texto):
-    """Placeholder para o motor de tradução linguística."""
     traducoes = {
         "idiomas disponíveis": "idiomas disponíveis",
         "sobre": "sobre",
@@ -12,7 +11,7 @@ def translate(texto):
     return traducoes.get(texto.lower(), texto)
 
 def load_md_file(filename):
-    """Carrega arquivos markdown do diretório MD_FILES respeitando o padrão UPPER."""
+    """Carrega arquivos md respeitando a extensão informada."""
     path = os.path.join("md_files", filename)
     if os.path.exists(path):
         with open(path, "r", encoding="utf-8") as f:
@@ -20,11 +19,9 @@ def load_md_file(filename):
     return f"<!-- {filename} não encontrado -->"
 
 def load_info(tema):
-    """Carrega metadados específicos do tema atual."""
     return f"METADADOS DA MATRIX: {tema.upper()}"
 
 def write_ypoema(texto, imagem):
-    """Orquestra a exibição poética/visual no palco."""
     st.divider()
     if os.path.exists(imagem):
         st.image(imagem, use_container_width=True)
@@ -42,16 +39,14 @@ if 'tema' not in st.session_state:
     st.session_state.tema = "default"
 
 if 'lang_idx' not in st.session_state:
-    st.session_state.lang_idx = 3 # fr
+    st.session_state.lang_idx = 3
 
-# Configuração de interface dinâmica
 sb_state = "collapsed" if st.session_state.pagina_ativa == "sobre" else "expanded"
 st.set_page_config(layout="wide", initial_sidebar_state=sb_state)
 
 # --- 2. CENTRO DE CONTROLE (SIDEBAR) ---
 def render_sidebar():
     with st.sidebar:
-        # 1. Idiomas
         label_idiomas = "↓ " + translate("idiomas disponíveis")
         idiomas_list = ["português : pt", "espanhol : es", "italiano : it", "francês : fr", "inglês : en", "catalão : ca"] + \
                        sorted(["alemão : de", "basco : eu", "córsico : co", "dinamarquês : da", "esperanto : eo", 
@@ -62,30 +57,27 @@ def render_sidebar():
         st.session_state.lang_idx = idiomas_list.index(sel_lang)
         st.divider()
 
-        # 2. Navegação de Palco
         c1, c2 = st.columns(2)
         if c1.button("arte", key="btn_arte", use_container_width=True):
             st.session_state.pagina_ativa = "mini"
             st.rerun()
-        if c2.button("audio", key="btn_audio", use_container_width=True):
-            pass 
         st.divider()
 
-        # 3. Conteúdo Dinâmico (INFO & IMG em UPPER)
         tag_foco = st.session_state.sub_sobre if st.session_state.pagina_ativa == "sobre" else st.session_state.pagina_ativa
         tag_upper = tag_foco.upper()
 
-        path_info = os.path.join("md_files", f"INFO_{tag_upper}.MD")
+        # Fallback para nomes com underscore no sistema de arquivos
+        tag_file = tag_upper.replace("-", "_")
+        path_info = os.path.join("md_files", f"INFO_{tag_file}.MD")
         if os.path.exists(path_info):
             with open(path_info, "r", encoding="utf-8") as f:
                 st.markdown(f.read().lower())
         
-        path_img = os.path.join("images", f"IMG_{tag_upper}.JPG")
+        path_img = os.path.join("images", f"IMG_{tag_file}.JPG")
         if os.path.exists(path_img):
             st.image(path_img, use_container_width=True)
         st.divider()
 
-        # 4. Rodapé Social
         s1, s2, s3 = st.columns(3)
         with s1: st.markdown("[insta](#)")
         with s2: st.markdown("[git](#)")
@@ -98,7 +90,6 @@ def page_sobre():
     options = list(range(len(sobre_list)))
     sobrios = "↓  " + translate("sobre")
     
-    # Sincroniza índice do selectbox com o estado atual
     try:
         curr_idx = sobre_list.index(st.session_state.sub_sobre.lower())
     except ValueError:
@@ -106,36 +97,31 @@ def page_sobre():
 
     _, col_menu, _ = st.columns([1, 2, 1])
     with col_menu:
-        opt_sobre = st.selectbox(
-            sobrios,
-            options,
-            format_func=lambda x: sobre_list[x],
-            index=curr_idx,
-            key="opt_sobre",
-        )
+        opt_sobre = st.selectbox(sobrios, options, format_func=lambda x: sobre_list[x], index=curr_idx, key="opt_sobre")
 
     choice = sobre_list[opt_sobre].upper()
     st.session_state.sub_sobre = choice.lower()
-    
     st.divider()
 
     _, col_texto, _ = st.columns([1, 5, 1])
     with col_texto:
-        about_expander = st.expander("", True)
-        with about_expander:
+        with st.expander("", True):
             if choice == "MACHINA":
-                st.markdown(load_md_file("ABOUT_MACHINA_A.MD"))
+                st.markdown(load_md_file("ABOUT_MACHINA_A.md"))
                 LOGO_TEXTO = load_info(st.session_state.tema)
                 LOGO_IMAGE = f"./images/matrix/{st.session_state.tema.upper()}.JPG"
                 write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
-                st.markdown(load_md_file("ABOUT_MACHINA_D.MD"))
+                st.markdown(load_md_file("ABOUT_MACHINA_D.md"))
+            elif choice == "NOTES":
+                st.markdown(load_md_file("ABOUT_NOTES.md"))
             else:
-                st.markdown(load_md_file(f"ABOUT_{choice}.MD"))
+                # Resolve hífens para underscores nos nomes de arquivos físicos
+                file_name = choice.replace("-", "_")
+                st.markdown(load_md_file(f"ABOUT_{file_name}.MD"))
 
 # --- 4. EXECUÇÃO ---
 if __name__ == "__main__":
     render_sidebar()
-    
     if st.session_state.pagina_ativa == "sobre":
         page_sobre()
     elif st.session_state.pagina_ativa == "mini":
