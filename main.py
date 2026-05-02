@@ -42,6 +42,8 @@ def main():
                 width: 100%;
                 font-size: 22px !important;
                 padding: 0px !important;
+                border: none !important;
+                background: transparent !important;
             }
         </style>
     """, unsafe_allow_html=True)
@@ -55,10 +57,10 @@ def main():
         
         st.divider()
 
-        # LISTA DE IDIOMAS OCIDENTAIS (SORTED ATÉ SV)
+        # LISTA OCIDENTAL COMPLETA + SORTED ATÉ SV
         idiomas_base = ["Português", "English", "Español", "Français", "Deutsch", "Italiano"]
-        outros = sorted(["Dansk", "Suomi", "Norsk", "Svenska", "Nederlands", "Portuñol"])
-        lista_completa = idiomas_base + [i for i in outros if i not in idiomas_base]
+        extensao = ["Dansk", "Suomi", "Nederlands", "Norsk", "Portuñol", "Svenska"]
+        lista_completa = idiomas_base + sorted(extensao)
         
         st.session_state.idioma = st.selectbox("Translator", lista_completa)
         
@@ -67,10 +69,11 @@ def main():
         st.markdown("### a Máquina de Fazer Poesia")
         st.caption("yPoema / Machina")
 
-    # NAVEGAÇÃO: PROPORÇÃO EXATA PELA QUANTIDADE DE LETRAS
+    # NAVEGAÇÃO: ALINHAMENTO MILIMÉTRICO PELO COMPRIMENTO DAS PALAVRAS
+    # Extremas 'm' (mini) e 'e' (sobre) cravadas na moldura do palco
     paginas = ["mini", "yPoema", "eureka", "off-machina", "livros", "poly", "opiniões", "sobre"]
     
-    # PESO = NÚMERO DE CARACTERES (PROPORÇÃO PURA)
+    # Proporção baseada estritamente na contagem de caracteres
     pesos = [len(pg) for pg in paginas]
     
     cols = st.columns(pesos)
