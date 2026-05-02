@@ -4,73 +4,68 @@ import os
 # --- CONFIGURAÇÃO DA PÁGINA ---
 st.set_page_config(page_title="a Máquina de Fazer Poesia", layout="wide")
 
-# --- FUNÇÕES DE SUPORTE (ESMERO E RESILIÊNCIA) ---
+# --- FUNÇÕES DE SUPORTE (O ESMERO TÉCNICO) ---
 
 def load_md_file(file_name):
     """
-    Carregamento resiliente: se a perna de apoio (arquivo) falhar, 
-    o sistema apenas informa e segue em frente.
+    Localiza os arquivos na pasta correta: ./md_files/
+    Garante a firmeza do passo antes da leitura.
     """
-    file_path = f"./docs/{file_name}"
+    # Ajuste preciso do caminho conforme o seu "housekeeping"
+    file_path = f"./md_files/{file_name}" 
     
     if os.path.exists(file_path):
         try:
             with open(file_path, "r", encoding="utf-8") as f:
                 return f.read()
         except Exception as e:
-            return f"### ⚠️ Erro técnico ao ler {file_name}\n{e}"
+            return f"### ⚠️ Erro de leitura em {file_name}\n{e}"
     
-    return f"### 🔍 Documento ausente: {file_name}\n*Verifique a pasta /docs.*"
+    return f"### 🔍 Arquivo não encontrado\nCaminho esperado: `{file_path}`"
 
 def page_sobre():
     """
-    Biblioteca Documental: O Farol da Machina.
+    Biblioteca documental consolidada.
     """
-    # A lista oficial, consolidada e sem redundâncias
     sobre_list = [
         "prefácio", "machina", "off-machina", "opinião",
         "outros", "traduttore", "imagens", "samizdát",
-        "notes", "index", "bibliografia", "license"
+        "notes", "index", "bibliografia", "license",
     ]
 
     options = list(range(len(sobre_list)))
+    sobrios = "↓ SOBRE" 
     
-    # Seletor independente: nunca fica inativo
     opt_sobre = st.selectbox(
-        "↓ SOBRE",
+        sobrios,
         options,
         format_func=lambda x: sobre_list[x],
         key="opt_sobre",
     )
 
-    choice = sobre_list[opt_sobre].strip().upper()
-    
-    # Moldura do palco documental
-    about_expander = st.expander(f"BIBLIOTECA: {choice}", expanded=True)
+    choice = sobre_list[opt_sobre].upper()
+    about_expander = st.expander(f"DOCUMENTO: {choice}", expanded=True)
     
     with about_expander:
         if choice == "MACHINA":
-            # Estrutura tripartida: Texto A -> Visual -> Texto D
+            # Estrutura: Texto A -> Imagem (em /images) -> Texto D
             st.markdown(load_md_file("ABOUT_MACHINA_A.md"))
             
-            # Caminho para a nova raiz /images
             tema_atual = st.session_state.get('tema', 'default')
             logo_path = f"./images/{tema_atual}.jpg"
             
             if os.path.exists(logo_path):
                 st.image(logo_path, use_container_width=True)
-            else:
-                st.caption(f"Visual não localizado: {logo_path}")
-                
+            
             st.markdown(load_md_file("ABOUT_MACHINA_D.md"))
         else:
-            # Carregamento dinâmico baseado na escolha
+            # Carregamento dinâmico: ABOUT_OPINIÃO.md, etc.
             st.markdown(load_md_file(f"ABOUT_{choice}.md"))
 
 # --- MOTOR DA INTERFACE ---
 
 def main():
-    # Inicialização silenciosa de estados
+    # Estados iniciais
     if 'pagina_ativa' not in st.session_state: 
         st.session_state.pagina_ativa = "mini"
     if 'idioma' not in st.session_state:
@@ -78,7 +73,7 @@ def main():
     if 'trigger_tts' not in st.session_state:
         st.session_state.trigger_tts = False
 
-    # CSS de Alta Precisão (Alinhamento m -> e)
+    # CSS para Alinhamento Milimétrico (m -> e)
     st.markdown("""
         <style>
             [data-testid="stAppViewContainer"] { display: flex; flex-direction: row; }
@@ -93,13 +88,11 @@ def main():
         </style>
     """, unsafe_allow_html=True)
 
-    # SIDEBAR: Controle e Tradução
     with st.sidebar:
         st.markdown("### a Máquina de Fazer Poesia")
         st.caption("yPoema / Machina")
         st.divider()
 
-        # 22 Idiomas Ocidentais
         idiomas = sorted(["Português", "English", "Español", "Français", "Deutsch", "Italiano",
                           "Català", "Dansk", "Euskara", "Suomi", "Galego", "Islandska", 
                           "Lëtzebuergesch", "Magyar", "Nederlands", "Norsk", "Polski", 
@@ -113,7 +106,7 @@ def main():
             if st.button("Áudio"): st.session_state.trigger_tts = True
         st.divider()
 
-    # PALCO: 6 Botões Definidos (m -> e)
+    # PALCO: 6 Botões
     paginas = ["mini", "yPoema", "eureka", "livros", "poly", "sobre"]
     pesos = [len(pg) for pg in paginas]
     
@@ -127,19 +120,17 @@ def main():
 
     st.divider()
 
-    # ROTEAMENTO DE CONTEÚDO
+    # CONTEÚDO
     if st.session_state.pagina_ativa == "sobre":
         page_sobre()
     else:
         st.markdown(f"<h2 style='text-align: center;'>{st.session_state.pagina_ativa.upper()}</h2>", unsafe_allow_html=True)
 
-    # RODAPÉ: ÁUDIO TTS (Zerado até o disparo)
+    # ÁUDIO (TTS)
     if st.session_state.trigger_tts:
         texto = st.session_state.pagina_ativa
         audio_url = f"https://translate.google.com/translate_tts?ie=UTF-8&q={texto}&tl=pt&client=tw-ob"
-        st.write("")
         st.audio(audio_url)
-        st.caption(f"<p style='text-align: center;'>Voz Ativa | Falando: {texto}</p>", unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
