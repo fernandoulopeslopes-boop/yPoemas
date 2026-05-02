@@ -28,10 +28,10 @@ def page_sobre():
     Biblioteca documental consolidada.
     """
     sobre_list = [
-        "prefácio", "machina", "off-machina", "opinião",
+        "opinião", "machina", "off-machina", "prefácio", 
         "outros", "traduttore", "imagens", "samizdát",
         "notes", "index", "bibliografia", "license",
-    ]
+    ]    
 
     options = list(range(len(sobre_list)))
     sobrios = "↓ SOBRE" 
