@@ -4,38 +4,65 @@ import re
 import urllib.parse
 from deep_translator import GoogleTranslator
 
-# --- 0. MOTORES DA MACHINA (SUPORTE) ---
+# --- 0. MOTORES DA MACHINA (SUPORTE & LIMPEZA) ---
 def sanitize_links(text):
     """
-    Limpa URLs complexas e remove rastreadores (fbclid, si, igshid, etc).
+    Remove redirecionadores e varre parâmetros de rastreamento (fbclid, si, etc).
     """
-    # 1. Remove redirecionadores (Facebook/Google)
+    if not text:
+        return ""
+        
+    # 1. Limpeza de redirecionadores (Facebook/Google)
     redir_pattern = r"https?://[l|www]\.(?:facebook|google)\.[a-z\.]+/l\.php\?u=([^& \n]+)&?[^ \n]*"
     def clean_redir(match):
         return urllib.parse.unquote(match.group(1))
     text = re.sub(redir_pattern, clean_redir, text)
 
-    # 2. Remove parâmetros de lixo de URLs diretas (como fbclid, si, etc)
-    # Procura por ?fbclid=... ou &fbclid=... e remove até o próximo espaço ou fechamento de parênteses
+    # 2. Limpeza de parâmetros de lixo (fbclid, si, igshid, utm)
+    # Remove o lixo mantendo a base da URL limpa
     junk_pattern = r"(\?|&)(fbclid|si|igshid|utm_[a-z]+)=[^ \n\)]+"
     text = re.sub(junk_pattern, "", text)
     
     return text
 
+def load_md_file(filename):
+    """Busca arquivos MD com tratamento robusto de nomes e extensões."""
+    folder = "md_files"
+    # Normaliza o nome para evitar duplicidade de extensão
+    base_name = filename.replace(".md", "").replace(".MD", "")
+    search_targets = [f"{base_name}.MD", f"{base_name}.md"]
+    
+    if os.path.exists(folder):
+        available_files = os.listdir(folder)
+        for target in search_targets:
+            for arq in available_files:
+                if arq.upper() == target.upper():
+                    with open(os.path.join(folder, arq), "r", encoding="utf-8") as f:
+                        return sanitize_links(f.read())
+    return f"<!-- {base_name}.MD não encontrado -->"
+
+def translate_content(text, target_lang_code):
+    if target_lang_code == "pt":
+        return text
+    try:
+        return GoogleTranslator(source='auto', target=target_lang_code).translate(text)
+    except:
+        return text
+
 def set_style_machina():
-    """Estilo refinado para o Palco e para o botão Sair."""
+    """Injeta a elegância visual e o 'Cisne' (Botão Sair)."""
     st.markdown(
         """
         <style>
         [data-testid="stMainInternal"] { max-width: 95% !important; padding: 2rem !important; }
         
-        /* Tipografia Elegante */
+        /* Tipografia de Calibre */
         h1 { font-size: 1.8rem !important; font-weight: bold !important; color: #1E1E1E; }
         h2 { font-size: 1.5rem !important; font-weight: bold !important; color: #2E2E2E; }
         h3 { font-size: 1.2rem !important; font-weight: bold !important; color: #3E3E3E; }
         p { font-size: 1.05rem !important; line-height: 1.6; text-align: justify; }
 
-        /* Transformação do Botão Sair (De Patinho Feio a Cisne) */
+        /* O Botão Sair: De Patinho Feio a Cisne */
         div.stButton > button {
             width: 100%;
             border-radius: 4px;
@@ -51,12 +78,16 @@ def set_style_machina():
             color: white;
             border: 1px solid #ff4b4b;
         }
+        
+        /* Ajuste de links para não estourarem o palco */
+        a { word-wrap: break-word; color: #ff4b4b; text-decoration: none; }
+        a:hover { text-decoration: underline; }
         </style>
         """,
         unsafe_allow_html=True
     )
 
-# --- 1. BOOTSTRAP ---
+# --- 1. BOOTSTRAP (ESTADO INICIAL) ---
 if 'pagina_ativa' not in st.session_state:
     st.session_state.pagina_ativa = "sobre"
 if 'sub_sobre' not in st.session_state:
@@ -82,11 +113,10 @@ def page_sobre():
         "bibliografia", "license"
     ]
     
-    # Header: Grid alinhado
+    # Navegação Superior
     c1, c2, c3 = st.columns([1, 2, 1])
     
     with c1:
-        # O botão agora tem destaque visual condizente com a interface
         if st.button("← SAIR", use_container_width=True):
             st.session_state.pagina_ativa = "principal"
             st.rerun()
@@ -94,10 +124,10 @@ def page_sobre():
     with c2:
         try:
             curr_idx = sobre_list.index(st.session_state.sub_sobre.lower())
-        except ValueError:
+        except (ValueError, AttributeError):
             curr_idx = 0
-        choice = st.selectbox("↓ SOBRE", sobre_list, index=curr_idx).upper()
-        st.session_state.sub_sobre = choice.lower()
+        choice_label = st.selectbox("↓ SOBRE", sobre_list, index=curr_idx)
+        st.session_state.sub_sobre = choice_label.lower()
 
     with c3:
         sel_lang = st.selectbox("🌐 IDIOMA", idiomas_labels, index=st.session_state.lang_idx)
@@ -106,16 +136,18 @@ def page_sobre():
 
     st.divider()
 
+    # ÁREA DE EXPOSIÇÃO DO PALCO EXPANDIDO
     with st.container():
-        # Carregamento e Sanitização (incluindo o link da Beth Alvim)
-        if choice == "MACHINA":
-            raw_text = load_md_file("ABOUT_MACHINA_A.MD") + "\n\n" + load_md_file("ABOUT_MACHINA_D.MD")
-        else:
-            raw_text = load_md_file(f"ABOUT_{choice}.MD")
+        choice_file = st.session_state.sub_sobre.upper()
         
-        with st.spinner(f"Processando conteúdo para {sel_lang}..."):
+        if choice_file == "MACHINA":
+            raw_text = load_md_file("ABOUT_MACHINA_A") + "\n\n" + load_md_file("ABOUT_MACHINA_D")
+        else:
+            raw_text = load_md_file(f"ABOUT_{choice_file}")
+        
+        with st.spinner(f"Sincronizando Machina ({sel_lang})..."):
             translated_text = translate_content(raw_text, lang_code)
-            # A sanitização final garante que mesmo links traduzidos fiquem limpos
+            # Sanitização final aplicada ao Markdown renderizado
             st.markdown(sanitize_links(translated_text))
 
 # --- 3. EXECUÇÃO ---
@@ -123,7 +155,9 @@ if __name__ == "__main__":
     if st.session_state.pagina_ativa == "sobre":
         page_sobre()
     else:
+        # Palco Principal da Machina
         st.title("a Machina de Fazer Poesia")
-        if st.button("Configurações / Sobre"):
+        st.write("A escala de complexidade quindecilhônica em operação.")
+        if st.button("Retornar ao Farol (Sobre)"):
             st.session_state.pagina_ativa = "sobre"
             st.rerun()
