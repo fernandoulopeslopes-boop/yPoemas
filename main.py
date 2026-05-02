@@ -3,7 +3,7 @@ import os
 
 # --- 1. BOOTSTRAP (CPC) ---
 if 'pagina_ativa' not in st.session_state:
-    st.session_state.pagina_ativa = "sobre"  # ajuste solicitado
+    st.session_state.pagina_ativa = "sobre"
 
 if 'sub_sobre' not in st.session_state:
     st.session_state.sub_sobre = "ypoemas"
@@ -15,23 +15,25 @@ st.set_page_config(layout="wide", initial_sidebar_state=sb_state)
 # --- 2. CENTRO DE CONTROLE (SIDEBAR) ---
 def render_sidebar():
     with st.sidebar:
-        # 1. idiomas (ajuste de index para francês)
+        # 1. idiomas (index 3: francês)
         idiomas = ["português : pt", "espanhol : es", "italiano : it", "francês : fr", "inglês : en", "catalão : ca"] + \
                   sorted(["alemão : de", "basco : eu", "córsico : co", "dinamarquês : da", "esperanto : eo", "finlandês : fi", 
                           "galego : gl", "galês : cy", "holandês : nl", "irlandês : ga", "latin : la", "norueguês : no", 
                           "polonês : pl", "romeno : ro", "sueco : sv"])
         
-        # francês : fr está na posição 3 (index 3)
         st.selectbox("idiomas disponíveis", idiomas, index=3)
         st.divider()
 
-        # 2. botões
+        # 2. botões arte/audio
         c1, c2 = st.columns(2)
-        c1.button("arte", key="btn_arte", use_container_width=True)
-        c2.button("audio", key="btn_audio", use_container_width=True)
+        if c1.button("arte", key="btn_arte", use_container_width=True):
+            st.session_state.pagina_ativa = "mini"
+            st.rerun()
+        if c2.button("audio", key="btn_audio", use_container_width=True):
+            pass 
         st.divider()
 
-        # 3. info (dinâmico)
+        # 3. info (dinâmico baseado no sub_sobre ou página)
         tag = st.session_state.sub_sobre if st.session_state.pagina_ativa == "sobre" else st.session_state.pagina_ativa
         path_info = f"info_{tag.lower()}.md"
         if os.path.exists(path_info):
@@ -44,7 +46,7 @@ def render_sidebar():
             st.image("img_logo.jpg", use_container_width=True)
         st.divider()
 
-        # 5. links
+        # 5. links sociais
         s1, s2, s3 = st.columns(3)
         s1.markdown("[insta](#)"); s2.markdown("[git](#)"); s3.markdown("[mail](#)")
 
@@ -52,23 +54,31 @@ def render_sidebar():
 def page_sobre():
     sobre_list = ["ypoemas", "machina", "off-machina", "comments", "prefácio", "outros", "imagens", "notes", "traduttore", "samizdát", "index", "bibliografia", "license"]
     
+    # Eixo Y: Navegação Documental
     _, col_menu, _ = st.columns([1, 2, 1])
     with col_menu:
-        st.session_state.sub_sobre = st.selectbox(
+        escolha = st.selectbox(
             "↓ guia de navegação documental", 
             sobre_list, 
-            index=sobre_list.index(st.session_state.sub_sobre)
+            index=sobre_list.index(st.session_state.sub_sobre),
+            label_visibility="collapsed"
         )
+        if escolha != st.session_state.sub_sobre:
+            st.session_state.sub_sobre = escolha
+            st.rerun()
 
     st.divider()
 
+    # Palco: Proporcionalidade de Leitura
     _, col_texto, _ = st.columns([1, 5, 1])
     with col_texto:
         path_about = f"about_{st.session_state.sub_sobre}.md"
         if os.path.exists(path_about):
             with open(path_about, "r", encoding="utf-8") as f: 
+                # Renderiza o conteúdo do arquivo .md
                 st.markdown(f.read())
         else:
+            # Resposta neutra para arquivos ausentes
             st.info("os documentos da machina...")
 
 # --- 4. EXECUÇÃO ---
@@ -78,4 +88,5 @@ if __name__ == "__main__":
     if st.session_state.pagina_ativa == "sobre":
         page_sobre()
     elif st.session_state.pagina_ativa == "mini":
-        pass
+        # Placeholder para o palco mini
+        st.empty()
