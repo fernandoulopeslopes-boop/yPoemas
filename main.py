@@ -11,9 +11,12 @@ def translate(texto):
     return traducoes.get(texto.lower(), texto)
 
 def load_md_file(filename):
-    """Carrega arquivos md respeitando a extensão informada."""
+    """Carrega arquivos md e exibe o caminho para depuração."""
     path = os.path.join("md_files", filename)
-    msgAlert(path)
+    
+    # Exibe o caminho exato na interface para conferência
+    st.info(f"DEBUG: Tentando carregar -> {path}")
+    
     if os.path.exists(path):
         with open(path, "r", encoding="utf-8") as f:
             return f.read()
