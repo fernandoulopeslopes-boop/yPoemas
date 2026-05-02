@@ -1,9 +1,10 @@
 ### Autores & Livros sobre...
-___
+
 > Acid-Free Bits; Autopoemas; Born-Again Bits; Ciberliteratura;  
 > Cibertexto; Digital An-archive; Digital Poetry; Electronic Literature;  
 > Hipertexto; Literatura Cibernética; Literatura Informacional;  
 > Metalivro; Motor Textual; Poesia Digital; Poesia Eletrônica; Poesia Experimental  
+___
 
 - Antonio, Jorge Luiz - “Poesia eletrônica no Brasil: Alguns exemplos” - Cibertextualidades
 
@@ -27,24 +28,24 @@ ___
 
 - Hayles, N Katherine - “Translating Media: Why We Should Rethink Textuality” The Yale Journal of Criticism (2003)
 
-- Kac, Eduardo - “A poesia da nova era” Luz e Letra. Ensaios de arte, literatura e comunicação. RJ: Contra, 2004
+- Kac, Eduardo - “A poesia da nova era” Luz e Letra. Ensaios de arte, literatura e comunicação. RJ: Contra, 2004  
 
-- Lee, Kyong-ho et al - “The State of the Art and Practice in Digital Preservation” 
-  Journal Of Research Of The National Institute Of Standards And Technology (2002)
+- Lee, Kyong-ho et al - “The State of the Art and Practice in Digital Preservation”  
+  Journal Of Research Of The National Institute Of Standards And Technology (2002)  
 
-- Liu, Alan et al - “Born-Again Bits: A Framework for Migrating Electronic Literature”
+- Liu, Alan et al - “Born-Again Bits: A Framework for Migrating Electronic Literature”  
 
-- Manovich, Lev. - The Language of New Media. Massassuchets: MIT Press, 2001
+- Manovich, Lev. - The Language of New Media. Massassuchets: MIT Press, 2001  
 
-- Montfort, Nick, y Noah Wardrip -Fruin - “Acid-Free Bits: Recommendations for Long-Lasting Electronic Literature”
+- Montfort, Nick, y Noah Wardrip -Fruin - “Acid-Free Bits: Recommendations for Long-Lasting Electronic Literature”  
 
-- Pestana, Silvestre - “Apontamentos de Literatura informacional ou a poética dos anos 80” Poemografias.
+- Pestana, Silvestre - “Apontamentos de Literatura informacional ou a poética dos anos 80” Poemografias.  
   Ed. Fernando Aguiar y Silvestre Pestana. Lisboa: Ulmeiro, 1985
 
-- Portela, Manuel - “Hipertexto como Metalivro” Ciberscópio (2003)
+- Portela, Manuel - “Hipertexto como Metalivro” Ciberscópio (2003)  
 
-- Tabbi, Joseph - “Toward a Semantic Literary” <eliterature.org/pad/slw.html>
+- Tabbi, Joseph - “Toward a Semantic Literary” <eliterature.org/pad/slw.html>  
 
-- Van Looy, Jan, y Jan Baetens - “Digitising Cultural Heritage”
+- Van Looy, Jan, y Jan Baetens - “Digitising Cultural Heritage”  
 ---
 Copyright © 1983-Hoje Nando Lopes - **yPoemas @ Machina de fazer Poesia**
