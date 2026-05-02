@@ -40,6 +40,7 @@ def main():
                 border: none !important;
                 background: transparent !important;
             }
+            /* Centralização absoluta do player no palco */
             div[data-testid="stAudio"] {
                 width: 60% !important;
                 margin: 0 auto !important;
@@ -53,7 +54,7 @@ def main():
         
         st.divider()
 
-        # LISTA COMPLETA DE IDIOMAS
+        # Translator (22 Países/Idiomas - Apenas Alfabeto Ocidental)
         idiomas_base = ["Português", "English", "Español", "Français", "Deutsch", "Italiano"]
         extensao = sorted([
             "Català", "Dansk", "Euskara", "Suomi", "Galego", 
@@ -66,17 +67,17 @@ def main():
         
         st.divider()
 
+        # Botões Arte e Áudio
         col_art, col_aud = st.columns(2)
         with col_art:
             st.button("Arte")
         with col_aud:
-            # DISPARA O TALK/TTS
             if st.button("Áudio"):
                 st.session_state.trigger_tts = True
         
         st.divider()
 
-    # PALCO: NAVEGAÇÃO PROPORCIONAL
+    # PALCO: Navegação Proporcional Baseada em Letras
     paginas = ["mini", "yPoema", "eureka", "off-machina", "livros", "poly", "opinião", "sobre"]
     pesos = [len(pg) for pg in paginas]
     
@@ -90,25 +91,31 @@ def main():
 
     st.divider()
 
-    # LÓGICA DO TALK/TTS NO PALCO
+    # SLIDE DO ÁUDIO: Centrado e sincronizado com a página ativa
+    vozes_neurais = {
+        "Português": "antonio_neural", "English": "brian_neural", "Español": "enrique_neural",
+        "Français": "mathieu_neural", "Deutsch": "hans_neural", "Italiano": "giorgio_neural",
+        "Dansk": "mads_neural", "Suomi": "jari_neural", "Nederlands": "ruben_neural",
+        "Norsk": "henrik_neural", "Suécia": "hugo_neural", "Polski": "jacek_neural",
+        "Română": "alexandru_neural", "Magyar": "tamas_neural", "Català": "jordi_neural",
+        "Islandska": "karl_neural", "Euskara": "jon_neural", "Galego": "roi_neural",
+        "Slovenčina": "filip_neural", "Slovenščina": "luka_neural", "Portuñol": "miguel_neural",
+        "Lëtzebuergesch": "marc_neural", "Russia": "maxim_neural"
+    }
+    
+    voz = vozes_neurais.get(st.session_state.idioma, "voz_neural")
+    
+    st.write("") # Espaçamento
+    
+    audio_source = None
     if st.session_state.trigger_tts:
-        vozes_neurais = {
-            "Português": "antonio_neural", "English": "brian_neural", "Español": "enrique_neural",
-            "Français": "mathieu_neural", "Deutsch": "hans_neural", "Italiano": "giorgio_neural",
-            "Dansk": "mads_neural", "Suomi": "jari_neural", "Nederlands": "ruben_neural",
-            "Norsk": "henrik_neural", "Suécia": "hugo_neural", "Polski": "jacek_neural",
-            "Română": "alexandru_neural", "Magyar": "tamas_neural", "Català": "jordi_neural",
-            "Islandska": "karl_neural", "Euskara": "jon_neural", "Galego": "roi_neural",
-            "Slovenčina": "filip_neural", "Slovenščina": "luka_neural", "Portuñol": "miguel_neural",
-            "Lëtzebuergesch": "marc_neural", "Russia": "maxim_neural"
-        }
-        voz = vozes_neurais.get(st.session_state.idioma, "voz_neural")
-        texto_para_falar = st.session_state.pagina_ativa
+        # Gera a fala baseada no nome da página ativa
+        texto = st.session_state.pagina_ativa
+        audio_source = f"https://translate.google.com/translate_tts?ie=UTF-8&q={texto}&tl=pt&client=tw-ob"
 
-        st.write("") 
-        # O player agora "fala" o nome da página
-        st.audio(f"https://translate.google.com/translate_tts?ie=UTF-8&q={texto_para_falar}&tl=pt&client=tw-ob") 
-        st.caption(f"<p style='text-align: center;'>Talk/TTS: <b>{texto_para_falar}</b> (Voz: {voz})</p>", unsafe_allow_html=True)
+    # Renderiza o player (00:00 se audio_source for None)
+    st.audio(audio_source) 
+    st.caption(f"<p style='text-align: center;'>Talk/TTS Ativo: <b>{voz}</b></p>", unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
