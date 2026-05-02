@@ -3,7 +3,7 @@ import os
 
 # --- 1. BOOTSTRAP (CPC) ---
 if 'pagina_ativa' not in st.session_state:
-    st.session_state.pagina_ativa = "mini"
+    st.session_state.pagina_ativa = "sobre"  # ajuste solicitado
 
 if 'sub_sobre' not in st.session_state:
     st.session_state.sub_sobre = "ypoemas"
@@ -15,12 +15,14 @@ st.set_page_config(layout="wide", initial_sidebar_state=sb_state)
 # --- 2. CENTRO DE CONTROLE (SIDEBAR) ---
 def render_sidebar():
     with st.sidebar:
-        # 1. idiomas
+        # 1. idiomas (ajuste de index para francês)
         idiomas = ["português : pt", "espanhol : es", "italiano : it", "francês : fr", "inglês : en", "catalão : ca"] + \
                   sorted(["alemão : de", "basco : eu", "córsico : co", "dinamarquês : da", "esperanto : eo", "finlandês : fi", 
                           "galego : gl", "galês : cy", "holandês : nl", "irlandês : ga", "latin : la", "norueguês : no", 
                           "polonês : pl", "romeno : ro", "sueco : sv"])
-        st.selectbox("idiomas disponíveis", idiomas)
+        
+        # francês : fr está na posição 3 (index 3)
+        st.selectbox("idiomas disponíveis", idiomas, index=3)
         st.divider()
 
         # 2. botões
@@ -76,4 +78,4 @@ if __name__ == "__main__":
     if st.session_state.pagina_ativa == "sobre":
         page_sobre()
     elif st.session_state.pagina_ativa == "mini":
-        pass # reservado para o palco mini
+        pass
