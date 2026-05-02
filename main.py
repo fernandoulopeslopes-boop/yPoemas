@@ -6,7 +6,6 @@ from deep_translator import GoogleTranslator
 
 # --- 0. MOTORES DA MACHINA (SUPORTE & LIMPEZA) ---
 def sanitize_links(text):
-    """Limpa URLs e remove rastreadores."""
     if not text: return ""
     redir_pattern = r"https?://[l|www]\.(?:facebook|google)\.[a-z\.]+/l\.php\?u=([^& \n]+)&?[^ \n]*"
     def clean_redir(match): return urllib.parse.unquote(match.group(1))
@@ -16,7 +15,6 @@ def sanitize_links(text):
     return text
 
 def load_md_file(filename):
-    """Carrega arquivos MD com sanitização na origem."""
     folder = "md_files"
     base_name = filename.replace(".md", "").replace(".MD", "")
     search_targets = [f"{base_name}.MD", f"{base_name}.md"]
@@ -30,66 +28,65 @@ def load_md_file(filename):
     return f"<!-- {base_name}.MD não encontrado -->"
 
 def translate_content(text, target_lang_code):
-    """Motor de tradução via deep-translator."""
     if target_lang_code == "pt": return text
     try:
         return GoogleTranslator(source='auto', target=target_lang_code).translate(text)
     except: return text
 
 def set_style_machina():
-    """CSS: Alinhamento assimétrico, botão áudio e títulos elegantes."""
+    """CSS: Alinhamento horizontal absoluto e provocação visual."""
     st.markdown(
         """
         <style>
         [data-testid="stMainInternal"] { max-width: 95% !important; padding: 2rem !important; }
         
-        /* Título Principal Logo abaixo do Divider */
         .titulo-logo {
-            font-size: 2.2rem !important;
+            font-size: 2.1rem !important;
             font-weight: bold !important;
-            margin-top: 1rem;
-            margin-bottom: 1.5rem;
+            margin: 1.5rem 0;
             color: #1E1E1E;
         }
 
-        /* Padronização de Títulos do Corpo (H1, H2, H3) */
-        h1 { font-size: 1.8rem !important; font-weight: bold !important; }
-        h2 { font-size: 1.5rem !important; font-weight: bold !important; }
-        h3 { font-size: 1.2rem !important; font-weight: bold !important; }
-        p { font-size: 1.05rem !important; line-height: 1.6; text-align: justify; }
-
-        /* Sincronização de Alturas */
-        .stSelectbox div[data-baseweb="select"] > div {
-            height: 2.8rem !important;
+        /* Alinhamento Horizontal dos Widgets */
+        [data-testid="stHorizontalBlock"] {
+            align-items: end !important;
         }
 
-        /* Botões Sair e Áudio */
+        /* Estilização dos Botões */
         .stButton > button {
             height: 2.8rem !important;
             border-radius: 4px;
             font-weight: bold;
-            transition: all 0.2s ease-in-out;
-            margin-top: 28px;
+            transition: all 0.2s ease;
+            width: 100% !important;
         }
         
-        /* Estilo Sair (Provocação Vermelha) */
+        /* Provocação: Fundo Vermelho no Sair */
         .btn-sair > div > button {
-            border: 1px solid #ff4b4b !important;
-            background-color: transparent !important;
-            color: #ff4b4b !important;
-            width: 80px !important;
-        }
-        .btn-sair > div > button:hover {
             background-color: #ff4b4b !important;
             color: white !important;
+            border: 1px solid #ff4b4b !important;
+        }
+        .btn-sair > div > button:hover {
+            background-color: #d43f3f !important;
+            border: 1px solid #d43f3f !important;
         }
 
-        /* Estilo Áudio (Inclusão) */
         .btn-audio > div > button {
             border: 1px solid #333 !important;
             background-color: transparent !important;
             color: #333 !important;
-            width: 100% !important;
+        }
+
+        /* Formatação para números gigantes (Quindecilhões) */
+        .metadados-tempo {
+            font-family: monospace;
+            background-color: #f0f2f6;
+            padding: 1rem;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            word-break: break-all;
+            line-height: 1.4;
         }
         </style>
         """,
@@ -114,7 +111,6 @@ def page_sobre():
         "português": "pt", "espanhol": "es", "italiano": "it", 
         "francês": "fr", "inglês": "en", "catalão": "ca"
     }
-    idiomas_labels = list(idiomas_dict.keys())
     
     sobre_list = [
         "comments", "prefácio", "machina", "off-machina", "outros",
@@ -122,8 +118,8 @@ def page_sobre():
         "bibliografia", "license"
     ]
     
-    # Grid de Navegação Assimétrico
-    c_sair, c_audio, c_doc, c_lang = st.columns([0.5, 0.8, 2, 1])
+    # 1. ALINHAMENTO HORIZONTAL: Grid com ajuste de base
+    c_sair, c_audio, c_doc, c_lang = st.columns([0.6, 0.8, 2, 1])
     
     with c_sair:
         st.markdown('<div class="btn-sair">', unsafe_allow_html=True)
@@ -135,19 +131,17 @@ def page_sobre():
     with c_audio:
         st.markdown('<div class="btn-audio">', unsafe_allow_html=True)
         if st.button("audio 🔈", key="btn_talk"):
-            # TODO: Implementar gTTS
             pass
         st.markdown('</div>', unsafe_allow_html=True)
 
     with c_doc:
-        # Título alterado para minúsculas conforme pedido
         choice_label = st.selectbox("documentação", sobre_list, 
-                                   index=sobre_list.index(st.session_state.sub_sobre) if st.session_state.sub_sobre in sobre_list else 0,
+                                   index=sobre_list.index(st.session_state.sub_sobre),
                                    key="sel_doc")
         st.session_state.sub_sobre = choice_label.lower()
 
     with c_lang:
-        # Título alterado para minúsculas conforme pedido
+        idiomas_labels = list(idiomas_dict.keys())
         sel_lang = st.selectbox("idiomas", idiomas_labels, 
                                index=st.session_state.lang_idx,
                                key="sel_lang")
@@ -156,19 +150,28 @@ def page_sobre():
 
     st.divider()
 
-    # Título Principal da Machina (Tamanho calibrado entre logo e corpo)
+    # Título calibrado
     st.markdown('<div class="titulo-logo">a Machina de Fazer Poesia</div>', unsafe_allow_html=True)
 
-    # BLOCO DE RENDERIZAÇÃO REATIVO
+    # --- TODO LIST ---
+    # [ ] Refazer Análise Combinatória (Divergência nos Quindecilhões)
+
     with st.container():
+        if st.session_state.sub_sobre.upper() == "INDEX":
+            # 3. AJUSTE TEMA TEMPO: Preservando tabs e espaços
+            st.markdown("### Metadados do Tema: TEMPO")
+            st.markdown(
+                """<div class="metadados-tempo">
+Tempo : 112.765.820.236.797.923.580.529.825.269.143.876.665.344.000.000.000
+Total : 112.765.820.265.471.186.578.333.495.090.938.981.765.900.724.963.269
+                </div>""", unsafe_allow_html=True
+            )
+            st.divider()
+
+        # Renderização Normal
         choice_file = st.session_state.sub_sobre.upper()
+        raw_text = load_md_file("ABOUT_MACHINA_A") + "\n\n" + load_md_file("ABOUT_MACHINA_D") if choice_file == "MACHINA" else load_md_file(f"ABOUT_{choice_file}")
         
-        if choice_file == "MACHINA":
-            raw_text = load_md_file("ABOUT_MACHINA_A") + "\n\n" + load_md_file("ABOUT_MACHINA_D")
-        else:
-            raw_text = load_md_file(f"ABOUT_{choice_file}")
-        
-        # A reatividade agora é forçada pelo spinner atrelado ao sel_lang
         with st.spinner(f"Processando tradução ({sel_lang})..."):
             translated_text = translate_content(raw_text, lang_code)
             st.markdown(sanitize_links(translated_text))
