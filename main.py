@@ -49,31 +49,52 @@ def main():
     """, unsafe_allow_html=True)
 
     with st.sidebar:
-        col_t, col_a = st.columns(2)
-        with col_t:
-            st.button("Talk")
-        with col_a:
-            st.button("Arts")
+        st.button("Talk")
         
         st.divider()
 
-        # LISTA OCIDENTAL COMPLETA + SORTED ATÉ SV
+        # LISTA DE IDIOMAS: OCIDENTAIS + EXTENSÃO (RUSSIA + SUÉCIA NO FINAL)
         idiomas_base = ["Português", "English", "Español", "Français", "Deutsch", "Italiano"]
-        extensao = ["Dansk", "Suomi", "Nederlands", "Norsk", "Portuñol", "Svenska"]
-        lista_completa = idiomas_base + sorted(extensao)
+        
+        extensao = sorted([
+            "Català", "Dansk", "Euskara", "Suomi", "Galego", 
+            "Islandska", "Lëtzebuergesch", "Magyar", "Nederlands", 
+            "Norsk", "Polski", "Portuñol", "Română", "Slovenčina", "Slovenščina"
+        ]) + ["Russia", "Suécia"]
+        
+        lista_completa = idiomas_base + extensao
         
         st.session_state.idioma = st.selectbox("Translator", lista_completa)
         
         st.divider()
 
+        col_art, col_aud = st.columns(2)
+        with col_art:
+            st.button("Arte")
+        
+        with col_aud:
+            # MAPEAMENTO DE VOZES (NOMES PRÓPRIOS MASCULINOS)
+            vozes_neurais = {
+                "Português": "António", "English": "Brian", "Español": "Enrique",
+                "Français": "Mathieu", "Deutsch": "Hans", "Italiano": "Giorgio",
+                "Dansk": "Mads", "Suomi": "Jari", "Nederlands": "Ruben",
+                "Norsk": "Henrik", "Suécia": "Hugo", "Polski": "Jacek",
+                "Română": "Alexandru", "Magyar": "Tamás", "Català": "Jordi",
+                "Islandska": "Karl", "Euskara": "Jon", "Galego": "Roi",
+                "Slovenčina": "Filip", "Slovenščina": "Luka", "Portuñol": "Miguel",
+                "Lëtzebuergesch": "Marc", "Russia": "Maxim"
+            }
+            voz_ativa = vozes_neurais.get(st.session_state.idioma, "Voz Masculina")
+            if st.button("Áudio"):
+                st.toast(f"Voz: {voz_ativa}")
+
+        st.divider()
+
         st.markdown("### a Máquina de Fazer Poesia")
         st.caption("yPoema / Machina")
 
-    # NAVEGAÇÃO: ALINHAMENTO MILIMÉTRICO PELO COMPRIMENTO DAS PALAVRAS
-    # Extremas 'm' (mini) e 'e' (sobre) cravadas na moldura do palco
+    # PALCO: NAVEGAÇÃO PROPORCIONAL POR CARACTERES
     paginas = ["mini", "yPoema", "eureka", "off-machina", "livros", "poly", "opiniões", "sobre"]
-    
-    # Proporção baseada estritamente na contagem de caracteres
     pesos = [len(pg) for pg in paginas]
     
     cols = st.columns(pesos)
