@@ -6,7 +6,8 @@ def render_sidebar():
     with st.sidebar:
         # 1. TRADUÇÃO DINÂMICA DO LABEL
         # Utiliza a função de tradução conforme o idioma selecionado
-        label_idiomas = "↓ " + translate("idiomas disponíveis")
+        label_idiomas = "↓ " + "idiomas disponíveis"
+#        label_idiomas = "↓ " + translate("idiomas disponíveis")
         
         idiomas_list = ["português : pt", "espanhol : es", "italiano : it", "francês : fr", "inglês : en", "catalão : ca"] + \
                        sorted(["alemão : de", "basco : eu", "córsico : co", "dinamarquês : da", "esperanto : eo", 
