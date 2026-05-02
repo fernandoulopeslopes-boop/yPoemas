@@ -1,9 +1,9 @@
 import streamlit as st
 
 def main():
-    # Garantindo que a página ativa e o idioma existam no estado
+    # ESMERO: A página ativa agora nasce em 'mini' para habilitar o sistema imediatamente
     if 'pagina_ativa' not in st.session_state: 
-        st.session_state.pagina_ativa = None  # Começa zerado
+        st.session_state.pagina_ativa = "mini"
     if 'idioma' not in st.session_state:
         st.session_state.idioma = "Português"
     if 'trigger_tts' not in st.session_state:
@@ -13,9 +13,20 @@ def main():
         <style>
             [data-testid="stAppViewContainer"] { display: flex; flex-direction: row; width: 100vw !important; }
             .main { flex-grow: 1; width: auto !important; }
-            .main .block-container { max-width: 98vw !important; padding-top: 2rem !important; }
-            [data-testid="stSidebar"] { min-width: 300px !important; }
-            .stButton > button { width: 100%; font-size: 22px !important; background: transparent !important; border: none !important; }
+            .main .block-container { 
+                max-width: 98vw !important; 
+                padding-top: 2rem !important; 
+                padding-left: 1rem !important; 
+                padding-right: 1rem !important; 
+            }
+            [data-testid="stSidebar"] { min-width: 300px !important; width: 300px !important; }
+            .stButton > button { 
+                width: 100%; 
+                font-size: 22px !important; 
+                background: transparent !important; 
+                border: none !important; 
+                padding: 0px !important;
+            }
             div[data-testid="stAudio"] { width: 60% !important; margin: 0 auto !important; }
         </style>
     """, unsafe_allow_html=True)
@@ -26,7 +37,7 @@ def main():
         
         st.divider()
 
-        # Lista de 22 Idiomas (Filtro Ocidental)
+        # Translator: 22 vozes neurais masculinas (Alfabeto Ocidental)
         idiomas_base = ["Português", "English", "Español", "Français", "Deutsch", "Italiano"]
         extensao = sorted(["Català", "Dansk", "Euskara", "Suomi", "Galego", "Islandska", "Lëtzebuergesch", "Magyar", "Nederlands", "Norsk", "Polski", "Portuñol", "Română", "Slovenčina", "Slovenščina"]) + ["Russia", "Suécia"]
         
@@ -38,28 +49,27 @@ def main():
         with col_art:
             st.button("Arte")
         with col_aud:
-            # Só permite o gatilho se houver uma página selecionada
             if st.button("Áudio"):
-                if st.session_state.pagina_ativa:
-                    st.session_state.trigger_tts = True
-                else:
-                    st.sidebar.warning("Selecione uma página primeiro.")
+                st.session_state.trigger_tts = True
+        
+        st.divider()
 
-    # PALCO: Navegação Proporcional
+    # PALCO: Navegação Proporcional (m -> e)
     paginas = ["mini", "yPoema", "eureka", "off-machina", "livros", "poly", "opinião", "sobre"]
     pesos = [len(pg) for pg in paginas]
     
     cols = st.columns(pesos)
     for i, pg in enumerate(paginas):
         with cols[i]:
+            # Esmero: Identifica a página ativa visualmente ou via estado
             if st.button(pg, key=f"btn_{pg}"):
                 st.session_state.pagina_ativa = pg
-                st.session_state.trigger_tts = False # Reseta para aguardar novo clique em áudio
+                st.session_state.trigger_tts = False 
                 st.rerun()
 
     st.divider()
 
-    # LOGICA TTS (NOMES NEURAIS MASCULINOS)
+    # MAPEAMENTO: NOMES NEURAIS MASCULINOS
     vozes_neurais = {
         "Português": "antonio_neural", "English": "brian_neural", "Español": "enrique_neural",
         "Français": "mathieu_neural", "Deutsch": "hans_neural", "Italiano": "giorgio_neural",
@@ -74,14 +84,15 @@ def main():
     voz = vozes_neurais.get(st.session_state.idioma, "voz_neural")
     
     audio_source = None
-    # Se houver página e o botão Áudio foi clicado, gera a URL
-    if st.session_state.trigger_tts and st.session_state.pagina_ativa:
+    if st.session_state.trigger_tts:
+        # Falar o nome da página ativa
         texto = st.session_state.pagina_ativa
         audio_source = f"https://translate.google.com/translate_tts?ie=UTF-8&q={texto}&tl=pt&client=tw-ob"
 
-    # Player aparece zerado se audio_source for None
+    # Slide do Áudio: Centrado no palco
+    st.write("") 
     st.audio(audio_source) 
-    st.caption(f"<p style='text-align: center;'>Status: <b>{voz}</b> | Página: <b>{st.session_state.pagina_ativa or 'Nenhuma'}</b></p>", unsafe_allow_html=True)
+    st.caption(f"<p style='text-align: center;'>Voz: <b>{voz}</b> | Falando: <b>{st.session_state.pagina_ativa}</b></p>", unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
