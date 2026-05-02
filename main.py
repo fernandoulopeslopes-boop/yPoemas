@@ -24,6 +24,7 @@ def load_md_file(filename):
             for arq in available_files:
                 if arq.upper() == target.upper():
                     with open(os.path.join(folder, arq), "r", encoding="utf-8") as f:
+                        # 1. Grafia correta OFF-MACHINA.MD tratada aqui
                         return sanitize_links(f.read())
     return f"<!-- {base_name}.MD não encontrado -->"
 
@@ -34,7 +35,7 @@ def translate_content(text, target_lang_code):
     except: return text
 
 def set_style_machina():
-    """CSS: Alinhamento horizontal absoluto e provocação visual."""
+    """CSS: Alinhamento milimétrico e Provocação Vermelha."""
     st.markdown(
         """
         <style>
@@ -47,29 +48,25 @@ def set_style_machina():
             color: #1E1E1E;
         }
 
-        /* Alinhamento Horizontal dos Widgets */
+        /* 3. ALINHAMENTO: Força todos os elementos da coluna a alinhar na base */
         [data-testid="stHorizontalBlock"] {
-            align-items: end !important;
+            align-items: flex-end !important;
         }
 
-        /* Estilização dos Botões */
-        .stButton > button {
+        /* Padronização de altura para botões e campos */
+        .stButton > button, .stSelectbox div[data-baseweb="select"] {
             height: 2.8rem !important;
-            border-radius: 4px;
-            font-weight: bold;
-            transition: all 0.2s ease;
-            width: 100% !important;
         }
-        
-        /* Provocação: Fundo Vermelho no Sair */
+
+        /* 2. PROVIDÊNCIA: Fundo Vermelho no Sair */
         .btn-sair > div > button {
             background-color: #ff4b4b !important;
             color: white !important;
-            border: 1px solid #ff4b4b !important;
+            border: none !important;
+            font-weight: bold !important;
         }
         .btn-sair > div > button:hover {
             background-color: #d43f3f !important;
-            border: 1px solid #d43f3f !important;
         }
 
         .btn-audio > div > button {
@@ -78,15 +75,14 @@ def set_style_machina():
             color: #333 !important;
         }
 
-        /* Formatação para números gigantes (Quindecilhões) */
         .metadados-tempo {
             font-family: monospace;
-            background-color: #f0f2f6;
-            padding: 1rem;
-            border-radius: 5px;
+            background-color: #f8f9fb;
+            padding: 1.2rem;
+            border-left: 5px solid #ff4b4b;
             white-space: pre-wrap;
             word-break: break-all;
-            line-height: 1.4;
+            margin: 1rem 0;
         }
         </style>
         """,
@@ -112,13 +108,14 @@ def page_sobre():
         "francês": "fr", "inglês": "en", "catalão": "ca"
     }
     
+    # 2. Lista oficial restaurada
     sobre_list = [
         "comments", "prefácio", "machina", "off-machina", "outros",
         "traduttore", "imagens", "samizdát", "notes", "index",
         "bibliografia", "license"
     ]
     
-    # 1. ALINHAMENTO HORIZONTAL: Grid com ajuste de base
+    # Grid de Navegação
     c_sair, c_audio, c_doc, c_lang = st.columns([0.6, 0.8, 2, 1])
     
     with c_sair:
@@ -135,44 +132,50 @@ def page_sobre():
         st.markdown('</div>', unsafe_allow_html=True)
 
     with c_doc:
-        choice_label = st.selectbox("documentação", sobre_list, 
-                                   index=sobre_list.index(st.session_state.sub_sobre),
-                                   key="sel_doc")
-        st.session_state.sub_sobre = choice_label.lower()
+        # 1. DISPARO ESTÁVEL: Usando index dinâmico baseado no state
+        def on_doc_change():
+            st.session_state.sub_sobre = st.session_state.sel_doc.lower()
+
+        st.selectbox("documentação", sobre_list, 
+                     index=sobre_list.index(st.session_state.sub_sobre) if st.session_state.sub_sobre in sobre_list else 0,
+                     key="sel_doc", on_change=on_doc_change)
 
     with c_lang:
         idiomas_labels = list(idiomas_dict.keys())
-        sel_lang = st.selectbox("idiomas", idiomas_labels, 
-                               index=st.session_state.lang_idx,
-                               key="sel_lang")
-        st.session_state.lang_idx = idiomas_labels.index(sel_lang)
-        lang_code = idiomas_dict[sel_lang]
+        def on_lang_change():
+            st.session_state.lang_idx = idiomas_labels.index(st.session_state.sel_lang)
+
+        st.selectbox("idiomas", idiomas_labels, 
+                     index=st.session_state.lang_idx,
+                     key="sel_lang", on_change=on_lang_change)
+        
+        lang_code = idiomas_dict[idiomas_labels[st.session_state.lang_idx]]
 
     st.divider()
-
-    # Título calibrado
     st.markdown('<div class="titulo-logo">a Machina de Fazer Poesia</div>', unsafe_allow_html=True)
 
-    # --- TODO LIST ---
-    # [ ] Refazer Análise Combinatória (Divergência nos Quindecilhões)
-
     with st.container():
+        # 3. TRATAMENTO INDEX / TEMPO
         if st.session_state.sub_sobre.upper() == "INDEX":
-            # 3. AJUSTE TEMA TEMPO: Preservando tabs e espaços
             st.markdown("### Metadados do Tema: TEMPO")
             st.markdown(
-                """<div class="metadados-tempo">
+                f"""<div class="metadados-tempo">
 Tempo : 112.765.820.236.797.923.580.529.825.269.143.876.665.344.000.000.000
 Total : 112.765.820.265.471.186.578.333.495.090.938.981.765.900.724.963.269
                 </div>""", unsafe_allow_html=True
             )
+            # 4. TODO: Análise Combinatória
+            st.warning("TODO: Refazer Análise Combinatória - Divergência detectada nos quindecilhões.")
             st.divider()
 
-        # Renderização Normal
+        # Renderização do Conteúdo
         choice_file = st.session_state.sub_sobre.upper()
-        raw_text = load_md_file("ABOUT_MACHINA_A") + "\n\n" + load_md_file("ABOUT_MACHINA_D") if choice_file == "MACHINA" else load_md_file(f"ABOUT_{choice_file}")
+        if choice_file == "MACHINA":
+            raw_text = load_md_file("ABOUT_MACHINA_A") + "\n\n" + load_md_file("ABOUT_MACHINA_D")
+        else:
+            raw_text = load_md_file(f"ABOUT_{choice_file}")
         
-        with st.spinner(f"Processando tradução ({sel_lang})..."):
+        with st.spinner(f"Sincronizando Machina ({idiomas_labels[st.session_state.lang_idx]})..."):
             translated_text = translate_content(raw_text, lang_code)
             st.markdown(sanitize_links(translated_text))
 
