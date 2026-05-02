@@ -1,8 +1,25 @@
 import streamlit as st
 import os
+import re
+import urllib.parse
 from deep_translator import GoogleTranslator
 
 # --- 0. MOTORES DA MACHINA (SUPORTE) ---
+def sanitize_links(text):
+    """
+    Varre o texto em busca de URLs de redirecionamento (FB, Google, etc)
+    e extrai apenas o destino real para manter o código limpo.
+    """
+    # Padrão para capturar o parâmetro 'u=' ou 'q=' comum em redirecionadores
+    pattern = r"https?://[l|www]\.(?:facebook|google)\.[a-z\.]+/l\.php\?u=([^& \n]+)&?[^ \n]*"
+    
+    def clean(match):
+        url_encoded = match.group(1)
+        # Decodifica caracteres como %3A (:) e %2F (/)
+        return urllib.parse.unquote(url_encoded)
+
+    return re.sub(pattern, clean, text)
+
 def load_md_file(filename):
     folder = "md_files"
     search_name = filename if filename.upper().endswith(".MD") else f"{filename}.MD"
@@ -10,7 +27,9 @@ def load_md_file(filename):
         for arq in os.listdir(folder):
             if arq.upper() == search_name.upper():
                 with open(os.path.join(folder, arq), "r", encoding="utf-8") as f:
-                    return f.read()
+                    conteudo = f.read()
+                    # A sanitização ocorre na origem do carregamento
+                    return sanitize_links(conteudo)
     return f"<!-- {search_name} não encontrado -->"
 
 def translate_content(text, target_lang_code):
@@ -30,6 +49,8 @@ def set_style_machina():
         h2 { font-size: 1.5rem !important; font-weight: bold !important; }
         h3 { font-size: 1.2rem !important; font-weight: bold !important; }
         p { font-size: 1.05rem !important; line-height: 1.6; text-align: justify; }
+        /* Garante que links longos não quebrem o layout */
+        a { word-wrap: break-word; }
         </style>
         """,
         unsafe_allow_html=True
@@ -73,7 +94,6 @@ def page_sobre():
             curr_idx = sobre_list.index(st.session_state.sub_sobre.lower())
         except ValueError:
             curr_idx = 0
-        # Grafia de exibição corrigida para "MACHINA" conforme instrução
         choice = st.selectbox("↓ SOBRE", sobre_list, index=curr_idx).upper()
         st.session_state.sub_sobre = choice.lower()
 
@@ -84,16 +104,15 @@ def page_sobre():
 
     st.divider()
 
-    # TODO LIST: ACESSIBILIDADE (Inclusão Visual)
-    # [ ] Implementar talk() gTTS
-
     with st.container():
+        # Lógica de carregamento de arquivos MD
         if choice == "MACHINA":
             raw_text = load_md_file("ABOUT_MACHINA_A.MD") + "\n\n" + load_md_file("ABOUT_MACHINA_D.MD")
         else:
             raw_text = load_md_file(f"ABOUT_{choice}.MD")
         
-        with st.spinner(f"Traduzindo para {sel_lang}..."):
+        with st.spinner(f"Processando conteúdo para {sel_lang}..."):
+            # Tradução e exibição final
             translated_text = translate_content(raw_text, lang_code)
             st.markdown(translated_text)
 
@@ -102,7 +121,6 @@ if __name__ == "__main__":
     if st.session_state.pagina_ativa == "sobre":
         page_sobre()
     else:
-        # Título ajustado para a grafia obrigatória
         st.title("a Machina de Fazer Poesia")
         if st.button("Configurações / Sobre"):
             st.session_state.pagina_ativa = "sobre"
