@@ -5,6 +5,8 @@ def main():
         st.session_state.pagina_ativa = "mini"
     if 'idioma' not in st.session_state:
         st.session_state.idioma = "Português"
+    if 'play_audio' not in st.session_state:
+        st.session_state.play_audio = False
 
     st.markdown("""
         <style>
@@ -31,10 +33,6 @@ def main():
                 min-width: 300px !important;
                 width: 300px !important;
             }
-            [data-testid="stSidebar"][aria-expanded="false"] {
-                min-width: 0px !important;
-                width: 0px !important;
-            }
             [data-testid="stHeader"] {
                 background: transparent !important;
             }
@@ -45,17 +43,23 @@ def main():
                 border: none !important;
                 background: transparent !important;
             }
+            /* Alinhamento central do áudio no palco */
+            div[data-testid="stAudio"] {
+                width: 60% !important;
+                margin: 0 auto !important;
+            }
         </style>
     """, unsafe_allow_html=True)
 
     with st.sidebar:
-        st.button("Talk")
+        # TÍTULO DA MÁQUINA NO TOPO DA SIDEBAR
+        st.markdown("### a Máquina de Fazer Poesia")
+        st.caption("yPoema / Machina")
         
         st.divider()
 
-        # LISTA DE IDIOMAS: OCIDENTAIS + EXTENSÃO (RUSSIA + SUÉCIA NO FINAL)
+        # TRANSLATOR (22 IDIOMAS)
         idiomas_base = ["Português", "English", "Español", "Français", "Deutsch", "Italiano"]
-        
         extensao = sorted([
             "Català", "Dansk", "Euskara", "Suomi", "Galego", 
             "Islandska", "Lëtzebuergesch", "Magyar", "Nederlands", 
@@ -63,38 +67,23 @@ def main():
         ]) + ["Russia", "Suécia"]
         
         lista_completa = idiomas_base + extensao
-        
         st.session_state.idioma = st.selectbox("Translator", lista_completa)
         
         st.divider()
 
+        # BOTÕES ARTE E ÁUDIO (O CLIQUE EM ÁUDIO DISPARA O TALK)
         col_art, col_aud = st.columns(2)
         with col_art:
             st.button("Arte")
-        
         with col_aud:
-            # MAPEAMENTO DE VOZES (NOMES PRÓPRIOS MASCULINOS)
-            vozes_neurais = {
-                "Português": "António", "English": "Brian", "Español": "Enrique",
-                "Français": "Mathieu", "Deutsch": "Hans", "Italiano": "Giorgio",
-                "Dansk": "Mads", "Suomi": "Jari", "Nederlands": "Ruben",
-                "Norsk": "Henrik", "Suécia": "Hugo", "Polski": "Jacek",
-                "Română": "Alexandru", "Magyar": "Tamás", "Català": "Jordi",
-                "Islandska": "Karl", "Euskara": "Jon", "Galego": "Roi",
-                "Slovenčina": "Filip", "Slovenščina": "Luka", "Portuñol": "Miguel",
-                "Lëtzebuergesch": "Marc", "Russia": "Maxim"
-            }
-            voz_ativa = vozes_neurais.get(st.session_state.idioma, "Voz Masculina")
             if st.button("Áudio"):
-                st.toast(f"Voz: {voz_ativa}")
-
+                # O botão áudio agora assume a função de disparar o TTS
+                st.session_state.play_audio = True
+        
         st.divider()
 
-        st.markdown("### a Máquina de Fazer Poesia")
-        st.caption("yPoema / Machina")
-
-    # PALCO: NAVEGAÇÃO PROPORCIONAL POR CARACTERES
-    paginas = ["mini", "yPoema", "eureka", "off-machina", "livros", "poly", "opiniões", "sobre"]
+    # PALCO: NAVEGAÇÃO PROPORCIONAL (MOLDURA m -> e)
+    paginas = ["mini", "yPoema", "eureka", "off-machina", "livros", "poly", "opinião", "sobre"]
     pesos = [len(pg) for pg in paginas]
     
     cols = st.columns(pesos)
@@ -102,9 +91,30 @@ def main():
         with cols[i]:
             if st.button(pg, key=f"btn_{pg}"):
                 st.session_state.pagina_ativa = pg
+                st.session_state.play_audio = False 
                 st.rerun()
 
     st.divider()
+
+    # SLIDE DO ÁUDIO: NO PALCO, ABAIXO DAS PÁGINAS, CENTRADO
+    if st.session_state.play_audio:
+        # MAPEAMENTO DE VOZES MASCULINAS "NOME_NEURAL"
+        vozes_neurais = {
+            "Português": "antonio_neural", "English": "brian_neural", "Español": "enrique_neural",
+            "Français": "mathieu_neural", "Deutsch": "hans_neural", "Italiano": "giorgio_neural",
+            "Dansk": "mads_neural", "Suomi": "jari_neural", "Nederlands": "ruben_neural",
+            "Norsk": "henrik_neural", "Suécia": "hugo_neural", "Polski": "jacek_neural",
+            "Română": "alexandru_neural", "Magyar": "tamas_neural", "Català": "jordi_neural",
+            "Islandska": "karl_neural", "Euskara": "jon_neural", "Galego": "roi_neural",
+            "Slovenčina": "filip_neural", "Slovenščina": "luka_neural", "Portuñol": "miguel_neural",
+            "Lëtzebuergesch": "marc_neural", "Russia": "maxim_neural"
+        }
+        voz_selecionada = vozes_neurais.get(st.session_state.idioma, "voz_neural")
+        
+        st.write("") 
+        # O player centrado que aparece ao clicar em "Áudio" na sidebar
+        st.audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3") 
+        st.caption(f"<p style='text-align: center;'>Talk/TTS Ativo: {voz_selecionada}</p>", unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
