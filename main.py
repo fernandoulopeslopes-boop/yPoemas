@@ -28,9 +28,9 @@ def page_sobre():
     Biblioteca documental consolidada.
     """
     sobre_list = [
-        "comments", "machina", "off-machina", "prefácio", 
-        "outros", "imagens", "traduttore", "samizdát",
-        "notes", "index", "bibliografia", "license",
+        "ypoemas", "machina", "off-machina", "comments", "prefácio", 
+        "outros", "imagens", "notes", "traduttore", "samizdát",
+        "index", "bibliografia", "license",
     ]    
 
     options = list(range(len(sobre_list)))
