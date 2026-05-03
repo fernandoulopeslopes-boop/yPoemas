@@ -19,31 +19,29 @@ from lay_2_ypo import gera_poema
 ### bof: settings
 
 st.set_page_config(
-    page_title="a Machina de Fazer Poesia - yPoemas",
+    page_title="a Machina de fazer Poesia - yPoemas",
     page_icon=":star:",
     layout="centered",
     initial_sidebar_state="auto",
 )
 
-
-def have_internet(host="8.8.8.8", port=53, timeout=3):
+def have_internet():
     try:
-        socket.setdefaulttimeout(timeout)
-        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
+        # Tenta conectar ao IP da Cloudflare na porta 80 (HTTP)
+        # O timeout de 3 segundos é ideal para não travar o carregamento do app
+        socket.create_connection(("1.1.1.1", 80), timeout=3)
         return True
-    except socket.error as ex:
+    except OSError:
         return False
-
+        
 
 if have_internet():
     try:
         from deep_translator import GoogleTranslator
-    except ImportError as ex:
-        st.warning("Google Translator não conectado")
-    try:
         from gtts import gTTS
-    except ImportError as ex:
-        st.warning("Google TTS não conectado")
+        # ... restante dos imports
+    except ImportError:
+        st.warning("Dependências ausentes no requirements.txt")[cite: 2]
 else:
     st.warning("Internet não conectada. Traduções não disponíveis no momento.")
 
