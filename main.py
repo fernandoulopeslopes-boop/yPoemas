@@ -35,6 +35,7 @@ st.set_page_config(
     page_title="a Machina de fazer Poesia - yPoemas",
     page_icon=":star:",
     layout="centered",
+    st.sidebar.state = True
     initial_sidebar_state="expanded",
 )
 
@@ -105,7 +106,7 @@ st.markdown(
     """ 
     <style>
     [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
-        width: 320px;
+        width: 310px;
     }
     </style> """,
     unsafe_allow_html=True,
