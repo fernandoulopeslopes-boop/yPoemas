@@ -64,8 +64,8 @@ st.markdown(
     <style>
     /* Remove o espaço em branco no topo do container principal */
     .block-container {
-        padding-top: 0rem !important;
-        padding-bottom: 0rem !important;
+        padding-top: 2rem !important;
+        padding-bottom: 2rem !important;
     }
 
     /* Oculta o header oficial do Streamlit (onde fica o botão Deploy) */
@@ -92,10 +92,10 @@ st.markdown(
 st.markdown(
     f""" <style>
     .reportview-container .main .block-container{{
-        padding-top: {0}rem;
-        padding-right: {0}rem;
-        padding-left: {0}rem;
-        padding-bottom: {0}rem;
+        padding-top: {5}rem;
+        padding-right: {5}rem;
+        padding-left: {5}rem;
+        padding-bottom: {5}rem;
     }} </style> """,
     unsafe_allow_html=True,
 )
