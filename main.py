@@ -1409,31 +1409,31 @@ def main():
 
     if chosen_id == "1":
         st.sidebar.info(load_md_file("INFO_MINI.md"))
-        magy = "\images\img_mini.jpg"
+        magy = "./images/img_mini.jpg",
         page_mini()
     elif chosen_id == "2":
         st.sidebar.info(load_md_file("INFO_YPOEMAS.md"))
-        magy = "\images\img_ypoemas.jpg"
+        magy = "./images/img_ypoemas.jpg",
         page_ypoemas()
     elif chosen_id == "3":
         st.sidebar.info(load_md_file("INFO_EUREKA.md"))
-        magy = "\images\img_eureka.jpg"
+        magy = "./images/img_eureka.jpg",
         page_eureka()
     elif chosen_id == "4":
         st.sidebar.info(load_md_file("INFO_OFF-MACHINA.md"))
-        magy = "\images\img_off-machina.jpg"
+        magy = "./images/img_off-machina.jpg",
         page_off_machina()
     elif chosen_id == "5":
         st.sidebar.info(load_md_file("INFO_BOOKS.md"))
-        magy = "\images\img_books.jpg"
+        magy = "./images/img_books.jpg",
         page_books()
     elif chosen_id == "6":
         st.sidebar.info(load_md_file("INFO_POLY.md"))
-        magy = "\images\img_poly.jpg"
+        magy = "./images/img_poly.jpg",
         page_polys()
     elif chosen_id == "7":
         st.sidebar.info(load_md_file("INFO_ABOUT.md"))
-        magy = "\images\img_about.jpg"
+        magy = "./images/img_about.jpg",
         page_abouts()
         ##$ page_docs()
 
