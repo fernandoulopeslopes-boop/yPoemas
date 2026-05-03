@@ -32,4 +32,5 @@ ___
 > A imagem (aleatória) agregada ao tema apenas multi-aplica-lhe outro valor.  
 > As conexões tema-imagem ficam por conta dos neurônios do leitor, a cada lida.  
 ___
-Copyright © 1983-2022 Nando Lopes - **yPoemas @ máquina de fazer Poesia**
+Copyright © 1983-Hoje Nando Lopes - **yPoemas @ Machina de fazer Poesia**
+<eof>
