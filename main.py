@@ -84,10 +84,10 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-/* Garante que o elemento 'main' não tenha margens extras */
-root > div:nth-child(1) > div > div > div > div > section > div {
-    padding-top: 0rem;
-}
+#/* Garante que o elemento 'main' não tenha margens extras */
+#root > div:nth-child(1) > div > div > div > div > section > div {
+#    padding-top: 0rem;
+#}
 
 # change padding between components
 st.markdown(
