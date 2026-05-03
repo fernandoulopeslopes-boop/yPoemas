@@ -714,7 +714,7 @@ if st.session_state.visy:  # check visitor once; rand initial temas
     maxy_mini = len(temas_list)
     st.session_state.mini = random.randrange(0, maxy_mini)
 
-    st.success(translate("bem vindo à **máquina de fazer Poesia...**"))
+    # st.success(translate("bem vindo à **máquina de fazer Poesia...**"))
     st.session_state.draw = True
     st.session_state.visy = False
 
