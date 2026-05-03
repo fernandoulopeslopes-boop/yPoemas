@@ -41,4 +41,6 @@ ___
   Ou, use **Ctrl F** para localizar as ocorrências da palavra na página atual.  
 - Pode-se também usar a combinação **Ctrl C** e **Ctrl V** para copiar e colar o texto.  
 ___
-Copyright © 1983-Hoje Nando Lopes - **yPoemas @ Machina de Fazer Poesia**
+Copyright © 1983-Hoje Nando Lopes - **yPoemas @ Machina de fazer Poesia**
+<eof>
+
