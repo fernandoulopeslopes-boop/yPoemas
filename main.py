@@ -24,7 +24,6 @@ def load_md_file(filename):
             for arq in available_files:
                 if arq.upper() == target.upper():
                     with open(os.path.join(folder, arq), "r", encoding="utf-8") as f:
-                        # 1. Grafia correta OFF-MACHINA.MD tratada aqui
                         return sanitize_links(f.read())
     return f"<!-- {base_name}.MD não encontrado -->"
 
@@ -35,12 +34,23 @@ def translate_content(text, target_lang_code):
     except: return text
 
 def set_style_machina():
-    """CSS: Alinhamento milimétrico e Provocação Vermelha."""
+    """CSS: Alinhamento, Provocação Vermelha e Padronização de Texto."""
     st.markdown(
         """
         <style>
         [data-testid="stMainInternal"] { max-width: 95% !important; padding: 2rem !important; }
         
+        /* 1. O MOTOR DE LAYOUT DE TEXTO */
+        .conteudo-padronizado {
+            max-width: 850px;
+            margin: 0 auto;
+            line-height: 1.7;
+            word-wrap: break-word;
+            text-align: justify;
+            font-size: 1.1rem;
+            color: #262730;
+        }
+
         .titulo-logo {
             font-size: 2.1rem !important;
             font-weight: bold !important;
@@ -48,33 +58,16 @@ def set_style_machina():
             color: #1E1E1E;
         }
 
-        /* 3. ALINHAMENTO: Força todos os elementos da coluna a alinhar na base */
         [data-testid="stHorizontalBlock"] {
             align-items: flex-end !important;
         }
 
-        /* Padronização de altura para botões e campos */
-        .stButton > button, .stSelectbox div[data-baseweb="select"] {
-            height: 2.8rem !important;
-        }
-
-        /* 2. PROVIDÊNCIA: Fundo Vermelho no Sair */
         .btn-sair > div > button {
             background-color: #ff4b4b !important;
             color: white !important;
-            border: none !important;
             font-weight: bold !important;
         }
-        .btn-sair > div > button:hover {
-            background-color: #d43f3f !important;
-        }
-
-        .btn-audio > div > button {
-            border: 1px solid #333 !important;
-            background-color: transparent !important;
-            color: #333 !important;
-        }
-
+        
         .metadados-tempo {
             font-family: monospace;
             background-color: #f8f9fb;
@@ -108,14 +101,12 @@ def page_sobre():
         "francês": "fr", "inglês": "en", "catalão": "ca"
     }
     
-    # 2. Lista oficial restaurada
     sobre_list = [
         "comments", "prefácio", "machina", "off-machina", "outros",
         "traduttore", "imagens", "samizdát", "notes", "index",
         "bibliografia", "license"
     ]
     
-    # Grid de Navegação
     c_sair, c_audio, c_doc, c_lang = st.columns([0.6, 0.8, 2, 1])
     
     with c_sair:
@@ -127,15 +118,12 @@ def page_sobre():
 
     with c_audio:
         st.markdown('<div class="btn-audio">', unsafe_allow_html=True)
-        if st.button("audio 🔈", key="btn_talk"):
-            pass
+        st.button("audio 🔈", key="btn_talk")
         st.markdown('</div>', unsafe_allow_html=True)
 
     with c_doc:
-        # 1. DISPARO ESTÁVEL: Usando index dinâmico baseado no state
         def on_doc_change():
             st.session_state.sub_sobre = st.session_state.sel_doc.lower()
-
         st.selectbox("documentação", sobre_list, 
                      index=sobre_list.index(st.session_state.sub_sobre) if st.session_state.sub_sobre in sobre_list else 0,
                      key="sel_doc", on_change=on_doc_change)
@@ -144,42 +132,30 @@ def page_sobre():
         idiomas_labels = list(idiomas_dict.keys())
         def on_lang_change():
             st.session_state.lang_idx = idiomas_labels.index(st.session_state.sel_lang)
-
         st.selectbox("idiomas", idiomas_labels, 
                      index=st.session_state.lang_idx,
                      key="sel_lang", on_change=on_lang_change)
         
-        lang_code = idiomas_dict[idiomas_labels[st.session_state.lang_idx]]
-
     st.divider()
     st.markdown('<div class="titulo-logo">a Machina de Fazer Poesia</div>', unsafe_allow_html=True)
 
+    # 2. RENDERIZAÇÃO COM O MOTOR DE LAYOUT
     with st.container():
-        # 3. TRATAMENTO INDEX / TEMPO
-        if st.session_state.sub_sobre.upper() == "INDEX":
-            st.markdown("### Metadados do Tema: TEMPO")
-            st.markdown(
-                f"""<div class="metadados-tempo">
-Tempo : 112.765.820.236.797.923.580.529.825.269.143.876.665.344.000.000.000
-Total : 112.765.820.265.471.186.578.333.495.090.938.981.765.900.724.963.269
-                </div>""", unsafe_allow_html=True
-            )
-            # 4. TODO: Análise Combinatória
-            st.warning("TODO: Refazer Análise Combinatória - Divergência detectada nos quindecilhões.")
-            st.divider()
-
-        # Renderização do Conteúdo
         choice_file = st.session_state.sub_sobre.upper()
+        
+        # Lógica de carga
         if choice_file == "MACHINA":
             raw_text = load_md_file("ABOUT_MACHINA_A") + "\n\n" + load_md_file("ABOUT_MACHINA_D")
         else:
             raw_text = load_md_file(f"ABOUT_{choice_file}")
         
-        with st.spinner(f"Sincronizando Machina ({idiomas_labels[st.session_state.lang_idx]})..."):
+        lang_code = idiomas_dict[list(idiomas_dict.keys())[st.session_state.lang_idx]]
+        
+        with st.spinner("Sincronizando..."):
             translated_text = translate_content(raw_text, lang_code)
-            st.markdown(sanitize_links(translated_text))
+            # A mágica acontece aqui: div injetada para controlar o layout
+            st.markdown(f'<div class="conteudo-padronizado">{translated_text}</div>', unsafe_allow_html=True)
 
-# --- 3. EXECUÇÃO ---
 if __name__ == "__main__":
     if st.session_state.pagina_ativa == "sobre":
         page_sobre()
