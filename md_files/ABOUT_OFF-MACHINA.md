@@ -56,7 +56,6 @@ ___
 
 ___
 (1) **livro**: substantivo masculino (Houaiss)  
-
 > Coleção de folhas de papel, impressas ou não, cortadas, dobradas  
 > e reunidas em cadernos cujos dorsos são unidos por meio de cola  
 > ou costura, formando um volume que se recobre com capa resistente.  
@@ -70,8 +69,9 @@ ___
 > com mais de 48 páginas, além da capa.  
 
 (1) **livro**: ABNT - NBR 6029: 3.31  
-
 > Publicação não periódica que contém acima de 49 páginas, excluídas as capas,  
 > e que é objeto de Número Internacional Normalizado para Livro (ISBN).  
 ___
-Copyright © 1983-hoje Nando Lopes - **yPoemas @ máquina de fazer Poesia**
+Copyright © 1983-Hoje Nando Lopes - **yPoemas @ Machina de fazer Poesia**
+<eof>
+
