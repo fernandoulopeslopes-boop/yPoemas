@@ -41,6 +41,23 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
+# --- INICIALIZAÇÃO OBRIGATÓRIA (Coloque logo após o set_page_config) ---
+def init_session_state():
+    # Chaves para os botões de controle (Talk, Arts, etc)
+    defaults = {
+        "talk": False,
+        "arts": False,
+        "lang": "pt",
+        "poly_name": "Custom",
+        "poly_lang": "en",
+        "poly_file": "poly_pt.txt"
+    }
+    for key, value in defaults.items():
+        if key not in st.session_state:
+            st.session_state[key] = value
+
+# Chama a função antes de qualquer outra coisa
+init_session_state()
 if have_internet():
     try:
         from deep_translator import GoogleTranslator
