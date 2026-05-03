@@ -84,12 +84,6 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-/* Remove o espaço reservado para o header (onde fica o menu 'Deploy') */
-header {
-    visibility: hidden;
-    height: 0px;
-}
-
 /* Garante que o elemento 'main' não tenha margens extras */
 #root > div:nth-child(1) > div > div > div > div > section > div {
     padding-top: 0rem;
