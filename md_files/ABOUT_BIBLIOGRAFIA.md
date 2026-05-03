@@ -49,3 +49,4 @@ ___
 - Van Looy, Jan, y Jan Baetens - “Digitising Cultural Heritage”  
 ---
 Copyright © 1983-Hoje Nando Lopes - **yPoemas @ Machina de fazer Poesia**
+<eof>
