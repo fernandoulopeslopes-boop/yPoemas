@@ -14,65 +14,110 @@ import streamlit as st
 
 from extra_streamlit_components import TabBar as stx
 from datetime import datetime
-from lay_2_ypo import gera_poema
 
 ### bof: settings
 
-# the User IPAddress for LYPO, TYPO
-hostname = socket.gethostname()
-IPAddres = socket.gethostbyname(hostname)
-
-def have_internet():
-    try:
-        # Tenta conectar ao IP da Cloudflare na porta 80 (HTTP)
-        socket.create_connection(("1.1.1.1", 80), timeout=3)
-        return True
-    except OSError:
-        return False
-        
 st.set_page_config(
-    page_title="a Machina de fazer Poesia - yPoemas",
-    page_icon="★",
+    page_title="a Machina de Fazer Poesia - yPoemas",
+    page_icon=":star:",
     layout="centered",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state="auto",
 )
+
+
+def have_internet(host="8.8.8.8", port=53, timeout=3):
+    try:
+        socket.setdefaulttimeout(timeout)
+        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
+        return True
+    except socket.error as ex:
+        return False
+
 
 if have_internet():
     try:
         from deep_translator import GoogleTranslator
+    except ImportError as ex:
+        st.warning(translate("Google Translator não conectado"))
+    try:
         from gtts import gTTS
-    except ImportError:
-        st.warning("Dependências ausentes no requirements.txt")
+    except ImportError as ex:
+        st.warning(translate("Google TTS não conectado"))
 else:
     st.warning("Internet não conectada. Traduções não disponíveis no momento.")
 
-# --- BLOCO ÚNICO DE CSS (Otimizado e Sem Conflitos) ---
+
+# the User IPAddres for LYPO, TYPO
+hostname = socket.gethostname()
+IPAddres = socket.gethostbyname(hostname)
+
+
+# hide Streamlit Menu and Footer
+st.markdown(
+    """ <style>
+    /*#MainMenu {visibility: hidden;}*/
+    footer {visibility: hidden;}
+    </style> """,
+    unsafe_allow_html=True,
+)
+
+
+# change padding between components
+st.markdown(
+    f""" <style>
+    .reportview-container .main .block-container{{
+        padding-top: {0}rem;
+        padding-right: {0}rem;
+        padding-left: {0}rem;
+        padding-bottom: {0}rem;
+    }} </style> """,
+    unsafe_allow_html=True,
+)
+
+# change sidebar width
+st.markdown(
+    """ 
+    <style>
+    [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
+        width: 310px;
+    }
+    </style> """,
+    unsafe_allow_html=True,
+)
+
+
 # load_poema settings
 st.markdown(
     """
     <style>
-    /* 1. Respiro no topo: Ajustado para não ficar colado */
-    .block-container {
-        padding-top: 1.5rem !important; /* Aumentado de 0 para 1.5 para dar distância */
-        margin-top: 0px !important;
+    mark {
+      background-color: powderblue;
+      color: black;
+    }
+    .container {
+        display: flex;
+        /* justify-content: center; */
     }
 
-    /* 2. Forçar botões da sidebar na horizontal */
-    [data-testid="stVerticalBlock"] > div > div > div > div > div > button {
-        display: inline-flex !important;
-        width: auto !important;
-        margin-right: 5px !important;
+    .header {
+        text-align:center;
     }
-    
-    /* 3. Garantir que a sidebar não empilhe tudo verticalmente */
-    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
-        flex-direction: column;
+    .logo-text {
+        font-weight: 600;
+        font-size: 18px;
+        font-size: 18px;
+        font-family: 'IBM Plex Sans';
+        color: #000000;
+        padding-top: 0px;
+        padding-left: 15px;
     }
-    </style>
-    """,
+    .logo-img {
+        float:right;
+    }
+    </style> """,
     unsafe_allow_html=True,
 )
-### eof: settings
+
 
 # Initialize SessionState
 
@@ -82,7 +127,7 @@ if "last_lang" not in st.session_state:
     st.session_state.last_lang = "pt"
 
 if "book" not in st.session_state:  #  index for books_list
-    st.session_state.book = "todos os temas"
+    st.session_state.book = "livro vivo"
 if "take" not in st.session_state:  #  index for selected tema in books_list
     st.session_state.take = 0
 if "mini" not in st.session_state:  #  index for selected tema in page_mini
@@ -132,8 +177,8 @@ if "rand" not in st.session_state:
 
 def pick_lang():  # define idioma
     btn_pt, btn_es, btn_it, btn_fr, btn_en, btn_xy = st.sidebar.columns(
-        [1.1, 1.13, 1.04, 1.04, 1.17, 1.25]
-#        [2, 2, 2, 2, 2, 2]
+#        [1.1, 1.13, 1.04, 1.04, 1.17, 1.25]
+        [2, 2, 2, 2, 2, 2]
     )
     btn_pt = btn_pt.button("pt", key=1, help="Português")
     btn_es = btn_es.button("es", key=2, help="Español")
@@ -173,7 +218,7 @@ def show_icons():  # https://api.whatsapp.com/
             <a href='https://www.facebook.com/nandoulopes' target='_blank'>• facebook</a> |
             <a href='mailto:lopes.fernando@hotmail.com' target='_blank'>e-mail</a> |
             <a href='https://www.instagram.com/fernando.lopes.942/' target='_blank'>instagram</a> |
-            <a href='https://web.whatsapp.com/send?phone=+55 12 991 36 8181' target='_blank'>whatsapp</a>
+            <a href='https://web.whatsapp.com/send?phone=+5512991368181' target='_blank'>whatsapp</a>
             </nav>
             """,
             unsafe_allow_html=True,
@@ -488,13 +533,11 @@ def load_all_offs():
         "faz_de_conto",
         "quase_que_eu_Poesia",
         "essencial",
-        "ensaio",
         "desvoto",
-        "urbano",
         "um_romance",
         "livro_vivo",
         "linguafiada",
-        "secreto"
+        "secreto",
     ]
 
     return all_books_off
@@ -672,7 +715,7 @@ if st.session_state.visy:  # check visitor once; rand initial temas
     maxy_mini = len(temas_list)
     st.session_state.mini = random.randrange(0, maxy_mini)
 
-    # st.success(translate("bem vindo à **máquina de fazer Poesia...**"))
+    st.success(translate("bem vindo à **máquina de fazer Poesia...**"))
     st.session_state.draw = True
     st.session_state.visy = False
 
@@ -1151,7 +1194,7 @@ def page_off_machina():  # available off_machina_books
         with off_machina_expander:
             off_book_text = ""
             pipe_line = this_off_book[st.session_state.off_take].split("|")
-            if "@" in pipe_line:
+            if "@ " in pipe_line[1]:
                 if st.session_state.lang != st.session_state.last_lang:
                     off_book_text = load_lypo()  # changes in lang, keep LYPO
                 else:
@@ -1368,31 +1411,31 @@ def main():
 
     if chosen_id == "1":
         st.sidebar.info(load_md_file("INFO_MINI.md"))
-        magy = "./images/img_mini.jpg",
+        magy = "img_mini.jpg"
         page_mini()
     elif chosen_id == "2":
         st.sidebar.info(load_md_file("INFO_YPOEMAS.md"))
-        magy = "./images/img_ypoemas.jpg",
+        magy = "img_ypoemas.jpg"
         page_ypoemas()
     elif chosen_id == "3":
         st.sidebar.info(load_md_file("INFO_EUREKA.md"))
-        magy = "./images/img_eureka.jpg",
+        magy = "img_eureka.jpg"
         page_eureka()
     elif chosen_id == "4":
         st.sidebar.info(load_md_file("INFO_OFF-MACHINA.md"))
-        magy = "./images/img_off-machina.jpg",
+        magy = "img_off-machina.jpg"
         page_off_machina()
     elif chosen_id == "5":
         st.sidebar.info(load_md_file("INFO_BOOKS.md"))
-        magy = "./images/img_books.jpg",
+        magy = "img_books.jpg"
         page_books()
     elif chosen_id == "6":
         st.sidebar.info(load_md_file("INFO_POLY.md"))
-        magy = "./images/img_poly.jpg",
+        magy = "img_poly.jpg"
         page_polys()
     elif chosen_id == "7":
         st.sidebar.info(load_md_file("INFO_ABOUT.md"))
-        magy = "./images/img_about.jpg",
+        magy = "img_about.jpg"
         page_abouts()
         ##$ page_docs()
 
@@ -1400,7 +1443,8 @@ def main():
         st.image(magy)
 
     show_icons()
-    st.sidebar.state = True
+    ##$ st.sidebar.state = True
 
 if __name__ == "__main__":
     main()
+
