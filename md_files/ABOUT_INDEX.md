@@ -162,6 +162,8 @@ ___
   
 [fonte dos dados](http://www.fisica-interessante.com/matematica-divertida-ordens-classes-multiplos.html)  
 ___
-Copyright © 1983-2022 Nando Lopes - **yPoemas @ máquina de fazer Poesia**  
-
 Total de variações: 112.765.820.265.471.186.578.333.495.090.938.981.765.900.724.963.269 (quindecilhões)
+___
+Copyright © 1983-Hoje Nando Lopes - **yPoemas @ Machina de fazer Poesia**
+<eof>
+
