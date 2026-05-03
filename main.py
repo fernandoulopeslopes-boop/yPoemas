@@ -18,14 +18,13 @@ from lay_2_ypo import gera_poema
 
 ### bof: settings
 
-# the User IPAddres for LYPO, TYPO
+# the User IPAddress for LYPO, TYPO
 hostname = socket.gethostname()
 IPAddres = socket.gethostbyname(hostname)
 
 def have_internet():
     try:
         # Tenta conectar ao IP da Cloudflare na porta 80 (HTTP)
-        # O timeout de 3 segundos é ideal para não travar o carregamento do app
         socket.create_connection(("1.1.1.1", 80), timeout=3)
         return True
     except OSError:
@@ -42,107 +41,52 @@ if have_internet():
     try:
         from deep_translator import GoogleTranslator
         from gtts import gTTS
-        # ... restante dos imports
     except ImportError:
         st.warning("Dependências ausentes no requirements.txt")
 else:
     st.warning("Internet não conectada. Traduções não disponíveis no momento.")
 
-
-# hide Streamlit Menu and Footer
-st.markdown(
-    """ <style>
-    /*MainMenu {visibility: hidden;}*/
-    footer {visibility: hidden;}
-    </style> """,
-    unsafe_allow_html=True,
-)
-
-# --- ajuste de topo (subir o palco) ---
+# --- BLOCO ÚNICO DE CSS (Otimizado e Sem Conflitos) ---
 st.markdown(
     """
     <style>
-    /* Remove o espaço em branco no topo do container principal */
+    /* 1. Limpeza de Menu e Rodapé */
+    footer {visibility: hidden;}
+    header {visibility: hidden; height: 0px;}
+
+    /* 2. Subir o Palco (Remover espaços em branco no topo) */
     .block-container {
         padding-top: 0rem !important;
         padding-bottom: 0rem !important;
+        max-width: 100% !important;
     }
-
-    /* Oculta o header oficial do Streamlit (onde fica o botão Deploy) */
-    header {
-        visibility: hidden;
-        height: 0px;
-    }
-
-    /* Ajuste fino para o topo da página */
+    
     .stApp {
-        margin-top: -10px;
-        margin-left: 5px;
+        margin-top: -20px; /* Ajuste fino para subir */
     }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
 
-#/* Garante que o elemento 'main' não tenha margens extras */
-#root > div:nth-child(1) > div > div > div > div > section > div {
-#    padding-top: 0rem;
-#}
-
-# change padding between components
-st.markdown(
-    f""" <style>
-    .reportview-container .main .block-container{{
-        padding-top: {1}rem;
-        padding-right: {1}rem;
-        padding-left: {1}rem;
-        padding-bottom: {1}rem;
-    }} </style> """,
-    unsafe_allow_html=True,
-)
-
-st.markdown(
-    """
-    <style>
-    /* Força a largura da sidebar e garante que o conteúdo não transborde */
+    /* 3. Sidebar: Fixar 310px e Trazer o botão >> de volta */
     [data-testid="stSidebar"] {
         width: 310px !important;
         min-width: 310px !important;
     }
-
-    /* Garante que o botão de fechar/abrir (o >>) permaneça visível e funcional */
-    [data-testid="stSidebarNav"] {
-        width: 320px !important;
+    
+    /* Faz o botão de expansão (>> ou >) acompanhar a largura da sidebar */
+    [data-testid="stSidebarCollapseButton"] {
+        left: 310px !important;
+        background-color: rgba(255,255,255,0.5); /* Torna o botão mais visível */
     }
 
-    /* Ajuste para o botão de colapso não ser "engolido" pela largura fixa */
-    button[kind="header"] {
-        left: 320px !important;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
-# load_poema settings
-st.markdown(
-    """
-    <style>
+    /* 4. Estilos de Texto e Poema */
     mark {
       background-color: powderblue;
       color: black;
     }
     .container {
         display: flex;
-        /* justify-content: center; */
-    }
-
-    .header {
-        text-align:center;
     }
     .logo-text {
         font-weight: 600;
-        font-size: 16px;
         font-size: 16px;
         font-family: 'IBM Plex Sans';
         color: #000000;
@@ -150,12 +94,13 @@ st.markdown(
         padding-left: 5px;
     }
     .logo-img {
-        float:right;
+        float: right;
     }
-    </style> """,
+    </style>
+    """,
     unsafe_allow_html=True,
 )
-
+### eof: settings
 
 # Initialize SessionState
 
