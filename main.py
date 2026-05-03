@@ -101,7 +101,6 @@ st.markdown(
     unsafe_allow_html=True,
 )
 ### eof: settings
-
 # Initialize SessionState
 
 if "lang" not in st.session_state:
