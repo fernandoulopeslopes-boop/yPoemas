@@ -63,7 +63,7 @@ from lay_2_ypo import gera_poema
 ### bof: settings
 
 st.set_page_config(
-    page_title="a máquina de fazer Poesia - yPoemas",
+    page_title="a Machina de fazer Poesia - yPoemas",
     page_icon=":star:",
     layout="centered",
     initial_sidebar_state="auto",
@@ -169,6 +169,9 @@ if "lang" not in st.session_state:
     st.session_state.lang = "pt"
 if "last_lang" not in st.session_state:
     st.session_state.last_lang = "pt"
+
+if "poly_lang" not in st.session_state:
+    st.session_state.poly_lang = "ca"
 
 if "book" not in st.session_state:  #  index for books_list
     st.session_state.book = "livro vivo"
