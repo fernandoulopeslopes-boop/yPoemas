@@ -52,7 +52,7 @@ else:
 # hide Streamlit Menu and Footer
 st.markdown(
     """ <style>
-    /*#MainMenu {visibility: hidden;}*/
+    /*MainMenu {visibility: hidden;}*/
     footer {visibility: hidden;}
     </style> """,
     unsafe_allow_html=True,
@@ -64,8 +64,8 @@ st.markdown(
     <style>
     /* Remove o espaço em branco no topo do container principal */
     .block-container {
-        padding-top: 2rem !important;
-        padding-bottom: 2rem !important;
+        padding-top: 0rem !important;
+        padding-bottom: 0rem !important;
     }
 
     /* Oculta o header oficial do Streamlit (onde fica o botão Deploy) */
@@ -77,25 +77,26 @@ st.markdown(
     /* Ajuste fino para o topo da página */
     .stApp {
         margin-top: -10px;
+        margin-left: 5px;
     }
     </style>
     """,
     unsafe_allow_html=True,
 )
 
-#/* Garante que o elemento 'main' não tenha margens extras */
-#root > div:nth-child(1) > div > div > div > div > section > div {
-#    padding-top: 0rem;
-#}
+/* Garante que o elemento 'main' não tenha margens extras */
+root > div:nth-child(1) > div > div > div > div > section > div {
+    padding-top: 0rem;
+}
 
 # change padding between components
 st.markdown(
     f""" <style>
     .reportview-container .main .block-container{{
-        padding-top: {5}rem;
-        padding-right: {5}rem;
-        padding-left: {5}rem;
-        padding-bottom: {5}rem;
+        padding-top: {1}rem;
+        padding-right: {1}rem;
+        padding-left: {1}rem;
+        padding-bottom: {1}rem;
     }} </style> """,
     unsafe_allow_html=True,
 )
@@ -111,12 +112,12 @@ st.markdown(
 
     /* Garante que o botão de fechar/abrir (o >>) permaneça visível e funcional */
     [data-testid="stSidebarNav"] {
-        width: 310px !important;
+        width: 320px !important;
     }
 
     /* Ajuste para o botão de colapso não ser "engolido" pela largura fixa */
     button[kind="header"] {
-        left: 310px !important;
+        left: 320px !important;
     }
     </style>
     """,
@@ -145,8 +146,8 @@ st.markdown(
         font-size: 16px;
         font-family: 'IBM Plex Sans';
         color: #000000;
-        padding-top: 0px;
-        padding-left: 15px;
+        padding-top: 5px;
+        padding-left: 5px;
     }
     .logo-img {
         float:right;
