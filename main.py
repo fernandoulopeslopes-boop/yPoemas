@@ -81,7 +81,7 @@ st.markdown(
 # ... [Mantenha os SessionState como estão no seu original] ...
 
 ### bof: tools
-
+st.session_state.poly_name='ca'
 def pick_lang():  # define idioma de forma horizontal na sidebar
     with st.sidebar:
         cols = st.columns([1, 1, 1, 1, 1, 1])
