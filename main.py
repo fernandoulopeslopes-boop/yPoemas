@@ -52,7 +52,7 @@ st.markdown(
     <style>
     /* 1. Respiro no topo: Ajustado para não ficar colado */
     .block-container {
-        padding-top: 5rem !important; /* Aumentado de 0 para 5 para dar distância */
+        padding-top: 1.5rem !important; /* Aumentado de 0 para 1.5 para dar distância */
         margin-top: 0px !important;
     }
 
@@ -60,7 +60,7 @@ st.markdown(
     [data-testid="stVerticalBlock"] > div > div > div > div > div > button {
         display: inline-flex !important;
         width: auto !important;
-        margin-right: 5px !important;
+        margin-right: 1.5px !important;
     }
     
     /* 3. Garantir que a sidebar não empilhe tudo verticalmente */
@@ -172,7 +172,7 @@ def show_icons():  # https://api.whatsapp.com/
             <a href='https://www.facebook.com/nandoulopes' target='_blank'>• facebook</a> |
             <a href='mailto:lopes.fernando@hotmail.com' target='_blank'>e-mail</a> |
             <a href='https://www.instagram.com/fernando.lopes.942/' target='_blank'>instagram</a> |
-            <a href='https://web.whatsapp.com/send?phone=+5512991368181' target='_blank'>whatsapp</a>
+            <a href='https://web.whatsapp.com/send?phone=+55 12 991 36 8181' target='_blank'>whatsapp</a>
             </nav>
             """,
             unsafe_allow_html=True,
