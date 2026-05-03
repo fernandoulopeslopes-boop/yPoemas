@@ -561,10 +561,11 @@ def load_all_offs():
         "essencial",
         "ensaio",
         "desvoto",
+        "urbano",
         "um_romance",
         "livro_vivo",
         "linguafiada",
-        "secreto",
+        "secreto"
     ]
 
     return all_books_off
