@@ -146,4 +146,6 @@ ___
 
 It’s brilliant! Well done you! I love words.  
 ___  
-Copyright © 1983-Hoje Nando Lopes - **yPoemas @ Machina de Fazer Poesia**
+Copyright © 1983-Hoje Nando Lopes - **yPoemas @ Machina de fazer Poesia**
+<eof>
+
