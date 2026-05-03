@@ -18,13 +18,6 @@ from lay_2_ypo import gera_poema
 
 ### bof: settings
 
-st.set_page_config(
-    page_title="a Machina de fazer Poesia - yPoemas",
-    page_icon=":star:",
-    layout="centered",
-    initial_sidebar_state="auto",
-)
-
 def have_internet():
     try:
         # Tenta conectar ao IP da Cloudflare na porta 80 (HTTP)
@@ -34,6 +27,12 @@ def have_internet():
     except OSError:
         return False
         
+st.set_page_config(
+    page_title="a Machina de fazer Poesia - yPoemas",
+    page_icon=":star:",
+    layout="centered",
+    initial_sidebar_state="auto",
+)
 
 if have_internet():
     try:
