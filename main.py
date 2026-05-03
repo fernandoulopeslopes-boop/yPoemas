@@ -33,9 +33,8 @@ def have_internet():
         
 st.set_page_config(
     page_title="a Machina de fazer Poesia - yPoemas",
-    page_icon=":star:",
+    page_icon="★",
     layout="centered",
-    # state = True
     initial_sidebar_state="expanded",
 )
 
