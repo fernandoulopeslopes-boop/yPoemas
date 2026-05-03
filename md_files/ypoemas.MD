@@ -1,5 +1,5 @@
 >A Machina: Um Engenho de Poesia  
-_
+_  
 >No horizonte onde a literatura encontra o algoritmo, surge a Machina.  
 >Não se trata de um simulador de acasos: é um organismo gerador em escala monumental.  
 >Uma estrutura desenhada para processar um inventário exato e gigantesco de variações poéticas.  
@@ -18,17 +18,17 @@ _
 >A matéria-prima dessa operação são os Ítimos.  
 >Analogamente à átomos e étimos, os ítimos são as unidades mínimas de significado.  
 >A Machina os articula através de um rigoroso sistema, fundindo-os em um novo yPoema.  
-_
+_  
   
 II. O Palco e a Experiência Multimodal  
-_
+_  
 >A interface da Machina é projetada como um Palco, onde o yPoema assume o protagonismo absoluto.  
 >A experiência é sensorial e rompe fronteiras:  
 >   Visual: Onde o texto se funde a uma identidade estética.  
 >   Sonora: Através da síntese de voz, dando corpo e ritmo à leitura dos versos.  
 >   Universal: Com suporte a múltiplos idiomas, permite ao yPoema transitar livremente por diversas culturas  
 >  
->_
+>_  
 >III. O Ritual de Navegação  
 >_  
 >A interação com a Machina segue um fluxo de descoberta conduzido por comandos precisos.  
@@ -38,7 +38,7 @@ _
 >  
 >A Memória (◀/▶): Um trânsito seguro entre os acervos da Machina.  
 >  
->O Acaso (✻): Onde a Machina seleciona, dentro de seu inventário, uma nova direção.  
+>O Acaso (✻): Onde a Machina seleciona, dentro de seu inventário, uma nova direção.    
 >  
 >A Revelação (?): o modo de ajuda, que revela a análise estrutural e a arquitetura invisível  
 >                 que sustenta cada verso produzido.  
