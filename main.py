@@ -12,6 +12,16 @@ from lay_2_ypo import gera_poema
 
 ### bof: settings
 
+# --- INICIALIZAÇÃO DO ESTADO ---
+if "poly_name" not in st.session_state:
+    st.session_state.poly_name = "Custom Lang"  # Ou o nome padrão que desejar
+
+if "poly_lang" not in st.session_state:
+    st.session_state.poly_lang = "en" # Idioma padrão do tradutor
+
+if "lang" not in st.session_state:
+    st.session_state.lang = "pt"
+
 # the User IPAddress for LYPO, TYPO
 hostname = socket.gethostname()
 IPAddres = socket.gethostbyname(hostname)
