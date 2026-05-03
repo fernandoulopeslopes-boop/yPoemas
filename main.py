@@ -47,28 +47,35 @@ else:
     st.warning("Internet não conectada. Traduções não disponíveis no momento.")
 
 # --- BLOCO ÚNICO DE CSS (Otimizado e Sem Conflitos) ---
+# load_poema settings
 st.markdown(
     """
     <style>
-    /* 1. Respiro no topo: Ajustado para não ficar colado */
-    .block-container {
-        padding-top: 1.5rem !important; /* Aumentado de 0 para 1.5 para dar distância */
-        margin-top: 0px !important;
+    mark {
+      background-color: powderblue;
+      color: black;
+    }
+    .container {
+        display: flex;
+        /* justify-content: center; */
     }
 
-    /* 2. Forçar botões da sidebar na horizontal */
-    [data-testid="stVerticalBlock"] > div > div > div > div > div > button {
-        display: inline-flex !important;
-        width: auto !important;
-        margin-right: 1.5px !important;
+    .header {
+        text-align:center;
     }
-    
-    /* 3. Garantir que a sidebar não empilhe tudo verticalmente */
-    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
-        flex-direction: column;
+    .logo-text {
+        font-weight: 600;
+        font-size: 18px;
+        font-size: 18px;
+        font-family: 'IBM Plex Sans';
+        color: #000000;
+        padding-top: 0px;
+        padding-left: 15px;
     }
-    </style>
-    """,
+    .logo-img {
+        float:right;
+    }
+    </style> """,
     unsafe_allow_html=True,
 )
 
