@@ -52,7 +52,7 @@ st.markdown(
     <style>
     /* 1. Respiro no topo: Ajustado para não ficar colado */
     .block-container {
-        padding-top: 1.5rem !important; /* Aumentado de 0 para 1.5 para dar distância */
+        padding-top: 5rem !important; /* Aumentado de 0 para 5 para dar distância */
         margin-top: 0px !important;
     }
 
