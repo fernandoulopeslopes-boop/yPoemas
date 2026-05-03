@@ -105,7 +105,7 @@ st.markdown(
     """ 
     <style>
     [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
-        width: 300px;
+        width: 320px;
     }
     </style> """,
     unsafe_allow_html=True,
