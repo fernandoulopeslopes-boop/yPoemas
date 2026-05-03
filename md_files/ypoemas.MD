@@ -1,4 +1,4 @@
->A Machina: Um Engenho de Poesia  
+>A Machina: Um Engenho de fazer Poesia ( autor: anônimo )  
 _  
 >No horizonte onde a literatura encontra o algoritmo, surge a Machina.  
 >Não se trata de um simulador de acasos: é um organismo gerador em escala monumental.  
