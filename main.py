@@ -41,7 +41,7 @@ if have_internet():
         from gtts import gTTS
         # ... restante dos imports
     except ImportError:
-        st.warning("Dependências ausentes no requirements.txt")[cite: 2]
+        st.warning("Dependências ausentes no requirements.txt")
 else:
     st.warning("Internet não conectada. Traduções não disponíveis no momento.")
 
