@@ -14,6 +14,7 @@ import streamlit as st
 
 from extra_streamlit_components import TabBar as stx
 from datetime import datetime
+from lay_2_ypo import gera_poema
 
 ### bof: settings
 
