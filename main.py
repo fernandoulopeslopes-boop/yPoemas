@@ -18,6 +18,10 @@ from lay_2_ypo import gera_poema
 
 ### bof: settings
 
+# the User IPAddres for LYPO, TYPO
+hostname = socket.gethostname()
+IPAddres = socket.gethostbyname(hostname)
+
 def have_internet():
     try:
         # Tenta conectar ao IP da Cloudflare na porta 80 (HTTP)
@@ -43,11 +47,6 @@ if have_internet():
         st.warning("Dependências ausentes no requirements.txt")
 else:
     st.warning("Internet não conectada. Traduções não disponíveis no momento.")
-
-
-# the User IPAddres for LYPO, TYPO
-hostname = socket.gethostname()
-IPAddres = socket.gethostbyname(hostname)
 
 
 # hide Streamlit Menu and Footer
@@ -77,7 +76,7 @@ st.markdown(
 
     /* Ajuste fino para o topo da página */
     .stApp {
-        margin-top: -50px;
+        margin-top: -10px;
     }
     </style>
     """,
@@ -106,7 +105,7 @@ st.markdown(
     """ 
     <style>
     [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
-        width: 310px;
+        width: 300px;
     }
     </style> """,
     unsafe_allow_html=True,
@@ -131,8 +130,8 @@ st.markdown(
     }
     .logo-text {
         font-weight: 600;
-        font-size: 18px;
-        font-size: 18px;
+        font-size: 16px;
+        font-size: 16px;
         font-family: 'IBM Plex Sans';
         color: #000000;
         padding-top: 0px;
@@ -154,7 +153,7 @@ if "last_lang" not in st.session_state:
     st.session_state.last_lang = "pt"
 
 if "book" not in st.session_state:  #  index for books_list
-    st.session_state.book = "livro vivo"
+    st.session_state.book = "todos os livros"
 if "take" not in st.session_state:  #  index for selected tema in books_list
     st.session_state.take = 0
 if "mini" not in st.session_state:  #  index for selected tema in page_mini
@@ -560,6 +559,7 @@ def load_all_offs():
         "faz_de_conto",
         "quase_que_eu_Poesia",
         "essencial",
+        "ensaio",
         "desvoto",
         "um_romance",
         "livro_vivo",
