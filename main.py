@@ -1221,7 +1221,7 @@ def page_off_machina():  # available off_machina_books
         with off_machina_expander:
             off_book_text = ""
             pipe_line = this_off_book[st.session_state.off_take].split("|")
-            if "@ " in pipe_line[1]:
+            if "@" in pipe_line[1]:
                 if st.session_state.lang != st.session_state.last_lang:
                     off_book_text = load_lypo()  # changes in lang, keep LYPO
                 else:
