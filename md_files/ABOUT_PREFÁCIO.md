@@ -7,7 +7,6 @@ sutilmente impregnados de humor.
 A máquina está ao serviço do autor, é uma ferramenta de trabalho moderna.
 A criatividade literária não é uma via de mão única; tudo depende do poeta.
 
-
 a **máquina** segundo **Victor Leonardi:**  
 ---
 > Fernando Lopes e eu já conversamos inúmeras vezes sobre temas que nos aproximam.  
@@ -85,4 +84,6 @@ a **máquina** segundo **Victor Leonardi:**
 
 [saber mais...](https://www.facebook.com/victor.leonardi.18)  
 ___
-Copyright © 1983-Hoje Nando Lopes - **yPoemas @ máquina de fazer Poesia**
+Copyright © 1983-Hoje Nando Lopes - **yPoemas @ Machina de fazer Poesia**
+<eof>
+
