@@ -2,6 +2,6 @@ streamlit
 streamlit-antd-components
 extra-streamlit-components
 deep-translator
-edge-tts
+gTTS
 numpy
 matplotlib
