@@ -1441,7 +1441,7 @@ def main():
         ##$ page_docs()
 
     with st.sidebar:
-        st.image(.\images\magy)
+        st.image(magy)
 
     show_icons()
     st.sidebar.state = True
