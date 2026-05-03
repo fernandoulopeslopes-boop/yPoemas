@@ -86,7 +86,7 @@ st.markdown(
 
 /* Garante que o elemento 'main' não tenha margens extras */
 root > div:nth-child(1) > div > div > div > div > section > div {
-    padding-top: 0rem;
+    padding-top: 5rem;
 }
 
 # change padding between components
