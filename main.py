@@ -153,7 +153,7 @@ if "last_lang" not in st.session_state:
     st.session_state.last_lang = "pt"
 
 if "book" not in st.session_state:  #  index for books_list
-    st.session_state.book = "todos os livros"
+    st.session_state.book = "todos os temas"
 if "take" not in st.session_state:  #  index for selected tema in books_list
     st.session_state.take = 0
 if "mini" not in st.session_state:  #  index for selected tema in page_mini
