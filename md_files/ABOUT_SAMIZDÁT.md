@@ -1,4 +1,4 @@
-### Editora Samizdát  
+### sobre a Editora Samizdát  
 ___
 **samizdát**: substantivo masculino.  
 
@@ -16,4 +16,5 @@ ___
 >  
 >> p.ex., Gosizdát: sigla de Gosudárstvnnoe izdátel'stvo "Editora Estatal"  
 ___
-Copyright © 1983-Hoje Nando Lopes - **yPoemas @ máquina de fazer Poesia**
+Copyright © 1983-Hoje Nando Lopes - **yPoemas @ Machina de fazer Poesia**
+<eof>
