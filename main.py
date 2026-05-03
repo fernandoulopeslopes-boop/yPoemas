@@ -59,6 +59,22 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+/* Remove o padding superior do container principal */
+.block-container {
+    padding-top: 1rem;    /* Ajuste entre 0rem e 2rem conforme o gosto */
+    padding-bottom: 0rem;
+}
+
+/* Remove o espaço reservado para o header (onde fica o menu 'Deploy') */
+header {
+    visibility: hidden;
+    height: 0px;
+}
+
+/* Garante que o elemento 'main' não tenha margens extras */
+#root > div:nth-child(1) > div > div > div > div > section > div {
+    padding-top: 0rem;
+}
 
 # change padding between components
 st.markdown(
