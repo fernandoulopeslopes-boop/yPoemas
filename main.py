@@ -59,11 +59,30 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-/* Remove o padding superior do container principal */
-.block-container {
-    padding-top: 1 rem;    /* Ajuste entre 0rem e 2rem conforme o gosto */
-    padding-bottom: 0 rem;
-}
+# --- ajuste de topo (subir o palco) ---
+st.markdown(
+    """
+    <style>
+    /* Remove o espaço em branco no topo do container principal */
+    .block-container {
+        padding-top: 0rem !important;
+        padding-bottom: 0rem !important;
+    }
+
+    /* Oculta o header oficial do Streamlit (onde fica o botão Deploy) */
+    header {
+        visibility: hidden;
+        height: 0px;
+    }
+
+    /* Ajuste fino para o topo da página */
+    .stApp {
+        margin-top: -50px;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
 /* Remove o espaço reservado para o header (onde fica o menu 'Deploy') */
 header {
