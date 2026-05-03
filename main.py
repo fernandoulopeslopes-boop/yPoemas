@@ -50,56 +50,28 @@ else:
 st.markdown(
     """
     <style>
-    /* 1. Limpeza de Menu e Rodapé */
-    footer {visibility: hidden;}
-    header {visibility: hidden; height: 0px;}
-
-    /* 2. Subir o Palco (Remover espaços em branco no topo) */
+    /* 1. Respiro no topo: Ajustado para não ficar colado */
     .block-container {
-        padding-top: 0rem !important;
-        padding-bottom: 0rem !important;
-        max-width: 100% !important;
-    }
-    
-    .stApp {
-        margin-top: -20px; /* Ajuste fino para subir */
+        padding-top: 1.5rem !important; /* Aumentado de 0 para 1.5 para dar distância */
+        margin-top: 0px !important;
     }
 
-    /* 3. Sidebar: Fixar 310px e Trazer o botão >> de volta */
-    [data-testid="stSidebar"] {
-        width: 310px !important;
-        min-width: 310px !important;
+    /* 2. Forçar botões da sidebar na horizontal */
+    [data-testid="stVerticalBlock"] > div > div > div > div > div > button {
+        display: inline-flex !important;
+        width: auto !important;
+        margin-right: 5px !important;
     }
     
-    /* Faz o botão de expansão (>> ou >) acompanhar a largura da sidebar */
-    [data-testid="stSidebarCollapseButton"] {
-        left: 310px !important;
-        background-color: rgba(255,255,255,0.5); /* Torna o botão mais visível */
-    }
-
-    /* 4. Estilos de Texto e Poema */
-    mark {
-      background-color: powderblue;
-      color: black;
-    }
-    .container {
-        display: flex;
-    }
-    .logo-text {
-        font-weight: 600;
-        font-size: 16px;
-        font-family: 'IBM Plex Sans';
-        color: #000000;
-        padding-top: 5px;
-        padding-left: 5px;
-    }
-    .logo-img {
-        float: right;
+    /* 3. Garantir que a sidebar não empilhe tudo verticalmente */
+    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
+        flex-direction: column;
     }
     </style>
     """,
     unsafe_allow_html=True,
 )
+
 ### eof: settings
 # Initialize SessionState
 
@@ -159,8 +131,8 @@ if "rand" not in st.session_state:
 
 def pick_lang():  # define idioma
     btn_pt, btn_es, btn_it, btn_fr, btn_en, btn_xy = st.sidebar.columns(
-#        [1.1, 1.13, 1.04, 1.04, 1.17, 1.25]
-        [2, 2, 2, 2, 2, 2]
+        [1.1, 1.13, 1.04, 1.04, 1.17, 1.25]
+#        [2, 2, 2, 2, 2, 2]
     )
     btn_pt = btn_pt.button("pt", key=1, help="Português")
     btn_es = btn_es.button("es", key=2, help="Español")
