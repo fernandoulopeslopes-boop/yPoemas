@@ -12,7 +12,7 @@ ___
 - ☆ - Para que serve a poesia  
 ✔ **Clarice**  
 ___
-- Eliabeth Brait Alvim [saber mais...](https://l.facebook.com/l.php?u=https%3A%2F%2Fwww.youtube.com%2Fuser%2FTheBethbraitalvim%3Ffbclid%3DIwAR2q4OkHxDnmcVc2qmei1sbo-uPMfUzwBkxKtW3T03BWEZiS8uKH7S-A7dU&h=AT1ra5nOy8p06Asrm5hSEV4agfdAfhXqcCVvoQSvUnMhK9ROF3BHUsKn_kvC7OqxBES4RWJjv1Y-MWdwloQ_u84UUF1RSQtKwFnlGHih6cKc5vmi7o_l73cFas5XgBdlN4j5IeyPs0j461hcUME&__tn__=-UK-R&c[0]=AT25Cw3bln7I1MAXIM4DQiN6ZeVbCI8DsxoIKWDwhz00uGYdsDeXoQ9aNzVInblgIN_gWVN21UhvZXg0Tbs7i5rh0wj-cfB3pH57P_kwoi6dKqmi_c4uUxJoHTkNJ261EVHdN2TRN9yIs0qiuOUokbjXBkNZ8qdQAmiNrvLevJzdQ08oBUJGdiSskg)  
+- Eliabeth Brait Alvim [saber mais...](https://l.facebook.com/l.php?
 - ☆ - A febre e a mariposa  [saber mais...](https://www.editorapatua.com.br/produto/24326/a-febre-e-a-mariposa-de-beth-brait-alvim)  
 ✔ **MachBrait**  
 ✔ **MachBeth**  
