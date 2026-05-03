@@ -35,7 +35,7 @@ st.set_page_config(
     page_title="a Machina de fazer Poesia - yPoemas",
     page_icon=":star:",
     layout="centered",
-    initial_sidebar_state="auto",
+    initial_sidebar_state="expanded",
 )
 
 if have_internet():
