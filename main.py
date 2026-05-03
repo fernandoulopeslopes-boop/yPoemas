@@ -312,9 +312,8 @@ def load_help(idiom):
         returns.append(translate("próximo"))
         returns.append(translate("mais lidos..."))
         returns.append(translate("gera novo yPoema"))
-        returns.append(translate("imagem"))
-        returns.append(translate("áudio"))
-        returns.append(translate("vídeo"))
+        returns.append(translate("arte"))
+        returns.append(translate("audio"))
 
     return returns
 
