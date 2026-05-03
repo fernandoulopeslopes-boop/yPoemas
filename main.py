@@ -149,11 +149,11 @@ st.markdown(
     }
     .logo-text {
         font-weight: 600;
-        font-size: 16px;
+        font-size: 14px;
         font-family: 'IBM Plex Sans';
         color: #000000;
         padding-top: 0px;
-        padding-left: 15px;
+        padding-left: 10px;
     }
     .logo-img {
         float:right;
