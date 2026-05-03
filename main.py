@@ -61,8 +61,8 @@ st.markdown(
 
 /* Remove o padding superior do container principal */
 .block-container {
-    padding-top: 1rem;    /* Ajuste entre 0rem e 2rem conforme o gosto */
-    padding-bottom: 0rem;
+    padding-top: 1 rem;    /* Ajuste entre 0rem e 2rem conforme o gosto */
+    padding-bottom: 0 rem;
 }
 
 /* Remove o espaço reservado para o header (onde fica o menu 'Deploy') */
