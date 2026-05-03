@@ -1152,7 +1152,7 @@ def page_eureka():
 
 
 def page_off_machina():  # available off_books
-    st.sidebar.image("./images/img_off_machina.jpg")
+    st.sidebar.image("./images/img_off-machina.jpg")
     pick_lang()
     pick_draw()
     st.sidebar.info(load_file("INFO_OFF-MACHINA.md"))
