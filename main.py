@@ -65,13 +65,6 @@ from lay_2_ypo import gera_poema
 hostname = socket.gethostname()
 IPAddres = socket.gethostbyname(hostname)
 
-st.set_page_config(
-    page_title="a Machina de fazer Poesia - yPoemas",
-    page_icon="★",
-    layout="centered",
-    initial_sidebar_state="expanded",
-)
-
 def have_internet():
     try:
         # Tenta conectar ao IP da Cloudflare na porta 80 (HTTP)
@@ -88,6 +81,15 @@ if have_internet():
         st.warning("Dependências ausentes no requirements.txt")
 else:
     st.warning("Internet não conectada. Traduções não disponíveis no momento.")
+
+
+st.set_page_config(
+    page_title="a Machina de fazer Poesia - yPoemas",
+    page_icon="★",
+    layout="centered",
+    initial_sidebar_state="expanded",
+)
+
 
 # hide Streamlit Menu and Footer
 st.markdown(
@@ -318,7 +320,7 @@ def load_help(idiom):
 
 
 def draw_check_buttons():
-    draw_text, talk_text = st.sidebar.columns([3.8, 3.2, 3])
+    draw_text, talk_text = st.sidebar.columns([3.8, 3.2])
     help_tips = load_help(st.session_state.lang)
     help_draw = help_tips[5]
     help_talk = help_tips[6]
