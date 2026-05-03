@@ -100,17 +100,28 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# change sidebar width
 st.markdown(
-    """ 
+    """
     <style>
-    [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
-        width: 310px;
+    /* Força a largura da sidebar e garante que o conteúdo não transborde */
+    [data-testid="stSidebar"] {
+        width: 310px !important;
+        min-width: 310px !important;
     }
-    </style> """,
-    unsafe_allow_html=True,
-)
 
+    /* Garante que o botão de fechar/abrir (o >>) permaneça visível e funcional */
+    [data-testid="stSidebarNav"] {
+        width: 310px !important;
+    }
+
+    /* Ajuste para o botão de colapso não ser "engolido" pela largura fixa */
+    button[kind="header"] {
+        left: 310px !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 # load_poema settings
 st.markdown(
