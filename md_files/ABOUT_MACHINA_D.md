@@ -69,4 +69,6 @@ no "Banco de Ítimos", variando de milhões a valores astronômicos.
 
 *Obviamente, os sinais de pontuação são parte muito importante dos ítimos.*
 ___
-Copyright © 1983-2026 Nando Lopes - **yPoemas @ máquina de fazer Poesia**
+Copyright © 1983-Hoje Nando Lopes - **yPoemas @ Machina de fazer Poesia**
+<eof>
+
