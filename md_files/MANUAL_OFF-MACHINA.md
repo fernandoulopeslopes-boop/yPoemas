@@ -1,5 +1,3 @@
-  
-___  
 **off-machina: modo de usar**  
 ___  
 selecione um livro da lista para ler...  
@@ -10,4 +8,5 @@ ___
 - ❤ = temas mais lidos    
 - ?  = Manual do Usuário   
 ___  
-Copyright © 1983-Hoje Nando Lopes - **yPoemas @ máquina de fazer Poesia**  
+Copyright © 1983-Hoje Nando Lopes - **yPoemas @ Machina de fazer Poesia**
+<eof>
