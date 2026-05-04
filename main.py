@@ -142,7 +142,7 @@ def load_help(lang):
 
 def draw_check_buttons():
     draw_text, talk_text, vyde_text = st.sidebar.columns([3.8, 3.2, 3])
-    help_tips = load_help(st.session_state.lang)
+    help_tips = load_help()
     help_draw = help_tips[5]
     help_talk = help_tips[6]
     help_vyde = help_tips[7]
