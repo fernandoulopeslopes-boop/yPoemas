@@ -531,7 +531,6 @@ def load_arts(nome_tema):  # Select image for arts
 
 ### eof: loaders
 ### bof: functions
-
         
 def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
     if LOGO_IMAGE == None:
@@ -587,7 +586,6 @@ def page_abouts():
         "index",
     ]
 
-
     options = list(range(len(abouts_list)))
     sobrios = "↓  " + translate("sobre")
     opt_abouts = st.selectbox(
@@ -598,12 +596,6 @@ def page_abouts():
     )
 
     lnew = True
-    if st.session_state.vydo:
-        lnew = False
-        show_video("about")
-        update_readings("video_about")
-        st.session_state.vydo = False
-
     if lnew:
         choice = abouts_list[opt_abouts].upper()
         about_expander = st.expander("", True)
