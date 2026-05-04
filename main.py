@@ -10,10 +10,10 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# --- FUNÇÕES DE CARREGAMENTO ---
+# --- UTILITÁRIOS DE ARQUIVO ---
 @st.cache_data
 def load_txt(file_path):
-    """Carrega textos informativos com tratamento de erro."""
+    """Carrega textos informativos com segurança."""
     try:
         if os.path.exists(file_path):
             with open(file_path, "r", encoding="utf-8") as f:
@@ -21,6 +21,20 @@ def load_txt(file_path):
     except Exception:
         pass
     return "Conteúdo informativo em breve."
+
+def get_image_path(base_name, folder="images"):
+    """
+    Localiza a imagem ignorando a capitalização da extensão.
+    Busca por .jpg, .JPG, .png, .PNG, etc.
+    """
+    if not os.path.exists(folder):
+        return None
+    
+    files = os.listdir(folder)
+    for f in files:
+        if f.upper().startswith(base_name.upper()):
+            return os.path.join(folder, f)
+    return None
 
 # --- CSS PERSONALIZADO ---
 st.markdown(
@@ -59,10 +73,10 @@ def main():
         default="2"
     )
 
-    # Identifica o nome da página atual para o padrão de imagem
+    # Identifica o nome da página atual
     page_name = next((t for t, i in tabs_data if i == chosen_id), "ypoemas")
 
-    # 3. SIDEBAR (Design e Estrutura)
+    # 3. SIDEBAR
     with st.sidebar:
         # Seleção de Idiomas
         st.write("### 🌐 Language")
@@ -75,43 +89,40 @@ def main():
         
         st.write("---")
 
-        # Toggles de Funcionalidade
+        # Toggles
         c1, c2 = st.columns(2)
         st.session_state.draw = c1.checkbox("Imagem", st.session_state.draw)
         st.session_state.talk = c2.checkbox("Áudio", st.session_state.talk)
         
         st.write("---")
 
-        # MAPEAMENTO DE CONTEÚDO (Imagens e Textos)
-        # Padronização: images/img_nome_da_pagina.JPG
-        img_path = f"images/img_{page_name}.JPG"
-        txt_path = f"texts/info_{page_name}.md"
+        # Busca robusta pela imagem (img_nome_da_pagina.*)
+        img_base = f"img_{page_name}"
+        img_found = get_image_path(img_base)
 
-        # Renderização da Arte
-        if os.path.exists(img_path):
-            st.image(img_path, use_container_width=True)
+        if img_found:
+            st.image(img_found, use_container_width=True)
         else:
-            st.warning(f"Arquivo não encontrado: {img_path}")
+            st.caption(f"Aguardando arte: {img_base}.JPG")
         
-        # Renderização do Texto Informativo
-        info_text = load_txt(txt_path)
-        st.markdown(f"<div class='sidebar-info'>{info_text}</div>", unsafe_allow_html=True)
+        # Texto Informativo
+        txt_path = f"texts/info_{page_name}.md"
+        st.markdown(f"<div class='sidebar-info'>{load_txt(txt_path)}</div>", unsafe_allow_html=True)
 
         st.write("---")
         
-        # Rodapé de Contato
+        # Rodapé
         st.markdown(
             "<div style='text-align: center; opacity: 0.5; font-size: 0.7rem;'>"
             "fb | ig | wa | mail</div>", 
             unsafe_allow_html=True
         )
 
-    # 4. ÁREA DE CONTEÚDO (Aguardando GO)
+    # 4. ÁREA DE CONTEÚDO
     if chosen_id == "1":
-        st.write(f"### {page_name}")
+        st.write("### mini-Machina")
     elif chosen_id == "2":
-        st.write(f"### {page_name}")
-    # ...
+        st.write("### yPoemas - A Machina")
 
 if __name__ == "__main__":
     main()
