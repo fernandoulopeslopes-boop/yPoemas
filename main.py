@@ -42,18 +42,13 @@ st.markdown(
     #MainMenu { visibility: hidden; }
     footer { visibility: hidden; }
     header { background: transparent !important; }
+    
     .sidebar-info {
         font-family: 'IBM Plex Sans', sans-serif;
         font-size: 0.9rem;
         line-height: 1.4;
         text-align: justify;
         padding: 10px 0;
-    }
-    /* Estilo para a grade de idiomas */
-    .stButton > button {
-        width: 100%;
-        padding: 2px;
-        font-size: 0.8rem;
     }
     </style>
     """,
@@ -80,9 +75,7 @@ def main():
 
     # 3. SIDEBAR
     with st.sidebar:
-        st.caption("idiomas disponíveis...")
-        
-        # Grade de 21 Idiomas (6 originais + 15 ocidente)
+        # Lista oficial de 21 idiomas em Dropdown
         langs = [
             "pt", "es", "it", "fr", "en", "⚒️", 
             "de", "nl", "da", "sv", "no", "fi", 
@@ -90,13 +83,19 @@ def main():
             "gl", "eu", "el"
         ]
         
-        # Renderização em grade de 6 colunas
-        for i in range(0, len(langs), 6):
-            cols = st.columns(6)
-            for j, lang in enumerate(langs[i:i+6]):
-                if cols[j].button(lang, key=f"lang_{lang}"):
-                    st.session_state.lang = lang
-                    st.rerun()
+        # Garante que o índice inicial do selectbox seja o idioma atual
+        current_index = langs.index(st.session_state.lang) if st.session_state.lang in langs else 0
+        
+        selected_lang = st.selectbox(
+            "idiomas disponíveis...",
+            langs,
+            index=current_index
+        )
+        
+        # Atualiza o estado apenas se houver mudança
+        if selected_lang != st.session_state.lang:
+            st.session_state.lang = selected_lang
+            st.rerun()
         
         st.write("---")
 
