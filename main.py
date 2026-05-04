@@ -94,21 +94,7 @@ def load_help_tips():
 
 ### bof: tools
 
-def draw_check_buttons():
-    draw_text, talk_text, vyde_text = st.sidebar.columns([3.8, 3.2, 3])
-    help_tips = load_help(st.session_state.lang)
-    help_draw = help_tips[5]
-    help_talk = help_tips[6]
-    help_vyde = help_tips[7]
-    st.session_state.draw = draw_text.checkbox(
-        help_draw, st.session_state.draw, key="draw_machina"
-    )
-    st.session_state.talk = talk_text.checkbox(
-        help_talk, st.session_state.talk, key="talk_machina"
-    )
-    st.session_state.vydo = vyde_text.checkbox(
-        help_vyde, st.session_state.vydo, key="vyde_machina"
-    )
+
 
 def pick_lang():  # define idioma de forma horizontal na sidebar
     with st.sidebar:
@@ -141,6 +127,22 @@ def pick_lang():  # define idioma de forma horizontal na sidebar
             st.session_state.lang = st.session_state.poly_lang
 
 # ... [Mantenha as funções translate, load_help, etc.] ...
+
+def draw_check_buttons():
+    draw_text, talk_text, vyde_text = st.sidebar.columns([3.8, 3.2, 3])
+    help_tips = load_help(st.session_state.lang)
+    help_draw = help_tips[5]
+    help_talk = help_tips[6]
+    help_vyde = help_tips[7]
+    st.session_state.draw = draw_text.checkbox(
+        help_draw, st.session_state.draw, key="draw_machina"
+    )
+    st.session_state.talk = talk_text.checkbox(
+        help_talk, st.session_state.talk, key="talk_machina"
+    )
+    st.session_state.vydo = vyde_text.checkbox(
+        help_vyde, st.session_state.vydo, key="vyde_machina"
+    )
 
 def load_help(idiom):
     returns = []
