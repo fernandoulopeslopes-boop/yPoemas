@@ -2,7 +2,7 @@ import os
 import streamlit as st
 from extra_streamlit_components import TabBar as stx
 
-# --- CONFIGURAÇÃO DA PÁGINA ---
+# --- 1. CONFIGURAÇÃO DA PÁGINA ---
 st.set_page_config(
     page_title="a Machina de fazer Poesia - yPoemas",
     page_icon="★",
@@ -10,7 +10,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# --- UTILITÁRIOS DE ARQUIVO ---
+# --- 2. UTILITÁRIOS E CACHE ---
 @st.cache_data
 def load_txt(file_path):
     try:
@@ -33,7 +33,7 @@ def get_image_path(base_name, folder="images"):
         pass
     return None
 
-# --- CSS PERSONALIZADO ---
+# --- 3. CSS (LIMPO E ESTRUTURAL) ---
 st.markdown(
     """
     <style>
@@ -42,7 +42,6 @@ st.markdown(
     #MainMenu { visibility: hidden; }
     footer { visibility: hidden; }
     header { background: transparent !important; }
-    
     .sidebar-info {
         font-family: 'IBM Plex Sans', sans-serif;
         font-size: 0.9rem;
@@ -50,18 +49,27 @@ st.markdown(
         text-align: justify;
         padding: 10px 0;
     }
+    .poema-box {
+        background-color: #fcfcfc;
+        padding: 25px;
+        border-radius: 5px;
+        border: 1px solid #eee;
+        font-family: 'serif';
+        font-size: 1.1rem;
+        line-height: 1.6;
+    }
     </style>
     """,
     unsafe_allow_html=True,
 )
 
 def main():
-    # 1. Estados de Sessão
+    # Estados de Sessão
     if "lang" not in st.session_state: st.session_state.lang = "pt"
     if "draw" not in st.session_state: st.session_state.draw = False
     if "talk" not in st.session_state: st.session_state.talk = False
 
-    # 2. Navegação Superior
+    # Navegação Superior
     tabs_data = [
         ("mini", "1"), ("yPoemas", "2"), ("eureka", "3"),
         ("off-machina", "4"), ("books", "5"), ("poly", "6"), ("about", "7")
@@ -73,67 +81,71 @@ def main():
     if chosen_id is None: chosen_id = "2"
     page_name = next((t for t, i in tabs_data if i == chosen_id), "yPoemas")
 
-    # 3. SIDEBAR
+    # --- 4. SIDEBAR ---
     with st.sidebar:
-        # Lista oficial de 21 idiomas em Dropdown
-        langs = [
-            "pt", "es", "it", "fr", "en", "⚒️", 
-            "de", "nl", "da", "sv", "no", "fi", 
-            "pl", "cs", "sk", "hu", "ro", "ca", 
-            "gl", "eu", "el"
-        ]
-        
-        # Garante que o índice inicial do selectbox seja o idioma atual
+        langs = ["pt", "es", "it", "fr", "en", "⚒️", "de", "nl", "da", "sv", "no", "fi", "pl", "cs", "sk", "hu", "ro", "ca", "gl", "eu", "el"]
         current_index = langs.index(st.session_state.lang) if st.session_state.lang in langs else 0
         
-        selected_lang = st.selectbox(
-            "idiomas disponíveis...",
-            langs,
-            index=current_index
-        )
-        
-        # Atualiza o estado apenas se houver mudança
+        selected_lang = st.selectbox("idiomas disponíveis...", langs, index=current_index)
         if selected_lang != st.session_state.lang:
             st.session_state.lang = selected_lang
             st.rerun()
         
         st.write("---")
-
-        # Controles: arte e audio
         c1, c2 = st.columns(2)
         st.session_state.draw = c1.checkbox("arte", st.session_state.draw)
         st.session_state.talk = c2.checkbox("audio", st.session_state.talk)
         
         st.write("---")
-
-        # Arte da página (img_nome_da_pagina.jpg/JPG)
         img_base = f"img_{page_name}"
         img_found = get_image_path(img_base)
-
         if img_found:
             st.image(img_found, use_container_width=True)
-        else:
-            st.caption(f"Aguardando arte: {img_base}.jpg")
         
-        # Texto Informativo
         txt_path = f"texts/info_{page_name}.md"
         info_content = load_txt(txt_path)
         if info_content:
             st.markdown(f"<div class='sidebar-info'><b>>></b> {info_content}</div>", unsafe_allow_html=True)
 
         st.write("---")
-        
-        st.markdown(
-            "<div style='text-align: center; opacity: 0.5; font-size: 0.7rem;'>"
-            "fb | ig | wa | mail</div>", 
-            unsafe_allow_html=True
-        )
+        st.markdown("<div style='text-align: center; opacity: 0.5; font-size: 0.7rem;'>fb | ig | wa | mail</div>", unsafe_allow_html=True)
 
-    # 4. ÁREA DE CONTEÚDO
+    # --- 5. ÁREA DE CONTEÚDO ---
+    
+    # PÁGINA 1: MINI-MACHINA
     if chosen_id == "1":
-        st.write("### mini-Machina")
+        st.title("mini-Machina")
+        
+        col1, col2 = st.columns([2, 1])
+        
+        with col2:
+            st.write("### ⚙️")
+            tema = st.selectbox("tema", ["Amor", "Morte", "Tempo", "Mar", "Eterno", "Nada"])
+            btn_gerar = st.button("gerar poema", use_container_width=True)
+            
+        with col1:
+            if btn_gerar:
+                # Placeholder de lógica para Página Mini
+                st.markdown(f"""
+                <div class="poema-box">
+                    <i>{tema}...</i><br><br>
+                    O verso que a machina traça,<br>
+                    na brevidade do instante.<br>
+                    Toda forma é uma fumaça,<br>
+                    no cálculo do errante.
+                </div>
+                """, unsafe_allow_html=True)
+                
+                if st.session_state.talk:
+                    st.audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3") # Placeholder
+            else:
+                st.info("Aguardando comando para processar.")
+
+    # PÁGINA 2: YPOEMAS (PRINCIPAL)
     elif chosen_id == "2":
-        st.write("### yPoemas - A Machina")
+        st.title("yPoemas")
+        st.write("A Machina de Fazer Poesia")
+        # Desenvolvimento da lógica principal aguardando próximo passo.
 
 if __name__ == "__main__":
     main()
