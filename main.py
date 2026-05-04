@@ -128,6 +128,18 @@ def load_help_tips():
     return help_list
 
 
+def load_help(lang):
+    returns = []
+    returns.append(translate("anterior"))
+    returns.append(translate("escolhe tema ao acaso"))
+    returns.append(translate("próximo"))
+    returns.append(translate("mais lidos..."))
+    returns.append(translate("gera novo yPoema"))
+    returns.append(translate("imagem"))
+    returns.append(translate("audio"))
+    return returns
+
+
 def draw_check_buttons():
     draw_text, talk_text, vyde_text = st.sidebar.columns([3.8, 3.2, 3])
     help_tips = load_help(st.session_state.lang)
@@ -143,27 +155,6 @@ def draw_check_buttons():
     st.session_state.vydo = vyde_text.checkbox(
         help_vyde, st.session_state.vydo, key="vyde_machina"
     )
-
-def load_help(lang):
-    returns = []
-    if lang in "_pt_es_it_fr_en":
-        helpers = load_help_tips()
-        for line in helpers:
-            pipe_line = line.split("|")
-            if pipe_line[1].startswith(lang + "_"):
-                text = pipe_line[2]
-                returns.append(text)
-    else:
-        returns.append(translate("anterior"))
-        returns.append(translate("escolhe tema ao acaso"))
-        returns.append(translate("próximo"))
-        returns.append(translate("mais lidos..."))
-        returns.append(translate("gera novo yPoema"))
-        returns.append(translate("imagem"))
-        returns.append(translate("áudio"))
-        returns.append(translate("vídeo"))
-
-    return returns
 
 
 def main():
