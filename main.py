@@ -78,23 +78,11 @@ st.markdown(
 )
 
 
-def load_help_tips():
-    help_list = []
-    with open(os.path.join("./base/helpers.txt"), encoding="utf-8") as file:
-        for line in file:
-            help_list.append(line)
-    file.close()
-
-    return help_list
-
-
 ### eof: settings
 
 # ... [Mantenha os SessionState como estão no seu original] ...
 
 ### bof: tools
-
-
 
 def pick_lang():  # define idioma de forma horizontal na sidebar
     with st.sidebar:
@@ -127,6 +115,16 @@ def pick_lang():  # define idioma de forma horizontal na sidebar
             st.session_state.lang = st.session_state.poly_lang
 
 # ... [Mantenha as funções translate, load_help, etc.] ...
+
+def load_help_tips():
+    help_list = []
+    with open(os.path.join("./base/helpers.txt"), encoding="utf-8") as file:
+        for line in file:
+            help_list.append(line)
+    file.close()
+
+    return help_list
+
 
 def draw_check_buttons():
     draw_text, talk_text, vyde_text = st.sidebar.columns([3.8, 3.2, 3])
