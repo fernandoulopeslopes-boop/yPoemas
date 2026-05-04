@@ -142,6 +142,28 @@ def pick_lang():  # define idioma de forma horizontal na sidebar
 
 # ... [Mantenha as funções translate, load_help, etc.] ...
 
+def load_help(idiom):
+    returns = []
+    if idiom in "_pt_es_it_fr_en":
+        helpers = load_help_tips()
+        for line in helpers:
+            pipe_line = line.split("|")
+            if pipe_line[1].startswith(idiom + "_"):
+                text = pipe_line[2]
+                returns.append(text)
+    else:
+        returns.append(translate("anterior"))
+        returns.append(translate("escolhe tema ao acaso"))
+        returns.append(translate("próximo"))
+        returns.append(translate("mais lidos..."))
+        returns.append(translate("gera novo yPoema"))
+        returns.append(translate("imagem"))
+        returns.append(translate("áudio"))
+        returns.append(translate("vídeo"))
+
+    return returns
+
+
 def main():
     chosen_id = stx.tab_bar(
         data=[
