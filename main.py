@@ -142,13 +142,13 @@ def draw_check_buttons():
         help_vyde, st.session_state.vydo, key="vyde_machina"
     )
 
-def load_help(idiom):
+def load_help(lang):
     returns = []
-    if idiom in "_pt_es_it_fr_en":
+    if lang in "_pt_es_it_fr_en":
         helpers = load_help_tips()
         for line in helpers:
             pipe_line = line.split("|")
-            if pipe_line[1].startswith(idiom + "_"):
+            if pipe_line[1].startswith(lang + "_"):
                 text = pipe_line[2]
                 returns.append(text)
     else:
