@@ -421,12 +421,16 @@ def load_typo():  # Load translated yPoema & clean translator returned bugs in t
 def load_all_offs():
     all_books_off = [
         "a_torre_de_papel",
-        "linguafiada",
-        "livro_vivo",
+        "quase_que_eu_Poesia",
         "faz_de_conto",
         "um_romance",
-        "quase_que_eu_Poesia",
-        "segredo_público",
+        "linguafiada",
+        "livro_vivo",
+        "desvoto",
+        "ensaio",
+        "urbano",
+        "essencial",
+        "secreto",
     ]
 
     return all_books_off
