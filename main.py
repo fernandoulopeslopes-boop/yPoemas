@@ -128,7 +128,7 @@ def load_help_tips():
     return help_list
 
 
-def load_help(lang):
+def load_help():
     returns = []
     returns.append(translate("anterior"))
     returns.append(translate("escolhe tema ao acaso"))
