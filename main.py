@@ -228,6 +228,19 @@ def draw_check_buttons():
         help_talk, st.session_state.talk, key="talk_machina"
     )
 
+def load_md_file(file):  # Open files for about's
+    try:
+        with open(os.path.join("./md_files/" + file), encoding="utf-8") as file_to_open:
+            file_text = file_to_open.read()
+
+        if not "rol_" in file.lower():  # do not translate theme
+            file_text = translate(file_text)
+    except:
+        file_text = translate("ooops... arquivo ( " + file + " ) não pode ser aberto.")
+        st.session_state.lang = "pt"
+
+    return file_text
+
 
 def main():
     chosen_id = stx.tab_bar(
