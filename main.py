@@ -135,6 +135,19 @@ if "rand" not in st.session_state:
 
 ### bof: tools
 
+def show_icons():  # https://api.whatsapp.com/
+    with st.sidebar:
+        st.sidebar.markdown(
+            f"""
+            <nav>
+            <a href='https://www.facebook.com/nandoulopes' target='_blank'>• facebook</a> |
+            <a href='mailto:lopes.fernando@hotmail.com' target='_blank'>e-mail</a> |
+            <a href='https://www.instagram.com/fernando.lopes.942/' target='_blank'>instagram</a> |
+            <a href='https://web.whatsapp.com/send?phone=+5512991368181' target='_blank'>whatsapp</a>
+            </nav>
+            """,
+            unsafe_allow_html=True,
+        )
 
 def pick_lang():  # define idioma de forma horizontal na sidebar
     with st.sidebar:
