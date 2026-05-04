@@ -76,6 +76,18 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+
+def load_help_tips():
+    help_list = []
+    with open(os.path.join("./base/helpers.txt"), encoding="utf-8") as file:
+        for line in file:
+            help_list.append(line)
+    file.close()
+
+    return help_list
+
+
 ### eof: settings
 
 # ... [Mantenha os SessionState como estão no seu original] ...
