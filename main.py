@@ -13,7 +13,6 @@ st.set_page_config(
 # --- UTILITÁRIOS DE ARQUIVO ---
 @st.cache_data
 def load_txt(file_path):
-    """Carrega textos informativos de forma otimizada."""
     try:
         if os.path.exists(file_path):
             with open(file_path, "r", encoding="utf-8") as f:
@@ -23,45 +22,38 @@ def load_txt(file_path):
     return ""
 
 def get_image_path(base_name, folder="images"):
-    """
-    Localiza a imagem ignorando a capitalização da extensão.
-    Busca por img_nome.* (jpg, JPG, png, etc)
-    """
     if not os.path.exists(folder):
         return None
     try:
         files = os.listdir(folder)
         for f in files:
-            # Compara o nome base ignorando case
             if f.upper().startswith(base_name.upper()):
                 return os.path.join(folder, f)
     except Exception:
         pass
     return None
 
-# --- CSS PERSONALIZADO (REVISADO) ---
+# --- CSS PERSONALIZADO ---
 st.markdown(
     """
     <style>
-    /* Ajuste de padding superior */
     .block-container { padding-top: 2rem !important; }
-    
-    /* Largura da Sidebar */
     [data-testid="stSidebar"] { width: 310px !important; }
-    
-    /* Mantém o header visível para não perder o botão '>>' (toggle) */
-    /* Mas remove a decoração e o menu de hambúrguer desnecessário */
     #MainMenu { visibility: hidden; }
     footer { visibility: hidden; }
     header { background: transparent !important; }
-    
-    /* Estilização do texto informativo */
     .sidebar-info {
         font-family: 'IBM Plex Sans', sans-serif;
         font-size: 0.9rem;
         line-height: 1.4;
         text-align: justify;
         padding: 10px 0;
+    }
+    /* Estilo para a grade de idiomas */
+    .stButton > button {
+        width: 100%;
+        padding: 2px;
+        font-size: 0.8rem;
     }
     </style>
     """,
@@ -74,46 +66,48 @@ def main():
     if "draw" not in st.session_state: st.session_state.draw = False
     if "talk" not in st.session_state: st.session_state.talk = False
 
-    # 2. Navegação Superior (Tabs)
+    # 2. Navegação Superior
     tabs_data = [
         ("mini", "1"), ("yPoemas", "2"), ("eureka", "3"),
         ("off-machina", "4"), ("books", "5"), ("poly", "6"), ("about", "7")
     ]
-    
-    # Renderização da barra de abas
     chosen_id = stx.tab_bar(
         data=[stx.TabBarItemData(id=i, title=t, description="") for t, i in tabs_data],
         default="2"
     )
-
-    # Fallback de segurança para evitar que o app trave se o componente falhar
-    if chosen_id is None:
-        chosen_id = "2"
-
-    # Identifica o nome amigável da página
+    if chosen_id is None: chosen_id = "2"
     page_name = next((t for t, i in tabs_data if i == chosen_id), "yPoemas")
 
-    # 3. SIDEBAR (Estrutura Visual)
+    # 3. SIDEBAR
     with st.sidebar:
-        # Seleção de Idiomas
-        st.write("### 🌐 Language")
-        cols = st.columns(6)
-        langs = ["pt", "es", "it", "fr", "en", "⚒️"]
-        for i, l in enumerate(langs):
-            if cols[i].button(l, key=f"btn_{l}"):
-                st.session_state.lang = l
-                st.rerun()
+        st.caption("idiomas disponíveis...")
+        
+        # Grade de 21 Idiomas (6 originais + 15 ocidente)
+        langs = [
+            "pt", "es", "it", "fr", "en", "⚒️", 
+            "de", "nl", "da", "sv", "no", "fi", 
+            "pl", "cs", "sk", "hu", "ro", "ca", 
+            "gl", "eu", "el"
+        ]
+        
+        # Renderização em grade de 6 colunas
+        for i in range(0, len(langs), 6):
+            cols = st.columns(6)
+            for j, lang in enumerate(langs[i:i+6]):
+                if cols[j].button(lang, key=f"lang_{lang}"):
+                    st.session_state.lang = lang
+                    st.rerun()
         
         st.write("---")
 
-        # Toggles de Funcionalidade
+        # Controles: arte e audio
         c1, c2 = st.columns(2)
-        st.session_state.draw = c1.checkbox("Imagem", st.session_state.draw)
-        st.session_state.talk = c2.checkbox("Áudio", st.session_state.talk)
+        st.session_state.draw = c1.checkbox("arte", st.session_state.draw)
+        st.session_state.talk = c2.checkbox("audio", st.session_state.talk)
         
         st.write("---")
 
-        # Localização dinâmica da Arte: images/img_nome.JPG (ou .jpg)
+        # Arte da página (img_nome_da_pagina.jpg/JPG)
         img_base = f"img_{page_name}"
         img_found = get_image_path(img_base)
 
@@ -122,32 +116,25 @@ def main():
         else:
             st.caption(f"Aguardando arte: {img_base}.jpg")
         
-        # Texto Informativo: texts/info_nome.md
+        # Texto Informativo
         txt_path = f"texts/info_{page_name}.md"
         info_content = load_txt(txt_path)
-        
-        # Exibição com o marcador visual >>
         if info_content:
             st.markdown(f"<div class='sidebar-info'><b>>></b> {info_content}</div>", unsafe_allow_html=True)
 
         st.write("---")
         
-        # Rodapé de Contatos
         st.markdown(
             "<div style='text-align: center; opacity: 0.5; font-size: 0.7rem;'>"
             "fb | ig | wa | mail</div>", 
             unsafe_allow_html=True
         )
 
-    # 4. ÁREA DE CONTEÚDO (Placeholders por etapa)
+    # 4. ÁREA DE CONTEÚDO
     if chosen_id == "1":
         st.write("### mini-Machina")
-        # Implementação futura da página mini
     elif chosen_id == "2":
         st.write("### yPoemas - A Machina")
-        # Implementação futura da página yPoemas
-    else:
-        st.write(f"### {page_name}")
 
 if __name__ == "__main__":
     main()
