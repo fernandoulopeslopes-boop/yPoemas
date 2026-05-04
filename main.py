@@ -2,7 +2,7 @@ import os
 import streamlit as st
 from extra_streamlit_components import TabBar as stx
 
-# --- CONFIGURAÇÃO DA PÁGINA (Clean Design) ---
+# --- CONFIGURAÇÃO DA PÁGINA ---
 st.set_page_config(
     page_title="a Machina de fazer Poesia - yPoemas",
     page_icon="★",
@@ -10,118 +10,108 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# --- CACHE DE ARQUIVOS (Otimizado) ---
+# --- FUNÇÕES DE CARREGAMENTO ---
 @st.cache_data
 def load_txt(file_path):
-    """Carrega textos informativos de forma otimizada."""
-    if os.path.exists(file_path):
-        with open(file_path, "r", encoding="utf-8") as f:
-            return f.read()
-    return "Conteúdo não encontrado."
+    """Carrega textos informativos com tratamento de erro."""
+    try:
+        if os.path.exists(file_path):
+            with open(file_path, "r", encoding="utf-8") as f:
+                return f.read()
+    except Exception:
+        pass
+    return "Conteúdo informativo em breve."
 
-# --- CSS PERSONALIZADO (Visual Clean) ---
+# --- CSS PERSONALIZADO ---
 st.markdown(
     """
     <style>
-    /* Remove espaçamentos excessivos no topo */
     .block-container { padding-top: 1rem !important; }
-    
-    /* Largura fixa da Sidebar para manter o design */
     [data-testid="stSidebar"] { width: 310px !important; }
-    
-    /* Esconde elementos nativos para interface limpa */
     header { visibility: hidden; height: 0px; }
     footer { visibility: hidden; }
-    
-    /* Estilização dos ícones e textos da sidebar */
     .sidebar-info {
         font-family: 'IBM Plex Sans', sans-serif;
         font-size: 0.9rem;
         line-height: 1.4;
         text-align: justify;
+        padding: 10px 0;
     }
     </style>
     """,
     unsafe_allow_html=True,
 )
 
-# --- LÓGICA DE INTERFACE ---
 def main():
-    # 1. Inicialização de Estados
-    if "lang" not in st.session_state:
-        st.session_state.lang = "pt"
-    if "draw" not in st.session_state:
-        st.session_state.draw = False
-    if "talk" not in st.session_state:
-        st.session_state.talk = False
+    # 1. Estados de Sessão
+    if "lang" not in st.session_state: st.session_state.lang = "pt"
+    if "draw" not in st.session_state: st.session_state.draw = False
+    if "talk" not in st.session_state: st.session_state.talk = False
 
     # 2. Navegação Superior (Tabs)
-    tabs = [
+    tabs_data = [
         ("mini", "1"), ("yPoemas", "2"), ("eureka", "3"),
         ("off-machina", "4"), ("books", "5"), ("poly", "6"), ("about", "7")
     ]
+    
     chosen_id = stx.tab_bar(
-        data=[stx.TabBarItemData(id=i, title=t, description="") for t, i in tabs],
+        data=[stx.TabBarItemData(id=i, title=t, description="") for t, i in tabs_data],
         default="2"
     )
 
-    # 3. CONSTRUÇÃO DA SIDEBAR (Foco: Arte e Texto)
+    # Identifica o nome da página atual para o padrão de imagem
+    page_name = next((t for t, i in tabs_data if i == chosen_id), "ypoemas")
+
+    # 3. SIDEBAR (Design e Estrutura)
     with st.sidebar:
-        # Seleção de Idiomas (Horizontal)
-        st.write("### 🌐")
+        # Seleção de Idiomas
+        st.write("### 🌐 Language")
         cols = st.columns(6)
         langs = ["pt", "es", "it", "fr", "en", "⚒️"]
         for i, l in enumerate(langs):
-            if cols[i].button(l):
+            if cols[i].button(l, key=f"btn_{l}"):
                 st.session_state.lang = l
                 st.rerun()
         
         st.write("---")
 
-        # Configurações Adicionais
+        # Toggles de Funcionalidade
         c1, c2 = st.columns(2)
         st.session_state.draw = c1.checkbox("Imagem", st.session_state.draw)
         st.session_state.talk = c2.checkbox("Áudio", st.session_state.talk)
         
         st.write("---")
 
-        # MAPEAMENTO DINÂMICO (Página -> Arte + Texto)
-        # Cada página define sua imagem e seu arquivo de texto
-        sidebar_content = {
-            "1": {"img": "art_mini.jpg", "txt": "info_mini.md"},
-            "2": {"img": "art_ypoemas.jpg", "txt": "info_ypoemas.md"},
-            "3": {"img": "art_eureka.jpg", "txt": "info_eureka.md"},
-            "4": {"img": "art_off.jpg", "txt": "info_off.md"},
-            "5": {"img": "art_books.jpg", "txt": "info_books.md"},
-            "6": {"img": "art_poly.jpg", "txt": "info_poly.md"},
-            "7": {"img": "art_about.jpg", "txt": "info_about.md"},
-        }
+        # MAPEAMENTO DE CONTEÚDO (Imagens e Textos)
+        # Padronização: images/img_nome_da_pagina.JPG
+        img_path = f"images/img_{page_name}.JPG"
+        txt_path = f"texts/info_{page_name}.md"
 
-        # Renderização da Arte da Página Selecionada
-        content = sidebar_content.get(chosen_id)
-        if content:
-            st.image(f"assets/{content['img']}", use_container_width=True)
-            st.markdown(f"<div class='sidebar-info'>{load_txt(f'texts/{content[ 'txt']}')}</div>", unsafe_allow_html=True)
+        # Renderização da Arte
+        if os.path.exists(img_path):
+            st.image(img_path, use_container_width=True)
+        else:
+            st.warning(f"Arquivo não encontrado: {img_path}")
+        
+        # Renderização do Texto Informativo
+        info_text = load_txt(txt_path)
+        st.markdown(f"<div class='sidebar-info'>{info_text}</div>", unsafe_allow_html=True)
 
         st.write("---")
         
-        # Ícones Sociais (Rodapé da Sidebar)
+        # Rodapé de Contato
         st.markdown(
-            """
-            <div style='text-align: center; opacity: 0.6; font-size: 0.8rem;'>
-                fb | ig | wa | mail
-            </div>
-            """,
+            "<div style='text-align: center; opacity: 0.5; font-size: 0.7rem;'>"
+            "fb | ig | wa | mail</div>", 
             unsafe_allow_html=True
         )
 
-    # 4. ÁREA DE CONTEÚDO (Placeholders para as próximas etapas)
+    # 4. ÁREA DE CONTEÚDO (Aguardando GO)
     if chosen_id == "1":
-        # Aguardando GO para implementar page_mini()
-        st.title("Página Mini")
+        st.write(f"### {page_name}")
     elif chosen_id == "2":
-        st.title("yPoemas - A Machina")
-    # ... demais condições
+        st.write(f"### {page_name}")
+    # ...
 
 if __name__ == "__main__":
     main()
