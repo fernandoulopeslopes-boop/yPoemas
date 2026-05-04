@@ -1,124 +1,172 @@
 import os
+import re
+import time
 import random
+import base64
+import socket
 import streamlit as st
-from gtts import gTTS
 
-# --- 1. ARQUITETURA VISUAL E CSS (RIGOR 300px) ---
+from extra_streamlit_components import TabBar as stx
+from datetime import datetime
+from lay_2_ypo import gera_poema
+
+### bof: settings
+
+# the User IPAddress for LYPO, TYPO
+hostname = socket.gethostname()
+IPAddres = socket.gethostbyname(hostname)
+
+def have_internet():
+    try:
+        # Tenta conectar ao IP da Cloudflare na porta 80 (HTTP)
+        socket.create_connection(("1.1.1.1", 80), timeout=3)
+        return True
+    except OSError:
+        return False
+        
 st.set_page_config(
-    page_title='a Máquina de Fazer Poesia',
+    page_title="a Machina de fazer Poesia - yPoemas",
+    page_icon="★",
     layout="centered",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="expanded",
 )
 
+if have_internet():
+    try:
+        from deep_translator import GoogleTranslator
+        from gtts import gTTS
+    except ImportError:
+        st.warning("Dependências ausentes no requirements.txt")
+else:
+    st.warning("Internet não conectada. Traduções não disponíveis no momento.")
+
+# --- BLOCO ÚNICO DE CSS (Otimizado) ---
 st.markdown(
     """
     <style>
-    /* Fixa a Sidebar em 300px conforme o Guia */
-    [data-testid="stSidebar"] { width: 300px !important; }
-    
-    /* Estética Cockpit: Botões e Fontes */
-    .stButton>button { width: 100%; border-radius: 2px; height: 3.5em; font-weight: 600; }
-    .logo-text { font-family: 'IBM Plex Sans'; font-size: 22px; font-weight: 700; text-align: center; padding-bottom: 20px; }
-    
-    /* Ajuste de Padding para o Palco */
-    .block-container { padding-top: 2rem; }
-    </style>
-    """, unsafe_allow_html=True
-)
-
-# --- 2. ENGENHARIA DE ESTADO (PERSISTÊNCIA PTC) ---
-def init_session_state():
-    """Garante a integridade das variáveis de controle conforme o Guia"""
-    defaults = {
-        "page": "yPoemas",
-        "lang": "pt",
-        "book": "livro vivo",
-        "take_tema": 0,
-        "talk": False,
-        "arts": False,
-        "find_what": ""
+    /* 1. Respiro no topo: Ajustado para o ponto ideal */
+    .block-container {
+        padding-top: 2rem !important; 
+        margin-top: 0px !important;
     }
-    for key, value in defaults.items():
-        if key not in st.session_state:
-            st.session_state[key] = value
 
-init_session_state()
+    /* 2. Sidebar e Botão de Colapso (>>) */
+    [data-testid="stSidebar"] {
+        width: 310px !important;
+        min-width: 310px !important;
+    }
 
-# --- 3. FERRAMENTAS DE CARGA (MD & ROL) ---
-@st.cache_data
-def load_md(file_name):
-    """Lê documentos respeitando o encerramento <eof>"""
-    try:
-        path = os.path.join("./md_files/", file_name)
-        with open(path, encoding="utf-8") as f:
-            content = f.read()
-            return content.split("<eof>")[0] if "<eof>" in content else content
-    except: return "⚠️ Erro na carga da documentação."
+    [data-testid="stSidebarCollapseButton"] {
+        left: 310px !important;
+        z-index: 999999;
+    }
 
-# --- 4. CENTRO DE CONTROLE (SIDEBAR EXCLUSIVA) ---
-def cockpit_control():
+    /* 3. Estética do Poema */
+    mark { background-color: powderblue; color: black; }
+    .logo-text {
+        font-weight: 600;
+        font-size: 16px;
+        font-family: 'IBM Plex Sans';
+        color: #000000;
+        padding-left: 5px;
+    }
+    header { visibility: hidden; height: 0px; }
+    footer { visibility: hidden; }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+### eof: settings
+
+# ... [Mantenha os SessionState como estão no seu original] ...
+
+### bof: tools
+
+def pick_lang():  # define idioma de forma horizontal na sidebar
     with st.sidebar:
-        st.markdown('<p class="logo-text">MACHINA 2026</p>', unsafe_allow_html=True)
+        cols = st.columns([1, 1, 1, 1, 1, 1])
         
-        # NAVEGAÇÃO PRINCIPAL (Botões de Ação Direta)
-        if st.button("🎭 yPoemas"): st.session_state.page = "yPoemas"
-        if st.button("🔍 eureka"): st.session_state.page = "eureka"
-        if st.button("📚 livros"): st.session_state.page = "livros"
-        if st.button("🌐 poly"): st.session_state.page = "poly"
-        if st.button("💬 opiniões"): st.session_state.page = "opiniões"
-        if st.button("📖 Sobre"): st.session_state.page = "Sobre"
-        
-        st.markdown("---")
-        
-        # IDIOMAS (Filtro Ocidental Oficial)
-        langs = ["pt", "es", "it", "fr", "en", "ca"]
-        st.session_state.lang = st.selectbox("Linguagem", langs)
-        
-        st.markdown("---")
-        st.write("🌌 Estética Ativa")
+        btn_pt = cols[0].button("pt", help="Português")
+        btn_es = cols[1].button("es", help="Español")
+        btn_it = cols[2].button("it", help="Italiano")
+        btn_fr = cols[3].button("fr", help="Français")
+        btn_en = cols[4].button("en", help="English")
+        btn_xy = cols[5].button("⚒️", help=st.session_state.poly_name)
 
-# --- 5. O PALCO (ÁREA DE EXIBIÇÃO) ---
-def stage_render():
-    # TOPO DA TELA: Botões Global [Talk] e [Arts]
-    col_t, col_a = st.columns(2)
-    with col_t:
-        label_t = "🗣️ Talk [ON]" if st.session_state.talk else "🗣️ Talk"
-        if st.button(label_t): st.session_state.talk = not st.session_state.talk
-    with col_a:
-        label_a = "🎨 Arts [ON]" if st.session_state.arts else "🎨 Arts"
-        if st.button(label_a): st.session_state.arts = not st.session_state.arts
+        if btn_pt:
+            st.session_state.lang = "pt"
+            st.session_state.poly_file = "poly_pt.txt"
+        elif btn_es:
+            st.session_state.lang = "es"
+            st.session_state.poly_file = "poly_es.txt"
+        elif btn_it:
+            st.session_state.lang = "it"
+            st.session_state.poly_file = "poly_it.txt"
+        elif btn_fr:
+            st.session_state.lang = "fr"
+            st.session_state.poly_file = "poly_fr.txt"
+        elif btn_en:
+            st.session_state.lang = "en"
+            st.session_state.poly_file = "poly_en.txt"
+        elif btn_xy:
+            st.session_state.last_lang = st.session_state.lang
+            st.session_state.lang = st.session_state.poly_lang
 
-    st.divider()
-    
-    pg = st.session_state.page
+# ... [Mantenha as funções translate, load_help, etc.] ...
 
-    # Implementação das Páginas conforme o Palco
-    if pg == "yPoemas":
-        c1, c2, c3, c4 = st.columns([1,1,1,1])
-        with c1: st.button("<-")
-        with c2: st.button("⭐")
-        with c3: st.button("->")
-        with c4: 
-            if st.button("?"): st.info(load_md("help_ypoemas.md"))
-        st.write("### [Processamento Poético Ativo]")
+def main():
+    chosen_id = stx.tab_bar(
+        data=[
+            stx.TabBarItemData(id=1, title="mini", description=""),
+            stx.TabBarItemData(id=2, title="yPoemas", description=""),
+            stx.TabBarItemData(id=3, title="eureka", description=""),
+            stx.TabBarItemData(id=4, title="off-machina", description=""),
+            stx.TabBarItemData(id=5, title="books", description=""),
+            stx.TabBarItemData(id=6, title="poly", description=""),
+            stx.TabBarItemData(id=7, title="about", description=""),
+        ],
+        default=2,
+    )
 
-    elif pg == "eureka":
-        c_in, c_p, c_s, c_h = st.columns([4,1,1,1])
-        with c_in: st.session_state.find_what = st.text_input("find_what", label_visibility="collapsed")
-        with c_p: st.button("+")
-        with c_s: st.button("⭐")
-        with c_h:
-            if st.button("?"): st.info(load_md("help_eureka.md"))
+    pick_lang()
+    draw_check_buttons()
 
-    elif pg == "Sobre":
-        try:
-            files = [f for f in os.listdir("./md_files/") if f.startswith("ABOUT_")]
-            names = [f.replace("ABOUT_", "").replace(".md", "") for f in files]
-            choice = st.selectbox("Selecione o Capítulo", names)
-            if choice:
-                st.markdown(load_md(f"ABOUT_{choice}.md"), unsafe_allow_html=True)
-        except: st.error("Erro no diretório md_files.")
+    # Correção das vírgulas nas atribuições de magy
+    if chosen_id == "1":
+        st.sidebar.info(load_md_file("INFO_MINI.md"))
+        magy = "./images/img_mini.jpg"
+        page_mini()
+    elif chosen_id == "2":
+        st.sidebar.info(load_md_file("INFO_YPOEMAS.md"))
+        magy = "./images/img_ypoemas.jpg"
+        page_ypoemas()
+    elif chosen_id == "3":
+        st.sidebar.info(load_md_file("INFO_EUREKA.md"))
+        magy = "./images/img_eureka.jpg"
+        page_eureka()
+    elif chosen_id == "4":
+        st.sidebar.info(load_md_file("INFO_OFF-MACHINA.md"))
+        magy = "./images/img_off-machina.jpg"
+        page_off_machina()
+    elif chosen_id == "5":
+        st.sidebar.info(load_md_file("INFO_BOOKS.md"))
+        magy = "./images/img_books.jpg"
+        page_books()
+    elif chosen_id == "6":
+        st.sidebar.info(load_md_file("INFO_POLY.md"))
+        magy = "./images/img_poly.jpg"
+        page_polys()
+    elif chosen_id == "7":
+        st.sidebar.info(load_md_file("INFO_ABOUT.md"))
+        magy = "./images/img_about.jpg"
+        page_abouts()
 
-# --- EXECUÇÃO FINAL ---
-cockpit_control()
-stage_render()
+    with st.sidebar:
+        # Só tenta carregar se magy for uma string válida
+        if 'magy' in locals() and isinstance(magy, str):
+            st.image(magy)
+
+    show_icons()
+
+if __name__ == "__main__":
+    main()
