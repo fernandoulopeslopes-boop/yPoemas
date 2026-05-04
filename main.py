@@ -79,7 +79,59 @@ st.markdown(
 
 ### eof: settings
 
-# ... [Mantenha os SessionState como estão no seu original] ...
+# Initialize SessionState
+
+if "lang" not in st.session_state:
+    st.session_state.lang = "pt"
+if "last_lang" not in st.session_state:
+    st.session_state.last_lang = "pt"
+
+if "book" not in st.session_state:  #  index for books_list
+    st.session_state.book = "livro vivo"
+if "take" not in st.session_state:  #  index for selected tema in books_list
+    st.session_state.take = 0
+if "mini" not in st.session_state:  #  index for selected tema in page_mini
+    st.session_state.mini = 0
+if "tema" not in st.session_state:  #  selected tema for all pages
+    st.session_state.tema = "Fatos"
+
+if "off_book" not in st.session_state:  #  index for off_books_list
+    st.session_state.off_book = 0
+if "off_take" not in st.session_state:  #  index for selected book in off_books_list
+    st.session_state.off_take = 0
+
+if "eureka" not in st.session_state:  #  index for random tema in page_eureka
+    st.session_state.eureka = 0
+
+if "poly_lang" not in st.session_state:
+    st.session_state.poly_lang = "ca"
+if "poly_name" not in st.session_state:
+    st.session_state.poly_name = "català"
+if "poly_take" not in st.session_state:
+    st.session_state.poly_take = 12
+if "poly_file" not in st.session_state:
+    st.session_state.poly_file = "poly_pt.txt"
+
+if "visy" not in st.session_state:
+    st.session_state.visy = True
+if "nany_visy" not in st.session_state:
+    st.session_state.nany_visy = 0
+
+if "draw" not in st.session_state:
+    st.session_state.draw = False
+if "talk" not in st.session_state:
+    st.session_state.talk = False
+if "vydo" not in st.session_state:
+    st.session_state.vydo = False
+if "arts" not in st.session_state:
+    st.session_state.arts = []
+if "auto" not in st.session_state:
+    st.session_state.auto = False
+if "rand" not in st.session_state:
+    st.session_state.rand = False
+
+### eof: settings
+
 
 ### bof: tools
 
