@@ -116,6 +116,8 @@ def pick_lang():  # define idioma de forma horizontal na sidebar
 
 # ... [Mantenha as funções translate, load_help, etc.] ...
 
+pick_lang()
+
 def load_help_tips():
     help_list = []
     with open(os.path.join("./base/helpers.txt"), encoding="utf-8") as file:
@@ -178,7 +180,6 @@ def main():
         default=2,
     )
 
-    pick_lang()
     draw_check_buttons()
 
     # Correção das vírgulas nas atribuições de magy
