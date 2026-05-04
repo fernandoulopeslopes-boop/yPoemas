@@ -91,7 +91,7 @@ def pick_lang():  # define idioma de forma horizontal na sidebar
         btn_it = cols[2].button("it", help="Italiano")
         btn_fr = cols[3].button("fr", help="Français")
         btn_en = cols[4].button("en", help="English")
-        btn_xy = cols[5].button("⚒️", help=st.session_state.poly_name)
+        btn_xy = cols[5].button("⚒️", help="ca")
 
         if btn_pt:
             st.session_state.lang = "pt"
