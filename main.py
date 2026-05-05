@@ -1,7 +1,8 @@
 import streamlit as st
 import os
 import glob
-from lista_oficial import IDIOMAS
+import base64
+from original import IDIOMAS
 
 # Configuração CSS obrigatória para fixar a largura da Sidebar em 300px
 st.markdown(
@@ -12,14 +13,25 @@ st.markdown(
             max-width: 300px !important;
             min-width: 300px !important;
         }
+        .linkey-container {
+            display: flex;
+            justify-content: flex-end;
+            padding-right: 5px;
+        }
+        .linkey-button {
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+        }
     </style>
     """,
     unsafe_with_html=True
 )
 
-# Inicialização do estado das variáveis de controle se não existirem
+# Inicialização segura do estado das variáveis de controle
 if "focus_page" not in st.session_state:
-    st.session_state.focus_page = "livros"  # Iniciando em uma das páginas ativas para avaliação
+    st.session_state.focus_page = "livros"  
 if "lang_selector" not in st.session_state:
     st.session_state.lang_selector = list(IDIOMAS.keys())[0] if IDIOMAS else ""
 if "draw" not in st.session_state:
@@ -29,6 +41,12 @@ if "talk" not in st.session_state:
 if "auto" not in st.session_state:
     st.session_state.auto = False
 
+def get_base64_image(image_path):
+    if os.path.exists(image_path):
+        with open(image_path, "rb") as img_file:
+            return base64.b64encode(img_file.read()).decode()
+    return None
+
 # ============================================================
 # ⚙️ COMPONENTE: SIDEBAR (CENTRO DE CONTROLE)
 # ============================================================
@@ -37,34 +55,45 @@ def render_sidebar():
         # Layout do topo com o botão linkey sem função no canto direito
         col_top_left, col_top_right = st.columns([8, 2])
         with col_top_right:
-            st.button("🔗", key="btn_linkey", help="Linkey")
+            chave_base64 = get_base64_image("images/chave_dourada.png")
+            if chave_base64:
+                st.markdown(
+                    f'<div class="linkey-container">'
+                    f'<button class="linkey-button" title="Linkey">'
+                    f'<img src="data:image/png;base64,{chave_base64}" width="20" height="20" style="image-rendering: pixelated;"/>'
+                    f'</button>'
+                    f'</div>',
+                    unsafe_with_html=True
+                )
+            else:
+                st.button("🔗", key="btn_linkey", help="Linkey")
             
-        # 1. IMAGEM DA PÁGINA EM FOCO
+        # 1. IMAGEM DA PÁGINA EM FOCO (\images + "img_" + pagina + ".JPG")
         if st.session_state.focus_page:
-            nome_base_upper = str(st.session_state.focus_page).upper()
-            nome_arte = f"img_{nome_base_upper}.JPG"
-            arte_path = f"images/{nome_arte}"
+            nome_pagina = str(st.session_state.focus_page)
+            nome_arte = f"img_{nome_pagina}.JPG"
+            pasta_imagens = "images"
             
-            if os.path.exists("images"):
-                arquivos_imagens = os.listdir("images")
-                alvo_arte = next((arq for arq in arquivos_imagens if arq.upper() == nome_arte), None)
+            if os.path.exists(pasta_imagens):
+                arquivos_imagens = os.listdir(pasta_imagens)
+                alvo_arte = next((arq for arq in arquivos_imagens if arq.upper() == nome_arte.upper()), None)
                 if alvo_arte:
-                    st.image(f"images/{alvo_arte}", use_column_width=True)
+                    st.image(f"{pasta_imagens}/{alvo_arte}", use_column_width=True)
                     
-        # 2. CONTEÚDO INFORMATIVO MD_FILE
+        # 2. CONTEÚDO INFORMATIVO MD_FILE ("INFO_" + pagina + ".MD")
         if st.session_state.focus_page:
-            nome_md = f"INFO_{nome_base_upper}.MD"
+            nome_md = f"INFO_{nome_pagina}.MD"
             pasta_md = "md_files"
             
             if os.path.exists(pasta_md):
                 arquivos_md = os.listdir(pasta_md)
-                alvo_md = next((arq for arq in arquivos_md if arq.upper() == nome_md), None)
+                alvo_md = next((arq for arq in arquivos_md if arq.upper() == nome_md.upper()), None)
                 if alvo_md:
                     with open(f"{pasta_md}/{alvo_md}", "r", encoding="utf-8") as f:
                         st.markdown(f.read())
                     st.markdown("---")
 
-        # 3. SELETOR DE IDIOMAS (Lista Oficial) e Botões de Controle
+        # 3. SELETOR DE IDIOMAS (Lista Oficial vinda de original.py)
         st.markdown("*idiomas disponíveis...*")
         col_lang, col_art, col_aud = st.columns([6, 2, 2])
         
@@ -103,10 +132,8 @@ def render_sidebar():
 # 🎭 COMPONENTE: O PALCO (PÁGINAS)
 # ============================================================
 def render_palco():
-    # Seletor de páginas para simular e habilitar o teste completo da estrutura
     paginas_disponiveis = ["mini", "yPoemas", "eureka", "livros", "poly", "Sobre"]
     
-    # Linha superior de navegação global para desenvolvimento/avaliação
     st.session_state.focus_page = st.radio(
         "Navegação do Palco (Foco):", 
         paginas_disponiveis, 
@@ -128,26 +155,21 @@ def render_palco():
     elif st.session_state.focus_page == "livros":
         st.subheader("Biblioteca Off-Machina")
         
-        # Busca dinâmica de arquivos md na pasta correta
         pasta_md = "md_files"
         arquivos_livros = []
         if os.path.exists(pasta_md):
-            # Filtra tudo que não seja arquivos auxiliares conhecidos para listar como conteúdo
             todos_files = os.listdir(pasta_md)
             arquivos_livros = [f for f in todos_files if f.upper().endswith(".MD") and not f.upper().startswith("INFO_") and not f.upper().startswith("HELP_") and not f.upper().startswith("ABOUT_")]
 
         if arquivos_livros:
-            # Dropdown ocupa o palco inteiro
-            livro_selecionado = st.selectbox("Selecione um Livro:", arquivos_livros, key="select_livros")
+            livro_selecionado = st.selectbox("Selecione um Livro:", arquivos_livros, label_visibility="collapsed", key="select_livros")
             
-            # Bloco de botões específicos
             col_b1, col_b2, col_b3, col_b4, col_b5, _ = st.columns([1, 1, 1, 1, 1, 7])
             with col_b1: st.button("<-", key="livros_prev")
             with col_b2: st.button("⭐", key="livros_star")
             with col_b3: st.button("->", key="livros_next")
             with col_b4: st.button("❤️", key="livros_heart")
             with col_b5: 
-                # Help associado
                 help_path = "md_files/HELP_OFF-MACHINA.MD"
                 help_content = ""
                 if os.path.exists(help_path):
@@ -155,7 +177,6 @@ def render_palco():
                         help_content = h_f.read()
                 st.button("?", key="livros_help", help=help_content if help_content else "Help indisponível")
                 
-            # Exibição do conteúdo do arquivo md selecionado
             st.markdown("---")
             with open(f"{pasta_md}/{livro_selecionado}", "r", encoding="utf-8") as l_f:
                 st.markdown(l_f.read())
@@ -171,18 +192,15 @@ def render_palco():
         pasta_md = "md_files"
         arquivos_poly = []
         if os.path.exists(pasta_md):
-            # Coleta arquivos de poemas/textos específicos para o ambiente poly
             arquivos_poly = [f for f in os.listdir(pasta_md) if f.upper().endswith(".MD") and not f.upper().startswith("INFO_") and not f.upper().startswith("HELP_") and not f.upper().startswith("ABOUT_")]
 
         if arquivos_poly:
-            poema_selecionado = st.selectbox("Selecione o Texto Poliglota:", arquivos_poly, key="select_poly")
+            poema_selecionado = st.selectbox("Selecione o Texto Poliglota:", arquivos_poly, label_visibility="collapsed", key="select_poly")
             
-            # Bloco de botões específicos
             col_p1, col_p2, _ = st.columns([1, 1, 10])
             with col_p1: 
                 st.button("❤️", key="poly_heart", help="temas mais lidos")
             with col_p2:
-                # Help associado
                 help_path = "md_files/HELP_POLY.MD"
                 help_content = ""
                 if os.path.exists(help_path):
@@ -203,23 +221,19 @@ def render_palco():
         st.subheader("Sobre a Machina")
         
         pasta_md = "md_files"
-        # Resgate de todos os arquivos ABOUT_*.md de forma dinâmica
         arquivos_about = glob.glob(os.path.join(pasta_md, "ABOUT_*.md")) if os.path.exists(pasta_md) else []
         
         if arquivos_about:
-            # Mapeamento do dicionário para exibição limpa (remove o prefixo 'ABOUT_' e a extensão '.MD')
             mapa_exibicao = {}
             for caminho_completo in arquivos_about:
                 nome_arquivo = os.path.basename(caminho_completo)
-                # Separa sem o prefixo e sem a extensão .md
+                # O nome na lista omite o prefixo 'ABOUT_' (6 caracteres) e a extensão '.md'/'.MD' (3 caracteres)
                 nome_limpo = nome_arquivo[6:-3] if nome_arquivo.upper().startswith("ABOUT_") else nome_arquivo[:-3]
                 mapa_exibicao[nome_limpo] = caminho_completo
             
-            # Selectbox dinâmico alimentado pelos arquivos reais
-            opcao_escolhida = st.selectbox("Seções Informativas:", list(mapa_exibicao.keys()), key="select_about")
+            opcao_escolhida = st.selectbox("Seções Informativas:", list(mapa_exibicao.keys()), label_visibility="collapsed", key="select_about")
             
             st.markdown("---")
-            # Leitura e exibição do arquivo real correspondente
             caminho_alvo = mapa_exibicao[opcao_escolhida]
             with open(caminho_alvo, "r", encoding="utf-8") as a_f:
                 st.markdown(a_f.read())
