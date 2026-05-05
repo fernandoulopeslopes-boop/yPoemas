@@ -2,7 +2,8 @@ import streamlit as st
 import os
 import glob
 import base64
-from original import IDIOMAS
+# Importação corrigida respeitando o case exato do arquivo físico (Original.py)
+from Original import IDIOMAS
 
 # Configuração CSS obrigatória para fixar a largura da Sidebar em 300px
 st.markdown(
@@ -93,7 +94,7 @@ def render_sidebar():
                         st.markdown(f.read())
                     st.markdown("---")
 
-        # 3. SELETOR DE IDIOMAS (Lista Oficial vinda de original.py)
+        # 3. SELETOR DE IDIOMAS (Lista Oficial vinda de Original.py)
         st.markdown("*idiomas disponíveis...*")
         col_lang, col_art, col_aud = st.columns([6, 2, 2])
         
@@ -194,7 +195,7 @@ def render_palco():
         if os.path.exists(pasta_md):
             arquivos_poly = [f for f in os.listdir(pasta_md) if f.upper().endswith(".MD") and not f.upper().startswith("INFO_") and not f.upper().startswith("HELP_") and not f.upper().startswith("ABOUT_")]
 
-        if arquivos_poly:
+        if archivos_poly:
             poema_selecionado = st.selectbox("Selecione o Texto Poliglota:", arquivos_poly, label_visibility="collapsed", key="select_poly")
             
             col_p1, col_p2, _ = st.columns([1, 1, 10])
@@ -211,37 +212,3 @@ def render_palco():
             st.markdown("---")
             with open(f"{pasta_md}/{poema_selecionado}", "r", encoding="utf-8") as p_f:
                 st.markdown(p_f.read())
-        else:
-            st.warning("Nenhum arquivo de texto encontrado para a Poly em \\md_files.")
-
-    # --------------------------------------------------------
-    # 6. SOBRE
-    # --------------------------------------------------------
-    elif st.session_state.focus_page == "Sobre":
-        st.subheader("Sobre a Machina")
-        
-        pasta_md = "md_files"
-        arquivos_about = glob.glob(os.path.join(pasta_md, "ABOUT_*.md")) if os.path.exists(pasta_md) else []
-        
-        if arquivos_about:
-            mapa_exibicao = {}
-            for caminho_completo in arquivos_about:
-                nome_arquivo = os.path.basename(caminho_completo)
-                # O nome na lista omite o prefixo 'ABOUT_' (6 caracteres) e a extensão '.md'/'.MD' (3 caracteres)
-                nome_limpo = nome_arquivo[6:-3] if nome_arquivo.upper().startswith("ABOUT_") else nome_arquivo[:-3]
-                mapa_exibicao[nome_limpo] = caminho_completo
-            
-            opcao_escolhida = st.selectbox("Seções Informativas:", list(mapa_exibicao.keys()), label_visibility="collapsed", key="select_about")
-            
-            st.markdown("---")
-            caminho_alvo = mapa_exibicao[opcao_escolhida]
-            with open(caminho_alvo, "r", encoding="utf-8") as a_f:
-                st.markdown(a_f.read())
-        else:
-            st.warning("Nenhum arquivo 'ABOUT_*.md' foi encontrado em \\md_files para compor esta página.")
-
-# ============================================================
-# ⚙️ EXECUÇÃO ORQUESTRADA DO SISTEMA
-# ============================================================
-render_sidebar()
-render_palco()
