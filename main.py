@@ -13,10 +13,9 @@ IDIOMAS = {
     "Italiano": "it"
 }
 
-# 2. INJEÇÃO DE CSS (Versão compatível com Python 3.14)
-# Evitando as aspas triplas dentro do st.markdown para prevenir o erro de metrics_util
+# 2. INJEÇÃO DE CSS (Parâmetro corrigido para unsafe_allow_html)
 css_style = "<style>section[data-testid='stSidebar'] {width: 300px !important; max-width: 300px !important; min-width: 300px !important;} .linkey-container {display: flex; justify-content: flex-end; padding-right: 5px;} .linkey-button {background: none; border: none; padding: 0; cursor: pointer;}</style>"
-st.write(css_style, unsafe_with_html=True)
+st.markdown(css_style, unsafe_allow_html=True)
 
 # 3. ESTADO DA SESSÃO
 if "focus_page" not in st.session_state:
@@ -36,11 +35,11 @@ def get_base64_image(image_path):
 # ============================================================
 def render_sidebar():
     with st.sidebar:
-        # Linkey
+        # Linkey com injeção HTML corrigida
         chave_base64 = get_base64_image("images/chave_dourada.png")
         if chave_base64:
             html_linkey = f"<div class='linkey-container'><button class='linkey-button'><img src='data:image/png;base64,{chave_base64}' width='20' height='20' style='image-rendering: pixelated;'/></button></div>"
-            st.write(html_linkey, unsafe_with_html=True)
+            st.markdown(html_linkey, unsafe_allow_html=True)
         else:
             st.button("🔗", key="btn_linkey")
 
@@ -95,66 +94,4 @@ def render_palco():
         c1.button("<-", key="m_prev")
         c2.button("⭐", key="m_star")
         c3.button("->", key="m_next")
-        # Help conforme Guia: help_ypoemas.md (minúsculo nesta página)
-        if c4.button("?", key="m_h"):
-            st.help("md_files/help_ypoemas.md")
-
-    elif p == "yPoemas":
-        st.subheader("yPoemas")
-        c1, c2, c3, c4, _ = st.columns([1, 1, 1, 1, 8])
-        c1.button("<-", key="y_prev")
-        c2.button("⭐", key="y_star")
-        c3.button("->", key="y_next")
-        if c4.button("?", key="y_h"):
-            st.help("md_files/HELP_YPOEMAS.MD")
-
-    elif p == "eureka":
-        st.subheader("Eureka")
-        st.text_input("Find what:", key="find_what", label_visibility="collapsed")
-        c1, c2, c3, _ = st.columns([1, 1, 1, 9])
-        c1.button("+", key="e_plus")
-        c2.button("⭐", key="e_star")
-        if c3.button("?", key="e_h"):
-            st.help("md_files/HELP_EUREKA.MD")
-
-    elif p == "livros":
-        st.subheader("Biblioteca Off-Machina")
-        files = [f for f in os.listdir("md_files") if f.endswith(".MD") and "_" not in f] if os.path.exists("md_files") else []
-        if files:
-            sel = st.selectbox("Livro:", files, label_visibility="collapsed", key="s_liv")
-            c1, c2, c3, c4, c5, _ = st.columns([1, 1, 1, 1, 1, 7])
-            c1.button("<-", key="l_prev")
-            c2.button("⭐", key="l_star")
-            c3.button("->", key="l_next")
-            c4.button("❤️", key="l_heart")
-            if c5.button("?", key="l_h"):
-                st.help("md_files/HELP_OFF-MACHINA.MD")
-            st.markdown("---")
-            with open(f"md_files/{sel}", "r", encoding="utf-8") as f:
-                st.markdown(f.read())
-
-    elif p == "poly":
-        st.subheader("Modo Poliglota")
-        files = [f for f in os.listdir("md_files") if f.endswith(".MD") and "_" not in f]
-        if files:
-            sel = st.selectbox("Texto:", files, label_visibility="collapsed", key="s_poly")
-            c1, c2, _ = st.columns([1, 1, 10])
-            c1.button("❤️", key="p_heart", help="temas mais lidos")
-            if c2.button("?", key="p_h"):
-                st.help("md_files/HELP_POLY.MD")
-            st.markdown("---")
-            with open(f"md_files/{sel}", "r", encoding="utf-8") as f:
-                st.markdown(f.read())
-
-    elif p == "Sobre":
-        st.subheader("Sobre a Machina")
-        abouts = glob.glob("md_files/ABOUT_*.MD")
-        if abouts:
-            mapa = {os.path.basename(a)[6:-3]: a for a in abouts}
-            sel = st.selectbox("Sessão:", list(mapa.keys()), label_visibility="collapsed", key="s_ab")
-            st.markdown("---")
-            with open(mapa[sel], "r", encoding="utf-8") as f:
-                st.markdown(f.read())
-
-render_sidebar()
-render_palco()
+        # Help
