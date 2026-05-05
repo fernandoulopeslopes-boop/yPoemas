@@ -6,22 +6,22 @@ IDIOMAS = {
     'Italiano': 'it',
     'Francês': 'fr',
     'Inglês': 'en',
+    'Latin': 'la',
+    'Esperanto': 'eo',
+    'Basco': 'eu',
     'Catalão': 'ca',
     'Córsico': 'co',
     'Galego': 'gl',
-    'Basco': 'eu',
-    'Esperanto': 'eo',
-    'Latin': 'la',
     'Galês': 'cy',
-    'Sueco': 'sv',
     'Polonês': 'pl',
     'Holandês': 'nl',
+    'Irlandês': 'ga',
     'Norueguês': 'no',
     'Finlandês': 'fi',
     'Dinamarquês': 'da',
-    'Irlandês': 'ga',
     'Romeno': 'ro',
     'Russo': 'ru'
+    'Sueco': 'sv',
 }
 
 TEMAS_ATIVOS = {
@@ -172,7 +172,7 @@ TEMAS_ATIVOS = {
 def load_temas_ativos():
     return TEMAS_ATIVOS
 
-def zay_number(tema):
+def pick_some_tema(tema):
     # Retorna o índice do tema na lista + 1
     temas = list(TEMAS_ATIVOS.keys())
     if tema in temas:
