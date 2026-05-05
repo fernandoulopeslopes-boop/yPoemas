@@ -50,7 +50,7 @@ TEMAS_ATIVOS = {
     'Clarice': 'poesia',
     'Conto': 'poesia',
     'Cordel': 'metalinguagem',
-    'Crítica': 'joco',
+    'Críticas': 'joco',
     'Critico': 'author',
     'Cromossomo': 'joco',
     'Cuores': 'poesia',
