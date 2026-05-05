@@ -23,7 +23,7 @@ Clandestino : author
 Clarice : author
 Conto : poesia
 Cordel : metalinguagem
-Crítica : joco
+Críticas : joco
 Crítico : author
 Cromossomo : joco
 Cuores : poesia
@@ -70,7 +70,7 @@ Nós : poesia
 Oca : poesia
 Ocio : joco
 Oco : poesia
-Oficia : beauty
+Oficia : joco
 Oficio : author
 Ogiva : poesia
 Olhares : poesia
