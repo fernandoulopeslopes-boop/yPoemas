@@ -100,11 +100,29 @@ IPAddres = socket.gethostbyname(hostname)
 
 # hide Streamlit Menu and Footer
 st.markdown(
-    """ <style>
-    /*#MainMenu {visibility: hidden;}*/
-    footer {visibility: hidden;}
-    </style> """,
-    unsafe_allow_html=True,
+    """
+    <style>
+        section[data-testid="stSidebar"] {
+            width: 300px !important; max-width: 300px !important; min-width: 300px !important;
+            background-color: #0E0E0E !important; border-right: 1px solid #1C1C1C;
+        }
+        .linkey-container { display: flex; justify-content: flex-end; padding: 5px 2px 0 0; margin-bottom: -10px; }
+        .linkey-btn { background: transparent; border: none; cursor: pointer; }
+        h1, h2, h3, p, span, label, input, select, button { font-family: 'Courier New', monospace !important; color: #CCCCCC !important; }
+        div[data-testid="stWidgetLabel"] { display: none !important; }
+        iframe { display: none !important; }
+        div.stButton > button {
+            background-color: #141414 !important; color: #888888 !important; border: 1px solid #262626 !important;
+            border-radius: 3px !important; padding: 3px 8px !important; font-size: 13px !important; width: 100% !important;
+        }
+        div.stButton > button:hover { border-color: #C5A059 !important; color: #FFFFFF !important; background-color: #1A1A1A !important; }
+        div[data-baseweb="select"] { background-color: #121212 !important; border: 1px solid #222222 !important; border-radius: 3px !important; }
+        input { background-color: #121212 !important; color: #E0E0E0 !important; border: 1px solid #222222 !important; border-radius: 3px !important; }
+        hr { border-color: #1A1A1A !important; margin: 12px 0 !important; }
+        .stAlert { background-color: #121212 !important; border: 1px solid #222222 !important; border-radius: 3px !important; }
+    </style>
+    """,
+    unsafe_allow_html=True
 )
 
 
