@@ -116,7 +116,7 @@ st.markdown(
     }
     .logo-text {
         font-weight: 600;
-        font-size: 14px;
+        font-size: 12px;
         font-family: 'Roboto';
         color: #000000;
         padding-top: 0px;
@@ -170,7 +170,7 @@ st.markdown(
     }
     .logo-text {
         font-weight: 600;
-        font-size: 14px;
+        font-size: 12px;
         font-family: 'Roboto';
         color: #000000;
         padding-top: 0px;
