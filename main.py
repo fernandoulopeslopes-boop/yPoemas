@@ -1102,6 +1102,143 @@ def page_eureka():
             )
 
 
+def page_off_machina():  # available off_machina_books
+    off_books_list = load_all_offs()
+    options = list(range(len(off_books_list)))
+    sobrios = "↓  " + translate("lista de Livros")
+    opt_off_book = st.selectbox(
+        sobrios,
+        options,
+        index=st.session_state.off_book,
+        format_func=lambda x: off_books_list[x],
+        key="opt_off_book",
+    )
+
+    if opt_off_book != st.session_state.off_book:
+        st.session_state.off_book = opt_off_book
+        st.session_state.off_take = 0
+
+    off_book_name = off_books_list[st.session_state.off_book]
+
+    help_tips = load_help(st.session_state.lang)
+    help_last = help_tips[0]
+    help_rand = help_tips[1]
+    help_nest = help_tips[2]
+    help_love = help_tips[3]
+
+    foo1, last, rand, nest, love, manu, foo2 = st.columns([2.5, 1, 1, 1, 1, 1, 2.5])
+    last = last.button("◀", help=help_last)
+    rand = rand.button("✻", help=help_rand)
+    nest = nest.button("▶", help=help_nest)
+    love = love.button("❤", help=help_love)
+    manu = manu.button("?", help="help !!!")
+
+    this_off_book = load_off_book(off_book_name)
+    off_book_pagys = load_book_pages(this_off_book)
+    maxy_off_machina = len(off_book_pagys) - 1
+
+    if last:
+        st.session_state.off_take -= 1
+        if st.session_state.off_take < 0:
+            st.session_state.off_take = maxy_off_machina
+
+    if rand:
+        st.session_state.off_take = random.randrange(0, maxy_off_machina)
+
+    if nest:
+        st.session_state.off_take += 1
+        if st.session_state.off_take > maxy_off_machina:
+            st.session_state.off_take = 0
+
+    if st.session_state.off_take > maxy_off_machina:  # just in case...
+        st.session_state.off_take = 0
+
+    if not st.session_state.draw:
+        options = list(range(len(off_book_pagys)))
+        sobrios = "↓  " + translate("lista de Títulos")
+        opt_off_take = st.selectbox(
+            sobrios,
+            options,
+            index=st.session_state.off_take,
+            format_func=lambda x: off_book_pagys[x],
+            key="opt_off_take",
+        )
+
+        if opt_off_take != st.session_state.off_take:
+            st.session_state.off_take = opt_off_take
+
+    lnew = True
+    if manu:
+        lnew = False
+        st.subheader(load_md_file("MANUAL_OFF-MACHINA.md"))
+
+    if love:
+        lnew = False
+        list_readings()
+        st.markdown(
+            get_binary_file_downloader_html("./temp/read_list.txt", "views"),
+            unsafe_allow_html=True,
+        )
+
+    if lnew:
+        what_book = (
+            "⚫  "
+            + st.session_state.lang
+            + " ( "
+            + str(st.session_state.off_take + 1)
+            + "/"
+            + str(len(off_book_pagys))
+            + " )"
+        )
+
+        off_machina_expander = st.expander(what_book, True)
+        with off_machina_expander:
+            off_book_text = ""
+            pipe_line = this_off_book[st.session_state.off_take].split("|")
+            if "@ " in pipe_line[1]:
+                if st.session_state.lang != st.session_state.last_lang:
+                    off_book_text = load_lypo()  # changes in lang, keep LYPO
+                else:
+                    nome_tema = pipe_line[1].replace("@ ", "")
+                    off_book_text = load_poema(nome_tema, "")  # no seed_eureka
+                    off_book_text = "<br>" + load_lypo()
+            else:
+                for text in pipe_line:
+                    off_book_text += text + "<br>"
+
+            capo = st.session_state.off_take == 0
+
+            if capo:
+                capa, isbn = st.columns([2.5, 7.5])
+                with capa:
+                    if off_book_name == "livro_vivo":
+                        LOGO_CAPA = load_arts("livro_vivo")
+                        st.image(LOGO_CAPA, use_column_width=True)
+                    else:
+                        st.image(
+                            "./off_machina/capa_" + off_book_name + ".jpg",
+                            use_column_width=True,
+                        )
+                with isbn:
+                    st.markdown(
+                        off_book_text, unsafe_allow_html=True
+                    )  # finally... write it
+            else:
+                if st.session_state.lang != "pt":
+                    off_book_text = translate(off_book_text)
+
+                LOGO_TEXTO = off_book_text
+                LOGO_IMAGE = None
+                if st.session_state.draw:
+                    LOGO_IMAGE = load_arts(off_book_name)
+
+                write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
+                update_readings(off_book_name)
+
+        if st.session_state.talk:
+            talk(off_book_text)
+
+
 def page_books():  # available books
     books, ok = st.columns([9.3, 0.7])
     with books:
