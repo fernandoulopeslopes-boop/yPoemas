@@ -3,9 +3,7 @@ a Machina_X_IA
 ---
 uma conversa 'real' com uma Inteligência 'artificial'
 
-[Y_P] = a Machina - yPoemas
-[I.A] = Inteligência 'artificial'
----
+[Y_P] = a Machina & [I.A] = Inteligência 'artificial'
 
 ---[Y_P]  
 vc precisa entender que toda vez que vc faz um código "feio e mal pensado", por preguiça ou pressa, não vai passar pelo meu senso estético. Isso significa que nós dois estamos tendo trabalho redobrado-triplicado à toa! Enquanto não estiver no padrão Machina vc vai pedalar e não vai dar em nada. Imagine onde estaríamos não fosse esse vício de fazer errado!  
