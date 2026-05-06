@@ -1490,8 +1490,7 @@ def main():
         ##$ page_docs()
 
     with st.sidebar:
-        foo = magy.lower
-        st.image("/images/" + foo)
+        st.image("/images/" + magy)
 
     show_icons()
     ##$ st.sidebar.state = True
