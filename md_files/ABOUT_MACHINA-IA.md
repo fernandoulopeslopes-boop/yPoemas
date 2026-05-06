@@ -1,7 +1,4 @@
----
-a Machina_X_IA
----
-uma conversa 'real' com uma Inteligência 'artificial'
+uma conversa 'real' da Machina com uma Inteligência 'artificial'
 
 [Y_P] = a Machina & [I.A] = Inteligência 'artificial'
 
