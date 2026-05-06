@@ -117,7 +117,7 @@ st.markdown(
     .logo-text {
         font-weight: 600;
         font-size: 14px;
-        font-family: 'IBM Plex Sans';
+        font-family: 'Ubuntu';
         color: #000000;
         padding-top: 0px;
         padding-left: 15px;
@@ -171,7 +171,7 @@ st.markdown(
     .logo-text {
         font-weight: 600;
         font-size: 14px;
-        font-family: 'IBM Plex Sans';
+        font-family: 'Ubuntu';
         color: #000000;
         padding-top: 0px;
         padding-left: 15px;
