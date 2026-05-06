@@ -569,6 +569,7 @@ def load_all_offs():
         "um_romance",
         "linguafiada",
         "essencial",
+        "urbano",
         "desvoto",
         "secreto",
     ]
