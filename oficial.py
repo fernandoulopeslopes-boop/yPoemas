@@ -21,7 +21,7 @@ IDIOMAS = {
     'Dinamarquês': 'da',
     'Romeno': 'ro',
     'Russo': 'ru'
-    'Sueco': 'sv',
+    'Sueco': 'sv'
 }
 
 TEMAS_ATIVOS = {
