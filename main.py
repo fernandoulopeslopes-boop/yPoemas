@@ -2,7 +2,6 @@ import os
 import json
 import streamlit as st
 from deep_translator import GoogleTranslator
-import oficial  # Mantém o arquivo oficial e suas engrenagens preservados na raiz
 
 # ==============================================================================
 # 1. CONFIGURAÇÕES DE INTERFACE & LAYOUT
