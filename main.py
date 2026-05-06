@@ -170,7 +170,7 @@ st.markdown(
     }
     .logo-text {
         font-weight: 600;
-        font-size: 18px;
+        font-size: 16px;
         font-family: 'IBM Plex Sans';
         color: #000000;
         padding-top: 0px;
@@ -263,7 +263,7 @@ def translate(input_text):
 
 def pick_lang():  # define idioma
     btn_pt, btn_es, btn_it, btn_fr, btn_en, btn_xy = st.sidebar.columns(
-        [1.1, 1.13, 1.04, 1.04, 1.17, 1.25]
+        [1.5, 1.5, 1.5, 1.5, 1.5, 1.5]
     )
     btn_pt = btn_pt.button("pt", key=1, help="Português")
     btn_es = btn_es.button("es", key=2, help="Español")
