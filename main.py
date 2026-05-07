@@ -1,52 +1,3 @@
-r"""
-
-yPoemas is an app that randomly collects words and phrases
-from specific databases and organizes them
-in different new poems or poetic texts.
-
-All texts are unique and will only be repeated  
-after they are sold out the thourekasands  
-of combinations possible to each theme.
-
-[Epitaph]
-Passei boa parte da minha vida escrevendo a "machina".
-A leitura fica para os amanhãs.
-Não vivo no meu tempo.
-
-º¤ø,¸¸,ø¤º°`°º¤ø,¸¸,ø¤º°`°ºº¤ø,¸¸,ø¤º°`°º¤ø,¸¸,ø¤º°`°ºº¤ø,¸¸,ø¤º°`°º¤ø,¸¸,ø¤º°
-
-ツpoemas
-
-AlfaBetaAção == C:\WINDOWS\new.ini
-config.toml  == C:\Users\dkvece\.streamlit
-
-share : https://share.streamlit.io/
-deploy: https://share.streamlit.io/nandoulopes/ypoemas/main/ypo.py
-runnin: https://nandoulopes-ypoemas-ypo-gf4z3l.streamlitapp.com/
-config: chrome://settings/content/siteDetails?site=https%3A%2F%2Fauth.streamlit.io
-github: https://github.com/NandouLopes/yPoemas
-instag: https://www.instagram.com/maquina_de_fazer_ypoemas/
-youtub: https://youtu.be/uL6T3roTtAs
-google: https://console.cloud.google.com/welcome?project=ypoemas&cloudshell=false
-prosas: https://prosas.com.br/dashboards/my-proposals
-bairro: https://www.superbairro.com.br/joseense-cria-maquina-de-produzir-poemas-2/
-
-para novos temas:
-- incluir novo_tema em \ypo\base\ativos.txt
-- incluir novo_tema em \ypo\base\images.txt
-- incluir novo_tema em \ypo\temp\readings.txt
-- incluir novo_tema em \base\rol_*.txt
-- atualizar ABOUT_NOTES.md se necessário...
-
-VISY == New Visitor
-NANY_VISY == Number of Visitors
-LYPO == Last YPOema created from curr_ypoema
-TYPO == Translated YPOema from LYPO
-POLY == Poliglot Idiom == Changed on Catalán
-
-One more test...
-"""
-
 import os
 ##$ import io
 import re
@@ -239,8 +190,7 @@ def translate(input_text):
 
 def pick_lang():  # define idioma
     btn_pt, btn_es, btn_it, btn_fr, btn_en, btn_xy = st.sidebar.columns(
-#        [1.1, 1.13, 1.04, 1.04, 1.17, 1.25]
-        [1.6, 1.6, 1.6, 1.6, 1.6, 1.6]
+        [1.1, 1.13, 1.04, 1.04, 1.17, 1.25]
     )
     btn_pt = btn_pt.button("pt", key=1, help="Português")
     btn_es = btn_es.button("es", key=2, help="Español")
@@ -857,6 +807,74 @@ def page_mini():
 
 
 def page_ypoemas():
+    # 1. SETUP DE DADOS
+    books_list = [
+        "todos os temas", "livro vivo", "poemas", "jocosos", "ensaios",
+        "variações", "metalinguagem", "outros autores", "sociais",
+        "signos_fem", "signos_mas", "todos os signos"
+    ]
+    
+    # Carrega temas baseados no livro atual no state
+    temas_list = load_temas(st.session_state.book)
+    maxy_ypoemas = len(temas_list) - 1
+
+    # 2. COCKPIT DE NAVEGAÇÃO: [books] [ + < * > ? ] [temas]
+    # Ajuste fino de pesos: 3 para listas, 1 para ícones
+    col_books, b1, b2, b3, b4, b5, col_temas = st.columns([3, 1, 1, 1, 1, 1, 3])
+
+    with col_books:
+        sel_book = st.selectbox(
+            "Livros", options=books_list,
+            index=books_list.index(st.session_state.book) if st.session_state.book in books_list else 0,
+            label_visibility="collapsed", key="sel_book_nav"
+        )
+        if sel_book != st.session_state.book:
+            st.session_state.book = sel_book
+            st.session_state.take = 0  # Reset necessário ao trocar a fonte
+            st.rerun()
+
+    # Botões Centrais
+    help_tips = load_help(st.session_state.lang)
+    more_btn = b1.button("✚", help=help_tips[4])
+    last_btn = b2.button("◀", help=help_tips[0])
+    rand_btn = b3.button("✻", help=help_tips[1])
+    nest_btn = b4.button("▶", help=help_tips[2])
+    manu_btn = b5.button("?", help="help !!!")
+
+    with col_temas:
+        opt_take = st.selectbox(
+            "Temas", options=list(range(len(temas_list))),
+            index=st.session_state.take if st.session_state.take <= maxy_ypoemas else 0,
+            format_func=lambda z: temas_list[z],
+            label_visibility="collapsed", key="opt_take_nav"
+        )
+        if opt_take != st.session_state.take:
+            st.session_state.take = opt_take
+            st.rerun()
+
+    # 3. LÓGICA DE CONTROLE
+    if more_btn: 
+        st.rerun() # "Mais" uma variação do mesmo tema
+
+    if last_btn:
+        st.session_state.take = maxy_ypoemas if st.session_state.take <= 0 else st.session_state.take - 1
+        st.rerun()
+
+    if rand_btn:
+        st.session_state.take = random.randrange(0, len(temas_list))
+        st.rerun()
+
+    if nest_btn:
+        st.session_state.take = 0 if st.session_state.take >= maxy_ypoemas else st.session_state.take + 1
+        st.rerun()
+
+    # Define o tema final para processamento
+    st.session_state.tema = temas_list[st.session_state.take]
+
+    # 4. EXIBIÇÃO (O PALCO)
+    # Aqui segue a lógica de st.expander e write_ypoema...
+    
+def page_ypoemos():
     temas_list = load_temas(st.session_state.book)
     maxy_ypoemas = len(temas_list) - 1
     if (
@@ -1240,15 +1258,15 @@ def page_books():  # available books
     books, ok = st.columns([9.3, 0.7])
     with books:
         books_list = [
+            "todos os temas",
             "livro vivo",
             "poemas",
             "jocosos",
             "ensaios",
             "variações",
             "metalinguagem",
-            "sociais",
-            "todos os temas",
             "outros autores",
+            "sociais",
             "signos_fem",
             "signos_mas",
             "todos os signos",
@@ -1423,7 +1441,7 @@ def main():
     with st.sidebar:
         st.image("./images/" + magy)
 
-#    show_icons()
+    show_icons()
     ##$ st.sidebar.state = True
 
 
