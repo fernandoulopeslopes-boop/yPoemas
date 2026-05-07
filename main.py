@@ -807,20 +807,36 @@ def page_mini():
 
 
 def page_ypoemas():
-    # 1. SETUP DE DADOS
+    # 0. REMOÇÃO DO VÃO SUPERIOR
+    st.markdown(
+        """
+        <style>
+            .block-container {
+                padding-top: 1rem;
+                margin-top: -2.5rem;
+            }
+            header {
+                visibility: hidden;
+                height: 0px;
+            }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+    # 1. DADOS BASE
     books_list = [
         "todos os temas", "livro vivo", "poemas", "jocosos", "ensaios",
         "variações", "metalinguagem", "outros autores", "sociais",
         "signos_fem", "signos_mas", "todos os signos"
     ]
     
-    # Carrega temas baseados no livro atual no state
     temas_list = load_temas(st.session_state.book)
     maxy_ypoemas = len(temas_list) - 1
+    help_tips = load_help(st.session_state.lang)
 
-    # 2. COCKPIT DE NAVEGAÇÃO: [books] [ + < * > ? ] [temas]
-    # Ajuste fino de pesos: 3 para listas, 1 para ícones
-    col_books, b1, b2, b3, b4, b5, col_temas = st.columns([3, 1, 1, 1, 1, 1, 3])
+    # 2. COCKPIT: [books] [ + < * > ? ] [temas]
+    col_books, b1, b2, b3, b4, b5, col_temas = st.columns([3.5, 0.8, 0.8, 0.8, 0.8, 0.8, 3.5])
 
     with col_books:
         sel_book = st.selectbox(
@@ -830,16 +846,15 @@ def page_ypoemas():
         )
         if sel_book != st.session_state.book:
             st.session_state.book = sel_book
-            st.session_state.take = 0  # Reset necessário ao trocar a fonte
+            st.session_state.take = 0
             st.rerun()
 
-    # Botões Centrais
-    help_tips = load_help(st.session_state.lang)
-    more_btn = b1.button("✚", help=help_tips[4])
-    last_btn = b2.button("◀", help=help_tips[0])
-    rand_btn = b3.button("✻", help=help_tips[1])
-    nest_btn = b4.button("▶", help=help_tips[2])
-    manu_btn = b5.button("?", help="help !!!")
+    # Comandos Centrais
+    more_btn = b1.button("✚", help=help_tips[4], use_container_width=True)
+    last_btn = b2.button("◀", help=help_tips[0], use_container_width=True)
+    rand_btn = b3.button("✻", help=help_tips[1], use_container_width=True)
+    nest_btn = b4.button("▶", help=help_tips[2], use_container_width=True)
+    manu_btn = b5.button("?", help="Manual", use_container_width=True)
 
     with col_temas:
         opt_take = st.selectbox(
@@ -852,28 +867,46 @@ def page_ypoemas():
             st.session_state.take = opt_take
             st.rerun()
 
-    # 3. LÓGICA DE CONTROLE
-    if more_btn: 
-        st.rerun() # "Mais" uma variação do mesmo tema
-
+    # 3. PROCESSAMENTO DE NAVEGAÇÃO
+    if more_btn: st.rerun()
     if last_btn:
         st.session_state.take = maxy_ypoemas if st.session_state.take <= 0 else st.session_state.take - 1
         st.rerun()
-
     if rand_btn:
         st.session_state.take = random.randrange(0, len(temas_list))
         st.rerun()
-
     if nest_btn:
         st.session_state.take = 0 if st.session_state.take >= maxy_ypoemas else st.session_state.take + 1
         st.rerun()
 
-    # Define o tema final para processamento
+    # 4. GERAÇÃO E EXIBIÇÃO
     st.session_state.tema = temas_list[st.session_state.take]
-
-    # 4. EXIBIÇÃO (O PALCO)
-    # Aqui segue a lógica de st.expander e write_ypoema...
     
+    if manu_btn:
+        st.subheader(load_md_file("MANUAL_YPOEMAS.md"))
+    
+    # Carregamento do Poema
+    if st.session_state.lang != st.session_state.last_lang:
+        curr_ypoema = load_lypo()
+    else:
+        _ = load_poema(st.session_state.tema, "") 
+        curr_ypoema = load_lypo()
+
+    if st.session_state.lang != "pt":
+        curr_ypoema = translate(curr_ypoema)
+
+    # 5. RENDERIZAÇÃO NO PALCO
+    st.markdown("---")
+    label_info = f"⚫ {st.session_state.lang} | {st.session_state.book} ({st.session_state.take + 1}/{len(temas_list)})"
+    
+    with st.expander(label_info, expanded=True):
+        img = load_arts(st.session_state.tema) if st.session_state.draw else None
+        write_ypoema(curr_ypoema, img)
+
+    if st.session_state.talk:
+        talk(curr_ypoema)
+
+
 def page_ypoemos():
     temas_list = load_temas(st.session_state.book)
     maxy_ypoemas = len(temas_list) - 1
@@ -1447,4 +1480,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
