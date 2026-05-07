@@ -817,27 +817,25 @@ import streamlit as st
 import random
 import os
 
+import streamlit as st
+import random
+import os
+
 def page_ypoemas():
-    # 0. AJUSTE DE PALCO (ESTABILIZAÇÃO E MARGEM)
+    # 0. AJUSTE DE PALCO (RESTAURANDO SIDEBAR E CABEÇALHO)
     st.markdown(
         """
         <style>
-            /* 1. Resolve a invasão do topo: margem de 2rem para não colar nos botões do sistema */
+            /* Reduz o espaço mas preserva a funcionalidade da sidebar */
             .block-container {
-                padding-top: 2rem;
+                padding-top: 3.5rem; 
                 padding-bottom: 0rem;
-                margin-top: 0rem;
             }
-            /* 2. Trava a largura para evitar o efeito "encolhe/estica" */
-            .stMain {
-                max-width: 100%;
+            /* Remove a faixa branca do topo (header nativo) sem matar o botão >> */
+            header[data-testid="stHeader"] {
+                background-color: rgba(0,0,0,0);
+                border-bottom: none;
             }
-            /* 3. Estabiliza o expander para ocupar sempre a largura total do palco */
-            .stExpander {
-                width: 100% !important;
-                margin-left: 0px;
-            }
-            header { visibility: hidden; height: 0px; }
         </style>
         """,
         unsafe_allow_html=True
@@ -850,7 +848,6 @@ def page_ypoemas():
     help_tips = load_help(st.session_state.lang)
 
     # 2. COCKPIT DE NAVEGAÇÃO
-    # Mantendo os pesos para o balanceamento exigido
     col_books, b1, b2, b3, b4, b5, col_temas = st.columns([3.5, 0.8, 0.8, 0.8, 0.8, 0.8, 3.5])
 
     with col_books:
@@ -862,40 +859,45 @@ def page_ypoemas():
             st.session_state.take = 0
             st.rerun()
 
-    # Navegação com rerun imediato para destravar o tema
+    # Navegação Direta
     if b1.button("✚", help=help_tips[4], use_container_width=True): st.rerun()
+    
     if b2.button("◀", help=help_tips[0], use_container_width=True):
         st.session_state.take = maxy_ypoemas if st.session_state.take <= 0 else st.session_state.take - 1
         st.rerun()
+        
     if b3.button("✻", help=help_tips[1], use_container_width=True):
         st.session_state.take = random.randrange(0, len(temas_list))
         st.rerun()
+        
     if b4.button("▶", help=help_tips[2], use_container_width=True):
         st.session_state.take = 0 if st.session_state.take >= maxy_ypoemas else st.session_state.take + 1
         st.rerun()
+        
     manu = b5.button("?", help="help !!!", use_container_width=True)
 
     with col_temas:
+        # ATUALIZAÇÃO DO INDEX: O segredo está em index=st.session_state.take
         opt_take = st.selectbox("Temas", options=list(range(len(temas_list))),
-                                index=st.session_state.take if st.session_state.take <= maxy_ypoemas else 0,
+                                index=st.session_state.take,
                                 format_func=lambda z: temas_list[z],
                                 label_visibility="collapsed", key="opt_take_nav")
         if opt_take != st.session_state.take:
             st.session_state.take = opt_take
             st.rerun()
 
-    # 3. DEFINIÇÃO E GERAÇÃO
+    # 3. DEFINIÇÃO DO TEMA
     st.session_state.tema = temas_list[st.session_state.take]
     
     if manu:
         st.subheader(load_md_file("MANUAL_YPOEMAS.md"))
 
-    # 4. O PALCO (ESTÁVEL)
+    # 4. O PALCO
     st.markdown("---")
-    what_book = f"⚫ {st.session_state.lang} ( {st.session_state.book} ) ( {st.session_state.take + 1} / {len(temas_list)} )"
+    label_status = f"⚫ {st.session_state.lang} ( {st.session_state.book} ) ( {st.session_state.take + 1} / {len(temas_list)} )"
     
-    # O container do palco agora está travado via CSS
-    with st.expander(what_book, expanded=True):
+    with st.expander(label_status, expanded=True):
+        # Motor de Geração e Normalização
         if st.session_state.lang != st.session_state.last_lang:
             curr_ypoema = load_lypo()
         else:
@@ -914,7 +916,8 @@ def page_ypoemas():
         write_ypoema(curr_ypoema, img)
 
     if st.session_state.talk:
-        talk(curr_ypoema)# --- EXECUÇÃO ---
+        talk(curr_ypoema)
+
 
 if __name__ == "__main__":
     # Inicialização de variáveis mínimas para o main.py não quebrar
