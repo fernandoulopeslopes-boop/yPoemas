@@ -816,6 +816,10 @@ if __name__ == "__main__":
     if "talk" not in st.session_state: st.session_state.talk = False
     
 
+import streamlit as st
+import random
+import os
+
 def page_ypoemas():
     # 0. REFINAMENTO PARA 90% DE LARGURA ÚTIL E TOPO MAXIMIZADO
     st.markdown(
@@ -824,6 +828,7 @@ def page_ypoemas():
             .block-container {
                 padding-top: 1rem; 
                 margin-top: -3.5rem; 
+                /* Define a largura em 90% e centraliza com auto-margins */
                 max-width: 90%;
                 margin-left: auto;
                 margin-right: auto;
@@ -853,7 +858,7 @@ def page_ypoemas():
     maxy_ypoemas = len(temas_list) - 1
     help_tips = load_help(st.session_state.lang)
 
-    # 2. COCKPIT DE NAVEGAÇÃO: [3.5 | 0.8x5 | 3.5]
+    # 2. COCKPIT DE NAVEGAÇÃO: [books] [ + < * > ? ] [temas]
     col_books, b1, b2, b3, b4, b5, col_temas = st.columns([3.5, 0.8, 0.8, 0.8, 0.8, 0.8, 3.5])
 
     with col_books:
@@ -868,7 +873,8 @@ def page_ypoemas():
             st.rerun()
 
     # Comandos Centrais (Navegação Reativa)
-    if b1.button("✚", help=help_tips[4], use_container_width=True): st.rerun()
+    if b1.button("✚", help=help_tips[4], use_container_width=True): 
+        st.rerun()
     
     if b2.button("◀", help=help_tips[0], use_container_width=True):
         st.session_state.take = maxy_ypoemas if st.session_state.take <= 0 else st.session_state.take - 1
@@ -885,7 +891,7 @@ def page_ypoemas():
     manu = b5.button("?", help="help !!!", use_container_width=True)
 
     with col_temas:
-        # Index sincronizado via key dinâmica
+        # Index sincronizado via key dinâmica para forçar atualização do widget
         opt_take = st.selectbox(
             "Temas", 
             options=list(range(len(temas_list))),
@@ -904,11 +910,11 @@ def page_ypoemas():
     if manu:
         st.subheader(load_md_file("MANUAL_YPOEMAS.md"))
 
-    # 4. O PALCO (EXPANDER)
-    st.markdown("---")
+    # 4. O PALCO (EXPANDER) - SEM DIVISOR
     label_status = f"⚫ {st.session_state.lang} ( {st.session_state.book} ) ( {st.session_state.take + 1} / {len(temas_list)} )"
     
     with st.expander(label_status, expanded=True):
+        # Processo de Geração e Normalização conforme a arquitetura da Máquina
         if st.session_state.lang != st.session_state.last_lang:
             curr_ypoema = load_lypo()
         else:
