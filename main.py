@@ -806,36 +806,6 @@ def page_mini():
                         secs -= 1
 
 
-# --- CONFIGURAÇÃO DE PALCO (CSS) ---
-st.set_page_config(layout="wide", page_title="a Máquina de Fazer Poesia")
-
-# 0. REFINAMENTO PARA 90% DE LARGURA ÚTIL
-    st.markdown(
-        """
-        <style>
-            .block-container {
-                padding-top: 1rem; 
-                margin-top: -3.5rem; 
-                /* Define a largura em 90% e centraliza com auto-margins */
-                max-width: 90%;
-                margin-left: auto;
-                margin-right: auto;
-                padding-bottom: 0rem;
-            }
-            
-            header[data-testid="stHeader"] {
-                background-color: rgba(0,0,0,0);
-            }
-
-            .stExpander {
-                width: 100% !important;
-            }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
-
-
 if __name__ == "__main__":
     # Inicialização de variáveis mínimas para o main.py não quebrar
     if "book" not in st.session_state: st.session_state.book = "poemas"
@@ -958,6 +928,7 @@ def page_ypoemas():
 
     if st.session_state.talk:
         talk(curr_ypoema)
+
 
 def page_eureka():
     help_tips = load_help(st.session_state.lang)
