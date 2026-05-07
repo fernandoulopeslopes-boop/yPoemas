@@ -239,7 +239,8 @@ def translate(input_text):
 
 def pick_lang():  # define idioma
     btn_pt, btn_es, btn_it, btn_fr, btn_en, btn_xy = st.sidebar.columns(
-        [1.1, 1.13, 1.04, 1.04, 1.17, 1.25]
+#        [1.1, 1.13, 1.04, 1.04, 1.17, 1.25]
+        [1.4, 1.4, 1.4, 1.4, 1.4, 1.4]
     )
     btn_pt = btn_pt.button("pt", key=1, help="Português")
     btn_es = btn_es.button("es", key=2, help="Español")
@@ -271,19 +272,19 @@ def pick_lang():  # define idioma
         st.success(translate("idioma atual") + " ➪ " + st.session_state.lang)
 
 
-def show_icons():  # https://api.whatsapp.com/
-    with st.sidebar:
-        st.sidebar.markdown(
-            f"""
-            <nav>
-            <a href='https://www.facebook.com/nandoulopes' target='_blank'>• facebook</a> |
-            <a href='mailto:lopes.fernando@hotmail.com' target='_blank'>e-mail</a> |
-            <a href='https://www.instagram.com/fernando.lopes.942/' target='_blank'>instagram</a> |
-            <a href='https://web.whatsapp.com/send?phone=+5512991368181' target='_blank'>whatsapp</a>
-            </nav>
-            """,
-            unsafe_allow_html=True,
-        )
+#def show_icons():  # https://api.whatsapp.com/
+#    with st.sidebar:
+#        st.sidebar.markdown(
+#            f"""
+#            <nav>
+#            <a href='https://www.facebook.com/nandoulopes' target='_blank'>• facebook</a> |
+#            <a href='mailto:lopes.fernando@hotmail.com' target='_blank'>e-mail</a> |
+#            <a href='https://www.instagram.com/fernando.lopes.942/' target='_blank'>instagram</a> |
+#            <a href='https://web.whatsapp.com/send?phone=+5512991368181' target='_blank'>whatsapp</a>
+#            </nav>
+#            """,
+#            unsafe_allow_html=True,
+#        )
 
 
 @st.cache(allow_output_mutation=True)
