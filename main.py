@@ -813,86 +813,110 @@ import os
 # --- CONFIGURAÇÃO DE PALCO (CSS) ---
 st.set_page_config(layout="wide", page_title="a Máquina de Fazer Poesia")
 
+import streamlit as st
+import random
+import os
+
 def page_ypoemas():
+    # 0. AJUSTE DE PALCO (CORRIGIDO PARA NÃO MATAR A SIDEBAR)
     st.markdown(
         """
         <style>
-            .block-container { padding-top: 1rem; margin-top: -2.5rem; }
-            header { visibility: hidden; height: 0px; }
+            .block-container {
+                padding-top: 1rem;
+                margin-top: -2.5rem;
+            }
+            /* Oculta apenas os botões de sistema, preservando a sidebar */
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            header {background: rgba(0,0,0,0); height: 1rem;} 
         </style>
         """,
         unsafe_allow_html=True
     )
 
-    # 1. SETUP DE DADOS E ESTADO
-    books_list = ["todos os temas", "livro vivo", "poemas", "jocosos", "ensaios", "variações", "metalinguagem", "outros autores", "sociais", "signos_fem", "signos_mas", "todos os signos"]
+    # 1. SETUP DE DADOS
+    books_list = [
+        "todos os temas", "livro vivo", "poemas", "jocosos", "ensaios",
+        "variações", "metalinguagem", "outros autores", "sociais",
+        "signos_fem", "signos_mas", "todos os signos"
+    ]
     
     temas_list = load_temas(st.session_state.book)
     maxy_ypoemas = len(temas_list) - 1
     
-    # Just in case (sua lógica original)
-    if st.session_state.take > maxy_ypoemas or st.session_state.take < 0:
+    # Garantia de integridade do índice
+    if st.session_state.take > maxy_ypoemas:
         st.session_state.take = 0
 
-    # 2. COCKPIT: [books] [ + < * > ? ] [temas]
+    # 2. COCKPIT DE NAVEGAÇÃO
     col_books, b1, b2, b3, b4, b5, col_temas = st.columns([3.5, 0.8, 0.8, 0.8, 0.8, 0.8, 3.5])
 
     with col_books:
-        sel_book = st.selectbox("Livros", options=books_list, index=books_list.index(st.session_state.book) if st.session_state.book in books_list else 0, label_visibility="collapsed", key="sel_book_nav")
+        sel_book = st.selectbox(
+            "Livros", options=books_list,
+            index=books_list.index(st.session_state.book) if st.session_state.book in books_list else 0,
+            label_visibility="collapsed", key="sel_book_nav"
+        )
         if sel_book != st.session_state.book:
             st.session_state.book = sel_book
             st.session_state.take = 0
             st.rerun()
 
     help_tips = load_help(st.session_state.lang)
-    more = b1.button("✚", help=help_tips[4], use_container_width=True)
-    last = b2.button("◀", help=help_tips[0], use_container_width=True)
-    rand = b3.button("✻", help=help_tips[1], use_container_width=True)
-    nest = b4.button("▶", help=help_tips[2], use_container_width=True)
+    
+    # Atribuição direta dos botões para evitar travamento
+    if b1.button("✚", help=help_tips[4], use_container_width=True):
+        st.rerun()
+    
+    if b2.button("◀", help=help_tips[0], use_container_width=True):
+        st.session_state.take = maxy_ypoemas if st.session_state.take <= 0 else st.session_state.take - 1
+        st.rerun()
+        
+    if b3.button("✻", help=help_tips[1], use_container_width=True):
+        st.session_state.take = random.randrange(0, len(temas_list))
+        st.rerun()
+        
+    if b4.button("▶", help=help_tips[2], use_container_width=True):
+        st.session_state.take = 0 if st.session_state.take >= maxy_ypoemas else st.session_state.take + 1
+        st.rerun()
+        
     manu = b5.button("?", help="help !!!", use_container_width=True)
 
     with col_temas:
-        opt_take = st.selectbox("Temas", options=list(range(len(temas_list))), index=st.session_state.take, format_func=lambda z: temas_list[z], label_visibility="collapsed", key="opt_take_nav")
+        opt_take = st.selectbox(
+            "Temas", options=list(range(len(temas_list))),
+            index=st.session_state.take,
+            format_func=lambda z: temas_list[z],
+            label_visibility="collapsed", key="opt_take_nav"
+        )
         if opt_take != st.session_state.take:
             st.session_state.take = opt_take
             st.rerun()
 
-    # 3. LÓGICA DE NAVEGAÇÃO
-    if last:
-        st.session_state.take = maxy_ypoemas if st.session_state.take <= 0 else st.session_state.take - 1
-        st.rerun()
-    if rand:
-        st.session_state.take = random.randrange(0, maxy_ypoemas)
-        st.rerun()
-    if nest:
-        st.session_state.take = 0 if st.session_state.take >= maxy_ypoemas else st.session_state.take + 1
-        st.rerun()
-
+    # 3. DEFINIÇÃO DO TEMA ATUAL
     st.session_state.tema = temas_list[st.session_state.take]
 
-    # 4. GERAÇÃO E EXIBIÇÃO (O SEU lnew = True)
+    # 4. EXIBIÇÃO (O PALCO)
     if manu:
         st.subheader(load_md_file("MANUAL_YPOEMAS.md"))
 
-    # Título do Expander
     what_book = f"⚫ {st.session_state.lang} ( {st.session_state.book} ) ( {st.session_state.take + 1} / {len(temas_list)} )"
     
-    ypoemas_expander = st.expander(what_book, expanded=True)
-    with ypoemas_expander:
-        # Lógica exata de geração de texto
+    with st.expander(what_book, expanded=True):
+        # Lógica de Geração e Normalização
         if st.session_state.lang != st.session_state.last_lang:
             curr_ypoema = load_lypo()
         else:
-            load_poema(st.session_state.tema, "") # Gera
-            curr_ypoema = load_lypo() # Carrega
+            load_poema(st.session_state.tema, "")
+            curr_ypoema = load_lypo()
 
-        # Tradução e Normalização via arquivo temporário
         if st.session_state.lang != "pt":
             curr_ypoema = translate(curr_ypoema)
             typo_user = "TYPO_" + IPAddres
-            with open(os.path.join("./temp/" + typo_user), "w", encoding="utf-8") as save_typo:
-                save_typo.write(curr_ypoema)
-            curr_ypoema = load_typo() # Sua função de normalização
+            with open(os.path.join("./temp/" + typo_user), "w", encoding="utf-8") as f:
+                f.write(curr_ypoema)
+            curr_ypoema = load_typo()
 
         update_readings(st.session_state.tema)
         
@@ -901,17 +925,8 @@ def page_ypoemas():
         
         write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
 
-        # Se o botão manual foi clicado, mostra info extra (conforme seu original)
-        if manu:
-            INFO_TEXTO = load_info(st.session_state.tema)
-            if st.session_state.lang != "pt":
-                INFO_TEXTO = translate(INFO_TEXTO)
-            INFO_IMAGE = f"./images/matrix/{st.session_state.tema.capitalize()}.jpg"
-            write_ypoema(INFO_TEXTO, INFO_IMAGE)
-
     if st.session_state.talk:
         talk(curr_ypoema)
-
 # --- EXECUÇÃO ---
 
 if __name__ == "__main__":
