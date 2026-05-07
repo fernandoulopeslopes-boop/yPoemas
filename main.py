@@ -809,117 +809,32 @@ def page_mini():
 # --- CONFIGURAÇÃO DE PALCO (CSS) ---
 st.set_page_config(layout="wide", page_title="a Máquina de Fazer Poesia")
 
-import streamlit as st
-import random
-import os
-
-def page_ypoemas():
-    # 0. AJUSTE DE PALCO (OCUPAÇÃO MÁXIMA E RESPIRO TÉCNICO)
+# 0. REFINAMENTO PARA 90% DE LARGURA ÚTIL
     st.markdown(
         """
         <style>
             .block-container {
                 padding-top: 1rem; 
                 margin-top: -3.5rem; 
+                /* Define a largura em 90% e centraliza com auto-margins */
+                max-width: 90%;
+                margin-left: auto;
+                margin-right: auto;
                 padding-bottom: 0rem;
             }
+            
             header[data-testid="stHeader"] {
                 background-color: rgba(0,0,0,0);
             }
-            /* Garante que o cockpit não 'dance' lateralmente */
-            .stMain { max-width: 100%; }
+
+            .stExpander {
+                width: 100% !important;
+            }
         </style>
         """,
         unsafe_allow_html=True
     )
 
-    # 1. SETUP DE DADOS
-    books_list = [
-        "todos os temas", "livro vivo", "poemas", "jocosos", "ensaios",
-        "variações", "metalinguagem", "outros autores", "sociais",
-        "signos_fem", "signos_mas", "todos os signos"
-    ]
-    
-    temas_list = load_temas(st.session_state.book)
-    maxy_ypoemas = len(temas_list) - 1
-    help_tips = load_help(st.session_state.lang)
-
-    # 2. COCKPIT DE NAVEGAÇÃO: [books] [ + < * > ? ] [temas]
-    col_books, b1, b2, b3, b4, b5, col_temas = st.columns([3.5, 0.8, 0.8, 0.8, 0.8, 0.8, 3.5])
-
-    with col_books:
-        sel_book = st.selectbox(
-            "Livros", options=books_list,
-            index=books_list.index(st.session_state.book) if st.session_state.book in books_list else 0,
-            label_visibility="collapsed", key="sel_book_nav"
-        )
-        if sel_book != st.session_state.book:
-            st.session_state.book = sel_book
-            st.session_state.take = 0
-            st.rerun()
-
-    # Comandos Centrais (Navegação Reativa)
-    if b1.button("✚", help=help_tips[4], use_container_width=True): st.rerun()
-    
-    if b2.button("◀", help=help_tips[0], use_container_width=True):
-        st.session_state.take = maxy_ypoemas if st.session_state.take <= 0 else st.session_state.take - 1
-        st.rerun()
-        
-    if b3.button("✻", help=help_tips[1], use_container_width=True):
-        st.session_state.take = random.randrange(0, len(temas_list))
-        st.rerun()
-        
-    if b4.button("▶", help=help_tips[2], use_container_width=True):
-        st.session_state.take = 0 if st.session_state.take >= maxy_ypoemas else st.session_state.take + 1
-        st.rerun()
-        
-    manu = b5.button("?", help="help !!!", use_container_width=True)
-
-    with col_temas:
-        # Chave dinâmica para forçar a atualização do índice no widget
-        opt_take = st.selectbox(
-            "Temas", 
-            options=list(range(len(temas_list))),
-            index=st.session_state.take if st.session_state.take <= maxy_ypoemas else 0,
-            format_func=lambda z: temas_list[z],
-            label_visibility="collapsed", 
-            key=f"opt_take_nav_{st.session_state.take}" 
-        )
-        if opt_take != st.session_state.take:
-            st.session_state.take = opt_take
-            st.rerun()
-
-    # 3. MOTOR DE GERAÇÃO
-    st.session_state.tema = temas_list[st.session_state.take]
-    
-    if manu:
-        st.subheader(load_md_file("MANUAL_YPOEMAS.md"))
-
-    # 4. O PALCO (EXPANDER DE CONTEÚDO)
-    st.markdown("---")
-    label_status = f"⚫ {st.session_state.lang} ( {st.session_state.book} ) ( {st.session_state.take + 1} / {len(temas_list)} )"
-    
-    with st.expander(label_status, expanded=True):
-        # Processo de Geração e Normalização de Variações
-        if st.session_state.lang != st.session_state.last_lang:
-            curr_ypoema = load_lypo()
-        else:
-            load_poema(st.session_state.tema, "")
-            curr_ypoema = load_lypo()
-
-        if st.session_state.lang != "pt":
-            curr_ypoema = translate(curr_ypoema)
-            typo_user = "TYPO_" + IPAddres
-            with open(os.path.join("./temp/" + typo_user), "w", encoding="utf-8") as f:
-                f.write(curr_ypoema)
-            curr_ypoema = load_typo()
-
-        update_readings(st.session_state.tema)
-        img = load_arts(st.session_state.tema) if st.session_state.draw else None
-        write_ypoema(curr_ypoema, img)
-
-    if st.session_state.talk:
-        talk(curr_ypoema)
 
 if __name__ == "__main__":
     # Inicialização de variáveis mínimas para o main.py não quebrar
