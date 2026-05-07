@@ -1,8 +1,5 @@
 r"""
 
-https://ypoemas-mxzvate9zattkypcouvnfs.streamlit.app/
-https://github.com/fernandoulopeslopes-boop/yPoemas
-
 yPoemas is an app that randomly collects words and phrases
 from specific databases and organizes them
 in different new poems or poetic texts.
@@ -20,7 +17,9 @@ Não vivo no meu tempo.
 
 ツpoemas
 
+AlfaBetaAção == C:\WINDOWS\new.ini
 config.toml  == C:\Users\dkvece\.streamlit
+
 share : https://share.streamlit.io/
 deploy: https://share.streamlit.io/nandoulopes/ypoemas/main/ypo.py
 runnin: https://nandoulopes-ypoemas-ypo-gf4z3l.streamlitapp.com/
@@ -62,72 +61,46 @@ from datetime import datetime
 from lay_2_ypo import gera_poema
 
 ### bof: settings
+# the User IPAddress for LYPO, TYPO
+hostname = socket.gethostname()
+IPAddres = socket.gethostbyname(hostname)
 
-st.set_page_config(
-    page_title="a Machina de fazer Poesia - yPoemas",
-    page_icon=":star:",
-    layout="centered",
-    initial_sidebar_state="auto",
-)
-
-
-def have_internet(host="8.8.8.8", port=53, timeout=3):
+def have_internet():
     try:
-        socket.setdefaulttimeout(timeout)
-        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
+        # Tenta conectar ao IP da Cloudflare na porta 80 (HTTP)
+        socket.create_connection(("1.1.1.1", 80), timeout=3)
         return True
-    except socket.error as ex:
+    except OSError:
         return False
-
-
+        
 if have_internet():
     try:
         from deep_translator import GoogleTranslator
-    except ImportError as ex:
-        st.warning(translate("Google Translator não conectado"))
-    try:
         from gtts import gTTS
-    except ImportError as ex:
-        st.warning(translate("Google TTS não conectado"))
+    except ImportError:
+        st.warning("Dependências ausentes no requirements.txt")
 else:
     st.warning("Internet não conectada. Traduções não disponíveis no momento.")
 
 
-# the User IPAddres for LYPO, TYPO
-hostname = socket.gethostname()
-IPAddres = socket.gethostbyname(hostname)
+st.set_page_config(
+    page_title="a Machina de fazer Poesia - yPoemas",
+    page_icon="★",
+    layout="centered",
+    initial_sidebar_state="expanded",
+)
 
 
 # hide Streamlit Menu and Footer
 st.markdown(
-    """
-    <style>
-    mark {
-      background-color: powderblue;
-      color: black;
-    }
-    .container {
-        display: flex;
-        /* justify-content: center; */
-    }
-
-    .header {
-        text-align:center;
-    }
-    .logo-text {
-        font-weight: 600;
-        font-size: 18px;
-        font-family: 'IBM Plex Sans';
-        color: #000000;
-        padding-top: 0px;
-        padding-left: 15px;
-    }
-    .logo-img {
-        float:right;
-    }
+    """ <style>
+    /*#MainMenu {visibility: hidden;}*/
+    footer {visibility: hidden;}
     </style> """,
     unsafe_allow_html=True,
 )
+
+
 # change padding between components
 st.markdown(
     f""" <style>
@@ -170,11 +143,11 @@ st.markdown(
     }
     .logo-text {
         font-weight: 600;
-        font-size: 18px;
+        font-size: 14px;
         font-family: 'IBM Plex Sans';
         color: #000000;
         padding-top: 0px;
-        padding-left: 15px;
+        padding-left: 10px;
     }
     .logo-img {
         float:right;
@@ -190,6 +163,9 @@ if "lang" not in st.session_state:
     st.session_state.lang = "pt"
 if "last_lang" not in st.session_state:
     st.session_state.last_lang = "pt"
+
+if "poly_lang" not in st.session_state:
+    st.session_state.poly_lang = "ca"
 
 if "book" not in st.session_state:  #  index for books_list
     st.session_state.book = "livro vivo"
@@ -338,14 +314,12 @@ def load_help(idiom):
         returns.append(translate("gera novo yPoema"))
         returns.append(translate("arte"))
         returns.append(translate("audio"))
-        returns.append(translate("vídeo"))
 
     return returns
 
 
 def draw_check_buttons():
-    foo = ''
-    draw_text, foo, foo, talk_text = st.sidebar.columns([3,2,2,3])
+    draw_text, talk_text = st.sidebar.columns([3.8, 3.2])
     help_tips = load_help(st.session_state.lang)
     help_draw = help_tips[5]
     help_talk = help_tips[6]
@@ -438,7 +412,7 @@ def list_readings():
 
     total_viewes = st.session_state.nany_visy
     currrent_day = datetime.now()
-    begining_day = datetime(2026, 5, 9)
+    begining_day = datetime(2021, 7, 6)
     days_of_runs = begining_day - currrent_day
     days_of_runs = abs(days_of_runs.days)
     views_by_day = total_viewes / days_of_runs
@@ -467,7 +441,7 @@ def list_readings():
 ### bof: loaders
 
 
-st.cache_data
+# @st.cache(allow_output_mutation=True)
 def load_md_file(file):  # Open files for about's
     try:
         with open(os.path.join("./md_files/" + file), encoding="utf-8") as file_to_open:
@@ -482,7 +456,7 @@ def load_md_file(file):  # Open files for about's
     return file_text
 
 
-st.cache_data
+# @st.cache(allow_output_mutation=True)
 def load_eureka(part_of_word):
     lexico_list = []
     with open(os.path.join("./base/lexico_pt.txt"), encoding="utf-8") as lista:
@@ -509,7 +483,7 @@ def load_temas(book):  # List of themes inside a Book
     return book_list
 
 
-st.cache_data
+# @st.cache(allow_output_mutation=True)
 def load_info(nome_tema):
     with open(os.path.join("./base/" + "info.txt"), "r", encoding="utf-8") as file:
         result = "nonono"
@@ -542,7 +516,7 @@ def load_info(nome_tema):
         return result
 
 
-st.cache_data
+# @st.cache(allow_output_mutation=True)
 def load_index():  # Load indexes numbers for all themes
     index_list = []
     with open(os.path.join("./md_files/ABOUT_INDEX.md"), encoding="utf-8") as lista:
@@ -589,16 +563,12 @@ def load_typo():  # Load translated yPoema & clean translator returned bugs in t
 def load_all_offs():
     all_books_off = [
         "a_torre_de_papel",
-        "quase_que_eu_Poesia",
-        "faz_de_conto",
-        "um_romance",
         "linguafiada",
         "livro_vivo",
-        "desvoto",
-        "ensaio",
-        "urbano",
-        "essencial",
-        "secreto",
+        "faz_de_conto",
+        "um_romance",
+        "quase_que_eu_Poesia",
+        "segredo_público",
     ]
 
     return all_books_off
@@ -767,7 +737,6 @@ if st.session_state.visy:  # check visitor once; rand initial temas
     maxy_mini = len(temas_list)
     st.session_state.mini = random.randrange(0, maxy_mini)
 
-    st.success(translate("bem vindo à **máquina de fazer Poesia...**"))
     st.session_state.draw = True
     st.session_state.visy = False
 
@@ -1208,7 +1177,6 @@ def page_off_machina():  # available off_machina_books
             unsafe_allow_html=True,
         )
 
-    if lnew:
         what_book = (
             "⚫  "
             + st.session_state.lang
@@ -1344,7 +1312,6 @@ def page_polys():  # available languages
     with ok:
         doit = st.button("✔", help="confirm ?")
 
-    lnew = True
     if doit:
         poly_pais = poly_pais[opt_poly]
         poly_ling = poly_ling[opt_poly]
@@ -1367,7 +1334,6 @@ def page_abouts():
         "prefácio",
         "machina",
         "off-machina",
-        "machina-IA",
         "outros",
         "traduttore",
         "bibliografia",
@@ -1425,40 +1391,41 @@ def main():
 
     if chosen_id == "1":
         st.sidebar.info(load_md_file("INFO_MINI.md"))
-        magy = "./images/img_mini.jpg"
+        magy = "img_mini.jpg"
         page_mini()
     elif chosen_id == "2":
         st.sidebar.info(load_md_file("INFO_YPOEMAS.md"))
-        magy = "./images/img_ypoemas.jpg"
+        magy = "img_ypoemas.jpg"
         page_ypoemas()
     elif chosen_id == "3":
         st.sidebar.info(load_md_file("INFO_EUREKA.md"))
-        magy = "./images/img_eureka.jpg"
+        magy = "img_eureka.jpg"
         page_eureka()
     elif chosen_id == "4":
         st.sidebar.info(load_md_file("INFO_OFF-MACHINA.md"))
-        magy = "./images/img_off-machina.jpg"
+        magy = "img_off-machina.jpg"
         page_off_machina()
     elif chosen_id == "5":
         st.sidebar.info(load_md_file("INFO_BOOKS.md"))
-        magy = "./images/img_books.jpg"
+        magy = "img_books.jpg"
         page_books()
     elif chosen_id == "6":
         st.sidebar.info(load_md_file("INFO_POLY.md"))
-        magy = "./images/img_poly.jpg"
+        magy = "img_poly.jpg"
         page_polys()
     elif chosen_id == "7":
         st.sidebar.info(load_md_file("INFO_ABOUT.md"))
-        magy = "./images/img_about.jpg"
+        magy = "img_about.jpg"
         page_abouts()
+        ##$ page_docs()
 
     with st.sidebar:
-        st.image(magy)
+        st.image("./images/" + magy)
 
     show_icons()
-    st.sidebar.state = True
+    ##$ st.sidebar.state = True
 
 
 if __name__ == "__main__":
     main()
-    
+
