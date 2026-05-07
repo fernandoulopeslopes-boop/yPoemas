@@ -847,7 +847,7 @@ if __name__ == "__main__":
     
 
 def page_ypoemas():
-    # 0. REFINAMENTO TOTAL (90% LARGURA + TOPO MAXIMIZADO)
+    # 0. REFINAMENTO PARA 90% DE LARGURA ÚTIL E TOPO MAXIMIZADO
     st.markdown(
         """
         <style>
@@ -859,9 +859,11 @@ def page_ypoemas():
                 margin-right: auto;
                 padding-bottom: 0rem;
             }
+            
             header[data-testid="stHeader"] {
                 background-color: rgba(0,0,0,0);
             }
+
             .stExpander {
                 width: 100% !important;
             }
@@ -881,7 +883,7 @@ def page_ypoemas():
     maxy_ypoemas = len(temas_list) - 1
     help_tips = load_help(st.session_state.lang)
 
-    # 2. COCKPIT DE NAVEGAÇÃO: [3.5 | 0.8 x 5 | 3.5]
+    # 2. COCKPIT DE NAVEGAÇÃO: [3.5 | 0.8x5 | 3.5]
     col_books, b1, b2, b3, b4, b5, col_temas = st.columns([3.5, 0.8, 0.8, 0.8, 0.8, 0.8, 3.5])
 
     with col_books:
@@ -937,7 +939,6 @@ def page_ypoemas():
     label_status = f"⚫ {st.session_state.lang} ( {st.session_state.book} ) ( {st.session_state.take + 1} / {len(temas_list)} )"
     
     with st.expander(label_status, expanded=True):
-        # Processo de Geração e Normalização
         if st.session_state.lang != st.session_state.last_lang:
             curr_ypoema = load_lypo()
         else:
@@ -957,7 +958,6 @@ def page_ypoemas():
 
     if st.session_state.talk:
         talk(curr_ypoema)
-
 
 def page_eureka():
     help_tips = load_help(st.session_state.lang)
