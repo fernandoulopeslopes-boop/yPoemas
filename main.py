@@ -222,7 +222,7 @@ def pick_lang():  # define idioma
         st.success(translate("idioma atual") + " ➪ " + st.session_state.lang)
 
 
-def show_icons():  # https://api.whatsapp.com/
+def ():  # https://api.whatsapp.com/
     with st.sidebar:
         st.sidebar.markdown(
             f"""
@@ -1393,7 +1393,6 @@ def main():
     with st.sidebar:
         st.image("./images/" + magy)
 
-    show_icons()
     ##$ st.sidebar.state = True
 
 
