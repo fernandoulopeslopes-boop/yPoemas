@@ -95,7 +95,7 @@ st.markdown(
     .logo-text {
         font-weight: 600;
         font-size: 14px;
-        font-family: 'roboto';
+        font-family: 'nunito';
         color: #000000;
         padding-top: 0px;
         padding-left: 10px;
