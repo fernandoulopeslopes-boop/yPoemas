@@ -1,33 +1,38 @@
 import streamlit as st
 
-# 1. CONFIGURAÇÃO INICIAL (Obrigatório ser a primeira chamada)
-st.set_page_config(page_title="yPoemas - A Machina", layout="wide")
+# 1. CONFIGURAÇÃO INICIAL (NOME DEFINITIVO)
+st.set_page_config(
+    page_title="yPoemas - a Machina de fazer Poesia", 
+    layout="wide"
+)
 
-# 2. PROTOCOLO DE ESTILO (PTC - Correção de Interação)
+# 2. PROTOCOLO DE ESTILO (PTC - RESET DE INTERAÇÃO)
 st.markdown(
     """
     <style>
-        /* Ajuste do Palco: Largura de 90% e liberação de cliques */
+        /* Reset de cliques para evitar o congelamento */
+        html, body, [data-testid="stAppViewContainer"] {
+            pointer-events: auto !important;
+        }
+
+        /* O PALCO: Largura de 90% sem bloquear o mouse */
         .block-container {
             max-width: 90% !important;
             margin-left: auto;
             margin-right: auto;
             padding-top: 2rem;
-            /* Garante que a área receba eventos de mouse */
-            pointer-events: auto !important; 
+            z-index: 1;
         }
 
-        /* Sidebar: Prioridade de visualização e clique */
+        /* SIDEBAR: Garantia de acesso total */
         section[data-testid="stSidebar"] {
             z-index: 10000 !important;
+            pointer-events: auto !important;
         }
 
-        /* Estilização básica para verificar se o palco está vivo */
-        .palco-moldura {
-            border: 1px solid #ddd;
-            padding: 20px;
-            border-radius: 10px;
-            background-color: #f9f9f9;
+        /* HEADER */
+        header[data-testid="stHeader"] {
+            z-index: 9999 !important;
         }
     </style>
     """,
@@ -35,29 +40,25 @@ st.markdown(
 )
 
 def main():
-    # --- SIDEBAR: LISTA OFICIAL CPC ---
+    # --- SIDEBAR: LISTA OFICIAL CONFORME O CPC ---
     st.sidebar.title("Configurações")
+    
+    # LISTA OFICIAL ESTABELECIDA
     languages = ["Português", "Español", "Italiano", "Français", "English", "Català"]
-    sel_lang = st.sidebar.selectbox("Idioma de Destino", languages)
+    
+    sel_lang = st.sidebar.selectbox("Idioma", languages)
     
     st.sidebar.divider()
-    st.sidebar.write("Machina de Fazer Poesia - 2026")
+    st.sidebar.write("2026 - a Machina de fazer Poesia")
 
     # --- O PALCO (ÁREA PRINCIPAL) ---
-    st.title("yPoemas")
+    st.title("yPoemas - a Machina de fazer Poesia")
     
-    # Usando uma div com classe para testar a interatividade
-    st.markdown(f"""
-        <div class="palco-moldura">
-            <h3>Palco Ativo: {sel_lang}</h3>
-            <p>Se você consegue selecionar este texto, o mouse não está mais congelado.</p>
-        </div>
-    """, unsafe_allow_html=True)
-
-    # Espaço para o motor da Machina
-    if st.button("Precipitar o Acaso"):
-        st.balloons()
-        st.success(f"Gerando variações em {sel_lang}...")
+    st.info(f"Idioma selecionado: {sel_lang}")
+    
+    # Teste de área clicável
+    if st.button("Testar Mouse (Clique Aqui)"):
+        st.success("O mouse está operacional no palco!")
 
 if __name__ == "__main__":
     main()
