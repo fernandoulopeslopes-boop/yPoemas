@@ -610,10 +610,7 @@ def load_arts(nome_tema):  # Select image for arts
 def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
     if LOGO_IMAGE == None:
         st.markdown(
-            #font-weight: 600;
-            f#ont-size: 14px;
-            #font-family: 'IBM Plex Sans';
-            f"""
+            """
             <div class='container'>
                 <p class='logo-text'>{LOGO_TEXTO}</p>
             </div>
