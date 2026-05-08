@@ -406,7 +406,7 @@ def load_eureka(part_of_word):
     return lexico_list
 
 
-# @st.cache(suppress_st_warning=True, allow_output_mutation=True)
+@st.cache_data
 def load_temas(book):  # List of themes inside a Book
     book_list = []
     with open(
@@ -419,7 +419,7 @@ def load_temas(book):  # List of themes inside a Book
     return book_list
 
 
-# @st.cache_data
+@st.cache_data
 def load_info(nome_tema):
     with open(os.path.join("./base/" + "info.txt"), "r", encoding="utf-8") as file:
         result = "nonono"
@@ -452,7 +452,7 @@ def load_info(nome_tema):
         return result
 
 
-# @st.cache_data
+@st.cache_data
 def load_index():  # Load indexes numbers for all themes
     index_list = []
     with open(os.path.join("./md_files/ABOUT_INDEX.md"), encoding="utf-8") as lista:
@@ -610,6 +610,9 @@ def load_arts(nome_tema):  # Select image for arts
 def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
     if LOGO_IMAGE == None:
         st.markdown(
+            font-weight: 600;
+            font-size: 14px;
+            font-family: 'IBM Plex Sans';
             f"""
             <div class='container'>
                 <p class='logo-text'>{LOGO_TEXTO}</p>
