@@ -218,9 +218,6 @@ def pick_lang():  # define idioma
         st.session_state.last_lang = st.session_state.lang
         st.session_state.lang = st.session_state.poly_lang
 
-    if st.session_state.lang != st.session_state.last_lang:
-        st.success(translate("idioma atual") + " ➪ " + st.session_state.lang)
-
 
 @st.cache_data
 def load_help_tips():
