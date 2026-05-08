@@ -374,7 +374,7 @@ def list_readings():
 ### bof: loaders
 
 
-# @st.cache_data
+@st.cache_data
 def load_md_file(file):  # Open files for about's
     try:
         with open(os.path.join("./md_files/" + file), encoding="utf-8") as file_to_open:
@@ -389,7 +389,7 @@ def load_md_file(file):  # Open files for about's
     return file_text
 
 
-# @st.cache_data
+@st.cache_data
 def load_eureka(part_of_word):
     lexico_list = []
     with open(os.path.join("./base/lexico_pt.txt"), encoding="utf-8") as lista:
