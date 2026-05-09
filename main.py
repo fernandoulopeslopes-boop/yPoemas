@@ -231,21 +231,6 @@ def pick_lang():  # define idioma
         st.success(translate("idioma atual") + " ➪ " + st.session_state.lang)
 
 
-def show_icons():  # https://api.whatsapp.com/
-    with st.sidebar:
-        st.sidebar.markdown(
-            f"""
-            <nav>
-            <a href='https://www.facebook.com/nandoulopes' target='_blank'>• facebook</a> |
-            <a href='mailto:lopes.fernando@hotmail.com' target='_blank'>e-mail</a> |
-            <a href='https://www.instagram.com/fernando.lopes.942/' target='_blank'>instagram</a> |
-            <a href='https://web.whatsapp.com/send?phone=+5512991368181' target='_blank'>whatsapp</a>
-            </nav>
-            """,
-            unsafe_allow_html=True,
-        )
-
-
 @st.cache_data(show_spinner=False)
 def load_help_tips():
     help_list = []
@@ -272,16 +257,15 @@ def load_help(idiom):
         returns.append(translate("próximo"))
         returns.append(translate("mais lidos..."))
         returns.append(translate("gera novo yPoema"))
-        returns.append(translate("imagem"))
-        returns.append(translate("áudio"))
-        returns.append(translate("vídeo"))
+        returns.append(translate("arte"))
+        returns.append(translate("audio"))
 
     return returns
 
 
 def draw_check_buttons():
     foo = ""
-    draw_text, foo, talk_text = st.sidebar.columns([2, 6, 2])
+    draw_text, foo, talk_text = st.sidebar.columns([4, 2, 4])
     help_tips = load_help(st.session_state.lang)
     help_draw = help_tips[5]
     help_talk = help_tips[6]
@@ -1413,8 +1397,7 @@ def main():
     with st.sidebar:
         st.image("./images/" + magy)
 
-    show_icons()
-    st.sidebar.state = True
+    ## st.sidebar.state = True
 
 if __name__ == "__main__":
     main()
