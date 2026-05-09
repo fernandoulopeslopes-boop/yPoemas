@@ -1314,6 +1314,7 @@ def page_books():  # available books
     books, ok = st.columns([9.3, 0.7])
     with books:
         books_list = [
+            "todos os temas",
             "livro vivo",
             "poemas",
             "jocosos",
@@ -1321,7 +1322,6 @@ def page_books():  # available books
             "variações",
             "metalinguagem",
             "sociais",
-            "todos os temas",
             "outros autores",
             "signos_fem",
             "signos_mas",
