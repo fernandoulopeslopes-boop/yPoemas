@@ -3,15 +3,15 @@
 |pt_nest|próximo|
 |pt_love|mais lidos...|
 |pt_more|gera um novo yPoema|
-|pt_draw|imagem|
-|pt_talk|áudio|
+|pt_draw|arte|
+|pt_talk|audio|
 |pt_vydo|vídeo|
 |es_last|anterior|
 |es_rand|elige un tema al azar|
 |es_nest|próximo|
 |es_love|mas leidos...|
-|es_more|genera un nuevo yPoem|
-|es_draw|imagen|
+|es_more|genera un nuevo yPoema|
+|es_draw|arte|
 |es_talk|audio|
 |es_vydo|video|
 |it_last|precedente|
@@ -19,7 +19,7 @@
 |it_nest|prossimo|
 |it_love|più letto...|
 |it_more|genera un nuovo yPoem|
-|it_draw|immagine|
+|it_draw|arte|
 |it_talk|audio|
 |it_vydo|video|
 |fr_last|précédent|
@@ -27,7 +27,7 @@
 |fr_nest|prochain|
 |fr_love|les plus lus...|
 |fr_more|génère un nouveau yPoem|
-|fr_draw|image|
+|fr_draw|art|
 |fr_talk|audio|
 |fr_vydo|video|
 |en_last|last|
@@ -35,6 +35,6 @@
 |en_nest|next|
 |en_love|most read...|
 |en_more|generates a new yPoem|
-|en_draw|image|
+|en_draw|art|
 |en_talk|audio|
 |en_vydo|video|
