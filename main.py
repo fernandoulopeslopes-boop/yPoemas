@@ -1481,7 +1481,7 @@ def main():
         page_books()
     elif chosen_id == "6":
         st.sidebar.info(load_md_file("INFO_POLY.md"))
-         magy = "\images\img_poly.jpg"
+        magy = "\images\img_poly.jpg"
         page_polys()
     elif chosen_id == "7":
         st.sidebar.info(load_md_file("INFO_ABOUT.md"))
