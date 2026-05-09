@@ -686,7 +686,7 @@ def main():
 
     page = st.sidebar.selectbox("menu", tuple(pages.keys()))
     pages[page]()
-    show_icons()
+#    show_icons()
     st.sidebar.state = True
     st.write("")
 
