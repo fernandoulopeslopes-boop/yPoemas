@@ -16,14 +16,14 @@ from lay_2_ypo import gera_poema
 ### bof: settings
 
 st.set_page_config(
-    page_title="a Machina de fazer Poesia - yPoemas",
+    page_title="a máquina de fazer Poesia - yPoemas",
     page_icon=":star:",
     layout="centered",
     initial_sidebar_state="auto",
 )
 
 
-def have_internet(host="1.1.1.1", port=80, timeout=3):
+def have_internet(host="8.8.8.8", port=53, timeout=3):
     try:
         socket.setdefaulttimeout(timeout)
         socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
@@ -41,6 +41,8 @@ if have_internet():
     try:
         import edge_tts
         import asyncio
+        # O gTTS não é mais estritamente necessário se usarmos o Edge, 
+        # mas se quiser mantê-lo como "plano B", pode deixar aqui.
     except ImportError:
         st.warning("Motor de voz neural (edge-tts) não conectado.")
 else:
@@ -160,8 +162,6 @@ if "draw" not in st.session_state:
     st.session_state.draw = False
 if "talk" not in st.session_state:
     st.session_state.talk = False
-if "vydo" not in st.session_state:
-    st.session_state.vydo = False
 if "arts" not in st.session_state:
     st.session_state.arts = []
 if "auto" not in st.session_state:
@@ -280,19 +280,16 @@ def load_help(idiom):
 
 
 def draw_check_buttons():
-    draw_text, talk_text, vyde_text = st.sidebar.columns([3.8, 3.2, 3])
+    foo = ""
+    draw_text, foo, talk_text = st.sidebar.columns([2, 6, 2])
     help_tips = load_help(st.session_state.lang)
     help_draw = help_tips[5]
     help_talk = help_tips[6]
-    help_vyde = help_tips[7]
     st.session_state.draw = draw_text.checkbox(
         help_draw, st.session_state.draw, key="draw_machina"
     )
     st.session_state.talk = talk_text.checkbox(
         help_talk, st.session_state.talk, key="talk_machina"
-    )
-    st.session_state.vydo = vyde_text.checkbox(
-        help_vyde, st.session_state.vydo, key="vyde_machina"
     )
 
 
@@ -541,6 +538,7 @@ def load_all_offs():
         "desvoto",
         "essencial",
         "linguafiada",
+        "parafernália",
         "secreto",
     ]
 
@@ -696,14 +694,6 @@ def talk(text):
     except Exception as e:
         st.error(f"Erro na voz neural: {e}")
         
-    
-def show_video(pagina):  # vídeo-tutorial da página
-    st.sidebar.info(load_md_file("INFO_VYDE.md"))
-    video_name = os.path.join("./base/" + "video_" + pagina + ".webm")
-    video_file = open(video_name, "rb")
-    video_byts = video_file.read()
-    st.video(video_byts, format="webm")
-    video_file.close()
 
 
 def say_number(tema):  # search index title for eureka
@@ -733,9 +723,6 @@ if st.session_state.visy:  # check visitor once; rand initial temas
     temas_list = load_temas("todos os temas")
     maxy_mini = len(temas_list)
     st.session_state.mini = random.randrange(0, maxy_mini)
-
-    st.success(translate("bem vindo à **máquina de fazer Poesia...**"))
-    st.session_state.draw = True
     st.session_state.visy = False
 
 
@@ -759,7 +746,6 @@ def page_mini():
 
     if st.session_state.auto:
         st.session_state.talk = False
-        st.session_state.vydo = False
         with st.sidebar:
             wait_time = st.slider(translate("tempo de exibição (em segundos): "), 5, 60)
 
@@ -776,14 +762,7 @@ def page_mini():
     if more:
         st.session_state.rand = False
 
-    lnew = True
-    if st.session_state.vydo:
-        lnew = False
-        show_video("mini")
-        update_readings("video_mini")
-        st.session_state.vydo = False
-
-    if lnew or st.session_state.auto:
+    if st.session_state.auto:
         if st.session_state.rand:
             st.session_state.mini = random.randrange(0, maxy_mini)
             st.session_state.tema = temas_list[st.session_state.mini]
@@ -914,16 +893,12 @@ def page_ypoemas():
 
     st.session_state.tema = temas_list[st.session_state.take]
 
-    lnew = True
     if manu:
         st.subheader(load_md_file("MANUAL_YPOEMAS.md"))
 
-    if st.session_state.vydo:
-        lnew = False
-        show_video("ypoemas")
-        update_readings("video_ypoemas")
-        st.session_state.vydo = False
 
+
+    lnew = True
     if lnew:
         what_book = (
             "⚫  "
@@ -1083,12 +1058,6 @@ def page_eureka():
                 curr_ypoema = load_typo()  # to normalize line breaks in text
 
             lnew = True
-            if st.session_state.vydo:
-                lnew = False
-                show_video("eureka")
-                update_readings("video_eureka")
-                st.session_state.vydo = False
-
             if lnew:
                 eureka_expander = st.expander("", expanded=True)
                 with eureka_expander:
@@ -1197,12 +1166,6 @@ def page_off_machina():  # available off_machina_books
             unsafe_allow_html=True,
         )
 
-    if st.session_state.vydo:
-        lnew = False
-        show_video("off-machina")
-        update_readings("video_off-machina")
-        st.session_state.vydo = False
-
     if lnew:
         what_book = (
             "⚫  "
@@ -1266,6 +1229,7 @@ def page_books():  # available books
     books, ok = st.columns([9.3, 0.7])
     with books:
         books_list = [
+            "todos os temas",
             "livro vivo",
             "poemas",
             "jocosos",
@@ -1273,7 +1237,6 @@ def page_books():  # available books
             "variações",
             "metalinguagem",
             "sociais",
-            "todos os temas",
             "outros autores",
             "signos_fem",
             "signos_mas",
@@ -1294,12 +1257,6 @@ def page_books():  # available books
             doit = st.button("✔", help="confirm ?")
 
         lnew = True
-        if st.session_state.vydo:
-            lnew = False
-            show_video("books")
-            update_readings("video_books")
-            st.session_state.vydo = False
-
         if lnew:
             list_book = ""
             temas_list = load_temas(books_list[opt_book])
@@ -1345,13 +1302,6 @@ def page_polys():  # available languages
     with ok:
         doit = st.button("✔", help="confirm ?")
 
-    lnew = True
-    if st.session_state.vydo:
-        lnew = False
-        show_video("poly")
-        update_readings("video_poly")
-        st.session_state.vydo = False
-
     if doit:
         poly_pais = poly_pais[opt_poly]
         poly_ling = poly_ling[opt_poly]
@@ -1362,6 +1312,7 @@ def page_polys():  # available languages
         st.session_state.last_lang = st.session_state.lang
         st.session_state.lang = st.session_state.poly_lang
 
+    lnew = True
     if lnew:
         poly_expander = st.expander("", True)
         with poly_expander:
@@ -1395,12 +1346,6 @@ def page_abouts():
     )
 
     lnew = True
-    if st.session_state.vydo:
-        lnew = False
-        show_video("about")
-        update_readings("video_about")
-        st.session_state.vydo = False
-
     if lnew:
         choice = abouts_list[opt_abouts].upper()
         about_expander = st.expander("", True)
@@ -1461,11 +1406,12 @@ def main():
         page_polys()
     elif chosen_id == "7":
         st.sidebar.info(load_md_file("INFO_ABOUT.md"))
-        "magy = img_about.jpg"
+        magy = "img_about.jpg"
         page_abouts()
-    
+        ##$ page_docs()
+
     with st.sidebar:
-        st.image("/images/" + magy)
+        st.image("./images/" + magy)
 
     show_icons()
     ##$ st.sidebar.state = True
