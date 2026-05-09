@@ -1485,7 +1485,7 @@ def main():
     with st.sidebar:
         st.image("./images/" + magy)
 
-    show_icons()
+#    show_icons()
     ##$ st.sidebar.state = True
 
 
