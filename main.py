@@ -713,6 +713,7 @@ def page_mini():
 
     if st.session_state.auto:
         st.session_state.talk = False
+        st.session_state.vydo = False
         with st.sidebar:
             wait_time = st.slider(translate("tempo de exibição (em segundos): "), 5, 60)
 
@@ -730,6 +731,12 @@ def page_mini():
         st.session_state.rand = False
 
     lnew = True
+    if st.session_state.vydo:
+        lnew = False
+        show_video("mini")
+        update_readings("video_mini")
+        st.session_state.vydo = False
+
     if lnew or st.session_state.auto:
         if st.session_state.rand:
             st.session_state.mini = random.randrange(0, maxy_mini)
@@ -807,134 +814,120 @@ def page_mini():
                         secs -= 1
 
 
-if __name__ == "__main__":
-    # Inicialização de variáveis mínimas para o main.py não quebrar
-    if "book" not in st.session_state: st.session_state.book = "poemas"
-    if "take" not in st.session_state: st.session_state.take = 0
-    if "lang" not in st.session_state: st.session_state.lang = "pt"
-    if "last_lang" not in st.session_state: st.session_state.last_lang = "pt"
-    if "draw" not in st.session_state: st.session_state.draw = False
-    if "talk" not in st.session_state: st.session_state.talk = False
-    
-
-import streamlit as st
-import random
-import os
-
 def page_ypoemas():
-    # 0. REFINAMENTO PARA 90% DE LARGURA ÚTIL E TOPO MAXIMIZADO
-    st.markdown(
-        """
-        <style>
-            .block-container {
-                padding-top: 1rem; 
-                margin-top: -3.5rem; 
-                /* Define a largura em 90% e centraliza com auto-margins */
-                max-width: 90%;
-                margin-left: auto;
-                margin-right: auto;
-                padding-bottom: 0rem;
-            }
-            
-            header[data-testid="stHeader"] {
-                background-color: rgba(0,0,0,0);
-            }
-
-            .stExpander {
-                width: 100% !important;
-            }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
-
-    # 1. SETUP DE DADOS
-    books_list = [
-        "todos os temas", "livro vivo", "poemas", "jocosos", "ensaios",
-        "variações", "metalinguagem", "outros autores", "sociais",
-        "signos_fem", "signos_mas", "todos os signos"
-    ]
-    
     temas_list = load_temas(st.session_state.book)
     maxy_ypoemas = len(temas_list) - 1
+    if (
+        st.session_state.take > maxy_ypoemas or st.session_state.take < 0
+    ):  # just in case
+        st.session_state.take = 0
+
+    foo1, more, last, rand, nest, manu, foo2 = st.columns([3, 1, 1, 1, 1, 1, 3])
+
     help_tips = load_help(st.session_state.lang)
+    help_last = help_tips[0]
+    help_rand = help_tips[1]
+    help_nest = help_tips[2]
+    help_more = help_tips[4]
 
-    # 2. COCKPIT DE NAVEGAÇÃO: [books] [ + < * > ? ] [temas]
-    col_books, b1, b2, b3, b4, b5, col_temas = st.columns([3.5, 0.8, 0.8, 0.8, 0.8, 0.8, 3.5])
+    more = more.button("✚", help=help_more)
+    last = last.button("◀", help=help_last)
+    rand = rand.button("✻", help=help_rand)
+    nest = nest.button("▶", help=help_nest)
+    manu = manu.button("?", help="help !!!")
 
-    with col_books:
-        sel_book = st.selectbox(
-            "Livros", options=books_list,
-            index=books_list.index(st.session_state.book) if st.session_state.book in books_list else 0,
-            label_visibility="collapsed", key="sel_book_nav"
-        )
-        if sel_book != st.session_state.book:
-            st.session_state.book = sel_book
+    if last:
+        st.session_state.take -= 1
+        if st.session_state.take < 0:
+            st.session_state.take = maxy_ypoemas
+
+    if rand:
+        st.session_state.take = random.randrange(0, maxy_ypoemas)
+
+    if nest:
+        st.session_state.take += 1
+        if st.session_state.take > maxy_ypoemas:
             st.session_state.take = 0
-            st.rerun()
 
-    # Comandos Centrais (Navegação Reativa)
-    if b1.button("✚", help=help_tips[4], use_container_width=True): 
-        st.rerun()
-    
-    if b2.button("◀", help=help_tips[0], use_container_width=True):
-        st.session_state.take = maxy_ypoemas if st.session_state.take <= 0 else st.session_state.take - 1
-        st.rerun()
-        
-    if b3.button("✻", help=help_tips[1], use_container_width=True):
-        st.session_state.take = random.randrange(0, len(temas_list))
-        st.rerun()
-        
-    if b4.button("▶", help=help_tips[2], use_container_width=True):
-        st.session_state.take = 0 if st.session_state.take >= maxy_ypoemas else st.session_state.take + 1
-        st.rerun()
-        
-    manu = b5.button("?", help="help !!!", use_container_width=True)
-
-    with col_temas:
-        # Index sincronizado via key dinâmica para forçar atualização do widget
+    if not st.session_state.draw:
+        options = list(range(len(temas_list)))
+        sobrios = "↓  " + translate("lista de Temas")
         opt_take = st.selectbox(
-            "Temas", 
-            options=list(range(len(temas_list))),
-            index=st.session_state.take if st.session_state.take <= maxy_ypoemas else 0,
+            sobrios,
+            options,
+            index=st.session_state.take,
             format_func=lambda z: temas_list[z],
-            label_visibility="collapsed", 
-            key=f"opt_take_nav_{st.session_state.take}" 
+            key="opt_take",
         )
+
         if opt_take != st.session_state.take:
             st.session_state.take = opt_take
-            st.rerun()
 
-    # 3. MOTOR DE GERAÇÃO
     st.session_state.tema = temas_list[st.session_state.take]
-    
+
+    lnew = True
     if manu:
         st.subheader(load_md_file("MANUAL_YPOEMAS.md"))
 
-    # 4. O PALCO (EXPANDER) - SEM DIVISOR
-    label_status = f"⚫ {st.session_state.lang} ( {st.session_state.book} ) ( {st.session_state.take + 1} / {len(temas_list)} )"
-    
-    with st.expander(label_status, expanded=True):
-        # Processo de Geração e Normalização conforme a arquitetura da Máquina
-        if st.session_state.lang != st.session_state.last_lang:
-            curr_ypoema = load_lypo()
-        else:
-            load_poema(st.session_state.tema, "")
-            curr_ypoema = load_lypo()
+    if st.session_state.vydo:
+        lnew = False
+        show_video("ypoemas")
+        update_readings("video_ypoemas")
+        st.session_state.vydo = False
 
-        if st.session_state.lang != "pt":
-            curr_ypoema = translate(curr_ypoema)
-            typo_user = "TYPO_" + IPAddres
-            with open(os.path.join("./temp/" + typo_user), "w", encoding="utf-8") as f:
-                f.write(curr_ypoema)
-            curr_ypoema = load_typo()
+    if lnew:
+        what_book = (
+            "⚫  "
+            + st.session_state.lang
+            + " ( "
+            + st.session_state.book
+            + " ) ( "
+            + str(st.session_state.take + 1)
+            + " / "
+            + str(len(temas_list))
+            + " )"
+        )
 
-        update_readings(st.session_state.tema)
-        img = load_arts(st.session_state.tema) if st.session_state.draw else None
-        write_ypoema(curr_ypoema, img)
+        ypoemas_expander = st.expander(what_book, expanded=True)
+        with ypoemas_expander:
+            if st.session_state.lang != st.session_state.last_lang:
+                curr_ypoema = load_lypo()  # changes in lang, keep LYPO
+            else:
+                curr_ypoema = load_poema(st.session_state.tema, "")
+                curr_ypoema = load_lypo()
 
-    if st.session_state.talk:
-        talk(curr_ypoema)
+            if st.session_state.lang != "pt":  # translate if idioma <> pt
+                curr_ypoema = translate(curr_ypoema)
+                typo_user = "TYPO_" + IPAddres
+                with open(
+                    os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
+                ) as save_typo:
+                    save_typo.write(curr_ypoema)
+                    save_typo.close()
+                curr_ypoema = load_typo()  # to normalize line breaks in text
+
+            update_readings(st.session_state.tema)
+            LOGO_TEXTO = curr_ypoema
+            LOGO_IMAGE = None
+            if st.session_state.draw:
+                LOGO_IMAGE = load_arts(st.session_state.tema)
+
+            write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
+
+            if manu:
+                LOGO_TEXTO = load_info(st.session_state.tema)
+                if st.session_state.lang != "pt":  # translate if idioma <> pt
+                    LOGO_TEXTO = translate(LOGO_TEXTO)
+
+                LOGO_IMAGE = (
+                    "./images/matrix/" + st.session_state.tema.capitalize() + ".jpg"
+                )
+                write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
+
+        if st.session_state.talk:
+            talk(curr_ypoema)
+
+        # st.markdown(get_binary_file_downloader_html('./temp/'+'LYPO_' + IPAddres, '➪ '+st.session_state.tema), unsafe_allow_html=True)
 
 
 def page_eureka():
@@ -1041,6 +1034,12 @@ def page_eureka():
                 curr_ypoema = load_typo()  # to normalize line breaks in text
 
             lnew = True
+            if st.session_state.vydo:
+                lnew = False
+                show_video("eureka")
+                update_readings("video_eureka")
+                st.session_state.vydo = False
+
             if lnew:
                 eureka_expander = st.expander("", expanded=True)
                 with eureka_expander:
@@ -1149,6 +1148,13 @@ def page_off_machina():  # available off_machina_books
             unsafe_allow_html=True,
         )
 
+    if st.session_state.vydo:
+        lnew = False
+        show_video("off-machina")
+        update_readings("video_off-machina")
+        st.session_state.vydo = False
+
+    if lnew:
         what_book = (
             "⚫  "
             + st.session_state.lang
@@ -1216,10 +1222,10 @@ def page_books():  # available books
             "poemas",
             "jocosos",
             "ensaios",
+            "sociais",
             "variações",
             "metalinguagem",
             "outros autores",
-            "sociais",
             "signos_fem",
             "signos_mas",
             "todos os signos",
@@ -1239,6 +1245,12 @@ def page_books():  # available books
             doit = st.button("✔", help="confirm ?")
 
         lnew = True
+        if st.session_state.vydo:
+            lnew = False
+            show_video("books")
+            update_readings("video_books")
+            st.session_state.vydo = False
+
         if lnew:
             list_book = ""
             temas_list = load_temas(books_list[opt_book])
@@ -1284,6 +1296,13 @@ def page_polys():  # available languages
     with ok:
         doit = st.button("✔", help="confirm ?")
 
+    lnew = True
+    if st.session_state.vydo:
+        lnew = False
+        show_video("poly")
+        update_readings("video_poly")
+        st.session_state.vydo = False
+
     if doit:
         poly_pais = poly_pais[opt_poly]
         poly_ling = poly_ling[opt_poly]
@@ -1327,6 +1346,12 @@ def page_abouts():
     )
 
     lnew = True
+    if st.session_state.vydo:
+        lnew = False
+        show_video("about")
+        update_readings("video_about")
+        st.session_state.vydo = False
+
     if lnew:
         choice = abouts_list[opt_abouts].upper()
         about_expander = st.expander("", True)
@@ -1339,9 +1364,6 @@ def page_abouts():
                 st.subheader(load_md_file("ABOUT_MACHINA_D.md"))
             else:
                 st.subheader(load_md_file("ABOUT_" + choice + ".md"))
-
-
-### eof: pages
 
 
 def main():
