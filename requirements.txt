@@ -1,6 +1,7 @@
 streamlit
 streamlit-antd-components
 extra-streamlit-components
+edge_tts
 deep-translator
 gTTS
 numpy
