@@ -858,9 +858,6 @@ def page_ypoemas():
         if st.session_state.take > maxy_ypoemas:
             st.session_state.take = 0
 
-        if opt_take != st.session_state.take:
-            st.session_state.take = opt_take
-
     st.session_state.tema = temas_list[st.session_state.take]
 
     lnew = True
