@@ -1,4 +1,19 @@
 """
+yPoemas is an app that randomly collects words and phrases
+from specific databases and organizes them
+in different new poems or poetic texts.
+
+It's a slightly different project from the data science, NLP
+and ML works I see around.
+I believe it can be one more example of Streamlit's possibilities.
+
+All texts are unique and will only be repeated  
+after they are sold out the thourekasands  
+of combinations possible to each theme.
+
+[ToDo] - write_ypoema == write_text
+[ToDo] - st.subheader == write_ypoema(load_file(manual_))
+
 VISY == New Visitor
 NANY_VISY == Numbof Visitors
 LYPO == Last YPOema created from curr_ypoema
@@ -20,6 +35,10 @@ import streamlit as st
 
 # Project Module
 from lay_2_ypo import gera_poema
+
+# TagCloud
+# from wordcloud import WordCloud
+# import matplotlib.pyplot as plt
 
 # user_id: to create LYPO and TYPO for each hostname
 import socket
@@ -112,8 +131,8 @@ st.markdown(
     }
     .logo-text {
         /* padding-top: 10px !important; */
-        font-weight: 700;
-        font-size: 16px;
+        font-weight: 600;
+        font-size: 14px;
         font-family: 'IBM Plex Sans';
         color: #000000;
         padding-left: 15px;
@@ -423,7 +442,7 @@ def load_eureka(part_of_word):  # Lexicon
 @st.cache_data
 def load_temas(book):  # List of yPoemas themes inside a Book
     curr_temas_list = []
-    with open(os.path.join("./base/rol_" + book + ".txt"), "r", encoding="utf-8") as file:
+    with open(os.path.join("./base/" + book + ".rol"), "r", encoding="utf-8") as file:
         for line in file:
             curr_temas_list.append(line.strip("\n"))
     return curr_temas_list
@@ -653,6 +672,7 @@ def translate(input_text):
         st.session_state.lang = "pt"  # if no Internet then...
         return input_text
 
+
 #def tag_cloud(text):
 #    if text == "_ypo_":
 #        if st.session_state.lang == "pt":
@@ -833,6 +853,42 @@ if st.session_state.visy:  # random text at first entry
     st.session_state.visy = False
 
 
+def page_mine():
+    st.sidebar.image("./images/img_mini.jpg")
+    pick_lang()
+    pick_draw()
+    st.sidebar.info(load_file("INFO_MINI.md"))
+
+    temas_list = load_temas(st.session_state.book)
+    maxy = len(temas_list) - 1
+
+    mini_expander = st.expander("", expanded=True)
+    with mini_expander:
+
+        foo1, more, rand, numb, foo2 = st.columns([3.5, 1, 1, 1, 3.5])
+        more = more.button("✔")
+        rand = rand.button("✴")
+        
+        if rand:
+            st.session_state.take = random.randrange(0, maxy, 1)
+        
+        curr_tema = temas_list[st.session_state.take]
+        analise = say_numeros(curr_tema)
+        # numb = numb.button("☁", help=analise)
+        # st.session_state.draw = numb.checkbox("imagens", help=analise)
+        st.session_state.draw = numb.button("☁", help=analise)
+
+        curr_ypoema = load_poema(curr_tema, "")
+        curr_ypoema = load_lypo()
+        update_readings(curr_tema)
+        LOGO_TEXT = curr_ypoema
+        LOGO_IMAGE = "none"
+        if st.session_state.draw:
+            LOGO_IMAGE = pick_arts(curr_tema)
+        
+        write_ypoema(LOGO_TEXT, LOGO_IMAGE)
+
+
 def page_mini():
     st.sidebar.image("./images/img_mini.jpg")
     pick_lang()
@@ -943,6 +999,13 @@ def page_ypoemas():
     manu = manu.button("?", help="help !!!")
 
     lnew = True
+#    if numb:
+#        lnew = False
+#        st.subheader(analise)
+#        tag_cloud("_ypo_")
+#    st.button("❤")
+#    st.button("✚"):
+#
     if manu:
         lnew = False
         st.subheader(load_file("MANUAL_YPOEMAS.md"))
@@ -985,10 +1048,14 @@ def page_ypoemas():
                 LOGO_IMAGE = pick_arts(curr_tema)
 
             write_ypoema(LOGO_TEXT, LOGO_IMAGE)
-            ReRun()
 
         if st.session_state.talk:
             talk(curr_ypoema)
+        # st.markdown(get_binary_file_downloader_html('./temp/'+"LYPO_" + user_id, curr_tema), unsafe_allow_html=True)
+        # bin_file = base64.b64encode(open(LOGO_IMAGE, "rb").read()).decode()+LOGO_TEXT
+        # st.markdown(get_binary_file_downloader_html(bin_file, curr_tema), unsafe_allow_html=True)
+
+
 
 def page_eureka():
     st.sidebar.image("./images/img_eureka.jpg")
@@ -1085,8 +1152,9 @@ def page_eureka():
         else:
             st.warning("nenhum verbete encontrado com essas letras ---> " + find_what)
 
+
 def page_off_machina():  # available off_books
-    st.sidebar.image("./images/img_off-machina.jpg")
+    st.sidebar.image("./images/img_off_machina.jpg")
     pick_lang()
     pick_draw()
     st.sidebar.info(load_file("INFO_OFF-MACHINA.md"))
@@ -1219,7 +1287,8 @@ def page_off_machina():  # available off_books
 
         if st.session_state.talk:
             talk(off_book_text)
-### eof: pages
 
+
+### eof: pages
 if __name__ == "__main__":
     main()
