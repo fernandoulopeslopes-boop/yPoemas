@@ -1,3 +1,53 @@
+r"""
+
+https://ypoemas-mxzvate9zattkypcouvnfs.streamlit.app/
+https://github.com/fernandoulopeslopes-boop/yPoemas
+
+yPoemas is an app that randomly collects words and phrases
+from specific databases and organizes them
+in different new poems or poetic texts.
+
+All texts are unique and will only be repeated  
+after they are sold out the thourekasands  
+of combinations possible to each theme.
+
+[Epitaph]
+Passei boa parte da minha vida escrevendo a "machina".
+A leitura fica para os amanhãs.
+Não vivo no meu tempo.
+
+º¤ø,¸¸,ø¤º°`°º¤ø,¸¸,ø¤º°`°ºº¤ø,¸¸,ø¤º°`°º¤ø,¸¸,ø¤º°`°ºº¤ø,¸¸,ø¤º°`°º¤ø,¸¸,ø¤º°
+
+ツpoemas
+
+config.toml  == C:\Users\dkvece\.streamlit
+share : https://share.streamlit.io/
+deploy: https://share.streamlit.io/nandoulopes/ypoemas/main/ypo.py
+runnin: https://nandoulopes-ypoemas-ypo-gf4z3l.streamlitapp.com/
+config: chrome://settings/content/siteDetails?site=https%3A%2F%2Fauth.streamlit.io
+github: https://github.com/NandouLopes/yPoemas
+instag: https://www.instagram.com/maquina_de_fazer_ypoemas/
+youtub: https://youtu.be/uL6T3roTtAs
+google: https://console.cloud.google.com/welcome?project=ypoemas&cloudshell=false
+prosas: https://prosas.com.br/dashboards/my-proposals
+bairro: https://www.superbairro.com.br/joseense-cria-maquina-de-produzir-poemas-2/
+
+para novos temas:
+- incluir novo_tema em \ypo\base\ativos.txt
+- incluir novo_tema em \ypo\base\images.txt
+- incluir novo_tema em \ypo\temp\readings.txt
+- incluir novo_tema em \base\rol_*.txt
+- atualizar ABOUT_NOTES.md se necessário...
+
+VISY == New Visitor
+NANY_VISY == Number of Visitors
+LYPO == Last YPOema created from curr_ypoema
+TYPO == Translated YPOema from LYPO
+POLY == Poliglot Idiom == Changed on Catalán
+
+One more test...
+"""
+
 import os
 ##$ import io
 import re
@@ -12,34 +62,40 @@ from datetime import datetime
 from lay_2_ypo import gera_poema
 
 ### bof: settings
-# the User IPAddress for LYPO, TYPO
-hostname = socket.gethostname()
-IPAddres = socket.gethostbyname(hostname)
 
-def have_internet():
+st.set_page_config(
+    page_title="a máquina de fazer Poesia - yPoemas",
+    page_icon=":star:",
+    layout="centered",
+    initial_sidebar_state="auto",
+)
+
+
+def have_internet(host="8.8.8.8", port=53, timeout=3):
     try:
-        # Tenta conectar ao IP da Cloudflare na porta 80 (HTTP)
-        socket.create_connection(("1.1.1.1", 80), timeout=3)
+        socket.setdefaulttimeout(timeout)
+        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
         return True
-    except OSError:
+    except socket.error as ex:
         return False
-        
+
+
 if have_internet():
     try:
         from deep_translator import GoogleTranslator
+    except ImportError as ex:
+        st.warning(translate("Google Translator não conectado"))
+    try:
         from gtts import gTTS
-    except ImportError:
-        st.warning("Dependências ausentes no requirements.txt")
+    except ImportError as ex:
+        st.warning(translate("Google TTS não conectado"))
 else:
     st.warning("Internet não conectada. Traduções não disponíveis no momento.")
 
 
-st.set_page_config(
-    page_title="a Machina de fazer Poesia - yPoemas",
-    page_icon="★",
-    layout="centered",
-    initial_sidebar_state="expanded",
-)
+# the User IPAddres for LYPO, TYPO
+hostname = socket.gethostname()
+IPAddres = socket.gethostbyname(hostname)
 
 
 # hide Streamlit Menu and Footer
@@ -94,11 +150,11 @@ st.markdown(
     }
     .logo-text {
         font-weight: 600;
-        font-size: 14px;
-        font-family: 'Nunito';
+        font-size: 18px;
+        font-family: 'IBM Plex Sans';
         color: #000000;
         padding-top: 0px;
-        padding-left: 10px;
+        padding-left: 15px;
     }
     .logo-img {
         float:right;
@@ -107,7 +163,6 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# OpenDyslexic", "Playfair Display", "Inter", "JetBrains Mono", "Nunito", "IBM Plex Sans"
 
 # Initialize SessionState
 
@@ -115,9 +170,6 @@ if "lang" not in st.session_state:
     st.session_state.lang = "pt"
 if "last_lang" not in st.session_state:
     st.session_state.last_lang = "pt"
-
-if "poly_lang" not in st.session_state:
-    st.session_state.poly_lang = "ca"
 
 if "book" not in st.session_state:  #  index for books_list
     st.session_state.book = "livro vivo"
@@ -154,6 +206,8 @@ if "draw" not in st.session_state:
     st.session_state.draw = False
 if "talk" not in st.session_state:
     st.session_state.talk = False
+if "vydo" not in st.session_state:
+    st.session_state.vydo = False
 if "arts" not in st.session_state:
     st.session_state.arts = []
 if "auto" not in st.session_state:
@@ -264,22 +318,27 @@ def load_help(idiom):
         returns.append(translate("próximo"))
         returns.append(translate("mais lidos..."))
         returns.append(translate("gera novo yPoema"))
-        returns.append(translate("arte"))
-        returns.append(translate("audio"))
+        returns.append(translate("imagem"))
+        returns.append(translate("áudio"))
+        returns.append(translate("vídeo"))
 
     return returns
 
 
 def draw_check_buttons():
-    draw_text, talk_text = st.sidebar.columns([3.8, 3.2])
+    draw_text, talk_text, vyde_text = st.sidebar.columns([3.8, 3.2, 3])
     help_tips = load_help(st.session_state.lang)
     help_draw = help_tips[5]
     help_talk = help_tips[6]
+    help_vyde = help_tips[7]
     st.session_state.draw = draw_text.checkbox(
         help_draw, st.session_state.draw, key="draw_machina"
     )
     st.session_state.talk = talk_text.checkbox(
         help_talk, st.session_state.talk, key="talk_machina"
+    )
+    st.session_state.vydo = vyde_text.checkbox(
+        help_vyde, st.session_state.vydo, key="vyde_machina"
     )
 
 
@@ -515,12 +574,16 @@ def load_typo():  # Load translated yPoema & clean translator returned bugs in t
 def load_all_offs():
     all_books_off = [
         "a_torre_de_papel",
-        "linguafiada",
-        "livro_vivo",
+        "quase_que_eu_Poesia",
         "faz_de_conto",
         "um_romance",
-        "quase_que_eu_Poesia",
-        "segredo_público",
+        "linguafiada",
+        "livro_vivo",
+        "desvoto",
+        "ensaio",
+        "urbano",
+        "essencial",
+        "secreto",
     ]
 
     return all_books_off
@@ -661,6 +724,15 @@ def talk(text):  # text to speech( in session_state.lang )
     os.remove(file_name)
 
 
+def show_video(pagina):  # vídeo-tutorial da página
+    st.sidebar.info(load_md_file("INFO_VYDE.md"))
+    video_name = os.path.join("./base/" + "video_" + pagina + ".webm")
+    video_file = open(video_name, "rb")
+    video_byts = video_file.read()
+    st.video(video_byts, format="webm")
+    video_file.close()
+
+
 def say_number(tema):  # search index title for eureka
     analise = "nonono"
     indexes = load_index()
@@ -689,6 +761,7 @@ if st.session_state.visy:  # check visitor once; rand initial temas
     maxy_mini = len(temas_list)
     st.session_state.mini = random.randrange(0, maxy_mini)
 
+    st.success(translate("bem vindo à **máquina de fazer Poesia...**"))
     st.session_state.draw = True
     st.session_state.visy = False
 
@@ -713,6 +786,7 @@ def page_mini():
 
     if st.session_state.auto:
         st.session_state.talk = False
+        st.session_state.vydo = False
         with st.sidebar:
             wait_time = st.slider(translate("tempo de exibição (em segundos): "), 5, 60)
 
@@ -730,6 +804,12 @@ def page_mini():
         st.session_state.rand = False
 
     lnew = True
+    if st.session_state.vydo:
+        lnew = False
+        show_video("mini")
+        update_readings("video_mini")
+        st.session_state.vydo = False
+
     if lnew or st.session_state.auto:
         if st.session_state.rand:
             st.session_state.mini = random.randrange(0, maxy_mini)
@@ -861,6 +941,12 @@ def page_ypoemas():
     lnew = True
     if manu:
         st.subheader(load_md_file("MANUAL_YPOEMAS.md"))
+
+    if st.session_state.vydo:
+        lnew = False
+        show_video("ypoemas")
+        update_readings("video_ypoemas")
+        st.session_state.vydo = False
 
     if lnew:
         what_book = (
@@ -1021,6 +1107,12 @@ def page_eureka():
                 curr_ypoema = load_typo()  # to normalize line breaks in text
 
             lnew = True
+            if st.session_state.vydo:
+                lnew = False
+                show_video("eureka")
+                update_readings("video_eureka")
+                st.session_state.vydo = False
+
             if lnew:
                 eureka_expander = st.expander("", expanded=True)
                 with eureka_expander:
@@ -1129,6 +1221,12 @@ def page_off_machina():  # available off_machina_books
             unsafe_allow_html=True,
         )
 
+    if st.session_state.vydo:
+        lnew = False
+        show_video("off-machina")
+        update_readings("video_off-machina")
+        st.session_state.vydo = False
+
     if lnew:
         what_book = (
             "⚫  "
@@ -1192,14 +1290,14 @@ def page_books():  # available books
     books, ok = st.columns([9.3, 0.7])
     with books:
         books_list = [
-            "todos os temas",
             "livro vivo",
             "poemas",
             "jocosos",
             "ensaios",
-            "sociais",
             "variações",
             "metalinguagem",
+            "sociais",
+            "todos os temas",
             "outros autores",
             "signos_fem",
             "signos_mas",
@@ -1220,6 +1318,12 @@ def page_books():  # available books
             doit = st.button("✔", help="confirm ?")
 
         lnew = True
+        if st.session_state.vydo:
+            lnew = False
+            show_video("books")
+            update_readings("video_books")
+            st.session_state.vydo = False
+
         if lnew:
             list_book = ""
             temas_list = load_temas(books_list[opt_book])
@@ -1266,6 +1370,12 @@ def page_polys():  # available languages
         doit = st.button("✔", help="confirm ?")
 
     lnew = True
+    if st.session_state.vydo:
+        lnew = False
+        show_video("poly")
+        update_readings("video_poly")
+        st.session_state.vydo = False
+
     if doit:
         poly_pais = poly_pais[opt_poly]
         poly_ling = poly_ling[opt_poly]
@@ -1309,6 +1419,12 @@ def page_abouts():
     )
 
     lnew = True
+    if st.session_state.vydo:
+        lnew = False
+        show_video("about")
+        update_readings("video_about")
+        st.session_state.vydo = False
+
     if lnew:
         choice = abouts_list[opt_abouts].upper()
         about_expander = st.expander("", True)
@@ -1321,6 +1437,9 @@ def page_abouts():
                 st.subheader(load_md_file("ABOUT_MACHINA_D.md"))
             else:
                 st.subheader(load_md_file("ABOUT_" + choice + ".md"))
+
+
+### eof: pages
 
 
 def main():
@@ -1371,7 +1490,7 @@ def main():
         ##$ page_docs()
 
     with st.sidebar:
-        st.image("./images/" + magy)
+        st.image(magy)
 
     show_icons()
     ##$ st.sidebar.state = True
@@ -1379,3 +1498,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
