@@ -1461,7 +1461,7 @@ def main():
 
     if chosen_id == "1":
         st.sidebar.info(load_md_file("INFO_MINI.md"))
-         = "img_mini.jpg"
+        magy = "img_mini.jpg"
         page_mini()
     elif chosen_id == "2":
         st.sidebar.info(load_md_file("INFO_YPOEMAS.md"))
