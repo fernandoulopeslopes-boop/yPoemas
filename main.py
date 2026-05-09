@@ -858,17 +858,6 @@ def page_ypoemas():
         if st.session_state.take > maxy_ypoemas:
             st.session_state.take = 0
 
-    if not st.session_state.draw:
-        options = list(range(len(temas_list)))
-        sobrios = "↓  " + translate("lista de Temas")
-        opt_take = st.selectbox(
-            sobrios,
-            options,
-            index=st.session_state.take,
-            format_func=lambda z: temas_list[z],
-            key="opt_take",
-        )
-
         if opt_take != st.session_state.take:
             st.session_state.take = opt_take
 
@@ -931,6 +920,7 @@ def page_ypoemas():
             talk(curr_ypoema)
 
         # st.markdown(get_binary_file_downloader_html('./temp/'+'LYPO_' + IPAddres, '➪ '+st.session_state.tema), unsafe_allow_html=True)
+    st.rerun()
 
 def page_eureka():
     help_tips = load_help(st.session_state.lang)
