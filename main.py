@@ -662,7 +662,7 @@ def talk(text):
         "pt": "pt-BR-FranciscaNeural",
         "en": "en-US-GuyNeural",
         "es": "es-ES-AlvaroNeural",
-        "fr": "fr-FR-RemyNeural",
+        "fr": "fr-FR-DeniseNeural",
         "it": "it-IT-DiegoNeural"
     }
     selected_voice = voices.get(st.session_state.lang, "pt-BR-AntonioNeural")
