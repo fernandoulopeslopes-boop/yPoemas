@@ -1322,6 +1322,7 @@ def page_polys():  # available languages
         st.session_state.last_lang = st.session_state.lang
         st.session_state.lang = st.session_state.poly_lang
 
+    lNew = .t.
     if lnew:
         poly_expander = st.expander("", True)
         with poly_expander:
