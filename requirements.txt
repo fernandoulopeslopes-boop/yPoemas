@@ -1,8 +1,11 @@
 streamlit
 streamlit-antd-components
 extra-streamlit-components
+altair
+protobuf
+setuptools
 edge_tts
+asyncio
 deep-translator
-gTTS
 numpy
 matplotlib
