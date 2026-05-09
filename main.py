@@ -27,11 +27,18 @@ def have_internet():
 if have_internet():
     try:
         from deep_translator import GoogleTranslator
-        from gtts import gTTS
     except ImportError:
-        st.warning("Dependências ausentes no requirements.txt")
+        st.warning("Google Translator não encontrado no ambiente...")
+    
+    try:
+        import edge_tts
+        import asyncio
+        # O gTTS não é mais estritamente necessário se usarmos o Edge, 
+        # mas se quiser mantê-lo como "plano B", pode deixar aqui.
+    except ImportError:
+        st.warning("Motor de voz neural (edge-tts) não conectado.")
 else:
-    st.warning("Internet não conectada. Traduções não disponíveis no momento.")
+    st.warning("Internet não conectada. Traduções e Vozes Neurais indisponíveis.")
 
 
 st.set_page_config(
