@@ -653,7 +653,6 @@ def translate(input_text):
         st.session_state.lang = "pt"  # if no Internet then...
         return input_text
 
-
 #def tag_cloud(text):
 #    if text == "_ypo_":
 #        if st.session_state.lang == "pt":
@@ -1087,7 +1086,7 @@ def page_eureka():
             st.warning("nenhum verbete encontrado com essas letras ---> " + find_what)
 
 def page_off_machina():  # available off_books
-    st.sidebar.image("./images/img_off_machina.jpg")
+    st.sidebar.image("./images/img_off-machina.jpg")
     pick_lang()
     pick_draw()
     st.sidebar.info(load_file("INFO_OFF-MACHINA.md"))
