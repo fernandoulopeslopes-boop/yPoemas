@@ -95,7 +95,7 @@ st.markdown(
     .logo-text {
         font-weight: 600;
         font-size: 14px;
-        font-family: 'nunito';
+        font-family: 'Nunito';
         color: #000000;
         padding-top: 0px;
         padding-left: 10px;
@@ -107,6 +107,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+# OpenDyslexic", "Playfair Display", "Inter", "JetBrains Mono", "Nunito", "IBM Plex Sans"
 
 # Initialize SessionState
 
@@ -218,8 +219,26 @@ def pick_lang():  # define idioma
         st.session_state.last_lang = st.session_state.lang
         st.session_state.lang = st.session_state.poly_lang
 
+    if st.session_state.lang != st.session_state.last_lang:
+        st.success(translate("idioma atual") + " ➪ " + st.session_state.lang)
 
-@st.cache_data
+
+def show_icons():  # https://api.whatsapp.com/
+    with st.sidebar:
+        st.sidebar.markdown(
+            f"""
+            <nav>
+            <a href='https://www.facebook.com/nandoulopes' target='_blank'>• facebook</a> |
+            <a href='mailto:lopes.fernando@hotmail.com' target='_blank'>e-mail</a> |
+            <a href='https://www.instagram.com/fernando.lopes.942/' target='_blank'>instagram</a> |
+            <a href='https://web.whatsapp.com/send?phone=+5512991368181' target='_blank'>whatsapp</a>
+            </nav>
+            """,
+            unsafe_allow_html=True,
+        )
+
+
+@st.cache(allow_output_mutation=True)
 def load_help_tips():
     help_list = []
     with open(os.path.join("./base/helpers.txt"), encoding="utf-8") as file:
@@ -374,7 +393,7 @@ def list_readings():
 ### bof: loaders
 
 
-@st.cache_data
+# @st.cache(allow_output_mutation=True)
 def load_md_file(file):  # Open files for about's
     try:
         with open(os.path.join("./md_files/" + file), encoding="utf-8") as file_to_open:
@@ -389,7 +408,7 @@ def load_md_file(file):  # Open files for about's
     return file_text
 
 
-@st.cache_data
+# @st.cache(allow_output_mutation=True)
 def load_eureka(part_of_word):
     lexico_list = []
     with open(os.path.join("./base/lexico_pt.txt"), encoding="utf-8") as lista:
@@ -403,7 +422,7 @@ def load_eureka(part_of_word):
     return lexico_list
 
 
-@st.cache_data
+# @st.cache(suppress_st_warning=True, allow_output_mutation=True)
 def load_temas(book):  # List of themes inside a Book
     book_list = []
     with open(
@@ -416,7 +435,7 @@ def load_temas(book):  # List of themes inside a Book
     return book_list
 
 
-@st.cache_data
+# @st.cache(allow_output_mutation=True)
 def load_info(nome_tema):
     with open(os.path.join("./base/" + "info.txt"), "r", encoding="utf-8") as file:
         result = "nonono"
@@ -449,7 +468,7 @@ def load_info(nome_tema):
         return result
 
 
-@st.cache_data
+# @st.cache(allow_output_mutation=True)
 def load_index():  # Load indexes numbers for all themes
     index_list = []
     with open(os.path.join("./md_files/ABOUT_INDEX.md"), encoding="utf-8") as lista:
@@ -607,7 +626,7 @@ def load_arts(nome_tema):  # Select image for arts
 def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
     if LOGO_IMAGE == None:
         st.markdown(
-            """
+            f"""
             <div class='container'>
                 <p class='logo-text'>{LOGO_TEXTO}</p>
             </div>
@@ -1375,6 +1394,7 @@ def main():
     with st.sidebar:
         st.image("./images/" + magy)
 
+    show_icons()
     ##$ st.sidebar.state = True
 
 
