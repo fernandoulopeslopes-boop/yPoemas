@@ -33,17 +33,17 @@ def have_internet(host="1.1.1.1", port=80, timeout=3):
 if have_internet():
     try:
         from deep_translator import GoogleTranslator
-    except ImportError as ex:
-        st.warning(translate("Google Translator não conectado"))
+    except ImportError:
+        st.warning("Google Translator não encontrado no ambiente...")
+    
     try:
         import edge_tts
         import asyncio
-    except ImportError as ex:
-        st.warning(translate("Edge TTS não conectado"))
+    except ImportError:
+        st.warning("Motor de voz neural (edge-tts) não conectado.")
 else:
-    st.warning("Internet não conectada. Traduções não disponíveis no momento.")
-
-
+    st.warning("Internet não conectada. Traduções e Vozes Neurais indisponíveis.")
+    
 # the User IPAddres for LYPO, TYPO
 hostname = socket.gethostname()
 IPAddres = socket.gethostbyname(hostname)
