@@ -115,7 +115,7 @@ st.markdown(
     }
     [data-testid="stSidebar"][aria-expanded="false"] > div:first-child {
         width: 310px;
-        margin-left: -320px;
+        margin-left: -310px;
     }
     </style>
     """,
@@ -243,7 +243,6 @@ def pick_lang():
         st.session_state.lang = st.session_state.poly_lang
 
 
-@st.cache(allow_output_mutation=True)
 def load_help_tips():
     help_list = []
     with open(os.path.join("./base/helpers.txt"), encoding="utf-8") as file:
@@ -693,8 +692,8 @@ def main():
 
 def page_polys():  # available languages
     pick_lang()
-    st.sidebar.image("./images/img_poly.jpg")
     st.sidebar.info(load_file("INFO_POLY.md"))
+    st.sidebar.image("./images/img_poly.jpg")
 
     poly_expander = st.expander("", True)
     with poly_expander:
@@ -734,8 +733,8 @@ def page_polys():  # available languages
 
 def page_books():  # available books
     pick_lang()
-    st.sidebar.image("./images/img_books.jpg")
     st.sidebar.info(load_file("INFO_BOOKS.md"))
+    st.sidebar.image("./images/img_books.jpg")
 
     books_expander = st.expander("", True)
     with books_expander:
@@ -783,8 +782,8 @@ def page_books():  # available books
 
 def page_comments():  # available comments
     pick_lang()
-    st.sidebar.image("./images/img_comments.jpg")
     st.sidebar.info(load_file("INFO_COMMENTS.md"))
+    st.sidebar.image("./images/img_comments.jpg")
 
     comments_expander = st.expander("", True)
     with comments_expander:
@@ -793,8 +792,8 @@ def page_comments():  # available comments
 
 def page_abouts():
     pick_lang()
-    st.sidebar.image("./images/img_about.jpg")
     st.sidebar.info(load_file("INFO_ABOUT.md"))
+    st.sidebar.image("./images/img_about.jpg")
 
     abouts_list = [
         "machina",
@@ -839,8 +838,8 @@ if st.session_state.visy:  # random text at first entry
 
 def page_mini():  # F4C3S
     pick_lang()
-    st.sidebar.image("./images/img_mini.jpg")
     st.sidebar.info(load_file("INFO_MINI.md"))
+    st.sidebar.image("./images/img_mini.jpg")
 
     pick_draw()
 
@@ -892,8 +891,8 @@ def page_mini():  # F4C3S
 def page_ypoemas():
     pick_lang()
     pick_draw()
-    st.sidebar.image("./images/img_ypoemas.jpg")
     st.sidebar.info(load_file("INFO_YPOEMAS.md"))
+    st.sidebar.image("./images/img_ypoemas.jpg")
 
     foo1, more, last, rand, nest, manu, foo2 = st.columns(
         [2, 1, 1, 1, 1, 1, 2]
@@ -992,8 +991,8 @@ def page_ypoemas():
 def page_eureka():
     pick_lang()
     pick_draw()
-    st.sidebar.image("./images/img_eureka.jpg")
     st.sidebar.info(load_file("INFO_EUREKA.md"))
+    st.sidebar.image("./images/img_eureka.jpg")
 
     help_me = load_help(st.session_state.lang)
     help_more = help_me[4]
@@ -1089,8 +1088,8 @@ def page_eureka():
 def page_off_machina():  # available off_books
     pick_lang()
     pick_draw()
-    st.sidebar.image("./images/img_off-machina.jpg")
     st.sidebar.info(load_file("INFO_OFF-MACHINA.md"))
+    st.sidebar.image("./images/img_off-machina.jpg")
 
     off_books_list = load_all_offs()
     options = list(range(len(off_books_list)))
