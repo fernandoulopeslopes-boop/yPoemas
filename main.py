@@ -876,6 +876,7 @@ def page_ypoemas():
             st.session_state.take = opt_take
 
     st.session_state.tema = temas_list[st.session_state.take]
+    st.rerun()
 
     if manu:
         st.subheader(load_md_file("MANUAL_YPOEMAS.md"))
