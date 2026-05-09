@@ -918,9 +918,9 @@ def page_ypoemas():
         st.session_state.take_tema = random.randrange(0, maxy_temas, 1)
     
     if nest:
-        st.session_state.take_tema_tema += 1
-        if st.session_state.take_tema_tema > maxy_temas:
-            st.session_state.take_tema_tema = 0
+        st.session_state.take_tema += 1
+        if st.session_state.take_tema > maxy_temas:
+            st.session_state.take_tema = 0
     
     options = list(range(len(temas_list)))
     opt_take = st.selectbox(
