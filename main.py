@@ -653,22 +653,36 @@ def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
         )
 
 
-def talk(text):  # text to speech( in session_state.lang )
-    text = text.replace("<br>", "\n")
-    text = text.replace("< br>", "")
-    text = text.replace("<br >", "")
+def talk(text):
+    # Limpeza para a voz não ler tags
+    text_clean = text.replace("<br>", " ").replace("< br>", "").replace("<br >", "").replace("<br/>", " ")
+    
+    # Mapeamento de vozes neurais de alta qualidade
+    voices = {
+        "pt": "pt-BR-AntonioNeural",
+        "en": "en-US-GuyNeural",
+        "es": "es-ES-AlvaroNeural",
+        "fr": "fr-FR-RemyNeural",
+        "it": "it-IT-DiegoNeural"
+    }
+    selected_voice = voices.get(st.session_state.lang, "pt-BR-AntonioNeural")
 
-    tts = gTTS(text=text, lang=st.session_state.lang, slow=False)
-    nany_file = random.randint(1, 20000000)
-    file_name = os.path.join("./temp/" + "audio" + str(nany_file) + ".mp3")
-    tts.save(file_name)
-    audio_file = open(file_name, "rb")
-    audio_byts = audio_file.read()
-    st.audio(audio_byts, format="audio/ogg")
-    audio_file.close()
-    os.remove(file_name)
+    async def generate_audio():
+        communicate = edge_tts.Communicate(text_clean, selected_voice)
+        audio_bytes = b""
+        async for chunk in communicate.stream():
+            if chunk["type"] == "audio":
+                audio_bytes += chunk["data"]
+        return audio_bytes
 
-
+    try:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        audio_output = loop.run_until_complete(generate_audio())
+        st.audio(audio_output, format="audio/mp3")
+    except Exception as e:
+        st.error(f"Erro na voz neural: {e}")
+        
 def say_number(tema):  # search index title for eureka
     analise = "nonono"
     indexes = load_index()
