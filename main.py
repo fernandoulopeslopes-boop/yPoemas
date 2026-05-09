@@ -1,8 +1,5 @@
 r"""
 
-https://ypoemas-mxzvate9zattkypcouvnfs.streamlit.app/
-https://github.com/fernandoulopeslopes-boop/yPoemas
-
 yPoemas is an app that randomly collects words and phrases
 from specific databases and organizes them
 in different new poems or poetic texts.
@@ -20,7 +17,9 @@ Não vivo no meu tempo.
 
 ツpoemas
 
+AlfaBetaAção == C:\WINDOWS\new.ini
 config.toml  == C:\Users\dkvece\.streamlit
+
 share : https://share.streamlit.io/
 deploy: https://share.streamlit.io/nandoulopes/ypoemas/main/ypo.py
 runnin: https://nandoulopes-ypoemas-ypo-gf4z3l.streamlitapp.com/
@@ -49,13 +48,14 @@ One more test...
 """
 
 import os
-##$ import io
 import re
 import time
 import random
 import base64
 import socket
 import streamlit as st
+import edge_tts
+import asyncio
 
 from extra_streamlit_components import TabBar as stx
 from datetime import datetime
@@ -83,16 +83,19 @@ def have_internet(host="8.8.8.8", port=53, timeout=3):
 if have_internet():
     try:
         from deep_translator import GoogleTranslator
-    except ImportError as ex:
-        st.warning(translate("Google Translator não conectado"))
+    except ImportError:
+        st.warning("Google Translator não encontrado no ambiente...")
+    
     try:
-        from gtts import gTTS
-    except ImportError as ex:
-        st.warning(translate("Google TTS não conectado"))
+        import edge_tts
+        import asyncio
+        # O gTTS não é mais estritamente necessário se usarmos o Edge, 
+        # mas se quiser mantê-lo como "plano B", pode deixar aqui.
+    except ImportError:
+        st.warning("Motor de voz neural (edge-tts) não conectado.")
 else:
-    st.warning("Internet não conectada. Traduções não disponíveis no momento.")
-
-
+    st.warning("Internet não conectada. Traduções e Vozes Neurais indisponíveis.")
+    
 # the User IPAddres for LYPO, TYPO
 hostname = socket.gethostname()
 IPAddres = socket.gethostbyname(hostname)
@@ -119,6 +122,7 @@ st.markdown(
     }} </style> """,
     unsafe_allow_html=True,
 )
+
 
 # change sidebar width
 st.markdown(
@@ -292,7 +296,7 @@ def show_icons():  # https://api.whatsapp.com/
         )
 
 
-@st.cache(allow_output_mutation=True)
+@st.cache_data(show_spinner=False)
 def load_help_tips():
     help_list = []
     with open(os.path.join("./base/helpers.txt"), encoding="utf-8") as file:
@@ -363,6 +367,7 @@ def natural_keys(text):
 ### bof: update themes readings
 
 
+@st.cache_data(show_spinner=False)
 def update_visy():  # count one more visitor
     with open(os.path.join("./temp/visitors.txt"), "r", encoding="utf-8") as visitors:
         tots = int(visitors.read())
@@ -375,6 +380,7 @@ def update_visy():  # count one more visitor
     visitors.close()
 
 
+@st.cache_data(show_spinner=False)
 def load_readings():
     readers_list = []
     with open(os.path.join("./temp/read_list.txt"), encoding="utf-8") as reader:
@@ -452,7 +458,7 @@ def list_readings():
 ### bof: loaders
 
 
-# @st.cache(allow_output_mutation=True)
+@st.cache_data(show_spinner=False)
 def load_md_file(file):  # Open files for about's
     try:
         with open(os.path.join("./md_files/" + file), encoding="utf-8") as file_to_open:
@@ -467,7 +473,7 @@ def load_md_file(file):  # Open files for about's
     return file_text
 
 
-# @st.cache(allow_output_mutation=True)
+@st.cache_data(show_spinner=False)
 def load_eureka(part_of_word):
     lexico_list = []
     with open(os.path.join("./base/lexico_pt.txt"), encoding="utf-8") as lista:
@@ -481,7 +487,7 @@ def load_eureka(part_of_word):
     return lexico_list
 
 
-# @st.cache(suppress_st_warning=True, allow_output_mutation=True)
+@st.cache_data(show_spinner=False)
 def load_temas(book):  # List of themes inside a Book
     book_list = []
     with open(
@@ -494,7 +500,7 @@ def load_temas(book):  # List of themes inside a Book
     return book_list
 
 
-# @st.cache(allow_output_mutation=True)
+@st.cache_data(show_spinner=False)
 def load_info(nome_tema):
     with open(os.path.join("./base/" + "info.txt"), "r", encoding="utf-8") as file:
         result = "nonono"
@@ -527,7 +533,7 @@ def load_info(nome_tema):
         return result
 
 
-# @st.cache(allow_output_mutation=True)
+@st.cache_data(show_spinner=False)
 def load_index():  # Load indexes numbers for all themes
     index_list = []
     with open(os.path.join("./md_files/ABOUT_INDEX.md"), encoding="utf-8") as lista:
@@ -537,6 +543,7 @@ def load_index():  # Load indexes numbers for all themes
     return index_list
 
 
+@st.cache_data(show_spinner=False)
 def load_lypo():  # Load last yPoema & replace '\n' with '<br>' for translator returned text
     lypo_text = ""
     lypo_user = "LYPO_" + IPAddres
@@ -548,6 +555,7 @@ def load_lypo():  # Load last yPoema & replace '\n' with '<br>' for translator r
     return lypo_text
 
 
+@st.cache_data(show_spinner=False)
 def load_typo():  # Load translated yPoema & clean translator returned bugs in text
     typo_text = ""
     typo_user = "TYPO_" + IPAddres
@@ -577,12 +585,12 @@ def load_all_offs():
         "quase_que_eu_Poesia",
         "faz_de_conto",
         "um_romance",
-        "linguafiada",
         "livro_vivo",
-        "desvoto",
         "ensaio",
         "urbano",
+        "desvoto",
         "essencial",
+        "linguafiada",
         "secreto",
     ]
 
@@ -613,6 +621,7 @@ def load_book_pages(book):  # Load Book pages for off_book
     return book_pages
 
 
+@st.cache_data(show_spinner=False)
 def load_poema(nome_tema, seed_eureka):  # generate new yPoema
     script = gera_poema(nome_tema, seed_eureka)
     novo_ypoema = ""
@@ -636,7 +645,7 @@ def load_poema(nome_tema, seed_eureka):  # generate new yPoema
 
     return novo_ypoema
 
-
+@st.cache_data(show_spinner=False)
 def load_images():
     images_list = []
     with open(os.path.join("./base/images.txt"), encoding="utf-8") as lista:
@@ -707,23 +716,37 @@ def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
             unsafe_allow_html=True,
         )
 
+def talk(text):
+    # Limpeza para a voz não ler tags
+    text_clean = text.replace("<br>", " ").replace("< br>", "").replace("<br >", "").replace("<br/>", " ")
+    
+    # Mapeamento de vozes neurais de alta qualidade
+    voices = {
+        "pt": "pt-BR-AntonioNeural",
+        "en": "en-US-GuyNeural",
+        "es": "es-ES-AlvaroNeural",
+        "fr": "fr-FR-RemyNeural",
+        "it": "it-IT-DiegoNeural"
+    }
+    selected_voice = voices.get(st.session_state.lang, "pt-BR-AntonioNeural")
 
-def talk(text):  # text to speech( in session_state.lang )
-    text = text.replace("<br>", "\n")
-    text = text.replace("< br>", "")
-    text = text.replace("<br >", "")
+    async def generate_audio():
+        communicate = edge_tts.Communicate(text_clean, selected_voice)
+        audio_bytes = b""
+        async for chunk in communicate.stream():
+            if chunk["type"] == "audio":
+                audio_bytes += chunk["data"]
+        return audio_bytes
 
-    tts = gTTS(text=text, lang=st.session_state.lang, slow=False)
-    nany_file = random.randint(1, 20000000)
-    file_name = os.path.join("./temp/" + "audio" + str(nany_file) + ".mp3")
-    tts.save(file_name)
-    audio_file = open(file_name, "rb")
-    audio_byts = audio_file.read()
-    st.audio(audio_byts, format="audio/ogg")
-    audio_file.close()
-    os.remove(file_name)
-
-
+    try:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        audio_output = loop.run_until_complete(generate_audio())
+        st.audio(audio_output, format="audio/mp3")
+    except Exception as e:
+        st.error(f"Erro na voz neural: {e}")
+        
+    
 def show_video(pagina):  # vídeo-tutorial da página
     st.sidebar.info(load_md_file("INFO_VYDE.md"))
     video_name = os.path.join("./base/" + "video_" + pagina + ".webm")
@@ -913,14 +936,17 @@ def page_ypoemas():
         st.session_state.take -= 1
         if st.session_state.take < 0:
             st.session_state.take = maxy_ypoemas
+            st.rerun()
 
     if rand:
         st.session_state.take = random.randrange(0, maxy_ypoemas)
+        st.rerun()
 
     if nest:
         st.session_state.take += 1
         if st.session_state.take > maxy_ypoemas:
             st.session_state.take = 0
+            st.rerun()
 
     if not st.session_state.draw:
         options = list(range(len(temas_list)))
@@ -1461,36 +1487,36 @@ def main():
 
     if chosen_id == "1":
         st.sidebar.info(load_md_file("INFO_MINI.md"))
-        magy = "\images\img_mini.jpg"
+        magy = "img_mini.jpg"
         page_mini()
     elif chosen_id == "2":
         st.sidebar.info(load_md_file("INFO_YPOEMAS.md"))
-        magy = "\images\img_ypoemas.jpg"
+        magy = "img_ypoemas.jpg"
         page_ypoemas()
     elif chosen_id == "3":
         st.sidebar.info(load_md_file("INFO_EUREKA.md"))
-        magy = "\images\img_eureka.jpg"
+        magy = "img_eureka.jpg"
         page_eureka()
     elif chosen_id == "4":
         st.sidebar.info(load_md_file("INFO_OFF-MACHINA.md"))
-        magy = "\images\img_off-machina.jpg"
+        magy = "img_off-machina.jpg"
         page_off_machina()
     elif chosen_id == "5":
         st.sidebar.info(load_md_file("INFO_BOOKS.md"))
-        magy = "\images\img_books.jpg"
+        magy = "img_books.jpg"
         page_books()
     elif chosen_id == "6":
         st.sidebar.info(load_md_file("INFO_POLY.md"))
-        magy = "\images\img_poly.jpg"
+        magy = "img_poly.jpg"
         page_polys()
     elif chosen_id == "7":
         st.sidebar.info(load_md_file("INFO_ABOUT.md"))
-        magy = "\images\img_about.jpg"
+        magy = "img_about.jpg"
         page_abouts()
         ##$ page_docs()
 
     with st.sidebar:
-        st.image(magy)
+        st.image('\images\'+magy)
 
     show_icons()
     ##$ st.sidebar.state = True
@@ -1498,4 +1524,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
