@@ -834,42 +834,6 @@ if st.session_state.visy:  # random text at first entry
     st.session_state.visy = False
 
 
-def page_mine():
-    st.sidebar.image("./images/img_mini.jpg")
-    pick_lang()
-    pick_draw()
-    st.sidebar.info(load_file("INFO_MINI.md"))
-
-    temas_list = load_temas(st.session_state.book)
-    maxy = len(temas_list) - 1
-
-    mini_expander = st.expander("", expanded=True)
-    with mini_expander:
-
-        foo1, more, rand, numb, foo2 = st.columns([3.5, 1, 1, 1, 3.5])
-        more = more.button("✔")
-        rand = rand.button("✴")
-        
-        if rand:
-            st.session_state.take = random.randrange(0, maxy, 1)
-        
-        curr_tema = temas_list[st.session_state.take]
-        analise = say_numeros(curr_tema)
-        # numb = numb.button("☁", help=analise)
-        # st.session_state.draw = numb.checkbox("imagens", help=analise)
-        st.session_state.draw = numb.button("☁", help=analise)
-
-        curr_ypoema = load_poema(curr_tema, "")
-        curr_ypoema = load_lypo()
-        update_readings(curr_tema)
-        LOGO_TEXT = curr_ypoema
-        LOGO_IMAGE = "none"
-        if st.session_state.draw:
-            LOGO_IMAGE = pick_arts(curr_tema)
-        
-        write_ypoema(LOGO_TEXT, LOGO_IMAGE)
-
-
 def page_mini():
     st.sidebar.image("./images/img_mini.jpg")
     pick_lang()
@@ -980,13 +944,6 @@ def page_ypoemas():
     manu = manu.button("?", help="help !!!")
 
     lnew = True
-#    if numb:
-#        lnew = False
-#        st.subheader(analise)
-#        tag_cloud("_ypo_")
-#    st.button("❤")
-#    st.button("✚"):
-#
     if manu:
         lnew = False
         st.subheader(load_file("MANUAL_YPOEMAS.md"))
@@ -1029,14 +986,10 @@ def page_ypoemas():
                 LOGO_IMAGE = pick_arts(curr_tema)
 
             write_ypoema(LOGO_TEXT, LOGO_IMAGE)
+            ReRun()
 
         if st.session_state.talk:
             talk(curr_ypoema)
-        # st.markdown(get_binary_file_downloader_html('./temp/'+"LYPO_" + user_id, curr_tema), unsafe_allow_html=True)
-        # bin_file = base64.b64encode(open(LOGO_IMAGE, "rb").read()).decode()+LOGO_TEXT
-        # st.markdown(get_binary_file_downloader_html(bin_file, curr_tema), unsafe_allow_html=True)
-
-
 
 def page_eureka():
     st.sidebar.image("./images/img_eureka.jpg")
