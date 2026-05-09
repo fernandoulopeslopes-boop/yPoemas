@@ -853,7 +853,7 @@ def page_mini():  # F4C3S
         rand = rand.button("✴")
         
         if rand:
-            st.session_state.take_tema = random.randrange(0, maxy_temas_temas, 1)
+            st.session_state.take_tema = random.randrange(0, maxy_temas, 1)
         
         curr_tema = temas_list[st.session_state.take_tema]
         analise = say_numeros(curr_tema)
