@@ -826,15 +826,15 @@ def page_abouts():
 
 st.session_state.last_lang = st.session_state.lang
 temas_list = load_temas(st.session_state.book)
-maxy = len(temas_list) - 1
+maxy_temas = len(temas_list) - 1
 
-if st.session_state.take_tema > maxy:  # just in case
+if st.session_state.take_tema > maxy_temas:  # just in case
     st.session_state.take_tema = 0
 
 if st.session_state.visy:  # random text at first entry
     update_visy()
     st.session_state.visy = False
-    st.session_state.take_tema = random.randrange(0, maxy, 1)
+    st.session_state.take_tema = random.randrange(0, maxy_temas, 1)
 
 
 def page_mini():  # F4C3S
@@ -845,7 +845,7 @@ def page_mini():  # F4C3S
     pick_draw()
 
     temas_list = load_temas(st.session_state.book)
-    maxy = len(temas_list) - 1
+    maxy_temas = len(temas_list) - 1
 
     mini_expander = st.expander("", expanded=True)
     with mini_expander:
@@ -854,7 +854,7 @@ def page_mini():  # F4C3S
         rand = rand.button("✴")
         
         if rand:
-            st.session_state.take_tema = random.randrange(0, maxy_temas, 1)
+            st.session_state.take_tema = random.randrange(0, maxy_temas_temas, 1)
         
         curr_tema = temas_list[st.session_state.take_tema]
         analise = say_numeros(curr_tema)
@@ -920,7 +920,7 @@ def page_ypoemas():
     
     if nest:
         st.session_state.take_tema_tema += 1
-        if st.session_state.take_tema_tema > maxy:
+        if st.session_state.take_tema_tema > maxy_temas:
             st.session_state.take_tema_tema = 0
     
     options = list(range(len(temas_list)))
