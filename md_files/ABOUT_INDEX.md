@@ -162,7 +162,7 @@ ___
   
 [fonte dos dados](http://www.fisica-interessante.com/matematica-divertida-ordens-classes-multiplos.html)  
 ___
-Total de variações: sei lá quanto dá tudo isso somado...S
+Total de variações: sei lá quanto dá tudo isso somado...
 ___
 Copyright © 1983-Hoje Nando Lopes - **yPoemas @ Machina de fazer Poesia**
 <eof>
