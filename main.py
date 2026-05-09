@@ -724,7 +724,7 @@ def page_polys():  # available languages
                 for line in poly:
                     poly_list.append(line)
                     pipe_line = line.split("|")
-                    poly_show.append(pipe_line[1] + " : " + pipe_line[2])
+                    poly_show.append(pipe_line[0] + " : " + pipe_line[1])
             poly.close()
 
             options = list(range(len(poly_show)))
