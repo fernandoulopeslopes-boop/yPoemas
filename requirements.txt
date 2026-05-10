@@ -7,5 +7,6 @@ setuptools
 edge_tts
 asyncio
 deep-translator
+gtts
 numpy
 matplotlib
