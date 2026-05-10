@@ -172,6 +172,9 @@ TEMAS_ATIVOS = {
 def load_temas_ativos():
     return TEMAS_ATIVOS
 
+def load_idiomas():
+    return IDIOMAS
+
 def pick_some_tema(tema):
     # Retorna o índice do tema na lista + 1
     temas = list(TEMAS_ATIVOS.keys())
