@@ -41,7 +41,7 @@ def main():
         idiomas_base = ["Português", "English", "Español", "Français", "Deutsch", "Italiano"]
         extensao = sorted(["Català", "Dansk", "Euskara", "Suomi", "Galego", "Islandska", "Lëtzebuergesch", "Magyar", "Nederlands", "Norsk", "Polski", "Portuñol", "Română", "Slovenčina", "Slovenščina"]) + ["Russia", "Suécia"]
         
-        st.session_state.idioma = st.selectbox("Translator", idiomas_base + extensao)
+        st.session_state.idioma = st.selectbox("Idiomas disponíveis...", idiomas_base + extensao)
         
         st.divider()
 
