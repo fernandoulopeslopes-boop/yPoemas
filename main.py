@@ -1,7 +1,7 @@
 import streamlit as st
 
 # =========================
-# CONFIG BASE
+# CONFIG
 # =========================
 st.set_page_config(
     page_title="Machina de Fazer Poesia",
@@ -20,56 +20,51 @@ voices = {
 }
 
 # =========================
-# CORE (EIXO X + Y + Z)
+# CORE — EIXO Z REAL
 # =========================
 def core_generate(theme: str, lang: str, z_variations: int = 3):
-    """
-    Núcleo da Machina com Eixo Z:
-    gera múltiplas variações do mesmo poema-base
-    """
-
-    base = f"[{lang}] yPoema sobre {theme}"
 
     results = []
 
     for i in range(z_variations):
-        # pequena variação estrutural simulando deriva do Z
+
+        # Z ALTERA ESTRUTURA, NÃO TEXTO
         if i == 0:
-            content = base
+            content = f"[{lang}] {theme}"
         elif i == 1:
-            content = base + " :: deriva silenciosa"
+            content = f"[{lang}] {theme}\n\nsilêncio entre camadas"
         else:
-            content = base + " :: expansão residual da linguagem"
+            content = f"[{lang}] {theme}\n\nsilêncio entre camadas\n\nderiva sem fechamento\neco residual"
 
         results.append({
-            "version": i,
-            "theme": theme,
+            "z": i,
             "lang": lang,
-            "content": content,
-            "meta": {
-                "z_index": i
-            }
+            "content": content
         })
 
     return results
 
 # =========================
-# STAGE (RENDER PURA)
+# STAGE
 # =========================
-def stage_render(results: list):
+def stage_render(results):
+
     st.markdown("## 🎭 Palco")
 
     for r in results:
+
+        st.markdown(f"### Z-{r['z']}")
+
         st.text_area(
-            f"yPoema Z-{r['meta']['z_index']}",
+            "yPoema",
             r["content"],
-            height=140
+            height=160
         )
 
         st.divider()
 
 # =========================
-# UI — CENTRO DE CONTROLE
+# UI
 # =========================
 st.title("Machina de Fazer Poesia")
 
@@ -80,7 +75,7 @@ with col1:
 
     lang = st.selectbox("Idioma (X)", list(voices.keys()))
     theme = st.text_input("Tema (Y)", "Babel")
-    z = st.slider("Eixo Z (variações)", 1, 5, 3)
+    z = st.slider("Eixo Z", 1, 3, 3)
 
     go = st.button("GO")
 
