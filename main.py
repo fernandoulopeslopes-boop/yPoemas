@@ -1,5 +1,6 @@
 import streamlit as st
 
+
 def main():
     # ESMERO: A página ativa agora nasce em 'mini' para habilitar o sistema imediatamente
     if 'pagina_ativa' not in st.session_state: 
