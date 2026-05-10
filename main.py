@@ -37,7 +37,7 @@ try:
 except ImportError:
     # Fallback para manter o main.py executável mesmo antes de copiar core/padroes.py.
     ABOUTS_LIST = [
-        "comments", "prefácio", "machina", "off-machina", "outros", "traduttore",
+        "comments", "prefácio", "machina", "off-machina", "Machina_&_IA", "outros", "traduttore",
         "bibliografia", "imagens", "samizdát", "notes", "license", "index",
     ]
     BOOKS_LIST = [
@@ -1317,7 +1317,6 @@ def page_polys():  # available languages
 
 def page_abouts():
     abouts_list = ABOUTS_LIST
-
 
     options = list(range(len(abouts_list)))
     sobrios = "↓  " + translate("sobre")
