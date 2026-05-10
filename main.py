@@ -40,7 +40,7 @@ def main():
 
         # Translator: 22 vozes neurais masculinas (Alfabeto Ocidental)
         idiomas_base = ["Português", "English", "Español", "Français", "Deutsch", "Italiano"]
-        extensao = sorted(["Català", "Dansk", "Euskara", "Suomi", "Galego", "Islandska", "Lëtzebuergesch", "Magyar", "Nederlands", "Norsk", "Polski", "Portuñol", "Română", "Slovenčina", "Slovenščina"]) + ["Russia", "Suécia"]
+        extensao = sorted(["Català", "Dansk", "Euskara", "Galego", "Islandska", "Lëtzebuergesch", "Nederlands", "Norsk", "Polski", "Portuñol", "Română", "Slovenčina", "Slovenščina"]) + ["Russia", "Suécia"]
         
         st.session_state.idioma = st.selectbox("Idiomas disponíveis...", idiomas_base + extensao)
         
