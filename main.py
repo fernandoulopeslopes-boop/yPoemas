@@ -56,7 +56,7 @@ def main():
         st.divider()
 
     # PALCO: Navegação Proporcional (m -> e)
-    paginas = ["mini", "yPoema", "eureka", "off-machina", "livros", "poly", "opinião", "sobre"]
+    paginas = ["mini", "yPoema", "eureka", "off-machina", "livros", "poly", "sobre"]
     pesos = [len(pg) for pg in paginas]
     
     cols = st.columns(pesos)
