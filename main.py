@@ -20,35 +20,53 @@ voices = {
 }
 
 # =========================
-# CORE (simulado por enquanto)
+# CORE (EIXO X + Y + Z)
 # =========================
-def core_generate(theme: str, lang: str):
+def core_generate(theme: str, lang: str, z_variations: int = 3):
     """
-    Núcleo lógico da Machina (placeholder limpo)
-    Aqui depois entra Eixo X/Y/Z real.
+    Núcleo da Machina com Eixo Z:
+    gera múltiplas variações do mesmo poema-base
     """
-    return {
-        "theme": theme,
-        "lang": lang,
-        "content": f"[{lang}] yPoema sobre {theme}",
-        "meta": {
-            "z_state": "neutral"
-        }
-    }
+
+    base = f"[{lang}] yPoema sobre {theme}"
+
+    results = []
+
+    for i in range(z_variations):
+        # pequena variação estrutural simulando deriva do Z
+        if i == 0:
+            content = base
+        elif i == 1:
+            content = base + " :: deriva silenciosa"
+        else:
+            content = base + " :: expansão residual da linguagem"
+
+        results.append({
+            "version": i,
+            "theme": theme,
+            "lang": lang,
+            "content": content,
+            "meta": {
+                "z_index": i
+            }
+        })
+
+    return results
 
 # =========================
-# STAGE (apenas render)
+# STAGE (RENDER PURA)
 # =========================
-def stage_render(result: dict):
+def stage_render(results: list):
     st.markdown("## 🎭 Palco")
 
-    st.text_area(
-        "yPoema",
-        result["content"],
-        height=300
-    )
+    for r in results:
+        st.text_area(
+            f"yPoema Z-{r['meta']['z_index']}",
+            r["content"],
+            height=140
+        )
 
-    st.caption(f"Tema: {result['theme']} | Idioma: {result['lang']}")
+        st.divider()
 
 # =========================
 # UI — CENTRO DE CONTROLE
@@ -62,10 +80,11 @@ with col1:
 
     lang = st.selectbox("Idioma (X)", list(voices.keys()))
     theme = st.text_input("Tema (Y)", "Babel")
+    z = st.slider("Eixo Z (variações)", 1, 5, 3)
 
     go = st.button("GO")
 
 with col2:
     if go:
-        result = core_generate(theme, lang)
-        stage_render(result)
+        results = core_generate(theme, lang, z_variations=z)
+        stage_render(results)
