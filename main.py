@@ -87,7 +87,7 @@ def main():
     audio_source = None
     if st.session_state.trigger_tts:
         # Falar o nome da página ativa
-        texto = st.session_state.pagina_ativa
+        texto = "a Máquina de Fazer Poesia, Falar o nome da página ativa"
         audio_source = f"https://translate.google.com/translate_tts?ie=UTF-8&q={texto}&tl=pt&client=tw-ob"
 
     # Slide do Áudio: Centrado no palco
