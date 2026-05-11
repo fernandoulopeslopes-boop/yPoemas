@@ -1,73 +1,18 @@
-"""
-main.py :: yPoemas / Machina
-
-Primeiro CLEAN conservador.
-
-Objetivo:
-- manter o fluxo original conhecido pelo autor;
-- preservar o Palco, LYPO, TYPO e o Eixo Z;
-- reduzir ruído visual do código;
-- preparar futura divisão em módulos sem quebrar a Machina.
-"""
-
 import os
+##$ import io
 import re
 import time
 import random
 import base64
 import socket
-import asyncio
-from datetime import datetime
-
 import streamlit as st
-from extra_streamlit_components import TabBar as stx
 
+from extra_streamlit_components import TabBar as stx
+from datetime import datetime
 from lay_2_ypo import gera_poema
 
-try:
-    from core.padroes import (
-        ABOUTS_LIST,
-        BOOKS_LIST,
-        LANG_FILES,
-        OFF_BOOKS_LIST,
-        PAGE_IMAGES,
-        PAGE_INFO_FILES,
-        VOICES_EDGE_TTS,
-    )
-except ImportError:
-    # Fallback para manter o main.py executável mesmo antes de copiar core/padroes.py.
-    ABOUTS_LIST = [
-        "comments", "prefácio", "machina", "off-machina", "machina-IA", "outros", "traduttore",
-        "bibliografia", "imagens", "samizdát", "notes", "license", "index",
-    ]
-    BOOKS_LIST = [
-        "livro vivo", "poemas", "jocosos", "ensaios", "variações", "metalinguagem",
-        "sociais", "todos os temas", "outros autores", "signos_fem", "signos_mas",
-        "todos os signos",
-    ]
-    OFF_BOOKS_LIST = [
-        "a_torre_de_papel", "quase_que_eu_Poesia", "faz_de_conto", "um_romance",
-        "linguafiada", "livro_vivo", "desvoto", "ensaio", "urbano", "essencial", "secreto",
-    ]
-    PAGE_IMAGES = {
-        "1": "img_mini.jpg", "2": "img_ypoemas.jpg", "3": "img_eureka.jpg",
-        "4": "img_off-machina.jpg", "5": "img_books.jpg", "6": "img_poly.jpg", "7": "img_about.jpg",
-    }
-    PAGE_INFO_FILES = {
-        "1": "INFO_MINI.md", "2": "INFO_YPOEMAS.md", "3": "INFO_EUREKA.md",
-        "4": "INFO_OFF-MACHINA.md", "5": "INFO_BOOKS.md", "6": "INFO_POLY.md", "7": "INFO_ABOUT.md",
-    }
-    LANG_FILES = {"pt": "poly_pt.txt", "es": "poly_es.txt", "it": "poly_it.txt", "fr": "poly_fr.txt", "en": "poly_en.txt"}
-    VOICES_EDGE_TTS = {
-        "pt": "pt-BR-AntonioNeural", "en": "en-US-GuyNeural", "es": "es-ES-AlvaroNeural",
-        "fr": "fr-FR-RemyNeural", "it": "it-IT-DiegoNeural",
-    }
+### bof: settings
 
-
-# -----------------------------------------------------------------------------
-# Configuração inicial da página Streamlit.
-# Deve permanecer antes de qualquer saída visual do Streamlit.
-# -----------------------------------------------------------------------------
 st.set_page_config(
     page_title="a máquina de fazer Poesia - yPoemas",
     page_icon=":star:",
@@ -77,142 +22,225 @@ st.set_page_config(
 
 
 def have_internet(host="1.1.1.1", port=80, timeout=3):
-    """Verifica conexão antes de ativar tradução e voz neural."""
     try:
         socket.setdefaulttimeout(timeout)
         socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
         return True
-    except OSError:
+    except socket.error as ex:
         return False
 
-
-# Recursos externos opcionais.
-GoogleTranslator = None
-edge_tts = None
 
 if have_internet():
     try:
         from deep_translator import GoogleTranslator
     except ImportError:
         st.warning("Google Translator não encontrado no ambiente...")
-
+    
     try:
         import edge_tts
+        import asyncio
     except ImportError:
         st.warning("Motor de voz neural (edge-tts) não conectado.")
 else:
     st.warning("Internet não conectada. Traduções e Vozes Neurais indisponíveis.")
-
-
-# Identificador atual usado por LYPO/TYPO.
-# Mantido neste CLEAN por preservar a persistência do último yPoema gerado.
+    
+# the User IPAddres for LYPO, TYPO
 hostname = socket.gethostname()
 IPAddres = socket.gethostbyname(hostname)
 
 
-def apply_styles():
-    """Aplica os estilos básicos da Machina e preserva o Palco sem controles."""
-    st.markdown(
-        """
-        <style>
-        /*#MainMenu {visibility: hidden;}*/
-        footer {visibility: hidden;}
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    st.markdown(
-        """
-        <style>
-        .reportview-container .main .block-container{
-            padding-top: 0rem;
-            padding-right: 0rem;
-            padding-left: 0rem;
-            padding-bottom: 0rem;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    st.markdown(
-        """
-        <style>
-        [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
-            width: 310px;
-        }
-        mark {
-            background-color: powderblue;
-            color: black;
-        }
-        .container {
-            display: flex;
-        }
-        .header {
-            text-align:center;
-        }
-        .logo-text {
-            font-weight: 600;
-            font-size: 18px;
-            font-family: 'IBM Plex Sans';
-            color: #000000;
-            padding-top: 0px;
-            padding-left: 15px;
-        }
-        .logo-img {
-            float:right;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
+# hide Streamlit Menu and Footer
+st.markdown(
+    """ <style>
+    /*#MainMenu {visibility: hidden;}*/
+    footer {visibility: hidden;}
+    </style> """,
+    unsafe_allow_html=True,
+)
 
 
-def init_session_state():
-    """Inicializa o estado vivo da Machina no Streamlit."""
-    defaults = {
-        "lang": "pt",
-        "last_lang": "pt",
-        "book": "livro vivo",
-        "take": 0,
-        "mini": 0,
-        "tema": "Fatos",
-        "off_book": 0,
-        "off_take": 0,
-        "eureka": 0,
-        "poly_lang": "ca",
-        "poly_name": "català",
-        "poly_take": 12,
-        "poly_file": "poly_pt.txt",
-        "visy": True,
-        "nany_visy": 0,
-        "draw": False,
-        "talk": False,
-        "arts": [],
-        "auto": False,
-        "rand": False,
+# change padding between components
+st.markdown(
+    f""" <style>
+    .reportview-container .main .block-container{{
+        padding-top: {0}rem;
+        padding-right: {0}rem;
+        padding-left: {0}rem;
+        padding-bottom: {0}rem;
+    }} </style> """,
+    unsafe_allow_html=True,
+)
+
+# change sidebar width
+st.markdown(
+    """ 
+    <style>
+    [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
+        width: 310px;
+    }
+    [data-testid='stSidebar'] {
+        font-family: 'IBM Plex Sans', sans-serif;
+    }
+    [data-testid='stSidebar'] .stSelectbox label,
+    [data-testid='stSidebar'] .stCheckbox label {
+        font-size: 13px;
+    }
+    .machina-mural {
+        font-family: 'IBM Plex Sans', sans-serif;
+        font-size: 14px;
+        line-height: 1.45;
+        padding: 0.6rem 0.25rem 0.8rem 0.25rem;
+        margin-top: 0.25rem;
+        margin-bottom: 220px;
+    }
+    .machina-sidebar-art {
+        position: fixed;
+        bottom: 10px;
+        left: 18px;
+        width: 240px;
+        max-height: 360px;
+        z-index: 999;
+    }
+    .machina-sidebar-art img {
+        width: 100%;
+        height: auto;
+        border-radius: 2px;
+    }
+    </style> """,
+    unsafe_allow_html=True,
+)
+
+
+# load_poema settings
+st.markdown(
+    """
+    <style>
+    mark {
+      background-color: powderblue;
+      color: black;
+    }
+    .container {
+        display: flex;
+        /* justify-content: center; */
     }
 
-    for key, value in defaults.items():
-        if key not in st.session_state:
-            st.session_state[key] = value
+    .header {
+        text-align:center;
+    }
+    .logo-text {
+        font-weight: 600;
+        font-size: 18px;
+        font-family: 'IBM Plex Sans';
+        color: #000000;
+        padding-top: 0px;
+        padding-left: 15px;
+    }
+    .logo-img {
+        float:right;
+    }
+    </style> """,
+    unsafe_allow_html=True,
+)
 
 
-apply_styles()
-init_session_state()
+# Initialize SessionState
+
+if "lang" not in st.session_state:
+    st.session_state.lang = "pt"
+if "last_lang" not in st.session_state:
+    st.session_state.last_lang = "pt"
+
+if "book" not in st.session_state:  #  index for books_list
+    st.session_state.book = "livro vivo"
+if "take" not in st.session_state:  #  index for selected tema in books_list
+    st.session_state.take = 0
+if "mini" not in st.session_state:  #  index for selected tema in page_mini
+    st.session_state.mini = 0
+if "tema" not in st.session_state:  #  selected tema for all pages
+    st.session_state.tema = "Fatos"
+
+if "off_book" not in st.session_state:  #  index for off_books_list
+    st.session_state.off_book = 0
+if "off_take" not in st.session_state:  #  index for selected book in off_books_list
+    st.session_state.off_take = 0
+
+if "eureka" not in st.session_state:  #  index for random tema in page_eureka
+    st.session_state.eureka = 0
+
+if "poly_lang" not in st.session_state:
+    st.session_state.poly_lang = "ca"
+if "poly_name" not in st.session_state:
+    st.session_state.poly_name = "català"
+if "poly_take" not in st.session_state:
+    st.session_state.poly_take = 12
+if "poly_file" not in st.session_state:
+    st.session_state.poly_file = "poly_pt.txt"
+
+if "visy" not in st.session_state:
+    st.session_state.visy = True
+if "nany_visy" not in st.session_state:
+    st.session_state.nany_visy = 0
+
+if "draw" not in st.session_state:
+    st.session_state.draw = False
+if "talk" not in st.session_state:
+    st.session_state.talk = False
+if "arts" not in st.session_state:
+    st.session_state.arts = []
+if "auto" not in st.session_state:
+    st.session_state.auto = False
+if "rand" not in st.session_state:
+    st.session_state.rand = False
+if "fonte_palco" not in st.session_state:
+    st.session_state.fonte_palco = "IBM Plex Sans"
+if "show_fontes" not in st.session_state:
+    st.session_state.show_fontes = False
 
 
+# Fontes oferecidas ao leitor para modular a leitura no Palco.
+FONTES_PALCO = [
+    "IBM Plex Sans",
+    "Inter",
+    "Source Serif Pro",
+    "EB Garamond",
+    "JetBrains Mono",
+    "OpenDyslexic",
+]
+
+IDIOMAS_OFICIAIS = {
+    "Português": "pt",
+    "Español": "es",
+    "Italiano": "it",
+    "Français": "fr",
+    "English": "en",
+    "Esperanto": "eo",
+    "Latin": "la",
+    "Basco": "eu",
+    "Català": "ca",
+    "Corsu": "co",
+    "Galego": "gl",
+    "Galês": "cy",
+    "Polski": "pl",
+    "Nederlands": "nl",
+    "Irlandês": "ga",
+    "Norsk": "no",
+    "Suomi": "fi",
+    "Dansk": "da",
+    "Română": "ro",
+    "Русский": "ru",
+    "Svenska": "sv",
+}
+
+
+### eof: settings
 ### bof: tools
 
 
-
 def translate(input_text):
-    """Traduz textos de apoio e yPoemas quando o idioma atual não é português."""
     if st.session_state.lang == "pt":  # don't need translations here
         return input_text
 
-    if not have_internet() or GoogleTranslator is None:
+    if not have_internet():
         st.session_state.lang = "pt"
         return input_text
 
@@ -227,41 +255,36 @@ def translate(input_text):
         output_text = output_text.replace("<br ", "<br>")
         output_text = output_text.replace(" br>", "<br>")
         return output_text
-    except Exception:
-        return "Arquivo muito grande para ser traduzido."
+    except:
+        return translate("Arquivo muito grande para ser traduzido.")
 
 
-def pick_lang():  # define idioma
-    btn_pt, btn_es, btn_it, btn_fr, btn_en, btn_xy = st.sidebar.columns(
-        [1.1, 1.13, 1.04, 1.04, 1.17, 1.25]
+def pick_lang():  # define idioma pela Central de Comando
+    # A Machina é POLY: a escolha de idioma fica no topo da Sidebar.
+    nomes = list(IDIOMAS_OFICIAIS.keys())
+    codigos = list(IDIOMAS_OFICIAIS.values())
+
+    try:
+        index_atual = codigos.index(st.session_state.lang)
+    except ValueError:
+        index_atual = 0
+
+    escolha = st.sidebar.selectbox(
+        "idiomas disponíveis...",
+        nomes,
+        index=index_atual,
+        key="select_idioma",
     )
-    btn_pt = btn_pt.button("pt", key=1, help="Português")
-    btn_es = btn_es.button("es", key=2, help="Español")
-    btn_it = btn_it.button("it", key=3, help="Italiano")
-    btn_fr = btn_fr.button("fr", key=4, help="Français")
-    btn_en = btn_en.button("en", key=5, help="English")
-    btn_xy = btn_xy.button("⚒️", key=6, help=st.session_state.poly_name)
 
-    if btn_pt:
-        st.session_state.lang = "pt"
-        st.session_state.poly_file = "poly_pt.txt"
-    elif btn_es:
-        st.session_state.lang = "es"
-        st.session_state.poly_file = "poly_es.txt"
-    elif btn_it:
-        st.session_state.lang = "it"
-        st.session_state.poly_file = "poly_it.txt"
-    elif btn_fr:
-        st.session_state.lang = "fr"
-        st.session_state.poly_file = "poly_fr.txt"
-    elif btn_en:
-        st.session_state.lang = "en"
-        st.session_state.poly_file = "poly_en.txt"
-    elif btn_xy:
+    novo_idioma = IDIOMAS_OFICIAIS[escolha]
+    if novo_idioma != st.session_state.lang:
         st.session_state.last_lang = st.session_state.lang
-        st.session_state.lang = st.session_state.poly_lang
+        st.session_state.lang = novo_idioma
 
-    if st.session_state.lang != st.session_state.last_lang:
+        # Mantém o arquivo POLY coerente com os idiomas principais.
+        if novo_idioma in ["pt", "es", "it", "fr", "en"]:
+            st.session_state.poly_file = "poly_" + novo_idioma + ".txt"
+
         st.success(translate("idioma atual") + " ➪ " + st.session_state.lang)
 
 
@@ -313,17 +336,33 @@ def load_help(idiom):
 
 
 def draw_check_buttons():
-    foo = ""
-    draw_text, foo, foo, talk_text = st.sidebar.columns([4,1,1,4])
+    # Controles sensoriais da Central de Comando:
+    # arte, fonte do Palco e áudio.
+    col_arte, col_fonte, col_audio = st.sidebar.columns([1, 1, 1])
     help_tips = load_help(st.session_state.lang)
     help_draw = help_tips[5]
     help_talk = help_tips[6]
-    st.session_state.draw = draw_text.checkbox(
-        help_draw, st.session_state.draw, key="draw_machina"
+
+    st.session_state.draw = col_arte.checkbox(
+        "arte", st.session_state.draw, key="draw_machina", help=help_draw
     )
-    st.session_state.talk = talk_text.checkbox(
-        help_talk, st.session_state.talk, key="talk_machina"
+
+    if col_fonte.button("⚙", key="fontes_machina", help="fontes do Palco"):
+        st.session_state.show_fontes = not st.session_state.show_fontes
+
+    st.session_state.talk = col_audio.checkbox(
+        "audio", st.session_state.talk, key="talk_machina", help=help_talk
     )
+
+    if st.session_state.show_fontes:
+        st.session_state.fonte_palco = st.sidebar.selectbox(
+            "fontes disponíveis...",
+            FONTES_PALCO,
+            index=FONTES_PALCO.index(st.session_state.fonte_palco)
+            if st.session_state.fonte_palco in FONTES_PALCO
+            else 0,
+            key="select_fonte_palco",
+        )
 
 
 def get_binary_file_downloader_html(bin_file, file_label="File"):
@@ -341,6 +380,101 @@ def atoi(text):  # human reading number functions for sorting
 
 def natural_keys(text):
     return [atoi(c) for c in re.split(r"(\d+)", text)]
+
+
+def pick_tema_sidebar():
+    # Vitrine dos Temas: permite ao leitor perceber a vastidão da Machina.
+    try:
+        temas = load_temas("todos os temas")
+    except Exception:
+        return
+
+    if not temas:
+        return
+
+    try:
+        index_atual = temas.index(st.session_state.tema)
+    except ValueError:
+        index_atual = 0
+
+    tema = st.sidebar.selectbox(
+        "todos os temas...",
+        temas,
+        index=index_atual,
+        key="select_todos_temas",
+    )
+
+    if tema != st.session_state.tema:
+        st.session_state.tema = tema
+        try:
+            st.session_state.mini = temas.index(tema)
+        except ValueError:
+            pass
+
+
+def load_mural():
+    # O Mural é o território livre da Machina.
+    # Pode conter textos, fragmentos, silêncio e futuros recados.
+    mural_file = os.path.join("./base", "mural.txt")
+    fallback = [
+        "",
+        "no comments",
+        "a Machina continua pensando aqui",
+        "todo Livro-Vivo precisa de margens",
+        "o acaso também sabe silenciar",
+    ]
+
+    if not os.path.exists(mural_file):
+        return fallback
+
+    try:
+        with open(mural_file, encoding="utf-8") as file:
+            linhas = [line.strip() for line in file if line.strip() or line == "\n"]
+        return linhas or fallback
+    except Exception:
+        return fallback
+
+
+def render_mural(info_file=None):
+    # Mini-Palco da Sidebar: território livre, mutante e discreto.
+    conteudo = random.choice(load_mural())
+
+    texto = ""
+    if conteudo and conteudo.lower() != "no comments":
+        texto += conteudo.replace("\n", "<br>")
+    elif conteudo.lower() == "no comments":
+        texto += "<em>no comments</em>"
+
+    if info_file:
+        info = load_md_file(info_file)
+        if info:
+            if texto:
+                texto += "<br><br>"
+            texto += info.replace("\n", "<br>")
+
+    st.sidebar.markdown(
+        f"<div class='machina-mural'>{texto}</div>",
+        unsafe_allow_html=True,
+    )
+
+
+def render_sidebar_art(image_file):
+    # Arte fixa no rodapé da Central de Comando.
+    path = os.path.join("./images", image_file)
+    if not os.path.exists(path):
+        return
+
+    with open(path, "rb") as img:
+        encoded = base64.b64encode(img.read()).decode()
+
+    st.sidebar.markdown(
+        f"""
+        <div class='machina-sidebar-art'>
+            <img src='data:image/jpg;base64,{encoded}'>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 
 ### eof: tools
@@ -556,8 +690,21 @@ def load_typo():  # Load translated yPoema & clean translator returned bugs in t
 
 
 def load_all_offs():
-    """Retorna a lista oficial de livros do modo off-machina."""
-    return OFF_BOOKS_LIST
+    all_books_off = [
+        "a_torre_de_papel",
+        "quase_que_eu_Poesia",
+        "faz_de_conto",
+        "um_romance",
+        "linguafiada",
+        "livro_vivo",
+        "desvoto",
+        "ensaio",
+        "urbano",
+        "essencial",
+        "secreto",
+    ]
+
+    return all_books_off
 
 
 def load_off_book(book):  # Load selected off_book
@@ -658,11 +805,15 @@ def load_arts(nome_tema):  # Select image for arts
 
         
 def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
+    # Renderiza o yPoema no Palco com a fonte escolhida pelo leitor.
+    fonte = st.session_state.get("fonte_palco", "IBM Plex Sans")
+    style = f"font-family: '{fonte}', 'IBM Plex Sans', sans-serif;"
+
     if LOGO_IMAGE == None:
         st.markdown(
             f"""
             <div class='container'>
-                <p class='logo-text'>{LOGO_TEXTO}</p>
+                <p class='logo-text' style="{style}">{LOGO_TEXTO}</p>
             </div>
             """,
             unsafe_allow_html=True,
@@ -672,7 +823,7 @@ def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
             f"""
             <div class='container'>
                 <img class='logo-img' src='data:image/jpg;base64,{base64.b64encode(open(LOGO_IMAGE, 'rb').read()).decode()}'>
-                <p class='logo-text'>{LOGO_TEXTO}</p>
+                <p class='logo-text' style="{style}">{LOGO_TEXTO}</p>
             </div>
             """,
             unsafe_allow_html=True,
@@ -680,16 +831,18 @@ def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
 
 
 def talk(text):
-    """Lê o yPoema no idioma atual usando edge-tts, quando disponível."""
-    if edge_tts is None:
-        st.warning("Motor de voz neural indisponível.")
-        return
-
     # Limpeza para a voz não ler tags
     text_clean = text.replace("<br>", " ").replace("< br>", "").replace("<br >", "").replace("<br/>", " ")
     
     # Mapeamento de vozes neurais de alta qualidade
-    selected_voice = VOICES_EDGE_TTS.get(st.session_state.lang, "pt-BR-AntonioNeural")
+    voices = {
+        "pt": "pt-BR-AntonioNeural",
+        "en": "en-US-GuyNeural",
+        "es": "es-ES-AlvaroNeural",
+        "fr": "fr-FR-RemyNeural",
+        "it": "it-IT-DiegoNeural"
+    }
+    selected_voice = voices.get(st.session_state.lang, "pt-BR-AntonioNeural")
 
     async def generate_audio():
         communicate = edge_tts.Communicate(text_clean, selected_voice)
@@ -1237,7 +1390,20 @@ def page_off_machina():  # available off_machina_books
 def page_books():  # available books
     books, ok = st.columns([9.3, 0.7])
     with books:
-        books_list = BOOKS_LIST
+        books_list = [
+            "livro vivo",
+            "poemas",
+            "jocosos",
+            "ensaios",
+            "variações",
+            "metalinguagem",
+            "sociais",
+            "todos os temas",
+            "outros autores",
+            "signos_fem",
+            "signos_mas",
+            "todos os signos",
+        ]
 
         options = list(range(len(books_list)))
         sobrios = "↓  " + translate("lista de Livros")
@@ -1316,7 +1482,21 @@ def page_polys():  # available languages
 
 
 def page_abouts():
-    abouts_list = ABOUTS_LIST
+    abouts_list = [
+        "comments",
+        "prefácio",
+        "machina",
+        "off-machina",
+        "outros",
+        "traduttore",
+        "bibliografia",
+        "imagens",
+        "samizdát",
+        "notes",
+        "license",
+        "index",
+    ]
+
 
     options = list(range(len(abouts_list)))
     sobrios = "↓  " + translate("sobre")
@@ -1341,6 +1521,7 @@ def page_abouts():
             else:
                 st.subheader(load_md_file("ABOUT_" + choice + ".md"))
 
+
 ### eof: pages
 
 
@@ -1358,40 +1539,48 @@ def main():
         default=2,
     )
 
+    # Central de Comando: escolhas do leitor antes da aparição no Palco.
     pick_lang()
+    pick_tema_sidebar()
     draw_check_buttons()
 
+    info_file = "INFO_YPOEMAS.md"
+    magy = "img_ypoemas.jpg"
+
     if chosen_id == "1":
-        st.sidebar.info(load_md_file("INFO_MINI.md"))
+        info_file = "INFO_MINI.md"
         magy = "img_mini.jpg"
         page_mini()
     elif chosen_id == "2":
-        st.sidebar.info(load_md_file("INFO_YPOEMAS.md"))
+        info_file = "INFO_YPOEMAS.md"
         magy = "img_ypoemas.jpg"
         page_ypoemas()
     elif chosen_id == "3":
-        st.sidebar.info(load_md_file("INFO_EUREKA.md"))
+        info_file = "INFO_EUREKA.md"
         magy = "img_eureka.jpg"
         page_eureka()
     elif chosen_id == "4":
-        st.sidebar.info(load_md_file("INFO_OFF-MACHINA.md"))
+        info_file = "INFO_OFF-MACHINA.md"
         magy = "img_off-machina.jpg"
         page_off_machina()
     elif chosen_id == "5":
-        st.sidebar.info(load_md_file("INFO_BOOKS.md"))
+        info_file = "INFO_BOOKS.md"
         magy = "img_books.jpg"
         page_books()
     elif chosen_id == "6":
-        st.sidebar.info(load_md_file("INFO_POLY.md"))
+        info_file = "INFO_POLY.md"
         magy = "img_poly.jpg"
         page_polys()
     elif chosen_id == "7":
-        st.sidebar.info(load_md_file("INFO_ABOUT.md"))
+        info_file = "INFO_ABOUT.md"
         magy = "img_about.jpg"
         page_abouts()
 
-    with st.sidebar:
-        st.image("./images/" + magy)
+    # Mural + info da página em foco: margem viva da Central.
+    render_mural(info_file)
+
+    # Arte fixa no rodapé da Sidebar.
+    render_sidebar_art(magy)
 
 #    show_icons()
     ##$ st.sidebar.state = True
