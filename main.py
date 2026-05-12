@@ -1487,6 +1487,7 @@ def page_abouts():
         "prefácio",
         "machina",
         "off-machina",
+        "machina-IA",
         "outros",
         "traduttore",
         "bibliografia",
