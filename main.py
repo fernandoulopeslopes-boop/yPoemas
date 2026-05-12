@@ -1392,13 +1392,13 @@ def page_books():  # available books
     with books:
         books_list = [
             "livro vivo",
+            "todos os livros",
             "poemas",
             "jocosos",
             "ensaios",
             "variações",
             "metalinguagem",
             "sociais",
-            "todos os temas",
             "outros autores",
             "signos_fem",
             "signos_mas",
@@ -1513,7 +1513,9 @@ def page_abouts():
         choice = abouts_list[opt_abouts].upper()
         about_expander = st.expander("", True)
         with about_expander:
-            if choice == "MACHINA":
+            if choice == "MACHINA-IA":
+                st.subheader(load_md_file("MACHINA-IA.md"))
+            elif choice == "MACHINA":
                 st.subheader(load_md_file("ABOUT_MACHINA_A.md"))
                 LOGO_TEXTO = load_info(st.session_state.tema)
                 LOGO_IMAGE = "./images/matrix/" + st.session_state.tema + ".jpg"
