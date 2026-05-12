@@ -1,18 +1,73 @@
+"""
+main.py :: yPoemas / Machina
+
+Primeiro CLEAN conservador.
+
+Objetivo:
+- manter o fluxo original conhecido pelo autor;
+- preservar o Palco, LYPO, TYPO e o Eixo Z;
+- reduzir ruído visual do código;
+- preparar futura divisão em módulos sem quebrar a Machina.
+"""
+
 import os
-##$ import io
 import re
 import time
 import random
 import base64
 import socket
-import streamlit as st
-
-from extra_streamlit_components import TabBar as stx
+import asyncio
 from datetime import datetime
+
+import streamlit as st
+from extra_streamlit_components import TabBar as stx
+
 from lay_2_ypo import gera_poema
 
-### bof: settings
+try:
+    from core.padroes import (
+        ABOUTS_LIST,
+        BOOKS_LIST,
+        LANG_FILES,
+        OFF_BOOKS_LIST,
+        PAGE_IMAGES,
+        PAGE_INFO_FILES,
+        VOICES_EDGE_TTS,
+    )
+except ImportError:
+    # Fallback para manter o main.py executável mesmo antes de copiar core/padroes.py.
+    ABOUTS_LIST = [
+        "comments", "prefácio", "machina", "off-machina", "outros", "traduttore",
+        "bibliografia", "imagens", "samizdát", "notes", "license", "index",
+    ]
+    BOOKS_LIST = [
+        "livro vivo", "poemas", "jocosos", "ensaios", "variações", "metalinguagem",
+        "sociais", "todos os temas", "outros autores", "signos_fem", "signos_mas",
+        "todos os signos",
+    ]
+    OFF_BOOKS_LIST = [
+        "a_torre_de_papel", "quase_que_eu_Poesia", "faz_de_conto", "um_romance",
+        "linguafiada", "livro_vivo", "desvoto", "ensaio", "urbano", "essencial", "secreto",
+    ]
+    PAGE_IMAGES = {
+        "1": "img_mini.jpg", "2": "img_ypoemas.jpg", "3": "img_eureka.jpg",
+        "4": "img_off-machina.jpg", "5": "img_books.jpg", "6": "img_poly.jpg", "7": "img_about.jpg",
+    }
+    PAGE_INFO_FILES = {
+        "1": "INFO_MINI.md", "2": "INFO_YPOEMAS.md", "3": "INFO_EUREKA.md",
+        "4": "INFO_OFF-MACHINA.md", "5": "INFO_BOOKS.md", "6": "INFO_POLY.md", "7": "INFO_ABOUT.md",
+    }
+    LANG_FILES = {"pt": "poly_pt.txt", "es": "poly_es.txt", "it": "poly_it.txt", "fr": "poly_fr.txt", "en": "poly_en.txt"}
+    VOICES_EDGE_TTS = {
+        "pt": "pt-BR-AntonioNeural", "en": "en-US-GuyNeural", "es": "es-ES-AlvaroNeural",
+        "fr": "fr-FR-RemyNeural", "it": "it-IT-DiegoNeural",
+    }
 
+
+# -----------------------------------------------------------------------------
+# Configuração inicial da página Streamlit.
+# Deve permanecer antes de qualquer saída visual do Streamlit.
+# -----------------------------------------------------------------------------
 st.set_page_config(
     page_title="a máquina de fazer Poesia - yPoemas",
     page_icon=":star:",
@@ -22,225 +77,150 @@ st.set_page_config(
 
 
 def have_internet(host="1.1.1.1", port=80, timeout=3):
+    """Verifica conexão antes de ativar tradução e voz neural."""
     try:
         socket.setdefaulttimeout(timeout)
         socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
         return True
-    except socket.error as ex:
+    except OSError:
         return False
 
+
+# Recursos externos opcionais.
+GoogleTranslator = None
+edge_tts = None
 
 if have_internet():
     try:
         from deep_translator import GoogleTranslator
     except ImportError:
         st.warning("Google Translator não encontrado no ambiente...")
-    
+
     try:
         import edge_tts
-        import asyncio
     except ImportError:
         st.warning("Motor de voz neural (edge-tts) não conectado.")
 else:
     st.warning("Internet não conectada. Traduções e Vozes Neurais indisponíveis.")
-    
-# the User IPAddres for LYPO, TYPO
+
+
+# Identificador atual usado por LYPO/TYPO.
+# Mantido neste CLEAN por preservar a persistência do último yPoema gerado.
 hostname = socket.gethostname()
 IPAddres = socket.gethostbyname(hostname)
 
 
-# hide Streamlit Menu and Footer
-st.markdown(
-    """ <style>
-    /*#MainMenu {visibility: hidden;}*/
-    footer {visibility: hidden;}
-    </style> """,
-    unsafe_allow_html=True,
-)
+def apply_styles():
+    """Aplica os estilos básicos da Machina e preserva o Palco sem controles."""
+    st.markdown(
+        """
+        <style>
+        /*#MainMenu {visibility: hidden;}*/
+        footer {visibility: hidden;}
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        """
+        <style>
+        .reportview-container .main .block-container{
+            padding-top: 0rem;
+            padding-right: 0rem;
+            padding-left: 0rem;
+            padding-bottom: 0rem;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        """
+        <style>
+        [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
+            width: 310px;
+        }
+        [data-testid="stSidebar"],
+        [data-testid="stSidebar"] * {
+            font-family: 'IBM Plex Sans', sans-serif !important;
+        }
+        [data-testid="stSidebar"] {
+            font-size: 13px !important;
+            line-height: 1.25 !important;
+        }
+        mark {
+            background-color: powderblue;
+            color: black;
+        }
+        .container {
+            display: flex;
+        }
+        .header {
+            text-align:center;
+        }
+        .logo-text {
+            font-weight: 600;
+            font-size: 18px;
+            font-family: 'IBM Plex Sans';
+            color: #000000;
+            padding-top: 0px;
+            padding-left: 15px;
+        }
+        .logo-img {
+            float:right;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
 
 
-# change padding between components
-st.markdown(
-    f""" <style>
-    .reportview-container .main .block-container{{
-        padding-top: {0}rem;
-        padding-right: {0}rem;
-        padding-left: {0}rem;
-        padding-bottom: {0}rem;
-    }} </style> """,
-    unsafe_allow_html=True,
-)
-
-# change sidebar width
-st.markdown(
-    """ 
-    <style>
-    [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
-        width: 310px;
+def init_session_state():
+    """Inicializa o estado vivo da Machina no Streamlit."""
+    defaults = {
+        "lang": "pt",
+        "last_lang": "pt",
+        "book": "livro vivo",
+        "take": 0,
+        "mini": 0,
+        "tema": "Fatos",
+        "off_book": 0,
+        "off_take": 0,
+        "eureka": 0,
+        "poly_lang": "ca",
+        "poly_name": "català",
+        "poly_take": 12,
+        "poly_file": "poly_pt.txt",
+        "visy": True,
+        "nany_visy": 0,
+        "draw": False,
+        "talk": False,
+        "arts": [],
+        "auto": False,
+        "rand": False,
     }
-    [data-testid='stSidebar'] {
-        font-family: 'IBM Plex Sans', sans-serif;
-    }
-    [data-testid='stSidebar'] .stSelectbox label,
-    [data-testid='stSidebar'] .stCheckbox label {
-        font-size: 13px;
-    }
-    .machina-mural {
-        font-family: 'IBM Plex Sans', sans-serif;
-        font-size: 14px;
-        line-height: 1.45;
-        padding: 0.6rem 0.25rem 0.8rem 0.25rem;
-        margin-top: 0.25rem;
-        margin-bottom: 220px;
-    }
-    .machina-sidebar-art {
-        position: fixed;
-        bottom: 10px;
-        left: 18px;
-        width: 240px;
-        max-height: 360px;
-        z-index: 999;
-    }
-    .machina-sidebar-art img {
-        width: 100%;
-        height: auto;
-        border-radius: 2px;
-    }
-    </style> """,
-    unsafe_allow_html=True,
-)
+
+    for key, value in defaults.items():
+        if key not in st.session_state:
+            st.session_state[key] = value
 
 
-# load_poema settings
-st.markdown(
-    """
-    <style>
-    mark {
-      background-color: powderblue;
-      color: black;
-    }
-    .container {
-        display: flex;
-        /* justify-content: center; */
-    }
-
-    .header {
-        text-align:center;
-    }
-    .logo-text {
-        font-weight: 600;
-        font-size: 18px;
-        font-family: 'IBM Plex Sans';
-        color: #000000;
-        padding-top: 0px;
-        padding-left: 15px;
-    }
-    .logo-img {
-        float:right;
-    }
-    </style> """,
-    unsafe_allow_html=True,
-)
+apply_styles()
+init_session_state()
 
 
-# Initialize SessionState
-
-if "lang" not in st.session_state:
-    st.session_state.lang = "pt"
-if "last_lang" not in st.session_state:
-    st.session_state.last_lang = "pt"
-
-if "book" not in st.session_state:  #  index for books_list
-    st.session_state.book = "livro vivo"
-if "take" not in st.session_state:  #  index for selected tema in books_list
-    st.session_state.take = 0
-if "mini" not in st.session_state:  #  index for selected tema in page_mini
-    st.session_state.mini = 0
-if "tema" not in st.session_state:  #  selected tema for all pages
-    st.session_state.tema = "Fatos"
-
-if "off_book" not in st.session_state:  #  index for off_books_list
-    st.session_state.off_book = 0
-if "off_take" not in st.session_state:  #  index for selected book in off_books_list
-    st.session_state.off_take = 0
-
-if "eureka" not in st.session_state:  #  index for random tema in page_eureka
-    st.session_state.eureka = 0
-
-if "poly_lang" not in st.session_state:
-    st.session_state.poly_lang = "ca"
-if "poly_name" not in st.session_state:
-    st.session_state.poly_name = "català"
-if "poly_take" not in st.session_state:
-    st.session_state.poly_take = 12
-if "poly_file" not in st.session_state:
-    st.session_state.poly_file = "poly_pt.txt"
-
-if "visy" not in st.session_state:
-    st.session_state.visy = True
-if "nany_visy" not in st.session_state:
-    st.session_state.nany_visy = 0
-
-if "draw" not in st.session_state:
-    st.session_state.draw = False
-if "talk" not in st.session_state:
-    st.session_state.talk = False
-if "arts" not in st.session_state:
-    st.session_state.arts = []
-if "auto" not in st.session_state:
-    st.session_state.auto = False
-if "rand" not in st.session_state:
-    st.session_state.rand = False
-if "fonte_palco" not in st.session_state:
-    st.session_state.fonte_palco = "IBM Plex Sans"
-if "show_fontes" not in st.session_state:
-    st.session_state.show_fontes = False
-
-
-# Fontes oferecidas ao leitor para modular a leitura no Palco.
-FONTES_PALCO = [
-    "IBM Plex Sans",
-    "Inter",
-    "Source Serif Pro",
-    "EB Garamond",
-    "JetBrains Mono",
-    "OpenDyslexic",
-]
-
-IDIOMAS_OFICIAIS = {
-    "Português": "pt",
-    "Español": "es",
-    "Italiano": "it",
-    "Français": "fr",
-    "English": "en",
-    "Esperanto": "eo",
-    "Latin": "la",
-    "Basco": "eu",
-    "Català": "ca",
-    "Corsu": "co",
-    "Galego": "gl",
-    "Galês": "cy",
-    "Polski": "pl",
-    "Nederlands": "nl",
-    "Irlandês": "ga",
-    "Norsk": "no",
-    "Suomi": "fi",
-    "Dansk": "da",
-    "Română": "ro",
-    "Русский": "ru",
-    "Svenska": "sv",
-}
-
-
-### eof: settings
 ### bof: tools
 
 
+
 def translate(input_text):
+    """Traduz textos de apoio e yPoemas quando o idioma atual não é português."""
     if st.session_state.lang == "pt":  # don't need translations here
         return input_text
 
-    if not have_internet():
+    if not have_internet() or GoogleTranslator is None:
         st.session_state.lang = "pt"
         return input_text
 
@@ -255,52 +235,60 @@ def translate(input_text):
         output_text = output_text.replace("<br ", "<br>")
         output_text = output_text.replace(" br>", "<br>")
         return output_text
-    except:
-        return translate("Arquivo muito grande para ser traduzido.")
+    except Exception:
+        return "Arquivo muito grande para ser traduzido."
 
 
-def pick_lang():  # define idioma pela Central de Comando
-    # A Machina é POLY: a escolha de idioma fica no topo da Sidebar.
-    nomes = list(IDIOMAS_OFICIAIS.keys())
-    codigos = list(IDIOMAS_OFICIAIS.values())
+IDIOMAS_SEGUROS = [
+    ("Português", "pt", "poly_pt.txt"),
+    ("Español", "es", "poly_es.txt"),
+    ("Italiano", "it", "poly_it.txt"),
+    ("Français", "fr", "poly_fr.txt"),
+    ("English", "en", "poly_en.txt"),
+    ("Català", "ca", "poly_pt.txt"),
+    ("Deutsch", "de", "poly_pt.txt"),
+    ("Dansk", "da", "poly_pt.txt"),
+    ("Esperanto", "eo", "poly_pt.txt"),
+    ("Galego", "gl", "poly_pt.txt"),
+    ("Latin", "la", "poly_pt.txt"),
+    ("Íslenska", "is", "poly_pt.txt"),
+    ("Nederlands", "nl", "poly_pt.txt"),
+    ("Norsk", "no", "poly_pt.txt"),
+    ("Polski", "pl", "poly_pt.txt"),
+    ("Portuñol", "pt", "poly_pt.txt"),
+    ("Română", "ro", "poly_pt.txt"),
+    ("Русский", "ru", "poly_pt.txt"),
+    ("Svenska", "sv", "poly_pt.txt"),
+    ("Suomi", "fi", "poly_pt.txt"),
+    ("Magyar", "hu", "poly_pt.txt"),
+]
 
-    try:
-        index_atual = codigos.index(st.session_state.lang)
-    except ValueError:
-        index_atual = 0
 
-    escolha = st.sidebar.selectbox(
-        "idiomas disponíveis...",
-        nomes,
-        index=index_atual,
-        key="select_idioma",
+def pick_lang():  # define idioma
+    labels = [item[0] for item in IDIOMAS_SEGUROS]
+    codes = {label: code for label, code, _ in IDIOMAS_SEGUROS}
+    files = {label: poly_file for label, _, poly_file in IDIOMAS_SEGUROS}
+
+    current_label = next(
+        (label for label, code, _ in IDIOMAS_SEGUROS if code == st.session_state.lang),
+        "Português",
     )
 
-    novo_idioma = IDIOMAS_OFICIAIS[escolha]
-    if novo_idioma != st.session_state.lang:
+    choice = st.sidebar.selectbox(
+        "Idiomas disponíveis...",
+        labels,
+        index=labels.index(current_label),
+        key="idioma_disponivel",
+    )
+
+    new_lang = codes[choice]
+    new_poly_file = files[choice]
+
+    if new_lang != st.session_state.lang:
         st.session_state.last_lang = st.session_state.lang
-        st.session_state.lang = novo_idioma
-
-        # Mantém o arquivo POLY coerente com os idiomas principais.
-        if novo_idioma in ["pt", "es", "it", "fr", "en"]:
-            st.session_state.poly_file = "poly_" + novo_idioma + ".txt"
-
+        st.session_state.lang = new_lang
+        st.session_state.poly_file = new_poly_file
         st.success(translate("idioma atual") + " ➪ " + st.session_state.lang)
-
-
-def show_icons():  # https://api.whatsapp.com/
-    with st.sidebar:
-        st.sidebar.markdown(
-            f"""
-            <nav>
-            <a href='https://www.facebook.com/nandoulopes' target='_blank'>• facebook</a> |
-            <a href='mailto:lopes.fernando@hotmail.com' target='_blank'>e-mail</a> |
-            <a href='https://www.instagram.com/fernando.lopes.942/' target='_blank'>instagram</a> |
-            <a href='https://web.whatsapp.com/send?phone=+5512991368181' target='_blank'>whatsapp</a>
-            </nav>
-            """,
-            unsafe_allow_html=True,
-        )
 
 
 @st.cache(allow_output_mutation=True)
@@ -336,33 +324,17 @@ def load_help(idiom):
 
 
 def draw_check_buttons():
-    # Controles sensoriais da Central de Comando:
-    # arte, fonte do Palco e áudio.
-    col_arte, col_fonte, col_audio = st.sidebar.columns([1, 1, 1])
+    foo = ""
+    draw_text, foo, foo, talk_text = st.sidebar.columns([4,1,1,4])
     help_tips = load_help(st.session_state.lang)
     help_draw = help_tips[5]
     help_talk = help_tips[6]
-
-    st.session_state.draw = col_arte.checkbox(
-        "arte", st.session_state.draw, key="draw_machina", help=help_draw
+    st.session_state.draw = draw_text.checkbox(
+        help_draw, st.session_state.draw, key="draw_machina"
     )
-
-    if col_fonte.button("⚙", key="fontes_machina", help="fontes do Palco"):
-        st.session_state.show_fontes = not st.session_state.show_fontes
-
-    st.session_state.talk = col_audio.checkbox(
-        "audio", st.session_state.talk, key="talk_machina", help=help_talk
+    st.session_state.talk = talk_text.checkbox(
+        help_talk, st.session_state.talk, key="talk_machina"
     )
-
-    if st.session_state.show_fontes:
-        st.session_state.fonte_palco = st.sidebar.selectbox(
-            "fontes disponíveis...",
-            FONTES_PALCO,
-            index=FONTES_PALCO.index(st.session_state.fonte_palco)
-            if st.session_state.fonte_palco in FONTES_PALCO
-            else 0,
-            key="select_fonte_palco",
-        )
 
 
 def get_binary_file_downloader_html(bin_file, file_label="File"):
@@ -380,101 +352,6 @@ def atoi(text):  # human reading number functions for sorting
 
 def natural_keys(text):
     return [atoi(c) for c in re.split(r"(\d+)", text)]
-
-
-def pick_tema_sidebar():
-    # Vitrine dos Temas: permite ao leitor perceber a vastidão da Machina.
-    try:
-        temas = load_temas("todos os temas")
-    except Exception:
-        return
-
-    if not temas:
-        return
-
-    try:
-        index_atual = temas.index(st.session_state.tema)
-    except ValueError:
-        index_atual = 0
-
-    tema = st.sidebar.selectbox(
-        "todos os temas...",
-        temas,
-        index=index_atual,
-        key="select_todos_temas",
-    )
-
-    if tema != st.session_state.tema:
-        st.session_state.tema = tema
-        try:
-            st.session_state.mini = temas.index(tema)
-        except ValueError:
-            pass
-
-
-def load_mural():
-    # O Mural é o território livre da Machina.
-    # Pode conter textos, fragmentos, silêncio e futuros recados.
-    mural_file = os.path.join("./base", "mural.txt")
-    fallback = [
-        "",
-        "no comments",
-        "a Machina continua pensando aqui",
-        "todo Livro-Vivo precisa de margens",
-        "o acaso também sabe silenciar",
-    ]
-
-    if not os.path.exists(mural_file):
-        return fallback
-
-    try:
-        with open(mural_file, encoding="utf-8") as file:
-            linhas = [line.strip() for line in file if line.strip() or line == "\n"]
-        return linhas or fallback
-    except Exception:
-        return fallback
-
-
-def render_mural(info_file=None):
-    # Mini-Palco da Sidebar: território livre, mutante e discreto.
-    conteudo = random.choice(load_mural())
-
-    texto = ""
-    if conteudo and conteudo.lower() != "no comments":
-        texto += conteudo.replace("\n", "<br>")
-    elif conteudo.lower() == "no comments":
-        texto += "<em>no comments</em>"
-
-    if info_file:
-        info = load_md_file(info_file)
-        if info:
-            if texto:
-                texto += "<br><br>"
-            texto += info.replace("\n", "<br>")
-
-    st.sidebar.markdown(
-        f"<div class='machina-mural'>{texto}</div>",
-        unsafe_allow_html=True,
-    )
-
-
-def render_sidebar_art(image_file):
-    # Arte fixa no rodapé da Central de Comando.
-    path = os.path.join("./images", image_file)
-    if not os.path.exists(path):
-        return
-
-    with open(path, "rb") as img:
-        encoded = base64.b64encode(img.read()).decode()
-
-    st.sidebar.markdown(
-        f"""
-        <div class='machina-sidebar-art'>
-            <img src='data:image/jpg;base64,{encoded}'>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
 
 
 ### eof: tools
@@ -644,950 +521,5 @@ def load_info(nome_tema):
 
         return result
 
+###< p1 >
 
-# @st.cache(allow_output_mutation=True)
-def load_index():  # Load indexes numbers for all themes
-    index_list = []
-    with open(os.path.join("./md_files/ABOUT_INDEX.md"), encoding="utf-8") as lista:
-        for line in lista:
-            index_list.append(line)
-
-    return index_list
-
-
-def load_lypo():  # Load last yPoema & replace '\n' with '<br>' for translator returned text
-    lypo_text = ""
-    lypo_user = "LYPO_" + IPAddres
-    with open(os.path.join("./temp/" + lypo_user), encoding="utf-8") as script:
-        for line in script:
-            line = line.strip()
-            lypo_text += line + "<br>"
-
-    return lypo_text
-
-
-def load_typo():  # Load translated yPoema & clean translator returned bugs in text
-    typo_text = ""
-    typo_user = "TYPO_" + IPAddres
-    with open(os.path.join("./temp/" + typo_user), encoding="utf-8") as script:
-        for line in script:  # just 1 line
-            line = line.strip()
-            if " >" in line:
-                line = line.replace(" >", "\n")
-            elif "< " in line:
-                line = line.replace("< ", "\n")
-            elif " br " in line:
-                line = line.replace(" br", "\n")
-            elif "br " in line:
-                line = line.replace("br ", "\n")
-            elif " br" in line:
-                line = line.replace(" br", "\n")
-            line = line.replace("< <", ">")
-            line = line.replace("> >", ">")
-            typo_text += line + "<br>"
-
-    return typo_text
-
-
-def load_all_offs():
-    all_books_off = [
-        "a_torre_de_papel",
-        "quase_que_eu_Poesia",
-        "faz_de_conto",
-        "um_romance",
-        "linguafiada",
-        "livro_vivo",
-        "desvoto",
-        "ensaio",
-        "urbano",
-        "essencial",
-        "secreto",
-    ]
-
-    return all_books_off
-
-
-def load_off_book(book):  # Load selected off_book
-    book_full = []
-    full_name = os.path.join("./off_machina/", book) + ".Pip"
-    with open(full_name, encoding="utf-8") as file:
-        for line in file:
-            if line.startswith("|"):
-                book_full.append(line)
-
-    return book_full
-
-
-def load_book_pages(book):  # Load Book pages for off_book
-    book_pages = []
-    for line in book:
-        if line.startswith("<EOF>"):
-            break
-
-        if line.startswith("|"):  # only valid lines in PIP
-            pipe_line = line.split("|")
-            book_pages.append(pipe_line[1])
-
-    return book_pages
-
-
-def load_poema(nome_tema, seed_eureka):  # generate new yPoema
-    script = gera_poema(nome_tema, seed_eureka)
-    novo_ypoema = ""
-    lypo_user = "LYPO_" + IPAddres
-
-    with open(os.path.join("./temp/" + lypo_user), "w", encoding="utf-8") as save_lypo:
-        save_lypo.write(
-            nome_tema
-        )  # include title of yPoema in first line for translations
-        save_lypo.write("\n")
-
-        for line in script:
-            if line == "\n":
-                save_lypo.write("\n")
-                novo_ypoema += "<br>"
-            else:
-                save_lypo.write(line + "\n")
-                novo_ypoema += line + "<br>"
-
-    save_lypo.close()  # save last generated in LYPO
-
-    return novo_ypoema
-
-
-def load_images():
-    images_list = []
-    with open(os.path.join("./base/images.txt"), encoding="utf-8") as lista:
-        for line in lista:
-            images_list.append(line)
-
-    return images_list
-
-
-def load_arts(nome_tema):  # Select image for arts
-    path = "./images/machina/"
-    path_list = load_images()
-    for line in path_list:
-        if line.startswith(nome_tema):
-            this_line = line.strip("\n")
-            part_line = this_line.partition(" : ")
-            if nome_tema == part_line[0]:
-                path = "./images/" + part_line[2] + "/"
-                break
-
-    arts_list = []
-    for file in os.listdir(path):
-        if file.endswith(".jpg"):
-            arts_list.append(file)
-
-    sorte = random.randrange(0, len(arts_list))
-    image = arts_list[sorte]
-
-    if image in st.session_state.arts:  # insert new image
-        while image in st.session_state.arts:
-            sorte = random.randrange(0, len(arts_list))
-            image = arts_list[sorte]
-        st.session_state.arts.append(image)
-        image = st.session_state.arts[-1]
-    else:
-        st.session_state.arts.append(image)
-
-    if len(st.session_state.arts) > 36:  # remove first
-        del st.session_state.arts[0]
-
-    logo = path + image
-
-    return logo
-
-
-### eof: loaders
-### bof: functions
-
-        
-def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
-    # Renderiza o yPoema no Palco com a fonte escolhida pelo leitor.
-    fonte = st.session_state.get("fonte_palco", "IBM Plex Sans")
-    style = f"font-family: '{fonte}', 'IBM Plex Sans', sans-serif;"
-
-    if LOGO_IMAGE == None:
-        st.markdown(
-            f"""
-            <div class='container'>
-                <p class='logo-text' style="{style}">{LOGO_TEXTO}</p>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-    else:
-        st.markdown(
-            f"""
-            <div class='container'>
-                <img class='logo-img' src='data:image/jpg;base64,{base64.b64encode(open(LOGO_IMAGE, 'rb').read()).decode()}'>
-                <p class='logo-text' style="{style}">{LOGO_TEXTO}</p>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-
-def talk(text):
-    # Limpeza para a voz não ler tags
-    text_clean = text.replace("<br>", " ").replace("< br>", "").replace("<br >", "").replace("<br/>", " ")
-    
-    # Mapeamento de vozes neurais de alta qualidade
-    voices = {
-        "pt": "pt-BR-AntonioNeural",
-        "en": "en-US-GuyNeural",
-        "es": "es-ES-AlvaroNeural",
-        "fr": "fr-FR-RemyNeural",
-        "it": "it-IT-DiegoNeural"
-    }
-    selected_voice = voices.get(st.session_state.lang, "pt-BR-AntonioNeural")
-
-    async def generate_audio():
-        communicate = edge_tts.Communicate(text_clean, selected_voice)
-        audio_bytes = b""
-        async for chunk in communicate.stream():
-            if chunk["type"] == "audio":
-                audio_bytes += chunk["data"]
-        return audio_bytes
-
-    try:
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        audio_output = loop.run_until_complete(generate_audio())
-        st.audio(audio_output, format="audio/mp3")
-    except Exception as e:
-        st.error(f"Erro na voz neural: {e}")
-        
-def say_number(tema):  # search index title for eureka
-    analise = "nonono"
-    indexes = load_index()
-    for line in indexes:
-        if line.startswith(tema):
-            this_line = line.strip("\n")
-            part_line = this_line.partition(" : ")
-            analise = part_line[2]
-            break
-
-    return translate(analise)
-
-
-### eof: functions
-### bof: pages
-
-
-if st.session_state.visy:  # check visitor once; rand initial temas
-    update_visy()
-
-    temas_list = load_temas(st.session_state.book)
-    maxy_ypoemas = len(temas_list)
-    st.session_state.take = random.randrange(0, maxy_ypoemas)
-
-    temas_list = load_temas("todos os temas")
-    maxy_mini = len(temas_list)
-    st.session_state.mini = random.randrange(0, maxy_mini)
-
-    st.session_state.draw = True
-    st.session_state.visy = False
-
-
-st.session_state.last_lang = st.session_state.lang
-
-
-def page_mini():
-    temas_list = load_temas("todos os temas")
-    maxy_mini = len(temas_list)
-
-    if st.session_state.mini > maxy_mini:  # just in case
-        st.session_state.mini = 0
-
-    foo1, more, rand, auto, foo2 = st.columns([4, 1, 1, 1, 4])
-
-    help_tips = load_help(st.session_state.lang)
-    help_rand = help_tips[1]
-    help_more = help_tips[4]
-    rand = rand.button("✻", help=help_rand)
-    st.session_state.auto = auto.checkbox("auto")
-
-    if st.session_state.auto:
-        st.session_state.talk = False
-        with st.sidebar:
-            wait_time = st.slider(translate("tempo de exibição (em segundos): "), 5, 60)
-
-    if rand:
-        st.session_state.rand = True
-        st.session_state.mini = random.randrange(0, maxy_mini)
-    else:
-        st.session_state.rand = False
-
-    st.session_state.tema = temas_list[st.session_state.mini]
-    analise = say_number(st.session_state.tema)
-    more = more.button("✚", help=help_more + " • " + analise)
-
-    if more:
-        st.session_state.rand = False
-
-    lnew = True
-    if lnew or st.session_state.auto:
-        if st.session_state.rand:
-            st.session_state.mini = random.randrange(0, maxy_mini)
-            st.session_state.tema = temas_list[st.session_state.mini]
-
-        if st.session_state.lang != st.session_state.last_lang:
-            curr_ypoema = load_lypo()  # changes in lang, keep LYPO
-        else:
-            curr_ypoema = load_poema(st.session_state.tema, "")
-            curr_ypoema = load_lypo()
-
-        if st.session_state.lang != "pt":  # translate if idioma <> pt
-            curr_ypoema = translate(curr_ypoema)
-            typo_user = "TYPO_" + IPAddres
-            with open(
-                os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
-            ) as save_typo:
-                save_typo.write(curr_ypoema)
-                save_typo.close()
-            curr_ypoema = load_typo()  # to normalize line breaks in text
-
-        update_readings(st.session_state.tema)
-        LOGO_TEXTO = curr_ypoema
-        LOGO_IMAGE = None
-
-        if st.session_state.draw:
-            LOGO_IMAGE = load_arts(st.session_state.tema)
-
-        mini_place_holder = st.empty()
-        mini_place_holder.empty()
-        st.write("")
-
-        if st.session_state.auto == False:
-            with mini_place_holder:
-                write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
-
-            if st.session_state.talk:
-                talk(curr_ypoema)
-
-        else:
-            while st.session_state.auto:
-                if st.session_state.rand:
-                    st.session_state.mini = random.randrange(0, maxy_mini)
-                    st.session_state.tema = temas_list[st.session_state.mini]
-
-                if st.session_state.lang != st.session_state.last_lang:
-                    curr_ypoema = load_lypo()  # changes in lang, keep LYPO
-                else:
-                    curr_ypoema = load_poema(st.session_state.tema, "")
-                    curr_ypoema = load_lypo()
-
-                if st.session_state.lang != "pt":  # translate if idioma <> pt
-                    curr_ypoema = translate(curr_ypoema)
-                    typo_user = "TYPO_" + IPAddres
-                    with open(
-                        os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
-                    ) as save_typo:
-                        save_typo.write(curr_ypoema)
-                        save_typo.close()
-                    curr_ypoema = load_typo()  # to normalize line breaks in text
-
-                update_readings(st.session_state.tema)
-                LOGO_TEXTO = curr_ypoema
-                LOGO_IMAGE = None
-
-                if st.session_state.draw:
-                    LOGO_IMAGE = load_arts(st.session_state.tema)
-
-                with mini_place_holder:
-                    mini_place_holder.empty()
-                    write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
-                    secs = wait_time
-                    while secs >= 0:
-                        time.sleep(1)
-                        secs -= 1
-
-
-def page_ypoemas():
-    temas_list = load_temas(st.session_state.book)
-    maxy_ypoemas = len(temas_list) - 1
-    if (
-        st.session_state.take > maxy_ypoemas or st.session_state.take < 0
-    ):  # just in case
-        st.session_state.take = 0
-
-    foo1, more, last, rand, nest, manu, foo2 = st.columns([3, 1, 1, 1, 1, 1, 3])
-
-    help_tips = load_help(st.session_state.lang)
-    help_last = help_tips[0]
-    help_rand = help_tips[1]
-    help_nest = help_tips[2]
-    help_more = help_tips[4]
-
-    more = more.button("✚", help=help_more)
-    last = last.button("◀", help=help_last)
-    rand = rand.button("✻", help=help_rand)
-    nest = nest.button("▶", help=help_nest)
-    manu = manu.button("?", help="help !!!")
-
-    if last:
-        st.session_state.take -= 1
-        if st.session_state.take < 0:
-            st.session_state.take = maxy_ypoemas
-
-    if rand:
-        st.session_state.take = random.randrange(0, maxy_ypoemas)
-
-    if nest:
-        st.session_state.take += 1
-        if st.session_state.take > maxy_ypoemas:
-            st.session_state.take = 0
-
-    if not st.session_state.draw:
-        options = list(range(len(temas_list)))
-        sobrios = "↓  " + translate("lista de Temas")
-        opt_take = st.selectbox(
-            sobrios,
-            options,
-            index=st.session_state.take,
-            format_func=lambda z: temas_list[z],
-            key="opt_take",
-        )
-
-        if opt_take != st.session_state.take:
-            st.session_state.take = opt_take
-
-    st.session_state.tema = temas_list[st.session_state.take]
-
-    lnew = True
-    if manu:
-        st.subheader(load_md_file("MANUAL_YPOEMAS.md"))
-
-    if lnew:
-        what_book = (
-            "⚫  "
-            + st.session_state.lang
-            + " ( "
-            + st.session_state.book
-            + " ) ( "
-            + str(st.session_state.take + 1)
-            + " / "
-            + str(len(temas_list))
-            + " )"
-        )
-
-        ypoemas_expander = st.expander(what_book, expanded=True)
-        with ypoemas_expander:
-            if st.session_state.lang != st.session_state.last_lang:
-                curr_ypoema = load_lypo()  # changes in lang, keep LYPO
-            else:
-                curr_ypoema = load_poema(st.session_state.tema, "")
-                curr_ypoema = load_lypo()
-
-            if st.session_state.lang != "pt":  # translate if idioma <> pt
-                curr_ypoema = translate(curr_ypoema)
-                typo_user = "TYPO_" + IPAddres
-                with open(
-                    os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
-                ) as save_typo:
-                    save_typo.write(curr_ypoema)
-                    save_typo.close()
-                curr_ypoema = load_typo()  # to normalize line breaks in text
-
-            update_readings(st.session_state.tema)
-            LOGO_TEXTO = curr_ypoema
-            LOGO_IMAGE = None
-            if st.session_state.draw:
-                LOGO_IMAGE = load_arts(st.session_state.tema)
-
-            write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
-
-            if manu:
-                LOGO_TEXTO = load_info(st.session_state.tema)
-                if st.session_state.lang != "pt":  # translate if idioma <> pt
-                    LOGO_TEXTO = translate(LOGO_TEXTO)
-
-                LOGO_IMAGE = (
-                    "./images/matrix/" + st.session_state.tema.capitalize() + ".jpg"
-                )
-                write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
-
-        if st.session_state.talk:
-            talk(curr_ypoema)
-
-        # st.markdown(get_binary_file_downloader_html('./temp/'+'LYPO_' + IPAddres, '➪ '+st.session_state.tema), unsafe_allow_html=True)
-
-
-def page_eureka():
-    help_tips = load_help(st.session_state.lang)
-    help_rand = help_tips[1]
-    help_more = help_tips[4]
-
-    seed, more, rand, manu, occurrences = st.columns([2.5, 1.5, 1.5, 0.7, 4])
-
-    with seed:
-        find_what = st.text_input(
-            label=translate("digite algo para buscar..."),
-        )
-
-    with more:
-        more = more.button("✚", help=help_more)
-
-    with rand:
-        rand = rand.button("✻", help=help_rand)
-
-    with manu:
-        manu = manu.button("?", help="help !!!")
-
-    if manu:
-        st.subheader(load_md_file("MANUAL_EUREKA.md"))
-
-    if len(find_what) < 3:
-        st.warning(translate("digite pelo menos 3 letras..."))
-    else:
-        seed_list = []
-        soma_tema = []
-
-        eureka_list = load_eureka(find_what)
-        for line in eureka_list:
-            this_line = line.strip("\n")
-            part_line = this_line.partition(" : ")
-            palas = part_line[0]
-            fonte = part_line[2]
-            seed_tema = fonte[0:-5]
-            if (palas is None) or (fonte is None):
-                continue
-            else:
-                seed_list.append(palas + " ➪ " + fonte)
-                if not seed_tema in soma_tema:
-                    soma_tema.append(seed_tema)
-
-        if (not more) and (not manu):
-            st.session_state.eureka = 0
-
-        if len(seed_list) == 0:
-            st.warning(
-                translate(
-                    'nenhuma ocorrência das letras " '
-                    + find_what
-                    + ' " foi encontrada...'
-                )
-            )
-        elif len(seed_list) >= 1:
-            seed_list.sort()
-            if len(seed_list) == 1:
-                info_find = translate('ocorrência de "')
-            else:
-                info_find = translate('ocorrências de "')
-
-            info_find += find_what
-            if len(soma_tema) > 1:
-                info_find += translate('" em ' + str(len(soma_tema)) + " temas")
-
-            if rand:
-                st.session_state.eureka = random.randrange(0, len(seed_list))
-
-            with occurrences:
-                options = list(range(len(seed_list)))
-                opt_ocur = st.selectbox(
-                    "↓  " + str(len(seed_list)) + " " + info_find,
-                    options,
-                    index=st.session_state.eureka,
-                    format_func=lambda y: seed_list[y],
-                    key="opt_ocur",
-                )
-
-            st.session_state.eureka = opt_ocur
-            this_seed = seed_list[st.session_state.eureka]
-            part_line = this_seed.partition(" ➪ ")
-            nome_tema = part_line[2]
-            seed_tema = nome_tema[0:-5]
-
-            st.session_state.tema = seed_tema
-
-            if st.session_state.lang != st.session_state.last_lang:
-                curr_ypoema = load_lypo()  # changes in lang, keep LYPO
-            else:
-                curr_ypoema = load_poema(seed_tema, this_seed)
-                curr_ypoema = load_lypo()
-
-            if st.session_state.lang != "pt":  # translate if idioma <> pt
-                curr_ypoema = translate(curr_ypoema)
-                typo_user = "TYPO_" + IPAddres
-                with open(
-                    os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
-                ) as save_typo:
-                    save_typo.write(curr_ypoema)
-                    save_typo.close()
-                curr_ypoema = load_typo()  # to normalize line breaks in text
-
-            lnew = True
-            if lnew:
-                eureka_expander = st.expander("", expanded=True)
-                with eureka_expander:
-                    LOGO_TEXTO = curr_ypoema
-                    LOGO_IMAGE = None
-                    if st.session_state.draw:
-                        LOGO_IMAGE = load_arts(seed_tema)
-
-                    write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
-                    update_readings(seed_tema)
-
-                if st.session_state.talk:
-                    talk(curr_ypoema)
-            if manu:
-                lnew = False
-                LOGO_TEXTO = load_info(seed_tema)
-                if st.session_state.lang != "pt":  # translate if idioma <> pt
-                    LOGO_TEXTO = translate(LOGO_TEXTO)
-
-                LOGO_IMAGE = "./images/matrix/" + seed_tema.capitalize() + ".jpg"
-                write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
-
-        else:
-            st.warning(
-                translate(
-                    "nenhum verbete encontrado com essas letras ---> " + find_what
-                )
-            )
-
-
-def page_off_machina():  # available off_machina_books
-    off_books_list = load_all_offs()
-    options = list(range(len(off_books_list)))
-    sobrios = "↓  " + translate("lista de Livros")
-    opt_off_book = st.selectbox(
-        sobrios,
-        options,
-        index=st.session_state.off_book,
-        format_func=lambda x: off_books_list[x],
-        key="opt_off_book",
-    )
-
-    if opt_off_book != st.session_state.off_book:
-        st.session_state.off_book = opt_off_book
-        st.session_state.off_take = 0
-
-    off_book_name = off_books_list[st.session_state.off_book]
-
-    help_tips = load_help(st.session_state.lang)
-    help_last = help_tips[0]
-    help_rand = help_tips[1]
-    help_nest = help_tips[2]
-    help_love = help_tips[3]
-
-    foo1, last, rand, nest, love, manu, foo2 = st.columns([2.5, 1, 1, 1, 1, 1, 2.5])
-    last = last.button("◀", help=help_last)
-    rand = rand.button("✻", help=help_rand)
-    nest = nest.button("▶", help=help_nest)
-    love = love.button("❤", help=help_love)
-    manu = manu.button("?", help="help !!!")
-
-    this_off_book = load_off_book(off_book_name)
-    off_book_pagys = load_book_pages(this_off_book)
-    maxy_off_machina = len(off_book_pagys) - 1
-
-    if last:
-        st.session_state.off_take -= 1
-        if st.session_state.off_take < 0:
-            st.session_state.off_take = maxy_off_machina
-
-    if rand:
-        st.session_state.off_take = random.randrange(0, maxy_off_machina)
-
-    if nest:
-        st.session_state.off_take += 1
-        if st.session_state.off_take > maxy_off_machina:
-            st.session_state.off_take = 0
-
-    if st.session_state.off_take > maxy_off_machina:  # just in case...
-        st.session_state.off_take = 0
-
-    if not st.session_state.draw:
-        options = list(range(len(off_book_pagys)))
-        sobrios = "↓  " + translate("lista de Títulos")
-        opt_off_take = st.selectbox(
-            sobrios,
-            options,
-            index=st.session_state.off_take,
-            format_func=lambda x: off_book_pagys[x],
-            key="opt_off_take",
-        )
-
-        if opt_off_take != st.session_state.off_take:
-            st.session_state.off_take = opt_off_take
-
-    lnew = True
-    if manu:
-        lnew = False
-        st.subheader(load_md_file("MANUAL_OFF-MACHINA.md"))
-
-    if love:
-        lnew = False
-        list_readings()
-        st.markdown(
-            get_binary_file_downloader_html("./temp/read_list.txt", "views"),
-            unsafe_allow_html=True,
-        )
-
-    if lnew:
-        what_book = (
-            "⚫  "
-            + st.session_state.lang
-            + " ( "
-            + str(st.session_state.off_take + 1)
-            + "/"
-            + str(len(off_book_pagys))
-            + " )"
-        )
-
-        off_machina_expander = st.expander(what_book, True)
-        with off_machina_expander:
-            off_book_text = ""
-            pipe_line = this_off_book[st.session_state.off_take].split("|")
-            if "@ " in pipe_line[1]:
-                if st.session_state.lang != st.session_state.last_lang:
-                    off_book_text = load_lypo()  # changes in lang, keep LYPO
-                else:
-                    nome_tema = pipe_line[1].replace("@ ", "")
-                    off_book_text = load_poema(nome_tema, "")  # no seed_eureka
-                    off_book_text = "<br>" + load_lypo()
-            else:
-                for text in pipe_line:
-                    off_book_text += text + "<br>"
-
-            capo = st.session_state.off_take == 0
-
-            if capo:
-                capa, isbn = st.columns([2.5, 7.5])
-                with capa:
-                    if off_book_name == "livro_vivo":
-                        LOGO_CAPA = load_arts("livro_vivo")
-                        st.image(LOGO_CAPA, use_column_width=True)
-                    else:
-                        st.image(
-                            "./off_machina/capa_" + off_book_name + ".jpg",
-                            use_column_width=True,
-                        )
-                with isbn:
-                    st.markdown(
-                        off_book_text, unsafe_allow_html=True
-                    )  # finally... write it
-            else:
-                if st.session_state.lang != "pt":
-                    off_book_text = translate(off_book_text)
-
-                LOGO_TEXTO = off_book_text
-                LOGO_IMAGE = None
-                if st.session_state.draw:
-                    LOGO_IMAGE = load_arts(off_book_name)
-
-                write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
-                update_readings(off_book_name)
-
-        if st.session_state.talk:
-            talk(off_book_text)
-
-
-def page_books():  # available books
-    books, ok = st.columns([9.3, 0.7])
-    with books:
-        books_list = [
-            "todos os livros",
-            "livro vivo",
-            "poemas",
-            "ensaios",
-            "sociais",
-            "variações",
-            "jocosos",
-            "metalinguagem",
-            "outros autores",
-            "signos_fem",
-            "signos_mas",
-            "todos os signos",
-        ]
-
-        options = list(range(len(books_list)))
-        sobrios = "↓  " + translate("lista de Livros")
-        opt_book = st.selectbox(
-            sobrios,
-            options,
-            index=books_list.index(st.session_state.book),
-            format_func=lambda x: books_list[x],
-            key="opt_book",
-        )
-
-        with ok:
-            doit = st.button("✔", help="confirm ?")
-
-        lnew = True
-        if lnew:
-            list_book = ""
-            temas_list = load_temas(books_list[opt_book])
-            for line in temas_list:
-                list_book += line.strip() + ", "
-            st.write(list_book[:-2] + " ▶ " + str(int(len(temas_list))) + " páginas")
-
-            books_expander = st.expander("", True)
-            with books_expander:
-                st.subheader(load_md_file("MANUAL_BOOKS.md"))
-
-            if doit:
-                st.session_state.take = 0
-                st.session_state.book = books_list[opt_book]
-
-
-def page_polys():  # available languages
-    polys, ok = st.columns([9.3, 0.7])
-    with polys:
-        poly_list = []
-        poly_pais = []
-        poly_ling = []
-        with open(
-            os.path.join("./base/" + st.session_state.poly_file), encoding="utf-8"
-        ) as poly:
-            for line in poly:
-                poly_list.append(line)
-                this_line = line.strip("\n")
-                part_line = this_line.partition(" : ")
-                poly_pais.append(translate(part_line[0]))
-                poly_ling.append(part_line[2])
-        poly.close()
-
-        options = list(range(len(poly_list)))
-        opt_poly = st.selectbox(
-            "↓  lista: " + str(len(poly_list)) + " idiomas",
-            options,
-            index=st.session_state.poly_take,
-            format_func=lambda x: poly_list[x],
-            key="opt_poly",
-        )
-
-    with ok:
-        doit = st.button("✔", help="confirm ?")
-
-    if doit:
-        poly_pais = poly_pais[opt_poly]
-        poly_ling = poly_ling[opt_poly]
-        st.session_state.poly_name = translate(poly_pais)
-        st.session_state.poly_lang = poly_ling
-        st.session_state.poly_take = opt_poly
-
-        st.session_state.last_lang = st.session_state.lang
-        st.session_state.lang = st.session_state.poly_lang
-
-    lnew = True
-    if lnew:
-        poly_expander = st.expander("", True)
-        with poly_expander:
-            st.subheader(load_md_file("MANUAL_POLY.md"))
-
-
-def page_abouts():
-    abouts_list = [
-        "comments",
-        "prefácio",
-        "machina",
-        "off-machina",
-        "machina-IA",
-        "outros",
-        "traduttore",
-        "bibliografia",
-        "imagens",
-        "samizdát",
-        "notes",
-        "license",
-        "index",
-    ]
-
-
-    options = list(range(len(abouts_list)))
-    sobrios = "↓  " + translate("sobre")
-    opt_abouts = st.selectbox(
-        sobrios,
-        options,
-        format_func=lambda x: abouts_list[x],
-        key="opt_abouts",
-    )
-
-    lnew = True
-    if lnew:
-        choice = abouts_list[opt_abouts].upper()
-        about_expander = st.expander("", True)
-        with about_expander:
-            if choice == "MACHINA-IA":
-                st.subheader(load_md_file("MACHINA-IA.md"))
-            elif choice == "MACHINA":
-                st.subheader(load_md_file("ABOUT_MACHINA_A.md"))
-                LOGO_TEXTO = load_info(st.session_state.tema)
-                LOGO_IMAGE = "./images/matrix/" + st.session_state.tema + ".jpg"
-                write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
-                st.subheader(load_md_file("ABOUT_MACHINA_D.md"))
-            else:
-                st.subheader(load_md_file("ABOUT_" + choice + ".md"))
-
-
-### eof: pages
-
-
-def main():
-    chosen_id = stx.tab_bar(
-        data=[
-            stx.TabBarItemData(id=1, title="mini", description=""),
-            stx.TabBarItemData(id=2, title="yPoemas", description=""),
-            stx.TabBarItemData(id=3, title="eureka", description=""),
-            stx.TabBarItemData(id=4, title="off-machina", description=""),
-            stx.TabBarItemData(id=6, title="books", description=""),
-            stx.TabBarItemData(id=7, title="poly", description=""),
-            stx.TabBarItemData(id=8, title="about", description=""),
-        ],
-        default=2,
-    )
-
-    # Central de Comando: escolhas do leitor antes da aparição no Palco.
-    pick_lang()
-    pick_tema_sidebar()
-    draw_check_buttons()
-
-    info_file = "INFO_YPOEMAS.md"
-    magy = "img_ypoemas.jpg"
-
-    if chosen_id == "1":
-        info_file = "INFO_MINI.md"
-        magy = "img_mini.jpg"
-        page_mini()
-    elif chosen_id == "2":
-        info_file = "INFO_YPOEMAS.md"
-        magy = "img_ypoemas.jpg"
-        page_ypoemas()
-    elif chosen_id == "3":
-        info_file = "INFO_EUREKA.md"
-        magy = "img_eureka.jpg"
-        page_eureka()
-    elif chosen_id == "4":
-        info_file = "INFO_OFF-MACHINA.md"
-        magy = "img_off-machina.jpg"
-        page_off_machina()
-    elif chosen_id == "5":
-        info_file = "INFO_BOOKS.md"
-        magy = "img_books.jpg"
-        page_books()
-    elif chosen_id == "6":
-        info_file = "INFO_POLY.md"
-        magy = "img_poly.jpg"
-        page_polys()
-    elif chosen_id == "7":
-        info_file = "INFO_ABOUT.md"
-        magy = "img_about.jpg"
-        page_abouts()
-
-    # Mural + info da página em foco: margem viva da Central.
-    render_mural(info_file)
-
-    # Arte fixa no rodapé da Sidebar.
-    render_sidebar_art(magy)
-
-#    show_icons()
-    ##$ st.sidebar.state = True
-
-
-if __name__ == "__main__":
-    main()
