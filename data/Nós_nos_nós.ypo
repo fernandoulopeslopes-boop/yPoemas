@@ -10,7 +10,7 @@
 |01|06|nós_nos_nós_0106|F|2|1|na garganta,|lógicos,|
 |01|07|nós_nos_nós_0107|F|1|1|feito nó|
 |01|08|nós_nos_nós_0108|F|6|1|de cadarço|de pescador|de marinheiro|de sobrevivente|de transatlântico|na garganta|
-|01|09|nós_nos_nós_0109|F|1|1|.|...|
+|01|09|nós_nos_nós_0109|F|4|1|.|...|,|@|
 |02|01|nós_nos_nós_0201|F|2|1|sem sequer|sem nem|
 |02|02|nós_nos_nós_0202|F|2|1|saber|imaginar|
 |02|03|nós_nos_nós_0203|F|1|1|que são|
@@ -18,8 +18,8 @@
 |02|05|nós_nos_nós_0205|F|1|1|:|
 |03|00|
 |03|01|nós_nos_nós_0301|F|1|1|Meu dó desse nó|
-|03|02|nós_nos_nós_0302|F|1|1|é que ele não sabe|
-|03|03|nós_nos_nós_0303|F|3|1|que é horizonte de uma volta só|que inventa-se a si mesmo|que da voltas em torno do próprio só|
+|03|02|nós_nos_nós_0302|F|1|1|é que ele não sabe que|
+|03|03|nós_nos_nós_0303|F|3|1|é horizonte de uma volta só.|inventa-se a si mesmo.|da voltas em torno do próprio só.|
 <EOF>
 #------------------------------------|
 # muito interessante para o tema:    |
