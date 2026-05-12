@@ -1533,9 +1533,10 @@ def main():
             stx.TabBarItemData(id=2, title="yPoemas", description=""),
             stx.TabBarItemData(id=3, title="eureka", description=""),
             stx.TabBarItemData(id=4, title="off-machina", description=""),
-            stx.TabBarItemData(id=5, title="books", description=""),
-            stx.TabBarItemData(id=6, title="poly", description=""),
-            stx.TabBarItemData(id=7, title="about", description=""),
+            stx.TabBarItemData(id=5, title="machina-IA", description=""),
+            stx.TabBarItemData(id=6, title="books", description=""),
+            stx.TabBarItemData(id=7, title="poly", description=""),
+            stx.TabBarItemData(id=8, title="about", description=""),
         ],
         default=2,
     )
