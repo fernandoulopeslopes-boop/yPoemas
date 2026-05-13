@@ -194,38 +194,63 @@ def translate(input_text):
         return translate("Arquivo muito grande para ser traduzido.")
 
 
-def pick_lang():  # define idioma
-    btn_pt, btn_es, btn_it, btn_fr, btn_en, btn_xy = st.sidebar.columns(
-        [1.1, 1.13, 1.04, 1.04, 1.17, 1.25]
+IDIOMAS_COPY = [
+    ("English",    "Inglaterra", "en", "poly_en.txt"),
+    ("Español",    "Espanha",    "es", "poly_es.txt"),
+    ("Français",   "França",     "fr", "poly_fr.txt"),
+    ("Italiano",   "Itália",     "it", "poly_it.txt"),
+    ("Português",  "Portugal",   "pt", "poly_pt.txt"),
+]
+
+def pick_lang():  # define idioma no C.O.P.Y.
+
+    lang_map = {
+        "pt": "Português",
+        "es": "Espanhol",
+        "it": "Italiano",
+        "fr": "Francês",
+        "en": "Inglês",
+    }
+
+    options = []
+    lang_lookup = {}
+
+    for native_name, country_pt, code, poly_file in IDIOMAS_COPY:
+        country_name = translate(country_pt)
+        label = f"{native_name:<14} — {country_name}"
+        options.append(label)
+        lang_lookup[label] = {
+            "lang": code,
+            "poly_file": poly_file,
+        }
+
+    current = next(
+        (
+            label
+            for label, data in lang_lookup.items()
+            if data["lang"] == st.session_state.lang
+        ),
+        options[0],
     )
-    btn_pt = btn_pt.button("pt", key=1, help="Português")
-    btn_es = btn_es.button("es", key=2, help="Español")
-    btn_it = btn_it.button("it", key=3, help="Italiano")
-    btn_fr = btn_fr.button("fr", key=4, help="Français")
-    btn_en = btn_en.button("en", key=5, help="English")
-    btn_xy = btn_xy.button("⚒️", key=6, help=st.session_state.poly_name)
 
-    if btn_pt:
-        st.session_state.lang = "pt"
-        st.session_state.poly_file = "poly_pt.txt"
-    elif btn_es:
-        st.session_state.lang = "es"
-        st.session_state.poly_file = "poly_es.txt"
-    elif btn_it:
-        st.session_state.lang = "it"
-        st.session_state.poly_file = "poly_it.txt"
-    elif btn_fr:
-        st.session_state.lang = "fr"
-        st.session_state.poly_file = "poly_fr.txt"
-    elif btn_en:
-        st.session_state.lang = "en"
-        st.session_state.poly_file = "poly_en.txt"
-    elif btn_xy:
+    choice = st.sidebar.selectbox(
+        "",
+        options,
+        index=options.index(current),
+        key="copy_lang_select",
+    )
+
+    selected = lang_lookup[choice]
+
+    if st.session_state.lang != selected["lang"]:
         st.session_state.last_lang = st.session_state.lang
-        st.session_state.lang = st.session_state.poly_lang
-
-    if st.session_state.lang != st.session_state.last_lang:
-        st.success(translate("idioma atual") + " ➪ " + st.session_state.lang)
+        st.session_state.lang = selected["lang"]
+        st.session_state.poly_file = selected["poly_file"]
+        st.success(
+            translate("idioma atual")
+            + " ➪ "
+            + st.session_state.lang
+        )
 
 
 def show_icons():  # https://api.whatsapp.com/
