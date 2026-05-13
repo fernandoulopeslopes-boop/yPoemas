@@ -1,5 +1,7 @@
 """
-main.py :: yPoemas @ Machina
+main.py :: yPoemas / Machina
+
+Primeiro CLEAN conservador.
 
 Objetivo:
 - manter o fluxo original conhecido pelo autor;
