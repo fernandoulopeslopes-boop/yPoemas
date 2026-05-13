@@ -1,5 +1,7 @@
 import sys
 
+https://chatgpt.com/c/69ffd7a5-050c-83e9-967d-56fcafcd467e
+
 IDIOMAS = {
     'Português': 'pt',
     'Espanhol': 'es',
