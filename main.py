@@ -1,5 +1,5 @@
 """
-main.py :: yPoemas / Machina
+main.py :: yPoemas @ Machina
 
 Objetivo:
 - manter o fluxo original conhecido pelo autor;
