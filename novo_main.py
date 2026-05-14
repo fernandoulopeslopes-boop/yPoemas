@@ -23,6 +23,8 @@ from extra_streamlit_components import TabBar as stx
 
 from lay_2_ypo import gera_poema
 
+st.warning(">>> TESTE FANTASMA ::: NOVO_MAIN REAL <<<")
+
 try:
     from core.padroes import (
         ABOUTS_LIST,
