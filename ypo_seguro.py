@@ -23,21 +23,43 @@ from extra_streamlit_components import TabBar as stx
 
 from lay_2_ypo import gera_poema
 
-oficial = open("oficial.txt", encoding="utf-8") as oficial:
 
-try:
-    from oficial import IDIOMAS_OFICIAIS
-except ImportError:
+def load_idiomas_oficiais():
+    idiomas = []
+
     try:
-        from oficial import IDIOMAS_COPY as IDIOMAS_OFICIAIS
-    except ImportError:
-        IDIOMAS_OFICIAIS = [
+        with open("oficial.txt", encoding="utf-8") as oficial:
+            for line in oficial:
+                line = line.strip()
+
+                if not line or line.startswith("#"):
+                    continue
+
+                partes = line.split("|")
+
+                if len(partes) >= 4:
+                    idiomas.append(
+                        (
+                            partes[0].strip(),
+                            partes[1].strip(),
+                            partes[2].strip(),
+                            partes[3].strip(),
+                        )
+                    )
+
+    except FileNotFoundError:
+        idiomas = [
             ("Português", "Brasil", "pt", "poly_pt.txt"),
             ("English", "Inglaterra", "en", "poly_en.txt"),
             ("Español", "Espanha", "es", "poly_es.txt"),
             ("Français", "França", "fr", "poly_fr.txt"),
             ("Italiano", "Itália", "it", "poly_it.txt"),
         ]
+
+    return idiomas
+
+
+IDIOMAS_OFICIAIS = load_idiomas_oficiais()
 
 try:
     from core.padroes import (
@@ -130,7 +152,7 @@ FONTES_MACHINA = {
     "Moderna": "'Inter', Arial, sans-serif",
     "Clean": "'Source Sans 3', Arial, sans-serif",
     "Literária": "'Merriweather', Georgia, serif",
-    "Elegante": "'Spectral', Georgia, serif",
+    "Elegante": "'Cormorant Garamond', Georgia, serif",
     "Técnica": "'JetBrains Mono', Consolas, monospace",
 }
 
@@ -149,7 +171,7 @@ def apply_styles():
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Spectral:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&display=swap');
 
         /*#MainMenu {{visibility: hidden;}}*/
@@ -286,31 +308,7 @@ def pick_lang():  # define idioma pela lista oficial no C.O.P.Y.
     options = []
     lookup = {}
 
-    for item in IDIOMAS_OFICIAIS:
-        if isinstance(item, dict):
-            nome = (
-                item.get("nome")
-                or item.get("native")
-                or item.get("idioma")
-                or item.get("label")
-            )
-            pais = item.get("pais") or item.get("country") or item.get("pais_pt") or ""
-            code = item.get("code") or item.get("lang") or item.get("codigo")
-            poly_file = (
-                item.get("poly_file")
-                or item.get("file")
-                or item.get("arquivo")
-                or f"poly_{code}.txt"
-            )
-        else:
-            if len(item) >= 4:
-                nome, pais, code, poly_file = item[0], item[1], item[2], item[3]
-            elif len(item) == 3:
-                nome, code, poly_file = item[0], item[1], item[2]
-                pais = ""
-            else:
-                continue
-
+    for nome, pais, code, poly_file in IDIOMAS_OFICIAIS:
         pais_atual = translate(pais) if pais else ""
         label = f"{nome} — {pais_atual}" if pais_atual else nome
 
@@ -336,7 +334,7 @@ def pick_lang():  # define idioma pela lista oficial no C.O.P.Y.
         "idioma-leitor",
         options,
         index=options.index(current),
-        key="copy_idioma_leitor",
+        key="copy_idioma_leitor_txt",
     )
 
     selected = lookup[choice]
