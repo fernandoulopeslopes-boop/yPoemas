@@ -536,35 +536,42 @@ def load_typo():  # Load translated yPoema & clean translator returned bugs in t
             line = line.strip()
 
             if " >" in line:
-                line = line.replace(" >", "\n")
+                line = line.replace(" >", "
+")
 
             elif "< " in line:
-                line = line.replace("< ", "\n")
+                line = line.replace("< ", "
+")
 
             elif " br " in line:
-                line = line.replace(" br", "\n")
+                line = line.replace(" br", "
+")
 
             elif "br " in line:
-                line = line.replace("br ", "\n")
+                line = line.replace("br ", "
+")
 
             elif " br" in line:
-                line = line.replace(" br", "\n")
+                line = line.replace(" br", "
+")
 
             line = line.replace("< <", ">")
             line = line.replace("> >", ">")
 
             typo_text += line + "<br>"
 
-    return typo_text    
+    return typo_text
 
-    def load_all_offs():
-         """Retorna a lista oficial de livros do modo off-machina."""
+
+def load_all_offs():
+    """Retorna a lista oficial de livros do modo off-machina."""
     return OFF_BOOKS_LIST
 
 
 def load_off_book(book):  # Load selected off_book
     book_full = []
     full_name = os.path.join("./off_machina/", book) + ".Pip"
+
     with open(full_name, encoding="utf-8") as file:
         for line in file:
             if line.startswith("|"):
