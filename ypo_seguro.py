@@ -24,6 +24,20 @@ from extra_streamlit_components import TabBar as stx
 from lay_2_ypo import gera_poema
 
 try:
+    from oficial import IDIOMAS_OFICIAIS
+except ImportError:
+    try:
+        from oficial import IDIOMAS_COPY as IDIOMAS_OFICIAIS
+    except ImportError:
+        IDIOMAS_OFICIAIS = [
+            ("Português", "Brasil", "pt", "poly_pt.txt"),
+            ("English", "Inglaterra", "en", "poly_en.txt"),
+            ("Español", "Espanha", "es", "poly_es.txt"),
+            ("Français", "França", "fr", "poly_fr.txt"),
+            ("Italiano", "Itália", "it", "poly_it.txt"),
+        ]
+
+try:
     from core.padroes import (
         ABOUTS_LIST,
         BOOKS_LIST,
@@ -114,7 +128,7 @@ FONTES_MACHINA = {
     "Moderna": "'Inter', Arial, sans-serif",
     "Clean": "'Source Sans 3', Arial, sans-serif",
     "Literária": "'Merriweather', Georgia, serif",
-    "Elegante": "'Cormorant Garamond', Georgia, serif",
+    "Elegante": "'Spectral', Georgia, serif",
     "Técnica": "'JetBrains Mono', Consolas, monospace",
 }
 
@@ -133,7 +147,7 @@ def apply_styles():
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Spectral:wght@300;400;500;600;700&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&display=swap');
 
         /*#MainMenu {{visibility: hidden;}}*/
@@ -266,38 +280,71 @@ def translate(input_text):
     except Exception:
         return "Arquivo muito grande para ser traduzido."
 
-def pick_lang():  # define idioma
-    btn_pt, btn_es, btn_it, btn_fr, btn_en, btn_xy = st.sidebar.columns(
-        [1.1, 1.13, 1.04, 1.04, 1.17, 1.25]
+def pick_lang():  # define idioma pela lista oficial no C.O.P.Y.
+    options = []
+    lookup = {}
+
+    for item in IDIOMAS_OFICIAIS:
+        if isinstance(item, dict):
+            nome = (
+                item.get("nome")
+                or item.get("native")
+                or item.get("idioma")
+                or item.get("label")
+            )
+            pais = item.get("pais") or item.get("country") or item.get("pais_pt") or ""
+            code = item.get("code") or item.get("lang") or item.get("codigo")
+            poly_file = (
+                item.get("poly_file")
+                or item.get("file")
+                or item.get("arquivo")
+                or f"poly_{code}.txt"
+            )
+        else:
+            if len(item) >= 4:
+                nome, pais, code, poly_file = item[0], item[1], item[2], item[3]
+            elif len(item) == 3:
+                nome, code, poly_file = item[0], item[1], item[2]
+                pais = ""
+            else:
+                continue
+
+        pais_atual = translate(pais) if pais else ""
+        label = f"{nome} — {pais_atual}" if pais_atual else nome
+
+        options.append(label)
+        lookup[label] = {
+            "lang": code,
+            "poly_file": poly_file,
+        }
+
+    if not options:
+        return
+
+    current = next(
+        (
+            label
+            for label, data in lookup.items()
+            if data["lang"] == st.session_state.lang
+        ),
+        options[0],
     )
-    btn_pt = btn_pt.button("pt", key=1, help="Português")
-    btn_es = btn_es.button("es", key=2, help="Español")
-    btn_it = btn_it.button("it", key=3, help="Italiano")
-    btn_fr = btn_fr.button("fr", key=4, help="Français")
-    btn_en = btn_en.button("en", key=5, help="English")
-    btn_xy = btn_xy.button("⚒️", key=6, help=st.session_state.poly_name)
 
-    if btn_pt:
-        st.session_state.lang = "pt"
-        st.session_state.poly_file = "poly_pt.txt"
-    elif btn_es:
-        st.session_state.lang = "es"
-        st.session_state.poly_file = "poly_es.txt"
-    elif btn_it:
-        st.session_state.lang = "it"
-        st.session_state.poly_file = "poly_it.txt"
-    elif btn_fr:
-        st.session_state.lang = "fr"
-        st.session_state.poly_file = "poly_fr.txt"
-    elif btn_en:
-        st.session_state.lang = "en"
-        st.session_state.poly_file = "poly_en.txt"
-    elif btn_xy:
+    choice = st.sidebar.selectbox(
+        "idioma-leitor",
+        options,
+        index=options.index(current),
+        key="copy_idioma_leitor",
+    )
+
+    selected = lookup[choice]
+
+    if st.session_state.lang != selected["lang"]:
         st.session_state.last_lang = st.session_state.lang
-        st.session_state.lang = st.session_state.poly_lang
-
-    if st.session_state.lang != st.session_state.last_lang:
+        st.session_state.lang = selected["lang"]
+        st.session_state.poly_file = selected["poly_file"]
         st.success(translate("idioma atual") + " ➪ " + st.session_state.lang)
+
 
 
 def pick_font():  # canivete suíço: fonte gráfica
