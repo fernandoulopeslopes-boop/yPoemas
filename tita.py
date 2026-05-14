@@ -267,7 +267,7 @@ def show_icons():  # https://api.whatsapp.com/
         )
 
 
-@st.cache(allow_output_mutation=True)
+@st.cache_data
 def load_help_tips():
     help_list = []
     with open(os.path.join("./base/helpers.txt"), encoding="utf-8") as file:
@@ -536,24 +536,19 @@ def load_typo():  # Load translated yPoema & clean translator returned bugs in t
             line = line.strip()
 
             if " >" in line:
-                line = line.replace(" >", "
-")
+                line = line.replace(" >", chr(10))
 
             elif "< " in line:
-                line = line.replace("< ", "
-")
+                line = line.replace("< ", chr(10))
 
             elif " br " in line:
-                line = line.replace(" br", "
-")
+                line = line.replace(" br", chr(10))
 
             elif "br " in line:
-                line = line.replace("br ", "
-")
+                line = line.replace("br ", chr(10))
 
             elif " br" in line:
-                line = line.replace(" br", "
-")
+                line = line.replace(" br", chr(10))
 
             line = line.replace("< <", ">")
             line = line.replace("> >", ">")
@@ -571,7 +566,6 @@ def load_all_offs():
 def load_off_book(book):  # Load selected off_book
     book_full = []
     full_name = os.path.join("./off_machina/", book) + ".Pip"
-
     with open(full_name, encoding="utf-8") as file:
         for line in file:
             if line.startswith("|"):
