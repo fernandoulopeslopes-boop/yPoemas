@@ -107,7 +107,7 @@ else:
     st.warning("Internet não conectada. Traduções e Vozes Neurais indisponíveis.")
 
 
-# Identificador atual usado por LYPO/TYPO.
+# Identificador atual usado por /TYPO.
 # Mantido neste CLEAN por preservar a persistência do último yPoema gerado.
 hostname = socket.gethostname()
 IPAddres = socket.gethostbyname(hostname)
@@ -538,7 +538,6 @@ def load_lypo():  # Load last yPoema & replace '\n' with '<br>' for translator r
 
     return lypo_text
 
-
 def load_typo():  # Load translated yPoema & clean translator returned bugs in text
     typo_text = ""
     typo_user = "TYPO_" + IPAddres
@@ -572,8 +571,8 @@ def load_typo():  # Load translated yPoema & clean translator returned bugs in t
 
             typo_text += line + "<br>"
 
-    return typo_text
-    
+    return typo_text    
+
     def load_all_offs():
          """Retorna a lista oficial de livros do modo off-machina."""
     return OFF_BOOKS_LIST
