@@ -41,8 +41,7 @@ except ImportError:
     ]
     BOOKS_LIST = [
         "todos os temas", "livro vivo", "poemas", "jocosos", "ensaios", "variações",
-        "metalinguagem", "sociais", "outros autores", "signos_fem", "signos_mas", 
-        "todos os signos",
+        "metalinguagem", "sociais", "outros autores", "signos_fem", "signos_mas", "todos os signos",
     ]
     OFF_BOOKS_LIST = [
         "a_torre_de_papel", "quase_que_eu_Poesia", "faz_de_conto", "um_romance",
