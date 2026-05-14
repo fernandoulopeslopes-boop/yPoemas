@@ -229,6 +229,7 @@ def translate(input_text):
     except Exception:
         return "Arquivo muito grande para ser traduzido."
 
+st.sidebar.markdown("### C.O.P.Y.")
 
 def pick_lang():  # define idioma
     btn_pt, btn_es, btn_it, btn_fr, btn_en, btn_xy = st.sidebar.columns(
