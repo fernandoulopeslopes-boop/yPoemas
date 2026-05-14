@@ -23,8 +23,6 @@ from extra_streamlit_components import TabBar as stx
 
 from lay_2_ypo import gera_poema
 
-st.error("TESTE DEPLOY: novo_main.py atualizado — 14/05")
-
 try:
     from core.padroes import (
         ABOUTS_LIST,
