@@ -23,9 +23,6 @@ from extra_streamlit_components import TabBar as stx
 
 from lay_2_ypo import gera_poema
 
-st.error("VERSÃO 2026-05-14 00:37 — NOVO_MAIN REAL")
-st.stop()
-
 try:
     from core.padroes import (
         ABOUTS_LIST,
