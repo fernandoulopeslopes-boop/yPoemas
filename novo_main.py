@@ -575,7 +575,7 @@ def load_typo():  # Load translated yPoema & clean translator returned bugs in t
     return typo_text
     
     def load_all_offs():
-    """Retorna a lista oficial de livros do modo off-machina."""
+         """Retorna a lista oficial de livros do modo off-machina."""
     return OFF_BOOKS_LIST
 
 
