@@ -1,5 +1,5 @@
 """
-main.py :: yPoemas / Machina
+main.py :: yPoemas / configMachina
 Primeiro CLEAN conservador.
 
 Objetivo:
@@ -76,6 +76,8 @@ st.set_page_config(
     initial_sidebar_state="auto",
 )
 
+st.error("TESTE FANTASMA — ESTE É O novo_main.py ATUAL")
+st.stop()
 
 def have_internet(host="1.1.1.1", port=80, timeout=3):
     """Verifica conexão antes de ativar tradução e voz neural."""
