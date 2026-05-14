@@ -40,8 +40,8 @@ except ImportError:
         "bibliografia", "imagens", "samizdát", "notes", "license", "index",
     ]
     BOOKS_LIST = [
-        "livro vivo", "poemas", "jocosos", "ensaios", "variações", "metalinguagem",
-        "sociais", "todos os temas", "outros autores", "signos_fem", "signos_mas",
+        "todos os temas", "livro vivo", "poemas", "jocosos", "ensaios", "variações",
+        "metalinguagem", "sociais", "outros autores", "signos_fem", "signos_mas", 
         "todos os signos",
     ]
     OFF_BOOKS_LIST = [
