@@ -70,14 +70,11 @@ except ImportError:
 # Deve permanecer antes de qualquer saída visual do Streamlit.
 # -----------------------------------------------------------------------------
 st.set_page_config(
-    page_title="a máquina de fazer Poesia - yPoemas",
+    page_title="a Machina de fazer Poesia - @ yPoemas",
     page_icon=":star:",
     layout="centered",
     initial_sidebar_state="auto",
 )
-
-st.error("TESTE FANTASMA — ESTE É O novo_main.py ATUAL")
-st.stop()
 
 def have_internet(host="1.1.1.1", port=80, timeout=3):
     """Verifica conexão antes de ativar tradução e voz neural."""
