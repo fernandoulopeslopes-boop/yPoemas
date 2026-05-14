@@ -22,7 +22,7 @@ IDIOMAS = {
     'Finlandês': 'fi',
     'Dinamarquês': 'da',
     'Romeno': 'ro',
-    'Russo': 'ru'
+    'Russo': 'ru',
     'Sueco': 'sv',
 }
 
