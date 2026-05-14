@@ -522,11 +522,16 @@ def load_index():  # Load indexes numbers for all themes
 
     return index_list
 
-
 def load_lypo():  # Load last yPoema & replace '\n' with '<br>' for translator returned text
     lypo_text = ""
     lypo_user = "LYPO_" + IPAddres
-    with open(os.path.join("./temp/" + lypo_user), encoding="utf-8") as script:
+
+    with open(
+        os.path.join("./temp/" + lypo_user),
+        encoding="utf-8",
+        errors="replace",
+    ) as script:
+
         for line in script:
             line = line.strip()
             lypo_text += line + "<br>"
@@ -537,27 +542,39 @@ def load_lypo():  # Load last yPoema & replace '\n' with '<br>' for translator r
 def load_typo():  # Load translated yPoema & clean translator returned bugs in text
     typo_text = ""
     typo_user = "TYPO_" + IPAddres
-    with open(os.path.join("./temp/" + typo_user), encoding="utf-8") as script:
+
+    with open(
+        os.path.join("./temp/" + typo_user),
+        encoding="utf-8",
+        errors="replace",
+    ) as script:
+
         for line in script:  # just 1 line
             line = line.strip()
+
             if " >" in line:
                 line = line.replace(" >", "\n")
+
             elif "< " in line:
                 line = line.replace("< ", "\n")
+
             elif " br " in line:
                 line = line.replace(" br", "\n")
+
             elif "br " in line:
                 line = line.replace("br ", "\n")
+
             elif " br" in line:
                 line = line.replace(" br", "\n")
+
             line = line.replace("< <", ">")
             line = line.replace("> >", ">")
+
             typo_text += line + "<br>"
 
     return typo_text
-
-
-def load_all_offs():
+    
+    def load_all_offs():
     """Retorna a lista oficial de livros do modo off-machina."""
     return OFF_BOOKS_LIST
 
