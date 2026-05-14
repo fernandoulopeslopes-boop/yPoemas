@@ -1,6 +1,5 @@
 """
 main.py :: yPoemas / Machina
-
 Primeiro CLEAN conservador.
 
 Objetivo:
