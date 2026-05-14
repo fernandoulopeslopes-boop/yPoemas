@@ -23,6 +23,8 @@ from extra_streamlit_components import TabBar as stx
 
 from lay_2_ypo import gera_poema
 
+oficial = open("oficial.txt", encoding="utf-8") as oficial:
+
 try:
     from oficial import IDIOMAS_OFICIAIS
 except ImportError:
