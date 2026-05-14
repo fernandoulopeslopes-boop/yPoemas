@@ -9,6 +9,7 @@ Objetivo:
 - preparar futura divisão em módulos sem quebrar a Machina.
 """
 import streamlit as st
-st.title("HELLO WORLD")
+def main(st.title("HELLO WORLD"))
+
 if __name__ == "__main__":
     main()
