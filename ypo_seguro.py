@@ -20,9 +20,8 @@ from datetime import datetime
 
 import streamlit as st
 from extra_streamlit_components import TabBar as stx
-from lay_2_ypo import gera_poema
 
-st.info( "C.O.P.Y. :: IDIOMAS OFICIAIS" )
+from lay_2_ypo import gera_poema
 
 try:
     from core.padroes import (
