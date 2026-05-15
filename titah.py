@@ -160,40 +160,6 @@ def apply_styles():
         section[data-testid="stSidebar"] > div:first-child {
             padding-top: 0rem !important;
         }
-
-        .machina-footer {
-            position: fixed;
-            bottom: 0.5rem;
-            width: 290px;
-        }
-
-        /* Machina :: palco sem altura fantasma */
-        .main .block-container {
-            padding-top: 0rem !important;
-            padding-bottom: 0rem !important;
-            margin-top: 0rem !important;
-            margin-bottom: 0rem !important;
-        }
-
-        div[data-testid="stAppViewContainer"] .main {
-            padding-top: 0rem !important;
-            margin-top: 0rem !important;
-        }
-
-        div[data-testid="stVerticalBlock"] {
-            gap: 0.25rem !important;
-        }
-
-        div[data-testid="stImage"] {
-            margin-top: 0rem !important;
-            margin-bottom: 0rem !important;
-        }
-
-        .element-container {
-            margin-top: 0rem !important;
-            margin-bottom: 0rem !important;
-        }
-
 </style>
         """,
         unsafe_allow_html=True,
@@ -1484,9 +1450,5 @@ def main():
     with st.sidebar:
         st.image("./images/" + magy)
 
-#    show_icons()
-    ##$ st.sidebar.state = True
 
-
-if __name__ == "__main__":
     main()
