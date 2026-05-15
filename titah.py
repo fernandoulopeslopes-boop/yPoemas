@@ -167,22 +167,31 @@ def apply_styles():
             width: 290px;
         }
 
+        /* Machina :: remover altura fantasma do topo */
+        header[data-testid="stHeader"] {
+            display: none !important;
+            height: 0px !important;
+        }
 
-        /* Machina :: topo colado */
-        
+        .main .block-container {
+            padding-top: 0rem !important;
+            padding-bottom: 0rem !important;
+            margin-top: 0rem !important;
+        }
 
-        [data-testid="stAppViewContainer"] .main 
+        div[data-testid="stAppViewContainer"] .main {
+            padding-top: 0rem !important;
+            margin-top: 0rem !important;
+        }
+
+        section[data-testid="stSidebar"] {
+            padding-top: 0rem !important;
+            margin-top: 0rem !important;
+        }
 
         section[data-testid="stSidebar"] [data-testid="stSidebarContent"] {
             padding-top: 0rem !important;
-        }
-
-        header[data-testid="stHeader"] {
-            height: 0rem !important;
-        }
-
-        div[data-testid="stToolbar"] {
-            top: 0.15rem !important;
+            margin-top: 0rem !important;
         }
 
 </style>
