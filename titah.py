@@ -140,96 +140,21 @@ def apply_styles():
         /*#MainMenu {visibility: hidden;}*/
         footer {visibility: hidden;}
         
-        /* C.O.P.Y. :: sidebar limpa e compacta */
-        section[data-testid="stSidebar"] {
-            overflow-x: hidden !important;
-        }
-
-        section[data-testid="stSidebar"] > div:first-child {
-            width: 330px !important;
-            min-width: 330px !important;
-            max-width: 330px !important;
-            padding-top: 0rem !important;
-            padding-left: 0.35rem !important;
-            padding-right: 0.35rem !important;
-        }
-
-        section[data-testid="stSidebar"] [data-testid="stSidebarContent"] {
-            padding-top: 0.15rem !important;
-        }
-
-        section[data-testid="stSidebar"] div[data-testid="stVerticalBlock"] {
-            gap: 0.22rem !important;
-        }
-
-        section[data-testid="stSidebar"] .element-container {
-            margin-top: 0rem !important;
-            margin-bottom: 0rem !important;
-        }
-
-        section[data-testid="stSidebar"] div[data-testid="stSelectbox"] {
-            width: 94% !important;
-            max-width: 94% !important;
-            margin-left: auto !important;
-            margin-right: auto !important;
-            margin-top: 0rem !important;
-            margin-bottom: 0.10rem !important;
-        }
-
-        section[data-testid="stSidebar"] div[data-testid="stSelectbox"] label {
-            font-size: 11px !important;
-            line-height: 1.05 !important;
-            padding-bottom: 0rem !important;
-            margin-bottom: 0rem !important;
-        }
-
-        section[data-testid="stSidebar"] div[data-testid="stSelectbox"] * {
-            font-size: 11px !important;
-        }
-
-        section[data-testid="stSidebar"] .stAlert {
-            width: 94% !important;
-            max-width: 94% !important;
-            margin: 0.12rem auto !important;
-            padding: 0.30rem 0.40rem !important;
-            font-size: 11px !important;
-            line-height: 1.10 !important;
-        }
-
-        .copy-tools-row {
-            width: 94%;
-            margin: 0.18rem auto 0.12rem auto;
-        }
-
-        .copy-tools-row button {
-            width: 100% !important;
-            min-height: 32px !important;
-            height: 32px !important;
-            padding: 0 !important;
-            border-radius: 8px !important;
-            line-height: 1 !important;
-        }
-
-        section[data-testid="stSidebar"] .stImage {
-            width: 94% !important;
-            margin-left: auto !important;
-            margin-right: auto !important;
-            margin-top: 0.20rem !important;
-        }
-
         
-        /* C.O.P.Y. :: sidebar menor que a tela */
+        /* C.O.P.Y. :: topo / mini-palco / rodapé */
         section[data-testid="stSidebar"] {
             overflow-x: hidden !important;
         }
 
         section[data-testid="stSidebar"] > div:first-child {
-            width: 328px !important;
-            min-width: 328px !important;
-            max-width: 328px !important;
+            width: 332px !important;
+            min-width: 332px !important;
+            max-width: 332px !important;
             padding-top: 0px !important;
-            padding-left: 4px !important;
-            padding-right: 4px !important;
+            padding-left: 6px !important;
+            padding-right: 6px !important;
+            padding-bottom: 0px !important;
+            overflow-x: hidden !important;
         }
 
         section[data-testid="stSidebar"] [data-testid="stSidebarContent"] {
@@ -237,13 +162,8 @@ def apply_styles():
             padding-bottom: 0px !important;
         }
 
-        section[data-testid="stSidebar"] .block-container {
-            padding-top: 0px !important;
-            padding-bottom: 0px !important;
-        }
-
         section[data-testid="stSidebar"] div[data-testid="stVerticalBlock"] {
-            gap: 2px !important;
+            gap: 4px !important;
         }
 
         section[data-testid="stSidebar"] .element-container {
@@ -252,57 +172,74 @@ def apply_styles():
         }
 
         section[data-testid="stSidebar"] div[data-testid="stSelectbox"] {
-            width: 300px !important;
-            margin: 0 auto !important;
+            width: 304px !important;
+            max-width: 304px !important;
+            margin: 0px auto 2px auto !important;
         }
 
         section[data-testid="stSidebar"] div[data-testid="stSelectbox"] label {
-            font-size: 9.5px !important;
+            font-size: 11px !important;
+            line-height: 1.05 !important;
             padding-bottom: 0px !important;
             margin-bottom: 0px !important;
-            line-height: 1 !important;
         }
 
         section[data-testid="stSidebar"] div[data-testid="stSelectbox"] * {
-            font-size: 10px !important;
-        }
-
-        section[data-testid="stSidebar"] .stAlert {
-            width: 300px !important;
-            max-height: 58px !important;
-            overflow: hidden !important;
-            margin: 0 auto !important;
-            padding: 3px 5px !important;
-            font-size: 9.5px !important;
-            line-height: 1.02 !important;
+            font-size: 11px !important;
         }
 
         .copy-tools-row {
-            width: 300px !important;
-            margin: 0 auto !important;
+            width: 304px !important;
+            max-width: 304px !important;
+            margin: 2px auto 4px auto !important;
         }
 
         .copy-tools-row button {
             width: 100% !important;
-            height: 26px !important;
-            min-height: 26px !important;
-            max-height: 26px !important;
+            height: 30px !important;
+            min-height: 30px !important;
+            max-height: 30px !important;
             padding: 0px !important;
-            border-radius: 7px !important;
+            border-radius: 8px !important;
             line-height: 1 !important;
         }
 
+        section[data-testid="stSidebar"] .stAlert {
+            width: 304px !important;
+            max-width: 304px !important;
+            min-height: 110px !important;
+            max-height: 260px !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            margin: 4px auto !important;
+            padding: 6px 8px !important;
+            font-size: 11px !important;
+            line-height: 1.18 !important;
+        }
+
         section[data-testid="stSidebar"] .stImage {
-            width: 300px !important;
-            margin-left: auto !important;
-            margin-right: auto !important;
-            margin-top: 1px !important;
+            width: 304px !important;
+            max-width: 304px !important;
+            margin: 4px auto 0px auto !important;
         }
 
         section[data-testid="stSidebar"] .stImage img {
-            max-height: 90px !important;
+            width: 304px !important;
+            max-width: 304px !important;
+            max-height: 120px !important;
             object-fit: contain !important;
         }
+
+        [data-testid="collapsedControl"],
+        [data-testid="stSidebarCollapseButton"] {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            width: 0 !important;
+            height: 0 !important;
+            pointer-events: none !important;
+        }
+
 
         </style>
         """,
@@ -485,6 +422,7 @@ def load_help(idiom):
 
 
 
+
 def draw_check_buttons():
     help_tips = load_help(st.session_state.lang)
     help_draw = help_tips[5]
@@ -495,7 +433,7 @@ def draw_check_buttons():
     col_art, col_tool, col_audio = st.sidebar.columns([1, 1, 1])
 
     with col_art:
-        arte_label = "◉" if st.session_state.draw else "○"
+        arte_label = "🎨" if st.session_state.draw else "◌"
         if st.button(arte_label, key="btn_arte", help=help_draw):
             st.session_state.draw = not st.session_state.draw
 
@@ -503,7 +441,7 @@ def draw_check_buttons():
         st.button("⚒", key="btn_canivete", help="canivete suíço", disabled=True)
 
     with col_audio:
-        audio_label = "◉" if st.session_state.talk else "○"
+        audio_label = "🔊" if st.session_state.talk else "◌"
         if st.button(audio_label, key="btn_audio", help=help_talk):
             st.session_state.talk = not st.session_state.talk
 
