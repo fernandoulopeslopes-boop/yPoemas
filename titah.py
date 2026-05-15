@@ -217,6 +217,93 @@ def apply_styles():
             margin-top: 0.20rem !important;
         }
 
+        
+        /* C.O.P.Y. :: sidebar menor que a tela */
+        section[data-testid="stSidebar"] {
+            overflow-x: hidden !important;
+        }
+
+        section[data-testid="stSidebar"] > div:first-child {
+            width: 328px !important;
+            min-width: 328px !important;
+            max-width: 328px !important;
+            padding-top: 0px !important;
+            padding-left: 4px !important;
+            padding-right: 4px !important;
+        }
+
+        section[data-testid="stSidebar"] [data-testid="stSidebarContent"] {
+            padding-top: 0px !important;
+            padding-bottom: 0px !important;
+        }
+
+        section[data-testid="stSidebar"] .block-container {
+            padding-top: 0px !important;
+            padding-bottom: 0px !important;
+        }
+
+        section[data-testid="stSidebar"] div[data-testid="stVerticalBlock"] {
+            gap: 2px !important;
+        }
+
+        section[data-testid="stSidebar"] .element-container {
+            margin-top: 0px !important;
+            margin-bottom: 0px !important;
+        }
+
+        section[data-testid="stSidebar"] div[data-testid="stSelectbox"] {
+            width: 300px !important;
+            margin: 0 auto !important;
+        }
+
+        section[data-testid="stSidebar"] div[data-testid="stSelectbox"] label {
+            font-size: 9.5px !important;
+            padding-bottom: 0px !important;
+            margin-bottom: 0px !important;
+            line-height: 1 !important;
+        }
+
+        section[data-testid="stSidebar"] div[data-testid="stSelectbox"] * {
+            font-size: 10px !important;
+        }
+
+        section[data-testid="stSidebar"] .stAlert {
+            width: 300px !important;
+            max-height: 58px !important;
+            overflow: hidden !important;
+            margin: 0 auto !important;
+            padding: 3px 5px !important;
+            font-size: 9.5px !important;
+            line-height: 1.02 !important;
+        }
+
+        .copy-tools-row {
+            width: 300px !important;
+            margin: 0 auto !important;
+        }
+
+        .copy-tools-row button {
+            width: 100% !important;
+            height: 26px !important;
+            min-height: 26px !important;
+            max-height: 26px !important;
+            padding: 0px !important;
+            border-radius: 7px !important;
+            line-height: 1 !important;
+        }
+
+        section[data-testid="stSidebar"] .stImage {
+            width: 300px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            margin-top: 1px !important;
+        }
+
+        section[data-testid="stSidebar"] .stImage img {
+            max-height: 90px !important;
+            object-fit: contain !important;
+        }
+
         </style>
         """,
         unsafe_allow_html=True,
