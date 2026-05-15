@@ -24,84 +24,66 @@ from extra_streamlit_components import TabBar as stx
 from lay_2_ypo import gera_poema
 
 
-def load_idiomas_oficiais():
-    idiomas = []
-    st.info("load_idiomas")
-    try:
-        with open("oficial.txt", encoding="utf-8") as oficial:
-            for line in oficial:
-                line = line.strip()
 
-                if not line or line.startswith("#"):
-                    continue
+ABOUTS_LIST = [
+    "comments", "prefácio", "machina", "off-machina", "outros", "traduttore",
+    "bibliografia", "imagens", "samizdát", "notes", "license", "index",
+]
 
-                partes = line.split("|")
+BOOKS_LIST = [
+    "livro vivo", "poemas", "jocosos", "ensaios", "variações", "metalinguagem",
+    "sociais", "todos os temas", "outros autores", "signos_fem", "signos_mas",
+    "todos os signos",
+]
 
-                if len(partes) >= 4:
-                    idiomas.append(
-                        (
-                            partes[0].strip(),
-                            partes[1].strip(),
-                            partes[2].strip(),
-                            partes[3].strip(),
-                        )
-                    )
+OFF_BOOKS_LIST = [
+    "a_torre_de_papel", "quase_que_eu_Poesia", "faz_de_conto", "um_romance",
+    "linguafiada", "livro_vivo", "desvoto", "ensaio", "urbano", "essencial", "secreto",
+]
 
-    except FileNotFoundError:
-        st.info("load_idiomas_error")
-        idiomas = [
-            ("Português", "Brasil", "pt", "poly_pt.txt"),
-            ("English", "Inglaterra", "en", "poly_en.txt"),
-            ("Español", "Espanha", "es", "poly_es.txt"),
-            ("Français", "França", "fr", "poly_fr.txt"),
-            ("Italiano", "Itália", "it", "poly_it.txt"),
-        ]
+PAGE_IMAGES = {
+    "1": "img_mini.jpg", "2": "img_ypoemas.jpg", "3": "img_eureka.jpg",
+    "4": "img_off-machina.jpg", "5": "img_books.jpg", "6": "img_poly.jpg", "7": "img_about.jpg",
+}
 
-    return idiomas
+PAGE_INFO_FILES = {
+    "1": "INFO_MINI.md", "2": "INFO_YPOEMAS.md", "3": "INFO_EUREKA.md",
+    "4": "INFO_OFF-MACHINA.md", "5": "INFO_BOOKS.md", "6": "INFO_POLY.md", "7": "INFO_ABOUT.md",
+}
 
+LANG_FILES = {
+    "pt": "poly_pt.txt", "es": "poly_es.txt", "it": "poly_it.txt",
+    "fr": "poly_fr.txt", "en": "poly_en.txt",
+}
 
-IDIOMAS_OFICIAIS = load_idiomas_oficiais()
+VOICES_EDGE_TTS = {
+    "pt": "pt-BR-AntonioNeural", "en": "en-US-GuyNeural", "es": "es-ES-AlvaroNeural",
+    "fr": "fr-FR-RemyNeural", "it": "it-IT-DiegoNeural",
+}
 
-try:
-    st.info("load_lists")
-    from core.padroes import (
-        ABOUTS_LIST,
-        BOOKS_LIST,
-        LANG_FILES,
-        OFF_BOOKS_LIST,
-        PAGE_IMAGES,
-        PAGE_INFO_FILES,
-        VOICES_EDGE_TTS,
-    )
-except ImportError:
-    # Fallback para manter o main.py executável mesmo antes de copiar core/padroes.py.
-    st.info("load_lists_error")
-    ABOUTS_LIST = [
-        "comments", "prefácio", "machina", "off-machina", "outros", "traduttore",
-        "bibliografia", "imagens", "samizdát", "notes", "license", "index",
-    ]
-    BOOKS_LIST = [
-        "livro vivo", "poemas", "jocosos", "ensaios", "variações", "metalinguagem",
-        "sociais", "todos os temas", "outros autores", "signos_fem", "signos_mas",
-        "todos os signos",
-    ]
-    OFF_BOOKS_LIST = [
-        "a_torre_de_papel", "quase_que_eu_Poesia", "faz_de_conto", "um_romance",
-        "linguafiada", "livro_vivo", "desvoto", "ensaio", "urbano", "essencial", "secreto",
-    ]
-    PAGE_IMAGES = {
-        "1": "img_mini.jpg", "2": "img_ypoemas.jpg", "3": "img_eureka.jpg",
-        "4": "img_off-machina.jpg", "5": "img_books.jpg", "6": "img_poly.jpg", "7": "img_about.jpg",
-    }
-    PAGE_INFO_FILES = {
-        "1": "INFO_MINI.md", "2": "INFO_YPOEMAS.md", "3": "INFO_EUREKA.md",
-        "4": "INFO_OFF-MACHINA.md", "5": "INFO_BOOKS.md", "6": "INFO_POLY.md", "7": "INFO_ABOUT.md",
-    }
-    LANG_FILES = {"pt": "poly_pt.txt", "es": "poly_es.txt", "it": "poly_it.txt", "fr": "poly_fr.txt", "en": "poly_en.txt"}
-    VOICES_EDGE_TTS = {
-        "pt": "pt-BR-AntonioNeural", "en": "en-US-GuyNeural", "es": "es-ES-AlvaroNeural",
-        "fr": "fr-FR-RemyNeural", "it": "it-IT-DiegoNeural",
-    }
+IDIOMAS_OFICIAIS = [
+    ("Português", "Brasil", "pt", "poly_pt.txt"),
+    ("English", "Inglaterra", "en", "poly_en.txt"),
+    ("Español", "Espanha", "es", "poly_es.txt"),
+    ("Français", "França", "fr", "poly_fr.txt"),
+    ("Italiano", "Itália", "it", "poly_it.txt"),
+    ("Deutsch", "Alemanha", "de", "poly_de.txt"),
+    ("Català", "Catalunha", "ca", "poly_ca.txt"),
+    ("Galego", "Galícia", "gl", "poly_gl.txt"),
+    ("Nederlands", "Países Baixos", "nl", "poly_nl.txt"),
+    ("Polski", "Polônia", "pl", "poly_pl.txt"),
+    ("Română", "Romênia", "ro", "poly_ro.txt"),
+    ("Русский", "Rússia", "ru", "poly_ru.txt"),
+    ("Svenska", "Suécia", "sv", "poly_sv.txt"),
+    ("Norsk", "Noruega", "no", "poly_no.txt"),
+    ("Dansk", "Dinamarca", "da", "poly_da.txt"),
+    ("Suomi", "Finlândia", "fi", "poly_fi.txt"),
+    ("Íslenska", "Islândia", "is", "poly_is.txt"),
+    ("Magyar", "Hungria", "hu", "poly_hu.txt"),
+    ("Latin", "Latim", "la", "poly_la.txt"),
+    ("Esperanto", "Esperanto", "eo", "poly_eo.txt"),
+    ("Portuñol", "Portunhol", "pt", "poly_pt.txt"),
+]
 
 
 # -----------------------------------------------------------------------------
@@ -109,7 +91,7 @@ except ImportError:
 # Deve permanecer antes de qualquer saída visual do Streamlit.
 # -----------------------------------------------------------------------------
 st.set_page_config(
-    page_title="a máquina de fazer Poesia - yPoemas - Titah",
+    page_title="a máquina de fazer Poesia - yPoemas",
     page_icon=":star:",
     layout="centered",
     initial_sidebar_state="auto",
@@ -210,9 +192,6 @@ def apply_styles():
 
 
 def init_session_state():
-    
-    st.info("init_session_state")
-    
     """Inicializa o estado vivo da Machina no Streamlit."""
     defaults = {
         "lang": "pt",
@@ -248,6 +227,8 @@ init_session_state()
 
 ### bof: tools
 
+
+
 def translate(input_text):
     """Traduz textos de apoio e yPoemas quando o idioma atual não é português."""
     if st.session_state.lang == "pt":  # don't need translations here
@@ -272,22 +253,14 @@ def translate(input_text):
         return "Arquivo muito grande para ser traduzido."
 
 
-def pick_lang():  # define idioma pela lista oficial no C.O.P.Y.
+def pick_lang():  # C.O.P.Y. :: idioma-leitor hard coded
     options = []
     lookup = {}
 
     for nome, pais, code, poly_file in IDIOMAS_OFICIAIS:
-        pais_atual = translate(pais) if pais else ""
-        label = f"{nome} — {pais_atual}" if pais_atual else nome
-
+        label = f"{nome} — {pais}" if pais else nome
         options.append(label)
-        lookup[label] = {
-            "lang": code,
-            "poly_file": poly_file,
-        }
-
-    if not options:
-        return
+        lookup[label] = {"lang": code, "poly_file": poly_file}
 
     current = next(
         (
@@ -302,7 +275,7 @@ def pick_lang():  # define idioma pela lista oficial no C.O.P.Y.
         "idioma-leitor",
         options,
         index=options.index(current),
-        key="copy_idioma_leitor_txt",
+        key="copy_idioma_leitor_hard",
     )
 
     selected = lookup[choice]
@@ -311,10 +284,10 @@ def pick_lang():  # define idioma pela lista oficial no C.O.P.Y.
         st.session_state.last_lang = st.session_state.lang
         st.session_state.lang = selected["lang"]
         st.session_state.poly_file = selected["poly_file"]
-        st.success(translate("idioma atual") + " ➪ " + st.session_state.lang)
+        st.success("idioma atual ➪ " + st.session_state.lang)
 
 
-@st.cache_data
+
 def load_help_tips():
     help_list = []
     with open(os.path.join("./base/helpers.txt"), encoding="utf-8") as file:
