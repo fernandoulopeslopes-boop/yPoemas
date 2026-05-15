@@ -26,7 +26,7 @@ from lay_2_ypo import gera_poema
 
 def load_idiomas_oficiais():
     idiomas = []
-
+    st.info("load_idiomas")
     try:
         with open("oficial.txt", encoding="utf-8") as oficial:
             for line in oficial:
@@ -48,6 +48,7 @@ def load_idiomas_oficiais():
                     )
 
     except FileNotFoundError:
+        st.info("load_idiomas_error")
         idiomas = [
             ("Português", "Brasil", "pt", "poly_pt.txt"),
             ("English", "Inglaterra", "en", "poly_en.txt"),
@@ -62,6 +63,7 @@ def load_idiomas_oficiais():
 IDIOMAS_OFICIAIS = load_idiomas_oficiais()
 
 try:
+    st.info("load_lists")
     from core.padroes import (
         ABOUTS_LIST,
         BOOKS_LIST,
@@ -73,6 +75,7 @@ try:
     )
 except ImportError:
     # Fallback para manter o main.py executável mesmo antes de copiar core/padroes.py.
+    st.info("load_lists_error")
     ABOUTS_LIST = [
         "comments", "prefácio", "machina", "off-machina", "outros", "traduttore",
         "bibliografia", "imagens", "samizdát", "notes", "license", "index",
@@ -106,7 +109,7 @@ except ImportError:
 # Deve permanecer antes de qualquer saída visual do Streamlit.
 # -----------------------------------------------------------------------------
 st.set_page_config(
-    page_title="a máquina de fazer Poesia - yPoemas",
+    page_title="a máquina de fazer Poesia - yPoemas - Titah",
     page_icon=":star:",
     layout="centered",
     initial_sidebar_state="auto",
@@ -207,6 +210,9 @@ def apply_styles():
 
 
 def init_session_state():
+    
+    st.info("init_session_state")
+    
     """Inicializa o estado vivo da Machina no Streamlit."""
     defaults = {
         "lang": "pt",
@@ -241,8 +247,6 @@ init_session_state()
 
 
 ### bof: tools
-
-
 
 def translate(input_text):
     """Traduz textos de apoio e yPoemas quando o idioma atual não é português."""
@@ -310,8 +314,7 @@ def pick_lang():  # define idioma pela lista oficial no C.O.P.Y.
         st.success(translate("idioma atual") + " ➪ " + st.session_state.lang)
 
 
-
-@st.cache(allow_output_mutation=True)
+@st.cache_data
 def load_help_tips():
     help_list = []
     with open(os.path.join("./base/helpers.txt"), encoding="utf-8") as file:
