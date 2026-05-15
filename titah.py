@@ -139,142 +139,7 @@ def apply_styles():
         <style>
         /*#MainMenu {visibility: hidden;}*/
         footer {visibility: hidden;}
-        
-        
-        
-        /* C.O.P.Y. :: bloco fixo, sem dança */
-        section[data-testid="stSidebar"] {
-            width: 320px !important;
-            min-width: 320px !important;
-            max-width: 320px !important;
-            overflow: hidden !important;
-        }
-
-        section[data-testid="stSidebar"] > div:first-child {
-            width: 320px !important;
-            min-width: 320px !important;
-            max-width: 320px !important;
-            height: 100vh !important;
-            min-height: 100vh !important;
-            max-height: 100vh !important;
-            overflow: hidden !important;
-            padding: 0 !important;
-            margin: 0 !important;
-        }
-
-        section[data-testid="stSidebar"] [data-testid="stSidebarContent"] {
-            height: 100vh !important;
-            max-height: 100vh !important;
-            overflow: hidden !important;
-            padding: 0.15rem 0.25rem 0.20rem 0.25rem !important;
-            margin: 0 !important;
-        }
-
-        section[data-testid="stSidebar"] .block-container {
-            padding: 0 !important;
-            margin: 0 !important;
-            max-height: 100vh !important;
-            overflow: hidden !important;
-        }
-
-        section[data-testid="stSidebar"] div[data-testid="stVerticalBlock"] {
-            gap: 0.16rem !important;
-            padding: 0 !important;
-            margin: 0 !important;
-        }
-
-        section[data-testid="stSidebar"] .element-container {
-            margin: 0 !important;
-            padding: 0 !important;
-        }
-
-        section[data-testid="stSidebar"] .stMarkdown,
-        section[data-testid="stSidebar"] .stMarkdown p {
-            margin: 0 !important;
-            padding: 0 !important;
-        }
-
-        section[data-testid="stSidebar"] div[data-testid="stSelectbox"] {
-            width: 300px !important;
-            max-width: 300px !important;
-            margin: 0 auto !important;
-            padding: 0 !important;
-        }
-
-        section[data-testid="stSidebar"] div[data-testid="stSelectbox"] label {
-            font-size: 10.5px !important;
-            line-height: 1 !important;
-            height: 14px !important;
-            min-height: 14px !important;
-            max-height: 14px !important;
-            padding: 0 !important;
-            margin: 0 !important;
-        }
-
-        section[data-testid="stSidebar"] div[data-testid="stSelectbox"] * {
-            font-size: 10.5px !important;
-        }
-
-        section[data-testid="stSidebar"] .stAlert {
-            width: 300px !important;
-            max-width: 300px !important;
-            height: 82px !important;
-            max-height: 82px !important;
-            overflow: hidden !important;
-            margin: 0.10rem auto !important;
-            padding: 0.20rem 0.28rem !important;
-            font-size: 10.5px !important;
-            line-height: 1.05 !important;
-        }
-
-        .copy-tools-row {
-            width: 300px !important;
-            max-width: 300px !important;
-            height: 34px !important;
-            max-height: 34px !important;
-            margin: 0.12rem auto !important;
-            padding: 0 !important;
-            overflow: hidden !important;
-        }
-
-        .copy-tools-row button {
-            width: 100% !important;
-            height: 30px !important;
-            min-height: 30px !important;
-            max-height: 30px !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            border-radius: 8px !important;
-            line-height: 1 !important;
-        }
-
-        .copy-footer-image {
-            width: 300px !important;
-            max-width: 300px !important;
-            height: 112px !important;
-            max-height: 112px !important;
-            overflow: hidden !important;
-            margin: 0.18rem auto 0 auto !important;
-            padding: 0 !important;
-        }
-
-        .copy-footer-image img {
-            width: 300px !important;
-            max-width: 300px !important;
-            max-height: 112px !important;
-            object-fit: contain !important;
-        }
-
-        [data-testid="collapsedControl"],
-        [data-testid="stSidebarCollapseButton"] {
-            display: none !important;
-            visibility: hidden !important;
-            opacity: 0 !important;
-            width: 0 !important;
-            height: 0 !important;
-            pointer-events: none !important;
-        }
-</style>
+        </style>
         """,
         unsafe_allow_html=True,
     )
@@ -407,7 +272,7 @@ def pick_lang():  # C.O.P.Y. :: idioma-leitor hard coded
     )
 
     choice = st.sidebar.selectbox(
-        "idiomas disponíveis...",
+        "idioma-leitor",
         options,
         index=options.index(current),
         key="copy_idioma_leitor_hard",
@@ -454,26 +319,18 @@ def load_help(idiom):
     return returns
 
 
-
-
 def draw_check_buttons():
-    st.sidebar.markdown('<div class="copy-tools-row">', unsafe_allow_html=True)
-
-    col1, col2, col3 = st.sidebar.columns([1, 1, 1])
-
-    with col1:
-        if st.button("🎨", key="btn_arte", help="arte"):
-            st.session_state.draw = not st.session_state.draw
-
-    with col2:
-        st.button("⚒", key="btn_canivete", help="canivete suíço", disabled=True)
-
-    with col3:
-        if st.button("🔊", key="btn_audio", help="audio"):
-            st.session_state.talk = not st.session_state.talk
-
-    st.sidebar.markdown("</div>", unsafe_allow_html=True)
-
+    foo = ""
+    draw_text, foo, foo, talk_text = st.sidebar.columns([4,1,1,4])
+    help_tips = load_help(st.session_state.lang)
+    help_draw = help_tips[5]
+    help_talk = help_tips[6]
+    st.session_state.draw = draw_text.checkbox(
+        help_draw, st.session_state.draw, key="draw_machina"
+    )
+    st.session_state.talk = talk_text.checkbox(
+        help_talk, st.session_state.talk, key="talk_machina"
+    )
 
 
 def get_binary_file_downloader_html(bin_file, file_label="File"):
