@@ -139,6 +139,92 @@ def apply_styles():
         <style>
         /*#MainMenu {visibility: hidden;}*/
         footer {visibility: hidden;}
+        
+        /* C.O.P.Y. :: sidebar tamanho exato */
+        section[data-testid="stSidebar"] {
+            overflow-x: hidden !important;
+        }
+
+        section[data-testid="stSidebar"] * {
+            box-sizing: border-box !important;
+        }
+
+        section[data-testid="stSidebar"] > div:first-child {
+            width: 342px !important;
+            min-width: 342px !important;
+            max-width: 342px !important;
+            overflow-x: hidden !important;
+            padding-top: 0.15rem !important;
+            padding-bottom: 0.35rem !important;
+        }
+
+        [data-testid="stSidebarCollapseButton"],
+        [data-testid="collapsedControl"] {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+            width: 0 !important;
+            height: 0 !important;
+        }
+
+        section[data-testid="stSidebar"] div[data-testid="stVerticalBlock"] {
+            gap: 0.30rem !important;
+        }
+
+        section[data-testid="stSidebar"] div[data-testid="stSelectbox"] {
+            width: 88% !important;
+            max-width: 88% !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            margin-bottom: 0.10rem !important;
+        }
+
+        section[data-testid="stSidebar"] div[data-testid="stSelectbox"] label {
+            font-size: 11px !important;
+            line-height: 1.05 !important;
+            padding-bottom: 0.05rem !important;
+        }
+
+        section[data-testid="stSidebar"] div[data-testid="stSelectbox"] * {
+            font-size: 11px !important;
+        }
+
+        section[data-testid="stSidebar"] [data-testid="stCheckbox"] {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        section[data-testid="stSidebar"] [data-testid="stCheckbox"] label {
+            font-size: 11px !important;
+            min-height: 1rem !important;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+        }
+
+        section[data-testid="stSidebar"] .stAlert {
+            width: 88% !important;
+            margin: 0.15rem auto !important;
+            padding: 0.35rem 0.45rem !important;
+            font-size: 11px !important;
+            line-height: 1.10 !important;
+        }
+
+        section[data-testid="stSidebar"] .stImage {
+            width: 88% !important;
+            margin: 0.35rem auto 0 auto !important;
+        }
+
+        .copy-tools-row {
+            width: 88%;
+            margin: 0.10rem auto 0.10rem auto;
+        }
+
+        .copy-footer-image {
+            width: 88%;
+            margin: 0.35rem auto 0 auto;
+        }
+
         </style>
         """,
         unsafe_allow_html=True,
@@ -272,7 +358,7 @@ def pick_lang():  # C.O.P.Y. :: idioma-leitor hard coded
     )
 
     choice = st.sidebar.selectbox(
-        "idioma-leitor",
+        "idiomas disponíveis...",
         options,
         index=options.index(current),
         key="copy_idioma_leitor_hard",
@@ -320,17 +406,38 @@ def load_help(idiom):
 
 
 def draw_check_buttons():
-    foo = ""
-    draw_text, foo, foo, talk_text = st.sidebar.columns([4,1,1,4])
     help_tips = load_help(st.session_state.lang)
     help_draw = help_tips[5]
     help_talk = help_tips[6]
-    st.session_state.draw = draw_text.checkbox(
-        help_draw, st.session_state.draw, key="draw_machina"
-    )
-    st.session_state.talk = talk_text.checkbox(
-        help_talk, st.session_state.talk, key="talk_machina"
-    )
+
+    st.sidebar.markdown('<div class="copy-tools-row">', unsafe_allow_html=True)
+
+    col_art, col_tool, col_audio = st.sidebar.columns([1, 0.58, 1])
+
+    with col_art:
+        st.session_state.draw = st.checkbox(
+            help_draw,
+            st.session_state.draw,
+            key="draw_machina",
+        )
+
+    with col_tool:
+        st.button(
+            "⚒",
+            key="copy_canivete",
+            help="canivete suíço",
+            disabled=True,
+        )
+
+    with col_audio:
+        st.session_state.talk = st.checkbox(
+            help_talk,
+            st.session_state.talk,
+            key="talk_machina",
+        )
+
+    st.sidebar.markdown("</div>", unsafe_allow_html=True)
+
 
 
 def get_binary_file_downloader_html(bin_file, file_label="File"):
