@@ -167,6 +167,24 @@ def apply_styles():
             width: 290px;
         }
 
+
+        /* Machina :: topo colado */
+        
+
+        [data-testid="stAppViewContainer"] .main 
+
+        section[data-testid="stSidebar"] [data-testid="stSidebarContent"] {
+            padding-top: 0rem !important;
+        }
+
+        header[data-testid="stHeader"] {
+            height: 0rem !important;
+        }
+
+        div[data-testid="stToolbar"] {
+            top: 0.15rem !important;
+        }
+
 </style>
         """,
         unsafe_allow_html=True,
@@ -175,12 +193,7 @@ def apply_styles():
     st.markdown(
         """
         <style>
-        .reportview-container .main .block-container{
-            padding-top: 0rem;
-            padding-right: 0rem;
-            padding-left: 0rem;
-            padding-bottom: 0rem;
-        }
+        .reportview-container .main 
         </style>
         """,
         unsafe_allow_html=True,
