@@ -141,83 +141,140 @@ def apply_styles():
         footer {visibility: hidden;}
         
         
-        /* C.O.P.Y. :: sidebar tamanho exato */
+        
+        /* C.O.P.Y. :: bloco fixo, sem dança */
         section[data-testid="stSidebar"] {
-            overflow-x: hidden !important;
+            width: 320px !important;
+            min-width: 320px !important;
+            max-width: 320px !important;
+            overflow: hidden !important;
         }
 
         section[data-testid="stSidebar"] > div:first-child {
             width: 320px !important;
             min-width: 320px !important;
             max-width: 320px !important;
-            padding-top: 0rem !important;
-            padding-left: 0.20rem !important;
-            padding-right: 0.20rem !important;
-            padding-bottom: 0rem !important;
-            overflow-x: hidden !important;
+            height: 100vh !important;
+            min-height: 100vh !important;
+            max-height: 100vh !important;
+            overflow: hidden !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        section[data-testid="stSidebar"] [data-testid="stSidebarContent"] {
+            height: 100vh !important;
+            max-height: 100vh !important;
+            overflow: hidden !important;
+            padding: 0.15rem 0.25rem 0.20rem 0.25rem !important;
+            margin: 0 !important;
         }
 
         section[data-testid="stSidebar"] .block-container {
-            padding-top: 0rem !important;
-            margin-top: 0rem !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            max-height: 100vh !important;
+            overflow: hidden !important;
         }
 
         section[data-testid="stSidebar"] div[data-testid="stVerticalBlock"] {
-            gap: 0rem !important;
+            gap: 0.16rem !important;
+            padding: 0 !important;
+            margin: 0 !important;
         }
 
         section[data-testid="stSidebar"] .element-container {
-            margin-top: 0rem !important;
-            margin-bottom: 0rem !important;
+            margin: 0 !important;
+            padding: 0 !important;
         }
 
-        section[data-testid="stSidebar"] .stMarkdown {
-            margin-bottom: 0rem !important;
-        }
-
-        section[data-testid="stSidebar"] .stAlert {
-            width: 96% !important;
-            margin: 0.10rem auto !important;
-            padding: 0.20rem 0.30rem !important;
-            font-size: 11px !important;
+        section[data-testid="stSidebar"] .stMarkdown,
+        section[data-testid="stSidebar"] .stMarkdown p {
+            margin: 0 !important;
+            padding: 0 !important;
         }
 
         section[data-testid="stSidebar"] div[data-testid="stSelectbox"] {
-            width: 96% !important;
+            width: 300px !important;
+            max-width: 300px !important;
             margin: 0 auto !important;
+            padding: 0 !important;
         }
 
         section[data-testid="stSidebar"] div[data-testid="stSelectbox"] label {
-            font-size: 11px !important;
-            padding-bottom: 0rem !important;
+            font-size: 10.5px !important;
+            line-height: 1 !important;
+            height: 14px !important;
+            min-height: 14px !important;
+            max-height: 14px !important;
+            padding: 0 !important;
+            margin: 0 !important;
         }
 
         section[data-testid="stSidebar"] div[data-testid="stSelectbox"] * {
-            font-size: 11px !important;
+            font-size: 10.5px !important;
+        }
+
+        section[data-testid="stSidebar"] .stAlert {
+            width: 300px !important;
+            max-width: 300px !important;
+            height: 82px !important;
+            max-height: 82px !important;
+            overflow: hidden !important;
+            margin: 0.10rem auto !important;
+            padding: 0.20rem 0.28rem !important;
+            font-size: 10.5px !important;
+            line-height: 1.05 !important;
         }
 
         .copy-tools-row {
-            width: 96%;
-            margin: 0.15rem auto;
+            width: 300px !important;
+            max-width: 300px !important;
+            height: 34px !important;
+            max-height: 34px !important;
+            margin: 0.12rem auto !important;
+            padding: 0 !important;
+            overflow: hidden !important;
         }
 
         .copy-tools-row button {
             width: 100% !important;
-            min-height: 38px !important;
-            border-radius: 10px !important;
+            height: 30px !important;
+            min-height: 30px !important;
+            max-height: 30px !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            border-radius: 8px !important;
+            line-height: 1 !important;
         }
 
         .copy-footer-image {
-            width: 96%;
-            margin: 0.20rem auto 0 auto;
+            width: 300px !important;
+            max-width: 300px !important;
+            height: 112px !important;
+            max-height: 112px !important;
+            overflow: hidden !important;
+            margin: 0.18rem auto 0 auto !important;
+            padding: 0 !important;
         }
 
-        [data-testid="collapsedControl"] {
+        .copy-footer-image img {
+            width: 300px !important;
+            max-width: 300px !important;
+            max-height: 112px !important;
+            object-fit: contain !important;
+        }
+
+        [data-testid="collapsedControl"],
+        [data-testid="stSidebarCollapseButton"] {
             display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            width: 0 !important;
+            height: 0 !important;
+            pointer-events: none !important;
         }
-    
-
-        </style>
+</style>
         """,
         unsafe_allow_html=True,
     )
@@ -398,20 +455,21 @@ def load_help(idiom):
 
 
 
+
 def draw_check_buttons():
     st.sidebar.markdown('<div class="copy-tools-row">', unsafe_allow_html=True)
 
     col1, col2, col3 = st.sidebar.columns([1, 1, 1])
 
     with col1:
-        if st.button("🎨", key="btn_arte"):
+        if st.button("🎨", key="btn_arte", help="arte"):
             st.session_state.draw = not st.session_state.draw
 
     with col2:
-        st.button("⚒", key="btn_canivete", disabled=True)
+        st.button("⚒", key="btn_canivete", help="canivete suíço", disabled=True)
 
     with col3:
-        if st.button("🔊", key="btn_audio"):
+        if st.button("🔊", key="btn_audio", help="audio"):
             st.session_state.talk = not st.session_state.talk
 
     st.sidebar.markdown("</div>", unsafe_allow_html=True)
