@@ -59,6 +59,7 @@ VOICES_EDGE_TTS = {
     "fr": "fr-FR-RemyNeural", "it": "it-IT-DiegoNeural",
 }
 
+
 IDIOMAS_OFICIAIS = [
     ("Português", "Brasil", "pt", "poly_pt.txt"),
     ("English", "Inglaterra", "en", "poly_en.txt"),
@@ -80,7 +81,6 @@ IDIOMAS_OFICIAIS = [
     ("Magyar", "Hungria", "hu", "poly_hu.txt"),
     ("Latin", "Latim", "la", "poly_la.txt"),
     ("Esperanto", "Esperanto", "eo", "poly_eo.txt"),
-    ("Portuñol", "Portunhol", "pt", "poly_pt.txt"),
 ]
 
 
@@ -137,35 +137,6 @@ def apply_styles():
         <style>
         /*#MainMenu {visibility: hidden;}*/
         footer {visibility: hidden;}
-        
-        /* C.O.P.Y. :: ajustes cirúrgicos */
-        [data-testid="stSidebarResizer"],
-        [data-testid="stSidebar"] [role="separator"] {
-            display: none !important;
-            pointer-events: none !important;
-            width: 0 !important;
-        }
-
-        [data-testid="stSidebarUserContent"],
-        section[data-testid="stSidebar"] [data-testid="stSidebarContent"] {
-            padding-top: 0rem !important;
-        }
-
-        section[data-testid="stSidebar"] > div:first-child {
-            padding-top: 0rem !important;
-        }
-
-        section[data-testid="stSidebar"] div[data-testid="stSelectbox"] {
-            margin-top: 0rem !important;
-            margin-bottom: 0.15rem !important;
-        }
-
-        section[data-testid="stSidebar"] div[data-testid="stSelectbox"] label {
-            margin-bottom: 0rem !important;
-            padding-bottom: 0rem !important;
-            line-height: 1.05 !important;
-        }
-
         </style>
         """,
         unsafe_allow_html=True,
@@ -279,12 +250,12 @@ def translate(input_text):
     except Exception:
         return "Arquivo muito grande para ser traduzido."
 
-def pick_lang():  # define idioma pela lista oficial
+def pick_lang():  # lista oficial única
     options = []
     lookup = {}
 
     for nome, pais, code, poly_file in IDIOMAS_OFICIAIS:
-        label = f"{nome} — {pais}" if pais else nome
+        label = f"{nome} — {pais}"
         options.append(label)
         lookup[label] = {
             "lang": code,
@@ -304,7 +275,7 @@ def pick_lang():  # define idioma pela lista oficial
         "idiomas disponíveis...",
         options,
         index=options.index(current),
-        key="idioma_machina_oficial",
+        key="idioma_oficial_select",
     )
 
     selected = lookup[choice]
@@ -313,7 +284,16 @@ def pick_lang():  # define idioma pela lista oficial
         st.session_state.last_lang = st.session_state.lang
         st.session_state.lang = selected["lang"]
         st.session_state.poly_file = selected["poly_file"]
-        st.success("idioma atual ➪ " + st.session_state.lang)
+
+    if st.session_state.lang != st.session_state.last_lang:
+        st.success(translate("idioma atual") + " ➪ " + st.session_state.lang)
+
+    st.sidebar.button(
+        "⚒️ POLY",
+        key="poly_button",
+        help=st.session_state.poly_name,
+        disabled=True,
+    )
 
 
 
@@ -376,6 +356,7 @@ def draw_check_buttons():
     st.session_state.talk = talk_text.checkbox(
         help_talk, st.session_state.talk, key="talk_machina"
     )
+
 
 
 def get_binary_file_downloader_html(bin_file, file_label="File"):
