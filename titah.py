@@ -139,49 +139,6 @@ def apply_styles():
         <style>
         /*#MainMenu {visibility: hidden;}*/
         footer {visibility: hidden;}
-        
-        /* C.O.P.Y. :: nativo compacto */
-        [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
-            width: 330px;
-            padding-top: 0rem !important;
-        }
-
-        section[data-testid="stSidebar"] [data-testid="stSidebarContent"] {
-            padding-top: 0rem !important;
-        }
-
-        section[data-testid="stSidebar"] div[data-testid="stVerticalBlock"] {
-            gap: 0.25rem !important;
-        }
-
-        section[data-testid="stSidebar"] .element-container {
-            margin-top: 0rem !important;
-            margin-bottom: 0rem !important;
-        }
-
-        section[data-testid="stSidebar"] div[data-testid="stSelectbox"] {
-            margin-top: 0rem !important;
-            margin-bottom: 0.15rem !important;
-        }
-
-        section[data-testid="stSidebar"] .stAlert {
-            margin-top: 0.15rem !important;
-            margin-bottom: 0.15rem !important;
-            padding-top: 0.35rem !important;
-            padding-bottom: 0.35rem !important;
-            max-height: 86px !important;
-            overflow: hidden !important;
-        }
-
-        section[data-testid="stSidebar"] .stImage {
-            margin-top: 0.15rem !important;
-        }
-
-        section[data-testid="stSidebar"] .stImage img {
-            max-height: 108px !important;
-            object-fit: contain !important;
-        }
-
         </style>
         """,
         unsafe_allow_html=True,
@@ -207,7 +164,7 @@ def apply_styles():
         [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
             width: 310px;
         }
-        mark {
+mark {
             background-color: powderblue;
             color: black;
         }
@@ -363,20 +320,19 @@ def load_help(idiom):
 
 
 
-
 def draw_check_buttons():
     help_tips = load_help(st.session_state.lang)
     help_draw = help_tips[5]
     help_talk = help_tips[6]
 
-    col_art, col_writer, col_audio = st.sidebar.columns([1, 1, 1])
+    col_art, col_copy, col_audio = st.sidebar.columns(3)
 
     with col_art:
         if st.button("arte", key="btn_arte", help=help_draw):
             st.session_state.draw = not st.session_state.draw
 
-    with col_writer:
-        st.button("redator", key="btn_redator", help="redator da Machina", disabled=True)
+    with col_copy:
+        st.button("COPY", key="btn_copy", help="Centro Operacional de PoesYas", disabled=True)
 
     with col_audio:
         if st.button("audio", key="btn_audio", help=help_talk):
@@ -1422,7 +1378,7 @@ def main():
     draw_check_buttons()
 
     if chosen_id == "1":
-        st.sidebar.caption(str(load_md_file("INFO_MINI.md")[:220]))
+        st.sidebar.info(load_md_file("INFO_MINI.md"))
         magy = "img_mini.jpg"
         page_mini()
     elif chosen_id == "2":
