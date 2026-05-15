@@ -139,6 +139,84 @@ def apply_styles():
         <style>
         /*#MainMenu {visibility: hidden;}*/
         footer {visibility: hidden;}
+        
+        /* C.O.P.Y. :: sidebar limpa e compacta */
+        section[data-testid="stSidebar"] {
+            overflow-x: hidden !important;
+        }
+
+        section[data-testid="stSidebar"] > div:first-child {
+            width: 330px !important;
+            min-width: 330px !important;
+            max-width: 330px !important;
+            padding-top: 0rem !important;
+            padding-left: 0.35rem !important;
+            padding-right: 0.35rem !important;
+        }
+
+        section[data-testid="stSidebar"] [data-testid="stSidebarContent"] {
+            padding-top: 0.15rem !important;
+        }
+
+        section[data-testid="stSidebar"] div[data-testid="stVerticalBlock"] {
+            gap: 0.22rem !important;
+        }
+
+        section[data-testid="stSidebar"] .element-container {
+            margin-top: 0rem !important;
+            margin-bottom: 0rem !important;
+        }
+
+        section[data-testid="stSidebar"] div[data-testid="stSelectbox"] {
+            width: 94% !important;
+            max-width: 94% !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            margin-top: 0rem !important;
+            margin-bottom: 0.10rem !important;
+        }
+
+        section[data-testid="stSidebar"] div[data-testid="stSelectbox"] label {
+            font-size: 11px !important;
+            line-height: 1.05 !important;
+            padding-bottom: 0rem !important;
+            margin-bottom: 0rem !important;
+        }
+
+        section[data-testid="stSidebar"] div[data-testid="stSelectbox"] * {
+            font-size: 11px !important;
+        }
+
+        section[data-testid="stSidebar"] .stAlert {
+            width: 94% !important;
+            max-width: 94% !important;
+            margin: 0.12rem auto !important;
+            padding: 0.30rem 0.40rem !important;
+            font-size: 11px !important;
+            line-height: 1.10 !important;
+        }
+
+        .copy-tools-row {
+            width: 94%;
+            margin: 0.18rem auto 0.12rem auto;
+        }
+
+        .copy-tools-row button {
+            width: 100% !important;
+            min-height: 32px !important;
+            height: 32px !important;
+            padding: 0 !important;
+            border-radius: 8px !important;
+            line-height: 1 !important;
+        }
+
+        section[data-testid="stSidebar"] .stImage {
+            width: 94% !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            margin-top: 0.20rem !important;
+        }
+
         </style>
         """,
         unsafe_allow_html=True,
@@ -272,7 +350,7 @@ def pick_lang():  # C.O.P.Y. :: idioma-leitor hard coded
     )
 
     choice = st.sidebar.selectbox(
-        "idioma-leitor",
+        "idiomas disponíveis...",
         options,
         index=options.index(current),
         key="copy_idioma_leitor_hard",
@@ -319,18 +397,31 @@ def load_help(idiom):
     return returns
 
 
+
 def draw_check_buttons():
-    foo = ""
-    draw_text, foo, foo, talk_text = st.sidebar.columns([4,1,1,4])
     help_tips = load_help(st.session_state.lang)
     help_draw = help_tips[5]
     help_talk = help_tips[6]
-    st.session_state.draw = draw_text.checkbox(
-        help_draw, st.session_state.draw, key="draw_machina"
-    )
-    st.session_state.talk = talk_text.checkbox(
-        help_talk, st.session_state.talk, key="talk_machina"
-    )
+
+    st.sidebar.markdown('<div class="copy-tools-row">', unsafe_allow_html=True)
+
+    col_art, col_tool, col_audio = st.sidebar.columns([1, 1, 1])
+
+    with col_art:
+        arte_label = "◉" if st.session_state.draw else "○"
+        if st.button(arte_label, key="btn_arte", help=help_draw):
+            st.session_state.draw = not st.session_state.draw
+
+    with col_tool:
+        st.button("⚒", key="btn_canivete", help="canivete suíço", disabled=True)
+
+    with col_audio:
+        audio_label = "◉" if st.session_state.talk else "○"
+        if st.button(audio_label, key="btn_audio", help=help_talk):
+            st.session_state.talk = not st.session_state.talk
+
+    st.sidebar.markdown("</div>", unsafe_allow_html=True)
+
 
 
 def get_binary_file_downloader_html(bin_file, file_label="File"):
