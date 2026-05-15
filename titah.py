@@ -140,90 +140,82 @@ def apply_styles():
         /*#MainMenu {visibility: hidden;}*/
         footer {visibility: hidden;}
         
+        
         /* C.O.P.Y. :: sidebar tamanho exato */
         section[data-testid="stSidebar"] {
             overflow-x: hidden !important;
         }
 
-        section[data-testid="stSidebar"] * {
-            box-sizing: border-box !important;
-        }
-
         section[data-testid="stSidebar"] > div:first-child {
-            width: 342px !important;
-            min-width: 342px !important;
-            max-width: 342px !important;
+            width: 320px !important;
+            min-width: 320px !important;
+            max-width: 320px !important;
+            padding-top: 0rem !important;
+            padding-left: 0.20rem !important;
+            padding-right: 0.20rem !important;
+            padding-bottom: 0rem !important;
             overflow-x: hidden !important;
-            padding-top: 0.15rem !important;
-            padding-bottom: 0.35rem !important;
         }
 
-        [data-testid="stSidebarCollapseButton"],
-        [data-testid="collapsedControl"] {
-            display: none !important;
-            visibility: hidden !important;
-            opacity: 0 !important;
-            pointer-events: none !important;
-            width: 0 !important;
-            height: 0 !important;
+        section[data-testid="stSidebar"] .block-container {
+            padding-top: 0rem !important;
+            margin-top: 0rem !important;
         }
 
         section[data-testid="stSidebar"] div[data-testid="stVerticalBlock"] {
-            gap: 0.30rem !important;
+            gap: 0rem !important;
+        }
+
+        section[data-testid="stSidebar"] .element-container {
+            margin-top: 0rem !important;
+            margin-bottom: 0rem !important;
+        }
+
+        section[data-testid="stSidebar"] .stMarkdown {
+            margin-bottom: 0rem !important;
+        }
+
+        section[data-testid="stSidebar"] .stAlert {
+            width: 96% !important;
+            margin: 0.10rem auto !important;
+            padding: 0.20rem 0.30rem !important;
+            font-size: 11px !important;
         }
 
         section[data-testid="stSidebar"] div[data-testid="stSelectbox"] {
-            width: 88% !important;
-            max-width: 88% !important;
-            margin-left: auto !important;
-            margin-right: auto !important;
-            margin-bottom: 0.10rem !important;
+            width: 96% !important;
+            margin: 0 auto !important;
         }
 
         section[data-testid="stSidebar"] div[data-testid="stSelectbox"] label {
             font-size: 11px !important;
-            line-height: 1.05 !important;
-            padding-bottom: 0.05rem !important;
+            padding-bottom: 0rem !important;
         }
 
         section[data-testid="stSidebar"] div[data-testid="stSelectbox"] * {
             font-size: 11px !important;
         }
 
-        section[data-testid="stSidebar"] [data-testid="stCheckbox"] {
-            margin: 0 !important;
-            padding: 0 !important;
-        }
-
-        section[data-testid="stSidebar"] [data-testid="stCheckbox"] label {
-            font-size: 11px !important;
-            min-height: 1rem !important;
-            padding-top: 0 !important;
-            padding-bottom: 0 !important;
-        }
-
-        section[data-testid="stSidebar"] .stAlert {
-            width: 88% !important;
-            margin: 0.15rem auto !important;
-            padding: 0.35rem 0.45rem !important;
-            font-size: 11px !important;
-            line-height: 1.10 !important;
-        }
-
-        section[data-testid="stSidebar"] .stImage {
-            width: 88% !important;
-            margin: 0.35rem auto 0 auto !important;
-        }
-
         .copy-tools-row {
-            width: 88%;
-            margin: 0.10rem auto 0.10rem auto;
+            width: 96%;
+            margin: 0.15rem auto;
+        }
+
+        .copy-tools-row button {
+            width: 100% !important;
+            min-height: 38px !important;
+            border-radius: 10px !important;
         }
 
         .copy-footer-image {
-            width: 88%;
-            margin: 0.35rem auto 0 auto;
+            width: 96%;
+            margin: 0.20rem auto 0 auto;
         }
+
+        [data-testid="collapsedControl"] {
+            display: none !important;
+        }
+    
 
         </style>
         """,
@@ -405,36 +397,22 @@ def load_help(idiom):
     return returns
 
 
-def draw_check_buttons():
-    help_tips = load_help(st.session_state.lang)
-    help_draw = help_tips[5]
-    help_talk = help_tips[6]
 
+def draw_check_buttons():
     st.sidebar.markdown('<div class="copy-tools-row">', unsafe_allow_html=True)
 
-    col_art, col_tool, col_audio = st.sidebar.columns([1, 0.58, 1])
+    col1, col2, col3 = st.sidebar.columns([1, 1, 1])
 
-    with col_art:
-        st.session_state.draw = st.checkbox(
-            help_draw,
-            st.session_state.draw,
-            key="draw_machina",
-        )
+    with col1:
+        if st.button("🎨", key="btn_arte"):
+            st.session_state.draw = not st.session_state.draw
 
-    with col_tool:
-        st.button(
-            "⚒",
-            key="copy_canivete",
-            help="canivete suíço",
-            disabled=True,
-        )
+    with col2:
+        st.button("⚒", key="btn_canivete", disabled=True)
 
-    with col_audio:
-        st.session_state.talk = st.checkbox(
-            help_talk,
-            st.session_state.talk,
-            key="talk_machina",
-        )
+    with col3:
+        if st.button("🔊", key="btn_audio"):
+            st.session_state.talk = not st.session_state.talk
 
     st.sidebar.markdown("</div>", unsafe_allow_html=True)
 
