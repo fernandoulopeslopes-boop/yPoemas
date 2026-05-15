@@ -23,65 +23,44 @@ from extra_streamlit_components import TabBar as stx
 
 from lay_2_ypo import gera_poema
 
-ABOUTS_LIST = [
-    "comments", "prefácio", "machina", "off-machina", "outros", "traduttore",
-    "bibliografia", "imagens", "samizdát", "notes", "license", "index",
-]
-
-BOOKS_LIST = [
-    "livro vivo", "poemas", "jocosos", "ensaios", "variações", "metalinguagem",
-    "sociais", "todos os temas", "outros autores", "signos_fem", "signos_mas",
-    "todos os signos",
-]
-
-OFF_BOOKS_LIST = [
-    "a_torre_de_papel", "quase_que_eu_Poesia", "faz_de_conto", "um_romance",
-    "linguafiada", "livro_vivo", "desvoto", "ensaio", "urbano", "essencial", "secreto",
-]
-
-PAGE_IMAGES = {
-    "1": "img_mini.jpg", "2": "img_ypoemas.jpg", "3": "img_eureka.jpg",
-    "4": "img_off-machina.jpg", "5": "img_books.jpg", "6": "img_poly.jpg", "7": "img_about.jpg",
-}
-
-PAGE_INFO_FILES = {
-    "1": "INFO_MINI.md", "2": "INFO_YPOEMAS.md", "3": "INFO_EUREKA.md",
-    "4": "INFO_OFF-MACHINA.md", "5": "INFO_BOOKS.md", "6": "INFO_POLY.md", "7": "INFO_ABOUT.md",
-}
-
-LANG_FILES = {
-    "pt": "poly_pt.txt", "es": "poly_es.txt", "it": "poly_it.txt",
-    "fr": "poly_fr.txt", "en": "poly_en.txt",
-}
-
-VOICES_EDGE_TTS = {
-    "pt": "pt-BR-AntonioNeural", "en": "en-US-GuyNeural", "es": "es-ES-AlvaroNeural",
-    "fr": "fr-FR-RemyNeural", "it": "it-IT-DiegoNeural",
-}
-
-
-IDIOMAS_OFICIAIS = [
-    ("Português", "Brasil", "pt", "poly_pt.txt"),
-    ("English", "Inglaterra", "en", "poly_en.txt"),
-    ("Español", "Espanha", "es", "poly_es.txt"),
-    ("Français", "França", "fr", "poly_fr.txt"),
-    ("Italiano", "Itália", "it", "poly_it.txt"),
-    ("Deutsch", "Alemanha", "de", "poly_de.txt"),
-    ("Català", "Catalunha", "ca", "poly_ca.txt"),
-    ("Galego", "Galícia", "gl", "poly_gl.txt"),
-    ("Nederlands", "Países Baixos", "nl", "poly_nl.txt"),
-    ("Polski", "Polônia", "pl", "poly_pl.txt"),
-    ("Română", "Romênia", "ro", "poly_ro.txt"),
-    ("Русский", "Rússia", "ru", "poly_ru.txt"),
-    ("Svenska", "Suécia", "sv", "poly_sv.txt"),
-    ("Norsk", "Noruega", "no", "poly_no.txt"),
-    ("Dansk", "Dinamarca", "da", "poly_da.txt"),
-    ("Suomi", "Finlândia", "fi", "poly_fi.txt"),
-    ("Íslenska", "Islândia", "is", "poly_is.txt"),
-    ("Magyar", "Hungria", "hu", "poly_hu.txt"),
-    ("Latin", "Latim", "la", "poly_la.txt"),
-    ("Esperanto", "Esperanto", "eo", "poly_eo.txt"),
-]
+try:
+    from core.padroes import (
+        ABOUTS_LIST,
+        BOOKS_LIST,
+        LANG_FILES,
+        OFF_BOOKS_LIST,
+        PAGE_IMAGES,
+        PAGE_INFO_FILES,
+        VOICES_EDGE_TTS,
+    )
+except ImportError:
+    # Fallback para manter o main.py executável mesmo antes de copiar core/padroes.py.
+    ABOUTS_LIST = [
+        "comments", "prefácio", "machina", "off-machina", "outros", "traduttore",
+        "bibliografia", "imagens", "samizdát", "notes", "license", "index",
+    ]
+    BOOKS_LIST = [
+        "livro vivo", "poemas", "jocosos", "ensaios", "variações", "metalinguagem",
+        "sociais", "todos os temas", "outros autores", "signos_fem", "signos_mas",
+        "todos os signos",
+    ]
+    OFF_BOOKS_LIST = [
+        "a_torre_de_papel", "quase_que_eu_Poesia", "faz_de_conto", "um_romance",
+        "linguafiada", "livro_vivo", "desvoto", "ensaio", "urbano", "essencial", "secreto",
+    ]
+    PAGE_IMAGES = {
+        "1": "img_mini.jpg", "2": "img_ypoemas.jpg", "3": "img_eureka.jpg",
+        "4": "img_off-machina.jpg", "5": "img_books.jpg", "6": "img_poly.jpg", "7": "img_about.jpg",
+    }
+    PAGE_INFO_FILES = {
+        "1": "INFO_MINI.md", "2": "INFO_YPOEMAS.md", "3": "INFO_EUREKA.md",
+        "4": "INFO_OFF-MACHINA.md", "5": "INFO_BOOKS.md", "6": "INFO_POLY.md", "7": "INFO_ABOUT.md",
+    }
+    LANG_FILES = {"pt": "poly_pt.txt", "es": "poly_es.txt", "it": "poly_it.txt", "fr": "poly_fr.txt", "en": "poly_en.txt"}
+    VOICES_EDGE_TTS = {
+        "pt": "pt-BR-AntonioNeural", "en": "en-US-GuyNeural", "es": "es-ES-AlvaroNeural",
+        "fr": "fr-FR-RemyNeural", "it": "it-IT-DiegoNeural",
+    }
 
 
 # -----------------------------------------------------------------------------
@@ -137,30 +116,7 @@ def apply_styles():
         <style>
         /*#MainMenu {visibility: hidden;}*/
         footer {visibility: hidden;}
-        
-        /* sidebar Machina */
-        [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
-            width: 310px;
-            min-width: 310px;
-            max-width: 310px;
-            overflow-y: hidden !important;
-        }
-
-        [data-testid="stSidebarResizer"],
-        [data-testid="stSidebar"] [role="separator"] {
-            display: none !important;
-            width: 0 !important;
-        }
-
-        section[data-testid="stSidebar"] [data-testid="stSidebarContent"] {
-            padding-top: 0rem !important;
-            overflow-y: hidden !important;
-        }
-
-        section[data-testid="stSidebar"] > div:first-child {
-            padding-top: 0rem !important;
-        }
-</style>
+        </style>
         """,
         unsafe_allow_html=True,
     )
@@ -273,41 +229,39 @@ def translate(input_text):
     except Exception:
         return "Arquivo muito grande para ser traduzido."
 
-def pick_lang():  # lista oficial única
-    options = []
-    lookup = {}
 
-    for nome, pais, code, poly_file in IDIOMAS_OFICIAIS:
-        label = f"{nome} — {pais}"
-        options.append(label)
-        lookup[label] = {
-            "lang": code,
-            "poly_file": poly_file,
-        }
-
-    current = next(
-        (
-            label
-            for label, data in lookup.items()
-            if data["lang"] == st.session_state.lang
-        ),
-        options[0],
+def pick_lang():  # define idioma
+    btn_pt, btn_es, btn_it, btn_fr, btn_en, btn_xy = st.sidebar.columns(
+        [1.1, 1.13, 1.04, 1.04, 1.17, 1.25]
     )
+    btn_pt = btn_pt.button("pt", key=1, help="Português")
+    btn_es = btn_es.button("es", key=2, help="Español")
+    btn_it = btn_it.button("it", key=3, help="Italiano")
+    btn_fr = btn_fr.button("fr", key=4, help="Français")
+    btn_en = btn_en.button("en", key=5, help="English")
+    btn_xy = btn_xy.button("⚒️", key=6, help=st.session_state.poly_name)
 
-    choice = st.sidebar.selectbox(
-        "idiomas disponíveis...",
-        options,
-        index=options.index(current),
-        key="idioma_oficial_select",
-    )
-
-    selected = lookup[choice]
-
-    if st.session_state.lang != selected["lang"]:
+    if btn_pt:
+        st.session_state.lang = "pt"
+        st.session_state.poly_file = "poly_pt.txt"
+    elif btn_es:
+        st.session_state.lang = "es"
+        st.session_state.poly_file = "poly_es.txt"
+    elif btn_it:
+        st.session_state.lang = "it"
+        st.session_state.poly_file = "poly_it.txt"
+    elif btn_fr:
+        st.session_state.lang = "fr"
+        st.session_state.poly_file = "poly_fr.txt"
+    elif btn_en:
+        st.session_state.lang = "en"
+        st.session_state.poly_file = "poly_en.txt"
+    elif btn_xy:
         st.session_state.last_lang = st.session_state.lang
-        st.session_state.lang = selected["lang"]
-        st.session_state.poly_file = selected["poly_file"]
+        st.session_state.lang = st.session_state.poly_lang
 
+    if st.session_state.lang != st.session_state.last_lang:
+        st.success(translate("idioma atual") + " ➪ " + st.session_state.lang)
 
 
 def show_icons():  # https://api.whatsapp.com/
@@ -325,7 +279,7 @@ def show_icons():  # https://api.whatsapp.com/
         )
 
 
-#@st.cache(allow_output_mutation=True)
+@st.cache(allow_output_mutation=True)
 def load_help_tips():
     help_list = []
     with open(os.path.join("./base/helpers.txt"), encoding="utf-8") as file:
@@ -358,19 +312,17 @@ def load_help(idiom):
 
 
 def draw_check_buttons():
-    col_art, col_poly, col_audio = st.sidebar.columns(3)
-
-    with col_art:
-        if st.button("arte", key="btn_arte"):
-            st.session_state.draw = not st.session_state.draw
-
-    with col_poly:
-        st.button("POLY", key="btn_poly", disabled=True)
-
-    with col_audio:
-        if st.button("audio", key="btn_audio"):
-            st.session_state.talk = not st.session_state.talk
-
+    foo = ""
+    draw_text, foo, foo, talk_text = st.sidebar.columns([4,1,1,4])
+    help_tips = load_help(st.session_state.lang)
+    help_draw = help_tips[5]
+    help_talk = help_tips[6]
+    st.session_state.draw = draw_text.checkbox(
+        help_draw, st.session_state.draw, key="draw_machina"
+    )
+    st.session_state.talk = talk_text.checkbox(
+        help_talk, st.session_state.talk, key="talk_machina"
+    )
 
 
 def get_binary_file_downloader_html(bin_file, file_label="File"):
@@ -570,11 +522,7 @@ def load_index():  # Load indexes numbers for all themes
 def load_lypo():  # Load last yPoema & replace '\n' with '<br>' for translator returned text
     lypo_text = ""
     lypo_user = "LYPO_" + IPAddres
-    with open(
-        os.path.join("./temp/" + lypo_user),
-        encoding="utf-8",
-        errors="replace",
-    ) as script:
+    with open(os.path.join("./temp/" + lypo_user), encoding="utf-8") as script:
         for line in script:
             line = line.strip()
             lypo_text += line + "<br>"
@@ -585,11 +533,7 @@ def load_lypo():  # Load last yPoema & replace '\n' with '<br>' for translator r
 def load_typo():  # Load translated yPoema & clean translator returned bugs in text
     typo_text = ""
     typo_user = "TYPO_" + IPAddres
-    with open(
-        os.path.join("./temp/" + typo_user),
-        encoding="utf-8",
-        errors="replace",
-    ) as script:
+    with open(os.path.join("./temp/" + typo_user), encoding="utf-8") as script:
         for line in script:  # just 1 line
             line = line.strip()
             if " >" in line:
@@ -1450,5 +1394,5 @@ def main():
     with st.sidebar:
         st.image("./images/" + magy)
 
-
+if __name__ == "__main__":
     main()
