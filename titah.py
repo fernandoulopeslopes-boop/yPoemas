@@ -23,8 +23,6 @@ from extra_streamlit_components import TabBar as stx
 
 from lay_2_ypo import gera_poema
 
-
-
 ABOUTS_LIST = [
     "comments", "prefácio", "machina", "off-machina", "outros", "traduttore",
     "bibliografia", "imagens", "samizdát", "notes", "license", "index",
@@ -164,7 +162,7 @@ def apply_styles():
         [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
             width: 310px;
         }
-mark {
+        mark {
             background-color: powderblue;
             color: black;
         }
@@ -252,15 +250,17 @@ def translate(input_text):
     except Exception:
         return "Arquivo muito grande para ser traduzido."
 
-
-def pick_lang():  # C.O.P.Y. :: idioma-leitor hard coded
+def pick_lang():  # define idioma pela lista oficial
     options = []
     lookup = {}
 
     for nome, pais, code, poly_file in IDIOMAS_OFICIAIS:
         label = f"{nome} — {pais}" if pais else nome
         options.append(label)
-        lookup[label] = {"lang": code, "poly_file": poly_file}
+        lookup[label] = {
+            "lang": code,
+            "poly_file": poly_file,
+        }
 
     current = next(
         (
@@ -275,7 +275,7 @@ def pick_lang():  # C.O.P.Y. :: idioma-leitor hard coded
         "idiomas disponíveis...",
         options,
         index=options.index(current),
-        key="copy_idioma_leitor_hard",
+        key="idioma_machina_oficial",
     )
 
     selected = lookup[choice]
@@ -288,6 +288,22 @@ def pick_lang():  # C.O.P.Y. :: idioma-leitor hard coded
 
 
 
+def show_icons():  # https://api.whatsapp.com/
+    with st.sidebar:
+        st.sidebar.markdown(
+            f"""
+            <nav>
+            <a href='https://www.facebook.com/nandoulopes' target='_blank'>• facebook</a> |
+            <a href='mailto:lopes.fernando@hotmail.com' target='_blank'>e-mail</a> |
+            <a href='https://www.instagram.com/fernando.lopes.942/' target='_blank'>instagram</a> |
+            <a href='https://web.whatsapp.com/send?phone=+5512991368181' target='_blank'>whatsapp</a>
+            </nav>
+            """,
+            unsafe_allow_html=True,
+        )
+
+
+@st.cache(allow_output_mutation=True)
 def load_help_tips():
     help_list = []
     with open(os.path.join("./base/helpers.txt"), encoding="utf-8") as file:
@@ -319,25 +335,18 @@ def load_help(idiom):
     return returns
 
 
-
 def draw_check_buttons():
+    foo = ""
+    draw_text, foo, foo, talk_text = st.sidebar.columns([4,1,1,4])
     help_tips = load_help(st.session_state.lang)
     help_draw = help_tips[5]
     help_talk = help_tips[6]
-
-    col_art, col_copy, col_audio = st.sidebar.columns(3)
-
-    with col_art:
-        if st.button("arte", key="btn_arte", help=help_draw):
-            st.session_state.draw = not st.session_state.draw
-
-    with col_copy:
-        st.button("COPY", key="btn_copy", help="Centro Operacional de PoesYas", disabled=True)
-
-    with col_audio:
-        if st.button("audio", key="btn_audio", help=help_talk):
-            st.session_state.talk = not st.session_state.talk
-
+    st.session_state.draw = draw_text.checkbox(
+        help_draw, st.session_state.draw, key="draw_machina"
+    )
+    st.session_state.talk = talk_text.checkbox(
+        help_talk, st.session_state.talk, key="talk_machina"
+    )
 
 
 def get_binary_file_downloader_html(bin_file, file_label="File"):
@@ -537,7 +546,11 @@ def load_index():  # Load indexes numbers for all themes
 def load_lypo():  # Load last yPoema & replace '\n' with '<br>' for translator returned text
     lypo_text = ""
     lypo_user = "LYPO_" + IPAddres
-    with open(os.path.join("./temp/" + lypo_user), encoding="utf-8") as script:
+    with open(
+        os.path.join("./temp/" + lypo_user),
+        encoding="utf-8",
+        errors="replace",
+    ) as script:
         for line in script:
             line = line.strip()
             lypo_text += line + "<br>"
@@ -548,7 +561,11 @@ def load_lypo():  # Load last yPoema & replace '\n' with '<br>' for translator r
 def load_typo():  # Load translated yPoema & clean translator returned bugs in text
     typo_text = ""
     typo_user = "TYPO_" + IPAddres
-    with open(os.path.join("./temp/" + typo_user), encoding="utf-8") as script:
+    with open(
+        os.path.join("./temp/" + typo_user),
+        encoding="utf-8",
+        errors="replace",
+    ) as script:
         for line in script:  # just 1 line
             line = line.strip()
             if " >" in line:
