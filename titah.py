@@ -167,29 +167,31 @@ def apply_styles():
             width: 290px;
         }
 
-
-        /* Machina :: topo útil sem matar sidebar */
+        /* Machina :: palco sem altura fantasma */
         .main .block-container {
-            padding-top: 0.25rem !important;
-            padding-bottom: 0.25rem !important;
-        }
-
-        section[data-testid="stSidebar"] [data-testid="stSidebarContent"] {
             padding-top: 0rem !important;
+            padding-bottom: 0rem !important;
+            margin-top: 0rem !important;
+            margin-bottom: 0rem !important;
         }
 
-        [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
-            width: 310px;
-            min-width: 310px;
-            max-width: 310px;
+        div[data-testid="stAppViewContainer"] .main {
+            padding-top: 0rem !important;
+            margin-top: 0rem !important;
         }
 
         div[data-testid="stVerticalBlock"] {
-            gap: 0.35rem;
+            gap: 0.25rem !important;
         }
 
-        iframe {
-            max-height: calc(100vh - 1rem) !important;
+        div[data-testid="stImage"] {
+            margin-top: 0rem !important;
+            margin-bottom: 0rem !important;
+        }
+
+        .element-container {
+            margin-top: 0rem !important;
+            margin-bottom: 0rem !important;
         }
 
 </style>
