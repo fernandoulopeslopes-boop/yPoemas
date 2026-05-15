@@ -167,31 +167,29 @@ def apply_styles():
             width: 290px;
         }
 
-        /* Machina :: remover altura fantasma do topo */
-        header[data-testid="stHeader"] {
-            display: none !important;
-            height: 0px !important;
-        }
 
+        /* Machina :: topo útil sem matar sidebar */
         .main .block-container {
-            padding-top: 0rem !important;
-            padding-bottom: 0rem !important;
-            margin-top: 0rem !important;
-        }
-
-        div[data-testid="stAppViewContainer"] .main {
-            padding-top: 0rem !important;
-            margin-top: 0rem !important;
-        }
-
-        section[data-testid="stSidebar"] {
-            padding-top: 0rem !important;
-            margin-top: 0rem !important;
+            padding-top: 0.25rem !important;
+            padding-bottom: 0.25rem !important;
         }
 
         section[data-testid="stSidebar"] [data-testid="stSidebarContent"] {
             padding-top: 0rem !important;
-            margin-top: 0rem !important;
+        }
+
+        [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
+            width: 310px;
+            min-width: 310px;
+            max-width: 310px;
+        }
+
+        div[data-testid="stVerticalBlock"] {
+            gap: 0.35rem;
+        }
+
+        iframe {
+            max-height: calc(100vh - 1rem) !important;
         }
 
 </style>
@@ -202,7 +200,12 @@ def apply_styles():
     st.markdown(
         """
         <style>
-        .reportview-container .main 
+        .reportview-container .main .block-container{
+            padding-top: 0rem;
+            padding-right: 0rem;
+            padding-left: 0rem;
+            padding-bottom: 0rem;
+        }
         </style>
         """,
         unsafe_allow_html=True,
