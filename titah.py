@@ -137,7 +137,37 @@ def apply_styles():
         <style>
         /*#MainMenu {visibility: hidden;}*/
         footer {visibility: hidden;}
-        </style>
+        
+        /* sidebar Machina */
+        [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
+            width: 310px;
+            min-width: 310px;
+            max-width: 310px;
+            overflow-y: hidden !important;
+        }
+
+        [data-testid="stSidebarResizer"],
+        [data-testid="stSidebar"] [role="separator"] {
+            display: none !important;
+            width: 0 !important;
+        }
+
+        section[data-testid="stSidebar"] [data-testid="stSidebarContent"] {
+            padding-top: 0rem !important;
+            overflow-y: hidden !important;
+        }
+
+        section[data-testid="stSidebar"] > div:first-child {
+            padding-top: 0rem !important;
+        }
+
+        .machina-footer {
+            position: fixed;
+            bottom: 0.5rem;
+            width: 290px;
+        }
+
+</style>
         """,
         unsafe_allow_html=True,
     )
@@ -285,16 +315,6 @@ def pick_lang():  # lista oficial única
         st.session_state.lang = selected["lang"]
         st.session_state.poly_file = selected["poly_file"]
 
-    if st.session_state.lang != st.session_state.last_lang:
-        st.success(translate("idioma atual") + " ➪ " + st.session_state.lang)
-
-    st.sidebar.button(
-        "⚒️ POLY",
-        key="poly_button",
-        help=st.session_state.poly_name,
-        disabled=True,
-    )
-
 
 
 def show_icons():  # https://api.whatsapp.com/
@@ -345,17 +365,18 @@ def load_help(idiom):
 
 
 def draw_check_buttons():
-    foo = ""
-    draw_text, foo, foo, talk_text = st.sidebar.columns([4,1,1,4])
-    help_tips = load_help(st.session_state.lang)
-    help_draw = help_tips[5]
-    help_talk = help_tips[6]
-    st.session_state.draw = draw_text.checkbox(
-        help_draw, st.session_state.draw, key="draw_machina"
-    )
-    st.session_state.talk = talk_text.checkbox(
-        help_talk, st.session_state.talk, key="talk_machina"
-    )
+    col_art, col_poly, col_audio = st.sidebar.columns(3)
+
+    with col_art:
+        if st.button("arte", key="btn_arte"):
+            st.session_state.draw = not st.session_state.draw
+
+    with col_poly:
+        st.button("POLY", key="btn_poly", disabled=True)
+
+    with col_audio:
+        if st.button("audio", key="btn_audio"):
+            st.session_state.talk = not st.session_state.talk
 
 
 
