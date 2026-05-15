@@ -137,6 +137,35 @@ def apply_styles():
         <style>
         /*#MainMenu {visibility: hidden;}*/
         footer {visibility: hidden;}
+        
+        /* C.O.P.Y. :: ajustes cirúrgicos */
+        [data-testid="stSidebarResizer"],
+        [data-testid="stSidebar"] [role="separator"] {
+            display: none !important;
+            pointer-events: none !important;
+            width: 0 !important;
+        }
+
+        [data-testid="stSidebarUserContent"],
+        section[data-testid="stSidebar"] [data-testid="stSidebarContent"] {
+            padding-top: 0rem !important;
+        }
+
+        section[data-testid="stSidebar"] > div:first-child {
+            padding-top: 0rem !important;
+        }
+
+        section[data-testid="stSidebar"] div[data-testid="stSelectbox"] {
+            margin-top: 0rem !important;
+            margin-bottom: 0.15rem !important;
+        }
+
+        section[data-testid="stSidebar"] div[data-testid="stSelectbox"] label {
+            margin-bottom: 0rem !important;
+            padding-bottom: 0rem !important;
+            line-height: 1.05 !important;
+        }
+
         </style>
         """,
         unsafe_allow_html=True,
