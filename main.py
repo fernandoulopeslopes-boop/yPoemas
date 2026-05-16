@@ -68,8 +68,8 @@ except ImportError:
 # Configuração inicial da página Streamlit.
 # Deve permanecer antes de qualquer saída visual do Streamlit.
 # -----------------------------------------------------------------------------
-st.set_page_config(
-    page_title="a máquina de fazer Poesia - yPoemas",
+st.set__config(
+    page_title="a Machina de fazer Poesia @ yPoemas",
     page_icon=":star:",
     layout="centered",
     initial_sidebar_state="auto",
