@@ -196,6 +196,19 @@ def apply_styles():
             padding-top: 0px;
             padding-left: 15px;
         }
+
+        section[data-testid="stSidebar"] .block-container {
+            padding-top: 0.35rem !important;
+            padding-bottom: 0.2rem !important;
+        }
+
+        section[data-testid="stSidebar"] .stSelectbox {
+            margin-bottom: 0.15rem !important;
+        }
+
+        section[data-testid="stSidebar"] .stMarkdown {
+            margin-bottom: 0rem !important;
+        }
         .logo-img {
             float:right;
         }
@@ -295,18 +308,11 @@ def pick_lang():  # lista oficial de idiomas + P.O.L.Y.
         key="idioma_oficial_select",
     )
 
-    use_poly = st.sidebar.button("P.O.L.Y.", key="btn_poly", help=st.session_state.poly_name)
-
-    if use_poly:
+    selected = lookup[choice]
+    if st.session_state.lang != selected["lang"]:
         st.session_state.last_lang = st.session_state.lang
-        st.session_state.lang = st.session_state.poly_lang
-        st.session_state.poly_file = LANG_FILES.get(st.session_state.poly_lang, st.session_state.poly_file)
-    else:
-        selected = lookup[choice]
-        if st.session_state.lang != selected["lang"]:
-            st.session_state.last_lang = st.session_state.lang
-            st.session_state.lang = selected["lang"]
-            st.session_state.poly_file = selected["poly_file"]
+        st.session_state.lang = selected["lang"]
+        st.session_state.poly_file = selected["poly_file"]
 
     if st.session_state.lang != st.session_state.last_lang:
         st.success(translate("idioma atual") + " ➪ " + st.session_state.lang)
@@ -361,17 +367,38 @@ def load_help(idiom):
 
 
 def draw_check_buttons():
-    foo = ""
-    draw_text, foo, foo, talk_text = st.sidebar.columns([4,1,1,4])
     help_tips = load_help(st.session_state.lang)
     help_draw = help_tips[5]
     help_talk = help_tips[6]
-    st.session_state.draw = draw_text.checkbox(
-        help_draw, st.session_state.draw, key="draw_machina"
+
+    st.sidebar.markdown(
+        """
+        <style>
+        div[data-testid="stButton"] > button[kind="secondary"] {
+            padding-top: 0rem !important;
+            padding-bottom: 0rem !important;
+            min-height: 1.6rem !important;
+            line-height: 1 !important;
+            font-size: 0.92rem !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
     )
-    st.session_state.talk = talk_text.checkbox(
-        help_talk, st.session_state.talk, key="talk_machina"
-    )
+
+    col1, col2, col3 = st.sidebar.columns(3)
+
+    with col1:
+        if st.button("arte", help=help_draw, use_container_width=True):
+            st.session_state.draw = not st.session_state.draw
+
+    with col2:
+        st.button("escrita", help="fontes do palco", use_container_width=True)
+
+    with col3:
+        if st.button("audio", help=help_talk, use_container_width=True):
+            st.session_state.talk = not st.session_state.talk
+
 
 
 def get_binary_file_downloader_html(bin_file, file_label="File"):
