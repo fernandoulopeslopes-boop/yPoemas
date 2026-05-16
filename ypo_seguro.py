@@ -81,12 +81,14 @@ VOICES_EDGE_TTS = {
 
 IDIOMAS_OFICIAIS = [
     ("Português", "Brasil", "pt", "poly_pt.txt"),
-    ("English", "Inglaterra", "en", "poly_en.txt"),
     ("Español", "Espanha", "es", "poly_es.txt"),
     ("Français", "França", "fr", "poly_fr.txt"),
     ("Italiano", "Itália", "it", "poly_it.txt"),
-    ("Deutsch", "Alemanha", "de", "poly_de.txt"),
+    ("Latin", "Latim", "la", "poly_la.txt"),
+    ("Esperanto", "Esperanto", "eo", "poly_eo.txt"),
+    ("English", "Inglaterra", "en", "poly_en.txt"),
     ("Català", "Catalunha", "ca", "poly_ca.txt"),
+    ("Deutsch", "Alemanha", "de", "poly_de.txt"),
     ("Galego", "Galícia", "gl", "poly_gl.txt"),
     ("Nederlands", "Países Baixos", "nl", "poly_nl.txt"),
     ("Polski", "Polônia", "pl", "poly_pl.txt"),
@@ -98,8 +100,6 @@ IDIOMAS_OFICIAIS = [
     ("Suomi", "Finlândia", "fi", "poly_fi.txt"),
     ("Íslenska", "Islândia", "is", "poly_is.txt"),
     ("Magyar", "Hungria", "hu", "poly_hu.txt"),
-    ("Latin", "Latim", "la", "poly_la.txt"),
-    ("Esperanto", "Esperanto", "eo", "poly_eo.txt"),
 ]
 
 
@@ -108,7 +108,7 @@ IDIOMAS_OFICIAIS = [
 # Deve permanecer antes de qualquer saída visual do Streamlit.
 # -----------------------------------------------------------------------------
 st.set_page_config(
-    page_title="a máquina de fazer Poesia - yPoemas",
+    page_title="a Machina de fazer Poesia @ yPoemas",
     page_icon=":star:",
     layout="centered",
     initial_sidebar_state="auto",
@@ -252,7 +252,6 @@ init_session_state()
 ### bof: tools
 
 
-
 def translate(input_text):
     """Traduz textos de apoio e yPoemas quando o idioma atual não é português."""
     if st.session_state.lang == "pt":  # don't need translations here
@@ -328,10 +327,10 @@ def show_icons():  # https://api.whatsapp.com/
         st.sidebar.markdown(
             f"""
             <nav>
-            <a href='https://www.facebook.com/nandoulopes' target='_blank'>• facebook</a> |
-            <a href='mailto:lopes.fernando@hotmail.com' target='_blank'>e-mail</a> |
-            <a href='https://www.instagram.com/fernando.lopes.942/' target='_blank'>instagram</a> |
-            <a href='https://web.whatsapp.com/send?phone=+5512991368181' target='_blank'>whatsapp</a>
+            <a href='https://www.facebook.com/nandoulopes' target='_blank'>face</a> |
+            <a href='mailto:lopes.fernando@hotmail.com' target='_blank'>mail</a> |
+            <a href='https://www.instagram.com/fernando.lopes.942/' target='_blank'>insta</a> |
+            <a href='https://web.whatsapp.com/send?phone=+5512991368181' target='_blank'>zapp</a>
             </nav>
             """,
             unsafe_allow_html=True,
@@ -1453,7 +1452,7 @@ def main():
     with st.sidebar:
         st.image("./images/" + magy)
 
-#    show_icons()
+    show_icons()
     ##$ st.sidebar.state = True
 
 
