@@ -223,7 +223,7 @@ def init_session_state():
     defaults = {
         "lang": "pt",
         "last_lang": "pt",
-        "book": "livro vivo",
+        "book": "todos os temas",
         "take": 0,
         "mini": 0,
         "tema": "Fatos",
@@ -324,10 +324,10 @@ def show_icons():  # https://api.whatsapp.com/
         st.sidebar.markdown(
             f"""
             <nav>
-            <a href='https://www.facebook.com/nandoulopes' target='_blank'>• face  </a>
+            <a href='https://www.facebook.com/nandoulopes' target='_blank'>•  face  </a>
             <a href='mailto:lopes.fernando@hotmail.com' target='_blank'>e-mail  </a>
             <a href='https://www.instagram.com/fernando.lopes.942/' target='_blank'>insta  </a>
-            <a href='https://web.whatsapp.com/send?phone=+5512991368181' target='_blank'>zapp •</a>
+            <a href='https://web.whatsapp.com/send?phone=+5512991368181' target='_blank'>zapp  •</a>
             </nav>
             """,
             unsafe_allow_html=True,
