@@ -24,7 +24,7 @@ from extra_streamlit_components import TabBar as stx
 from lay_2_ypo import gera_poema
 
 ABOUTS_LIST = [
-    "comments", "prefácio", "machina", "off-machina", MACHINA-IA, "outros", "traduttore",
+    "comments", "prefácio", "machina", "off-machina", "MACHINA-IA", "outros", "traduttore",
     "bibliografia", "imagens", "samizdát", "notes", "license", "index",
 ]
 
