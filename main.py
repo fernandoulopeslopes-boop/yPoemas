@@ -291,7 +291,7 @@ def pick_lang():  # define idioma
         st.success(translate("idioma atual") + " ➪ " + st.session_state.lang)
 
 
-@st.cache_data
+@st.cache(allow_output_mutation=True)
 def load_help_tips():
     help_list = []
     with open(os.path.join("./base/helpers.txt"), encoding="utf-8") as file:
