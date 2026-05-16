@@ -37,7 +37,7 @@ try:
 except ImportError:
     # Fallback para manter o main.py executável mesmo antes de copiar core/padroes.py.
     ABOUTS_LIST = [
-        "comments", "prefácio", "machina", "off-machina", "outros", "traduttore",
+        "comments", "prefácio", "machina", "off-machina", "MACHINA-IA", "outros", "traduttore",
         "bibliografia", "imagens", "samizdát", "notes", "license", "index",
     ]
     BOOKS_LIST = [
