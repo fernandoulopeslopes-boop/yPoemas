@@ -40,25 +40,25 @@ PAGE_INFO_FILES = {
 
 LANG_FILES = {
     "pt": "poly_pt.txt",
-    "en": "poly_en.txt",
     "es": "poly_es.txt",
-    "fr": "poly_fr.txt",
     "it": "poly_it.txt",
-    "de": "poly_de.txt",
+    "fr": "poly_fr.txt",
+    "la": "poly_la.txt",
+    "eo": "poly_eo.txt",
+    "en": "poly_en.txt",
     "ca": "poly_ca.txt",
+    "de": "poly_de.txt",
     "gl": "poly_gl.txt",
+    "hu": "poly_hu.txt",
     "nl": "poly_nl.txt",
     "pl": "poly_pl.txt",
     "ro": "poly_ro.txt",
-    "ru": "poly_ru.txt",
-    "sv": "poly_sv.txt",
     "no": "poly_no.txt",
     "da": "poly_da.txt",
     "fi": "poly_fi.txt",
     "is": "poly_is.txt",
-    "hu": "poly_hu.txt",
-    "la": "poly_la.txt",
-    "eo": "poly_eo.txt",
+    "ru": "poly_ru.txt",
+    "sv": "poly_sv.txt",
 }
 
 VOICES_EDGE_TTS = {
@@ -98,7 +98,7 @@ IDIOMAS_OFICIAIS = [
 # Deve permanecer antes de qualquer saída visual do Streamlit.
 # -----------------------------------------------------------------------------
 st.set_page_config(
-    page_title="a máquina de fazer Poesia - yPoemas",
+    page_title="a Machina de fazer Poesia @ yPoemas",
     page_icon=":star:",
     layout="centered",
     initial_sidebar_state="auto",
