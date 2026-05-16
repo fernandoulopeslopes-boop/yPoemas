@@ -13,13 +13,13 @@ from extra_streamlit_components import TabBar as stx
 from lay_2_ypo import gera_poema
 
 ABOUTS_LIST = [
-    "comments", "prefácio", "machina", "off-machina", "MACHINA-IA", "outros", "traduttore",
-    "bibliografia", "imagens", "samizdát", "notes", "license", "index",
+    "comments", "prefácil", "machina", "off-machina", "MACHINA-IA", "outros", "imagens",
+    "traduttore", "bibliografia", "samizdát", "notes", "license", "index",
 ]
 
 BOOKS_LIST = [
-    "livro vivo", "poemas", "jocosos", "ensaios", "variações", "metalinguagem",
-    "sociais", "todos os temas", "outros autores", "signos_fem", "signos_mas",
+    "todos os temas", "livro vivo", "poemas", "jocosos", "ensaios", "variações", 
+    "metalinguagem", "sociais", "outros autores", "signos_fem", "signos_mas",
     "todos os signos",
 ]
 
