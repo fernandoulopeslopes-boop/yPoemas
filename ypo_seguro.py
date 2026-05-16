@@ -1470,8 +1470,8 @@ def main():
     with st.sidebar:
         st.image("./images/" + magy)
 
-    # how_icons()
-    # $ st.sidebar.state = True
+    # show_icons()
+    ##$ st.sidebar.state = True
 
 
 if __name__ == "__main__":
