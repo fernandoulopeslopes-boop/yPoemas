@@ -37,7 +37,7 @@ try:
 except ImportError:
     # Fallback para manter o main.py executável mesmo antes de copiar core/padroes.py.
     ABOUTS_LIST = [
-        "comments", "prefácio", "machina", "off-machina", "MACHINA-IA", "outros", "traduttore",
+        "comments", "prefácio", "machina", "off-machina", "outros", "traduttore",
         "bibliografia", "imagens", "samizdát", "notes", "license", "index",
     ]
     BOOKS_LIST = [
@@ -68,8 +68,8 @@ except ImportError:
 # Configuração inicial da página Streamlit.
 # Deve permanecer antes de qualquer saída visual do Streamlit.
 # -----------------------------------------------------------------------------
-st.set__config(
-    page_title="a Machina de fazer Poesia @ yPoemas",
+st.set_page_config(
+    page_title="a máquina de fazer Poesia - yPoemas",
     page_icon=":star:",
     layout="centered",
     initial_sidebar_state="auto",
