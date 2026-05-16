@@ -2,6 +2,7 @@
 main.py :: yPoemas / Machina
 Primeiro CLEAN conservador.
 
+
 Objetivo:
 - manter o fluxo original conhecido pelo autor;
 - preservar o Palco, LYPO, TYPO e o Eixo Z;
