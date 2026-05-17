@@ -197,10 +197,69 @@ def apply_styles():
             padding-left: 15px;
         }
 
+        section[data-testid="stSidebar"] .block-container {
+            padding-top: 0.35rem !important;
+            padding-bottom: 0.2rem !important;
+        }
+
+        section[data-testid="stSidebar"] .stSelectbox {
+            margin-bottom: 0.15rem !important;
+        }
+
+        section[data-testid="stSidebar"] .stMarkdown {
+            margin-bottom: 0rem !important;
+        }
         .logo-img {
             float:right;
         }
 
+        /* Sidebar :: ancoragem leve, sem provocar o Streamlit */
+        section[data-testid="stSidebar"] .block-container {
+            padding-top: 0.25rem !important;
+            padding-bottom: 0.25rem !important;
+        }
+
+        section[data-testid="stSidebar"] [data-testid="stAlert"] {
+            max-height: 235px;
+            overflow: auto;
+            margin-top: 0.25rem !important;
+            margin-bottom: 0.25rem !important;
+        }
+
+        section[data-testid="stSidebar"] [data-testid="stAlert"] * {
+            line-height: 1.25 !important;
+        }
+
+        .machina-sidebar-actions {
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: 0.86rem;
+            line-height: 1.1;
+            text-align: center;
+            margin: 0.18rem 0 0.22rem 0;
+            white-space: nowrap;
+        }
+
+        .machina-sidebar-bottom {
+            margin-top: 0.35rem;
+            text-align: center;
+        }
+
+        .machina-sidebar-bottom img {
+            max-width: 100%;
+        }
+
+
+        section[data-testid="stSidebar"] div[data-testid="stButton"] > button {
+            font-family: 'IBM Plex Sans', sans-serif !important;
+            font-size: 0.78rem !important;
+            line-height: 1.0 !important;
+            padding: 0rem 0.05rem !important;
+            min-height: 1.25rem !important;
+            height: 1.25rem !important;
+            white-space: nowrap !important;
+            overflow-wrap: normal !important;
+            word-break: keep-all !important;
+        }
 
         </style>
         """,
@@ -359,19 +418,19 @@ def load_help(idiom):
 def draw_check_buttons():
     help_tips = load_help(st.session_state.lang)
     help_draw = help_tips[5]
-    help_talk = help_tips[6]
+    help_voice = help_tips[6]
 
-    col_arte, col_escrita, col_voz = st.sidebar.columns([1, 1.25, 1])
+    col_arte, col_escrita, col_voz = st.sidebar.columns([1.0, 1.45, 1.0])
 
     with col_arte:
-        if st.button("arte", key="ctrl_arte", help=help_draw):
+        if st.button("arte", help=help_draw, key="btn_arte_sidebar"):
             st.session_state.draw = not st.session_state.draw
 
     with col_escrita:
-        st.button("escrita", key="ctrl_escrita", help="fontes do palco")
+        st.button("escrita", help="fontes do palco", key="btn_escrita_sidebar")
 
     with col_voz:
-        if st.button("voz", key="ctrl_voz", help=help_talk):
+        if st.button("voz", help=help_voice, key="btn_voz_sidebar"):
             st.session_state.talk = not st.session_state.talk
 
 
@@ -740,19 +799,19 @@ def talk(text):
     # Mapeamento de vozes neurais de alta qualidade
     selected_voice = VOICES_EDGE_TTS.get(st.session_state.lang, "pt-BR-AntonioNeural")
 
-    async def generate_voz():
+    async def generate_audio():
         communicate = edge_tts.Communicate(text_clean, selected_voice)
-        voz_bytes = b""
+        audio_bytes = b""
         async for chunk in communicate.stream():
-            if chunk["type"] == "voz":
-                voz_bytes += chunk["data"]
-        return voz_bytes
+            if chunk["type"] == "audio":
+                audio_bytes += chunk["data"]
+        return audio_bytes
 
     try:
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        voz_output = loop.run_until_complete(generate_voz())
-        st.voz(voz_output, format="voz/mp3")
+        audio_output = loop.run_until_complete(generate_audio())
+        st.audio(audio_output, format="audio/mp3")
     except Exception as e:
         st.error(f"Erro na voz neural: {e}")
         
@@ -1443,9 +1502,11 @@ def main():
         page_abouts()
 
     with st.sidebar:
+        st.markdown("<div class='machina-sidebar-bottom'>", unsafe_allow_html=True)
         st.image("./images/" + magy)
+        st.markdown("</div>", unsafe_allow_html=True)
 
-    # show_icons()
+    show_icons()
     ##$ st.sidebar.state = True
 
 
