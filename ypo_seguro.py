@@ -375,9 +375,9 @@ def show_icons():  # https://api.whatsapp.com/
             f"""
             <nav>
             <a href='https://www.facebook.com/nandoulopes' target='_blank'>• face  </a>
-            <a href='mailto:lopes.fernando@hotmail.com' target='_blank'>• e-mail  </a>
-            <a href='https://www.instagram.com/fernando.lopes.942/' target='_blank'>• inst   </a>
-            <a href='https://web.whatsapp.com/send?phone=+5512991368181' target='_blank'>• zapp  </a>
+            <a href='mailto:lopes.fernando@hotmail.com' target='_blank'>e-mail  </a>
+            <a href='https://www.instagram.com/fernando.lopes.942/' target='_blank'>insta  </a>
+            <a href='https://web.whatsapp.com/send?phone=+5512991368181' target='_blank'>zapp •</a>
             </nav>
             """,
             unsafe_allow_html=True,
@@ -855,13 +855,16 @@ def page_mini():
     if st.session_state.mini > maxy_mini:  # just in case
         st.session_state.mini = 0
 
-    foo1, more, rand, auto, foo2 = st.columns([4, 1, 1, 1, 4])
+    foo1, more, rand, auto, foo2 = st.columns([3.7, 1, 1, 1.6, 3.7])
 
     help_tips = load_help(st.session_state.lang)
     help_rand = help_tips[1]
     help_more = help_tips[4]
     rand = rand.button("✻", help=help_rand)
-    st.session_state.auto = auto.checkbox("auto ", help="modo automático")
+
+    with auto:
+        if st.button("auto", key="mini_auto", help="modo automático"):
+            st.session_state.auto = not st.session_state.auto
 
     if st.session_state.auto:
         st.session_state.talk = False
