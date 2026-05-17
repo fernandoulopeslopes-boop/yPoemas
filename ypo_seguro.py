@@ -252,18 +252,7 @@ def apply_styles():
         .machina-sidebar-bottom img {
             max-width: 100%;
         }
-
-
-        .machina-sidebar-actions {
-            font-family: 'IBM Plex Sans', sans-serif;
-            font-size: 0.88rem;
-            line-height: 1.15;
-            text-align: center;
-            margin: 0.18rem 0 0.22rem 0;
-            white-space: nowrap;
-        }
-
-        .machina-sidebar-actions a {
+.machina-sidebar-actions a {
             color: #000000 !important;
             text-decoration: none !important;
             margin: 0 0.42rem;
@@ -271,6 +260,36 @@ def apply_styles():
         }
 
         .machina-sidebar-actions a:hover {
+            text-decoration: underline !important;
+        }
+
+
+        /* Sidebar :: controles textuais nativos */
+        section[data-testid="stSidebar"] div[data-testid="stButton"] > button {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+
+            width: 100% !important;
+            min-height: 1.25rem !important;
+            height: 1.25rem !important;
+
+            padding: 0rem !important;
+            margin: 0rem !important;
+
+            font-family: 'IBM Plex Sans', sans-serif !important;
+            font-size: 0.92rem !important;
+            font-weight: 400 !important;
+            line-height: 1 !important;
+
+            text-align: center !important;
+            white-space: nowrap !important;
+        }
+
+        section[data-testid="stSidebar"] div[data-testid="stButton"] > button:hover {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
             text-decoration: underline !important;
         }
 
@@ -429,31 +448,23 @@ def load_help(idiom):
 
 
 def draw_check_buttons():
-    action = st.query_params.get("machina_action", None)
-    if isinstance(action, list):
-        action = action[0]
+    help_tips = load_help(st.session_state.lang)
+    help_draw = help_tips[5]
+    help_voice = help_tips[6]
 
-    if action == "arte":
-        st.session_state.draw = not st.session_state.draw
-        st.query_params.clear()
-    elif action == "som":
-        st.session_state.talk = not st.session_state.talk
-        st.query_params.clear()
-    elif action == "escrita":
-        st.session_state.show_fonts = not st.session_state.get("show_fonts", False)
-        st.query_params.clear()
+    col_arte, col_escrita, col_som = st.sidebar.columns([1, 1, 1])
 
-    st.sidebar.markdown(
-        """
-        <div class="machina-sidebar-actions">
-            <a href="?machina_action=arte">arte</a>
-            <a href="?machina_action=escrita">escrita</a>
-            <a href="?machina_action=som">som</a>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    with col_arte:
+        if st.button("arte", help=help_draw, key="machina_arte_btn"):
+            st.session_state.draw = not st.session_state.draw
 
+    with col_escrita:
+        if st.button("escrita", help="fontes do palco", key="machina_escrita_btn"):
+            st.session_state.show_fonts = not st.session_state.get("show_fonts", False)
+
+    with col_som:
+        if st.button("som", help=help_voice, key="machina_som_btn"):
+            st.session_state.talk = not st.session_state.talk
 
 
 def get_binary_file_downloader_html(bin_file, file_label="File"):
@@ -1527,9 +1538,8 @@ def main():
         st.image("./images/" + magy)
         st.markdown("</div>", unsafe_allow_html=True)
 
-    # show_icons()
+    show_icons()
     ##$ st.sidebar.state = True
-
 
 if __name__ == "__main__":
     main()
