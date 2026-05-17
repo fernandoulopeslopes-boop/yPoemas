@@ -244,23 +244,34 @@ def apply_styles():
         section[data-testid="stSidebar"] [data-testid="stAlert"] * {
             line-height: 1.25 !important;
         }
-
-        .machina-sidebar-actions {
-            font-family: 'IBM Plex Sans', sans-serif;
-            font-size: 0.86rem;
-            line-height: 1.1;
-            text-align: center;
-            margin: 0.18rem 0 0.22rem 0;
-            white-space: nowrap;
-        }
-
-        .machina-sidebar-bottom {
+.machina-sidebar-bottom {
             margin-top: 0.35rem;
             text-align: center;
         }
 
         .machina-sidebar-bottom img {
             max-width: 100%;
+        }
+
+
+        .machina-sidebar-actions {
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: 0.88rem;
+            line-height: 1.15;
+            text-align: center;
+            margin: 0.18rem 0 0.22rem 0;
+            white-space: nowrap;
+        }
+
+        .machina-sidebar-actions a {
+            color: #000000 !important;
+            text-decoration: none !important;
+            margin: 0 0.42rem;
+            cursor: pointer;
+        }
+
+        .machina-sidebar-actions a:hover {
+            text-decoration: underline !important;
         }
 
         </style>
@@ -418,43 +429,30 @@ def load_help(idiom):
 
 
 def draw_check_buttons():
-    help_tips = load_help(st.session_state.lang)
-    help_draw = help_tips[5]
-    help_voice = help_tips[6]
+    action = st.query_params.get("machina_action", None)
+    if isinstance(action, list):
+        action = action[0]
+
+    if action == "arte":
+        st.session_state.draw = not st.session_state.draw
+        st.query_params.clear()
+    elif action == "som":
+        st.session_state.talk = not st.session_state.talk
+        st.query_params.clear()
+    elif action == "escrita":
+        st.session_state.show_fonts = not st.session_state.get("show_fonts", False)
+        st.query_params.clear()
 
     st.sidebar.markdown(
         """
-        <style>
-        section[data-testid="stSidebar"] div[data-testid="stButton"] > button {
-            width: 100% !important;
-            display: block !important;
-            text-align: center !important;
-            font-family: 'IBM Plex Sans', sans-serif !important;
-            font-size: 0.82rem !important;
-            line-height: 1.0 !important;
-            padding: 0.08rem 0rem !important;
-            min-height: 1.35rem !important;
-            height: 1.35rem !important;
-            white-space: nowrap !important;
-            border-radius: 0.35rem !important;
-        }
-        </style>
+        <div class="machina-sidebar-actions">
+            <a href="?machina_action=arte">arte</a>
+            <a href="?machina_action=escrita">escrita</a>
+            <a href="?machina_action=som">som</a>
+        </div>
         """,
         unsafe_allow_html=True,
     )
-
-    col_arte, col_escrita, col_som = st.sidebar.columns([1, 1, 1], gap="small")
-
-    with col_arte:
-        if st.button("arte", help=help_draw, key="btn_arte_sidebar"):
-            st.session_state.draw = not st.session_state.draw
-
-    with col_escrita:
-        st.button("escrita", help="fontes do palco", key="btn_escrita_sidebar")
-
-    with col_som:
-        if st.button("som", help=help_voice, key="btn_som_sidebar"):
-            st.session_state.talk = not st.session_state.talk
 
 
 
@@ -1529,7 +1527,7 @@ def main():
         st.image("./images/" + magy)
         st.markdown("</div>", unsafe_allow_html=True)
 
-    show_icons()
+    # show_icons()
     ##$ st.sidebar.state = True
 
 
