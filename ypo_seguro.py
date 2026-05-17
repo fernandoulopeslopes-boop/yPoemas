@@ -421,14 +421,11 @@ def draw_check_buttons():
     help_draw = help_tips[5]
     help_talk = help_tips[6]
 
-    col_arte, col_escrita, col_voz = st.sidebar.columns([1.0, 1.55, 0.75])
+    col_arte, col_voz = st.sidebar.columns([1, 1])
 
     with col_arte:
         if st.button("arte", key="ctrl_arte", help=help_draw):
             st.session_state.draw = not st.session_state.draw
-
-    with col_escrita:
-        st.button("escrita", key="ctrl_escrita", help="fontes do palco")
 
     with col_voz:
         if st.button("voz", key="ctrl_voz", help=help_talk):
@@ -864,7 +861,7 @@ def page_mini():
     help_rand = help_tips[1]
     help_more = help_tips[4]
     rand = rand.button("✻", help=help_rand)
-    st.session_state.auto = auto.checkbox("auto")
+    st.session_state.auto = auto.checkbox("auto ", help="modo automático")
 
     if st.session_state.auto:
         st.session_state.talk = False
@@ -1096,7 +1093,7 @@ def page_eureka():
         st.subheader(load_md_file("MANUAL_EUREKA.md"))
 
     if len(find_what) < 3:
-        st.warning(translate("digite pelo menos 3 letras..."))
+        st.warning(translate("comece com pelo menos 3 letras..."))
     else:
         seed_list = []
         soma_tema = []
@@ -1501,7 +1498,7 @@ def main():
     with st.sidebar:
         st.image("./images/" + magy)
 
-    # show_icons()
+    show_icons()
     ##$ st.sidebar.state = True
 
 
