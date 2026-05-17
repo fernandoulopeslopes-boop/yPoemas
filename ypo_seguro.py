@@ -278,6 +278,7 @@ def init_session_state():
         "auto": False,
         "rand": False,
         "mini_height": 420,
+        "ypoemas_height": 420,
     }
 
     for key, value in defaults.items():
@@ -1006,6 +1007,31 @@ def page_ypoemas():
     nest = nest.button("▶", help=help_nest)
     manu = manu.button("?", help="help !!!")
 
+    # -------------------------------------------------------------------------
+    # ajuste manual da altura do Palco yPoemas
+    # -------------------------------------------------------------------------
+    menos_altura, info_altura, mais_altura = st.columns([1, 3, 1])
+
+    with menos_altura:
+        if st.button("−", key="ypo_altura_menos", help="reduzir altura do Palco"):
+            st.session_state.ypoemas_height -= 10
+
+    with mais_altura:
+        if st.button("+", key="ypo_altura_mais", help="aumentar altura do Palco"):
+            st.session_state.ypoemas_height += 10
+
+    with info_altura:
+        st.markdown(
+            f"""
+            <div style='text-align:center;
+                        font-size:13px;
+                        padding-top:6px;'>
+                Palco yPoemas :: {st.session_state.ypoemas_height}px
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
     if last:
         st.session_state.take -= 1
         if st.session_state.take < 0:
@@ -1076,7 +1102,17 @@ def page_ypoemas():
             if st.session_state.draw:
                 LOGO_IMAGE = load_arts(st.session_state.tema)
 
+            st.markdown(
+                f"""
+                <div style="height:{st.session_state.ypoemas_height}px;
+                            overflow:hidden;">
+                """,
+                unsafe_allow_html=True,
+            )
+
             write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
+
+            st.markdown("</div>", unsafe_allow_html=True)
 
             if manu:
                 LOGO_TEXTO = load_info(st.session_state.tema)
@@ -1501,7 +1537,7 @@ def main():
         page_mini()
     elif chosen_id == "2":
         st.sidebar.info(load_md_file("INFO_YPOEMAS.md"))
-        magy = "img_ypoemas.jpg"
+        magy = None
         page_ypoemas()
     elif chosen_id == "3":
         st.sidebar.info(load_md_file("INFO_EUREKA.md"))
