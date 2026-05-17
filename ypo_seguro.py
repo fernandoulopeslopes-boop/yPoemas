@@ -1481,7 +1481,7 @@ def main():
         st.image("./images/" + magy)
         st.markdown("</div>", unsafe_allow_html=True)
 
-    show_icons()
+    # show_icons()
     ##$ st.sidebar.state = True
 
 
