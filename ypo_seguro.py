@@ -1166,7 +1166,7 @@ def page_eureka():
                 info_find = translate('ocorrências de "')
 
             info_find += find_what
-            if len(soma_tema) > 1:Machina
+            if len(soma_tema) > 1:
                     index=st.session_state.eureka,
                     format_func=lambda y: seed_list[y],
                     key="opt_ocur",
