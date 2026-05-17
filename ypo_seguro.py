@@ -422,7 +422,28 @@ def draw_check_buttons():
     help_draw = help_tips[5]
     help_voice = help_tips[6]
 
-    col_arte, col_escrita, col_voz = st.sidebar.columns([1.0, 1.45, 1.0])
+    st.sidebar.markdown(
+        """
+        <style>
+        section[data-testid="stSidebar"] div[data-testid="stButton"] > button {
+            width: 100% !important;
+            display: block !important;
+            text-align: center !important;
+            font-family: 'IBM Plex Sans', sans-serif !important;
+            font-size: 0.82rem !important;
+            line-height: 1.0 !important;
+            padding: 0.08rem 0rem !important;
+            min-height: 1.35rem !important;
+            height: 1.35rem !important;
+            white-space: nowrap !important;
+            border-radius: 0.35rem !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    col_arte, col_escrita, col_som = st.sidebar.columns([1, 1, 1], gap="small")
 
     with col_arte:
         if st.button("arte", help=help_draw, key="btn_arte_sidebar"):
@@ -431,8 +452,8 @@ def draw_check_buttons():
     with col_escrita:
         st.button("escrita", help="fontes do palco", key="btn_escrita_sidebar")
 
-    with col_voz:
-        if st.button("voz", help=help_voice, key="btn_voz_sidebar"):
+    with col_som:
+        if st.button("som", help=help_voice, key="btn_som_sidebar"):
             st.session_state.talk = not st.session_state.talk
 
 
@@ -1508,7 +1529,7 @@ def main():
         st.image("./images/" + magy)
         st.markdown("</div>", unsafe_allow_html=True)
 
-    # show_icons()
+    show_icons()
     ##$ st.sidebar.state = True
 
 
