@@ -98,7 +98,7 @@ IDIOMAS_OFICIAIS = [
 # Deve permanecer antes de qualquer saída visual do Streamlit.
 # -----------------------------------------------------------------------------
 st.set_page_config(
-    page_title="a máquina de fazer Poesia - yPoemas",
+    page_title="a Machina de fazer Poesia @ yPoemas",
     page_icon=":star:",
     layout="centered",
     initial_sidebar_state="auto",
@@ -259,6 +259,32 @@ def apply_styles():
             white-space: nowrap !important;
             overflow-wrap: normal !important;
             word-break: keep-all !important;
+        }
+
+
+        /* Sidebar :: último teste contra o teto falso do Streamlit */
+        section[data-testid="stSidebar"] {
+            padding-top: 0rem !important;
+            margin-top: 0rem !important;
+        }
+
+        section[data-testid="stSidebar"] > div {
+            padding-top: 0rem !important;
+            margin-top: 0rem !important;
+        }
+
+        section[data-testid="stSidebar"] [data-testid="stSidebarContent"] {
+            padding-top: 0rem !important;
+            margin-top: 0rem !important;
+        }
+
+        section[data-testid="stSidebar"] .block-container {
+            padding-top: 0rem !important;
+            margin-top: 0rem !important;
+        }
+
+        section[data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
+            gap: 0.15rem !important;
         }
 
         </style>
