@@ -324,10 +324,10 @@ def show_icons():  # https://api.whatsapp.com/
         st.sidebar.markdown(
             f"""
             <nav>
-            <a href='https://www.facebook.com/nandoulopes' target='_blank'>•   face  </a>
-            <a href='mailto:lopes.fernando@hotmail.com' target='_blank'>  e-mail  </a>
-            <a href='https://www.instagram.com/fernando.lopes.942/' target='_blank'>  insta  </a>
-            <a href='https://web.whatsapp.com/send?phone=+5512991368181' target='_blank'>   what  •</a>
+            <a href='https://www.facebook.com/nandoulopes' target='_blank'>• face  </a>
+            <a href='mailto:lopes.fernando@hotmail.com' target='_blank'>e-mail  </a>
+            <a href='https://www.instagram.com/fernando.lopes.942/' target='_blank'>insta  </a>
+            <a href='https://web.whatsapp.com/send?phone=+5512991368181' target='_blank'>zapp •</a>
             </nav>
             """,
             unsafe_allow_html=True,
@@ -371,32 +371,17 @@ def draw_check_buttons():
     help_draw = help_tips[5]
     help_talk = help_tips[6]
 
-    st.sidebar.markdown(
-        """
-        <style>
-        div[data-testid="stButton"] > button[kind="secondary"] {
-            padding-top: 0rem !important;
-            padding-bottom: 0rem !important;
-            min-height: 1.6rem !important;
-            line-height: 1 !important;
-            font-size: 0.92rem !important;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
-
     col1, col2, col3 = st.sidebar.columns(3)
 
     with col1:
-        if st.button("arte", help=help_draw, use_container_width=True):
+        if st.button("arte", help=help_draw):
             st.session_state.draw = not st.session_state.draw
 
     with col2:
-        st.button("escrita", help="fontes do palco", use_container_width=True)
+        st.button("escrita", help="fontes do palco")
 
     with col3:
-        if st.button("audio", help=help_talk, use_container_width=True):
+        if st.button("audio", help=help_talk):
             st.session_state.talk = not st.session_state.talk
 
 
@@ -1470,7 +1455,7 @@ def main():
     with st.sidebar:
         st.image("./images/" + magy)
 
-    show_icons()
+    # show_icons()
     ##$ st.sidebar.state = True
 
 
