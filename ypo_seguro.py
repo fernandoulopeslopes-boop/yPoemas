@@ -434,6 +434,25 @@ def draw_check_buttons():
             st.session_state.talk = not st.session_state.talk
 
 
+def draw_sidebar(chosen_id, magy):
+    """Compositor único da sidebar: ordem visual = ordem do código."""
+    info_file = PAGE_INFO_FILES.get(chosen_id)
+
+    pick_lang()
+    draw_check_buttons()
+
+    if info_file:
+        st.sidebar.info(load_md_file(info_file))
+
+    with st.sidebar:
+        st.markdown("<div class='machina-sidebar-bottom'>", unsafe_allow_html=True)
+        st.image("./images/" + magy)
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    # Links sociais preservados como opção controlada no arquivo.
+    # show_icons()
+
+
 
 def get_binary_file_downloader_html(bin_file, file_label="File"):
     with open(bin_file, "rb") as f:
@@ -867,8 +886,7 @@ def page_mini():
 
     if st.session_state.auto:
         st.session_state.talk = False
-        with st.sidebar:
-            wait_time = st.slider(translate("tempo de exibição (em segundos): "), 5, 60)
+        wait_time = st.slider(translate("tempo de exibição (em segundos): "), 5, 60)
 
     if rand:
         st.session_state.rand = True
@@ -1468,45 +1486,25 @@ def main():
     )
 
     chosen_id = str(chosen_id)
+    magy = PAGE_IMAGES.get(chosen_id, "img_ypoemas.jpg")
 
-    pick_lang()
-    draw_check_buttons()
+    draw_sidebar(chosen_id, magy)
 
     if chosen_id == "1":
-        st.sidebar.info(load_md_file("INFO_MINI.md"))
-        magy = "img_mini.jpg"
         page_mini()
     elif chosen_id == "2":
-        st.sidebar.info(load_md_file("INFO_YPOEMAS.md"))
-        magy = "img_ypoemas.jpg"
         page_ypoemas()
     elif chosen_id == "3":
-        st.sidebar.info(load_md_file("INFO_EUREKA.md"))
-        magy = "img_eureka.jpg"
         page_eureka()
     elif chosen_id == "4":
-        st.sidebar.info(load_md_file("INFO_OFF-MACHINA.md"))
-        magy = "img_off-machina.jpg"
         page_off_machina()
     elif chosen_id == "5":
-        st.sidebar.info(load_md_file("INFO_BOOKS.md"))
-        magy = "img_books.jpg"
         page_books()
     elif chosen_id == "6":
-        st.sidebar.info(load_md_file("INFO_POLY.md"))
-        magy = "img_poly.jpg"
         page_polys()
     elif chosen_id == "7":
-        st.sidebar.info(load_md_file("INFO_ABOUT.md"))
-        magy = "img_about.jpg"
         page_abouts()
 
-    with st.sidebar:
-        st.markdown("<div class='machina-sidebar-bottom'>", unsafe_allow_html=True)
-        st.image("./images/" + magy)
-        st.markdown("</div>", unsafe_allow_html=True)
-
-    show_icons()
     ##$ st.sidebar.state = True
 
 
