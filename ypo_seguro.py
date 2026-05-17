@@ -1166,17 +1166,7 @@ def page_eureka():
                 info_find = translate('ocorrências de "')
 
             info_find += find_what
-            if len(soma_tema) > 1:
-                info_find += translate('" em ' + str(len(soma_tema)) + " temas")
-
-            if rand:
-                st.session_state.eureka = random.randrange(0, len(seed_list))
-
-            with occurrences:
-                options = list(range(len(seed_list)))
-                opt_ocur = st.selectbox(
-                    "↓  " + str(len(seed_list)) + " " + info_find,
-                    options,
+            if len(soma_tema) > 1:Machina
                     index=st.session_state.eureka,
                     format_func=lambda y: seed_list[y],
                     key="opt_ocur",
