@@ -12,21 +12,6 @@ from extra_streamlit_components import TabBar as stx
 
 from lay_2_ypo import gera_poema
 
-# -----------------------------------------------------------------------------
-# TODO :: Sidebar / slider
-# -----------------------------------------------------------------------------
-# O slider vertical da sidebar fica temporariamente aceito como pendência.
-# Diagnóstico atual:
-# - há um “teto falso” reservado pelo Streamlit acima da lista de idiomas;
-# - há uma sobra branca no rodapé;
-# - a lista de idiomas ainda não ancora no topo real;
-# - qualquer correção agressiva de CSS tende a desorganizar os componentes.
-#
-# Decisão:
-# - não bloquear POLY / chave de ouro por causa dessa fricção;
-# - retomar o ajuste depois, com teste isolado de layout da sidebar.
-# -----------------------------------------------------------------------------
-
 ABOUTS_LIST = [
     "comments", "prefácil", "machina", "off-machina", "MACHINA-IA", "outros autores", "imagens",
     "traduttore", "bibliografia", "samizdát", "notes", "license", "index",
@@ -113,7 +98,7 @@ IDIOMAS_OFICIAIS = [
 # Deve permanecer antes de qualquer saída visual do Streamlit.
 # -----------------------------------------------------------------------------
 st.set_page_config(
-    page_title="a Machina de fazer Poesia @ yPoemas",
+    page_title="a máquina de fazer Poesia - yPoemas",
     page_icon=":star:",
     layout="centered",
     initial_sidebar_state="auto",
@@ -244,53 +229,23 @@ def apply_styles():
         section[data-testid="stSidebar"] [data-testid="stAlert"] * {
             line-height: 1.25 !important;
         }
-.machina-sidebar-bottom {
+
+        .machina-sidebar-actions {
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: 0.86rem;
+            line-height: 1.1;
+            text-align: center;
+            margin: 0.18rem 0 0.22rem 0;
+            white-space: nowrap;
+        }
+
+        .machina-sidebar-bottom {
             margin-top: 0.35rem;
             text-align: center;
         }
 
         .machina-sidebar-bottom img {
             max-width: 100%;
-        }
-.machina-sidebar-actions a {
-            color: #000000 !important;
-            text-decoration: none !important;
-            margin: 0 0.42rem;
-            cursor: pointer;
-        }
-
-        .machina-sidebar-actions a:hover {
-            text-decoration: underline !important;
-        }
-
-
-        /* Sidebar :: controles textuais nativos */
-        section[data-testid="stSidebar"] div[data-testid="stButton"] > button {
-            background: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
-
-            width: 100% !important;
-            min-height: 1.25rem !important;
-            height: 1.25rem !important;
-
-            padding: 0rem !important;
-            margin: 0rem !important;
-
-            font-family: 'IBM Plex Sans', sans-serif !important;
-            font-size: 0.92rem !important;
-            font-weight: 400 !important;
-            line-height: 1 !important;
-
-            text-align: center !important;
-            white-space: nowrap !important;
-        }
-
-        section[data-testid="stSidebar"] div[data-testid="stButton"] > button:hover {
-            background: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
-            text-decoration: underline !important;
         }
 
         </style>
@@ -322,6 +277,7 @@ def init_session_state():
         "arts": [],
         "auto": False,
         "rand": False,
+        "mini_height": 420,
     }
 
     for key, value in defaults.items():
@@ -442,29 +398,17 @@ def load_help(idiom):
         returns.append(translate("mais lidos..."))
         returns.append(translate("gera novo yPoema"))
         returns.append(translate("arte"))
-        returns.append(translate("voz"))
+        returns.append(translate("audio"))
 
     return returns
 
 
 def draw_check_buttons():
-    help_tips = load_help(st.session_state.lang)
-    help_draw = help_tips[5]
-    help_voice = help_tips[6]
+    st.sidebar.markdown(
+        "<div class='machina-sidebar-actions'>arte&nbsp;&nbsp;&nbsp;&nbsp;escrita&nbsp;&nbsp;&nbsp;&nbsp;audio</div>",
+        unsafe_allow_html=True,
+    )
 
-    col_arte, col_escrita, col_som = st.sidebar.columns([1, 1, 1])
-
-    with col_arte:
-        if st.button("arte", help=help_draw, key="machina_arte_btn"):
-            st.session_state.draw = not st.session_state.draw
-
-    with col_escrita:
-        if st.button("escrita", help="fontes do palco", key="machina_escrita_btn"):
-            st.session_state.show_fonts = not st.session_state.get("show_fonts", False)
-
-    with col_som:
-        if st.button("som", help=help_voice, key="machina_som_btn"):
-            st.session_state.talk = not st.session_state.talk
 
 
 def get_binary_file_downloader_html(bin_file, file_label="File"):
@@ -897,6 +841,31 @@ def page_mini():
     rand = rand.button("✻", help=help_rand)
     st.session_state.auto = auto.checkbox("auto")
 
+    # -------------------------------------------------------------------------
+    # ajuste manual do mini-palco
+    # -------------------------------------------------------------------------
+    menos_altura, info_altura, mais_altura = st.columns([1, 3, 1])
+
+    with menos_altura:
+        if st.button("−", help="reduzir altura do mini-palco"):
+            st.session_state.mini_height -= 10
+
+    with mais_altura:
+        if st.button("+", help="aumentar altura do mini-palco"):
+            st.session_state.mini_height += 10
+
+    with info_altura:
+        st.markdown(
+            f"""
+            <div style='text-align:center;
+                        font-size:13px;
+                        padding-top:6px;'>
+                mini-palco :: {st.session_state.mini_height}px
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
     if st.session_state.auto:
         st.session_state.talk = False
         with st.sidebar:
@@ -950,7 +919,17 @@ def page_mini():
 
         if st.session_state.auto == False:
             with mini_place_holder:
+                st.markdown(
+                    f"""
+                    <div style="height:{st.session_state.mini_height}px;
+                                overflow:hidden;">
+                    """,
+                    unsafe_allow_html=True,
+                )
+
                 write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
+
+                st.markdown("</div>", unsafe_allow_html=True)
 
             if st.session_state.talk:
                 talk(curr_ypoema)
@@ -986,7 +965,19 @@ def page_mini():
 
                 with mini_place_holder:
                     mini_place_holder.empty()
+
+                    st.markdown(
+                        f"""
+                        <div style="height:{st.session_state.mini_height}px;
+                                    overflow:hidden;">
+                        """,
+                        unsafe_allow_html=True,
+                    )
+
                     write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
+
+                    st.markdown("</div>", unsafe_allow_html=True)
+
                     secs = wait_time
                     while secs >= 0:
                         time.sleep(1)
@@ -1166,9 +1157,20 @@ def page_eureka():
 
             info_find += find_what
             if len(soma_tema) > 1:
-                index=st.session_state.eureka
-                format_func=lambda y: seed_list[y]
-                key="opt_ocur"
+                info_find += translate('" em ' + str(len(soma_tema)) + " temas")
+
+            if rand:
+                st.session_state.eureka = random.randrange(0, len(seed_list))
+
+            with occurrences:
+                options = list(range(len(seed_list)))
+                opt_ocur = st.selectbox(
+                    "↓  " + str(len(seed_list)) + " " + info_find,
+                    options,
+                    index=st.session_state.eureka,
+                    format_func=lambda y: seed_list[y],
+                    key="opt_ocur",
+                )
 
             st.session_state.eureka = opt_ocur
             this_seed = seed_list[st.session_state.eureka]
@@ -1494,11 +1496,11 @@ def main():
     draw_check_buttons()
 
     if chosen_id == "1":
-        #st.sidebar.info(load_md_file("INFO_MINI.md"))
+        st.sidebar.info(load_md_file("INFO_MINI.md"))
         magy = "img_mini.jpg"
         page_mini()
     elif chosen_id == "2":
-        #st.sidebar.info(load_md_file("INFO_YPOEMAS.md"))
+        st.sidebar.info(load_md_file("INFO_YPOEMAS.md"))
         magy = "img_ypoemas.jpg"
         page_ypoemas()
     elif chosen_id == "3":
@@ -1527,8 +1529,9 @@ def main():
         st.image("./images/" + magy)
         st.markdown("</div>", unsafe_allow_html=True)
 
-    show_icons()
+    # show_icons()
     ##$ st.sidebar.state = True
+
 
 if __name__ == "__main__":
     main()
