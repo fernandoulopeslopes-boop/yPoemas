@@ -1167,10 +1167,9 @@ def page_eureka():
 
             info_find += find_what
             if len(soma_tema) > 1:
-                    index=st.session_state.eureka,
-                    format_func=lambda y: seed_list[y],
-                    key="opt_ocur",
-                )
+                index=st.session_state.eureka
+                format_func=lambda y: seed_list[y]
+                key="opt_ocur"
 
             st.session_state.eureka = opt_ocur
             this_seed = seed_list[st.session_state.eureka]
