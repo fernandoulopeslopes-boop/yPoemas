@@ -351,7 +351,7 @@ def load_help(idiom):
         returns.append(translate("mais lidos..."))
         returns.append(translate("gera novo yPoema"))
         returns.append(translate("arte"))
-        returns.append(translate("audio"))
+        returns.append(translate("voz"))
 
     return returns
 
@@ -361,7 +361,7 @@ def draw_check_buttons():
     help_draw = help_tips[5]
     help_talk = help_tips[6]
 
-    col_arte, col_escrita, col_audio = st.sidebar.columns([1, 1.25, 1])
+    col_arte, col_escrita, col_voz = st.sidebar.columns([1, 1.25, 1])
 
     with col_arte:
         if st.button("arte", key="ctrl_arte", help=help_draw):
@@ -370,8 +370,8 @@ def draw_check_buttons():
     with col_escrita:
         st.button("escrita", key="ctrl_escrita", help="fontes do palco")
 
-    with col_audio:
-        if st.button("audio", key="ctrl_audio", help=help_talk):
+    with col_voz:
+        if st.button("voz", key="ctrl_voz", help=help_talk):
             st.session_state.talk = not st.session_state.talk
 
 
@@ -740,19 +740,19 @@ def talk(text):
     # Mapeamento de vozes neurais de alta qualidade
     selected_voice = VOICES_EDGE_TTS.get(st.session_state.lang, "pt-BR-AntonioNeural")
 
-    async def generate_audio():
+    async def generate_voz():
         communicate = edge_tts.Communicate(text_clean, selected_voice)
-        audio_bytes = b""
+        voz_bytes = b""
         async for chunk in communicate.stream():
-            if chunk["type"] == "audio":
-                audio_bytes += chunk["data"]
-        return audio_bytes
+            if chunk["type"] == "voz":
+                voz_bytes += chunk["data"]
+        return voz_bytes
 
     try:
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        audio_output = loop.run_until_complete(generate_audio())
-        st.audio(audio_output, format="audio/mp3")
+        voz_output = loop.run_until_complete(generate_voz())
+        st.voz(voz_output, format="voz/mp3")
     except Exception as e:
         st.error(f"Erro na voz neural: {e}")
         
