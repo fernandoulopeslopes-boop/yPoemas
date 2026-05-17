@@ -1,3 +1,4 @@
+---
 a Machina e uma Inteligência Artificial,  
   trechos de uma conversa real.  
 ---  
