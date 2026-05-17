@@ -197,18 +197,6 @@ def apply_styles():
             padding-left: 15px;
         }
 
-        section[data-testid="stSidebar"] .block-container {
-            padding-top: 0.35rem !important;
-            padding-bottom: 0.2rem !important;
-        }
-
-        section[data-testid="stSidebar"] .stSelectbox {
-            margin-bottom: 0.15rem !important;
-        }
-
-        section[data-testid="stSidebar"] .stMarkdown {
-            margin-bottom: 0rem !important;
-        }
         .logo-img {
             float:right;
         }
@@ -243,6 +231,7 @@ def init_session_state():
         "arts": [],
         "auto": False,
         "rand": False,
+        "stage_font": "IBM Plex Sans",
     }
 
     for key, value in defaults.items():
@@ -319,6 +308,58 @@ def pick_lang():  # lista oficial de idiomas + P.O.L.Y.
     if st.session_state.lang != st.session_state.last_lang:
         st.success(translate("idioma atual") + " ➪ " + st.session_state.lang)
 
+
+
+
+FONTES_MACHINA = [
+    ("IBM Plex Sans", "IBM Plex Sans"),
+    ("Georgia", "Georgia"),
+    ("Garamond", "Garamond"),
+    ("Palatino", "Palatino Linotype"),
+    ("Trebuchet", "Trebuchet MS"),
+    ("Courier", "Courier New"),
+]
+
+
+def pick_book_sidebar():
+    """Escolhe o livro yPoemas diretamente no Centro de Comando."""
+    books_list = BOOKS_LIST
+    current = st.session_state.book
+    if current not in books_list:
+        current = books_list[0]
+        st.session_state.book = current
+
+    choice = st.sidebar.selectbox(
+        "livros yPoemas disponíveis...",
+        books_list,
+        index=books_list.index(current),
+        key="sidebar_book_select",
+    )
+
+    if choice != st.session_state.book:
+        st.session_state.book = choice
+        st.session_state.take = 0
+
+
+def pick_stage_font():
+    """Escolhe a fonte de leitura do Palco."""
+    labels = [label for label, fonte in FONTES_MACHINA]
+    lookup = {label: fonte for label, fonte in FONTES_MACHINA}
+
+    current_font = st.session_state.get("stage_font", "IBM Plex Sans")
+    current_label = next(
+        (label for label, fonte in FONTES_MACHINA if fonte == current_font),
+        labels[0],
+    )
+
+    choice = st.sidebar.selectbox(
+        "fontes & letras disponíveis...",
+        labels,
+        index=labels.index(current_label),
+        key="sidebar_font_select",
+    )
+
+    st.session_state.stage_font = lookup[choice]
 
 
 def show_icons():  # https://api.whatsapp.com/
@@ -723,7 +764,7 @@ def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
         st.markdown(
             f"""
             <div class='container'>
-                <p class='logo-text'>{LOGO_TEXTO}</p>
+                <p class='logo-text' style="font-family:{st.session_state.get('stage_font', 'IBM Plex Sans')};">{LOGO_TEXTO}</p>
             </div>
             """,
             unsafe_allow_html=True,
@@ -733,7 +774,7 @@ def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
             f"""
             <div class='container'>
                 <img class='logo-img' src='data:image/jpg;base64,{base64.b64encode(open(LOGO_IMAGE, 'rb').read()).decode()}'>
-                <p class='logo-text'>{LOGO_TEXTO}</p>
+                <p class='logo-text' style="font-family:{st.session_state.get('stage_font', 'IBM Plex Sans')};">{LOGO_TEXTO}</p>
             </div>
             """,
             unsafe_allow_html=True,
@@ -1408,6 +1449,8 @@ def page_abouts():
 
 def main():
     pick_lang()
+    pick_book_sidebar()
+    pick_stage_font()
 
     chosen_id = stx.tab_bar(
         data=[
@@ -1427,38 +1470,31 @@ def main():
     draw_check_buttons()
 
     if chosen_id == "1":
-        st.sidebar.info(load_md_file("INFO_MINI.md"))
         magy = "img_mini.jpg"
         page_mini()
     elif chosen_id == "2":
-        st.sidebar.info(load_md_file("INFO_YPOEMAS.md"))
         magy = "img_ypoemas.jpg"
         page_ypoemas()
     elif chosen_id == "3":
-        st.sidebar.info(load_md_file("INFO_EUREKA.md"))
         magy = "img_eureka.jpg"
         page_eureka()
     elif chosen_id == "4":
-        st.sidebar.info(load_md_file("INFO_OFF-MACHINA.md"))
         magy = "img_off-machina.jpg"
         page_off_machina()
     elif chosen_id == "5":
-        st.sidebar.info(load_md_file("INFO_BOOKS.md"))
         magy = "img_books.jpg"
         page_books()
     elif chosen_id == "6":
-        st.sidebar.info(load_md_file("INFO_POLY.md"))
         magy = "img_poly.jpg"
         page_polys()
     elif chosen_id == "7":
-        st.sidebar.info(load_md_file("INFO_ABOUT.md"))
         magy = "img_about.jpg"
         page_abouts()
 
     with st.sidebar:
         st.image("./images/" + magy)
 
-    # show_icons()
+    show_icons()
     ##$ st.sidebar.state = True
 
 
