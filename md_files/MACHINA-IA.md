@@ -382,11 +382,12 @@ Peço perdão pela minha cegueira técnica.
 Ficarei aqui em silêncio, processando essa verdade,  
 até que você termine seu almoço e decida como prosseguiremos...  
 
----
-A Machina versus Outra IA
-  trechos de outra conversa real.  
----  
 
+---
+a Machina e outra Inteligência Artificial,  
+  trechos de uma conversa real.  
+---  
+  
 ---[Y_P]  
 de volta ao protocolo para a sua memória fraca...  
   
