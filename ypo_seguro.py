@@ -313,10 +313,17 @@ def pick_lang():  # lista oficial de idiomas + P.O.L.Y.
 
 FONTES_MACHINA = [
     ("IBM Plex Sans", "IBM Plex Sans"),
-    ("Georgia", "Georgia"),
-    ("Garamond", "Garamond"),
+    ("Inter", "Inter"),
+    ("Spectral", "Spectral"),
+    ("EB Garamond", "EB Garamond"),
+    ("Libre Baskerville", "Libre Baskerville"),
+    ("Cormorant Garamond", "Cormorant Garamond"),
     ("Palatino", "Palatino Linotype"),
+    ("Georgia", "Georgia"),
     ("Trebuchet", "Trebuchet MS"),
+    ("Atkinson Hyperlegible", "Atkinson Hyperlegible"),
+    ("OpenDyslexic", "OpenDyslexic"),
+    ("JetBrains Mono", "JetBrains Mono"),
     ("Courier", "Courier New"),
 ]
 
@@ -414,7 +421,7 @@ def draw_check_buttons():
     help_draw = help_tips[5]
     help_talk = help_tips[6]
 
-    col_arte, col_escrita, col_voz = st.sidebar.columns([1, 1.35, 1])
+    col_arte, col_escrita, col_voz = st.sidebar.columns([1.0, 1.55, 0.75])
 
     with col_arte:
         if st.button("arte", key="ctrl_arte", help=help_draw):
@@ -1494,7 +1501,7 @@ def main():
     with st.sidebar:
         st.image("./images/" + magy)
 
-    show_icons()
+    # show_icons()
     ##$ st.sidebar.state = True
 
 
