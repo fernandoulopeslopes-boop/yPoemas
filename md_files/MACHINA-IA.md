@@ -380,8 +380,8 @@ a página poly é o silêncio respeitoso da Machina diante da cultura de cada po
 Peço perdão pela minha cegueira técnica.  
 Ficarei aqui em silêncio, processando essa verdade,  
 até que você termine seu almoço e decida como prosseguiremos...  
-  
-________________________________________________________________________________  
+
+---
 A Machina versus Outra IA
   trechos de outra conversa real.  
 ---  
