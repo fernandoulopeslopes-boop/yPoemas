@@ -1,4 +1,3 @@
----
 a Machina e uma Inteligência Artificial,  
   trechos de uma conversa real.  
 ---  
@@ -381,13 +380,11 @@ a página poly é o silêncio respeitoso da Machina diante da cultura de cada po
 Peço perdão pela minha cegueira técnica.  
 Ficarei aqui em silêncio, processando essa verdade,  
 até que você termine seu almoço e decida como prosseguiremos...  
-
-P.S. não prosseguimos...  recomecei do zero com outra Inteligência Artificial.
-
+  
+________________________________________________________________________________  
+A Machina versus Outra IA
+  trechos de outra conversa real.  
 ---  
-a Machina e outra Inteligência Artificial,  
-  trechos de uma conversa real.  
----
 
 ---[Y_P]  
 de volta ao protocolo para a sua memória fraca...  
