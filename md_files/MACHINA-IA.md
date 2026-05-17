@@ -382,7 +382,6 @@ Peço perdão pela minha cegueira técnica.
 Ficarei aqui em silêncio, processando essa verdade,  
 até que você termine seu almoço e decida como prosseguiremos...  
 
-
 ---
 a Machina e outra Inteligência Artificial,  
   trechos de uma conversa real.  
