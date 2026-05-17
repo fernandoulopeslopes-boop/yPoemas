@@ -213,56 +213,6 @@ def apply_styles():
             float:right;
         }
 
-        /* Sidebar :: ancoragem leve, sem provocar o Streamlit */
-        section[data-testid="stSidebar"] .block-container {
-            padding-top: 0.25rem !important;
-            padding-bottom: 0.25rem !important;
-        }
-
-        section[data-testid="stSidebar"] [data-testid="stAlert"] {
-            max-height: 235px;
-            overflow: auto;
-            margin-top: 0.25rem !important;
-            margin-bottom: 0.25rem !important;
-        }
-
-        section[data-testid="stSidebar"] [data-testid="stAlert"] * {
-            line-height: 1.25 !important;
-        }
-
-        .machina-sidebar-actions {
-            font-family: 'IBM Plex Sans', sans-serif;
-            font-size: 0.86rem;
-            line-height: 1.1;
-            text-align: center;
-            margin: 0.18rem 0 0.22rem 0;
-            white-space: nowrap;
-        }
-
-        .machina-sidebar-bottom {
-            margin-top: 0.35rem;
-            text-align: center;
-        }
-
-        .machina-sidebar-bottom img {
-            max-width: 100%;
-        }
-
-
-        /* Sidebar :: mini-palco controlável */
-        .machina-mini-palco {
-            height: var(--mini-palco-height);
-            overflow: hidden;
-        }
-
-        .machina-mini-palco div[data-testid="stAlert"] {
-            height: var(--mini-palco-height);
-            overflow: hidden;
-        }
-
-        .machina-mini-palco div[data-testid="stAlert"] * {
-            line-height: 1.25;
-        }
 
         </style>
         """,
@@ -293,7 +243,6 @@ def init_session_state():
         "arts": [],
         "auto": False,
         "rand": False,
-        "mini_height": 420,
     }
 
     for key, value in defaults.items():
@@ -372,33 +321,6 @@ def pick_lang():  # lista oficial de idiomas + P.O.L.Y.
 
 
 
-
-def sidebar_info_mini(file_name):
-    """Mini-palco da sidebar com altura ajustável por botões + e -."""
-    menos_altura, info_altura, mais_altura = st.sidebar.columns([1, 3, 1])
-
-    with menos_altura:
-        if st.button("−", key="mini_altura_menos", help="reduzir altura do mini-palco"):
-            st.session_state.mini_height = max(80, st.session_state.mini_height - 10)
-
-    with mais_altura:
-        if st.button("+", key="mini_altura_mais", help="aumentar altura do mini-palco"):
-            st.session_state.mini_height += 10
-
-    with info_altura:
-        st.markdown(
-            f"<div style='text-align:center;font-size:13px;padding-top:6px;'>mini-palco :: {st.session_state.mini_height}px</div>",
-            unsafe_allow_html=True,
-        )
-
-    st.sidebar.markdown(
-        f"<div class='machina-mini-palco' style='--mini-palco-height:{st.session_state.mini_height}px;'>",
-        unsafe_allow_html=True,
-    )
-    st.sidebar.info(load_md_file(file_name))
-    st.sidebar.markdown("</div>", unsafe_allow_html=True)
-
-
 def show_icons():  # https://api.whatsapp.com/
     with st.sidebar:
         st.sidebar.markdown(
@@ -447,10 +369,22 @@ def load_help(idiom):
 
 
 def draw_check_buttons():
-    st.sidebar.markdown(
-        "<div class='machina-sidebar-actions'>arte&nbsp;&nbsp;&nbsp;&nbsp;escrita&nbsp;&nbsp;&nbsp;&nbsp;audio</div>",
-        unsafe_allow_html=True,
-    )
+    help_tips = load_help(st.session_state.lang)
+    help_draw = help_tips[5]
+    help_talk = help_tips[6]
+
+    col_arte, col_escrita, col_voz = st.sidebar.columns([1, 1.35, 1])
+
+    with col_arte:
+        if st.button("arte", key="ctrl_arte", help=help_draw):
+            st.session_state.draw = not st.session_state.draw
+
+    with col_escrita:
+        st.button("escrita", key="ctrl_escrita", help="fontes do palco")
+
+    with col_voz:
+        if st.button("voz", key="ctrl_voz", help=help_talk):
+            st.session_state.talk = not st.session_state.talk
 
 
 
@@ -884,31 +818,6 @@ def page_mini():
     rand = rand.button("✻", help=help_rand)
     st.session_state.auto = auto.checkbox("auto")
 
-    # -------------------------------------------------------------------------
-    # ajuste manual do mini-palco
-    # -------------------------------------------------------------------------
-    menos_altura, info_altura, mais_altura = st.columns([1, 3, 1])
-
-    with menos_altura:
-        if st.button("−", help="reduzir altura do mini-palco"):
-            st.session_state.mini_height -= 10
-
-    with mais_altura:
-        if st.button("+", help="aumentar altura do mini-palco"):
-            st.session_state.mini_height += 10
-
-    with info_altura:
-        st.markdown(
-            f"""
-            <div style='text-align:center;
-                        font-size:13px;
-                        padding-top:6px;'>
-                mini-palco :: {st.session_state.mini_height}px
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
     if st.session_state.auto:
         st.session_state.talk = False
         with st.sidebar:
@@ -962,17 +871,7 @@ def page_mini():
 
         if st.session_state.auto == False:
             with mini_place_holder:
-                st.markdown(
-                    f"""
-                    <div style="height:{st.session_state.mini_height}px;
-                                overflow:hidden;">
-                    """,
-                    unsafe_allow_html=True,
-                )
-
                 write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
-
-                st.markdown("</div>", unsafe_allow_html=True)
 
             if st.session_state.talk:
                 talk(curr_ypoema)
@@ -1008,19 +907,7 @@ def page_mini():
 
                 with mini_place_holder:
                     mini_place_holder.empty()
-
-                    st.markdown(
-                        f"""
-                        <div style="height:{st.session_state.mini_height}px;
-                                    overflow:hidden;">
-                        """,
-                        unsafe_allow_html=True,
-                    )
-
                     write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
-
-                    st.markdown("</div>", unsafe_allow_html=True)
-
                     secs = wait_time
                     while secs >= 0:
                         time.sleep(1)
@@ -1048,6 +935,7 @@ def page_ypoemas():
     rand = rand.button("✻", help=help_rand)
     nest = nest.button("▶", help=help_nest)
     manu = manu.button("?", help="help !!!")
+
     if last:
         st.session_state.take -= 1
         if st.session_state.take < 0:
@@ -1117,6 +1005,9 @@ def page_ypoemas():
             LOGO_IMAGE = None
             if st.session_state.draw:
                 LOGO_IMAGE = load_arts(st.session_state.tema)
+
+            write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
+
             if manu:
                 LOGO_TEXTO = load_info(st.session_state.tema)
                 if st.session_state.lang != "pt":  # translate if idioma <> pt
@@ -1516,6 +1407,8 @@ def page_abouts():
 
 
 def main():
+    pick_lang()
+
     chosen_id = stx.tab_bar(
         data=[
             stx.TabBarItemData(id=1, title="mini", description=""),
@@ -1531,11 +1424,10 @@ def main():
 
     chosen_id = str(chosen_id)
 
-    pick_lang()
     draw_check_buttons()
 
     if chosen_id == "1":
-        sidebar_info_mini("INFO_MINI.md")
+        st.sidebar.info(load_md_file("INFO_MINI.md"))
         magy = "img_mini.jpg"
         page_mini()
     elif chosen_id == "2":
@@ -1564,9 +1456,7 @@ def main():
         page_abouts()
 
     with st.sidebar:
-        st.markdown("<div class='machina-sidebar-bottom'>", unsafe_allow_html=True)
         st.image("./images/" + magy)
-        st.markdown("</div>", unsafe_allow_html=True)
 
     # show_icons()
     ##$ st.sidebar.state = True
