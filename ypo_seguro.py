@@ -197,56 +197,10 @@ def apply_styles():
             padding-left: 15px;
         }
 
-        section[data-testid="stSidebar"] .block-container {
-            padding-top: 0.35rem !important;
-            padding-bottom: 0.2rem !important;
-        }
-
-        section[data-testid="stSidebar"] .stSelectbox {
-            margin-bottom: 0.15rem !important;
-        }
-
-        section[data-testid="stSidebar"] .stMarkdown {
-            margin-bottom: 0rem !important;
-        }
         .logo-img {
             float:right;
         }
 
-        /* Sidebar :: ancoragem leve, sem provocar o Streamlit */
-        section[data-testid="stSidebar"] .block-container {
-            padding-top: 0.25rem !important;
-            padding-bottom: 0.25rem !important;
-        }
-
-        section[data-testid="stSidebar"] [data-testid="stAlert"] {
-            max-height: 235px;
-            overflow: auto;
-            margin-top: 0.25rem !important;
-            margin-bottom: 0.25rem !important;
-        }
-
-        section[data-testid="stSidebar"] [data-testid="stAlert"] * {
-            line-height: 1.25 !important;
-        }
-
-        .machina-sidebar-actions {
-            font-family: 'IBM Plex Sans', sans-serif;
-            font-size: 0.86rem;
-            line-height: 1.1;
-            text-align: center;
-            margin: 0.18rem 0 0.22rem 0;
-            white-space: nowrap;
-        }
-
-        .machina-sidebar-bottom {
-            margin-top: 0.35rem;
-            text-align: center;
-        }
-
-        .machina-sidebar-bottom img {
-            max-width: 100%;
-        }
 
         </style>
         """,
@@ -403,10 +357,22 @@ def load_help(idiom):
 
 
 def draw_check_buttons():
-    st.sidebar.markdown(
-        "<div class='machina-sidebar-actions'>arte&nbsp;&nbsp;&nbsp;&nbsp;escrita&nbsp;&nbsp;&nbsp;&nbsp;audio</div>",
-        unsafe_allow_html=True,
-    )
+    help_tips = load_help(st.session_state.lang)
+    help_draw = help_tips[5]
+    help_talk = help_tips[6]
+
+    col_arte, col_escrita, col_audio = st.sidebar.columns([1, 1.25, 1])
+
+    with col_arte:
+        if st.button("arte", key="ctrl_arte", help=help_draw):
+            st.session_state.draw = not st.session_state.draw
+
+    with col_escrita:
+        st.button("escrita", key="ctrl_escrita", help="fontes do palco")
+
+    with col_audio:
+        if st.button("audio", key="ctrl_audio", help=help_talk):
+            st.session_state.talk = not st.session_state.talk
 
 
 
@@ -1477,9 +1443,7 @@ def main():
         page_abouts()
 
     with st.sidebar:
-        st.markdown("<div class='machina-sidebar-bottom'>", unsafe_allow_html=True)
         st.image("./images/" + magy)
-        st.markdown("</div>", unsafe_allow_html=True)
 
     # show_icons()
     ##$ st.sidebar.state = True
