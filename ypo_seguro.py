@@ -1494,11 +1494,11 @@ def main():
     draw_check_buttons()
 
     if chosen_id == "1":
-        st.sidebar.info(load_md_file("INFO_MINI.md"))
+        #st.sidebar.info(load_md_file("INFO_MINI.md"))
         magy = "img_mini.jpg"
         page_mini()
     elif chosen_id == "2":
-        st.sidebar.info(load_md_file("INFO_YPOEMAS.md"))
+        #st.sidebar.info(load_md_file("INFO_YPOEMAS.md"))
         magy = "img_ypoemas.jpg"
         page_ypoemas()
     elif chosen_id == "3":
