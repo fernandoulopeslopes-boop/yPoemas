@@ -40,11 +40,13 @@ PAGE_INFO_FILES = {
 
 LANG_FILES = {
     "pt": "poly_pt.txt",
-    "en": "poly_en.txt",
     "es": "poly_es.txt",
-    "fr": "poly_fr.txt",
     "it": "poly_it.txt",
+    "fr": "poly_fr.txt",
+    "en": "poly_en.txt",
     "de": "poly_de.txt",
+    "la": "poly_la.txt",
+    "eo": "poly_eo.txt",
     "ca": "poly_ca.txt",
     "gl": "poly_gl.txt",
     "nl": "poly_nl.txt",
@@ -57,8 +59,6 @@ LANG_FILES = {
     "fi": "poly_fi.txt",
     "is": "poly_is.txt",
     "hu": "poly_hu.txt",
-    "la": "poly_la.txt",
-    "eo": "poly_eo.txt",
 }
 
 VOICES_EDGE_TTS = {
@@ -100,7 +100,7 @@ IDIOMAS_OFICIAIS = [
 st.set_page_config(
     page_title="a máquina de fazer Poesia - yPoemas",
     page_icon=":star:",
-    layout="centered",
+    layout="wide",
     initial_sidebar_state="auto",
 )
 
@@ -156,9 +156,10 @@ def apply_styles():
         <style>
         .reportview-container .main .block-container{
             padding-top: 0rem;
-            padding-right: 0rem;
-            padding-left: 0rem;
+            padding-right: 1.2rem;
+            padding-left: 1.2rem;
             padding-bottom: 0rem;
+            max-width: 96%;
         }
         </style>
         """,
@@ -190,7 +191,7 @@ def apply_styles():
         }
         .logo-text {
             font-weight: 600;
-            font-size: 18px;
+            font-size: 21px;
             font-family: 'IBM Plex Sans';
             color: #000000;
             padding-top: 0px;
@@ -232,6 +233,12 @@ def init_session_state():
         "auto": False,
         "rand": False,
         "stage_font": "IBM Plex Sans",
+
+        # chave de ouro
+        "key_open": False,
+        "key_poema_texto": "",
+        "key_poema_tema": "",
+        "key_analise": "",
     }
 
     for key, value in defaults.items():
@@ -421,7 +428,7 @@ def draw_check_buttons():
     help_draw = help_tips[5]
     help_talk = help_tips[6]
 
-    col_arte, col_voz = st.sidebar.columns([1, 1])
+    col_arte, col_meio, col_voz = st.sidebar.columns([1, 2.2, 1])
 
     with col_arte:
         if st.button("arte", key="ctrl_arte", help=help_draw):
@@ -855,13 +862,16 @@ def page_mini():
     if st.session_state.mini > maxy_mini:  # just in case
         st.session_state.mini = 0
 
-    foo1, more, rand, auto, foo2 = st.columns([4, 1, 1, 1, 4])
+    foo1, more, rand, auto, foo2 = st.columns([3.8, 1, 1, 1.25, 3.8])
 
     help_tips = load_help(st.session_state.lang)
     help_rand = help_tips[1]
     help_more = help_tips[4]
     rand = rand.button("✻", help=help_rand)
-    st.session_state.auto = auto.checkbox("auto ", help="modo automático")
+
+    with auto:
+        if st.button("auto", key="mini_auto_button", help="modo automático"):
+            st.session_state.auto = not st.session_state.auto
 
     if st.session_state.auto:
         st.session_state.talk = False
@@ -1459,9 +1469,9 @@ def main():
     chosen_id = stx.tab_bar(
         data=[
             stx.TabBarItemData(id=1, title="mini", description=""),
-            stx.TabBarItemData(id=2, title="yPoemas", description=""),
+            stx.TabBarItemData(id=2, title="yPo", description=""),
             stx.TabBarItemData(id=3, title="eureka", description=""),
-            stx.TabBarItemData(id=4, title="off-machina", description=""),
+            stx.TabBarItemData(id=4, title="off-mach", description=""),
             stx.TabBarItemData(id=5, title="books", description=""),
             stx.TabBarItemData(id=6, title="poly", description=""),
             stx.TabBarItemData(id=7, title="about", description=""),
