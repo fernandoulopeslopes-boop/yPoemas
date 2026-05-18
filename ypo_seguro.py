@@ -156,10 +156,9 @@ def apply_styles():
         <style>
         .reportview-container .main .block-container{
             padding-top: 0rem;
-            padding-right: 0.25rem;
-            padding-left: 0.25rem;
+            padding-right: 0.15rem;
+            padding-left: 0.15rem;
             padding-bottom: 0rem;
-            max-width: 94vw;
         }
         </style>
         """,
@@ -185,44 +184,27 @@ def apply_styles():
         }
         .container {
             display: flex;
-            gap: 8px;
             width: 100%;
+            gap: 0px;
         }
         .header {
             text-align:center;
         }
         .logo-text {
-            font-weight: 600;
+            font-weight: 500;
             font-size: 21px;
+            line-height: 1.35;
             font-family: 'IBM Plex Sans';
             color: #000000;
             padding-top: 0px;
-            padding-left: 8px;
+            padding-left: 2px;
+            margin-left: 0px;
         }
 
         .logo-img {
             float:right;
             margin-right: 0px;
             padding-right: 0px;
-        }
-
-
-
-        /* Palco :: ajuste fino de área útil */
-        div[data-testid="stVerticalBlock"] {
-            gap: 0.35rem;
-        }
-
-        div[data-testid="stExpander"] {
-            margin-top: 0rem;
-        }
-
-        div[data-testid="stExpander"] details {
-            padding-top: 0rem;
-        }
-
-        div[data-testid="stExpander"] [data-testid="stMarkdownContainer"] {
-            margin-top: 0rem;
         }
 
         </style>
@@ -255,6 +237,7 @@ def init_session_state():
         "auto": False,
         "rand": False,
         "stage_font": "IBM Plex Sans",
+        "stage_size": 21,
 
         # chave de ouro
         "key_open": False,
@@ -378,24 +361,28 @@ def pick_book_sidebar():
 
 
 def pick_stage_font():
-    """Escolhe a fonte de leitura do Palco."""
+    """Escolhe fonte e tamanho de leitura do Palco."""
     labels = [label for label, fonte in FONTES_MACHINA]
     lookup = {label: fonte for label, fonte in FONTES_MACHINA}
 
     current_font = st.session_state.get("stage_font", "IBM Plex Sans")
-    current_label = next(
-        (label for label, fonte in FONTES_MACHINA if fonte == current_font),
-        labels[0],
-    )
+    current_label = next((label for label, fonte in FONTES_MACHINA if fonte == current_font), labels[0])
 
-    choice = st.sidebar.selectbox(
-        "fontes & letras disponíveis...",
-        labels,
-        index=labels.index(current_label),
-        key="sidebar_font_select",
-    )
+    sizes = list(range(18, 25))
+    current_size = st.session_state.get("stage_size", 21)
+    if current_size not in sizes:
+        current_size = 21
+
+    col_fonte, col_size = st.sidebar.columns([2.2, 0.8])
+
+    with col_fonte:
+        choice = st.selectbox("fontes", labels, index=labels.index(current_label), key="sidebar_font_select")
+
+    with col_size:
+        size = st.selectbox("size", sizes, index=sizes.index(current_size), key="sidebar_size_select")
 
     st.session_state.stage_font = lookup[choice]
+    st.session_state.stage_size = size
 
 
 def show_icons():  # https://api.whatsapp.com/
@@ -450,16 +437,15 @@ def draw_check_buttons():
     help_draw = help_tips[5]
     help_talk = help_tips[6]
 
-    col_arte, col_meio, col_voz = st.sidebar.columns([1.25, 2.8, 1.25])
+    col_arte, col_gap, col_voz = st.sidebar.columns([1.15, 3.7, 1.15])
 
     with col_arte:
-        if st.button("arte", key="ctrl_arte", help=help_draw, use_container_width=True):
+        if st.button("arte", key="ctrl_arte", help=help_draw):
             st.session_state.draw = not st.session_state.draw
 
     with col_voz:
-        if st.button("voz", key="ctrl_voz", help=help_talk, use_container_width=True):
+        if st.button("voz", key="ctrl_voz", help=help_talk):
             st.session_state.talk = not st.session_state.talk
-
 
 
 def get_binary_file_downloader_html(bin_file, file_label="File"):
@@ -797,7 +783,7 @@ def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
         st.markdown(
             f"""
             <div class='container'>
-                <p class='logo-text' style="font-family:{st.session_state.get('stage_font', 'IBM Plex Sans')};">{LOGO_TEXTO}</p>
+                <p class='logo-text' style="font-family:{st.session_state.get('stage_font', 'IBM Plex Sans')}; font-size:{st.session_state.get('stage_size', 21)}px; line-height:1.35;">{LOGO_TEXTO}</p>
             </div>
             """,
             unsafe_allow_html=True,
@@ -807,7 +793,7 @@ def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
             f"""
             <div class='container'>
                 <img class='logo-img' src='data:image/jpg;base64,{base64.b64encode(open(LOGO_IMAGE, 'rb').read()).decode()}'>
-                <p class='logo-text' style="font-family:{st.session_state.get('stage_font', 'IBM Plex Sans')};">{LOGO_TEXTO}</p>
+                <p class='logo-text' style="font-family:{st.session_state.get('stage_font', 'IBM Plex Sans')}; font-size:{st.session_state.get('stage_size', 21)}px; line-height:1.35;">{LOGO_TEXTO}</p>
             </div>
             """,
             unsafe_allow_html=True,
@@ -892,7 +878,7 @@ def page_mini():
     rand = rand.button("✻", help=help_rand)
 
     with auto:
-        if st.button("auto", key="mini_auto_button", help="modo automático", use_container_width=True):
+        if st.button("auto", key="mini_auto_button", help="modo automático"):
             st.session_state.auto = not st.session_state.auto
 
     if st.session_state.auto:
@@ -1530,7 +1516,7 @@ def main():
     with st.sidebar:
         st.image("./images/" + magy)
 
-    # show_icons()
+    show_icons()
     ##$ st.sidebar.state = True
 
 
