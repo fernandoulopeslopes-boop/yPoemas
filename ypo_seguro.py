@@ -100,7 +100,7 @@ IDIOMAS_OFICIAIS = [
 st.set_page_config(
     page_title="a máquina de fazer Poesia - yPoemas",
     page_icon=":star:",
-    layout="centered",
+    layout="wide",
     initial_sidebar_state="auto",
 )
 
@@ -221,6 +221,62 @@ def apply_styles():
             float:right;
             margin-right: 0px;
             padding-right: 0px;
+        }
+
+
+        /* Área central :: palco sem colunas mortas */
+        div[data-testid="stAppViewContainer"] main .block-container {
+            padding-top: 0rem !important;
+            padding-left: 0.35rem !important;
+            padding-right: 0.35rem !important;
+            padding-bottom: 0rem !important;
+            max-width: none !important;
+            width: 100% !important;
+        }
+
+        /* Compatibilidade com versões antigas do Streamlit */
+        .reportview-container .main .block-container {
+            padding-top: 0rem !important;
+            padding-left: 0.35rem !important;
+            padding-right: 0.35rem !important;
+            padding-bottom: 0rem !important;
+            max-width: none !important;
+            width: 100% !important;
+        }
+
+        /* Divisores e elementos centrais devem acompanhar a largura real */
+        div[data-testid="stHorizontalBlock"],
+        div[data-testid="stVerticalBlock"],
+        div[data-testid="stElementContainer"],
+        div[data-testid="stMarkdownContainer"] {
+            max-width: none !important;
+        }
+
+        /* Expander/palco sem respiro lateral artificial */
+        div[data-testid="stExpander"] {
+            width: 100% !important;
+            max-width: none !important;
+        }
+
+        div[data-testid="stExpander"] details {
+            width: 100% !important;
+            max-width: none !important;
+        }
+
+        div[data-testid="stExpander"] div[role="button"] {
+            padding-left: 0.5rem !important;
+            padding-right: 0.5rem !important;
+        }
+
+        div[data-testid="stExpander"] div[data-testid="stVerticalBlock"] {
+            padding-left: 0rem !important;
+            padding-right: 0rem !important;
+        }
+
+        hr {
+            margin-left: 0rem !important;
+            margin-right: 0rem !important;
+            width: 100% !important;
         }
 
         </style>
