@@ -100,7 +100,7 @@ IDIOMAS_OFICIAIS = [
 st.set_page_config(
     page_title="a máquina de fazer Poesia - yPoemas",
     page_icon=":star:",
-    layout="wide",
+    layout="centered",
     initial_sidebar_state="auto",
 )
 
@@ -156,10 +156,10 @@ def apply_styles():
         <style>
         .reportview-container .main .block-container{
             padding-top: 0rem;
-            padding-right: 1.2rem;
-            padding-left: 1.2rem;
+            padding-right: 0.25rem;
+            padding-left: 0.25rem;
             padding-bottom: 0rem;
-            max-width: 96%;
+            max-width: 94vw;
         }
         </style>
         """,
@@ -185,6 +185,8 @@ def apply_styles():
         }
         .container {
             display: flex;
+            gap: 8px;
+            width: 100%;
         }
         .header {
             text-align:center;
@@ -195,13 +197,33 @@ def apply_styles():
             font-family: 'IBM Plex Sans';
             color: #000000;
             padding-top: 0px;
-            padding-left: 15px;
+            padding-left: 8px;
         }
 
         .logo-img {
             float:right;
+            margin-right: 0px;
+            padding-right: 0px;
         }
 
+
+
+        /* Palco :: ajuste fino de área útil */
+        div[data-testid="stVerticalBlock"] {
+            gap: 0.35rem;
+        }
+
+        div[data-testid="stExpander"] {
+            margin-top: 0rem;
+        }
+
+        div[data-testid="stExpander"] details {
+            padding-top: 0rem;
+        }
+
+        div[data-testid="stExpander"] [data-testid="stMarkdownContainer"] {
+            margin-top: 0rem;
+        }
 
         </style>
         """,
@@ -428,14 +450,14 @@ def draw_check_buttons():
     help_draw = help_tips[5]
     help_talk = help_tips[6]
 
-    col_arte, col_meio, col_voz = st.sidebar.columns([1, 2.2, 1])
+    col_arte, col_meio, col_voz = st.sidebar.columns([1.25, 2.8, 1.25])
 
     with col_arte:
-        if st.button("arte", key="ctrl_arte", help=help_draw):
+        if st.button("arte", key="ctrl_arte", help=help_draw, use_container_width=True):
             st.session_state.draw = not st.session_state.draw
 
     with col_voz:
-        if st.button("voz", key="ctrl_voz", help=help_talk):
+        if st.button("voz", key="ctrl_voz", help=help_talk, use_container_width=True):
             st.session_state.talk = not st.session_state.talk
 
 
@@ -870,7 +892,7 @@ def page_mini():
     rand = rand.button("✻", help=help_rand)
 
     with auto:
-        if st.button("auto", key="mini_auto_button", help="modo automático"):
+        if st.button("auto", key="mini_auto_button", help="modo automático", use_container_width=True):
             st.session_state.auto = not st.session_state.auto
 
     if st.session_state.auto:
@@ -1469,7 +1491,7 @@ def main():
     chosen_id = stx.tab_bar(
         data=[
             stx.TabBarItemData(id=1, title="mini", description=""),
-            stx.TabBarItemData(id=2, title="yPo", description=""),
+            stx.TabBarItemData(id=2, title="yPoemas", description=""),
             stx.TabBarItemData(id=3, title="eureka", description=""),
             stx.TabBarItemData(id=4, title="off-mach", description=""),
             stx.TabBarItemData(id=5, title="books", description=""),
