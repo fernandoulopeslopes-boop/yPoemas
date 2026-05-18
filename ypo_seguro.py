@@ -18,8 +18,8 @@ ABOUTS_LIST = [
 ]
 
 BOOKS_LIST = [
-    "todos os temas", "livro vivo", "poemas", "jocosos", "ensaios", "sociais",
-    "variações", "metalinguagem", "outros autores", "signos_fem", "signos_mas",
+    "todos os temas", "livro vivo", "poemas", "jocosos", "ensaios", "variações", 
+    "metalinguagem", "sociais", "outros autores", "signos_fem", "signos_mas",
     "todos os signos",
 ]
 
@@ -374,9 +374,9 @@ def show_icons():  # https://api.whatsapp.com/
         st.sidebar.markdown(
             f"""
             <nav>
-            <a href='https://www.facebook.com/nandoulopes' target='_blank'>• face  </a>
-            <a href='mailto:lopes.fernando@hotmail.com' target='_blank'>e-mail  </a>
-            <a href='https://www.instagram.com/fernando.lopes.942/' target='_blank'>insta  </a>
+            <a href='https://www.facebook.com/nandoulopes' target='_blank'>• face   </a>
+            <a href='mailto:lopes.fernando@hotmail.com' target='_blank'>e-mail   </a>
+            <a href='https://www.instagram.com/fernando.lopes.942/' target='_blank'>insta   </a>
             <a href='https://web.whatsapp.com/send?phone=+5512991368181' target='_blank'>zapp •</a>
             </nav>
             """,
