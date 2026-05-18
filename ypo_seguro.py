@@ -105,6 +105,49 @@ st.set_page_config(
 )
 
 
+st.markdown("""
+<style>
+/* posse imediata do palco */
+
+.main .block-container{
+    max-width: 100% !important;
+    width: 100% !important;
+    padding-top: 0rem !important;
+    padding-left: 0rem !important;
+    padding-right: 0rem !important;
+    padding-bottom: 0rem !important;
+    margin-left: 0rem !important;
+    margin-right: 0rem !important;
+}
+
+/* wrappers modernos */
+div[data-testid="stAppViewContainer"] main .block-container{
+    max-width: 100% !important;
+    width: 100% !important;
+    padding-left: 0rem !important;
+    padding-right: 0rem !important;
+    margin-left: 0rem !important;
+    margin-right: 0rem !important;
+}
+
+/* expansores acompanham o palco */
+div[data-testid="stExpander"],
+div[data-testid="stExpander"] details{
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0rem !important;
+    margin-right: 0rem !important;
+}
+
+hr{
+    margin-left: 0rem !important;
+    margin-right: 0rem !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+
+
 def have_internet(host="1.1.1.1", port=80, timeout=3):
     """Verifica conexão antes de ativar tradução e voz neural."""
     try:
@@ -225,6 +268,50 @@ def apply_styles():
 
 
         
+
+        
+        /* Sidebar :: fontes corpo arte voz */
+        section[data-testid="stSidebar"] button {
+            white-space: nowrap !important;
+            word-break: keep-all !important;
+        }
+
+        section[data-testid="stSidebar"] .stButton button {
+            padding-left: 0.25rem !important;
+            padding-right: 0.25rem !important;
+        }
+
+        /* Área central :: reduzir moldura lateral */
+        div[data-testid="stAppViewContainer"] main .block-container {
+            padding-left: 0.15rem !important;
+            padding-right: 0.15rem !important;
+            max-width: none !important;
+            width: 100% !important;
+        }
+
+        .reportview-container .main .block-container {
+            padding-left: 0.15rem !important;
+            padding-right: 0.15rem !important;
+            max-width: none !important;
+            width: 100% !important;
+        }
+
+        div[data-testid="stExpander"],
+        div[data-testid="stExpander"] details {
+            max-width: none !important;
+            width: 100% !important;
+        }
+
+        div[data-testid="stExpander"] div[role="button"] {
+            padding-left: 0.35rem !important;
+            padding-right: 0.35rem !important;
+        }
+
+        hr {
+            margin-left: 0rem !important;
+            margin-right: 0rem !important;
+            width: 100% !important;
+        }
 
         </style>
         """,
@@ -380,7 +467,7 @@ def pick_book_sidebar():
 
 
 def pick_stage_font():
-    """Escolhe fonte e tamanho de leitura do Palco."""
+    """Escolhe fonte e corpo de leitura do Palco."""
     labels = [label for label, fonte in FONTES_MACHINA]
     lookup = {label: fonte for label, fonte in FONTES_MACHINA}
 
@@ -390,13 +477,12 @@ def pick_stage_font():
         labels[0],
     )
 
-    sizes = list(range(18, 25))
+    corpos = list(range(18, 25))
     current_size = st.session_state.get("stage_size", 21)
-
-    if current_size not in sizes:
+    if current_size not in corpos:
         current_size = 21
 
-    col_font, col_size = st.sidebar.columns([1.85, 1.15])
+    col_font, col_corpo = st.sidebar.columns([2.2, 0.8])
 
     with col_font:
         choice = st.selectbox(
@@ -406,11 +492,11 @@ def pick_stage_font():
             key="sidebar_font_select",
         )
 
-    with col_size:
+    with col_corpo:
         size = st.selectbox(
-            "size",
-            sizes,
-            index=sizes.index(current_size),
+            "corpo",
+            corpos,
+            index=corpos.index(current_size),
             key="sidebar_size_select",
         )
 
@@ -466,18 +552,14 @@ def load_help(idiom):
 
 
 def draw_check_buttons():
-    help_tips = load_help(st.session_state.lang)
-    help_draw = help_tips[5]
-    help_talk = help_tips[6]
-
-    left_space, col_arte, mid_space, col_voz, right_space = st.sidebar.columns([0.2, 2.2, 1.2, 2.2, 0.2])
+    col_arte, col_voz = st.sidebar.columns([2.2, 0.8])
 
     with col_arte:
-        if st.button("arte", key="ctrl_arte", help=help_draw, use_container_width=True):
+        if st.button("arte", key="ctrl_arte", help="arte"):
             st.session_state.draw = not st.session_state.draw
 
     with col_voz:
-        if st.button("voz", key="ctrl_voz", help="voz", use_container_width=True):
+        if st.button("voz", key="ctrl_voz", help="voz"):
             st.session_state.talk = not st.session_state.talk
 
 
