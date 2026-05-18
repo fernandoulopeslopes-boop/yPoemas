@@ -18,8 +18,8 @@ ABOUTS_LIST = [
 ]
 
 BOOKS_LIST = [
-    "todos os temas", "livro vivo", "poemas", "jocosos", "ensaios", "variações", 
-    "metalinguagem", "sociais", "outros autores", "signos_fem", "signos_mas",
+    "todos os temas", "livro vivo", "poemas", "jocosos", "ensaios", "sociais",
+    "variações", "metalinguagem", "outros autores", "signos_fem", "signos_mas",
     "todos os signos",
 ]
 
@@ -221,22 +221,6 @@ def apply_styles():
             float:right;
             margin-right: 0px;
             padding-right: 0px;
-        }
-
-
-        /* Chave de ouro */
-        .machina-key-box {
-            font-family: 'IBM Plex Sans', sans-serif;
-            font-size: 18px;
-            line-height: 1.45;
-            color: #000000;
-            padding: 0.25rem 0.35rem 0.25rem 0.75rem;
-            border-left: 1px solid rgba(0, 0, 0, 0.25);
-        }
-
-        .machina-key-title {
-            font-weight: 600;
-            margin-bottom: 0.65rem;
         }
 
         </style>
@@ -927,48 +911,6 @@ st.session_state.last_lang = st.session_state.lang
 
 
 
-def close_key():
-    """Fecha a chave de ouro sem apagar o poema atual."""
-    st.session_state.key_open = False
-
-
-def reset_key():
-    """Limpa a chave quando o yPoema muda."""
-    st.session_state.key_open = False
-    st.session_state.key_poema_texto = ""
-    st.session_state.key_poema_tema = ""
-    st.session_state.key_poema_idioma = ""
-    st.session_state.key_analise = ""
-
-
-def open_key(curr_ypoema, tema):
-    """Congela o yPoema atual e abre a leitura ao lado."""
-    st.session_state.key_open = True
-    st.session_state.key_poema_texto = curr_ypoema
-    st.session_state.key_poema_tema = tema
-    st.session_state.key_poema_idioma = st.session_state.lang
-
-    # Placeholder intencional:
-    # a análise real entra depois, pela futura integração da chave.
-    st.session_state.key_analise = (
-        "conte-me mais...<br><br>"
-        "Esta leitura ficará presa a este yPoema, "
-        "para não se tornar órfã em caso de rerun."
-    )
-
-
-def render_key_panel():
-    """Renderiza a lateral interpretativa da chave."""
-    st.markdown(
-        f"""
-        <div class='machina-key-box'>
-            <div class='machina-key-title'>chave de ouro</div>
-            <div>{st.session_state.key_analise}</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
 
 def page_mini():
     temas_list = load_temas("todos os temas")
@@ -1004,7 +946,6 @@ def page_mini():
     more = more.button("✚", help=help_more + " • " + analise)
 
     if more:
-        reset_key()
         st.session_state.rand = False
 
     lnew = True
@@ -1093,7 +1034,7 @@ def page_ypoemas():
     ):  # just in case
         st.session_state.take = 0
 
-    foo1, more, last, rand, nest, key, manu, foo2 = st.columns([2.5, 1, 1, 1, 1, 1.4, 1, 2.5])
+    foo1, more, last, rand, nest, manu, foo2 = st.columns([3, 1, 1, 1, 1, 1, 3])
 
     help_tips = load_help(st.session_state.lang)
     help_last = help_tips[0]
@@ -1105,21 +1046,17 @@ def page_ypoemas():
     last = last.button("◀", help=help_last)
     rand = rand.button("✻", help=help_rand)
     nest = nest.button("▶", help=help_nest)
-    key = key.button("chave", help="conte-me mais...")
     manu = manu.button("?", help="help !!!")
 
     if last:
-        reset_key()
         st.session_state.take -= 1
         if st.session_state.take < 0:
             st.session_state.take = maxy_ypoemas
 
     if rand:
-        reset_key()
         st.session_state.take = random.randrange(0, maxy_ypoemas)
 
     if nest:
-        reset_key()
         st.session_state.take += 1
         if st.session_state.take > maxy_ypoemas:
             st.session_state.take = 0
@@ -1136,8 +1073,7 @@ def page_ypoemas():
         )
 
         if opt_take != st.session_state.take:
-            reset_key()
-            st.session_state.take = opt_take
+                st.session_state.take = opt_take
 
     st.session_state.tema = temas_list[st.session_state.take]
 
@@ -1182,20 +1118,7 @@ def page_ypoemas():
             if st.session_state.draw:
                 LOGO_IMAGE = load_arts(st.session_state.tema)
 
-            if key:
-                open_key(curr_ypoema, st.session_state.tema)
-
-            if st.session_state.key_open:
-                texto_chave = st.session_state.key_poema_texto or curr_ypoema
-                left_key, right_key = st.columns([1.35, 1])
-
-                with left_key:
-                    write_ypoema(texto_chave, None)
-
-                with right_key:
-                    render_key_panel()
-            else:
-                write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
+            write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
 
             if manu:
                 LOGO_TEXTO = load_info(st.session_state.tema)
@@ -1606,7 +1529,6 @@ def main():
             stx.TabBarItemData(id=2, title="yPoemas", description=""),
             stx.TabBarItemData(id=3, title="eureka", description=""),
             stx.TabBarItemData(id=4, title="off-mach", description=""),
-            stx.TabBarItemData(id=5, title="books", description=""),
             stx.TabBarItemData(id=6, title="poly", description=""),
             stx.TabBarItemData(id=7, title="about", description=""),
         ],
@@ -1629,9 +1551,6 @@ def main():
     elif chosen_id == "4":
         magy = "img_off-machina.jpg"
         page_off_machina()
-    elif chosen_id == "5":
-        magy = "img_books.jpg"
-        page_books()
     elif chosen_id == "6":
         magy = "img_poly.jpg"
         page_polys()
