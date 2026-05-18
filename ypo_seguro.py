@@ -488,7 +488,10 @@ def draw_check_buttons():
         <style>
         div[data-testid="stSidebar"] button[kind="secondary"] {
             min-height: 2.2rem;
-            white-space: nowrap;
+            min-width: 72px;
+            white-space: nowrap !important;
+            word-break: keep-all !important;
+            overflow-wrap: normal !important;
         }
         </style>
         """,
@@ -496,7 +499,7 @@ def draw_check_buttons():
     )
 
     left_space, col_arte, mid_space, col_voz, right_space = st.sidebar.columns(
-        [0.45, 1.25, 2.4, 1.25, 0.45]
+        [0.25, 1.8, 1.8, 1.8, 0.25]
     )
 
     with col_arte:
