@@ -225,26 +225,33 @@ def apply_styles():
 
 
         /* Área central :: palco sem colunas mortas */
+        div[data-testid="stAppViewContainer"] main {
+            padding-top: 0rem !important;
+        }
+
         div[data-testid="stAppViewContainer"] main .block-container {
             padding-top: 0rem !important;
-            padding-left: 0.35rem !important;
-            padding-right: 0.35rem !important;
+            padding-left: 0rem !important;
+            padding-right: 0rem !important;
             padding-bottom: 0rem !important;
+            margin-left: 0rem !important;
+            margin-right: 0rem !important;
             max-width: none !important;
             width: 100% !important;
         }
 
-        /* Compatibilidade com versões antigas do Streamlit */
-        .reportview-container .main .block-container {
-            padding-top: 0rem !important;
-            padding-left: 0.35rem !important;
-            padding-right: 0.35rem !important;
-            padding-bottom: 0rem !important;
-            max-width: none !important;
-            width: 100% !important;
+        header[data-testid="stHeader"] {
+            height: 0rem !important;
+            min-height: 0rem !important;
+            max-height: 0rem !important;
+            visibility: hidden !important;
         }
 
-        /* Divisores e elementos centrais devem acompanhar a largura real */
+        div[data-testid="stToolbar"] {
+            display: none !important;
+        }
+
+        /* elimina respiro lateral herdado em blocos centrais */
         div[data-testid="stHorizontalBlock"],
         div[data-testid="stVerticalBlock"],
         div[data-testid="stElementContainer"],
@@ -252,20 +259,24 @@ def apply_styles():
             max-width: none !important;
         }
 
-        /* Expander/palco sem respiro lateral artificial */
+        /* palco/expander sem respiro lateral artificial */
         div[data-testid="stExpander"] {
             width: 100% !important;
             max-width: none !important;
+            margin-left: 0rem !important;
+            margin-right: 0rem !important;
         }
 
         div[data-testid="stExpander"] details {
             width: 100% !important;
             max-width: none !important;
+            margin-left: 0rem !important;
+            margin-right: 0rem !important;
         }
 
         div[data-testid="stExpander"] div[role="button"] {
-            padding-left: 0.5rem !important;
-            padding-right: 0.5rem !important;
+            padding-left: 0.25rem !important;
+            padding-right: 0.25rem !important;
         }
 
         div[data-testid="stExpander"] div[data-testid="stVerticalBlock"] {
@@ -277,6 +288,16 @@ def apply_styles():
             margin-left: 0rem !important;
             margin-right: 0rem !important;
             width: 100% !important;
+        }
+
+        /* tab_bar: fixa, sem arraste horizontal */
+        div[data-testid="stHorizontalBlock"]:has(button),
+        div[data-testid="stElementContainer"]:has(button) {
+            overflow-x: hidden !important;
+        }
+
+        [data-testid="stAppViewContainer"] button {
+            white-space: nowrap !important;
         }
 
         </style>
