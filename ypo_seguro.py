@@ -146,6 +146,22 @@ def apply_styles():
         <style>
         /*#MainMenu {visibility: hidden;}*/
         footer {visibility: hidden;}
+
+        /* Sidebar :: harmonia */
+        section[data-testid="stSidebar"] div.block-container {
+            padding-top: 0.75rem;
+            padding-bottom: 0.5rem;
+        }
+
+        section[data-testid="stSidebar"] .stSelectbox {
+            margin-bottom: 0.25rem;
+        }
+
+        section[data-testid="stSidebar"] button {
+            margin-top: 0rem;
+            margin-bottom: 0rem;
+        }
+
         </style>
         """,
         unsafe_allow_html=True,
@@ -382,20 +398,34 @@ def pick_stage_font():
     lookup = {label: fonte for label, fonte in FONTES_MACHINA}
 
     current_font = st.session_state.get("stage_font", "IBM Plex Sans")
-    current_label = next((label for label, fonte in FONTES_MACHINA if fonte == current_font), labels[0])
+    current_label = next(
+        (label for label, fonte in FONTES_MACHINA if fonte == current_font),
+        labels[0],
+    )
 
     sizes = list(range(18, 25))
     current_size = st.session_state.get("stage_size", 21)
+
     if current_size not in sizes:
         current_size = 21
 
-    col_fonte, col_size = st.sidebar.columns([2.2, 0.8])
+    col_font, col_size = st.sidebar.columns([1.85, 1.15])
 
-    with col_fonte:
-        choice = st.selectbox("fontes", labels, index=labels.index(current_label), key="sidebar_font_select")
+    with col_font:
+        choice = st.selectbox(
+            "fontes",
+            labels,
+            index=labels.index(current_label),
+            key="sidebar_font_select",
+        )
 
     with col_size:
-        size = st.selectbox("size", sizes, index=sizes.index(current_size), key="sidebar_size_select")
+        size = st.selectbox(
+            "size",
+            sizes,
+            index=sizes.index(current_size),
+            key="sidebar_size_select",
+        )
 
     st.session_state.stage_font = lookup[choice]
     st.session_state.stage_size = size
@@ -453,14 +483,28 @@ def draw_check_buttons():
     help_draw = help_tips[5]
     help_talk = help_tips[6]
 
-    col_arte, col_gap, col_voz = st.sidebar.columns([1.15, 3.7, 1.15])
+    st.sidebar.markdown(
+        """
+        <style>
+        div[data-testid="stSidebar"] button[kind="secondary"] {
+            min-height: 2.2rem;
+            white-space: nowrap;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    left_space, col_arte, mid_space, col_voz, right_space = st.sidebar.columns(
+        [0.45, 1.25, 2.4, 1.25, 0.45]
+    )
 
     with col_arte:
-        if st.button("arte", key="ctrl_arte", help=help_draw):
+        if st.button("arte", key="ctrl_arte", help=help_draw, use_container_width=True):
             st.session_state.draw = not st.session_state.draw
 
     with col_voz:
-        if st.button("voz", key="ctrl_voz", help=help_talk):
+        if st.button("voz", key="ctrl_voz", help=help_talk, use_container_width=True):
             st.session_state.talk = not st.session_state.talk
 
 
@@ -1595,7 +1639,7 @@ def main():
     with st.sidebar:
         st.image("./images/" + magy)
 
-    # show_icons()
+    show_icons()
     ##$ st.sidebar.state = True
 
 
