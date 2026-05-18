@@ -18,8 +18,8 @@ ABOUTS_LIST = [
 ]
 
 BOOKS_LIST = [
-    "todos os temas", "livro vivo", "poemas", "jocosos", "ensaios", "variações", 
-    "metalinguagem", "sociais", "outros autores", "signos_fem", "signos_mas",
+    "todos os temas", "livro vivo", "poemas", "jocosos", "ensaios", "sociais",
+    "variações", "metalinguagem", "outros autores", "signos_fem", "signos_mas",
     "todos os signos",
 ]
 
@@ -855,16 +855,13 @@ def page_mini():
     if st.session_state.mini > maxy_mini:  # just in case
         st.session_state.mini = 0
 
-    foo1, more, rand, auto, foo2 = st.columns([3.7, 1, 1, 1.6, 3.7])
+    foo1, more, rand, auto, foo2 = st.columns([4, 1, 1, 1, 4])
 
     help_tips = load_help(st.session_state.lang)
     help_rand = help_tips[1]
     help_more = help_tips[4]
     rand = rand.button("✻", help=help_rand)
-
-    with auto:
-        if st.button("auto", key="mini_auto", help="modo automático"):
-            st.session_state.auto = not st.session_state.auto
+    st.session_state.auto = auto.checkbox("auto ", help="modo automático")
 
     if st.session_state.auto:
         st.session_state.talk = False
