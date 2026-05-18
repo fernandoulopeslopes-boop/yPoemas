@@ -470,14 +470,14 @@ def draw_check_buttons():
     help_draw = help_tips[5]
     help_talk = help_tips[6]
 
-    left_space, col_arte, mid_space, col_voz, right_space = st.sidebar.columns([0.3, 1.7, 2.0, 1.7, 0.3])
+    left_space, col_arte, mid_space, col_voz, right_space = st.sidebar.columns([0.2, 2.2, 1.2, 2.2, 0.2])
 
     with col_arte:
         if st.button("arte", key="ctrl_arte", help=help_draw, use_container_width=True):
             st.session_state.draw = not st.session_state.draw
 
     with col_voz:
-        if st.button("voz", key="ctrl_voz", help=help_talk, use_container_width=True):
+        if st.button("voz", key="ctrl_voz", help="voz", use_container_width=True):
             st.session_state.talk = not st.session_state.talk
 
 
@@ -929,7 +929,7 @@ def page_mini():
 
     st.session_state.tema = temas_list[st.session_state.mini]
     analise = say_number(st.session_state.tema)
-    more = more.button("✚", help=help_more + " • " + analise)
+    more = more.button("✚", help="nova versão do tema" + " • " + analise)
 
     if more:
         st.session_state.rand = False
@@ -1028,10 +1028,10 @@ def page_ypoemas():
     help_nest = help_tips[2]
     help_more = help_tips[4]
 
-    more = more.button("✚", help=help_more)
-    last = last.button("◀", help=help_last)
+    more = more.button("✚", help="nova versão do tema")
+    last = last.button("◀", help="tema anterior")
     rand = rand.button("✻", help=help_rand)
-    nest = nest.button("▶", help=help_nest)
+    nest = nest.button("▶", help="próximo tema")
     manu = manu.button("?", help="help !!!")
 
     if last:
@@ -1134,7 +1134,7 @@ def page_eureka():
         )
 
     with more:
-        more = more.button("✚", help=help_more)
+        more = more.button("✚", help="nova versão do tema")
 
     with rand:
         rand = rand.button("✻", help=help_rand)
@@ -1280,9 +1280,9 @@ def page_off_machina():  # available off_machina_books
     help_love = help_tips[3]
 
     foo1, last, rand, nest, love, manu, foo2 = st.columns([2.5, 1, 1, 1, 1, 1, 2.5])
-    last = last.button("◀", help=help_last)
+    last = last.button("◀", help="tema anterior")
     rand = rand.button("✻", help=help_rand)
-    nest = nest.button("▶", help=help_nest)
+    nest = nest.button("▶", help="próximo tema")
     love = love.button("❤", help=help_love)
     manu = manu.button("?", help="help !!!")
 
