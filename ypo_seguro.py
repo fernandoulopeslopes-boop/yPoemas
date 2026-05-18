@@ -224,81 +224,7 @@ def apply_styles():
         }
 
 
-        /* Área central :: palco sem colunas mortas */
-        div[data-testid="stAppViewContainer"] main {
-            padding-top: 0rem !important;
-        }
-
-        div[data-testid="stAppViewContainer"] main .block-container {
-            padding-top: 0rem !important;
-            padding-left: 0rem !important;
-            padding-right: 0rem !important;
-            padding-bottom: 0rem !important;
-            margin-left: 0rem !important;
-            margin-right: 0rem !important;
-            max-width: none !important;
-            width: 100% !important;
-        }
-
-        header[data-testid="stHeader"] {
-            height: 0rem !important;
-            min-height: 0rem !important;
-            max-height: 0rem !important;
-            visibility: hidden !important;
-        }
-
-        div[data-testid="stToolbar"] {
-            display: none !important;
-        }
-
-        /* elimina respiro lateral herdado em blocos centrais */
-        div[data-testid="stHorizontalBlock"],
-        div[data-testid="stVerticalBlock"],
-        div[data-testid="stElementContainer"],
-        div[data-testid="stMarkdownContainer"] {
-            max-width: none !important;
-        }
-
-        /* palco/expander sem respiro lateral artificial */
-        div[data-testid="stExpander"] {
-            width: 100% !important;
-            max-width: none !important;
-            margin-left: 0rem !important;
-            margin-right: 0rem !important;
-        }
-
-        div[data-testid="stExpander"] details {
-            width: 100% !important;
-            max-width: none !important;
-            margin-left: 0rem !important;
-            margin-right: 0rem !important;
-        }
-
-        div[data-testid="stExpander"] div[role="button"] {
-            padding-left: 0.25rem !important;
-            padding-right: 0.25rem !important;
-        }
-
-        div[data-testid="stExpander"] div[data-testid="stVerticalBlock"] {
-            padding-left: 0rem !important;
-            padding-right: 0rem !important;
-        }
-
-        hr {
-            margin-left: 0rem !important;
-            margin-right: 0rem !important;
-            width: 100% !important;
-        }
-
-        /* tab_bar: fixa, sem arraste horizontal */
-        div[data-testid="stHorizontalBlock"]:has(button),
-        div[data-testid="stElementContainer"]:has(button) {
-            overflow-x: hidden !important;
-        }
-
-        [data-testid="stAppViewContainer"] button {
-            white-space: nowrap !important;
-        }
+        
 
         </style>
         """,
@@ -544,24 +470,7 @@ def draw_check_buttons():
     help_draw = help_tips[5]
     help_talk = help_tips[6]
 
-    st.sidebar.markdown(
-        """
-        <style>
-        div[data-testid="stSidebar"] button[kind="secondary"] {
-            min-height: 2.2rem;
-            min-width: 72px;
-            white-space: nowrap !important;
-            word-break: keep-all !important;
-            overflow-wrap: normal !important;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    left_space, col_arte, mid_space, col_voz, right_space = st.sidebar.columns(
-        [0.25, 1.8, 1.8, 1.8, 0.25]
-    )
+    left_space, col_arte, mid_space, col_voz, right_space = st.sidebar.columns([0.3, 1.7, 2.0, 1.7, 0.3])
 
     with col_arte:
         if st.button("arte", key="ctrl_arte", help=help_draw, use_container_width=True):
