@@ -330,6 +330,19 @@ def apply_styles():
             padding-right: 0.25rem !important;
         }
 
+        
+        /* Hints fixos acima dos botões */
+        .machina-button-hint {
+            font-size: 10px;
+            line-height: 1.05;
+            text-align: center;
+            opacity: 0.72;
+            margin: 0rem 0rem 0.08rem 0rem;
+            padding: 0rem;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+
         </style>
         """,
         unsafe_allow_html=True,
@@ -568,15 +581,26 @@ def load_help(idiom):
     return returns
 
 
+
+def button_hint(where, label):
+    """Mostra um hint fixo acima do botão, na mesma coluna."""
+    where.markdown(
+        f"<div class='machina-button-hint'>{label}</div>",
+        unsafe_allow_html=True,
+    )
+
+
 def draw_check_buttons():
     col_arte, col_voz = st.sidebar.columns([2.05, 0.95])
 
     with col_arte:
-        if col_arte.button("arte", key="ctrl_arte", help="mostra / esconde imagens no Palco"):
+        button_hint(col_arte, "Palco")
+        if col_arte.button("arte", key="ctrl_arte"):
             st.session_state.draw = not st.session_state.draw
 
     with col_voz:
-        if col_voz.button("voz", key="ctrl_voz", help="ouve o texto do Palco"):
+        button_hint(col_voz, "Palco")
+        if col_voz.button("voz", key="ctrl_voz"):
             st.session_state.talk = not st.session_state.talk
 
 
@@ -1009,11 +1033,12 @@ def page_mini():
     help_tips = load_help(st.session_state.lang)
     help_rand = help_tips[1]
     help_more = help_tips[4]
-    rand = rand.button("✻", help="tema ao acaso")
+    button_hint(rand, "tema ao acaso")
+    rand = rand.button("✻")
 
-    with auto:
-        if st.button("auto", key="mini_auto_button", help="modo automático"):
-            st.session_state.auto = not st.session_state.auto
+    button_hint(auto, "modo auto")
+    if auto.button("auto", key="mini_auto_button"):
+        st.session_state.auto = not st.session_state.auto
 
     if st.session_state.auto:
         st.session_state.talk = False
@@ -1028,7 +1053,8 @@ def page_mini():
 
     st.session_state.tema = temas_list[st.session_state.mini]
     analise = say_number(st.session_state.tema)
-    more = more.button("✚", help="nova versão do tema")
+    button_hint(more, "nova versão")
+    more = more.button("✚")
 
     if more:
         st.session_state.rand = False
@@ -1127,11 +1153,20 @@ def page_ypoemas():
     help_nest = help_tips[2]
     help_more = help_tips[4]
 
-    more = more.button("✚", help="nova versão do tema")
-    last = last.button("◀", help="tema anterior")
-    rand = rand.button("✻", help="tema ao acaso")
-    nest = nest.button("▶", help="próximo tema")
-    manu = manu.button("?", help="help !!!")
+    button_hint(more, "nova versão")
+    more = more.button("✚")
+
+    button_hint(last, "tema anterior")
+    last = last.button("◀")
+
+    button_hint(rand, "tema ao acaso")
+    rand = rand.button("✻")
+
+    button_hint(nest, "próximo tema")
+    nest = nest.button("▶")
+
+    button_hint(manu, "ajuda")
+    manu = manu.button("?")
 
     if last:
         st.session_state.take -= 1
@@ -1233,13 +1268,16 @@ def page_eureka():
         )
 
     with more:
-        more = more.button("✚", help="nova versão do tema")
+        button_hint(more, "nova versão")
+        more = more.button("✚")
 
     with rand:
-        rand = rand.button("✻", help="tema ao acaso")
+        button_hint(rand, "tema ao acaso")
+        rand = rand.button("✻")
 
     with manu:
-        manu = manu.button("?", help="help !!!")
+        button_hint(manu, "ajuda")
+        manu = manu.button("?")
 
     if manu:
         st.subheader(load_md_file("MANUAL_EUREKA.md"))
@@ -1379,11 +1417,20 @@ def page_off_machina():  # available off_machina_books
     help_love = help_tips[3]
 
     foo1, last, rand, nest, love, manu, foo2 = st.columns([2.5, 1, 1, 1, 1, 1, 2.5])
-    last = last.button("◀", help="tema anterior")
-    rand = rand.button("✻", help="tema ao acaso")
-    nest = nest.button("▶", help="próximo tema")
-    love = love.button("❤", help=help_love)
-    manu = manu.button("?", help="help !!!")
+    button_hint(last, "anterior")
+    last = last.button("◀")
+
+    button_hint(rand, "ao acaso")
+    rand = rand.button("✻")
+
+    button_hint(nest, "próximo")
+    nest = nest.button("▶")
+
+    button_hint(love, "mais lidos")
+    love = love.button("❤")
+
+    button_hint(manu, "ajuda")
+    manu = manu.button("?")
 
     this_off_book = load_off_book(off_book_name)
     off_book_pagys = load_book_pages(this_off_book)
@@ -1507,7 +1554,7 @@ def page_books():  # available books
         )
 
         with ok:
-            doit = st.button("✔", help="confirm ?")
+            doit = st.button("✔")
 
         lnew = True
         if lnew:
@@ -1553,7 +1600,7 @@ def page_polys():  # available languages
         )
 
     with ok:
-        doit = st.button("✔", help="confirm ?")
+        doit = st.button("✔")
 
     if doit:
         poly_pais = poly_pais[opt_poly]
