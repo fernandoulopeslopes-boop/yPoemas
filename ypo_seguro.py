@@ -274,7 +274,7 @@ def apply_styles():
         }
 
         section[data-testid="stSidebar"] {
-            background: #ffffff !important;
+            background: #eaf6ff !important;
         }
 
         /* páginas ancoradas no topo do gramado */
@@ -331,16 +331,33 @@ def apply_styles():
         }
 
         
-        /* Hints fixos acima dos botões */
+        /* Machina :: Centro de Controle + hints estáveis */
+        section[data-testid="stSidebar"],
+        section[data-testid="stSidebar"] > div:first-child,
+        [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
+            background: #eaf6ff !important;
+        }
+
         .machina-button-hint {
-            font-size: 10px;
-            line-height: 1.05;
+            font-size: 9px;
+            line-height: 0.85;
             text-align: center;
-            opacity: 0.72;
-            margin: 0rem 0rem 0.08rem 0rem;
+            opacity: 0.68;
+            margin: -0.18rem 0rem -0.05rem 0rem;
             padding: 0rem;
             white-space: nowrap;
             pointer-events: none;
+        }
+
+        section[data-testid="stSidebar"] .machina-button-hint {
+            margin: -0.38rem 0rem -0.18rem 0rem;
+        }
+
+        section[data-testid="stSidebar"] .stButton button {
+            white-space: nowrap !important;
+            word-break: keep-all !important;
+            padding-left: 0.25rem !important;
+            padding-right: 0.25rem !important;
         }
 
         </style>
@@ -374,6 +391,7 @@ def init_session_state():
         "rand": False,
         "stage_font": "IBM Plex Sans",
         "stage_size": 21,
+        "visual_only_rerun": False,
 
         # chave de ouro
         "key_open": False,
@@ -419,6 +437,20 @@ def translate(input_text):
         return "Arquivo muito grande para ser traduzido."
 
 
+
+def button_hint(where, label):
+    """Mostra hint fixo acima do botão, sem tooltip lateral."""
+    where.markdown(
+        f"<div class='machina-button-hint'>{label}</div>",
+        unsafe_allow_html=True,
+    )
+
+
+def current_ypoema_for_visual_rerun():
+    """Evita gerar novo texto quando o rerun veio só de ajuste visual."""
+    return st.session_state.lang != st.session_state.last_lang or st.session_state.get("visual_only_rerun", False)
+
+
 def pick_lang():  # lista oficial de idiomas + P.O.L.Y.
     options = []
     lookup = {}
@@ -453,7 +485,7 @@ def pick_lang():  # lista oficial de idiomas + P.O.L.Y.
         st.session_state.lang = selected["lang"]
         st.session_state.poly_file = selected["poly_file"]
 
-    if st.session_state.lang != st.session_state.last_lang:
+    if current_ypoema_for_visual_rerun():
         st.success(translate("idioma atual") + " ➪ " + st.session_state.lang)
 
 
@@ -530,8 +562,13 @@ def pick_stage_font():
             key="sidebar_size_select",
         )
 
-    st.session_state.stage_font = lookup[choice]
+    selected_font = lookup[choice]
+    if selected_font != current_font or size != current_size:
+        st.session_state.visual_only_rerun = True
+
+    st.session_state.stage_font = selected_font
     st.session_state.stage_size = size
+
 
 
 def show_icons():  # https://api.whatsapp.com/
@@ -581,27 +618,21 @@ def load_help(idiom):
     return returns
 
 
-
-def button_hint(where, label):
-    """Mostra um hint fixo acima do botão, na mesma coluna."""
-    where.markdown(
-        f"<div class='machina-button-hint'>{label}</div>",
-        unsafe_allow_html=True,
-    )
-
-
 def draw_check_buttons():
     col_arte, col_voz = st.sidebar.columns([2.05, 0.95])
 
     with col_arte:
         button_hint(col_arte, "Palco")
         if col_arte.button("arte", key="ctrl_arte"):
+            st.session_state.visual_only_rerun = True
             st.session_state.draw = not st.session_state.draw
 
     with col_voz:
         button_hint(col_voz, "Palco")
         if col_voz.button("voz", key="ctrl_voz"):
+            st.session_state.visual_only_rerun = True
             st.session_state.talk = not st.session_state.talk
+
 
 
 def get_binary_file_downloader_html(bin_file, file_label="File"):
@@ -1065,7 +1096,7 @@ def page_mini():
             st.session_state.mini = random.randrange(0, maxy_mini)
             st.session_state.tema = temas_list[st.session_state.mini]
 
-        if st.session_state.lang != st.session_state.last_lang:
+        if current_ypoema_for_visual_rerun():
             curr_ypoema = load_lypo()  # changes in lang, keep LYPO
         else:
             curr_ypoema = load_poema(st.session_state.tema, "")
@@ -1105,7 +1136,7 @@ def page_mini():
                     st.session_state.mini = random.randrange(0, maxy_mini)
                     st.session_state.tema = temas_list[st.session_state.mini]
 
-                if st.session_state.lang != st.session_state.last_lang:
+                if current_ypoema_for_visual_rerun():
                     curr_ypoema = load_lypo()  # changes in lang, keep LYPO
                 else:
                     curr_ypoema = load_poema(st.session_state.tema, "")
@@ -1216,7 +1247,7 @@ def page_ypoemas():
 
         ypoemas_expander = st.expander(what_book, expanded=True)
         with ypoemas_expander:
-            if st.session_state.lang != st.session_state.last_lang:
+            if current_ypoema_for_visual_rerun():
                 curr_ypoema = load_lypo()  # changes in lang, keep LYPO
             else:
                 curr_ypoema = load_poema(st.session_state.tema, "")
@@ -1345,7 +1376,7 @@ def page_eureka():
 
             st.session_state.tema = seed_tema
 
-            if st.session_state.lang != st.session_state.last_lang:
+            if current_ypoema_for_visual_rerun():
                 curr_ypoema = load_lypo()  # changes in lang, keep LYPO
             else:
                 curr_ypoema = load_poema(seed_tema, this_seed)
@@ -1495,7 +1526,7 @@ def page_off_machina():  # available off_machina_books
             off_book_text = ""
             pipe_line = this_off_book[st.session_state.off_take].split("|")
             if "@ " in pipe_line[1]:
-                if st.session_state.lang != st.session_state.last_lang:
+                if current_ypoema_for_visual_rerun():
                     off_book_text = load_lypo()  # changes in lang, keep LYPO
                 else:
                     nome_tema = pipe_line[1].replace("@ ", "")
@@ -1694,6 +1725,7 @@ def main():
         st.image("./images/" + magy)
 
     show_icons()
+    st.session_state.visual_only_rerun = False  # reset visual-only rerun
     ##$ st.sidebar.state = True
 
 
