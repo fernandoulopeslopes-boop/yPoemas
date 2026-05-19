@@ -267,8 +267,8 @@ def apply_styles():
             padding-bottom: 0rem !important;
             max-width: none !important;
             width: 100% !important;
-            min-height: calc(100vh - var(--machina-topo-streamlit)) !important;
-            max-height: calc(100vh - var(--machina-topo-streamlit)) !important;
+            min-height: calc(100vh - 140px) !important;
+            max-height: calc(100vh - 140px) !important;
             overflow-x: hidden !important;
             overflow-y: auto !important;
         }
