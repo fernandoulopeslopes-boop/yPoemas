@@ -105,49 +105,6 @@ st.set_page_config(
 )
 
 
-st.markdown("""
-<style>
-/* posse imediata do palco */
-
-.main .block-container{
-    max-width: 100% !important;
-    width: 100% !important;
-    padding-top: 0rem !important;
-    padding-left: 0rem !important;
-    padding-right: 0rem !important;
-    padding-bottom: 0rem !important;
-    margin-left: 0rem !important;
-    margin-right: 0rem !important;
-}
-
-/* wrappers modernos */
-div[data-testid="stAppViewContainer"] main .block-container{
-    max-width: 100% !important;
-    width: 100% !important;
-    padding-left: 0rem !important;
-    padding-right: 0rem !important;
-    margin-left: 0rem !important;
-    margin-right: 0rem !important;
-}
-
-/* expansores acompanham o palco */
-div[data-testid="stExpander"],
-div[data-testid="stExpander"] details{
-    width: 100% !important;
-    max-width: 100% !important;
-    margin-left: 0rem !important;
-    margin-right: 0rem !important;
-}
-
-hr{
-    margin-left: 0rem !important;
-    margin-right: 0rem !important;
-}
-</style>
-""", unsafe_allow_html=True)
-
-
-
 def have_internet(host="1.1.1.1", port=80, timeout=3):
     """Verifica conexão antes de ativar tradução e voz neural."""
     try:
@@ -281,36 +238,41 @@ def apply_styles():
             padding-right: 0.25rem !important;
         }
 
-        /* Área central :: reduzir moldura lateral */
+        
+        /* Gramado :: território visual da Machina */
+        div[data-testid="stAppViewContainer"] {
+            background: #eef7e8 !important;
+        }
+
+        div[data-testid="stAppViewContainer"] main {
+            background: #eef7e8 !important;
+        }
+
         div[data-testid="stAppViewContainer"] main .block-container {
-            padding-left: 0.15rem !important;
-            padding-right: 0.15rem !important;
+            background: #eef7e8 !important;
+            padding-top: 0.35rem !important;
+            padding-left: 0.65rem !important;
+            padding-right: 0.65rem !important;
+            padding-bottom: 0.5rem !important;
             max-width: none !important;
             width: 100% !important;
         }
 
-        .reportview-container .main .block-container {
-            padding-left: 0.15rem !important;
-            padding-right: 0.15rem !important;
-            max-width: none !important;
-            width: 100% !important;
+        section[data-testid="stSidebar"] {
+            background: #ffffff !important;
         }
 
-        div[data-testid="stExpander"],
-        div[data-testid="stExpander"] details {
-            max-width: none !important;
-            width: 100% !important;
+        div[data-testid="stHorizontalBlock"] {
+            background: transparent !important;
         }
 
-        div[data-testid="stExpander"] div[role="button"] {
-            padding-left: 0.35rem !important;
-            padding-right: 0.35rem !important;
+        div[data-testid="stExpander"] {
+            background: transparent !important;
         }
 
         hr {
             margin-left: 0rem !important;
             margin-right: 0rem !important;
-            width: 100% !important;
         }
 
         </style>
