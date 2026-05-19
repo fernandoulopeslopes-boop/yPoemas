@@ -309,6 +309,18 @@ def apply_styles():
             max-width: 100% !important;
         }
 
+        
+        /* Gramado :: páginas coladas no topo */
+        div[data-testid="stAppViewContainer"] main .block-container > div:first-child {
+            margin-top: 0rem !important;
+            padding-top: 0rem !important;
+        }
+
+        div[data-testid="stAppViewContainer"] main .block-container > div:first-child > div:first-child {
+            margin-top: 0rem !important;
+            padding-top: 0rem !important;
+        }
+
         </style>
         """,
         unsafe_allow_html=True,
@@ -551,11 +563,11 @@ def draw_check_buttons():
     col_arte, col_voz = st.sidebar.columns([2.2, 0.8])
 
     with col_arte:
-        if st.button("arte", key="ctrl_arte", help="arte"):
+        if st.button("arte", key="ctrl_arte", help="mostra / esconde imagens no Palco"):
             st.session_state.draw = not st.session_state.draw
 
     with col_voz:
-        if st.button("voz", key="ctrl_voz", help="voz"):
+        if st.button("voz", key="ctrl_voz", help="ouve o texto do Palco"):
             st.session_state.talk = not st.session_state.talk
 
 
@@ -988,7 +1000,7 @@ def page_mini():
     help_tips = load_help(st.session_state.lang)
     help_rand = help_tips[1]
     help_more = help_tips[4]
-    rand = rand.button("✻", help=help_rand)
+    rand = rand.button("✻", help="tema ao acaso")
 
     with auto:
         if st.button("auto", key="mini_auto_button", help="modo automático"):
@@ -1007,7 +1019,7 @@ def page_mini():
 
     st.session_state.tema = temas_list[st.session_state.mini]
     analise = say_number(st.session_state.tema)
-    more = more.button("✚", help="nova versão do tema" + " • " + analise)
+    more = more.button("✚", help="nova versão do tema")
 
     if more:
         st.session_state.rand = False
@@ -1108,7 +1120,7 @@ def page_ypoemas():
 
     more = more.button("✚", help="nova versão do tema")
     last = last.button("◀", help="tema anterior")
-    rand = rand.button("✻", help=help_rand)
+    rand = rand.button("✻", help="tema ao acaso")
     nest = nest.button("▶", help="próximo tema")
     manu = manu.button("?", help="help !!!")
 
@@ -1215,7 +1227,7 @@ def page_eureka():
         more = more.button("✚", help="nova versão do tema")
 
     with rand:
-        rand = rand.button("✻", help=help_rand)
+        rand = rand.button("✻", help="tema ao acaso")
 
     with manu:
         manu = manu.button("?", help="help !!!")
@@ -1359,7 +1371,7 @@ def page_off_machina():  # available off_machina_books
 
     foo1, last, rand, nest, love, manu, foo2 = st.columns([2.5, 1, 1, 1, 1, 1, 2.5])
     last = last.button("◀", help="tema anterior")
-    rand = rand.button("✻", help=help_rand)
+    rand = rand.button("✻", help="tema ao acaso")
     nest = nest.button("▶", help="próximo tema")
     love = love.button("❤", help=help_love)
     manu = manu.button("?", help="help !!!")
