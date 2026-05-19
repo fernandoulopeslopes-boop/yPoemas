@@ -239,40 +239,74 @@ def apply_styles():
         }
 
         
-        /* Gramado :: território visual da Machina */
+        /* Gramado :: território visual da Machina v2 */
+        :root {
+            --machina-topo-streamlit: 72px;
+            --machina-gramado: #eef7e8;
+        }
+
+        html, body {
+            overflow-x: hidden !important;
+        }
+
         div[data-testid="stAppViewContainer"] {
-            background: #eef7e8 !important;
+            background: var(--machina-gramado) !important;
+            overflow-x: hidden !important;
         }
 
         div[data-testid="stAppViewContainer"] main {
-            background: #eef7e8 !important;
+            background: var(--machina-gramado) !important;
+            overflow-x: hidden !important;
         }
 
         div[data-testid="stAppViewContainer"] main .block-container {
-            background: #eef7e8 !important;
-            padding-top: 0.35rem !important;
+            background: var(--machina-gramado) !important;
+            padding-top: 0rem !important;
             padding-left: 0.65rem !important;
             padding-right: 0.65rem !important;
-            padding-bottom: 0.5rem !important;
+            padding-bottom: 0rem !important;
             max-width: none !important;
             width: 100% !important;
+            min-height: calc(100vh - var(--machina-topo-streamlit)) !important;
+            max-height: calc(100vh - var(--machina-topo-streamlit)) !important;
+            overflow-x: hidden !important;
+            overflow-y: auto !important;
         }
 
         section[data-testid="stSidebar"] {
             background: #ffffff !important;
         }
 
-        div[data-testid="stHorizontalBlock"] {
-            background: transparent !important;
+        /* páginas ancoradas no topo do gramado */
+        div[data-testid="stAppViewContainer"] main .block-container > div:first-child {
+            margin-top: 0rem !important;
+            padding-top: 0rem !important;
         }
 
+        /* evitar que a barra de páginas arraste o gramado */
+        div[data-testid="stHorizontalBlock"],
+        div[data-testid="stVerticalBlock"],
+        div[data-testid="stElementContainer"] {
+            max-width: 100% !important;
+            overflow-x: hidden !important;
+        }
+
+        /* palco ainda no gramado, sem redesenho estrutural */
         div[data-testid="stExpander"] {
             background: transparent !important;
+            max-width: 100% !important;
+            overflow-x: hidden !important;
+        }
+
+        div[data-testid="stExpander"] details {
+            max-width: 100% !important;
+            overflow-x: hidden !important;
         }
 
         hr {
             margin-left: 0rem !important;
             margin-right: 0rem !important;
+            max-width: 100% !important;
         }
 
         </style>
