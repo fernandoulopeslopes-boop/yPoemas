@@ -66,7 +66,7 @@ VOICES_EDGE_TTS = {
     "pt": "pt-BR-AntonioNeural",
     "en": "en-US-GuyNeural",
     "es": "es-ES-AlvaroNeural",
-    "fr": "fr-FR-HenriNeural",
+    "fr": "fr-FR-RemyNeural",
     "it": "it-IT-DiegoNeural",
 }
 
