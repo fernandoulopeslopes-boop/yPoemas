@@ -39,26 +39,28 @@ PAGE_INFO_FILES = {
 }
 
 LANG_FILES = {
-    "pt": "poly_pt.txt",
-    "en": "poly_en.txt",
-    "es": "poly_es.txt",
-    "fr": "poly_fr.txt",
-    "it": "poly_it.txt",
-    "de": "poly_de.txt",
-    "ca": "poly_ca.txt",
-    "gl": "poly_gl.txt",
-    "nl": "poly_nl.txt",
-    "pl": "poly_pl.txt",
-    "ro": "poly_ro.txt",
-    "ru": "poly_ru.txt",
-    "sv": "poly_sv.txt",
-    "no": "poly_no.txt",
-    "da": "poly_da.txt",
-    "fi": "poly_fi.txt",
-    "is": "poly_is.txt",
-    "hu": "poly_hu.txt",
-    "la": "poly_la.txt",
-    "eo": "poly_eo.txt",
+    'Português': 'pt',
+    'Espanhol': 'es',
+    'Italiano': 'it',
+    'Francês': 'fr',
+    'Inglês': 'en',
+    'Esperanto': 'eo',
+    'Latin': 'la',
+    'Basco': 'eu',
+    'Catalão': 'ca',
+    'Córsico': 'co',
+    'Galego': 'gl',
+    'Galês': 'cy',
+    'Polonês': 'pl',
+    'Holandês': 'nl',
+    'Irlandês': 'ga',
+    'Norueguês': 'no',
+    'Finlandês': 'fi',
+    'Dinamarquês': 'da',
+    'Romeno': 'ro',
+    'Russo': 'ru'
+    'Sueco': 'sv',
+
 }
 
 VOICES_EDGE_TTS = {
