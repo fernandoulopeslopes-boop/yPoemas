@@ -33,16 +33,11 @@ PAGE_IMAGES = {
     "4": "img_off-machina.jpg", "5": "img_books.jpg", "6": "img_poly.jpg", "7": "img_about.jpg",
 }
 
-PAGE_INFO_FILES = {
-    "1": "INFO_MINI.md", "2": "INFO_YPOEMAS.md", "3": "INFO_EUREKA.md",
-    "4": "INFO_OFF-MACHINA.md", "5": "INFO_BOOKS.md", "6": "INFO_POLY.md", "7": "INFO_ABOUT.md",
-}
-
 VOICES_EDGE_TTS = {
     "pt": "pt-BR-AntonioNeural",
     "en": "en-US-GuyNeural",
     "es": "es-ES-AlvaroNeural",
-    "fr": "fr-FR-RemyNeural",
+    "fr": "fr-FR-HenriNeural",
     "it": "it-IT-DiegoNeural",
 }
 
@@ -242,7 +237,7 @@ def init_session_state():
     defaults = {
         "lang": "pt",
         "last_lang": "pt",
-        "book": "livro vivo",
+        "book": "poemas",
         "take": 0,
         "mini": 0,
         "tema": "Fatos",
@@ -447,16 +442,6 @@ def show_icons():  # https://api.whatsapp.com/
         )
 
 
-@st.cache_data
-def load_help_tips():
-    help_list = []
-    with open(os.path.join("./base/helpers.txt"), encoding="utf-8") as file:
-        for line in file:
-            help_list.append(line)
-    file.close()
-
-    return help_list
-
 
 def load_help(idiom):
     returns = []
@@ -464,7 +449,7 @@ def load_help(idiom):
     returns.append(translate("escolhe tema ao acaso"))
     returns.append(translate("próximo tema"))
     returns.append(translate("mais lidos..."))
-    returns.append(translate("gera novo yPoema"))
+    returns.append(translate("gera nova versão do tema"))
     returns.append(translate("arte"))
     returns.append(translate("voz"))
 
@@ -897,9 +882,10 @@ def say_number(tema):  # search index title for eureka
 if st.session_state.visy:  # check visitor once; rand initial temas
     update_visy()
 
-    temas_list = load_temas(st.session_state.book)
+    temas_list = load_temas("poemas")
     maxy_ypoemas = len(temas_list)
     st.session_state.take = random.randrange(0, maxy_ypoemas)
+    st.session_state.tema = temas_list[st.session_state.take]
 
     temas_list = load_temas("todos os temas")
     maxy_mini = len(temas_list)
@@ -1406,40 +1392,6 @@ def page_off_machina():  # available off_machina_books
             talk(off_book_text)
 
 
-def page_books():  # available books
-    books, ok = st.columns([9.3, 0.7])
-    with books:
-        books_list = BOOKS_LIST
-
-        options = list(range(len(books_list)))
-        sobrios = "↓  " + translate("lista de Livros")
-        opt_book = st.selectbox(
-            sobrios,
-            options,
-            index=books_list.index(st.session_state.book),
-            format_func=lambda x: books_list[x],
-            key="opt_book",
-        )
-
-        with ok:
-            doit = st.button("✔", help="confirm ?")
-
-        lnew = True
-        if lnew:
-            list_book = ""
-            temas_list = load_temas(books_list[opt_book])
-            for line in temas_list:
-                list_book += line.strip() + ", "
-            st.write(list_book[:-2] + " ▶ " + str(int(len(temas_list))) + " páginas")
-
-            books_expander = st.expander("", True)
-            with books_expander:
-                st.subheader(load_md_file("MANUAL_BOOKS.md"))
-
-            if doit:
-                st.session_state.take = 0
-                st.session_state.book = books_list[opt_book]
-
 
 def page_polys():  # available languages
     polys, ok = st.columns([9.3, 0.7])
@@ -1529,9 +1481,8 @@ def main():
             stx.TabBarItemData(id=2, title="yPoemas", description=""),
             stx.TabBarItemData(id=3, title="eureka", description=""),
             stx.TabBarItemData(id=4, title="off-mach", description=""),
-            stx.TabBarItemData(id=5, title="books", description=""),
-            stx.TabBarItemData(id=6, title="poly", description=""),
-            stx.TabBarItemData(id=7, title="about", description=""),
+            stx.TabBarItemData(id=5, title="poly", description=""),
+            stx.TabBarItemData(id=6, title="about", description=""),
         ],
         default=2,
     )
@@ -1553,12 +1504,9 @@ def main():
         magy = "img_off-machina.jpg"
         page_off_machina()
     elif chosen_id == "5":
-        magy = "img_books.jpg"
-        page_books()
-    elif chosen_id == "6":
         magy = "img_poly.jpg"
         page_polys()
-    elif chosen_id == "7":
+    elif chosen_id == "6":
         magy = "img_about.jpg"
         page_abouts()
 
