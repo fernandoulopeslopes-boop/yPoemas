@@ -65,7 +65,7 @@ VOICES_EDGE_TTS = {
     "pt": "pt-BR-AntonioNeural",
     "en": "en-US-GuyNeural",
     "es": "es-ES-AlvaroNeural",
-    "fr": "fr-FR-RemyNeural",
+    "fr": "fr-FR-HenriNeural",
     "it": "it-IT-DiegoNeural",
 }
 
@@ -255,6 +255,7 @@ def init_session_state():
         "auto": False,
         "rand": False,
         "stage_font": "IBM Plex Sans",
+        "stage_size": 21,
 
         # chave de ouro
         "key_open": False,
@@ -440,7 +441,7 @@ def load_help(idiom):
         returns.append(translate("mais lidos..."))
         returns.append(translate("gera novo yPoema"))
         returns.append(translate("arte"))
-        returns.append(translate("audio"))
+        returns.append(translate("voz"))
 
     return returns
 
@@ -793,11 +794,11 @@ def load_arts(nome_tema):  # Select image for arts
 
         
 def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
-    if LOGO_IMAGE == None:
+    if LOGO_IMAGE is None:
         st.markdown(
             f"""
             <div class='container'>
-                <p class='logo-text' style="font-family:{st.session_state.get('stage_font', 'IBM Plex Sans')};">{LOGO_TEXTO}</p>
+                <p class='logo-text' style="font-family:{st.session_state.get('stage_font', 'IBM Plex Sans')}; font-size:{st.session_state.get('stage_size', 21)}px;">{LOGO_TEXTO}</p>
             </div>
             """,
             unsafe_allow_html=True,
@@ -807,7 +808,7 @@ def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
             f"""
             <div class='container'>
                 <img class='logo-img' src='data:image/jpg;base64,{base64.b64encode(open(LOGO_IMAGE, 'rb').read()).decode()}'>
-                <p class='logo-text' style="font-family:{st.session_state.get('stage_font', 'IBM Plex Sans')};">{LOGO_TEXTO}</p>
+                <p class='logo-text' style="font-family:{st.session_state.get('stage_font', 'IBM Plex Sans')}; font-size:{st.session_state.get('stage_size', 21)}px;">{LOGO_TEXTO}</p>
             </div>
             """,
             unsafe_allow_html=True,
@@ -1345,11 +1346,11 @@ def page_off_machina():  # available off_machina_books
                 with capa:
                     if off_book_name == "livro_vivo":
                         LOGO_CAPA = load_arts("livro_vivo")
-                        st.image(LOGO_CAPA, use_column_width=True)
+                        st.image(LOGO_CAPA, width="stretch")
                     else:
                         st.image(
                             "./off_machina/capa_" + off_book_name + ".jpg",
-                            use_column_width=True,
+                            width="stretch",
                         )
                 with isbn:
                     st.markdown(
