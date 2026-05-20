@@ -13,8 +13,8 @@ from extra_streamlit_components import TabBar as stx
 from lay_2_ypo import gera_poema
 
 ABOUTS_LIST = [
-    "comments", "prefácil", "machina", "off-machina", "MACHINA-IA", "outros autores", "imagens",
-    "traduttore", "bibliografia", "samizdát", "notes", "license", "index",
+    "comments", "prefácil", "machina", "off-machina", "MACHINA-IA", "livros", "outros autores",
+    "imagens", "traduttore", "bibliografia", "samizdát", "notes", "license", "index",
 ]
 
 BOOKS_LIST = [
