@@ -225,6 +225,24 @@ def apply_styles():
             margin-top: 0rem;
         }
 
+        
+        /* Sidebar :: Centro de Controle */
+        [data-testid="stSidebar"] {
+            background-color: #eef6fb !important;
+        }
+
+        [data-testid="stSidebar"] > div:first-child {
+            background-color: #eef6fb !important;
+        }
+
+        [data-testid="stSidebar"] .stButton button {
+            white-space: nowrap !important;
+            word-break: keep-all !important;
+            padding-left: 0.25rem !important;
+            padding-right: 0.25rem !important;
+            min-width: 100% !important;
+        }
+
         </style>
         """,
         unsafe_allow_html=True,
@@ -367,7 +385,7 @@ def pick_book_sidebar():
         st.session_state.book = current
 
     choice = st.sidebar.selectbox(
-        "livros yPoemas disponíveis...",
+        translate("livros yPoemas disponíveis..."),
         books_list,
         index=books_list.index(current),
         key="sidebar_book_select",
@@ -379,7 +397,7 @@ def pick_book_sidebar():
 
 
 def pick_stage_font():
-    """Escolhe a fonte de leitura do Palco."""
+    """Escolhe fonte e corpo de leitura do Palco."""
     labels = [label for label, fonte in FONTES_MACHINA]
     lookup = {label: fonte for label, fonte in FONTES_MACHINA}
 
@@ -389,14 +407,31 @@ def pick_stage_font():
         labels[0],
     )
 
-    choice = st.sidebar.selectbox(
-        "fontes & letras disponíveis...",
-        labels,
-        index=labels.index(current_label),
-        key="sidebar_font_select",
-    )
+    corpos = list(range(18, 25))
+    current_size = st.session_state.get("stage_size", 21)
+    if current_size not in corpos:
+        current_size = 21
+
+    col_font, col_corpo = st.sidebar.columns([2.1, 0.9])
+
+    with col_font:
+        choice = st.selectbox(
+            translate("fontes & letras disponíveis..."),
+            labels,
+            index=labels.index(current_label),
+            key="sidebar_font_select",
+        )
+
+    with col_corpo:
+        size = st.selectbox(
+            translate("corpo"),
+            corpos,
+            index=corpos.index(current_size),
+            key="sidebar_size_select",
+        )
 
     st.session_state.stage_font = lookup[choice]
+    st.session_state.stage_size = size
 
 
 def show_icons():  # https://api.whatsapp.com/
@@ -451,16 +486,25 @@ def draw_check_buttons():
     help_draw = help_tips[5]
     help_talk = help_tips[6]
 
-    col_arte, col_meio, col_voz = st.sidebar.columns([1.25, 2.8, 1.25])
+    col_arte, col_voz = st.sidebar.columns([2.1, 0.9])
 
     with col_arte:
-        if st.button("arte", key="ctrl_arte", help=help_draw, use_container_width=True):
+        if st.button(
+            translate("arte"),
+            key="ctrl_arte",
+            help=help_draw,
+            use_container_width=True,
+        ):
             st.session_state.draw = not st.session_state.draw
 
     with col_voz:
-        if st.button("voz", key="ctrl_voz", help=help_talk, use_container_width=True):
+        if st.button(
+            translate("voz"),
+            key="ctrl_voz",
+            help=help_talk,
+            use_container_width=True,
+        ):
             st.session_state.talk = not st.session_state.talk
-
 
 
 def get_binary_file_downloader_html(bin_file, file_label="File"):
