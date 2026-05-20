@@ -47,6 +47,7 @@ LANG_FILES = {
     "de": "poly_de.txt",
     "la": "poly_la.txt",
     "eo": "poly_eo.txt",
+    "eu": "poly_eu.txt",
     "ca": "poly_ca.txt",
     "gl": "poly_gl.txt",
     "nl": "poly_nl.txt",
@@ -71,12 +72,13 @@ VOICES_EDGE_TTS = {
 
 IDIOMAS_OFICIAIS = [
     ("Português", "Brasil", "pt", "poly_pt.txt"),
-    ("English", "Inglaterra", "en", "poly_en.txt"),
     ("Español", "Espanha", "es", "poly_es.txt"),
-    ("Français", "França", "fr", "poly_fr.txt"),
     ("Italiano", "Itália", "it", "poly_it.txt"),
+    ("Français", "França", "fr", "poly_fr.txt"),
+    ("English", "Inglaterra", "en", "poly_en.txt"),
     ("Deutsch", "Alemanha", "de", "poly_de.txt"),
     ("Català", "Catalunha", "ca", "poly_ca.txt"),
+    ("Euskara", "Basco", "eu", "poly_eu.txt"),
     ("Galego", "Galícia", "gl", "poly_gl.txt"),
     ("Nederlands", "Países Baixos", "nl", "poly_nl.txt"),
     ("Polski", "Polônia", "pl", "poly_pl.txt"),
@@ -341,7 +343,7 @@ def pick_lang():  # lista oficial de idiomas + P.O.L.Y.
     )
 
     choice = st.sidebar.selectbox(
-        "idiomas disponíveis...",
+        translate("idiomas disponíveis..."),
         options,
         index=options.index(current),
         key="idioma_oficial_select",
@@ -416,7 +418,7 @@ def pick_stage_font():
 
     with col_font:
         choice = st.selectbox(
-            translate("fontes & letras disponíveis..."),
+            translate("fontes & letras"),
             labels,
             index=labels.index(current_label),
             key="sidebar_font_select",
@@ -486,7 +488,7 @@ def draw_check_buttons():
     help_draw = help_tips[5]
     help_talk = help_tips[6]
 
-    col_arte, col_voz = st.sidebar.columns([2.1, 0.9])
+    col_arte, col_voz = st.sidebar.columns([1, 1])
 
     with col_arte:
         if st.button(
