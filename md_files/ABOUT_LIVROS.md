@@ -1,3 +1,5 @@
+os livros da Machina  
+
 livro vivo: uma seleção do autor  
 poemas: o "lado poético" da máquina  
 ensaios: estudos & possibilidades das palavras  
