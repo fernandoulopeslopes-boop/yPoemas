@@ -393,7 +393,7 @@ def fala_norma_abnp():
     :return: data randômicamente 'anterior' à data atual
     """
     hoje = datetime.datetime.now().date()
-    rand = randrange(0, hoje.year * 30)
+    rand = randrange(0, hoje.year * 5)
     ontem = hoje - datetime.timedelta(days=rand)
     return str(ontem.day) + "/" + str(ontem.year)
 
