@@ -245,6 +245,16 @@ def apply_styles():
             min-width: 100% !important;
         }
 
+        
+        /* Sidebar :: respiro vertical entre controles */
+        [data-testid="stSidebar"] div[data-testid="stVerticalBlock"] {
+            gap: 0.85rem !important;
+        }
+
+        [data-testid="stSidebar"] div[data-testid="stElementContainer"] {
+            margin-bottom: 0.12rem !important;
+        }
+
         </style>
         """,
         unsafe_allow_html=True,
@@ -332,6 +342,16 @@ def pick_lang():  # lista oficial de idiomas + P.O.L.Y.
             "lang": code,
             "poly_file": poly_file,
         }
+
+    # Antes de desenhar a lista, sincroniza o idioma com a seleção já feita.
+    # Isso evita label traduzido no idioma anterior.
+    previous_choice = st.session_state.get("idioma_oficial_select")
+    if previous_choice in lookup:
+        selected_previous = lookup[previous_choice]
+        if st.session_state.lang != selected_previous["lang"]:
+            st.session_state.last_lang = st.session_state.lang
+            st.session_state.lang = selected_previous["lang"]
+            st.session_state.poly_file = selected_previous["poly_file"]
 
     current = next(
         (
