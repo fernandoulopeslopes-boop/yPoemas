@@ -460,21 +460,13 @@ def load_help_tips():
 
 def load_help(idiom):
     returns = []
-    if idiom in "_pt_es_it_fr_en":
-        helpers = load_help_tips()
-        for line in helpers:
-            pipe_line = line.split("|")
-            if pipe_line[1].startswith(idiom + "_"):
-                text = pipe_line[2]
-                returns.append(text)
-    else:
-        returns.append(translate("anterior"))
-        returns.append(translate("escolhe tema ao acaso"))
-        returns.append(translate("próximo"))
-        returns.append(translate("mais lidos..."))
-        returns.append(translate("gera novo yPoema"))
-        returns.append(translate("arte"))
-        returns.append(translate("voz"))
+    returns.append(translate("tema anterior"))
+    returns.append(translate("escolhe tema ao acaso"))
+    returns.append(translate("próximo tema"))
+    returns.append(translate("mais lidos..."))
+    returns.append(translate("gera novo yPoema"))
+    returns.append(translate("arte"))
+    returns.append(translate("voz"))
 
     return returns
 
