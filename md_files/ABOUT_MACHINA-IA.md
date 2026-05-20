@@ -382,7 +382,6 @@ até que você termine seu almoço e decida como prosseguiremos...
   
 P.S. - não prosseguimos. Recomecei do zero com outra I.A. 
 ___  
----[I.A]  
 A Machina e Outra IA,  
 trechos de outra conversa real  
   
