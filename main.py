@@ -54,6 +54,7 @@ VOICES_EDGE_TTS = {
     "fr": "fr-FR-RemyNeural", "it": "it-IT-DiegoNeural",
 }
 
+
 IDIOMAS_OFICIAIS = [
     'Português': 'pt',
     'Espanhol': 'es',
