@@ -38,30 +38,6 @@ PAGE_INFO_FILES = {
     "4": "INFO_OFF-MACHINA.md", "5": "INFO_BOOKS.md", "6": "INFO_POLY.md", "7": "INFO_ABOUT.md",
 }
 
- = {
-    "pt": "poly_pt.txt",
-    "es": "poly_es.txt",
-    "it": "poly_it.txt",
-    "fr": "poly_fr.txt",
-    "en": "poly_en.txt",
-    "de": "poly_de.txt",
-    "la": "poly_la.txt",
-    "eo": "poly_eo.txt",
-    "eu": "poly_eu.txt",
-    "ca": "poly_ca.txt",
-    "gl": "poly_gl.txt",
-    "nl": "poly_nl.txt",
-    "pl": "poly_pl.txt",
-    "ro": "poly_ro.txt",
-    "ru": "poly_ru.txt",
-    "sv": "poly_sv.txt",
-    "no": "poly_no.txt",
-    "da": "poly_da.txt",
-    "fi": "poly_fi.txt",
-    "is": "poly_is.txt",
-    "hu": "poly_hu.txt",
-}
-
 VOICES_EDGE_TTS = {
     "pt": "pt-BR-AntonioNeural",
     "en": "en-US-GuyNeural",
