@@ -440,7 +440,7 @@ def pick_stage_font():
         labels[0],
     )
 
-    corpos = list(range(16, 24))
+    corpos = list(range(15, 25))
     current_size = st.session_state.get("stage_size", 21)
     if current_size not in corpos:
         current_size = 20
