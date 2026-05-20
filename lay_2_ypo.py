@@ -288,7 +288,7 @@ def acerto_final(texto):
         texto = texto.replace("< dNormas >", fala_norma_abnp())
     if "< dPublic >" in texto:
         hoje = datetime.datetime.now().date()
-        rand = randrange(0, hoje.year * 30)
+        rand = randrange(0, hoje.year * 5)
         ontem = hoje - datetime.timedelta(days=rand)
         texto = texto.replace("< dPublic >", fala_data(ontem))
     if "< dOficio >" in texto:
