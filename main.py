@@ -78,6 +78,7 @@ IDIOMAS_OFICIAIS = [
     'Sueco': 'sv',
 ]
 
+
 FONTES_MACHINA = [
     ("IBM Plex Sans", "IBM Plex Sans"),
     ("Georgia", "Georgia"),
