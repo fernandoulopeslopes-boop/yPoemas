@@ -293,7 +293,7 @@ def acerto_final(texto):
         texto = texto.replace("< dPublic >", fala_data(ontem))
     if "< dOficio >" in texto:
         hoje = datetime.datetime.now().date()
-        rand = randrange(0, hoje.year * 30)
+        rand = randrange(0, hoje.year * 5)
         demain = hoje + datetime.timedelta(days=rand)
         texto = texto.replace("< dOficio >", fala_data(demain))
 
