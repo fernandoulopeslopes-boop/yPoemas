@@ -22,5 +22,3 @@ frases no eixo X, linhas no eixo Y e palavras extraídas do imaginário eixo Z.
   As frases são escritas no eixo X, as linhas no eixo Y,  
   e as palavras de cada frase são extraídas do **imaginário eixo Z**.  
 ___ 
-Copyright © 1983-Hoje Nando Lopes - **yPoemas @ Machina de fazer Poesia**
-<eof>
