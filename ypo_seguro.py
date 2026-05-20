@@ -440,10 +440,10 @@ def pick_stage_font():
         labels[0],
     )
 
-    corpos = list(range(18, 25))
+    corpos = list(range(16, 24))
     current_size = st.session_state.get("stage_size", 21)
     if current_size not in corpos:
-        current_size = 21
+        current_size = 20
 
     col_font, col_corpo = st.sidebar.columns([2.1, 0.9])
 
