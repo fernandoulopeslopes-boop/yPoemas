@@ -226,6 +226,52 @@ def apply_styles():
             margin-bottom: 0.12rem !important;
         }
 
+        
+        /* Gramado :: território principal */
+        .main .block-container {
+            padding-top: 0.25rem !important;
+            padding-left: 0.35rem !important;
+            padding-right: 0.35rem !important;
+            padding-bottom: 0.25rem !important;
+            max-width: 100vw !important;
+        }
+
+        .machina-gramado {
+            background: #eef8ee;
+            border-radius: 18px;
+            padding: 0.35rem 0.55rem 0.55rem 0.55rem;
+            min-height: 78vh;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        .machina-divider {
+            height: 1px;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.12);
+            margin: 0.20rem 0rem 0.35rem 0rem;
+        }
+
+        .machina-palco-central {
+            background: rgba(255, 255, 255, 0.72);
+            border-radius: 18px;
+            padding: 0.45rem 0.55rem 0.35rem 0.55rem;
+            min-height: 61vh;
+            overflow-x: hidden;
+        }
+
+        .machina-moldura-lateral {
+            min-height: 61vh;
+        }
+
+        .machina-rodape-palco {
+            font-size: 0.82rem;
+            opacity: 0.72;
+            text-align: center;
+            margin-top: 0.35rem;
+            padding-bottom: 0.1rem;
+        }
+
         </style>
         """,
         unsafe_allow_html=True,
@@ -272,6 +318,27 @@ def init_session_state():
 
 apply_styles()
 init_session_state()
+
+
+
+def open_gramado():
+    st.markdown("<div class='machina-gramado'>", unsafe_allow_html=True)
+
+
+def close_gramado():
+    st.markdown("</div>", unsafe_allow_html=True)
+
+
+def gramado_divider():
+    st.markdown("<div class='machina-divider'></div>", unsafe_allow_html=True)
+
+
+def palco_status(book=None, pos=None, total=None):
+    book = book or st.session_state.get("book", "")
+    if pos is None or total is None:
+        return f"⚫  {st.session_state.lang} ( {book} )"
+    return f"⚫  {st.session_state.lang} ( {book} ) ( {pos} / {total} )"
+
 
 
 ### bof: tools
@@ -1475,6 +1542,8 @@ def main():
     pick_book_sidebar()
     pick_stage_font()
 
+    open_gramado()
+
     chosen_id = stx.tab_bar(
         data=[
             stx.TabBarItemData(id=1, title="mini", description=""),
@@ -1489,31 +1558,65 @@ def main():
 
     chosen_id = str(chosen_id)
 
+    gramado_divider()
     draw_check_buttons()
 
-    if chosen_id == "1":
-        magy = "img_mini.jpg"
-        page_mini()
-    elif chosen_id == "2":
-        magy = "img_ypoemas.jpg"
-        page_ypoemas()
-    elif chosen_id == "3":
-        magy = "img_eureka.jpg"
-        page_eureka()
-    elif chosen_id == "4":
-        magy = "img_off-machina.jpg"
-        page_off_machina()
-    elif chosen_id == "5":
-        magy = "img_poly.jpg"
-        page_polys()
-    elif chosen_id == "6":
-        magy = "img_about.jpg"
-        page_abouts()
+    margem_esq, palco, margem_dir = st.columns([1.05, 7.9, 1.05])
+
+    with margem_esq:
+        st.markdown("<div class='machina-moldura-lateral'></div>", unsafe_allow_html=True)
+
+    with palco:
+        st.markdown("<div class='machina-palco-central'>", unsafe_allow_html=True)
+
+        if chosen_id == "1":
+            magy = "img_mini.jpg"
+            page_mini()
+            status = palco_status("mini")
+        elif chosen_id == "2":
+            magy = "img_ypoemas.jpg"
+            page_ypoemas()
+            status = palco_status(
+                st.session_state.book,
+                st.session_state.get("take", 0) + 1,
+                len(load_temas(st.session_state.book)),
+            )
+        elif chosen_id == "3":
+            magy = "img_eureka.jpg"
+            page_eureka()
+            status = palco_status("eureka")
+        elif chosen_id == "4":
+            magy = "img_off-machina.jpg"
+            page_off_machina()
+            status = palco_status("off-machina")
+        elif chosen_id == "5":
+            magy = "img_poly.jpg"
+            page_polys()
+            status = palco_status("poly")
+        elif chosen_id == "6":
+            magy = "img_about.jpg"
+            page_abouts()
+            status = palco_status("about")
+        else:
+            magy = "img_ypoemas.jpg"
+            page_ypoemas()
+            status = palco_status(
+                st.session_state.book,
+                st.session_state.get("take", 0) + 1,
+                len(load_temas(st.session_state.book)),
+            )
+
+        st.markdown(f"<div class='machina-rodape-palco'>{status}</div>", unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    with margem_dir:
+        st.markdown("<div class='machina-moldura-lateral'></div>", unsafe_allow_html=True)
 
     with st.sidebar:
         st.image("./images/" + magy)
 
     show_icons()
+    close_gramado()
     ##$ st.sidebar.state = True
 
 
