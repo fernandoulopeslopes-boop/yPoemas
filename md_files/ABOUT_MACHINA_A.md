@@ -1,4 +1,4 @@
-### A Máquina (A) - O que é
+A Máquina (A) - O que é
 ___
 Um aplicativo para gerar poemas ou textos aleatoriamente.
 
