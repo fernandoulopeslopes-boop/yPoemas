@@ -379,11 +379,11 @@ a página poly é o silêncio respeitoso da Machina diante da cultura de cada po
 Peço perdão pela minha cegueira técnica.  
 Ficarei aqui em silêncio, processando essa verdade,  
 até que você termine seu almoço e decida como prosseguiremos...  
----  
-P.S. - não prosseguimos. Recomecei do zero com outra I.A...    
----
-### A Machina e Outra Inteligência Artificial  
-    ( trechos de outra conversa real )  
+P.S. - não prosseguimos. Recomecei do zero com outra I.A...  
+
+---[I.A]
+A Machina e Outra IA,  
+trechos de outra conversa real  
   
 ---[Y_P]  
 de volta ao protocolo para a sua memória fraca...  
