@@ -227,22 +227,25 @@ def apply_styles():
         }
 
         
-        /* Gramado :: território principal */
+        /* Gramado :: território principal real */
         .main .block-container {
-            padding-top: 0.25rem !important;
-            padding-left: 0.35rem !important;
-            padding-right: 0.35rem !important;
-            padding-bottom: 0.25rem !important;
+            background: #eef8ee !important;
+            border-radius: 18px !important;
+            padding-top: 0.40rem !important;
+            padding-left: 0.55rem !important;
+            padding-right: 0.55rem !important;
+            padding-bottom: 0.45rem !important;
             max-width: 100vw !important;
+            min-height: 82vh !important;
+            overflow-x: hidden !important;
         }
 
-        .machina-gramado {
-            background: #eef8ee;
-            border-radius: 18px;
-            padding: 0.35rem 0.55rem 0.55rem 0.55rem;
-            min-height: 78vh;
-            overflow-x: hidden;
-            overflow-y: auto;
+        [data-testid="stAppViewContainer"] {
+            overflow-x: hidden !important;
+        }
+
+        section.main {
+            overflow-x: hidden !important;
         }
 
         .machina-divider {
@@ -253,7 +256,7 @@ def apply_styles():
         }
 
         .machina-palco-central {
-            background: rgba(255, 255, 255, 0.72);
+            background: rgba(255, 255, 255, 0.74);
             border-radius: 18px;
             padding: 0.45rem 0.55rem 0.35rem 0.55rem;
             min-height: 61vh;
@@ -321,12 +324,6 @@ init_session_state()
 
 
 
-def open_gramado():
-    st.markdown("<div class='machina-gramado'>", unsafe_allow_html=True)
-
-
-def close_gramado():
-    st.markdown("</div>", unsafe_allow_html=True)
 
 
 def gramado_divider():
@@ -1542,8 +1539,6 @@ def main():
     pick_book_sidebar()
     pick_stage_font()
 
-    open_gramado()
-
     chosen_id = stx.tab_bar(
         data=[
             stx.TabBarItemData(id=1, title="mini", description=""),
@@ -1616,7 +1611,6 @@ def main():
         st.image("./images/" + magy)
 
     show_icons()
-    close_gramado()
     ##$ st.sidebar.state = True
 
 
