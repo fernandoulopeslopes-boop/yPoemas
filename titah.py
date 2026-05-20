@@ -1,14 +1,3 @@
-"""
-main.py :: yPoemas / Machina
-Primeiro CLEAN conservador.
-
-Objetivo:
-- manter o fluxo original conhecido pelo autor;
-- preservar o Palco, LYPO, TYPO e o Eixo Z;
-- reduzir ruído visual do código;
-- preparar futura divisão em módulos sem quebrar a Machina.
-"""
-
 import os
 import re
 import time
@@ -23,44 +12,85 @@ from extra_streamlit_components import TabBar as stx
 
 from lay_2_ypo import gera_poema
 
-try:
-    from core.padroes import (
-        ABOUTS_LIST,
-        BOOKS_LIST,
-        LANG_FILES,
-        OFF_BOOKS_LIST,
-        PAGE_IMAGES,
-        PAGE_INFO_FILES,
-        VOICES_EDGE_TTS,
-    )
-except ImportError:
-    # Fallback para manter o main.py executável mesmo antes de copiar core/padroes.py.
-    ABOUTS_LIST = [
-        "comments", "prefácio", "machina", "off-machina", "outros", "traduttore",
-        "bibliografia", "imagens", "samizdát", "notes", "license", "index",
-    ]
-    BOOKS_LIST = [
-        "livro vivo", "poemas", "jocosos", "ensaios", "variações", "metalinguagem",
-        "sociais", "todos os temas", "outros autores", "signos_fem", "signos_mas",
-        "todos os signos",
-    ]
-    OFF_BOOKS_LIST = [
-        "a_torre_de_papel", "quase_que_eu_Poesia", "faz_de_conto", "um_romance",
-        "linguafiada", "livro_vivo", "desvoto", "ensaio", "urbano", "essencial", "secreto",
-    ]
-    PAGE_IMAGES = {
-        "1": "img_mini.jpg", "2": "img_ypoemas.jpg", "3": "img_eureka.jpg",
-        "4": "img_off-machina.jpg", "5": "img_books.jpg", "6": "img_poly.jpg", "7": "img_about.jpg",
-    }
-    PAGE_INFO_FILES = {
-        "1": "INFO_MINI.md", "2": "INFO_YPOEMAS.md", "3": "INFO_EUREKA.md",
-        "4": "INFO_OFF-MACHINA.md", "5": "INFO_BOOKS.md", "6": "INFO_POLY.md", "7": "INFO_ABOUT.md",
-    }
-    LANG_FILES = {"pt": "poly_pt.txt", "es": "poly_es.txt", "it": "poly_it.txt", "fr": "poly_fr.txt", "en": "poly_en.txt"}
-    VOICES_EDGE_TTS = {
-        "pt": "pt-BR-AntonioNeural", "en": "en-US-GuyNeural", "es": "es-ES-AlvaroNeural",
-        "fr": "fr-FR-RemyNeural", "it": "it-IT-DiegoNeural",
-    }
+ABOUTS_LIST = [
+    "comments", "prefácil", "machina", "off-machina", "MACHINA-IA", "outros autores", "imagens",
+    "traduttore", "bibliografia", "samizdát", "notes", "license", "index",
+]
+
+BOOKS_LIST = [
+    "todos os temas", "livro vivo", "poemas", "jocosos", "ensaios", "variações", 
+    "metalinguagem", "sociais", "outros autores", "signos_fem", "signos_mas",
+    "todos os signos",
+]
+
+OFF_BOOKS_LIST = [
+    "a_torre_de_papel", "quase_que_eu_Poesia", "faz_de_conto", "um_romance",
+    "linguafiada", "livro_vivo", "desvoto", "ensaio", "urbano", "essencial", "secreto",
+]
+
+PAGE_IMAGES = {
+    "1": "img_mini.jpg", "2": "img_ypoemas.jpg", "3": "img_eureka.jpg",
+    "4": "img_off-machina.jpg", "5": "img_books.jpg", "6": "img_poly.jpg", "7": "img_about.jpg",
+}
+
+PAGE_INFO_FILES = {
+    "1": "INFO_MINI.md", "2": "INFO_YPOEMAS.md", "3": "INFO_EUREKA.md",
+    "4": "INFO_OFF-MACHINA.md", "5": "INFO_BOOKS.md", "6": "INFO_POLY.md", "7": "INFO_ABOUT.md",
+}
+
+LANG_FILES = {
+    "pt": "poly_pt.txt",
+    "es": "poly_es.txt",
+    "it": "poly_it.txt",
+    "fr": "poly_fr.txt",
+    "en": "poly_en.txt",
+    "de": "poly_de.txt",
+    "la": "poly_la.txt",
+    "eo": "poly_eo.txt",
+    "ca": "poly_ca.txt",
+    "gl": "poly_gl.txt",
+    "nl": "poly_nl.txt",
+    "pl": "poly_pl.txt",
+    "ro": "poly_ro.txt",
+    "ru": "poly_ru.txt",
+    "sv": "poly_sv.txt",
+    "no": "poly_no.txt",
+    "da": "poly_da.txt",
+    "fi": "poly_fi.txt",
+    "is": "poly_is.txt",
+    "hu": "poly_hu.txt",
+}
+
+VOICES_EDGE_TTS = {
+    "pt": "pt-BR-AntonioNeural",
+    "en": "en-US-GuyNeural",
+    "es": "es-ES-AlvaroNeural",
+    "fr": "fr-FR-RemyNeural",
+    "it": "it-IT-DiegoNeural",
+}
+
+IDIOMAS_OFICIAIS = [
+    ("Português", "Brasil", "pt", "poly_pt.txt"),
+    ("English", "Inglaterra", "en", "poly_en.txt"),
+    ("Español", "Espanha", "es", "poly_es.txt"),
+    ("Français", "França", "fr", "poly_fr.txt"),
+    ("Italiano", "Itália", "it", "poly_it.txt"),
+    ("Deutsch", "Alemanha", "de", "poly_de.txt"),
+    ("Català", "Catalunha", "ca", "poly_ca.txt"),
+    ("Galego", "Galícia", "gl", "poly_gl.txt"),
+    ("Nederlands", "Países Baixos", "nl", "poly_nl.txt"),
+    ("Polski", "Polônia", "pl", "poly_pl.txt"),
+    ("Română", "Romênia", "ro", "poly_ro.txt"),
+    ("Русский", "Rússia", "ru", "poly_ru.txt"),
+    ("Svenska", "Suécia", "sv", "poly_sv.txt"),
+    ("Norsk", "Noruega", "no", "poly_no.txt"),
+    ("Dansk", "Dinamarca", "da", "poly_da.txt"),
+    ("Suomi", "Finlândia", "fi", "poly_fi.txt"),
+    ("Íslenska", "Islândia", "is", "poly_is.txt"),
+    ("Magyar", "Hungria", "hu", "poly_hu.txt"),
+    ("Latin", "Latim", "la", "poly_la.txt"),
+    ("Esperanto", "Esperanto", "eo", "poly_eo.txt"),
+]
 
 
 # -----------------------------------------------------------------------------
@@ -126,9 +156,10 @@ def apply_styles():
         <style>
         .reportview-container .main .block-container{
             padding-top: 0rem;
-            padding-right: 0rem;
-            padding-left: 0rem;
+            padding-right: 0.25rem;
+            padding-left: 0.25rem;
             padding-bottom: 0rem;
+            max-width: 94vw;
         }
         </style>
         """,
@@ -140,6 +171,13 @@ def apply_styles():
         <style>
         [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
             width: 310px;
+            min-width: 310px;
+            max-width: 310px;
+        }
+        [data-testid="stSidebarResizer"],
+        [data-testid="stSidebar"] [role="separator"] {
+            display: none !important;
+            width: 0 !important;
         }
         mark {
             background-color: powderblue;
@@ -147,21 +185,46 @@ def apply_styles():
         }
         .container {
             display: flex;
+            gap: 8px;
+            width: 100%;
         }
         .header {
             text-align:center;
         }
         .logo-text {
             font-weight: 600;
-            font-size: 18px;
+            font-size: 21px;
             font-family: 'IBM Plex Sans';
             color: #000000;
             padding-top: 0px;
-            padding-left: 15px;
+            padding-left: 8px;
         }
+
         .logo-img {
             float:right;
+            margin-right: 0px;
+            padding-right: 0px;
         }
+
+
+
+        /* Palco :: ajuste fino de área útil */
+        div[data-testid="stVerticalBlock"] {
+            gap: 0.35rem;
+        }
+
+        div[data-testid="stExpander"] {
+            margin-top: 0rem;
+        }
+
+        div[data-testid="stExpander"] details {
+            padding-top: 0rem;
+        }
+
+        div[data-testid="stExpander"] [data-testid="stMarkdownContainer"] {
+            margin-top: 0rem;
+        }
+
         </style>
         """,
         unsafe_allow_html=True,
@@ -191,6 +254,13 @@ def init_session_state():
         "arts": [],
         "auto": False,
         "rand": False,
+        "stage_font": "IBM Plex Sans",
+
+        # chave de ouro
+        "key_open": False,
+        "key_poema_texto": "",
+        "key_poema_tema": "",
+        "key_analise": "",
     }
 
     for key, value in defaults.items():
@@ -230,38 +300,102 @@ def translate(input_text):
         return "Arquivo muito grande para ser traduzido."
 
 
-def pick_lang():  # define idioma
-    btn_pt, btn_es, btn_it, btn_fr, btn_en, btn_xy = st.sidebar.columns(
-        [1.1, 1.13, 1.04, 1.04, 1.17, 1.25]
-    )
-    btn_pt = btn_pt.button("pt", key=1, help="Português")
-    btn_es = btn_es.button("es", key=2, help="Español")
-    btn_it = btn_it.button("it", key=3, help="Italiano")
-    btn_fr = btn_fr.button("fr", key=4, help="Français")
-    btn_en = btn_en.button("en", key=5, help="English")
-    btn_xy = btn_xy.button("⚒️", key=6, help=st.session_state.poly_name)
+def pick_lang():  # lista oficial de idiomas + P.O.L.Y.
+    options = []
+    lookup = {}
 
-    if btn_pt:
-        st.session_state.lang = "pt"
-        st.session_state.poly_file = "poly_pt.txt"
-    elif btn_es:
-        st.session_state.lang = "es"
-        st.session_state.poly_file = "poly_es.txt"
-    elif btn_it:
-        st.session_state.lang = "it"
-        st.session_state.poly_file = "poly_it.txt"
-    elif btn_fr:
-        st.session_state.lang = "fr"
-        st.session_state.poly_file = "poly_fr.txt"
-    elif btn_en:
-        st.session_state.lang = "en"
-        st.session_state.poly_file = "poly_en.txt"
-    elif btn_xy:
+    for nome, pais, code, poly_file in IDIOMAS_OFICIAIS:
+        label = f"{nome} — {pais}"
+        options.append(label)
+        lookup[label] = {
+            "lang": code,
+            "poly_file": poly_file,
+        }
+
+    current = next(
+        (
+            label
+            for label, data in lookup.items()
+            if data["lang"] == st.session_state.lang
+        ),
+        options[0],
+    )
+
+    choice = st.sidebar.selectbox(
+        "idiomas disponíveis...",
+        options,
+        index=options.index(current),
+        key="idioma_oficial_select",
+    )
+
+    selected = lookup[choice]
+    if st.session_state.lang != selected["lang"]:
         st.session_state.last_lang = st.session_state.lang
-        st.session_state.lang = st.session_state.poly_lang
+        st.session_state.lang = selected["lang"]
+        st.session_state.poly_file = selected["poly_file"]
 
     if st.session_state.lang != st.session_state.last_lang:
         st.success(translate("idioma atual") + " ➪ " + st.session_state.lang)
+
+
+
+
+FONTES_MACHINA = [
+    ("IBM Plex Sans", "IBM Plex Sans"),
+    ("Inter", "Inter"),
+    ("Spectral", "Spectral"),
+    ("EB Garamond", "EB Garamond"),
+    ("Libre Baskerville", "Libre Baskerville"),
+    ("Cormorant Garamond", "Cormorant Garamond"),
+    ("Palatino", "Palatino Linotype"),
+    ("Georgia", "Georgia"),
+    ("Trebuchet", "Trebuchet MS"),
+    ("Atkinson Hyperlegible", "Atkinson Hyperlegible"),
+    ("OpenDyslexic", "OpenDyslexic"),
+    ("JetBrains Mono", "JetBrains Mono"),
+    ("Courier", "Courier New"),
+]
+
+
+def pick_book_sidebar():
+    """Escolhe o livro yPoemas diretamente no Centro de Comando."""
+    books_list = BOOKS_LIST
+    current = st.session_state.book
+    if current not in books_list:
+        current = books_list[0]
+        st.session_state.book = current
+
+    choice = st.sidebar.selectbox(
+        "livros yPoemas disponíveis...",
+        books_list,
+        index=books_list.index(current),
+        key="sidebar_book_select",
+    )
+
+    if choice != st.session_state.book:
+        st.session_state.book = choice
+        st.session_state.take = 0
+
+
+def pick_stage_font():
+    """Escolhe a fonte de leitura do Palco."""
+    labels = [label for label, fonte in FONTES_MACHINA]
+    lookup = {label: fonte for label, fonte in FONTES_MACHINA}
+
+    current_font = st.session_state.get("stage_font", "IBM Plex Sans")
+    current_label = next(
+        (label for label, fonte in FONTES_MACHINA if fonte == current_font),
+        labels[0],
+    )
+
+    choice = st.sidebar.selectbox(
+        "fontes & letras disponíveis...",
+        labels,
+        index=labels.index(current_label),
+        key="sidebar_font_select",
+    )
+
+    st.session_state.stage_font = lookup[choice]
 
 
 def show_icons():  # https://api.whatsapp.com/
@@ -269,17 +403,17 @@ def show_icons():  # https://api.whatsapp.com/
         st.sidebar.markdown(
             f"""
             <nav>
-            <a href='https://www.facebook.com/nandoulopes' target='_blank'>• facebook</a> |
-            <a href='mailto:lopes.fernando@hotmail.com' target='_blank'>e-mail</a> |
-            <a href='https://www.instagram.com/fernando.lopes.942/' target='_blank'>instagram</a> |
-            <a href='https://web.whatsapp.com/send?phone=+5512991368181' target='_blank'>whatsapp</a>
+            <a href='https://www.facebook.com/nandoulopes' target='_blank'>••  face </a>
+            <a href='mailto:lopes.fernando@hotmail.com' target='_blank'> e-mail  </a>
+            <a href='https://www.instagram.com/fernando.lopes.942/' target='_blank'> insta  </a>
+            <a href='https://web.whatsapp.com/send?phone=+5512991368181' target='_blank'> zapp  ••</a>
             </nav>
             """,
             unsafe_allow_html=True,
         )
 
 
-@st.cache(allow_output_mutation=True)
+@st.cache_data
 def load_help_tips():
     help_list = []
     with open(os.path.join("./base/helpers.txt"), encoding="utf-8") as file:
@@ -312,17 +446,20 @@ def load_help(idiom):
 
 
 def draw_check_buttons():
-    foo = ""
-    draw_text, foo, foo, talk_text = st.sidebar.columns([4,1,1,4])
     help_tips = load_help(st.session_state.lang)
     help_draw = help_tips[5]
     help_talk = help_tips[6]
-    st.session_state.draw = draw_text.checkbox(
-        help_draw, st.session_state.draw, key="draw_machina"
-    )
-    st.session_state.talk = talk_text.checkbox(
-        help_talk, st.session_state.talk, key="talk_machina"
-    )
+
+    col_arte, col_meio, col_voz = st.sidebar.columns([1.25, 2.8, 1.25])
+
+    with col_arte:
+        if st.button("arte", key="ctrl_arte", help=help_draw, use_container_width=True):
+            st.session_state.draw = not st.session_state.draw
+
+    with col_voz:
+        if st.button("voz", key="ctrl_voz", help=help_talk, use_container_width=True):
+            st.session_state.talk = not st.session_state.talk
+
 
 
 def get_binary_file_downloader_html(bin_file, file_label="File"):
@@ -435,7 +572,7 @@ def list_readings():
 ### bof: loaders
 
 
-# @st.cache(allow_output_mutation=True)
+# @st.cache_data
 def load_md_file(file):  # Open files for about's
     try:
         with open(os.path.join("./md_files/" + file), encoding="utf-8") as file_to_open:
@@ -450,7 +587,7 @@ def load_md_file(file):  # Open files for about's
     return file_text
 
 
-# @st.cache(allow_output_mutation=True)
+# @st.cache_data
 def load_eureka(part_of_word):
     lexico_list = []
     with open(os.path.join("./base/lexico_pt.txt"), encoding="utf-8") as lista:
@@ -477,7 +614,7 @@ def load_temas(book):  # List of themes inside a Book
     return book_list
 
 
-# @st.cache(allow_output_mutation=True)
+# @st.cache_data
 def load_info(nome_tema):
     with open(os.path.join("./base/" + "info.txt"), "r", encoding="utf-8") as file:
         result = "nonono"
@@ -509,7 +646,7 @@ def load_info(nome_tema):
 
         return result
 
-# @st.cache(allow_output_mutation=True)
+# @st.cache_data
 def load_index():  # Load indexes numbers for all themes
     index_list = []
     with open(os.path.join("./md_files/ABOUT_INDEX.md"), encoding="utf-8") as lista:
@@ -522,7 +659,7 @@ def load_index():  # Load indexes numbers for all themes
 def load_lypo():  # Load last yPoema & replace '\n' with '<br>' for translator returned text
     lypo_text = ""
     lypo_user = "LYPO_" + IPAddres
-    with open(os.path.join("./temp/" + lypo_user), encoding="utf-8") as script:
+    with open(os.path.join("./temp/" + lypo_user), encoding="utf-8", errors="replace") as script:
         for line in script:
             line = line.strip()
             lypo_text += line + "<br>"
@@ -533,7 +670,7 @@ def load_lypo():  # Load last yPoema & replace '\n' with '<br>' for translator r
 def load_typo():  # Load translated yPoema & clean translator returned bugs in text
     typo_text = ""
     typo_user = "TYPO_" + IPAddres
-    with open(os.path.join("./temp/" + typo_user), encoding="utf-8") as script:
+    with open(os.path.join("./temp/" + typo_user), encoding="utf-8", errors="replace") as script:
         for line in script:  # just 1 line
             line = line.strip()
             if " >" in line:
@@ -660,7 +797,7 @@ def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
         st.markdown(
             f"""
             <div class='container'>
-                <p class='logo-text'>{LOGO_TEXTO}</p>
+                <p class='logo-text' style="font-family:{st.session_state.get('stage_font', 'IBM Plex Sans')};">{LOGO_TEXTO}</p>
             </div>
             """,
             unsafe_allow_html=True,
@@ -670,7 +807,7 @@ def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
             f"""
             <div class='container'>
                 <img class='logo-img' src='data:image/jpg;base64,{base64.b64encode(open(LOGO_IMAGE, 'rb').read()).decode()}'>
-                <p class='logo-text'>{LOGO_TEXTO}</p>
+                <p class='logo-text' style="font-family:{st.session_state.get('stage_font', 'IBM Plex Sans')};">{LOGO_TEXTO}</p>
             </div>
             """,
             unsafe_allow_html=True,
@@ -747,13 +884,16 @@ def page_mini():
     if st.session_state.mini > maxy_mini:  # just in case
         st.session_state.mini = 0
 
-    foo1, more, rand, auto, foo2 = st.columns([4, 1, 1, 1, 4])
+    foo1, more, rand, auto, foo2 = st.columns([3.8, 1, 1, 1.25, 3.8])
 
     help_tips = load_help(st.session_state.lang)
     help_rand = help_tips[1]
     help_more = help_tips[4]
     rand = rand.button("✻", help=help_rand)
-    st.session_state.auto = auto.checkbox("auto")
+
+    with auto:
+        if st.button("auto", key="mini_auto_button", help="modo automático", use_container_width=True):
+            st.session_state.auto = not st.session_state.auto
 
     if st.session_state.auto:
         st.session_state.talk = False
@@ -985,7 +1125,7 @@ def page_eureka():
         st.subheader(load_md_file("MANUAL_EUREKA.md"))
 
     if len(find_what) < 3:
-        st.warning(translate("digite pelo menos 3 letras..."))
+        st.warning(translate("comece com pelo menos 3 letras..."))
     else:
         seed_list = []
         soma_tema = []
@@ -1344,12 +1484,16 @@ def page_abouts():
 
 
 def main():
+    pick_lang()
+    pick_book_sidebar()
+    pick_stage_font()
+
     chosen_id = stx.tab_bar(
         data=[
             stx.TabBarItemData(id=1, title="mini", description=""),
             stx.TabBarItemData(id=2, title="yPoemas", description=""),
             stx.TabBarItemData(id=3, title="eureka", description=""),
-            stx.TabBarItemData(id=4, title="off-machina", description=""),
+            stx.TabBarItemData(id=4, title="off-mach", description=""),
             stx.TabBarItemData(id=5, title="books", description=""),
             stx.TabBarItemData(id=6, title="poly", description=""),
             stx.TabBarItemData(id=7, title="about", description=""),
@@ -1359,40 +1503,36 @@ def main():
 
     chosen_id = str(chosen_id)
 
-    pick_lang()
     draw_check_buttons()
 
     if chosen_id == "1":
-        st.sidebar.info(load_md_file("INFO_MINI.md"))
         magy = "img_mini.jpg"
         page_mini()
     elif chosen_id == "2":
-        st.sidebar.info(load_md_file("INFO_YPOEMAS.md"))
         magy = "img_ypoemas.jpg"
         page_ypoemas()
     elif chosen_id == "3":
-        st.sidebar.info(load_md_file("INFO_EUREKA.md"))
         magy = "img_eureka.jpg"
         page_eureka()
     elif chosen_id == "4":
-        st.sidebar.info(load_md_file("INFO_OFF-MACHINA.md"))
         magy = "img_off-machina.jpg"
         page_off_machina()
     elif chosen_id == "5":
-        st.sidebar.info(load_md_file("INFO_BOOKS.md"))
         magy = "img_books.jpg"
         page_books()
     elif chosen_id == "6":
-        st.sidebar.info(load_md_file("INFO_POLY.md"))
         magy = "img_poly.jpg"
         page_polys()
     elif chosen_id == "7":
-        st.sidebar.info(load_md_file("INFO_ABOUT.md"))
         magy = "img_about.jpg"
         page_abouts()
 
     with st.sidebar:
         st.image("./images/" + magy)
+
+    show_icons()
+    ##$ st.sidebar.state = True
+
 
 if __name__ == "__main__":
     main()
