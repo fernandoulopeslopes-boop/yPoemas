@@ -44,7 +44,7 @@ Festim : 476.150.875.200 (bilhões)
 Finalmentes : 154.939.599.360.000 (trilhões)  
 Frases : 332.299.968 (milhões)  
 Fugaz : 17.416.269.561.600.000 (quatrilhões)  
-Gula : 1.063.827.923.558.400 (quatrilhões)  
+Gula : 1.094.223.007.088.640 (quatrilhões)  
 HaiKai : 493.936.934.400 (bilhões)  
 i-Mundo : 925.981.061.677.056.000 (quatrilhões)  
 Impar : 653.184 (mil)  
@@ -76,11 +76,12 @@ Palyndro : 967.680 (mil)
 Papilio : 17.276.809.528.053.504.000 (quintilhões)  
 Paroles : 58.025.870.622.720.000 (quatrilhões)  
 Passagens : 95.777.510.400 (bilhões)  
+Pedidos : 1.374.796.800 (bilhões)  
 Perfil : 26.964.500.536.512.000 (quatrilhões)  
 Pessoa : 4.665.600 (milhões)  
 Portal : 1.754.298.589.680 (trilhões)  
 Posfácio : 23.356.081.768.224.522.240.000.000 (setilhões)  
-Preciso : 2.433.481.408.512.000 (quatrilhões)  
+Preciso : 3.082.409.784.115.200 (quatrilhões)  
 Prefácil : 8.113.087.959.898.521.600.000.000 (setilhões)  
 Psiu : 3.464.123.520 (bilhões)  
 Reger : 404.352.000 (milhões)  
@@ -91,7 +92,7 @@ Rito : 57.550.500.000 (bilhões)
 Salute : 32.637.136.896 (bilhões)  
 Saudades : 7.420.616.146.944 (trilhões)  
 Seguro : 373.248.000 (milhões)  
-Sentença : 159.667.040.332.800 (trilhões)  
+Sentença : 163.982.365.747.200 (trilhões)  
 Ser : 1.028.160 (milhões)  
 Silente : 313.233.575.510.016.000.000 (quintilhões)  
 Sinais : 329.504.881.305.600 (trilhões)  
@@ -162,8 +163,6 @@ ___
   
 [fonte dos dados](http://www.fisica-interessante.com/matematica-divertida-ordens-classes-multiplos.html)  
 ___
-Total de variações: sei lá quanto dá tudo isso somado...
-___
-Copyright © 1983-Hoje Nando Lopes - **yPoemas @ Machina de fazer Poesia**
-<eof>
+Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de fazer Poesia**  
 
+Total de variações: 112.765.820.265.471.186.578.333.495.090.938.982.449.540.884.307.909 (quindecilhões)
