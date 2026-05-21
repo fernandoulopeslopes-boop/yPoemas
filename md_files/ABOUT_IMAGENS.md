@@ -14,7 +14,7 @@ ___
   do processo de aprendizagem. (imagem, grafia e leitura)  
 
 - Critérios gerais da escolha:  
-> Axioma zero: a **máquina** é essencialmente feminina.  
+> Axioma zero: a **Machina** é essencialmente feminina.  
 > Sempre que possível são imagens "puras", i.e. sem mensagens subliminares.  
 > Imagens sem dubiedade nem preconceito, sem conteúdo religioso,  
 > político  ou informações óbvias/redundantes.  
@@ -32,4 +32,4 @@ ___
 > A imagem (aleatória) agregada ao tema apenas multi-aplica-lhe outro valor.  
 > As conexões tema-imagem ficam por conta dos neurônios do leitor, a cada lida.  
 ___
-Copyright © 1983-Hoje Nando Lopes - **yPoemas @a Machina de fazer Poesia**
+Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de fazer Poesia**
