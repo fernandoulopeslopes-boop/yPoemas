@@ -59,4 +59,3 @@ _
 >   ela a serve com precisão de engenharia.  
 >   É um monumento à combinatória: um sistema onde a vastidão numérica dos yPoemas  
 >   é o que permite a celebração da palavra em sua forma mais exata e surpreendente.  
->
