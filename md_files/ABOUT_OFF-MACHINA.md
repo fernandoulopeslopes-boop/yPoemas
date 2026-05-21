@@ -3,7 +3,7 @@ ___
 > Os textos e poemas dos livros **off-machina** foram escritos  
 > em algum lugar no tempo entre os anos 1968 e 2022.  
 > Não há precisão pois não tenho o hábito de datar meus escritos.  
-> Assim como os textos da **máquina**, também são únicos.  
+> Assim como os textos da **Machina**, também são únicos.  
 > Porém, não imutáveis.  
 > Posso, graças à tecnologia, trocar uma palavra aqui, outra ali...  
 > Não o faço constantemente mas quem escreve há de saber a delícia que é.  
@@ -11,12 +11,6 @@ ___
 > Coincidentemente(?),  
 > todos os **livros**(1), afora o "Torre de Papel", têm 48 páginas.  
 > São mínimos.
-
-> Não posso dizer que vivo da poesia mas, vivo de poesia.  
->> No canto inferior esquerdo da tela, há **links** para  
->> **Facebook, Hotmail, Instagram e Whatsapp + Pix**.  
->>> Gostando, querendo ou podendo, clique neles!  
->>> Qualquer ***importância*** será bem-vinda!  
 
 ___
 **Ladainha II**  
@@ -68,4 +62,4 @@ ___
 > Publicação não periódica que contém acima de 49 páginas, excluídas as capas,  
 > e que é objeto de Número Internacional Normalizado para Livro (ISBN).  
 ___
-Copyright © 1983-Hoje Nando Lopes - **yPoemas @ Machina de fazer Poesia**
+Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de fazer Poesia**
