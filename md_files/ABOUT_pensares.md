@@ -98,6 +98,6 @@ ___
 > - doe-se ao futuro.  
 > - o prazer é o próprio pensar.  
 ___
-Copyright © 1983-Hoje Nando Lopes - **yPoemas @ Machina de fazer Poesia**
+Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de fazer Poesia**
 <eof>
 
