@@ -1063,19 +1063,36 @@ def copy_to_clipboard_button(texto):
         f"""
         <div style="width:100%; text-align:right; margin-bottom:-8px;">
             <button
-                onclick="navigator.clipboard.writeText(`{safe_text}`)"
+                onclick="
+                    navigator.clipboard.writeText(`{safe_text}`);
+                    const aviso = document.getElementById('copy_msg');
+                    aviso.style.opacity='1';
+                    setTimeout(() => aviso.style.opacity='0', 1200);
+                "
                 title="copiar yPoema"
                 style="
                     border:none;
-                    background:transparent;
+                    background:rgba(255,255,255,0.06);
+                    border-radius:6px;
+                    padding:2px 6px;
                     cursor:pointer;
-                    font-size:16px;
-                    opacity:0.55;
+                    font-size:18px;
+                    opacity:0.78;
                     transition:0.2s;
                 "
                 onmouseover="this.style.opacity='1.0'"
                 onmouseout="this.style.opacity='0.55'"
             >📋</button>
+
+            <span
+                id="copy_msg"
+                style="
+                    margin-left:8px;
+                    font-size:11px;
+                    opacity:0;
+                    transition:0.25s;
+                "
+            >✓ yPoema copiado</span>
         </div>
         """,
         height=28,
