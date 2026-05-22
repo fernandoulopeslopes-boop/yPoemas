@@ -1016,6 +1016,7 @@ def talk(text):
     except Exception as e:
         st.error(f"Erro na voz neural: {e}")
         
+        
 def say_number(tema):  # search index title for eureka
     analise = "nonono"
     indexes = load_index()
