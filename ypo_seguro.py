@@ -222,9 +222,9 @@ def apply_styles():
 
         /* Machina :: largura canônica da sidebar */
         [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
-            width: 330px;
-            min-width: 330px;
-            max-width: 330px;
+            width: 310px;
+            min-width: 310px;
+            max-width: 310px;
         }
 
 
@@ -1262,12 +1262,17 @@ def page_ypoemas():
     temas_list = load_temas(st.session_state.book)
     maxy_ypoemas = len(temas_list) - 1
 
+    if "take_widget_nonce" not in st.session_state:
+        st.session_state.take_widget_nonce = 0
+
     if st.session_state.take > maxy_ypoemas or st.session_state.take < 0:
         st.session_state.take = 0
+        st.session_state.take_widget_nonce += 1
 
     # Palco: listas laterais + cluster centralizado de navegação.
+    # Livros/temas +20% para evitar corte visual.
     book_col, spacer_l, more, last, rand, nest, manu, spacer_r, tema_col = st.columns(
-        [2.25, 0.75, 0.72, 0.72, 0.72, 0.72, 0.72, 0.75, 2.25]
+        [2.70, 0.45, 0.72, 0.72, 0.72, 0.72, 0.72, 0.45, 2.70]
     )
 
     nav_changed = bool(st.session_state.get("book_changed", False))
@@ -1292,6 +1297,7 @@ def page_ypoemas():
             st.session_state.take = 0
             st.session_state.book_changed = True
             nav_changed = True
+            st.session_state.take_widget_nonce += 1
             temas_list = load_temas(st.session_state.book)
             maxy_ypoemas = len(temas_list) - 1
 
@@ -1312,27 +1318,35 @@ def page_ypoemas():
         st.session_state.take -= 1
         if st.session_state.take < 0:
             st.session_state.take = maxy_ypoemas
+        st.session_state.take_widget_nonce += 1
 
     if rand_clicked:
         nav_changed = True
-        st.session_state.take = random.randrange(0, len(temas_list))
+        old_take = st.session_state.take
+        if len(temas_list) > 1:
+            new_take = random.randrange(0, len(temas_list))
+            while new_take == old_take:
+                new_take = random.randrange(0, len(temas_list))
+            st.session_state.take = new_take
+        else:
+            st.session_state.take = 0
+        st.session_state.take_widget_nonce += 1
 
     if nest_clicked:
         nav_changed = True
         st.session_state.take += 1
         if st.session_state.take > maxy_ypoemas:
             st.session_state.take = 0
+        st.session_state.take_widget_nonce += 1
 
     with tema_col:
         options = list(range(len(temas_list)))
-
-        # Selectbox apenas reflete o índice canônico.
         selected_take = st.selectbox(
             "temas",
             options,
             index=st.session_state.take,
             format_func=lambda z: temas_list[z],
-            key="take",
+            key="take_select_" + str(st.session_state.take_widget_nonce),
             label_visibility="collapsed",
         )
 
