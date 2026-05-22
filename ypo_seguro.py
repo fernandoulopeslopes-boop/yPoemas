@@ -202,6 +202,22 @@ def apply_styles():
             width: 0 !important;
         }
 
+
+        /* Sidebar :: topo sem faixa excedente e sem mexer na largura */
+        section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] {
+            padding-top: 0rem !important;
+            margin-top: 0rem !important;
+        }
+
+        section[data-testid="stSidebar"] div[data-testid="stVerticalBlock"] {
+            gap: 0.28rem !important;
+        }
+
+        section[data-testid="stSidebar"] div[data-testid="stElementContainer"] {
+            margin-top: 0rem !important;
+            margin-bottom: 0.04rem !important;
+        }
+
         section[data-testid="stSidebar"] div[data-testid="stSelectbox"] {
             margin-top: 0rem !important;
             margin-bottom: 0.15rem !important;
@@ -269,7 +285,7 @@ def apply_styles():
 
         /* machina-tabbar-tuning */
         div[data-testid="stAppViewContainer"] iframe[title="extra_streamlit_components.TabBar.tab_bar"] {
-            margin-top: -28px !important;
+            margin-top: -32px !important;
         }
         </style>
         """,
@@ -453,7 +469,8 @@ def pick_stage_font():
     if current_size not in corpos:
         current_size = 21
 
-    col_font, col_corpo = st.sidebar.columns([2.35, 0.65])
+    # Fonte ainda maior que corpo, mas corpo comporta 2 dígitos.
+    col_font, col_corpo = st.sidebar.columns([2.10, 0.90])
 
     with col_font:
         choice = st.selectbox(
@@ -483,11 +500,11 @@ def draw_check_buttons():
     col_arte, col_voz = st.sidebar.columns([1, 1])
 
     with col_arte:
-        if col_arte.button("arte", key="ctrl_arte", help=help_draw, use_container_width=True):
+        if col_arte.button(translate("arte"), key="ctrl_arte", help=help_draw, use_container_width=True):
             st.session_state.draw = not st.session_state.draw
 
     with col_voz:
-        if col_voz.button("voz", key="ctrl_voz", help=help_talk, use_container_width=True):
+        if col_voz.button(translate("voz"), key="ctrl_voz", help=help_talk, use_container_width=True):
             st.session_state.talk = not st.session_state.talk
 
 
@@ -1227,6 +1244,7 @@ def page_ypoemas():
             books_list,
             index=books_list.index(current_book),
             key="palco_book_select",
+            label_visibility="collapsed",
         )
 
         if new_book != st.session_state.book:
@@ -1273,6 +1291,7 @@ def page_ypoemas():
             index=st.session_state.take,
             format_func=lambda z: temas_list[z],
             key="opt_take",
+            label_visibility="collapsed",
         )
 
     if opt_take != st.session_state.take:
@@ -1701,12 +1720,12 @@ def page_abouts():
     abouts_list = [title for title in ABOUTS_LIST if title in abouts_map]
 
     options = list(range(len(abouts_list)))
-    sobrios = "↓  " + translate("sobre")
     opt_abouts = st.selectbox(
-        sobrios,
+        "sobre",
         options,
         format_func=lambda x: abouts_list[x],
         key="opt_abouts",
+        label_visibility="collapsed",
     )
 
     choice = abouts_list[opt_abouts]
