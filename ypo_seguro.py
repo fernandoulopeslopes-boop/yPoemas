@@ -206,9 +206,9 @@ def apply_styles():
 
         /* Machina :: largura canônica da sidebar */
         [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
-            width: 310px;
-            min-width: 310px;
-            max-width: 310px;
+            width: 320px;
+            min-width: 320px;
+            max-width: 320px;
         }
 
 
@@ -742,7 +742,7 @@ def discover_about_files():
 
 def about_markdown_css():
     font = st.session_state.get("stage_font", "'IBM Plex Sans', Arial, sans-serif")
-    size = st.session_state.get("stage_size", 21)
+    size = st.session_state.get("stage_size", 20)
 
     st.markdown(
         f"""
@@ -1020,7 +1020,7 @@ def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
     title, body = split_ypo_title(LOGO_TEXTO)
 
     fonte_palco = st.session_state.get("stage_font", "'IBM Plex Sans', Arial, sans-serif")
-    corpo_palco = st.session_state.get("stage_size", 21)
+    corpo_palco = st.session_state.get("stage_size", 20)
 
     titulo_html = ""
     if title:
@@ -1293,7 +1293,7 @@ def page_ypoemas():
 
     if rand_clicked:
         nav_changed = True
-        st.session_state.take = random.randrange(0, maxy_ypoemas + 1)
+        st.session_state.take = random.randrange(0, len(temas_list))
 
     if nest_clicked:
         nav_changed = True
@@ -1303,18 +1303,20 @@ def page_ypoemas():
 
     with tema_col:
         options = list(range(len(temas_list)))
-        opt_take = st.selectbox(
+
+        # Selectbox apenas reflete o índice canônico.
+        selected_take = st.selectbox(
             "temas",
             options,
             index=st.session_state.take,
             format_func=lambda z: temas_list[z],
-            key="opt_take",
+            key="take",
             label_visibility="collapsed",
         )
 
-    if opt_take != st.session_state.take:
+    if selected_take != st.session_state.take:
+        st.session_state.take = selected_take
         nav_changed = True
-        st.session_state.take = opt_take
 
     st.session_state.tema = temas_list[st.session_state.take]
 
@@ -1829,7 +1831,7 @@ def main():
     with st.sidebar:
         st.image("./images/" + magy)
 
-    #show_icons()
+    ## show_icons()
     ##$ st.sidebar.state = True
 
 
