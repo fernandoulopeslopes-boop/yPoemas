@@ -1038,6 +1038,37 @@ def split_ypo_title(logo_text):
     return title, body
 
 
+
+def copy_to_clipboard_button(texto):
+    safe_text = (
+        texto.replace("\\", "\\\\")
+        .replace("`", "\\`")
+        .replace("${", "\\${")
+    )
+
+    st.components.v1.html(
+        f"""
+        <div style="width:100%; text-align:right; margin-bottom:-8px;">
+            <button
+                onclick="navigator.clipboard.writeText(`{safe_text}`)"
+                title="copiar yPoema"
+                style="
+                    border:none;
+                    background:transparent;
+                    cursor:pointer;
+                    font-size:16px;
+                    opacity:0.55;
+                    transition:0.2s;
+                "
+                onmouseover="this.style.opacity='1.0'"
+                onmouseout="this.style.opacity='0.55'"
+            >📋</button>
+        </div>
+        """,
+        height=28,
+    )
+
+
 def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
     title, body = split_ypo_title(LOGO_TEXTO)
 
@@ -1399,6 +1430,7 @@ def page_ypoemas():
         if st.session_state.draw:
             LOGO_IMAGE = load_arts(st.session_state.tema)
 
+        copy_to_clipboard_button(curr_ypoema)
         write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
 
         if manu_clicked:
@@ -1545,6 +1577,7 @@ def page_eureka():
         if st.session_state.draw:
             LOGO_IMAGE = load_arts(seed_tema)
 
+        copy_to_clipboard_button(curr_ypoema)
         write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
         update_readings(seed_tema)
 
