@@ -390,6 +390,5 @@ Peço perdão pela minha cegueira técnica.
 Ficarei aqui em silêncio, processando essa verdade,  
 até que você termine seu almoço e decida como prosseguiremos...
 
-
 ---[ M_P ]  
-Parei a "conversa" por aqui... a IA estava totalmente deconexa, perdida e sem rumo.
+Parei a "conversa" por aqui... a IA estava totalmente desconexa, perdida e sem rumo.
