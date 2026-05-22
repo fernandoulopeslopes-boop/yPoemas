@@ -103,16 +103,9 @@ IDIOMAS_OFICIAIS = [
 
 FONTES_MACHINA = [
     ("IBM Plex Sans", "'IBM Plex Sans', Arial, sans-serif"),
-    ("Inter", "Inter, Arial, sans-serif"),
-    ("Spectral", "Spectral, Georgia, serif"),
-    ("EB Garamond", "'EB Garamond', Garamond, Georgia, serif"),
-    ("Libre Baskerville", "'Libre Baskerville', Georgia, serif"),
-    ("Cormorant Garamond", "'Cormorant Garamond', Garamond, Georgia, serif"),
     ("Georgia", "Georgia, 'Times New Roman', serif"),
     ("Palatino", "'Palatino Linotype', Palatino, serif"),
     ("Trebuchet", "'Trebuchet MS', Arial, sans-serif"),
-    ("Atkinson Hyperlegible", "'Atkinson Hyperlegible', Arial, sans-serif"),
-    ("JetBrains Mono", "'JetBrains Mono', 'Courier New', monospace"),
     ("Courier", "'Courier New', Courier, monospace"),
 ]
 
@@ -227,17 +220,6 @@ def apply_styles():
             padding-right: 0.25rem !important;
         }
 
-        .machina-button-hint {
-            font-size: 12px;
-            line-height: 1.08;
-            text-align: center;
-            opacity: 0.82;
-            margin: 0rem 0rem 0.08rem 0rem;
-            padding: 0rem;
-            white-space: nowrap;
-            pointer-events: none;
-        }
-
         mark {
             background-color: powderblue;
             color: black;
@@ -287,7 +269,7 @@ def apply_styles():
 
         /* machina-tabbar-tuning */
         div[data-testid="stAppViewContainer"] iframe[title="extra_streamlit_components.TabBar.tab_bar"] {
-            margin-top: -15px !important;
+            margin-top: -28px !important;
         }
         </style>
         """,
@@ -381,7 +363,7 @@ def pick_lang():  # define idioma pela lista oficial
     )
 
     choice = st.sidebar.selectbox(
-        "idiomas disponíveis...",
+        translate("idiomas disponíveis..."),
         options,
         index=options.index(current),
         key="idioma_machina_oficial",
@@ -393,7 +375,6 @@ def pick_lang():  # define idioma pela lista oficial
         st.session_state.last_lang = st.session_state.lang
         st.session_state.lang = selected["lang"]
         st.session_state.poly_file = selected["poly_file"]
-        st.success("idioma atual ➪ " + st.session_state.lang)
 
 
 
@@ -412,6 +393,17 @@ def show_icons():  # https://api.whatsapp.com/
         )
 
 
+@st.cache(allow_output_mutation=True)
+def load_help_tips():
+    help_list = []
+    with open(os.path.join("./base/helpers.txt"), encoding="utf-8") as file:
+        for line in file:
+            help_list.append(line)
+    file.close()
+
+    return help_list
+
+
 def load_help(idiom):
     returns = []
     returns.append(translate("anterior"))
@@ -423,12 +415,6 @@ def load_help(idiom):
     returns.append(translate("voz"))
     return returns
 
-def button_hint(where, label):
-    """Mostra hint fixo acima do botão, sem tooltip nativo."""
-    where.markdown(
-        f"<div class='machina-button-hint'>{label}</div>",
-        unsafe_allow_html=True,
-    )
 
 
 def pick_book():
@@ -439,7 +425,7 @@ def pick_book():
         current = "livro vivo" if "livro vivo" in books_list else books_list[0]
 
     choice = st.sidebar.selectbox(
-        "livros",
+        translate("livros disponíveis..."),
         books_list,
         index=books_list.index(current),
         key="sidebar_book_select",
@@ -456,22 +442,22 @@ def pick_stage_font():
     labels = [label for label, fonte in FONTES_MACHINA]
     lookup = {label: fonte for label, fonte in FONTES_MACHINA}
 
-    current_font = st.session_state.get("stage_font", "IBM Plex Sans")
+    current_font = st.session_state.get("stage_font", "'IBM Plex Sans', Arial, sans-serif")
     current_label = next(
         (label for label, fonte in FONTES_MACHINA if fonte == current_font),
         labels[0],
     )
 
-    corpos = list(range(18, 25))
+    corpos = list(range(15, 26))
     current_size = st.session_state.get("stage_size", 21)
     if current_size not in corpos:
         current_size = 21
 
-    col_font, col_corpo = st.sidebar.columns([1.5, 1.5])
+    col_font, col_corpo = st.sidebar.columns([2.35, 0.65])
 
     with col_font:
         choice = st.selectbox(
-            "fontes",
+            translate("fontes"),
             labels,
             index=labels.index(current_label),
             key="sidebar_font_select",
@@ -479,7 +465,7 @@ def pick_stage_font():
 
     with col_corpo:
         size = st.selectbox(
-            "corpo",
+            translate("corpo"),
             corpos,
             index=corpos.index(current_size),
             key="sidebar_size_select",
@@ -489,18 +475,19 @@ def pick_stage_font():
     st.session_state.stage_size = size
 
 
-
 def draw_check_buttons():
-    col_arte, col_voz = st.sidebar.columns([1.5, 1.5])
+    help_tips = load_help(st.session_state.lang)
+    help_draw = help_tips[5]
+    help_talk = help_tips[6]
+
+    col_arte, col_voz = st.sidebar.columns([1, 1])
 
     with col_arte:
-        button_hint(col_arte, "Palco")
-        if col_arte.button("arte", key="ctrl_arte"):
+        if col_arte.button("arte", key="ctrl_arte", help=help_draw, use_container_width=True):
             st.session_state.draw = not st.session_state.draw
 
     with col_voz:
-        button_hint(col_voz, "Palco")
-        if col_voz.button("voz", key="ctrl_voz"):
+        if col_voz.button("voz", key="ctrl_voz", help=help_talk, use_container_width=True):
             st.session_state.talk = not st.session_state.talk
 
 
@@ -614,7 +601,7 @@ def list_readings():
 ### bof: loaders
 
 
-@st.cache_data
+# @st.cache(allow_output_mutation=True)
 def load_md_file(file):  # Open files for about's
     try:
         with open(os.path.join("./md_files/" + file), encoding="utf-8") as file_to_open:
@@ -669,10 +656,6 @@ def about_title_from_file(file_name):
 
 
 def discover_about_files():
-    """
-    Descobre arquivos ABOUT_*.md em ./md_files.
-    A ordem final do menu é ABOUTS_LIST.
-    """
     found_by_key = {}
 
     try:
@@ -769,7 +752,7 @@ def about_markdown_css():
 
 
 
-@st.cache_data
+# @st.cache(allow_output_mutation=True)
 def load_eureka(part_of_word):
     lexico_list = []
     with open(os.path.join("./base/lexico_pt.txt"), encoding="utf-8") as lista:
@@ -796,7 +779,7 @@ def load_temas(book):  # List of themes inside a Book
     return book_list
 
 
-@st.cache_data
+# @st.cache(allow_output_mutation=True)
 def load_info(nome_tema):
     with open(os.path.join("./base/" + "info.txt"), "r", encoding="utf-8") as file:
         result = "nonono"
@@ -828,7 +811,7 @@ def load_info(nome_tema):
 
         return result
 
-@st.cache_data
+# @st.cache(allow_output_mutation=True)
 def load_index():  # Load indexes numbers for all themes
     index_list = []
     with open(os.path.join("./md_files/ABOUT_INDEX.md"), encoding="utf-8") as lista:
@@ -1107,11 +1090,13 @@ def page_mini():
 
     foo1, more, rand, auto, foo2 = st.columns([4, 1, 1, 1, 4])
 
-    button_hint(rand, "ao acaso")
-    rand = rand.button("✻")
+    help_tips = load_help(st.session_state.lang)
+    help_rand = help_tips[1]
+    help_more = help_tips[4]
 
-    button_hint(auto, "modo auto")
-    if auto.button("auto", key="mini_auto_button"):
+    rand = rand.button("✻", help=help_rand)
+
+    if auto.button("auto", key="mini_auto_button", help=translate("modo auto")):
         st.session_state.auto = not st.session_state.auto
 
     if st.session_state.auto:
@@ -1127,8 +1112,7 @@ def page_mini():
 
     st.session_state.tema = temas_list[st.session_state.mini]
     analise = say_number(st.session_state.tema)
-    button_hint(more, "nova versão")
-    more = more.button("✚")
+    more = more.button("✚", help=help_more)
 
     if more:
         st.session_state.rand = False
@@ -1224,8 +1208,9 @@ def page_ypoemas():
     if st.session_state.take > maxy_ypoemas or st.session_state.take < 0:
         st.session_state.take = 0
 
-    book_col, more, last, rand, nest, manu, tema_col, foo2 = st.columns(
-        [1.65, 1, 1, 1, 1, 1, 2.35, 1.0]
+    # Palco: listas laterais + cluster centralizado de navegação.
+    book_col, spacer_l, more, last, rand, nest, manu, spacer_r, tema_col = st.columns(
+        [2.25, 0.75, 0.72, 0.72, 0.72, 0.72, 0.72, 0.75, 2.25]
     )
 
     nav_changed = bool(st.session_state.get("book_changed", False))
@@ -1252,20 +1237,17 @@ def page_ypoemas():
             temas_list = load_temas(st.session_state.book)
             maxy_ypoemas = len(temas_list) - 1
 
-    button_hint(more, "nova versão")
-    more_clicked = more.button("✚", key="ypo_more")
+    help_tips = load_help(st.session_state.lang)
+    help_last = help_tips[0]
+    help_rand = help_tips[1]
+    help_nest = help_tips[2]
+    help_more = help_tips[4]
 
-    button_hint(last, "tema anterior")
-    last_clicked = last.button("◀", key="ypo_last")
-
-    button_hint(rand, "ao acaso")
-    rand_clicked = rand.button("✻", key="ypo_rand")
-
-    button_hint(nest, "próximo tema")
-    nest_clicked = nest.button("▶", key="ypo_next")
-
-    button_hint(manu, "ajuda")
-    manu_clicked = manu.button("?", key="ypo_help")
+    more_clicked = more.button("✚", key="ypo_more", help=help_more, use_container_width=True)
+    last_clicked = last.button("◀", key="ypo_last", help=help_last, use_container_width=True)
+    rand_clicked = rand.button("✻", key="ypo_rand", help=help_rand, use_container_width=True)
+    nest_clicked = nest.button("▶", key="ypo_next", help=help_nest, use_container_width=True)
+    manu_clicked = manu.button("?", key="ypo_help", help=translate("ajuda"), use_container_width=True)
 
     if last_clicked:
         nav_changed = True
@@ -1283,7 +1265,6 @@ def page_ypoemas():
         if st.session_state.take > maxy_ypoemas:
             st.session_state.take = 0
 
-    # Lista de temas reduzida, depois do botão ?.
     with tema_col:
         options = list(range(len(temas_list)))
         opt_take = st.selectbox(
@@ -1365,17 +1346,18 @@ def page_eureka():
             label=translate("digite algo para buscar..."),
         )
 
+    help_tips = load_help(st.session_state.lang)
+    help_rand = help_tips[1]
+    help_more = help_tips[4]
+
     with more:
-        button_hint(more, "nova versão")
-        more = more.button("✚")
+        more = more.button("✚", help=help_more)
 
     with rand:
-        button_hint(rand, "ao acaso")
-        rand = rand.button("✻")
+        rand = rand.button("✻", help=help_rand)
 
     with manu:
-        button_hint(manu, "ajuda")
-        manu = manu.button("?")
+        manu = manu.button("?", help=translate("ajuda"))
 
     if manu:
         st.subheader(load_md_file("MANUAL_EUREKA.md"))
@@ -1508,21 +1490,18 @@ def page_off_machina():  # available off_machina_books
 
     off_book_name = off_books_list[st.session_state.off_book]
 
+    help_tips = load_help(st.session_state.lang)
+    help_last = help_tips[0]
+    help_rand = help_tips[1]
+    help_nest = help_tips[2]
+    help_love = help_tips[3]
+
     foo1, last, rand, nest, love, manu, foo2 = st.columns([2.5, 1, 1, 1, 1, 1, 2.5])
-    button_hint(last, "anterior")
-    last = last.button("◀")
-
-    button_hint(rand, "ao acaso")
-    rand = rand.button("✻")
-
-    button_hint(nest, "próximo")
-    nest = nest.button("▶")
-
-    button_hint(love, "mais lidos")
-    love = love.button("❤")
-
-    button_hint(manu, "ajuda")
-    manu = manu.button("?")
+    last = last.button("◀", help=help_last)
+    rand = rand.button("✻", help=help_rand)
+    nest = nest.button("▶", help=help_nest)
+    love = love.button("❤", help=help_love)
+    manu = manu.button("?", help=translate("ajuda"))
 
     this_off_book = load_off_book(off_book_name)
     off_book_pagys = load_book_pages(this_off_book)
@@ -1781,6 +1760,7 @@ def main():
     chosen_id = str(chosen_id)
 
     pick_lang()
+    pick_book()
     pick_stage_font()
     draw_check_buttons()
 
