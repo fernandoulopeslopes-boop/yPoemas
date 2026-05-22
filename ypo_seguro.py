@@ -412,35 +412,15 @@ def show_icons():  # https://api.whatsapp.com/
         )
 
 
-@st.cache(allow_output_mutation=True)
-def load_help_tips():
-    help_list = []
-    with open(os.path.join("./base/helpers.txt"), encoding="utf-8") as file:
-        for line in file:
-            help_list.append(line)
-    file.close()
-
-    return help_list
-
-
 def load_help(idiom):
     returns = []
-    if idiom in "_pt_es_it_fr_en":
-        helpers = load_help_tips()
-        for line in helpers:
-            pipe_line = line.split("|")
-            if pipe_line[1].startswith(idiom + "_"):
-                text = pipe_line[2]
-                returns.append(text)
-    else:
-        returns.append(translate("anterior"))
-        returns.append(translate("escolhe tema ao acaso"))
-        returns.append(translate("próximo"))
-        returns.append(translate("mais lidos..."))
-        returns.append(translate("gera novo yPoema"))
-        returns.append(translate("arte"))
-        returns.append(translate("audio"))
-
+    returns.append(translate("anterior"))
+    returns.append(translate("ao acaso"))
+    returns.append(translate("próximo"))
+    returns.append(translate("mais lidos"))
+    returns.append(translate("novo"))
+    returns.append(translate("arte"))
+    returns.append(translate("voz"))
     return returns
 
 def button_hint(where, label):
@@ -634,7 +614,7 @@ def list_readings():
 ### bof: loaders
 
 
-# @st.cache(allow_output_mutation=True)
+@st.cache_data
 def load_md_file(file):  # Open files for about's
     try:
         with open(os.path.join("./md_files/" + file), encoding="utf-8") as file_to_open:
@@ -789,7 +769,7 @@ def about_markdown_css():
 
 
 
-# @st.cache(allow_output_mutation=True)
+@st.cache_data
 def load_eureka(part_of_word):
     lexico_list = []
     with open(os.path.join("./base/lexico_pt.txt"), encoding="utf-8") as lista:
@@ -816,7 +796,7 @@ def load_temas(book):  # List of themes inside a Book
     return book_list
 
 
-# @st.cache(allow_output_mutation=True)
+@st.cache_data
 def load_info(nome_tema):
     with open(os.path.join("./base/" + "info.txt"), "r", encoding="utf-8") as file:
         result = "nonono"
@@ -848,7 +828,7 @@ def load_info(nome_tema):
 
         return result
 
-# @st.cache(allow_output_mutation=True)
+@st.cache_data
 def load_index():  # Load indexes numbers for all themes
     index_list = []
     with open(os.path.join("./md_files/ABOUT_INDEX.md"), encoding="utf-8") as lista:
