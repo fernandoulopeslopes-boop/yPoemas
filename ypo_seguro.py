@@ -1040,8 +1040,21 @@ def split_ypo_title(logo_text):
 
 
 def copy_to_clipboard_button(texto):
+    import html
+
+    # clipboard deve receber texto limpo, não HTML.
+    texto_limpo = html.unescape(texto)
+
+    texto_limpo = (
+        texto_limpo
+        .replace("<br><br>", "\n\n")
+        .replace("<br>", "\n")
+        .replace("<br/>", "\n")
+        .replace("<br />", "\n")
+    )
+
     safe_text = (
-        texto.replace("\\", "\\\\")
+        texto_limpo.replace("\\", "\\\\")
         .replace("`", "\\`")
         .replace("${", "\\${")
     )
