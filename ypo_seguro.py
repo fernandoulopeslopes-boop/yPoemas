@@ -31,7 +31,7 @@ from lay_2_ypo import gera_poema
 # O restante do nome, em lower, vira o título/menu da página About.
 # Exceção: ABOUT_machina_A.md + ABOUT_machina_D.md formam um único item "machina".
 ABOUTS_LIST = [
-    "comentários", "prefácil", "machina", "off-machina", "MACHINA-IA", "livros", "outros autores",
+    "comments", "prefácil", "machina", "off-machina", "MACHINA-IA", "livros", "outros autores",
     "imagens", "traduttore", "bibliografia", "samizdát", "notes", "license", "index",
 ]
 
