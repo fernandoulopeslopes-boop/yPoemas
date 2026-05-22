@@ -165,9 +165,9 @@ def apply_styles():
             max-width: none !important;
             width: 100% !important;
             min-height: calc(100vh - 140px) !important;
-            max-height: calc(100vh - 140px) !important;
+            max-height: none !important;
             overflow-x: hidden !important;
-            overflow-y: auto !important;
+            overflow-y: visible !important;
         }
 
         section[data-testid="stSidebar"],
@@ -203,10 +203,10 @@ def apply_styles():
         }
 
         .machina-button-hint {
-            font-size: 10px;
-            line-height: 1.05;
+            font-size: 12px;
+            line-height: 1.08;
             text-align: center;
-            opacity: 0.72;
+            opacity: 0.82;
             margin: 0rem 0rem 0.08rem 0rem;
             padding: 0rem;
             white-space: nowrap;
@@ -235,7 +235,7 @@ def apply_styles():
             font-family: 'IBM Plex Sans';
             color: #000000;
             padding-top: 0px;
-            padding-left: 2px;
+            padding-left: 15px;
             margin-left: 0px;
         }
 
@@ -245,9 +245,22 @@ def apply_styles():
             padding-right: 0px;
         }
 
+        .ypo-title {
+            text-align: center;
+            font-weight: 700;
+            margin: 0rem 0rem 1.05rem 0rem;
+            padding: 0rem;
+            letter-spacing: 0.015em;
+        }
+
         hr {
             margin-left: 0rem !important;
             margin-right: 0rem !important;
+        }
+
+        /* machina-tabbar-tuning */
+        div[data-testid="stAppViewContainer"] iframe[title="extra_streamlit_components.TabBar.tab_bar"] {
+            margin-top: -15px !important;
         }
         </style>
         """,
@@ -447,7 +460,7 @@ def pick_stage_font():
     if current_size not in corpos:
         current_size = 21
 
-    col_font, col_corpo = st.sidebar.columns([2.05, 0.95])
+    col_font, col_corpo = st.sidebar.columns([1.5, 1.5])
 
     with col_font:
         choice = st.selectbox(
@@ -471,7 +484,7 @@ def pick_stage_font():
 
 
 def draw_check_buttons():
-    col_arte, col_voz = st.sidebar.columns([2.05, 0.95])
+    col_arte, col_voz = st.sidebar.columns([1.5, 1.5])
 
     with col_arte:
         button_hint(col_arte, "Palco")
@@ -925,12 +938,40 @@ def load_arts(nome_tema):  # Select image for arts
 ### bof: functions
 
         
+
+def split_ypo_title(logo_text):
+    """
+    Separa a primeira linha do yPoema para tratá-la como título.
+    LYPO costuma trazer o título na primeira linha.
+    """
+    if not logo_text:
+        return "", ""
+
+    parts = logo_text.split("<br>", 1)
+    title = parts[0].strip()
+    body = parts[1].strip() if len(parts) > 1 else ""
+
+    return title, body
+
+
 def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
+    title, body = split_ypo_title(LOGO_TEXTO)
+    titulo_html = ""
+    if title:
+        titulo_html = (
+            f"<div class='ypo-title' "
+            f"style=\"font-family:{st.session_state.get('stage_font', 'IBM Plex Sans')}; "
+            f"font-size:{st.session_state.get('stage_size', 21)}px;\">"
+            f"{title}</div>"
+        )
+
+    texto_html = body if body else LOGO_TEXTO
+
     if LOGO_IMAGE == None:
         st.markdown(
             f"""
             <div class='container'>
-                <p class='logo-text' style="font-family:{st.session_state.get('stage_font', 'IBM Plex Sans')}; font-size:{st.session_state.get('stage_size', 21)}px; line-height:1.35;">{LOGO_TEXTO}</p>
+                <p class='logo-text' style="font-family:{st.session_state.get('stage_font', 'IBM Plex Sans')}; font-size:{st.session_state.get('stage_size', 21)}px; line-height:1.35;">{titulo_html}{texto_html}</p>
             </div>
             """,
             unsafe_allow_html=True,
@@ -940,7 +981,7 @@ def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
             f"""
             <div class='container'>
                 <img class='logo-img' src='data:image/jpg;base64,{base64.b64encode(open(LOGO_IMAGE, 'rb').read()).decode()}'>
-                <p class='logo-text' style="font-family:{st.session_state.get('stage_font', 'IBM Plex Sans')}; font-size:{st.session_state.get('stage_size', 21)}px; line-height:1.35;">{LOGO_TEXTO}</p>
+                <p class='logo-text' style="font-family:{st.session_state.get('stage_font', 'IBM Plex Sans')}; font-size:{st.session_state.get('stage_size', 21)}px; line-height:1.35;">{titulo_html}{texto_html}</p>
             </div>
             """,
             unsafe_allow_html=True,
@@ -1719,7 +1760,7 @@ def main():
     with st.sidebar:
         st.image("./images/" + magy)
 
-    show_icons()
+    #show_icons()
     ##$ st.sidebar.state = True
 
 
