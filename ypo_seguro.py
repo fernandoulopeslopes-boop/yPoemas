@@ -203,6 +203,15 @@ def apply_styles():
         }
 
 
+
+        /* Machina :: largura canônica da sidebar */
+        [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
+            width: 310px;
+            min-width: 310px;
+            max-width: 310px;
+        }
+
+
         /* Sidebar :: topo sem faixa excedente e sem mexer na largura */
         section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] {
             padding-top: 0rem !important;
