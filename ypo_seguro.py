@@ -1041,6 +1041,7 @@ def split_ypo_title(logo_text):
 
 def copy_to_clipboard_button(texto):
     import html
+    import json
 
     # clipboard deve receber texto limpo, não HTML.
     texto_limpo = html.unescape(texto)
@@ -1053,50 +1054,53 @@ def copy_to_clipboard_button(texto):
         .replace("<br />", "\n")
     )
 
-    safe_text = (
-        texto_limpo.replace("\\", "\\\\")
-        .replace("`", "\\`")
-        .replace("${", "\\${")
-    )
+    safe_json = json.dumps(texto_limpo)
 
-    st.components.v1.html(
-        f"""
-        <div style="width:100%; text-align:right; margin-bottom:-8px;">
-            <button
-                onclick="
-                    navigator.clipboard.writeText(`{safe_text}`);
-                    const aviso = document.getElementById('copy_msg');
-                    aviso.style.opacity='1';
-                    setTimeout(() => aviso.style.opacity='0', 1200);
-                "
-                title="copiar yPoema"
-                style="
-                    border:none;
-                    background:rgba(255,255,255,0.06);
-                    border-radius:6px;
-                    padding:2px 6px;
-                    cursor:pointer;
-                    font-size:18px;
-                    opacity:0.78;
-                    transition:0.2s;
-                "
-                onmouseover="this.style.opacity='1.0'"
-                onmouseout="this.style.opacity='0.55'"
-            >📋</button>
+    html_code = f"""
+    <div style="width:100%; text-align:right; margin-bottom:-8px;">
+        <button
+            id="copy_btn"
+            title="copiar yPoema"
+            style="
+                border:none;
+                background:rgba(255,255,255,0.06);
+                border-radius:6px;
+                padding:2px 6px;
+                cursor:pointer;
+                font-size:18px;
+                opacity:0.78;
+                transition:0.2s;
+            "
+            onmouseover="this.style.opacity='1.0'"
+            onmouseout="this.style.opacity='0.78'"
+        >📋</button>
 
-            <span
-                id="copy_msg"
-                style="
-                    margin-left:8px;
-                    font-size:11px;
-                    opacity:0;
-                    transition:0.25s;
-                "
-            >✓ yPoema copiado</span>
-        </div>
-        """,
-        height=28,
-    )
+        <span
+            id="copy_msg"
+            style="
+                margin-left:8px;
+                font-size:11px;
+                opacity:0;
+                transition:0.25s;
+            "
+        >✓ yPoema copiado</span>
+    </div>
+
+    <script>
+    const copyBtn = document.getElementById("copy_btn");
+    const copyMsg = document.getElementById("copy_msg");
+
+    copyBtn.addEventListener("click", async () => {{
+        await navigator.clipboard.writeText({safe_json});
+        copyMsg.style.opacity = "1";
+        setTimeout(() => {{
+            copyMsg.style.opacity = "0";
+        }}, 1200);
+    }});
+    </script>
+    """
+
+    st.components.v1.html(html_code, height=32)
 
 
 def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
