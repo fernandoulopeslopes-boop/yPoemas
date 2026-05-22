@@ -2,23 +2,23 @@
 *- Demo.ypo
 *-
 *-
-|01|01|Demo_0101|F|4|2|Eu voto|Meu voto,|Tolo voto:|Aquele voto|
+|01|01|Demo_0101|F|4|2|Eu voto|Meu voto|O tolo voto|Aquele voto|
 |02|00|
-|02|01|Demo_0201|F|1|1|- |
-|02|02|Demo_0202|F|20|15|anunciado|válido|casto|vesgo|pensado|tosco|comprado|enganado|nulo|inútil|mandado|já visto|calculado|útil|indeciso|obrigado|casado|em branco|pelo novo|simplório|
-|02|03|Demo_0203|F|3|1|...|?|...|
-|02|04|Demo_0204|F|19|1|inocente|correto|secreto|discreto|já visto|vencido|de cabresto|iludido|de direita|de esquerda|de centro|sabido|firme|de costume|vendido|por impulso|verde|perdido|sofrido|
-|02|05|Demo_0205|F|4|3|...|?|...|?|
-|02|06|Demo_0206|F|15|6|marxista|capitalista|neo-liberal|situacionista|democrata|trotskista|bolivariano|comunista|progressista|ideológico|conservador|oposicionista|anarquista|no partido|trabalhista|
-|02|07|Demo_0207|F|3|3|?|...|?|
-|02|08|Demo_0208|F|1|1|-|
+|02|02|Demo_0202|T|20|15|anunciado|válido|casto|vesgo|pensado|tosco|comprado|enganado|nulo|inútil|mandado|já visto|calculado|útil|indeciso|obrigado|casado|em branco|pelo novo|simplório|inocente|correto|secreto|discreto|já visto|vencido|de cabresto|iludido|de direita|de esquerda|de centro|sabido|firme|de costume|vendido|por impulso|verde|perdido|sofrido|marxista|capitalista|neo-liberal|situacionista|democrata|trotskista|bolivariano|comunista|progressista|ideológico|conservador|oposicionista|anarquista|no partido|trabalhista|
+|02|03|Demo_0203|F|3|1|...|?|,|
+|02|04|Demo_0202|T|20|15|anunciado|válido|casto|vesgo|pensado|tosco|comprado|enganado|nulo|inútil|mandado|já visto|calculado|útil|indeciso|obrigado|casado|em branco|pelo novo|simplório|inocente|correto|secreto|discreto|já visto|vencido|de cabresto|iludido|de direita|de esquerda|de centro|sabido|firme|de costume|vendido|por impulso|verde|perdido|sofrido|marxista|capitalista|neo-liberal|situacionista|democrata|trotskista|bolivariano|comunista|progressista|ideológico|conservador|oposicionista|anarquista|no partido|trabalhista|
+|02|05|Demo_0205|F|4|3|...|?|,|
+|02|06|Demo_0202|T|20|15|anunciado|válido|casto|vesgo|pensado|tosco|comprado|enganado|nulo|inútil|mandado|já visto|calculado|útil|indeciso|obrigado|casado|em branco|pelo novo|simplório|inocente|correto|secreto|discreto|já visto|vencido|de cabresto|iludido|de direita|de esquerda|de centro|sabido|firme|de costume|vendido|por impulso|verde|perdido|sofrido|marxista|capitalista|neo-liberal|situacionista|democrata|trotskista|bolivariano|comunista|progressista|ideológico|conservador|oposicionista|anarquista|no partido|trabalhista|
+|02|07|Demo_0207|F|3|3|...|?|,|
 |03|00|
-|03|01|Demo_0301|F|10|1|é meu!|errado?|fala por mim!|iludido?|foi meu!|vendido?|me cabe!|perdido?|engano seu!|vencido?|
+|03|01|Demo_0301|F|10|1|é meu|errado|fala por mim|iludido|foi escolha minha|vendido|me cabe|perdido|enganado|vencido|de cabresto|
+|03|02|Demo_0302|F|10|1|?|!|.|
 |04|00|
-|04|01|Demo_0401|F|24|12|Olha o respeito.|Também opino.|Foi minha escolha.|Assim decreto!|Me respeite.|Tenho motivos.|Sei o que faço.|Eu acredito!|Mas, sem ditadura!.|Vai que algo muda...|É o fim do mundo?|Não são apostas.|Vivas à liberdade.|Por livre arbítrio.|Cabe sigilo!|Olha a patrulha!|É agora José!|E daí, pergunto.|Um dia acerto!|Eu o sustento.|É só um a mais.|Não cabe veto.|Basta causar!|Nunca omisso.|
+|04|01|Demo_0401|F|24|12|Olha o respeito|Também opino|Foi minha escolha|Assim decreto|Me respeite|Tenho motivos|Sei o que faço|Eu acredito|Mas, sem ditadura|Vai que algo muda..|É o fim do mundo?|Não são apostas|Vivas à liberdade|Por livre arbítrio|Cabe sigilo|Olha a patrulha|É agora José|E daí, pergunto|Um dia acerto|Eu o sustento|É só um a mais|Não cabe veto|Basta causar|Nunca omisso|
+|04|02|Demo_0402|F|10|1|?|!|.|
 <EOF>
 CATAPALA = 9
 VERBETES = 129
 PALAVRAS = 161
 VARIATIO = 590.976.000                                                                     
-Build_By_Lay_2_Ipo em 17/02/2021_16:53
+B...|?|,|uild_By_Lay_2_Ipo em 17/02/2021...|?|,|
