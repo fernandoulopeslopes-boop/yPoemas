@@ -182,7 +182,7 @@ Deixo meus bens à minha irmã. Não ao meu sobrinho. Jamais será paga a conta 
 O ALFAIATE fez a sua versão:  
 Deixo meus bens à minha irmã? Não! Ao meu sobrinho? Jamais! Será paga a conta do alfaiate. Nada aos pobres.  
 
-O PROCURADOR DOS POBRES, por sua vez:  
-Deixo meus bens à minha irmã? Não! Ao meu sobrinho? Jamais! Será paga a conta do alfaiate? Nada! Aos pobres!  
+## O PROCURADOR DOS POBRES, por sua vez:  
+Deixo meus bens à minha irmã? Não! Ao meu sobrinho? Jamais! Será paga a conta do alfaiate? Nada! Aos pobres!##  
 ---
 Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de fazer Poesia**
