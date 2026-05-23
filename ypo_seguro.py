@@ -1255,19 +1255,12 @@ def page_ypoemas():
         )
 
         if new_book != st.session_state.book:
-            # Novo livro = novo início.
-            # Nada do livro anterior permanece no navegador.
+            # Novo livro = novo alvo.
+            # Cada livro tem sua própria key no selectbox de temas.
             st.session_state.book = new_book
-
             st.session_state.take_ypoemas = 0
             st.session_state.take = 0
-
-            # Reset explícito da lista visual.
-            if "ypo_take_select" in st.session_state:
-                del st.session_state["ypo_take_select"]
-
             nav_changed = True
-
             temas_list = load_temas(st.session_state.book)
             maxy_ypoemas = len(temas_list) - 1
 
@@ -1286,7 +1279,7 @@ def page_ypoemas():
     # A lista visível é a verdade atual.
     # Se o leitor selecionou o item 66, ◀ parte de 66 e vai para 65;
     # ▶ parte de 66 e vai para 67.
-    current_take = st.session_state.take_ypoemas
+    current_take = st.session_state.get("ypo_take_select_" + st.session_state.book, st.session_state.take_ypoemas)
 
     if current_take > maxy_ypoemas or current_take < 0:
         current_take = st.session_state.take_ypoemas
