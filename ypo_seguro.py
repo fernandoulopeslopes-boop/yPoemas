@@ -200,7 +200,7 @@ def apply_styles():
         }
 
         section[data-testid="stSidebar"] div[data-testid="stElementContainer"] {
-            margin-top: 0rem !important;
+            margin-top: 0.02rem !important;
             margin-bottom: 0.02rem !important;
         }
 
@@ -222,9 +222,9 @@ def apply_styles():
 
         /* Machina :: largura canônica da sidebar */
         [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
-            width: 360px;
-            min-width: 360px;
-            max-width: 360px;
+            width: 400px;
+            min-width: 400px;
+            max-width: 400px;
         }
 
 
