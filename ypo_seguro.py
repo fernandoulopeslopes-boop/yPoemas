@@ -1249,16 +1249,10 @@ def page_ypoemas():
         )
 
         if new_book != st.session_state.book:
-            # Cada livro cuida do seu quintal.
-            # A lista visual pertence ao livro atual.
-            st.session_state.last_book = st.session_state.book
             st.session_state.book = new_book
-
-            # Novo livro começa do início.
             st.session_state.take = 0
-
+            st.session_state.book_changed = True
             nav_changed = True
-
             temas_list = load_temas(st.session_state.book)
             maxy_ypoemas = len(temas_list) - 1
 
@@ -1282,14 +1276,7 @@ def page_ypoemas():
 
     if rand_clicked:
         nav_changed = True
-        old_take = st.session_state.take
-        if len(temas_list) > 1:
-            new_take = random.randrange(0, len(temas_list))
-            while new_take == old_take:
-                new_take = random.randrange(0, len(temas_list))
-            st.session_state.take = new_take
-        else:
-            st.session_state.take = 0
+        st.session_state.take = random.randrange(0, maxy_ypoemas + 1)
 
     if nest_clicked:
         nav_changed = True
@@ -1298,32 +1285,19 @@ def page_ypoemas():
             st.session_state.take = 0
 
     with tema_col:
-            nav_button_clicked = last_clicked or rand_clicked or nest_clicked
-
-    # Se um botão foi clicado, o selectbox apenas reflete o take atual.
-    # Ele não pode devolver o take antigo no mesmo ciclo.
-    options = list(range(len(temas_list)))
-
-    if nav_button_clicked:
-        # O botão move o índice canônico e também a lista visual.
-        # Sem isso, o widget continua achando que está no item anterior.
-        st.session_state["opt_take"] = st.session_state.take
-        opt_take = st.session_state.take
-    else:
+        options = list(range(len(temas_list)))
         opt_take = st.selectbox(
-            "↓  lista: "
-            + str(len(temas_list))
-            + " "
-            + translate("temas"),
+            "temas",
             options,
             index=st.session_state.take,
-            format_func=lambda x: temas_list[x],
-            key="opt_take_" + st.session_state.book,
+            format_func=lambda z: temas_list[z],
+            key="opt_take",
+            label_visibility="collapsed",
         )
 
-        if opt_take != st.session_state.take:
-            nav_changed = True
-            st.session_state.take = opt_take
+    if opt_take != st.session_state.take:
+        nav_changed = True
+        st.session_state.take = opt_take
 
     st.session_state.tema = temas_list[st.session_state.take]
 
@@ -1385,7 +1359,6 @@ def page_ypoemas():
 
     if st.session_state.talk:
         talk(curr_ypoema)
-
 
 def page_eureka():
     seed, more, rand, manu, occurrences = st.columns([2.5, 1.5, 1.5, 0.7, 4])
