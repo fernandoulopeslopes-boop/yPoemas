@@ -2,7 +2,7 @@
 main.py :: yPoemas / Machina
 CLEAN conservador + gramado/sidebar transplantados.
 
-Objetivo:
+Objetivo: 
 - manter o fluxo original conhecido pelo autor;
 - preservar o Palco, LYPO, TYPO e o Eixo Z;
 - reduzir ruído visual do código;
