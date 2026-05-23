@@ -222,9 +222,9 @@ def apply_styles():
 
         /* Machina :: largura canônica da sidebar */
         [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
-            width: 325px;
-            min-width: 325px;
-            max-width: 325px;
+            width: 333px;
+            min-width: 333px;
+            max-width: 333px;
         }
 
 
