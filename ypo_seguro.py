@@ -1292,19 +1292,29 @@ def page_ypoemas():
             st.session_state.take = 0
 
     with tema_col:
-        options = list(range(len(temas_list)))
+            nav_button_clicked = last_clicked or rand_clicked or nest_clicked
+
+    # Se um botão foi clicado, o selectbox apenas reflete o take atual.
+    # Ele não pode devolver o take antigo no mesmo ciclo.
+    options = list(range(len(temas_list)))
+
+    if nav_button_clicked:
+        opt_take = st.session_state.take
+    else:
         opt_take = st.selectbox(
-            "temas",
+            "↓  lista: "
+            + str(len(temas_list))
+            + " "
+            + translate("temas"),
             options,
             index=st.session_state.take,
-            format_func=lambda z: temas_list[z],
+            format_func=lambda x: temas_list[x],
             key="opt_take",
-            label_visibility="collapsed",
         )
 
-    if opt_take != st.session_state.take:
-        nav_changed = True
-        st.session_state.take = opt_take
+        if opt_take != st.session_state.take:
+            nav_changed = True
+            st.session_state.take = opt_take
 
     st.session_state.tema = temas_list[st.session_state.take]
 
