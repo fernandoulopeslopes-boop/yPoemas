@@ -32,7 +32,7 @@ from lay_2_ypo import gera_poema
 # Exceção: ABOUT_machina_A.md + ABOUT_machina_D.md formam um único item "machina".
 ABOUTS_LIST = [
     "comments", "prefácil", "machina", "off-machina", "MACHINA-IA", "livros", "outros autores",
-    "imagens", "traduttore", "bibliografia", "samizdát", "notes", "license", "index",
+    "imagens", "poly", "tradittore", "bibliografia", "samizdát", "notes", "license", "index",
 ]
 
 BOOKS_LIST = [
@@ -200,7 +200,7 @@ def apply_styles():
         }
 
         section[data-testid="stSidebar"] div[data-testid="stElementContainer"] {
-            margin-top: 0.02rem !important;
+            margin-top: 0rem !important;
             margin-bottom: 0.02rem !important;
         }
 
@@ -219,11 +219,12 @@ def apply_styles():
         }
 
 
+
         /* Machina :: largura canônica da sidebar */
         [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
-            width: 400px;
-            min-width: 400px;
-            max-width: 400px;
+            width: 310px;
+            min-width: 310px;
+            max-width: 310px;
         }
 
 
@@ -686,7 +687,8 @@ ABOUT_ALIASES = {
     "livros": ["livros", "books"],
     "outros autores": ["outros_autores", "outros", "autores"],
     "imagens": ["imagens", "images"],
-    "traduttore": ["traduttore", "traducoes", "traduções", "tradutor"],
+    "poly": ["poly", "polys", "idiomas", "línguas"],
+    "tradittore": ["tradittore", "traduttore", "traducoes", "traduções", "tradutor"],
     "bibliografia": ["bibliografia"],
     "samizdát": ["samizdat", "samizdát"],
     "notes": ["notes", "notas"],
@@ -1322,14 +1324,79 @@ def page_mini():
                         secs -= 1
 
 
+
+def apply_ypoemas_navigation(action, temas_list):
+    """
+    Aplica a navegação da página yPoemas em um único ponto.
+
+    action:
+    - "prev": tema anterior
+    - "next": próximo tema
+    - "random": outro tema ao acaso
+    - "more": nova versão do mesmo tema
+    - "select": seleção manual já atualizou st.session_state.take
+    - None: sem navegação
+    """
+    if "take_widget_nonce" not in st.session_state:
+        st.session_state.take_widget_nonce = 0
+
+    max_index = len(temas_list) - 1
+    changed_theme = False
+    regenerate = False
+
+    if st.session_state.take > max_index or st.session_state.take < 0:
+        st.session_state.take = 0
+        changed_theme = True
+
+    if action == "prev":
+        st.session_state.take -= 1
+        if st.session_state.take < 0:
+            st.session_state.take = max_index
+        changed_theme = True
+        regenerate = True
+
+    elif action == "next":
+        st.session_state.take += 1
+        if st.session_state.take > max_index:
+            st.session_state.take = 0
+        changed_theme = True
+        regenerate = True
+
+    elif action == "random":
+        old_take = st.session_state.take
+        if len(temas_list) > 1:
+            new_take = random.randrange(0, len(temas_list))
+            while new_take == old_take:
+                new_take = random.randrange(0, len(temas_list))
+            st.session_state.take = new_take
+        else:
+            st.session_state.take = 0
+        changed_theme = True
+        regenerate = True
+
+    elif action == "more":
+        # nova versão do MESMO tema
+        regenerate = True
+
+    elif action == "select":
+        changed_theme = True
+        regenerate = True
+
+    if changed_theme:
+        st.session_state.take_widget_nonce += 1
+
+    st.session_state.tema = temas_list[st.session_state.take]
+
+    return regenerate
+
+
 def page_ypoemas():
     temas_list = load_temas(st.session_state.book)
-    maxy_ypoemas = len(temas_list) - 1
 
     if "take_widget_nonce" not in st.session_state:
         st.session_state.take_widget_nonce = 0
 
-    if st.session_state.take > maxy_ypoemas or st.session_state.take < 0:
+    if st.session_state.take >= len(temas_list) or st.session_state.take < 0:
         st.session_state.take = 0
         st.session_state.take_widget_nonce += 1
 
@@ -1339,8 +1406,7 @@ def page_ypoemas():
         [2.70, 0.45, 0.72, 0.72, 0.72, 0.72, 0.72, 0.45, 2.70]
     )
 
-    nav_changed = bool(st.session_state.get("book_changed", False))
-    st.session_state.book_changed = False
+    action = None
 
     with book_col:
         books_list = BOOKS_LIST
@@ -1359,11 +1425,9 @@ def page_ypoemas():
         if new_book != st.session_state.book:
             st.session_state.book = new_book
             st.session_state.take = 0
-            st.session_state.book_changed = True
-            nav_changed = True
-            st.session_state.take_widget_nonce += 1
             temas_list = load_temas(st.session_state.book)
-            maxy_ypoemas = len(temas_list) - 1
+            st.session_state.take_widget_nonce += 1
+            action = "select"
 
     help_tips = load_help(st.session_state.lang)
     help_last = help_tips[0]
@@ -1377,31 +1441,15 @@ def page_ypoemas():
     nest_clicked = nest.button("▶", key="ypo_next", help=help_nest, use_container_width=True)
     manu_clicked = manu.button("?", key="ypo_help", help=translate("ajuda"), use_container_width=True)
 
-    if last_clicked:
-        nav_changed = True
-        st.session_state.take -= 1
-        if st.session_state.take < 0:
-            st.session_state.take = maxy_ypoemas
-        st.session_state.take_widget_nonce += 1
-
-    if rand_clicked:
-        nav_changed = True
-        old_take = st.session_state.take
-        if len(temas_list) > 1:
-            new_take = random.randrange(0, len(temas_list))
-            while new_take == old_take:
-                new_take = random.randrange(0, len(temas_list))
-            st.session_state.take = new_take
-        else:
-            st.session_state.take = 0
-        st.session_state.take_widget_nonce += 1
-
-    if nest_clicked:
-        nav_changed = True
-        st.session_state.take += 1
-        if st.session_state.take > maxy_ypoemas:
-            st.session_state.take = 0
-        st.session_state.take_widget_nonce += 1
+    # Cada botão no seu quadrado: só define a intenção.
+    if more_clicked:
+        action = "more"
+    elif last_clicked:
+        action = "prev"
+    elif rand_clicked:
+        action = "random"
+    elif nest_clicked:
+        action = "next"
 
     with tema_col:
         options = list(range(len(temas_list)))
@@ -1416,9 +1464,9 @@ def page_ypoemas():
 
     if selected_take != st.session_state.take:
         st.session_state.take = selected_take
-        nav_changed = True
+        action = "select"
 
-    st.session_state.tema = temas_list[st.session_state.take]
+    regenerate = apply_ypoemas_navigation(action, temas_list)
 
     if manu_clicked:
         st.subheader(load_md_file("MANUAL_YPOEMAS.md"))
@@ -1439,7 +1487,7 @@ def page_ypoemas():
     with ypoemas_expander:
         if st.session_state.lang != st.session_state.last_lang:
             curr_ypoema = load_lypo()
-        elif more_clicked or nav_changed:
+        elif regenerate:
             curr_ypoema = load_poema(st.session_state.tema, "")
             curr_ypoema = load_lypo()
         else:
@@ -1463,7 +1511,9 @@ def page_ypoemas():
         if st.session_state.draw:
             LOGO_IMAGE = load_arts(st.session_state.tema)
 
-        copy_to_clipboard_button(curr_ypoema)
+        if "copy_to_clipboard_button" in globals():
+            copy_to_clipboard_button(curr_ypoema)
+
         write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
 
         if manu_clicked:
@@ -1905,8 +1955,7 @@ def main():
             stx.TabBarItemData(id=2, title="yPoemas", description=""),
             stx.TabBarItemData(id=3, title="eureka", description=""),
             stx.TabBarItemData(id=4, title="off-mach", description=""),
-            stx.TabBarItemData(id=6, title="poly", description=""),
-            stx.TabBarItemData(id=7, title="about", description=""),
+            stx.TabBarItemData(id=5, title="about", description=""),
         ],
         default=2,
     )
@@ -1934,11 +1983,7 @@ def main():
         st.sidebar.info(load_md_file("INFO_OFF-MACHINA.md"))
         magy = "img_off-machina.jpg"
         page_off_machina()
-    elif chosen_id == "6":
-        st.sidebar.info(load_md_file("INFO_POLY.md"))
-        magy = "img_poly.jpg"
-        page_polys()
-    elif chosen_id == "7":
+    elif chosen_id == "5":
         st.sidebar.info(load_md_file("INFO_ABOUT.md"))
         magy = "img_about.jpg"
         page_abouts()
