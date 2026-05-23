@@ -35,6 +35,24 @@ ABOUTS_LIST = [
     "imagens", "poly", "tradittore", "bibliografia", "samizdát", "notes", "license", "index",
 ]
 
+ABOUTS_FILES = {
+    "comments": ["ABOUT_comments.md"],
+    "prefácil": ["ABOUT_prefácil.md"],
+    "machina": ["ABOUT_machina_A.md", "ABOUT_machina_D.md"],
+    "off-machina": ["ABOUT_off-machina.md"],
+    "MACHINA-IA": ["ABOUT_MACHINA-IA.md"],
+    "livros": ["ABOUT_livros.md"],
+    "outros autores": ["ABOUT_outros autores.md"],
+    "imagens": ["ABOUT_imagens.md"],
+    "poly": ["ABOUT_poly.md"],
+    "tradittore": ["ABOUT_tradittore.md"],
+    "bibliografia": ["ABOUT_bibliografia.md"],
+    "samizdát": ["ABOUT_samizdát.md"],
+    "notes": ["ABOUT_notes.md"],
+    "license": ["ABOUT_license.md"],
+    "index": ["ABOUT_index.md"],
+}
+
 BOOKS_LIST = [
     "todos os temas", "livro vivo", "poemas", "jocosos", "ensaios", "sociais",
     "variações", "metalinguagem", "outros autores", "signos_fem", "signos_mas",
@@ -47,19 +65,13 @@ OFF_BOOKS_LIST = [
 ]
 
 PAGE_IMAGES = {
-    "1": "img_mini.jpg",
-    "2": "img_ypoemas.jpg",
-    "3": "img_eureka.jpg",
-    "4": "img_off-machina.jpg",
-    "5": "img_about.jpg",
+    "1": "img_mini.jpg", "2": "img_ypoemas.jpg", "3": "img_eureka.jpg",
+    "4": "img_off-machina.jpg", "5": "img_books.jpg", "6": "img_poly.jpg", "7": "img_about.jpg",
 }
 
 PAGE_INFO_FILES = {
-    "1": "INFO_MINI.md",
-    "2": "INFO_YPOEMAS.md",
-    "3": "INFO_EUREKA.md",
-    "4": "INFO_OFF-MACHINA.md",
-    "5": "INFO_ABOUT.md",
+    "1": "INFO_MINI.md", "2": "INFO_YPOEMAS.md", "3": "INFO_EUREKA.md",
+    "4": "INFO_OFF-MACHINA.md", "5": "INFO_BOOKS.md", "6": "INFO_POLY.md", "7": "INFO_ABOUT.md",
 }
 
 VOICES_EDGE_TTS = {
@@ -673,106 +685,6 @@ def load_md_file(file):  # Open files for about's
     return file_text
 
 
-def normalize_about_key(value):
-    value = str(value).strip().lower()
-    value = value.replace("about_", "")
-    value = value.replace(".md", "")
-    value = value.replace("-", "_")
-    value = value.replace(" ", "_")
-    value = unicodedata.normalize("NFKD", value)
-    value = "".join(ch for ch in value if not unicodedata.combining(ch))
-    return value
-
-
-ABOUT_ALIASES = {
-    "comments": ["comments", "comentarios", "comentários"],
-    "prefácil": ["prefacil", "prefácil", "prefacio", "prefácio"],
-    "machina": ["machina", "machina_a", "machina_d"],
-    "off-machina": ["off_machina", "off-machina", "offmachina"],
-    "MACHINA-IA": ["machina_ia", "machina-ia", "ia"],
-    "livros": ["livros", "books"],
-    "outros autores": ["outros_autores", "outros", "autores"],
-    "imagens": ["imagens", "images"],
-    "poly": ["poly"],
-    "tradittore": ["tradittore", "traduttore", "traducoes", "traduções", "tradutor"],
-    "bibliografia": ["bibliografia"],
-    "samizdát": ["samizdat", "samizdát"],
-    "notes": ["notes", "notas"],
-    "license": ["license", "licenca", "licença"],
-    "index": ["index", "indice", "índice"],
-}
-
-
-def about_title_from_file(file_name):
-    stem = os.path.splitext(os.path.basename(file_name))[0]
-    if stem.upper().startswith("ABOUT_"):
-        stem = stem[6:]
-
-    key = normalize_about_key(stem)
-
-    if key in ("machina_a", "machina_d"):
-        return "machina"
-
-    # Chaves próprias explícitas.
-    if key == "poly":
-        return "poly"
-
-    if key in ("tradittore", "traduttore"):
-        return "tradittore"
-
-    return key
-
-
-def discover_about_files():
-    found_by_key = {}
-
-    try:
-        md_names = os.listdir("./md_files")
-    except Exception:
-        return {}
-
-    for file_name in md_names:
-        if file_name.upper().startswith("ABOUT_") and file_name.lower().endswith(".md"):
-            key = about_title_from_file(file_name)
-            found_by_key.setdefault(key, []).append(file_name)
-
-    abouts = {}
-    for title in ABOUTS_LIST:
-        candidates = [normalize_about_key(title)]
-        candidates += [normalize_about_key(alias) for alias in ABOUT_ALIASES.get(title, [])]
-
-        files = []
-        for key in candidates:
-            files.extend(found_by_key.get(key, []))
-
-        if normalize_about_key(title) == "machina":
-            files = []
-            for key in ("machina", "machina_a", "machina_d"):
-                files.extend(found_by_key.get(key, []))
-
-        unique_files = []
-        seen = set()
-        for file_name in files:
-            if file_name not in seen:
-                unique_files.append(file_name)
-                seen.add(file_name)
-
-        if normalize_about_key(title) == "machina":
-            def machina_part_order(name):
-                low = name.lower()
-                if "_a.md" in low:
-                    return 0
-                if "_d.md" in low:
-                    return 2
-                return 1
-            unique_files = sorted(unique_files, key=machina_part_order)
-
-        if unique_files:
-            abouts[title] = unique_files
-
-    return abouts
-
-
 def about_markdown_css():
     font = st.session_state.get("stage_font", "'IBM Plex Sans', Arial, sans-serif")
     size = st.session_state.get("stage_size", 21)
@@ -1224,18 +1136,18 @@ def page_mini():
     temas_list = load_temas("todos os temas")
     maxy_mini = len(temas_list)
 
-    if st.session_state.mini > maxy_mini:  # just in case
+    if st.session_state.mini >= maxy_mini or st.session_state.mini < 0:
         st.session_state.mini = 0
 
-    foo1, more, rand, auto, foo2 = st.columns([4, 1, 1, 1, 4])
+    foo1, more, rand, auto, foo2 = st.columns([3.6, 1, 1, 1.45, 3.6])
 
     help_tips = load_help(st.session_state.lang)
     help_rand = help_tips[1]
     help_more = help_tips[4]
 
-    rand = rand.button("✻", help=help_rand)
+    rand_clicked = rand.button("✻", help=help_rand, use_container_width=True)
 
-    if auto.button("auto", key="mini_auto_button", help=translate("modo auto")):
+    if auto.button("auto", key="mini_auto_button", help=translate("modo auto"), use_container_width=True):
         st.session_state.auto = not st.session_state.auto
 
     if st.session_state.auto:
@@ -1243,186 +1155,83 @@ def page_mini():
         with st.sidebar:
             wait_time = st.slider(translate("tempo de exibição (em segundos): "), 5, 60)
 
-    if rand:
-        st.session_state.rand = True
-        st.session_state.mini = random.randrange(0, maxy_mini)
-    else:
-        st.session_state.rand = False
+    if rand_clicked:
+        old_mini = st.session_state.mini
+        if len(temas_list) > 1:
+            new_mini = random.randrange(0, len(temas_list))
+            while new_mini == old_mini:
+                new_mini = random.randrange(0, len(temas_list))
+            st.session_state.mini = new_mini
+        else:
+            st.session_state.mini = 0
 
     st.session_state.tema = temas_list[st.session_state.mini]
     analise = say_number(st.session_state.tema)
-    more = more.button("✚", help=help_more)
 
-    if more:
-        st.session_state.rand = False
+    more_clicked = more.button("✚", help=help_more, use_container_width=True)
 
-    lnew = True
-    if lnew or st.session_state.auto:
-        if st.session_state.rand:
-            st.session_state.mini = random.randrange(0, maxy_mini)
+    if st.session_state.auto:
+        # auto percorre todos os temas.
+        old_mini = st.session_state.mini
+        if len(temas_list) > 1:
+            new_mini = random.randrange(0, len(temas_list))
+            while new_mini == old_mini:
+                new_mini = random.randrange(0, len(temas_list))
+            st.session_state.mini = new_mini
             st.session_state.tema = temas_list[st.session_state.mini]
 
-        if st.session_state.lang != st.session_state.last_lang:
-            curr_ypoema = load_lypo()  # changes in lang, keep LYPO
-        elif more or rand or st.session_state.rand:
+    if st.session_state.lang != st.session_state.last_lang:
+        curr_ypoema = load_lypo()
+    elif more_clicked or rand_clicked or st.session_state.auto:
+        curr_ypoema = load_poema(st.session_state.tema, "")
+        curr_ypoema = load_lypo()
+    else:
+        try:
+            curr_ypoema = load_lypo()
+        except Exception:
             curr_ypoema = load_poema(st.session_state.tema, "")
             curr_ypoema = load_lypo()
-        else:
-            try:
-                curr_ypoema = load_lypo()
-            except Exception:
-                curr_ypoema = load_poema(st.session_state.tema, "")
-                curr_ypoema = load_lypo()
 
-        if st.session_state.lang != "pt":  # translate if idioma <> pt
-            curr_ypoema = translate(curr_ypoema)
-            typo_user = "TYPO_" + IPAddres
-            with open(
-                os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
-            ) as save_typo:
-                save_typo.write(curr_ypoema)
-                save_typo.close()
-            curr_ypoema = load_typo()  # to normalize line breaks in text
+    if st.session_state.lang != "pt":
+        curr_ypoema = translate(curr_ypoema)
+        typo_user = "TYPO_" + IPAddres
+        with open(os.path.join("./temp/" + typo_user), "w", encoding="utf-8") as save_typo:
+            save_typo.write(curr_ypoema)
+        curr_ypoema = load_typo()
 
-        update_readings(st.session_state.tema)
-        LOGO_TEXTO = curr_ypoema
-        LOGO_IMAGE = None
+    update_readings(st.session_state.tema)
+    LOGO_TEXTO = curr_ypoema
+    LOGO_IMAGE = None
 
-        if st.session_state.draw:
-            LOGO_IMAGE = load_arts(st.session_state.tema)
+    if st.session_state.draw:
+        LOGO_IMAGE = load_arts(st.session_state.tema)
 
-        mini_place_holder = st.empty()
-        mini_place_holder.empty()
-        st.write("")
+    mini_place_holder = st.empty()
+    mini_place_holder.empty()
+    st.write("")
 
-        if st.session_state.auto == False:
-            with mini_place_holder:
-                write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
+    with mini_place_holder:
+        if "copy_to_clipboard_button" in globals():
+            copy_to_clipboard_button(curr_ypoema)
+        write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
 
-            if st.session_state.talk:
-                talk(curr_ypoema)
-
-        else:
-            while st.session_state.auto:
-                if st.session_state.rand:
-                    st.session_state.mini = random.randrange(0, maxy_mini)
-                    st.session_state.tema = temas_list[st.session_state.mini]
-
-                if st.session_state.lang != st.session_state.last_lang:
-                    curr_ypoema = load_lypo()  # changes in lang, keep LYPO
-                else:
-                    curr_ypoema = load_poema(st.session_state.tema, "")
-                    curr_ypoema = load_lypo()
-
-                if st.session_state.lang != "pt":  # translate if idioma <> pt
-                    curr_ypoema = translate(curr_ypoema)
-                    typo_user = "TYPO_" + IPAddres
-                    with open(
-                        os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
-                    ) as save_typo:
-                        save_typo.write(curr_ypoema)
-                        save_typo.close()
-                    curr_ypoema = load_typo()  # to normalize line breaks in text
-
-                update_readings(st.session_state.tema)
-                LOGO_TEXTO = curr_ypoema
-                LOGO_IMAGE = None
-
-                if st.session_state.draw:
-                    LOGO_IMAGE = load_arts(st.session_state.tema)
-
-                with mini_place_holder:
-                    mini_place_holder.empty()
-                    write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
-                    secs = wait_time
-                    while secs >= 0:
-                        time.sleep(1)
-                        secs -= 1
-
-
-
-def apply_ypoemas_navigation(action, temas_list):
-    """
-    Aplica a navegação da página yPoemas em um único ponto.
-
-    action:
-    - "prev": tema anterior
-    - "next": próximo tema
-    - "random": outro tema ao acaso
-    - "more": nova versão do mesmo tema
-    - "select": seleção manual já atualizou st.session_state.take
-    - None: sem navegação
-    """
-    if "take_widget_nonce" not in st.session_state:
-        st.session_state.take_widget_nonce = 0
-
-    max_index = len(temas_list) - 1
-    changed_theme = False
-    regenerate = False
-
-    if st.session_state.take > max_index or st.session_state.take < 0:
-        st.session_state.take = 0
-        changed_theme = True
-
-    if action == "prev":
-        st.session_state.take -= 1
-        if st.session_state.take < 0:
-            st.session_state.take = max_index
-        changed_theme = True
-        regenerate = True
-
-    elif action == "next":
-        st.session_state.take += 1
-        if st.session_state.take > max_index:
-            st.session_state.take = 0
-        changed_theme = True
-        regenerate = True
-
-    elif action == "random":
-        old_take = st.session_state.take
-        if len(temas_list) > 1:
-            new_take = random.randrange(0, len(temas_list))
-            while new_take == old_take:
-                new_take = random.randrange(0, len(temas_list))
-            st.session_state.take = new_take
-        else:
-            st.session_state.take = 0
-        changed_theme = True
-        regenerate = True
-
-    elif action == "more":
-        # nova versão do MESMO tema
-        regenerate = True
-
-    elif action == "select":
-        changed_theme = True
-        regenerate = True
-
-    if changed_theme:
-        st.session_state.take_widget_nonce += 1
-
-    st.session_state.tema = temas_list[st.session_state.take]
-
-    return regenerate
+    if st.session_state.talk:
+        talk(curr_ypoema)
 
 
 def page_ypoemas():
     temas_list = load_temas(st.session_state.book)
+    maxy_ypoemas = len(temas_list) - 1
 
-    if "take_widget_nonce" not in st.session_state:
-        st.session_state.take_widget_nonce = 0
-
-    if st.session_state.take >= len(temas_list) or st.session_state.take < 0:
+    if st.session_state.take > maxy_ypoemas or st.session_state.take < 0:
         st.session_state.take = 0
-        st.session_state.take_widget_nonce += 1
 
     # Palco: listas laterais + cluster centralizado de navegação.
-    # Livros/temas +20% para evitar corte visual.
     book_col, spacer_l, more, last, rand, nest, manu, spacer_r, tema_col = st.columns(
         [2.70, 0.45, 0.72, 0.72, 0.72, 0.72, 0.72, 0.45, 2.70]
     )
 
-    action = None
+    nav_changed = False
 
     with book_col:
         books_list = BOOKS_LIST
@@ -1441,9 +1250,9 @@ def page_ypoemas():
         if new_book != st.session_state.book:
             st.session_state.book = new_book
             st.session_state.take = 0
+            nav_changed = True
             temas_list = load_temas(st.session_state.book)
-            st.session_state.take_widget_nonce += 1
-            action = "select"
+            maxy_ypoemas = len(temas_list) - 1
 
     help_tips = load_help(st.session_state.lang)
     help_last = help_tips[0]
@@ -1457,32 +1266,47 @@ def page_ypoemas():
     nest_clicked = nest.button("▶", key="ypo_next", help=help_nest, use_container_width=True)
     manu_clicked = manu.button("?", key="ypo_help", help=translate("ajuda"), use_container_width=True)
 
-    # Cada botão no seu quadrado: só define a intenção.
-    if more_clicked:
-        action = "more"
-    elif last_clicked:
-        action = "prev"
-    elif rand_clicked:
-        action = "random"
-    elif nest_clicked:
-        action = "next"
+    if last_clicked:
+        nav_changed = True
+        st.session_state.take -= 1
+        if st.session_state.take < 0:
+            st.session_state.take = maxy_ypoemas
+
+    if rand_clicked:
+        nav_changed = True
+        old_take = st.session_state.take
+        if len(temas_list) > 1:
+            new_take = random.randrange(0, len(temas_list))
+            while new_take == old_take:
+                new_take = random.randrange(0, len(temas_list))
+            st.session_state.take = new_take
+        else:
+            st.session_state.take = 0
+
+    if nest_clicked:
+        nav_changed = True
+        st.session_state.take += 1
+        if st.session_state.take > maxy_ypoemas:
+            st.session_state.take = 0
+
+    # O selectbox é reflexo visual do índice canônico.
+    st.session_state.ypo_take_select = st.session_state.take
 
     with tema_col:
         options = list(range(len(temas_list)))
         selected_take = st.selectbox(
             "temas",
             options,
-            index=st.session_state.take,
             format_func=lambda z: temas_list[z],
-            key="take_select_" + str(st.session_state.take_widget_nonce),
+            key="ypo_take_select",
             label_visibility="collapsed",
         )
 
     if selected_take != st.session_state.take:
+        nav_changed = True
         st.session_state.take = selected_take
-        action = "select"
 
-    regenerate = apply_ypoemas_navigation(action, temas_list)
+    st.session_state.tema = temas_list[st.session_state.take]
 
     if manu_clicked:
         st.subheader(load_md_file("MANUAL_YPOEMAS.md"))
@@ -1503,7 +1327,7 @@ def page_ypoemas():
     with ypoemas_expander:
         if st.session_state.lang != st.session_state.last_lang:
             curr_ypoema = load_lypo()
-        elif regenerate:
+        elif more_clicked or nav_changed:
             curr_ypoema = load_poema(st.session_state.tema, "")
             curr_ypoema = load_lypo()
         else:
@@ -1692,71 +1516,23 @@ def page_eureka():
         write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
 
 
+def page_off_machina():  # available off_machina_books
+    off_books_list = load_all_offs()
+    options = list(range(len(off_books_list)))
+    sobrios = "↓  " + translate("lista de Livros")
+    opt_off_book = st.selectbox(
+        sobrios,
+        options,
+        index=st.session_state.off_book,
+        format_func=lambda x: off_books_list[x],
+        key="opt_off_book",
+    )
 
-def apply_off_machina_navigation(action, off_book_pagys):
-    """
-    Navegação da página off-Machina em um único ponto.
-
-    action:
-    - "prev": página anterior
-    - "next": próxima página
-    - "random": página aleatória
-    - "love": mais lidos / ordenação especial, sem alterar índice diretamente
-    - "select": seleção manual já atualizou st.session_state.off_take
-    - None: sem navegação
-    """
-    if "off_widget_nonce" not in st.session_state:
-        st.session_state.off_widget_nonce = 0
-
-    max_index = len(off_book_pagys) - 1
-    changed_page = False
-
-    if st.session_state.off_take > max_index or st.session_state.off_take < 0:
+    if opt_off_book != st.session_state.off_book:
+        st.session_state.off_book = opt_off_book
         st.session_state.off_take = 0
-        changed_page = True
 
-    if action == "prev":
-        st.session_state.off_take -= 1
-        if st.session_state.off_take < 0:
-            st.session_state.off_take = max_index
-        changed_page = True
-
-    elif action == "next":
-        st.session_state.off_take += 1
-        if st.session_state.off_take > max_index:
-            st.session_state.off_take = 0
-        changed_page = True
-
-    elif action == "random":
-        old_take = st.session_state.off_take
-        if len(off_book_pagys) > 1:
-            new_take = random.randrange(0, len(off_book_pagys))
-            while new_take == old_take:
-                new_take = random.randrange(0, len(off_book_pagys))
-            st.session_state.off_take = new_take
-        else:
-            st.session_state.off_take = 0
-        changed_page = True
-
-    elif action == "select":
-        changed_page = True
-
-    if changed_page:
-        st.session_state.off_widget_nonce += 1
-
-    return changed_page
-
-
-def page_off_machina():
-    if "off_widget_nonce" not in st.session_state:
-        st.session_state.off_widget_nonce = 0
-
-    off_book = load_index()
-    off_book_pagys = list(range(0, len(off_book)))
-
-    if st.session_state.off_take >= len(off_book_pagys) or st.session_state.off_take < 0:
-        st.session_state.off_take = 0
-        st.session_state.off_widget_nonce += 1
+    off_book_name = off_books_list[st.session_state.off_book]
 
     help_tips = load_help(st.session_state.lang)
     help_last = help_tips[0]
@@ -1765,74 +1541,122 @@ def page_off_machina():
     help_love = help_tips[3]
 
     foo1, last, rand, nest, love, manu, foo2 = st.columns([2.5, 1, 1, 1, 1, 1, 2.5])
-
     last_clicked = last.button("◀", help=help_last)
     rand_clicked = rand.button("✻", help=help_rand)
     nest_clicked = nest.button("▶", help=help_nest)
     love_clicked = love.button("❤", help=help_love)
     manu_clicked = manu.button("?", help=translate("ajuda"))
 
-    action = None
+    this_off_book = load_off_book(off_book_name)
+    off_book_pagys = load_book_pages(this_off_book)
+    maxy_off_machina = len(off_book_pagys) - 1
 
     if last_clicked:
-        action = "prev"
-    elif rand_clicked:
-        action = "random"
-    elif nest_clicked:
-        action = "next"
+        st.session_state.off_take -= 1
+        if st.session_state.off_take < 0:
+            st.session_state.off_take = maxy_off_machina
 
-    if manu_clicked:
-        st.subheader(load_md_file("MANUAL_OFF-MACHINA.md"))
+    if rand_clicked:
+        old_take = st.session_state.off_take
+        if len(off_book_pagys) > 1:
+            new_take = random.randrange(0, len(off_book_pagys))
+            while new_take == old_take:
+                new_take = random.randrange(0, len(off_book_pagys))
+            st.session_state.off_take = new_take
+        else:
+            st.session_state.off_take = 0
 
-    # ❤ apenas muda a lista base para a visão dos mais lidos.
-    if love_clicked:
-        off_book = most_readings()
-        off_book_pagys = list(range(0, len(off_book)))
+    if nest_clicked:
+        st.session_state.off_take += 1
+        if st.session_state.off_take > maxy_off_machina:
+            st.session_state.off_take = 0
+
+    if st.session_state.off_take > maxy_off_machina or st.session_state.off_take < 0:
         st.session_state.off_take = 0
-        st.session_state.off_widget_nonce += 1
-        action = "select"
 
-    with foo2:
+    if not st.session_state.draw:
+        st.session_state.off_take_select = st.session_state.off_take
+
+        options = list(range(len(off_book_pagys)))
+        sobrios = "↓  " + translate("lista de Títulos")
         selected_off_take = st.selectbox(
-            "off",
-            off_book_pagys,
-            index=st.session_state.off_take,
-            format_func=lambda x: str(x + 1),
-            key="off_select_" + str(st.session_state.off_widget_nonce),
-            label_visibility="collapsed",
+            sobrios,
+            options,
+            format_func=lambda x: off_book_pagys[x],
+            key="off_take_select",
         )
 
-    if selected_off_take != st.session_state.off_take:
-        st.session_state.off_take = selected_off_take
-        action = "select"
+        if selected_off_take != st.session_state.off_take:
+            st.session_state.off_take = selected_off_take
 
-    apply_off_machina_navigation(action, off_book_pagys)
+    lnew = True
+    if manu_clicked:
+        lnew = False
+        st.subheader(load_md_file("MANUAL_OFF-MACHINA.md"))
 
-    this_line = off_book[st.session_state.off_take].strip("\n")
-    pipe_line = this_line.split("|")
+    if love_clicked:
+        lnew = False
+        list_readings()
+        st.markdown(
+            get_binary_file_downloader_html("./temp/read_list.txt", "views"),
+            unsafe_allow_html=True,
+        )
 
-    off_text = []
-    for line_part in pipe_line:
-        off_text.append(line_part)
+    if lnew:
+        what_book = (
+            "⚫  "
+            + st.session_state.lang
+            + " ( "
+            + str(st.session_state.off_take + 1)
+            + "/"
+            + str(len(off_book_pagys))
+            + " )"
+        )
 
-    what_book = (
-        "⚫  "
-        + str(st.session_state.off_take + 1)
-        + " / "
-        + str(len(off_book_pagys))
-    )
+        off_machina_expander = st.expander(what_book, True)
+        with off_machina_expander:
+            off_book_text = ""
+            pipe_line = this_off_book[st.session_state.off_take].split("|")
+            if "@ " in pipe_line[1]:
+                if st.session_state.lang != st.session_state.last_lang:
+                    off_book_text = load_lypo()
+                else:
+                    nome_tema = pipe_line[1].replace("@ ", "")
+                    off_book_text = load_poema(nome_tema, "")
+                    off_book_text = "<br>" + load_lypo()
+            else:
+                for line_part in pipe_line:
+                    off_book_text += line_part + "<br>"
 
-    off_expander = st.expander(what_book, expanded=True)
-    with off_expander:
-        LOGO_TEXTO = "<br>".join(off_text)
-        if st.session_state.lang != "pt":
-            LOGO_TEXTO = translate(LOGO_TEXTO)
+            capo = st.session_state.off_take == 0
 
-        LOGO_IMAGE = None
-        write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
+            if capo:
+                capa, isbn = st.columns([2.5, 7.5])
+                with capa:
+                    if off_book_name == "livro_vivo":
+                        LOGO_CAPA = load_arts("livro_vivo")
+                        st.image(LOGO_CAPA, width="stretch")
+                    else:
+                        st.image(
+                            "./off_machina/capa_" + off_book_name + ".jpg",
+                            width="stretch",
+                        )
+                with isbn:
+                    st.markdown(off_book_text, unsafe_allow_html=True)
+            else:
+                if st.session_state.lang != "pt":
+                    off_book_text = translate(off_book_text)
 
-    if st.session_state.talk:
-        talk(LOGO_TEXTO)
+                LOGO_TEXTO = off_book_text
+                LOGO_IMAGE = None
+                if st.session_state.draw:
+                    LOGO_IMAGE = load_arts(off_book_name)
+
+                write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
+                update_readings(off_book_name)
+
+        if st.session_state.talk:
+            talk(off_book_text)
 
 
 def page_books():  # available books
@@ -1871,14 +1695,9 @@ def page_books():  # available books
 
 
 def page_abouts():
-    abouts_map = discover_about_files()
-
-    if not abouts_map:
-        st.warning(translate("nenhum arquivo ABOUT_*.md encontrado em ./md_files"))
-        return
-
-    # Ordem autoral. Nunca usar sorted() aqui.
-    abouts_list = [title for title in ABOUTS_LIST if title in abouts_map]
+    # Ordem autoral e arquivos explícitos.
+    # Sem discover, sem sorted, sem anexar um ABOUT ao outro.
+    abouts_list = ABOUTS_LIST
 
     options = list(range(len(abouts_list)))
     opt_abouts = st.selectbox(
@@ -1890,35 +1709,26 @@ def page_abouts():
     )
 
     choice = abouts_list[opt_abouts]
+    about_files = ABOUTS_FILES[choice]
 
     about_expander = st.expander("", True)
     with about_expander:
         about_markdown_css()
+        st.markdown("<div class='about-reader'>", unsafe_allow_html=True)
 
-        if normalize_about_key(choice) == "machina":
-            st.markdown("<div class='about-reader'>", unsafe_allow_html=True)
+        if choice == "machina":
+            for file_name in about_files:
+                st.subheader(load_md_file(file_name))
 
-            for file_name in abouts_map[choice]:
-                if file_name.lower().endswith("_a.md"):
-                    st.subheader(load_md_file(file_name))
-
+                if file_name == "ABOUT_machina_A.md":
                     LOGO_TEXTO = load_info(st.session_state.tema)
                     LOGO_IMAGE = "./images/matrix/" + st.session_state.tema + ".jpg"
                     write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
-
-                elif file_name.lower().endswith("_d.md"):
-                    st.subheader(load_md_file(file_name))
-
-                else:
-                    st.subheader(load_md_file(file_name))
-
-            st.markdown("</div>", unsafe_allow_html=True)
-
         else:
-            st.markdown("<div class='about-reader'>", unsafe_allow_html=True)
-            for file_name in abouts_map[choice]:
+            for file_name in about_files:
                 st.subheader(load_md_file(file_name))
-            st.markdown("</div>", unsafe_allow_html=True)
+
+        st.markdown("</div>", unsafe_allow_html=True)
 
 
 ### eof: pages
