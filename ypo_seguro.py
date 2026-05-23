@@ -1228,7 +1228,7 @@ def page_ypoemas():
 
     # Palco: listas laterais + cluster centralizado de navegação.
     book_col, spacer_l, more, last, rand, nest, manu, spacer_r, tema_col = st.columns(
-        [2.70, 0.45, 0.72, 0.72, 0.72, 0.72, 0.72, 0.45, 2.70]
+        [2.25, 0.75, 0.72, 0.72, 0.72, 0.72, 0.72, 0.75, 2.25]
     )
 
     nav_changed = bool(st.session_state.get("book_changed", False))
@@ -1344,9 +1344,6 @@ def page_ypoemas():
         if st.session_state.draw:
             LOGO_IMAGE = load_arts(st.session_state.tema)
 
-        if "copy_to_clipboard_button" in globals():
-            copy_to_clipboard_button(curr_ypoema)
-
         write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
 
         if manu_clicked:
@@ -1359,6 +1356,7 @@ def page_ypoemas():
 
     if st.session_state.talk:
         talk(curr_ypoema)
+
 
 def page_eureka():
     seed, more, rand, manu, occurrences = st.columns([2.5, 1.5, 1.5, 0.7, 4])
