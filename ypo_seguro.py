@@ -245,6 +245,17 @@ def apply_styles():
             overflow-y: auto;
         }
 
+        /* Gramado real: primeiro container criado no main */
+        div[data-testid="stAppViewContainer"] main
+        div[data-testid="stVerticalBlock"] > div[data-testid="stVerticalBlockBorderWrapper"]:first-child,
+        div[data-testid="stAppViewContainer"] main
+        div[data-testid="stVerticalBlock"] > div[data-testid="stVerticalBlock"]:first-child {
+            background: #eef8ee !important;
+            border-radius: 18px !important;
+            padding: 0.35rem 0.55rem 0.55rem 0.55rem !important;
+        }
+
+
         .machina-divider {
             height: 1px;
             width: 100%;
@@ -322,15 +333,27 @@ init_session_state()
 
 
 def open_gramado():
-    st.markdown("<div class='machina-gramado'>", unsafe_allow_html=True)
+    """Cria um container real para o gramado.
+
+    Importante:
+    st.markdown("<div>") não envolve elementos Streamlit seguintes.
+    O gramado precisa ser um container usado com `with gramado:`.
+    """
+    return st.container()
 
 
 def close_gramado():
-    st.markdown("</div>", unsafe_allow_html=True)
+    """Mantida apenas por compatibilidade histórica."""
+    return None
 
 
 def gramado_divider():
     st.markdown("<div class='machina-divider'></div>", unsafe_allow_html=True)
+
+
+def open_palco():
+    """Cria um container real para o palco."""
+    return st.container()
 
 
 def palco_status(book=None, pos=None, total=None):
@@ -1543,75 +1566,79 @@ def main():
     pick_book_sidebar()
     pick_stage_font()
 
-    open_gramado()
+    gramado = open_gramado()
 
-    chosen_id = stx.tab_bar(
-        data=[
-            stx.TabBarItemData(id=1, title="mini", description=""),
-            stx.TabBarItemData(id=2, title="yPoemas", description=""),
-            stx.TabBarItemData(id=3, title="eureka", description=""),
-            stx.TabBarItemData(id=4, title="off-mach", description=""),
-            stx.TabBarItemData(id=5, title="poly", description=""),
-            stx.TabBarItemData(id=6, title="about", description=""),
-        ],
-        default=2,
-    )
+    with gramado:
+        chosen_id = stx.tab_bar(
+            data=[
+                stx.TabBarItemData(id=1, title="mini", description=""),
+                stx.TabBarItemData(id=2, title="yPoemas", description=""),
+                stx.TabBarItemData(id=3, title="eureka", description=""),
+                stx.TabBarItemData(id=4, title="off-mach", description=""),
+                stx.TabBarItemData(id=5, title="poly", description=""),
+                stx.TabBarItemData(id=6, title="about", description=""),
+            ],
+            default=2,
+        )
 
-    chosen_id = str(chosen_id)
+        chosen_id = str(chosen_id)
 
-    gramado_divider()
-    draw_check_buttons()
+        gramado_divider()
+        draw_check_buttons()
 
-    margem_esq, palco, margem_dir = st.columns([1.05, 7.9, 1.05])
+        margem_esq, palco, margem_dir = st.columns([1.05, 7.9, 1.05])
 
-    with margem_esq:
-        st.markdown("<div class='machina-moldura-lateral'></div>", unsafe_allow_html=True)
+        with margem_esq:
+            st.empty()
 
-    with palco:
-        st.markdown("<div class='machina-palco-central'>", unsafe_allow_html=True)
+        with palco:
+            palco_container = open_palco()
 
-        if chosen_id == "1":
-            magy = "img_mini.jpg"
-            page_mini()
-            status = palco_status("mini")
-        elif chosen_id == "2":
-            magy = "img_ypoemas.jpg"
-            page_ypoemas()
-            status = palco_status(
-                st.session_state.book,
-                st.session_state.get("take", 0) + 1,
-                len(load_temas(st.session_state.book)),
-            )
-        elif chosen_id == "3":
-            magy = "img_eureka.jpg"
-            page_eureka()
-            status = palco_status("eureka")
-        elif chosen_id == "4":
-            magy = "img_off-machina.jpg"
-            page_off_machina()
-            status = palco_status("off-machina")
-        elif chosen_id == "5":
-            magy = "img_poly.jpg"
-            page_polys()
-            status = palco_status("poly")
-        elif chosen_id == "6":
-            magy = "img_about.jpg"
-            page_abouts()
-            status = palco_status("about")
-        else:
-            magy = "img_ypoemas.jpg"
-            page_ypoemas()
-            status = palco_status(
-                st.session_state.book,
-                st.session_state.get("take", 0) + 1,
-                len(load_temas(st.session_state.book)),
-            )
+            with palco_container:
+                if chosen_id == "1":
+                    magy = "img_mini.jpg"
+                    page_mini()
+                    status = palco_status("mini")
+                elif chosen_id == "2":
+                    magy = "img_ypoemas.jpg"
+                    page_ypoemas()
+                    status = palco_status(
+                        st.session_state.book,
+                        st.session_state.get("take", 0) + 1,
+                        len(load_temas(st.session_state.book)),
+                    )
+                elif chosen_id == "3":
+                    magy = "img_eureka.jpg"
+                    page_eureka()
+                    status = palco_status("eureka")
+                elif chosen_id == "4":
+                    magy = "img_off-machina.jpg"
+                    page_off_machina()
+                    status = palco_status("off-machina")
+                elif chosen_id == "5":
+                    magy = "img_poly.jpg"
+                    page_polys()
+                    status = palco_status("poly")
+                elif chosen_id == "6":
+                    magy = "img_about.jpg"
+                    page_abouts()
+                    status = palco_status("about")
+                else:
+                    magy = "img_ypoemas.jpg"
+                    page_ypoemas()
+                    status = palco_status(
+                        st.session_state.book,
+                        st.session_state.get("take", 0) + 1,
+                        len(load_temas(st.session_state.book)),
+                    )
 
-        st.markdown(f"<div class='machina-rodape-palco'>{status}</div>", unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
+                st.markdown(
+                    f"<div class='machina-rodape-palco'>{status}</div>",
+                    unsafe_allow_html=True,
+                )
 
-    with margem_dir:
-        st.markdown("<div class='machina-moldura-lateral'></div>", unsafe_allow_html=True)
+        with margem_dir:
+            st.empty()
 
     with st.sidebar:
         st.image("./images/" + magy)
