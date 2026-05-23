@@ -1223,22 +1223,16 @@ def page_ypoemas():
     temas_list = load_temas(st.session_state.book)
     maxy_ypoemas = len(temas_list) - 1
 
-    # índice canônico exclusivo da página yPoemas
-    if "take_ypoemas" not in st.session_state:
-        st.session_state.take_ypoemas = st.session_state.get("take", 0)
-
-    if st.session_state.take_ypoemas > maxy_ypoemas or st.session_state.take_ypoemas < 0:
-        st.session_state.take_ypoemas = 0
-
-    # compatibilidade com trechos antigos que ainda leem st.session_state.take
-    st.session_state.take = st.session_state.take_ypoemas
+    if st.session_state.take > maxy_ypoemas or st.session_state.take < 0:
+        st.session_state.take = 0
 
     # Palco: listas laterais + cluster centralizado de navegação.
     book_col, spacer_l, more, last, rand, nest, manu, spacer_r, tema_col = st.columns(
         [2.70, 0.45, 0.72, 0.72, 0.72, 0.72, 0.72, 0.45, 2.70]
     )
 
-    nav_changed = False
+    nav_changed = bool(st.session_state.get("book_changed", False))
+    st.session_state.book_changed = False
 
     with book_col:
         books_list = BOOKS_LIST
@@ -1255,11 +1249,9 @@ def page_ypoemas():
         )
 
         if new_book != st.session_state.book:
-            # Novo livro = novo alvo.
-            # Cada livro tem sua própria key no selectbox de temas.
             st.session_state.book = new_book
-            st.session_state.take_ypoemas = 0
             st.session_state.take = 0
+            st.session_state.book_changed = True
             nav_changed = True
             temas_list = load_temas(st.session_state.book)
             maxy_ypoemas = len(temas_list) - 1
@@ -1276,59 +1268,45 @@ def page_ypoemas():
     nest_clicked = nest.button("▶", key="ypo_next", help=help_nest, use_container_width=True)
     manu_clicked = manu.button("?", key="ypo_help", help=translate("ajuda"), use_container_width=True)
 
-    # A lista visível é a verdade atual.
-    # Se o leitor selecionou o item 66, ◀ parte de 66 e vai para 65;
-    # ▶ parte de 66 e vai para 67.
-    current_take = st.session_state.get("ypo_take_select_" + st.session_state.book, st.session_state.take_ypoemas)
-
-    if current_take > maxy_ypoemas or current_take < 0:
-        current_take = st.session_state.take_ypoemas
-
     if last_clicked:
         nav_changed = True
-        st.session_state.take_ypoemas = current_take - 1
-        if st.session_state.take_ypoemas < 0:
-            st.session_state.take_ypoemas = maxy_ypoemas
+        st.session_state.take -= 1
+        if st.session_state.take < 0:
+            st.session_state.take = maxy_ypoemas
 
-    elif rand_clicked:
+    if rand_clicked:
         nav_changed = True
-        old_take = current_take
+        old_take = st.session_state.take
         if len(temas_list) > 1:
             new_take = random.randrange(0, len(temas_list))
             while new_take == old_take:
                 new_take = random.randrange(0, len(temas_list))
-            st.session_state.take_ypoemas = new_take
+            st.session_state.take = new_take
         else:
-            st.session_state.take_ypoemas = 0
+            st.session_state.take = 0
 
-    elif nest_clicked:
+    if nest_clicked:
         nav_changed = True
-        st.session_state.take_ypoemas = current_take + 1
-        if st.session_state.take_ypoemas > maxy_ypoemas:
-            st.session_state.take_ypoemas = 0
-
-    # sincroniza o espelho compatível e o visual antes de renderizar a lista
-    st.session_state.take = st.session_state.take_ypoemas
-    st.session_state.ypo_take_select = st.session_state.take_ypoemas
+        st.session_state.take += 1
+        if st.session_state.take > maxy_ypoemas:
+            st.session_state.take = 0
 
     with tema_col:
         options = list(range(len(temas_list)))
-        selected_take = st.selectbox(
+        opt_take = st.selectbox(
             "temas",
             options,
+            index=st.session_state.take,
             format_func=lambda z: temas_list[z],
-            key="ypo_take_select_" + st.session_state.book,
+            key="opt_take",
             label_visibility="collapsed",
         )
 
-    # Se não houve botão, a seleção manual da lista decide.
-    if not (last_clicked or rand_clicked or nest_clicked):
-        if selected_take != st.session_state.take_ypoemas:
-            nav_changed = True
-            st.session_state.take_ypoemas = selected_take
-            st.session_state.take = selected_take
+    if opt_take != st.session_state.take:
+        nav_changed = True
+        st.session_state.take = opt_take
 
-    st.session_state.tema = temas_list[st.session_state.take_ypoemas]
+    st.session_state.tema = temas_list[st.session_state.take]
 
     if manu_clicked:
         st.subheader(load_md_file("MANUAL_YPOEMAS.md"))
@@ -1339,7 +1317,7 @@ def page_ypoemas():
         + " ( "
         + st.session_state.book
         + " ) ( "
-        + str(st.session_state.take_ypoemas + 1)
+        + str(st.session_state.take + 1)
         + " / "
         + str(len(temas_list))
         + " )"
