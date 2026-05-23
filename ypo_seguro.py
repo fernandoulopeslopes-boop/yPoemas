@@ -1300,19 +1300,26 @@ def page_ypoemas():
 
     # sincroniza o espelho compatível antes de renderizar a lista
     st.session_state.take = st.session_state.take_ypoemas
-    st.session_state.ypo_take_select = st.session_state.take_ypoemas
+
+    nav_button_clicked = last_clicked or rand_clicked or nest_clicked
+
+    # Se um botão de navegação foi clicado, a lista apenas reflete.
+    # Ela não pode sobrescrever o índice novo no mesmo ciclo.
+    if nav_button_clicked:
+        st.session_state.ypo_take_select = st.session_state.take_ypoemas
 
     with tema_col:
         options = list(range(len(temas_list)))
         selected_take = st.selectbox(
             "temas",
             options,
+            index=st.session_state.take_ypoemas,
             format_func=lambda z: temas_list[z],
-            key="ypo_take_select",
+            key="ypo_take_select_view",
             label_visibility="collapsed",
         )
 
-    if selected_take != st.session_state.take_ypoemas:
+    if (not nav_button_clicked) and selected_take != st.session_state.take_ypoemas:
         nav_changed = True
         st.session_state.take_ypoemas = selected_take
         st.session_state.take = selected_take
