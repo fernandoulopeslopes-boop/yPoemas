@@ -4,7 +4,7 @@ CLEAN conservador + gramado/sidebar transplantados.
 
 Objetivo:
 - manter o fluxo original conhecido pelo autor;
-- preservar o Palco, LYPO, TYPO e o Eixo Z; 
+- preservar o Palco, LYPO, TYPO e o Eixo Z;
 - reduzir ruído visual do código;
 - preparar futura divisão em módulos sem quebrar a Machina.
 """
@@ -47,13 +47,19 @@ OFF_BOOKS_LIST = [
 ]
 
 PAGE_IMAGES = {
-    "1": "img_mini.jpg", "2": "img_ypoemas.jpg", "3": "img_eureka.jpg",
-    "4": "img_off-machina.jpg", "5": "img_books.jpg", "6": "img_poly.jpg", "7": "img_about.jpg",
+    "1": "img_mini.jpg",
+    "2": "img_ypoemas.jpg",
+    "3": "img_eureka.jpg",
+    "4": "img_off-machina.jpg",
+    "5": "img_about.jpg",
 }
 
 PAGE_INFO_FILES = {
-    "1": "INFO_MINI.md", "2": "INFO_YPOEMAS.md", "3": "INFO_EUREKA.md",
-    "4": "INFO_OFF-MACHINA.md", "5": "INFO_BOOKS.md", "6": "INFO_POLY.md", "7": "INFO_ABOUT.md",
+    "1": "INFO_MINI.md",
+    "2": "INFO_YPOEMAS.md",
+    "3": "INFO_EUREKA.md",
+    "4": "INFO_OFF-MACHINA.md",
+    "5": "INFO_ABOUT.md",
 }
 
 VOICES_EDGE_TTS = {
@@ -1862,52 +1868,6 @@ def page_books():  # available books
             if doit:
                 st.session_state.take = 0
                 st.session_state.book = books_list[opt_book]
-
-
-def page_polys():  # available languages
-    polys, ok = st.columns([9.3, 0.7])
-    with polys:
-        poly_list = []
-        poly_pais = []
-        poly_ling = []
-        with open(
-            os.path.join("./base/" + st.session_state.poly_file), encoding="utf-8"
-        ) as poly:
-            for line in poly:
-                poly_list.append(line)
-                this_line = line.strip("\n")
-                part_line = this_line.partition(" : ")
-                poly_pais.append(translate(part_line[0]))
-                poly_ling.append(part_line[2])
-        poly.close()
-
-        options = list(range(len(poly_list)))
-        opt_poly = st.selectbox(
-            "↓  lista: " + str(len(poly_list)) + " idiomas",
-            options,
-            index=st.session_state.poly_take,
-            format_func=lambda x: poly_list[x],
-            key="opt_poly",
-        )
-
-    with ok:
-        doit = st.button("✔")
-
-    if doit:
-        poly_pais = poly_pais[opt_poly]
-        poly_ling = poly_ling[opt_poly]
-        st.session_state.poly_name = translate(poly_pais)
-        st.session_state.poly_lang = poly_ling
-        st.session_state.poly_take = opt_poly
-
-        st.session_state.last_lang = st.session_state.lang
-        st.session_state.lang = st.session_state.poly_lang
-
-    lnew = True
-    if lnew:
-        poly_expander = st.expander("", True)
-        with poly_expander:
-            st.subheader(load_md_file("MANUAL_POLY.md"))
 
 
 def page_abouts():
