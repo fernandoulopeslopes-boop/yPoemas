@@ -219,7 +219,6 @@ def apply_styles():
         }
 
 
-
         /* Machina :: largura canônica da sidebar */
         [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
             width: 400px;
