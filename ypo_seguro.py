@@ -2,7 +2,7 @@
 main.py :: yPoemas / Machina
 CLEAN conservador + gramado/sidebar transplantados.
 
-Objetivo: 
+Objetivo:
 - manter o fluxo original conhecido pelo autor;
 - preservar o Palco, LYPO, TYPO e o Eixo Z;
 - reduzir ruído visual do código;
@@ -1249,10 +1249,16 @@ def page_ypoemas():
         )
 
         if new_book != st.session_state.book:
+            # Cada livro cuida do seu quintal.
+            # A lista visual pertence ao livro atual.
+            st.session_state.last_book = st.session_state.book
             st.session_state.book = new_book
+
+            # Novo livro começa do início.
             st.session_state.take = 0
-            st.session_state.book_changed = True
+
             nav_changed = True
+
             temas_list = load_temas(st.session_state.book)
             maxy_ypoemas = len(temas_list) - 1
 
@@ -1312,7 +1318,7 @@ def page_ypoemas():
             options,
             index=st.session_state.take,
             format_func=lambda x: temas_list[x],
-            key="opt_take",
+            key="opt_take_" + st.session_state.book,
         )
 
         if opt_take != st.session_state.take:
