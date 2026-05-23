@@ -687,7 +687,7 @@ ABOUT_ALIASES = {
     "livros": ["livros", "books"],
     "outros autores": ["outros_autores", "outros", "autores"],
     "imagens": ["imagens", "images"],
-    "poly": ["poly", "polys", "idiomas", "línguas"],
+    "poly": ["poly"],
     "tradittore": ["tradittore", "traduttore", "traducoes", "traduções", "tradutor"],
     "bibliografia": ["bibliografia"],
     "samizdát": ["samizdat", "samizdát"],
@@ -701,9 +701,19 @@ def about_title_from_file(file_name):
     stem = os.path.splitext(os.path.basename(file_name))[0]
     if stem.upper().startswith("ABOUT_"):
         stem = stem[6:]
+
     key = normalize_about_key(stem)
+
     if key in ("machina_a", "machina_d"):
         return "machina"
+
+    # Chaves próprias explícitas.
+    if key == "poly":
+        return "poly"
+
+    if key in ("tradittore", "traduttore"):
+        return "tradittore"
+
     return key
 
 
@@ -1676,23 +1686,71 @@ def page_eureka():
         write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
 
 
-def page_off_machina():  # available off_machina_books
-    off_books_list = load_all_offs()
-    options = list(range(len(off_books_list)))
-    sobrios = "↓  " + translate("lista de Livros")
-    opt_off_book = st.selectbox(
-        sobrios,
-        options,
-        index=st.session_state.off_book,
-        format_func=lambda x: off_books_list[x],
-        key="opt_off_book",
-    )
 
-    if opt_off_book != st.session_state.off_book:
-        st.session_state.off_book = opt_off_book
+def apply_off_machina_navigation(action, off_book_pagys):
+    """
+    Navegação da página off-Machina em um único ponto.
+
+    action:
+    - "prev": página anterior
+    - "next": próxima página
+    - "random": página aleatória
+    - "love": mais lidos / ordenação especial, sem alterar índice diretamente
+    - "select": seleção manual já atualizou st.session_state.off_take
+    - None: sem navegação
+    """
+    if "off_widget_nonce" not in st.session_state:
+        st.session_state.off_widget_nonce = 0
+
+    max_index = len(off_book_pagys) - 1
+    changed_page = False
+
+    if st.session_state.off_take > max_index or st.session_state.off_take < 0:
         st.session_state.off_take = 0
+        changed_page = True
 
-    off_book_name = off_books_list[st.session_state.off_book]
+    if action == "prev":
+        st.session_state.off_take -= 1
+        if st.session_state.off_take < 0:
+            st.session_state.off_take = max_index
+        changed_page = True
+
+    elif action == "next":
+        st.session_state.off_take += 1
+        if st.session_state.off_take > max_index:
+            st.session_state.off_take = 0
+        changed_page = True
+
+    elif action == "random":
+        old_take = st.session_state.off_take
+        if len(off_book_pagys) > 1:
+            new_take = random.randrange(0, len(off_book_pagys))
+            while new_take == old_take:
+                new_take = random.randrange(0, len(off_book_pagys))
+            st.session_state.off_take = new_take
+        else:
+            st.session_state.off_take = 0
+        changed_page = True
+
+    elif action == "select":
+        changed_page = True
+
+    if changed_page:
+        st.session_state.off_widget_nonce += 1
+
+    return changed_page
+
+
+def page_off_machina():
+    if "off_widget_nonce" not in st.session_state:
+        st.session_state.off_widget_nonce = 0
+
+    off_book = load_index()
+    off_book_pagys = list(range(0, len(off_book)))
+
+    if st.session_state.off_take >= len(off_book_pagys) or st.session_state.off_take < 0:
+        st.session_state.off_take = 0
+        st.session_state.off_widget_nonce += 1
 
     help_tips = load_help(st.session_state.lang)
     help_last = help_tips[0]
@@ -1701,116 +1759,74 @@ def page_off_machina():  # available off_machina_books
     help_love = help_tips[3]
 
     foo1, last, rand, nest, love, manu, foo2 = st.columns([2.5, 1, 1, 1, 1, 1, 2.5])
-    last = last.button("◀", help=help_last)
-    rand = rand.button("✻", help=help_rand)
-    nest = nest.button("▶", help=help_nest)
-    love = love.button("❤", help=help_love)
-    manu = manu.button("?", help=translate("ajuda"))
 
-    this_off_book = load_off_book(off_book_name)
-    off_book_pagys = load_book_pages(this_off_book)
-    maxy_off_machina = len(off_book_pagys) - 1
+    last_clicked = last.button("◀", help=help_last)
+    rand_clicked = rand.button("✻", help=help_rand)
+    nest_clicked = nest.button("▶", help=help_nest)
+    love_clicked = love.button("❤", help=help_love)
+    manu_clicked = manu.button("?", help=translate("ajuda"))
 
-    if last:
-        st.session_state.off_take -= 1
-        if st.session_state.off_take < 0:
-            st.session_state.off_take = maxy_off_machina
+    action = None
 
-    if rand:
-        st.session_state.off_take = random.randrange(0, maxy_off_machina)
+    if last_clicked:
+        action = "prev"
+    elif rand_clicked:
+        action = "random"
+    elif nest_clicked:
+        action = "next"
 
-    if nest:
-        st.session_state.off_take += 1
-        if st.session_state.off_take > maxy_off_machina:
-            st.session_state.off_take = 0
-
-    if st.session_state.off_take > maxy_off_machina:  # just in case...
-        st.session_state.off_take = 0
-
-    if not st.session_state.draw:
-        options = list(range(len(off_book_pagys)))
-        sobrios = "↓  " + translate("lista de Títulos")
-        opt_off_take = st.selectbox(
-            sobrios,
-            options,
-            index=st.session_state.off_take,
-            format_func=lambda x: off_book_pagys[x],
-            key="opt_off_take",
-        )
-
-        if opt_off_take != st.session_state.off_take:
-            st.session_state.off_take = opt_off_take
-
-    lnew = True
-    if manu:
-        lnew = False
+    if manu_clicked:
         st.subheader(load_md_file("MANUAL_OFF-MACHINA.md"))
 
-    if love:
-        lnew = False
-        list_readings()
-        st.markdown(
-            get_binary_file_downloader_html("./temp/read_list.txt", "views"),
-            unsafe_allow_html=True,
+    # ❤ apenas muda a lista base para a visão dos mais lidos.
+    if love_clicked:
+        off_book = most_readings()
+        off_book_pagys = list(range(0, len(off_book)))
+        st.session_state.off_take = 0
+        st.session_state.off_widget_nonce += 1
+        action = "select"
+
+    with foo2:
+        selected_off_take = st.selectbox(
+            "off",
+            off_book_pagys,
+            index=st.session_state.off_take,
+            format_func=lambda x: str(x + 1),
+            key="off_select_" + str(st.session_state.off_widget_nonce),
+            label_visibility="collapsed",
         )
 
-    if lnew:
-        what_book = (
-            "⚫  "
-            + st.session_state.lang
-            + " ( "
-            + str(st.session_state.off_take + 1)
-            + "/"
-            + str(len(off_book_pagys))
-            + " )"
-        )
+    if selected_off_take != st.session_state.off_take:
+        st.session_state.off_take = selected_off_take
+        action = "select"
 
-        off_machina_expander = st.expander(what_book, True)
-        with off_machina_expander:
-            off_book_text = ""
-            pipe_line = this_off_book[st.session_state.off_take].split("|")
-            if "@ " in pipe_line[1]:
-                if st.session_state.lang != st.session_state.last_lang:
-                    off_book_text = load_lypo()  # changes in lang, keep LYPO
-                else:
-                    nome_tema = pipe_line[1].replace("@ ", "")
-                    off_book_text = load_poema(nome_tema, "")  # no seed_eureka
-                    off_book_text = "<br>" + load_lypo()
-            else:
-                for text in pipe_line:
-                    off_book_text += text + "<br>"
+    apply_off_machina_navigation(action, off_book_pagys)
 
-            capo = st.session_state.off_take == 0
+    this_line = off_book[st.session_state.off_take].strip("\n")
+    pipe_line = this_line.split("|")
 
-            if capo:
-                capa, isbn = st.columns([2.5, 7.5])
-                with capa:
-                    if off_book_name == "livro_vivo":
-                        LOGO_CAPA = load_arts("livro_vivo")
-                        st.image(LOGO_CAPA, width="stretch")
-                    else:
-                        st.image(
-                            "./off_machina/capa_" + off_book_name + ".jpg",
-                            width="stretch",
-                        )
-                with isbn:
-                    st.markdown(
-                        off_book_text, unsafe_allow_html=True
-                    )  # finally... write it
-            else:
-                if st.session_state.lang != "pt":
-                    off_book_text = translate(off_book_text)
+    off_text = []
+    for line_part in pipe_line:
+        off_text.append(line_part)
 
-                LOGO_TEXTO = off_book_text
-                LOGO_IMAGE = None
-                if st.session_state.draw:
-                    LOGO_IMAGE = load_arts(off_book_name)
+    what_book = (
+        "⚫  "
+        + str(st.session_state.off_take + 1)
+        + " / "
+        + str(len(off_book_pagys))
+    )
 
-                write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
-                update_readings(off_book_name)
+    off_expander = st.expander(what_book, expanded=True)
+    with off_expander:
+        LOGO_TEXTO = "<br>".join(off_text)
+        if st.session_state.lang != "pt":
+            LOGO_TEXTO = translate(LOGO_TEXTO)
 
-        if st.session_state.talk:
-            talk(off_book_text)
+        LOGO_IMAGE = None
+        write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
+
+    if st.session_state.talk:
+        talk(LOGO_TEXTO)
 
 
 def page_books():  # available books
