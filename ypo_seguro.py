@@ -32,7 +32,7 @@ from lay_2_ypo import gera_poema
 # Exceção: ABOUT_machina_A.md + ABOUT_machina_D.md formam um único item "machina".
 ABOUTS_LIST = [
     "comments", "prefácil", "machina", "off-machina", "MACHINA-IA", "livros", "outros autores",
-    "imagens", "poly", "traduttore", "bibliografia", "samizdát", "notes", "license", "index",
+    "imagens", "traduttore", "bibliografia", "samizdát", "notes", "license", "index",
 ]
 
 BOOKS_LIST = [
@@ -344,7 +344,6 @@ def init_session_state():
         "stage_font": "IBM Plex Sans",
         "stage_size": 21,
         "book_changed": False,
-        "book_has_changed": False,
     }
 
     for key, value in defaults.items():
@@ -1042,7 +1041,6 @@ def split_ypo_title(logo_text):
 
 def copy_to_clipboard_button(texto):
     import html
-    import json
 
     # clipboard deve receber texto limpo, não HTML.
     texto_limpo = html.unescape(texto)
@@ -1055,53 +1053,33 @@ def copy_to_clipboard_button(texto):
         .replace("<br />", "\n")
     )
 
-    safe_json = json.dumps(texto_limpo)
+    safe_text = (
+        texto_limpo.replace("\\", "\\\\")
+        .replace("`", "\\`")
+        .replace("${", "\\${")
+    )
 
-    html_code = f"""
-    <div style="width:100%; text-align:right; margin-bottom:-8px;">
-        <button
-            id="copy_btn"
-            title="copiar yPoema"
-            style="
-                border:none;
-                background:rgba(255,255,255,0.06);
-                border-radius:6px;
-                padding:2px 6px;
-                cursor:pointer;
-                font-size:18px;
-                opacity:0.78;
-                transition:0.2s;
-            "
-            onmouseover="this.style.opacity='1.0'"
-            onmouseout="this.style.opacity='0.78'"
-        >📋</button>
-
-        <span
-            id="copy_msg"
-            style="
-                margin-left:8px;
-                font-size:11px;
-                opacity:0;
-                transition:0.25s;
-            "
-        >✓ yPoema copiado</span>
-    </div>
-
-    <script>
-    const copyBtn = document.getElementById("copy_btn");
-    const copyMsg = document.getElementById("copy_msg");
-
-    copyBtn.addEventListener("click", async () => {{
-        await navigator.clipboard.writeText({safe_json});
-        copyMsg.style.opacity = "1";
-        setTimeout(() => {{
-            copyMsg.style.opacity = "0";
-        }}, 1200);
-    }});
-    </script>
-    """
-
-    st.components.v1.html(html_code, height=32)
+    st.components.v1.html(
+        f"""
+        <div style="width:100%; text-align:right; margin-bottom:-8px;">
+            <button
+                onclick="navigator.clipboard.writeText(`{safe_text}`)"
+                title="copiar yPoema"
+                style="
+                    border:none;
+                    background:transparent;
+                    cursor:pointer;
+                    font-size:16px;
+                    opacity:0.55;
+                    transition:0.2s;
+                "
+                onmouseover="this.style.opacity='1.0'"
+                onmouseout="this.style.opacity='0.55'"
+            >📋</button>
+        </div>
+        """,
+        height=28,
+    )
 
 
 def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
@@ -1186,10 +1164,13 @@ def say_number(tema):  # search index title for eureka
 ### bof: pages
 
 
-if st.session_state.visy:  # check visitor once
+if st.session_state.visy:  # check visitor once; rand initial temas
     update_visy()
 
-    # Mini continua com abertura randômica própria.
+    temas_list = load_temas(st.session_state.book)
+    maxy_ypoemas = len(temas_list)
+    st.session_state.take = random.randrange(0, maxy_ypoemas)
+
     temas_list = load_temas("todos os temas")
     maxy_mini = len(temas_list)
     st.session_state.mini = random.randrange(0, maxy_mini)
@@ -1325,14 +1306,6 @@ def page_ypoemas():
     temas_list = load_temas(st.session_state.book)
     maxy_ypoemas = len(temas_list) - 1
 
-    # Ritual explícito de nascimento do livro atual.
-    # Cada livro deve inicializar seu próprio estado.
-    if st.session_state.book_has_changed:
-        st.session_state.take = 0
-        st.session_state.tema = temas_list[0]
-        st.session_state.take_widget_nonce += 1
-        st.session_state.book_has_changed = False
-
     if "take_widget_nonce" not in st.session_state:
         st.session_state.take_widget_nonce = 0
 
@@ -1365,13 +1338,10 @@ def page_ypoemas():
 
         if new_book != st.session_state.book:
             st.session_state.book = new_book
-
-            # Livro atual deve renascer como o primeiro livro da abertura.
-            st.session_state.book_has_changed = True
-
+            st.session_state.take = 0
             st.session_state.book_changed = True
             nav_changed = True
-
+            st.session_state.take_widget_nonce += 1
             temas_list = load_temas(st.session_state.book)
             maxy_ypoemas = len(temas_list) - 1
 
