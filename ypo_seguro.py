@@ -32,7 +32,7 @@ from lay_2_ypo import gera_poema
 # Exceção: ABOUT_machina_A.md + ABOUT_machina_D.md formam um único item "machina".
 ABOUTS_LIST = [
     "comments", "prefácil", "machina", "off-machina", "MACHINA-IA", "livros", "outros autores",
-    "imagens", "poly", "traduttore", "bibliografia", "samizdát", "notes", "license", "index",
+    "imagens", "traduttore", "bibliografia", "samizdát", "notes", "license", "index",
 ]
 
 BOOKS_LIST = [
@@ -1038,71 +1038,6 @@ def split_ypo_title(logo_text):
     return title, body
 
 
-
-def copy_to_clipboard_button(texto):
-    import html
-    import json
-
-    # clipboard deve receber texto limpo, não HTML.
-    texto_limpo = html.unescape(texto)
-
-    texto_limpo = (
-        texto_limpo
-        .replace("<br><br>", "\n\n")
-        .replace("<br>", "\n")
-        .replace("<br/>", "\n")
-        .replace("<br />", "\n")
-    )
-
-    safe_json = json.dumps(texto_limpo)
-
-    html_code = f"""
-    <div style="width:100%; text-align:right; margin-bottom:-8px;">
-        <button
-            id="copy_btn"
-            title="copiar yPoema"
-            style="
-                border:none;
-                background:rgba(255,255,255,0.06);
-                border-radius:6px;
-                padding:2px 6px;
-                cursor:pointer;
-                font-size:18px;
-                opacity:0.78;
-                transition:0.2s;
-            "
-            onmouseover="this.style.opacity='1.0'"
-            onmouseout="this.style.opacity='0.78'"
-        >📋</button>
-
-        <span
-            id="copy_msg"
-            style="
-                margin-left:8px;
-                font-size:11px;
-                opacity:0;
-                transition:0.25s;
-            "
-        >✓ yPoema copiado</span>
-    </div>
-
-    <script>
-    const copyBtn = document.getElementById("copy_btn");
-    const copyMsg = document.getElementById("copy_msg");
-
-    copyBtn.addEventListener("click", async () => {{
-        await navigator.clipboard.writeText({safe_json});
-        copyMsg.style.opacity = "1";
-        setTimeout(() => {{
-            copyMsg.style.opacity = "0";
-        }}, 1200);
-    }});
-    </script>
-    """
-
-    st.components.v1.html(html_code, height=32)
-
-
 def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
     title, body = split_ypo_title(LOGO_TEXTO)
 
@@ -1464,7 +1399,6 @@ def page_ypoemas():
         if st.session_state.draw:
             LOGO_IMAGE = load_arts(st.session_state.tema)
 
-        copy_to_clipboard_button(curr_ypoema)
         write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
 
         if manu_clicked:
@@ -1611,7 +1545,6 @@ def page_eureka():
         if st.session_state.draw:
             LOGO_IMAGE = load_arts(seed_tema)
 
-        copy_to_clipboard_button(curr_ypoema)
         write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
         update_readings(seed_tema)
 
