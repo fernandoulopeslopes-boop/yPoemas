@@ -1299,6 +1299,9 @@ def page_ypoemas():
     options = list(range(len(temas_list)))
 
     if nav_button_clicked:
+        # O botão move o índice canônico e também a lista visual.
+        # Sem isso, o widget continua achando que está no item anterior.
+        st.session_state["opt_take"] = st.session_state.take
         opt_take = st.session_state.take
     else:
         opt_take = st.selectbox(
