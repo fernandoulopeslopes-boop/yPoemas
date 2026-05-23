@@ -32,7 +32,7 @@ from lay_2_ypo import gera_poema
 # Exceção: ABOUT_machina_A.md + ABOUT_machina_D.md formam um único item "machina".
 ABOUTS_LIST = [
     "comments", "prefácil", "machina", "off-machina", "MACHINA-IA", "livros", "outros autores",
-    "imagens", "traduttore", "bibliografia", "samizdát", "notes", "license", "index",
+    "imagens", "poly", "traduttore", "bibliografia", "samizdát", "notes", "license", "index",
 ]
 
 BOOKS_LIST = [
@@ -48,13 +48,11 @@ OFF_BOOKS_LIST = [
 
 PAGE_IMAGES = {
     "1": "img_mini.jpg", "2": "img_ypoemas.jpg", "3": "img_eureka.jpg",
-    "4": "img_off-machina.jpg", "5": "img_books.jpg", "6": "img_poly.jpg", "7": "img_about.jpg",
-}
+    "4": "img_off-machina.jpg", "5": "img_books.jpg", "6": "img_poly.jpg", "7": "img_about.jpg"}
 
 PAGE_INFO_FILES = {
     "1": "INFO_MINI.md", "2": "INFO_YPOEMAS.md", "3": "INFO_EUREKA.md",
-    "4": "INFO_OFF-MACHINA.md", "5": "INFO_BOOKS.md", "6": "INFO_POLY.md", "7": "INFO_ABOUT.md",
-}
+    "4": "INFO_OFF-MACHINA.md", "5": "INFO_BOOKS.md", "6": "INFO_POLY.md", "7": "INFO_ABOUT.md"}
 
 VOICES_EDGE_TTS = {
     "pt": "pt-BR-AntonioNeural",
@@ -72,8 +70,7 @@ VOICES_EDGE_TTS = {
     "fi": "fi-FI-HarriNeural",
     "no": "nb-NO-FinnNeural",
     "nb": "nb-NO-FinnNeural",
-    "ro": "ro-RO-EmilNeural",
-}
+    "ro": "ro-RO-EmilNeural"}
 
 
 IDIOMAS_OFICIAIS = [
@@ -344,7 +341,7 @@ def init_session_state():
         "stage_font": "IBM Plex Sans",
         "stage_size": 21,
         "book_changed": False,
-    }
+        "book_has_changed": False}
 
     for key, value in defaults.items():
         if key not in st.session_state:
@@ -391,8 +388,7 @@ def pick_lang():  # define idioma pela lista oficial
         options.append(label)
         lookup[label] = {
             "lang": code,
-            "poly_file": poly_file,
-        }
+            "poly_file": poly_file}
 
     # Pré-sincroniza o idioma antes de desenhar o selectbox.
     # Assim o label "idiomas disponíveis..." já aparece no idioma escolhido.
@@ -692,8 +688,7 @@ ABOUT_ALIASES = {
     "samizdát": ["samizdat", "samizdát"],
     "notes": ["notes", "notas"],
     "license": ["license", "licenca", "licença"],
-    "index": ["index", "indice", "índice"],
-}
+    "index": ["index", "indice", "índice"]}
 
 
 def about_title_from_file(file_name):
@@ -1041,6 +1036,7 @@ def split_ypo_title(logo_text):
 
 def copy_to_clipboard_button(texto):
     import html
+    import json
 
     # clipboard deve receber texto limpo, não HTML.
     texto_limpo = html.unescape(texto)
@@ -1053,33 +1049,53 @@ def copy_to_clipboard_button(texto):
         .replace("<br />", "\n")
     )
 
-    safe_text = (
-        texto_limpo.replace("\\", "\\\\")
-        .replace("`", "\\`")
-        .replace("${", "\\${")
-    )
+    safe_json = json.dumps(texto_limpo)
 
-    st.components.v1.html(
-        f"""
-        <div style="width:100%; text-align:right; margin-bottom:-8px;">
-            <button
-                onclick="navigator.clipboard.writeText(`{safe_text}`)"
-                title="copiar yPoema"
-                style="
-                    border:none;
-                    background:transparent;
-                    cursor:pointer;
-                    font-size:16px;
-                    opacity:0.55;
-                    transition:0.2s;
-                "
-                onmouseover="this.style.opacity='1.0'"
-                onmouseout="this.style.opacity='0.55'"
-            >📋</button>
-        </div>
-        """,
-        height=28,
-    )
+    html_code = f"""
+    <div style="width:100%; text-align:right; margin-bottom:-8px;">
+        <button
+            id="copy_btn"
+            title="copiar yPoema"
+            style="
+                border:none;
+                background:rgba(255,255,255,0.06);
+                border-radius:6px;
+                padding:2px 6px;
+                cursor:pointer;
+                font-size:18px;
+                opacity:0.78;
+                transition:0.2s;
+            "
+            onmouseover="this.style.opacity='1.0'"
+            onmouseout="this.style.opacity='0.78'"
+        >📋</button>
+
+        <span
+            id="copy_msg"
+            style="
+                margin-left:8px;
+                font-size:11px;
+                opacity:0;
+                transition:0.25s;
+            "
+        >✓ yPoema copiado</span>
+    </div>
+
+    <script>
+    const copyBtn = document.getElementById("copy_btn");
+    const copyMsg = document.getElementById("copy_msg");
+
+    copyBtn.addEventListener("click", async () => {{
+        await navigator.clipboard.writeText({safe_json});
+        copyMsg.style.opacity = "1";
+        setTimeout(() => {{
+            copyMsg.style.opacity = "0";
+        }}, 1200);
+    }});
+    </script>
+    """
+
+    st.components.v1.html(html_code, height=32)
 
 
 def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
@@ -1164,13 +1180,10 @@ def say_number(tema):  # search index title for eureka
 ### bof: pages
 
 
-if st.session_state.visy:  # check visitor once; rand initial temas
+if st.session_state.visy:  # check visitor once
     update_visy()
 
-    temas_list = load_temas(st.session_state.book)
-    maxy_ypoemas = len(temas_list)
-    st.session_state.take = random.randrange(0, maxy_ypoemas)
-
+    # Mini continua com abertura randômica própria.
     temas_list = load_temas("todos os temas")
     maxy_mini = len(temas_list)
     st.session_state.mini = random.randrange(0, maxy_mini)
@@ -1306,12 +1319,16 @@ def page_ypoemas():
     temas_list = load_temas(st.session_state.book)
     maxy_ypoemas = len(temas_list) - 1
 
-    if "take_widget_nonce" not in st.session_state:
-        st.session_state.take_widget_nonce = 0
+    # Ritual explícito de nascimento do livro atual.
+    # Cada livro deve inicializar seu próprio estado.
+    if st.session_state.book_has_changed:
+        st.session_state.take = 0
+        st.session_state.tema = temas_list[0]
+        st.session_state.book_has_changed = False
+
 
     if st.session_state.take > maxy_ypoemas or st.session_state.take < 0:
         st.session_state.take = 0
-        st.session_state.take_widget_nonce += 1
 
     # Palco: listas laterais + cluster centralizado de navegação.
     # Livros/temas +20% para evitar corte visual.
@@ -1338,10 +1355,13 @@ def page_ypoemas():
 
         if new_book != st.session_state.book:
             st.session_state.book = new_book
-            st.session_state.take = 0
+
+            # Livro atual deve renascer como o primeiro livro da abertura.
+            st.session_state.book_has_changed = True
+
             st.session_state.book_changed = True
             nav_changed = True
-            st.session_state.take_widget_nonce += 1
+
             temas_list = load_temas(st.session_state.book)
             maxy_ypoemas = len(temas_list) - 1
 
@@ -1362,7 +1382,6 @@ def page_ypoemas():
         st.session_state.take -= 1
         if st.session_state.take < 0:
             st.session_state.take = maxy_ypoemas
-        st.session_state.take_widget_nonce += 1
 
     if rand_clicked:
         nav_changed = True
@@ -1374,14 +1393,12 @@ def page_ypoemas():
             st.session_state.take = new_take
         else:
             st.session_state.take = 0
-        st.session_state.take_widget_nonce += 1
 
     if nest_clicked:
         nav_changed = True
         st.session_state.take += 1
         if st.session_state.take > maxy_ypoemas:
             st.session_state.take = 0
-        st.session_state.take_widget_nonce += 1
 
     with tema_col:
         options = list(range(len(temas_list)))
@@ -1390,7 +1407,7 @@ def page_ypoemas():
             options,
             index=st.session_state.take,
             format_func=lambda z: temas_list[z],
-            key="take_select_" + str(st.session_state.take_widget_nonce),
+            key="opt_take",
             label_visibility="collapsed",
         )
 
