@@ -188,6 +188,22 @@ def apply_styles():
             overflow-y: visible !important;
         }
 
+
+        /* Machina :: sidebar topo compacto para alinhar idiomas com páginas */
+        section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] {
+            padding-top: 0rem !important;
+            margin-top: -1.10rem !important;
+        }
+
+        section[data-testid="stSidebar"] div[data-testid="stVerticalBlock"] {
+            gap: 0.18rem !important;
+        }
+
+        section[data-testid="stSidebar"] div[data-testid="stElementContainer"] {
+            margin-top: 0rem !important;
+            margin-bottom: 0.02rem !important;
+        }
+
         section[data-testid="stSidebar"],
         section[data-testid="stSidebar"] > div,
         [data-testid="stSidebarUserContent"],
@@ -206,16 +222,16 @@ def apply_styles():
 
         /* Machina :: largura canônica da sidebar */
         [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
-            width: 320px;
-            min-width: 320px;
-            max-width: 320px;
+            width: 310px;
+            min-width: 310px;
+            max-width: 310px;
         }
 
 
         /* Sidebar :: topo sem faixa excedente e sem mexer na largura */
         section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] {
             padding-top: 0rem !important;
-            margin-top: 0rem !important;
+            margin-top: -1.10rem !important;
         }
 
         section[data-testid="stSidebar"] div[data-testid="stVerticalBlock"] {
@@ -742,7 +758,7 @@ def discover_about_files():
 
 def about_markdown_css():
     font = st.session_state.get("stage_font", "'IBM Plex Sans', Arial, sans-serif")
-    size = st.session_state.get("stage_size", 20)
+    size = st.session_state.get("stage_size", 21)
 
     st.markdown(
         f"""
@@ -849,7 +865,13 @@ def load_info(nome_tema):
 @st.cache_data
 def load_index():  # Load indexes numbers for all themes
     index_list = []
-    with open(os.path.join("./md_files/ABOUT_index.md"), encoding="utf-8") as lista:
+    index_file = os.path.join("./md_files/ABOUT_index.md")
+
+    # fallback apenas para instalações antigas ainda não padronizadas
+    if not os.path.exists(index_file):
+        index_file = os.path.join("./md_files/ABOUT_INDEX.md")
+
+    with open(index_file, encoding="utf-8") as lista:
         for line in lista:
             index_list.append(line)
 
@@ -1016,11 +1038,55 @@ def split_ypo_title(logo_text):
     return title, body
 
 
+
+def copy_to_clipboard_button(texto):
+    import html
+
+    # clipboard deve receber texto limpo, não HTML.
+    texto_limpo = html.unescape(texto)
+
+    texto_limpo = (
+        texto_limpo
+        .replace("<br><br>", "\n\n")
+        .replace("<br>", "\n")
+        .replace("<br/>", "\n")
+        .replace("<br />", "\n")
+    )
+
+    safe_text = (
+        texto_limpo.replace("\\", "\\\\")
+        .replace("`", "\\`")
+        .replace("${", "\\${")
+    )
+
+    st.components.v1.html(
+        f"""
+        <div style="width:100%; text-align:right; margin-bottom:-8px;">
+            <button
+                onclick="navigator.clipboard.writeText(`{safe_text}`)"
+                title="copiar yPoema"
+                style="
+                    border:none;
+                    background:transparent;
+                    cursor:pointer;
+                    font-size:16px;
+                    opacity:0.55;
+                    transition:0.2s;
+                "
+                onmouseover="this.style.opacity='1.0'"
+                onmouseout="this.style.opacity='0.55'"
+            >📋</button>
+        </div>
+        """,
+        height=28,
+    )
+
+
 def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
     title, body = split_ypo_title(LOGO_TEXTO)
 
     fonte_palco = st.session_state.get("stage_font", "'IBM Plex Sans', Arial, sans-serif")
-    corpo_palco = st.session_state.get("stage_size", 20)
+    corpo_palco = st.session_state.get("stage_size", 21)
 
     titulo_html = ""
     if title:
@@ -1240,12 +1306,17 @@ def page_ypoemas():
     temas_list = load_temas(st.session_state.book)
     maxy_ypoemas = len(temas_list) - 1
 
+    if "take_widget_nonce" not in st.session_state:
+        st.session_state.take_widget_nonce = 0
+
     if st.session_state.take > maxy_ypoemas or st.session_state.take < 0:
         st.session_state.take = 0
+        st.session_state.take_widget_nonce += 1
 
     # Palco: listas laterais + cluster centralizado de navegação.
+    # Livros/temas +20% para evitar corte visual.
     book_col, spacer_l, more, last, rand, nest, manu, spacer_r, tema_col = st.columns(
-        [2.25, 0.75, 0.72, 0.72, 0.72, 0.72, 0.72, 0.75, 2.25]
+        [2.70, 0.45, 0.72, 0.72, 0.72, 0.72, 0.72, 0.45, 2.70]
     )
 
     nav_changed = bool(st.session_state.get("book_changed", False))
@@ -1270,6 +1341,7 @@ def page_ypoemas():
             st.session_state.take = 0
             st.session_state.book_changed = True
             nav_changed = True
+            st.session_state.take_widget_nonce += 1
             temas_list = load_temas(st.session_state.book)
             maxy_ypoemas = len(temas_list) - 1
 
@@ -1290,27 +1362,35 @@ def page_ypoemas():
         st.session_state.take -= 1
         if st.session_state.take < 0:
             st.session_state.take = maxy_ypoemas
+        st.session_state.take_widget_nonce += 1
 
     if rand_clicked:
         nav_changed = True
-        st.session_state.take = random.randrange(0, len(temas_list))
+        old_take = st.session_state.take
+        if len(temas_list) > 1:
+            new_take = random.randrange(0, len(temas_list))
+            while new_take == old_take:
+                new_take = random.randrange(0, len(temas_list))
+            st.session_state.take = new_take
+        else:
+            st.session_state.take = 0
+        st.session_state.take_widget_nonce += 1
 
     if nest_clicked:
         nav_changed = True
         st.session_state.take += 1
         if st.session_state.take > maxy_ypoemas:
             st.session_state.take = 0
+        st.session_state.take_widget_nonce += 1
 
     with tema_col:
         options = list(range(len(temas_list)))
-
-        # Selectbox apenas reflete o índice canônico.
         selected_take = st.selectbox(
             "temas",
             options,
             index=st.session_state.take,
             format_func=lambda z: temas_list[z],
-            key="take",
+            key="take_select_" + str(st.session_state.take_widget_nonce),
             label_visibility="collapsed",
         )
 
@@ -1363,6 +1443,7 @@ def page_ypoemas():
         if st.session_state.draw:
             LOGO_IMAGE = load_arts(st.session_state.tema)
 
+        copy_to_clipboard_button(curr_ypoema)
         write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
 
         if manu_clicked:
@@ -1403,112 +1484,126 @@ def page_eureka():
 
     if len(find_what) < 3:
         st.warning(translate("digite pelo menos 3 letras..."))
+        return
+
+    seed_list = []
+    soma_tema = []
+
+    eureka_list = load_eureka(find_what)
+    for line in eureka_list:
+        this_line = line.strip("\n")
+        part_line = this_line.partition(" : ")
+        palas = part_line[0]
+        fonte = part_line[2]
+        seed_tema = fonte[0:-5]
+
+        if (palas is None) or (fonte is None):
+            continue
+
+        seed_list.append(palas + " ➪ " + fonte)
+        if seed_tema not in soma_tema:
+            soma_tema.append(seed_tema)
+
+    if len(seed_list) == 0:
+        st.warning(
+            translate(
+                'nenhuma ocorrência das letras " '
+                + find_what
+                + ' " foi encontrada...'
+            )
+        )
+        return
+
+    seed_list.sort()
+
+    if len(seed_list) == 1:
+        info_find = translate('ocorrência de "')
     else:
-        seed_list = []
-        soma_tema = []
+        info_find = translate('ocorrências de "')
 
-        eureka_list = load_eureka(find_what)
-        for line in eureka_list:
-            this_line = line.strip("\n")
-            part_line = this_line.partition(" : ")
-            palas = part_line[0]
-            fonte = part_line[2]
-            seed_tema = fonte[0:-5]
-            if (palas is None) or (fonte is None):
-                continue
-            else:
-                seed_list.append(palas + " ➪ " + fonte)
-                if not seed_tema in soma_tema:
-                    soma_tema.append(seed_tema)
+    info_find += find_what
+    if len(soma_tema) > 1:
+        info_find += translate('" em ' + str(len(soma_tema)) + " temas")
 
-        if (not more) and (not manu):
+    # st.session_state.eureka é o índice canônico.
+    # ✻ varre a lista de ocorrências; ✚ gera nova versão da ocorrência atual.
+    if "eureka_widget_nonce" not in st.session_state:
+        st.session_state.eureka_widget_nonce = 0
+
+    if rand:
+        old_eureka = st.session_state.get("eureka", 0)
+
+        if len(seed_list) > 1:
+            new_eureka = random.randrange(0, len(seed_list))
+            while new_eureka == old_eureka:
+                new_eureka = random.randrange(0, len(seed_list))
+            st.session_state.eureka = new_eureka
+        else:
             st.session_state.eureka = 0
 
-        if len(seed_list) == 0:
-            st.warning(
-                translate(
-                    'nenhuma ocorrência das letras " '
-                    + find_what
-                    + ' " foi encontrada...'
-                )
-            )
-        elif len(seed_list) >= 1:
-            seed_list.sort()
-            if len(seed_list) == 1:
-                info_find = translate('ocorrência de "')
-            else:
-                info_find = translate('ocorrências de "')
+        # força o selectbox a reconstruir com o novo index
+        st.session_state.eureka_widget_nonce += 1
 
-            info_find += find_what
-            if len(soma_tema) > 1:
-                info_find += translate('" em ' + str(len(soma_tema)) + " temas")
+    if st.session_state.eureka >= len(seed_list) or st.session_state.eureka < 0:
+        st.session_state.eureka = 0
+        st.session_state.eureka_widget_nonce += 1
 
-            if rand:
-                st.session_state.eureka = random.randrange(0, len(seed_list))
+    with occurrences:
+        options = list(range(len(seed_list)))
+        selected_eureka = st.selectbox(
+            "↓  " + str(len(seed_list)) + " " + info_find,
+            options,
+            index=st.session_state.eureka,
+            format_func=lambda y: seed_list[y],
+            key="eureka_select_" + str(st.session_state.eureka_widget_nonce),
+        )
 
-            with occurrences:
-                options = list(range(len(seed_list)))
-                opt_ocur = st.selectbox(
-                    "↓  " + str(len(seed_list)) + " " + info_find,
-                    options,
-                    index=st.session_state.eureka,
-                    format_func=lambda y: seed_list[y],
-                    key="opt_ocur",
-                )
+    if selected_eureka != st.session_state.eureka:
+        st.session_state.eureka = selected_eureka
 
-            st.session_state.eureka = opt_ocur
-            this_seed = seed_list[st.session_state.eureka]
-            part_line = this_seed.partition(" ➪ ")
-            nome_tema = part_line[2]
-            seed_tema = nome_tema[0:-5]
+    this_seed = seed_list[st.session_state.eureka]
+    part_line = this_seed.partition(" ➪ ")
+    nome_tema = part_line[2]
+    seed_tema = nome_tema[0:-5]
 
-            st.session_state.tema = seed_tema
+    st.session_state.tema = seed_tema
 
-            if st.session_state.lang != st.session_state.last_lang:
-                curr_ypoema = load_lypo()  # changes in lang, keep LYPO
-            else:
-                curr_ypoema = load_poema(seed_tema, this_seed)
-                curr_ypoema = load_lypo()
+    if st.session_state.lang != st.session_state.last_lang:
+        curr_ypoema = load_lypo()
+    else:
+        curr_ypoema = load_poema(seed_tema, this_seed)
+        curr_ypoema = load_lypo()
 
-            if st.session_state.lang != "pt":  # translate if idioma <> pt
-                curr_ypoema = translate(curr_ypoema)
-                typo_user = "TYPO_" + IPAddres
-                with open(
-                    os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
-                ) as save_typo:
-                    save_typo.write(curr_ypoema)
-                    save_typo.close()
-                curr_ypoema = load_typo()  # to normalize line breaks in text
+    if st.session_state.lang != "pt":
+        curr_ypoema = translate(curr_ypoema)
+        typo_user = "TYPO_" + IPAddres
+        with open(
+            os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
+        ) as save_typo:
+            save_typo.write(curr_ypoema)
+        curr_ypoema = load_typo()
 
-            lnew = True
-            if lnew:
-                eureka_expander = st.expander("", expanded=True)
-                with eureka_expander:
-                    LOGO_TEXTO = curr_ypoema
-                    LOGO_IMAGE = None
-                    if st.session_state.draw:
-                        LOGO_IMAGE = load_arts(seed_tema)
+    eureka_expander = st.expander("", expanded=True)
+    with eureka_expander:
+        LOGO_TEXTO = curr_ypoema
+        LOGO_IMAGE = None
+        if st.session_state.draw:
+            LOGO_IMAGE = load_arts(seed_tema)
 
-                    write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
-                    update_readings(seed_tema)
+        copy_to_clipboard_button(curr_ypoema)
+        write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
+        update_readings(seed_tema)
 
-                if st.session_state.talk:
-                    talk(curr_ypoema)
-            if manu:
-                lnew = False
-                LOGO_TEXTO = load_info(seed_tema)
-                if st.session_state.lang != "pt":  # translate if idioma <> pt
-                    LOGO_TEXTO = translate(LOGO_TEXTO)
+    if st.session_state.talk:
+        talk(curr_ypoema)
 
-                LOGO_IMAGE = "./images/matrix/" + seed_tema.capitalize() + ".jpg"
-                write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
+    if manu:
+        LOGO_TEXTO = load_info(seed_tema)
+        if st.session_state.lang != "pt":
+            LOGO_TEXTO = translate(LOGO_TEXTO)
 
-        else:
-            st.warning(
-                translate(
-                    "nenhum verbete encontrado com essas letras ---> " + find_what
-                )
-            )
+        LOGO_IMAGE = "./images/matrix/" + seed_tema.capitalize() + ".jpg"
+        write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
 
 
 def page_off_machina():  # available off_machina_books
