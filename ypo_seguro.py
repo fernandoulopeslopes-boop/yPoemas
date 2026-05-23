@@ -14,8 +14,26 @@ from lay_2_ypo import gera_poema
 
 ABOUTS_LIST = [
     "comments", "prefácil", "machina", "off-machina", "MACHINA-IA", "livros", "outros autores",
-    "imagens", "poly", "traduttore", "bibliografia", "samizdát", "notes", "license", "index",
+    "imagens", "poly", "tradittore", "bibliografia", "samizdát", "notes", "license", "index",
 ]
+
+ABOUTS_FILES = {
+    "comments": ["ABOUT_comments.md"],
+    "prefácil": ["ABOUT_prefácil.md"],
+    "machina": ["ABOUT_machina_A.md", "ABOUT_machina_D.md"],
+    "off-machina": ["ABOUT_off-machina.md"],
+    "MACHINA-IA": ["ABOUT_MACHINA-IA.md"],
+    "livros": ["ABOUT_livros.md"],
+    "outros autores": ["ABOUT_outros_autores.md", "ABOUT_outros autores.md"],
+    "imagens": ["ABOUT_imagens.md"],
+    "poly": ["ABOUT_poly.md"],
+    "tradittore": ["ABOUT_tradittore.md"],
+    "bibliografia": ["ABOUT_bibliografia.md"],
+    "samizdát": ["ABOUT_samizdát.md"],
+    "notes": ["ABOUT_notes.md"],
+    "license": ["ABOUT_license.md"],
+    "index": ["ABOUT_index.md", "ABOUT_INDEX.md"],
+}
 
 BOOKS_LIST = [
     "todos os temas", "livro vivo", "poemas", "jocosos", "ensaios", "variações", 
@@ -30,7 +48,7 @@ OFF_BOOKS_LIST = [
 
 PAGE_IMAGES = {
     "1": "img_mini.jpg", "2": "img_ypoemas.jpg", "3": "img_eureka.jpg",
-    "4": "img_off-machina.jpg", "5": "img_books.jpg", "6": "img_poly.jpg", "7": "img_about.jpg",
+    "4": "img_off-machina.jpg", "5": "img_about.jpg",
 }
 
 VOICES_EDGE_TTS = {
@@ -230,8 +248,8 @@ def apply_styles():
         /* Gramado :: território principal */
         .main .block-container {
             padding-top: 0.25rem !important;
-            padding-left: 0.35rem !important;
-            padding-right: 0.35rem !important;
+            padding-left: 0.08rem !important;
+            padding-right: 0.08rem !important;
             padding-bottom: 0.25rem !important;
             max-width: 100vw !important;
         }
@@ -239,7 +257,7 @@ def apply_styles():
         .machina-gramado {
             background: #eef8ee;
             border-radius: 18px;
-            padding: 0.35rem 0.55rem 0.55rem 0.55rem;
+            padding: 0.12rem 0.18rem 0.28rem 0.18rem;
             min-height: 78vh;
             overflow-x: hidden;
             overflow-y: auto;
@@ -266,7 +284,7 @@ def apply_styles():
         .machina-palco-central {
             background: rgba(255, 255, 255, 0.72);
             border-radius: 18px;
-            padding: 0.45rem 0.55rem 0.35rem 0.55rem;
+            padding: 0.18rem 0.20rem 0.20rem 0.20rem;
             min-height: 61vh;
             overflow-x: hidden;
         }
@@ -1484,55 +1502,25 @@ def page_off_machina():  # available off_machina_books
 
 
 
-def page_polys():  # available languages
-    polys, ok = st.columns([9.3, 0.7])
-    with polys:
-        poly_list = []
-        poly_pais = []
-        poly_ling = []
-        with open(
-            os.path.join("./base/" + st.session_state.poly_file), encoding="utf-8"
-        ) as poly:
-            for line in poly:
-                poly_list.append(line)
-                this_line = line.strip("\n")
-                part_line = this_line.partition(" : ")
-                poly_pais.append(translate(part_line[0]))
-                poly_ling.append(part_line[2])
-        poly.close()
+def load_about_md(title):
+    """Carrega ABOUTs pelo padrão curatorial explícito.
 
-        options = list(range(len(poly_list)))
-        opt_poly = st.selectbox(
-            "↓  lista: " + str(len(poly_list)) + " idiomas",
-            options,
-            index=st.session_state.poly_take,
-            format_func=lambda x: poly_list[x],
-            key="opt_poly",
-        )
+    Padrão principal: ABOUT_nome_titulo.md.
+    Sem uppercase automático: nome de arquivo é assunto de curadoria.
+    """
+    candidates = ABOUTS_FILES.get(title, ["ABOUT_" + title.replace(" ", "_") + ".md"])
 
-    with ok:
-        doit = st.button("✔", help="confirm ?")
+    last_file = candidates[-1] if candidates else title
+    for file_name in candidates:
+        full_path = os.path.join("./md_files/" + file_name)
+        if os.path.exists(full_path):
+            return load_md_file(file_name)
 
-    if doit:
-        poly_pais = poly_pais[opt_poly]
-        poly_ling = poly_ling[opt_poly]
-        st.session_state.poly_name = translate(poly_pais)
-        st.session_state.poly_lang = poly_ling
-        st.session_state.poly_take = opt_poly
-
-        st.session_state.last_lang = st.session_state.lang
-        st.session_state.lang = st.session_state.poly_lang
-
-    lnew = True
-    if lnew:
-        poly_expander = st.expander("", True)
-        with poly_expander:
-            st.subheader(load_md_file("MANUAL_POLY.md"))
+    return translate("ooops... arquivo ( " + last_file + " ) não pode ser aberto.")
 
 
 def page_abouts():
     abouts_list = ABOUTS_LIST
-
 
     options = list(range(len(abouts_list)))
     sobrios = "↓  " + translate("sobre")
@@ -1543,19 +1531,18 @@ def page_abouts():
         key="opt_abouts",
     )
 
-    lnew = True
-    if lnew:
-        choice = abouts_list[opt_abouts].upper()
-        about_expander = st.expander("", True)
-        with about_expander:
-            if choice == "MACHINA":
-                st.subheader(load_md_file("ABOUT_MACHINA_A.md"))
-                LOGO_TEXTO = load_info(st.session_state.tema)
-                LOGO_IMAGE = "./images/matrix/" + st.session_state.tema + ".jpg"
-                write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
-                st.subheader(load_md_file("ABOUT_MACHINA_D.md"))
-            else:
-                st.subheader(load_md_file("ABOUT_" + choice + ".md"))
+    choice = abouts_list[opt_abouts]
+
+    about_expander = st.expander("", True)
+    with about_expander:
+        if choice == "machina":
+            st.subheader(load_md_file("ABOUT_machina_A.md"))
+            LOGO_TEXTO = load_info(st.session_state.tema)
+            LOGO_IMAGE = "./images/matrix/" + st.session_state.tema + ".jpg"
+            write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
+            st.subheader(load_md_file("ABOUT_machina_D.md"))
+        else:
+            st.subheader(load_about_md(choice))
 
 
 ### eof: pages
@@ -1575,8 +1562,7 @@ def main():
                 stx.TabBarItemData(id=2, title="yPoemas", description=""),
                 stx.TabBarItemData(id=3, title="eureka", description=""),
                 stx.TabBarItemData(id=4, title="off-mach", description=""),
-                stx.TabBarItemData(id=5, title="poly", description=""),
-                stx.TabBarItemData(id=6, title="about", description=""),
+                stx.TabBarItemData(id=5, title="about", description=""),
             ],
             default=2,
         )
@@ -1586,7 +1572,7 @@ def main():
         gramado_divider()
         draw_check_buttons()
 
-        margem_esq, palco, margem_dir = st.columns([1.05, 7.9, 1.05])
+        margem_esq, palco, margem_dir = st.columns([0.18, 9.64, 0.18])
 
         with margem_esq:
             st.empty()
@@ -1616,10 +1602,6 @@ def main():
                     page_off_machina()
                     status = palco_status("off-machina")
                 elif chosen_id == "5":
-                    magy = "img_poly.jpg"
-                    page_polys()
-                    status = palco_status("poly")
-                elif chosen_id == "6":
                     magy = "img_about.jpg"
                     page_abouts()
                     status = palco_status("about")
