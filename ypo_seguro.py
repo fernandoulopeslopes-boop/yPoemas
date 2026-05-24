@@ -91,7 +91,7 @@ IDIOMAS_OFICIAIS = [
 # -----------------------------------------------------------------------------
 st.set_page_config(
     page_title="a máquina de fazer Poesia - yPoemas",
-    page_icon="🌿",
+    page_icon=":star:",
     layout="centered",
     initial_sidebar_state="auto",
 )
@@ -1270,7 +1270,7 @@ def page_eureka():
     help_rand = help_tips[1]
     help_more = help_tips[4]
 
-    seed, more, rand, manu, occurrences = st.columns([2.5, 1.5, 1.5, 0.7, 4])
+    seed, more, rand, manu, occurrences = st.columns([2.1, 1.0, 1.0, 0.55, 5.35])
 
     with seed:
         find_what = st.text_input(
