@@ -138,7 +138,15 @@ def apply_styles():
         <style>
         /*#MainMenu {visibility: hidden;}*/
         footer {visibility: hidden;}
-        </style>
+        
+        /* Machina :: botões sem quebra de linha */
+        div[data-testid="stButton"] button,
+        div[data-testid="stButton"] button p {
+            white-space: nowrap !important;
+            word-break: keep-all !important;
+            overflow-wrap: normal !important;
+        }
+</style>
         """,
         unsafe_allow_html=True,
     )
@@ -1042,7 +1050,7 @@ def page_mini():
     if st.session_state.mini > maxy_mini:  # just in case
         st.session_state.mini = 0
 
-    foo1, more, rand, auto, foo2 = st.columns([3.8, 1, 1, 1.25, 3.8])
+    foo1, more, rand, auto, foo2 = st.columns([3.55, 1, 1, 1.9, 3.55])
 
     help_tips = load_help(st.session_state.lang)
     help_rand = help_tips[1]
@@ -1333,6 +1341,9 @@ def page_eureka():
                 else:
                     st.session_state.eureka = 0
 
+                # O selectbox precisa refletir a ocorrência sorteada.
+                st.session_state["opt_ocur"] = st.session_state.eureka
+
             with occurrences:
                 options = list(range(len(seed_list)))
                 opt_ocur = st.selectbox(
@@ -1343,7 +1354,9 @@ def page_eureka():
                     key="opt_ocur",
                 )
 
-            st.session_state.eureka = opt_ocur
+            if not rand:
+                st.session_state.eureka = opt_ocur
+
             this_seed = seed_list[st.session_state.eureka]
             part_line = this_seed.partition(" ➪ ")
             nome_tema = part_line[2]
