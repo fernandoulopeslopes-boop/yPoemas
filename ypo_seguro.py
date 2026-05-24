@@ -1668,16 +1668,21 @@ def main():
     gramado = open_gramado()
 
     with gramado:
-        chosen_id = stx.tab_bar(
-            data=[
-                stx.TabBarItemData(id=1, title="mini", description=""),
-                stx.TabBarItemData(id=2, title="yPoemas", description=""),
-                stx.TabBarItemData(id=3, title="eureka", description=""),
-                stx.TabBarItemData(id=4, title="off-mach", description=""),
-                stx.TabBarItemData(id=5, title="about", description=""),
-            ],
-            default=2,
-        )
+        # Lista de páginas centralizada no território do gramado.
+        # O eixo visual principal continua sendo o dos nav_buttons.
+        tab_left, tab_center, tab_right = st.columns([1.15, 7.70, 1.15])
+
+        with tab_center:
+            chosen_id = stx.tab_bar(
+                data=[
+                    stx.TabBarItemData(id=1, title="mini", description=""),
+                    stx.TabBarItemData(id=2, title="yPoemas", description=""),
+                    stx.TabBarItemData(id=3, title="eureka", description=""),
+                    stx.TabBarItemData(id=4, title="off-mach", description=""),
+                    stx.TabBarItemData(id=5, title="about", description=""),
+                ],
+                default=2,
+            )
 
         chosen_id = str(chosen_id)
 
