@@ -269,7 +269,7 @@ def apply_styles():
 
 
 
-        /* Território sem dono :: tudo obedece ao gramado */
+        /* Território sem dono :: TabBar sem encolher */
         iframe[title="extra_streamlit_components.TabBar.tab_bar"] {
             display: block !important;
             width: 100% !important;
@@ -285,8 +285,6 @@ def apply_styles():
             margin-bottom: 0rem !important;
             padding-left: 0 !important;
             padding-right: 0 !important;
-            display: grid !important;
-            place-items: center !important;
         }
 
         /* Sintonia fina :: subir páginas */
@@ -1668,21 +1666,16 @@ def main():
     gramado = open_gramado()
 
     with gramado:
-        # Lista de páginas centralizada no território do gramado.
-        # O eixo visual principal continua sendo o dos nav_buttons.
-        tab_left, tab_center, tab_right = st.columns([1.15, 7.70, 1.15])
-
-        with tab_center:
-            chosen_id = stx.tab_bar(
-                data=[
-                    stx.TabBarItemData(id=1, title="mini", description=""),
-                    stx.TabBarItemData(id=2, title="yPoemas", description=""),
-                    stx.TabBarItemData(id=3, title="eureka", description=""),
-                    stx.TabBarItemData(id=4, title="off-mach", description=""),
-                    stx.TabBarItemData(id=5, title="about", description=""),
-                ],
-                default=2,
-            )
+        chosen_id = stx.tab_bar(
+            data=[
+                stx.TabBarItemData(id=1, title="mini", description=""),
+                stx.TabBarItemData(id=2, title="yPoemas", description=""),
+                stx.TabBarItemData(id=3, title="eureka", description=""),
+                stx.TabBarItemData(id=4, title="off-mach", description=""),
+                stx.TabBarItemData(id=5, title="about", description=""),
+            ],
+            default=2,
+        )
 
         chosen_id = str(chosen_id)
 
