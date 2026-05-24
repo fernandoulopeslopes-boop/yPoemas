@@ -32,7 +32,7 @@ ABOUTS_FILES = {
     "samizdát": ["ABOUT_samizdát.md"],
     "notes": ["ABOUT_notes.md"],
     "license": ["ABOUT_license.md"],
-    "index": ["ABOUT_index.md", "ABOUT_INDEX.md"],
+    "index": ["ABOUT_index.md"],
 }
 
 BOOKS_LIST = [
@@ -777,7 +777,7 @@ def load_info(nome_tema):
 @st.cache_data
 def load_index():  # Load indexes numbers for all themes
     index_list = []
-    with open(os.path.join("./md_files/ABOUT_INDEX.md"), encoding="utf-8") as lista:
+    with open(os.path.join("./md_files/ABOUT_index.md"), encoding="utf-8") as lista:
         for line in lista:
             index_list.append(line)
 
