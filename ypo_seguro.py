@@ -335,10 +335,10 @@ def apply_styles():
 
         .machina-divider {
             height: 1px;
-            width: 100% !important;
-            max-width: 100% !important;
+            width: calc(100% - 12px) !important;
+            max-width: calc(100% - 12px) !important;
             background: rgba(0, 0, 0, 0.12);
-            margin: 0.02rem 0rem 0.10rem 0rem;
+            margin: 0.02rem auto 0.10rem auto;
         }
 
         .machina-palco-central {
