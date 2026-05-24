@@ -8,7 +8,6 @@ import asyncio
 from datetime import datetime
 
 import streamlit as st
-import streamlit.components.v1 as components
 from extra_streamlit_components import TabBar as stx
 
 from lay_2_ypo import gera_poema
@@ -180,16 +179,16 @@ def apply_styles():
         """
         <style>
         [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
-            width: 360px;
-            min-width: 280px;
-            max-width: 460px;
+            width: 25vw;
+            min-width: 25vw;
+            max-width: 25vw;
         }
 
         /* Sidebar :: calibragem temporária com dragster visível */
         [data-testid="stSidebarResizer"],
         [data-testid="stSidebar"] [role="separator"] {
-            display: block !important;
-            width: 0.35rem !important;
+            display: none !important;
+            width: 0 !important;
             opacity: 0.45 !important;
         }
         mark {
@@ -431,51 +430,6 @@ def translate(input_text):
     except Exception:
         return "Arquivo muito grande para ser traduzido."
 
-
-
-def sidebar_width_hint():
-    """Hint temporário: mede a largura real da sidebar durante a lapidação visual."""
-    components.html(
-        """
-        <div id="sidebar-width-hint"
-             style="
-                font-family: IBM Plex Sans, Arial, sans-serif;
-                font-size: 12px;
-                opacity: 0.68;
-                padding: 2px 4px;
-                margin: 0 0 4px 0;
-                text-align: center;
-             ">
-            🌿 sidebar :: medindo...
-        </div>
-        <script>
-        const hint = document.getElementById("sidebar-width-hint");
-
-        function sidebarWidth() {
-            try {
-                const sidebar = window.parent.document.querySelector('[data-testid="stSidebar"]');
-                if (!sidebar) {
-                    hint.textContent = "🌿 sidebar :: ?";
-                    return;
-                }
-
-                const rect = sidebar.getBoundingClientRect();
-                const app = window.parent.document.querySelector('[data-testid="stAppViewContainer"]');
-                const appWidth = app ? app.getBoundingClientRect().width : window.parent.innerWidth;
-                const pct = appWidth ? (rect.width / appWidth * 100).toFixed(1) : "?";
-
-                hint.textContent = "🌿 sidebar :: " + Math.round(rect.width) + " px  •  " + pct + "%";
-            } catch (err) {
-                hint.textContent = "🌿 sidebar :: indisponível";
-            }
-        }
-
-        sidebarWidth();
-        setInterval(sidebarWidth, 250);
-        </script>
-        """,
-        height=28,
-    )
 
 
 def pick_lang():  # lista oficial de idiomas + P.O.L.Y.
@@ -1646,9 +1600,6 @@ def page_abouts():
 
 
 def main():
-    with st.sidebar:
-        sidebar_width_hint()
-
     pick_lang()
     pick_book_sidebar()
     pick_stage_font()
