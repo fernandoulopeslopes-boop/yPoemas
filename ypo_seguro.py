@@ -1065,8 +1065,7 @@ def page_mini():
         st.session_state.rand = False
 
     st.session_state.tema = temas_list[st.session_state.mini]
-    analise = say_number(st.session_state.tema)
-    more = more.button("✚", help=help_more + " • " + analise)
+    more = more.button("✚", help=help_more)
 
     if more:
         st.session_state.rand = False
@@ -1259,6 +1258,9 @@ def page_ypoemas():
         # st.markdown(get_binary_file_downloader_html('./temp/'+'LYPO_' + IPAddres, '➪ '+st.session_state.tema), unsafe_allow_html=True)
 
 def page_eureka():
+    if "eureka_nonce" not in st.session_state:
+        st.session_state.eureka_nonce = 0
+
     help_tips = load_help(st.session_state.lang)
     help_rand = help_tips[1]
     help_more = help_tips[4]
@@ -1331,8 +1333,10 @@ def page_eureka():
                     while new_eureka == old_eureka:
                         new_eureka = random.randrange(0, len(seed_list))
                     st.session_state.eureka = new_eureka
+                    st.session_state.eureka_nonce += 1
                 else:
                     st.session_state.eureka = 0
+                    st.session_state.eureka_nonce += 1
 
             with occurrences:
                 options = list(range(len(seed_list)))
@@ -1341,7 +1345,7 @@ def page_eureka():
                     options,
                     index=st.session_state.eureka,
                     format_func=lambda y: seed_list[y],
-                    key="opt_ocur",
+                    key="opt_ocur_" + str(st.session_state.eureka_nonce),
                 )
 
             st.session_state.eureka = opt_ocur
