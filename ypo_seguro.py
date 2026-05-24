@@ -44,7 +44,7 @@ BOOKS_LIST = [
 
 OFF_BOOKS_LIST = [
     "a_torre_de_papel", "quase_que_eu_Poesia", "faz_de_conto", "um_romance",
-    "linguafiada", "livro_vivo", "desvoto", "ensaio", "urbano", "essencial", "secreto",
+    "linguafiada", "livro_vivo", "desvoto", "ensaios", "urbano", "essencial", "secreto",
 ]
 
 PAGE_IMAGES = {
@@ -165,10 +165,10 @@ def apply_styles():
         <style>
         .reportview-container .main .block-container{
             padding-top: 0rem;
-            padding-right: 0.25rem;
-            padding-left: 0.25rem;
+            padding-right: 0.08rem;
+            padding-left: 0.08rem;
             padding-bottom: 0rem;
-            max-width: 94vw;
+            max-width: 100vw;
         }
         </style>
         """,
@@ -268,17 +268,18 @@ def apply_styles():
         
         /* Gramado :: território principal */
         .main .block-container {
-            padding-top: 0.25rem !important;
-            padding-left: 0.08rem !important;
-            padding-right: 0.08rem !important;
-            padding-bottom: 0.25rem !important;
+            padding-top: 0.18rem !important;
+            padding-left: 0.04rem !important;
+            padding-right: 0.04rem !important;
+            padding-bottom: 0.20rem !important;
             max-width: 100vw !important;
+            width: 100% !important;
         }
 
         .machina-gramado {
             background: #eef8ee;
             border-radius: 18px;
-            padding: 0.12rem 0.18rem 0.28rem 0.18rem;
+            padding: 0.10rem 0.10rem 0.24rem 0.10rem;
             min-height: 78vh;
             overflow-x: hidden;
             overflow-y: auto;
@@ -291,7 +292,7 @@ def apply_styles():
         div[data-testid="stVerticalBlock"] > div[data-testid="stVerticalBlock"]:first-child {
             background: #eef8ee !important;
             border-radius: 18px !important;
-            padding: 0.35rem 0.55rem 0.55rem 0.55rem !important;
+            padding: 0.14rem 0.16rem 0.28rem 0.16rem !important;
         }
 
 
@@ -305,7 +306,7 @@ def apply_styles():
         .machina-palco-central {
             background: rgba(255, 255, 255, 0.72);
             border-radius: 18px;
-            padding: 0.18rem 0.20rem 0.20rem 0.20rem;
+            padding: 0.14rem 0.14rem 0.18rem 0.14rem;
             min-height: 61vh;
             overflow-x: hidden;
         }
@@ -1623,7 +1624,7 @@ def main():
         gramado_divider()
         draw_check_buttons()
 
-        margem_esq, palco, margem_dir = st.columns([0.18, 9.64, 0.18])
+        margem_esq, palco, margem_dir = st.columns([0.06, 9.88, 0.06])
 
         with margem_esq:
             st.empty()
@@ -1676,7 +1677,7 @@ def main():
     with st.sidebar:
         st.image("./images/" + magy)
 
-    show_icons()
+    ## show_icons()
     close_gramado()
     ##$ st.sidebar.state = True
 
