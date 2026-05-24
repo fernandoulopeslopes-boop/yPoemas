@@ -269,20 +269,22 @@ def apply_styles():
 
 
 
-        /* Sintonia fina :: TabBar no eixo do gramado */
+        /* Território sem dono :: tudo obedece ao gramado */
         iframe[title="extra_streamlit_components.TabBar.tab_bar"] {
             display: block !important;
-            margin: -0.22rem auto 0.02rem auto !important;
-            padding: 0 !important;
             width: 100% !important;
             max-width: 100% !important;
+            margin: -0.18rem 0 0.02rem 0 !important;
+            padding: 0 !important;
         }
 
         div[data-testid="stElementContainer"]:has(iframe[title="extra_streamlit_components.TabBar.tab_bar"]) {
-            display: flex !important;
-            justify-content: center !important;
-            margin-top: -0.22rem !important;
-            margin-bottom: 0.00rem !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            margin-top: -0.18rem !important;
+            margin-bottom: 0rem !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
         }
 
         /* Sintonia fina :: subir páginas */
@@ -335,18 +337,33 @@ def apply_styles():
 
         .machina-divider {
             height: 1px;
-            width: calc(100% - 12px) !important;
-            max-width: calc(100% - 12px) !important;
+            width: 100% !important;
+            max-width: 100% !important;
             background: rgba(0, 0, 0, 0.12);
-            margin: 0.02rem auto 0.10rem auto;
+            margin: 0.02rem 0rem 0.10rem 0rem;
+            padding: 0 !important;
+        }
+
+
+        /* Território sem dono :: expander/palco no mesmo eixo */
+        div[data-testid="stExpander"] {
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+
+        div[data-testid="stExpander"] details {
+            width: 100% !important;
+            max-width: 100% !important;
         }
 
         .machina-palco-central {
             background: rgba(255, 255, 255, 0.72);
             border-radius: 18px;
-            padding: 0.08rem 0.14rem 0.16rem 0.14rem;
+            padding: 0.08rem 0.06rem 0.16rem 0.06rem;
             min-height: 61vh;
             overflow-x: hidden;
+            width: 100% !important;
+            max-width: 100% !important;
         }
 
         .machina-moldura-lateral {
@@ -1662,7 +1679,7 @@ def main():
         gramado_divider()
         draw_check_buttons()
 
-        margem_esq, palco, margem_dir = st.columns([0.06, 9.88, 0.06])
+        margem_esq, palco, margem_dir = st.columns([0.01, 9.98, 0.01])
 
         with margem_esq:
             st.empty()
