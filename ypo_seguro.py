@@ -387,8 +387,8 @@ def open_palco():
 def palco_status(book=None, pos=None, total=None):
     book = book or st.session_state.get("book", "")
     if pos is None or total is None:
-        return f"⚫  {st.session_state.lang} ( {book} )"
-    return f"⚫  {st.session_state.lang} ( {book} ) ( {pos} / {total} )"
+        return f"🌿  {st.session_state.lang} ( {book} )"
+    return f"🌿  {st.session_state.lang} ( {book} ) ( {pos} / {total} )"
 
 
 
@@ -1205,7 +1205,7 @@ def page_ypoemas():
 
     if lnew:
         what_book = (
-            "⚫  "
+            "🌿  "
             + st.session_state.lang
             + " ( "
             + st.session_state.book
@@ -1258,9 +1258,6 @@ def page_ypoemas():
         # st.markdown(get_binary_file_downloader_html('./temp/'+'LYPO_' + IPAddres, '➪ '+st.session_state.tema), unsafe_allow_html=True)
 
 def page_eureka():
-    if "eureka_nonce" not in st.session_state:
-        st.session_state.eureka_nonce = 0
-
     help_tips = load_help(st.session_state.lang)
     help_rand = help_tips[1]
     help_more = help_tips[4]
@@ -1296,7 +1293,7 @@ def page_eureka():
             part_line = this_line.partition(" : ")
             palas = part_line[0]
             fonte = part_line[2]
-            seed_tema = fonte[0:-5]
+            seed_tema = fonte.partition("_")[0]
             if (palas is None) or (fonte is None):
                 continue
             else:
@@ -1333,10 +1330,8 @@ def page_eureka():
                     while new_eureka == old_eureka:
                         new_eureka = random.randrange(0, len(seed_list))
                     st.session_state.eureka = new_eureka
-                    st.session_state.eureka_nonce += 1
                 else:
                     st.session_state.eureka = 0
-                    st.session_state.eureka_nonce += 1
 
             with occurrences:
                 options = list(range(len(seed_list)))
@@ -1345,14 +1340,14 @@ def page_eureka():
                     options,
                     index=st.session_state.eureka,
                     format_func=lambda y: seed_list[y],
-                    key="opt_ocur_" + str(st.session_state.eureka_nonce),
+                    key="opt_ocur",
                 )
 
             st.session_state.eureka = opt_ocur
             this_seed = seed_list[st.session_state.eureka]
             part_line = this_seed.partition(" ➪ ")
             nome_tema = part_line[2]
-            seed_tema = nome_tema[0:-5]
+            seed_tema = nome_tema.partition("_")[0]
 
             st.session_state.tema = seed_tema
 
@@ -1483,7 +1478,7 @@ def page_off_machina():  # available off_machina_books
 
     if lnew:
         what_book = (
-            "⚫  "
+            "🌿  "
             + st.session_state.lang
             + " ( "
             + str(st.session_state.off_take + 1)
