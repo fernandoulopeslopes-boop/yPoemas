@@ -274,7 +274,7 @@ def apply_styles():
             display: block !important;
             width: 100% !important;
             max-width: 100% !important;
-            margin: -0.18rem 0 0.02rem 0 !important;
+            margin: -0.18rem auto 0.02rem auto !important;
             padding: 0 !important;
         }
 
@@ -287,6 +287,8 @@ def apply_styles():
             padding-right: 0 !important;
             display: flex !important;
             justify-content: center !important;
+            align-items: center !important;
+            text-align: center !important;
         }
 
         /* Sintonia fina :: subir páginas */
