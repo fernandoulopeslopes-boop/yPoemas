@@ -274,7 +274,8 @@ def apply_styles():
             display: block !important;
             margin: -0.22rem auto 0.02rem auto !important;
             padding: 0 !important;
-            max-width: 72% !important;
+            width: 100% !important;
+            max-width: 100% !important;
         }
 
         div[data-testid="stElementContainer"]:has(iframe[title="extra_streamlit_components.TabBar.tab_bar"]) {
@@ -334,7 +335,8 @@ def apply_styles():
 
         .machina-divider {
             height: 1px;
-            width: 100%;
+            width: 100% !important;
+            max-width: 100% !important;
             background: rgba(0, 0, 0, 0.12);
             margin: 0.02rem 0rem 0.10rem 0rem;
         }
