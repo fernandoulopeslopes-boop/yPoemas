@@ -91,7 +91,7 @@ IDIOMAS_OFICIAIS = [
 # -----------------------------------------------------------------------------
 st.set_page_config(
     page_title="a máquina de fazer Poesia - yPoemas",
-    page_icon=":star:",
+    page_icon="🌿",
     layout="centered",
     initial_sidebar_state="auto",
 )
