@@ -92,7 +92,7 @@ IDIOMAS_OFICIAIS = [
 st.set_page_config(
     page_title="a máquina de fazer Poesia - yPoemas",
     page_icon=":star:",
-    layout="centered",
+    layout="wide",
     initial_sidebar_state="auto",
 )
 
@@ -266,6 +266,15 @@ def apply_styles():
         }
 
         
+
+        /* Free Gramado :: liberar área útil real */
+        section.main > div.block-container {
+            max-width: 100vw !important;
+            width: 100% !important;
+            padding-left: 0.04rem !important;
+            padding-right: 0.04rem !important;
+        }
+
         /* Gramado :: território principal */
         .main .block-container {
             padding-top: 0.18rem !important;
@@ -1677,7 +1686,7 @@ def main():
     with st.sidebar:
         st.image("./images/" + magy)
 
-    ## show_icons()
+    show_icons()
     close_gramado()
     ##$ st.sidebar.state = True
 
