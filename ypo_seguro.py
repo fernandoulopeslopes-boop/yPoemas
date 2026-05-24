@@ -44,7 +44,7 @@ BOOKS_LIST = [
 
 OFF_BOOKS_LIST = [
     "a_torre_de_papel", "quase_que_eu_Poesia", "faz_de_conto", "um_romance",
-    "linguafiada", "livro_vivo", "desvoto", "ensaios", "urbano", "essencial", "secreto",
+    "linguafiada", "livro_vivo", "desvoto", "ensaio", "urbano", "essencial", "secreto",
 ]
 
 PAGE_IMAGES = {
