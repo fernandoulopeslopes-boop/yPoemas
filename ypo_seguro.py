@@ -13,26 +13,26 @@ from extra_streamlit_components import TabBar as stx
 from lay_2_ypo import gera_poema
 
 ABOUTS_LIST = [
-    "comments", "prefácil", "machina", "off-machina", "MACHINA-IA", "livros", "outros autores",
-    "imagens", "poly", "tradittore", "bibliografia", "samizdát", "notes", "license", "index",
+    "comentários", "prefácil", "machina", "off-machina", "machina-IA", "livros", "outros autores",
+    "imagens", "poly", "tradittore", "bibliografia", "samizdàt", "notes", "license", "index",
 ]
 
 ABOUTS_FILES = {
-    "comments": ["ABOUT_comments.md"],
+    "comentários": ["ABOUT_comentários.md"],
     "prefácil": ["ABOUT_prefácil.md"],
-    "machina": ["ABOUT_machina_A.md", "ABOUT_machina_D.md"],
+    "machina": ["ABOUT_machina I.md", "ABOUT_machina II.md"],
     "off-machina": ["ABOUT_off-machina.md"],
-    "MACHINA-IA": ["ABOUT_MACHINA-IA.md"],
+    "machina-IA": ["ABOUT_machina-IA.md"],
     "livros": ["ABOUT_livros.md"],
     "outros autores": ["ABOUT_outros_autores.md", "ABOUT_outros autores.md"],
     "imagens": ["ABOUT_imagens.md"],
     "poly": ["ABOUT_poly.md"],
     "tradittore": ["ABOUT_tradittore.md"],
     "bibliografia": ["ABOUT_bibliografia.md"],
-    "samizdát": ["ABOUT_samizdát.md"],
+    "samizdàt": ["ABOUT_samizdàt.md"],
     "notes": ["ABOUT_notes.md"],
     "license": ["ABOUT_license.md"],
-    "index": ["ABOUT_index.md"],
+    "index": ["ABOUT_index.md", "ABOUT_INDEX.md"],
 }
 
 BOOKS_LIST = [
@@ -777,7 +777,7 @@ def load_info(nome_tema):
 @st.cache_data
 def load_index():  # Load indexes numbers for all themes
     index_list = []
-    with open(os.path.join("./md_files/ABOUT_index.md"), encoding="utf-8") as lista:
+    with open(os.path.join("./md_files/ABOUT_INDEX.md"), encoding="utf-8") as lista:
         for line in lista:
             index_list.append(line)
 
@@ -1297,7 +1297,14 @@ def page_eureka():
                 info_find += translate('" em ' + str(len(soma_tema)) + " temas")
 
             if rand:
-                st.session_state.eureka = random.randrange(0, len(seed_list))
+                old_eureka = st.session_state.get("eureka", 0)
+                if len(seed_list) > 1:
+                    new_eureka = random.randrange(0, len(seed_list))
+                    while new_eureka == old_eureka:
+                        new_eureka = random.randrange(0, len(seed_list))
+                    st.session_state.eureka = new_eureka
+                else:
+                    st.session_state.eureka = 0
 
             with occurrences:
                 options = list(range(len(seed_list)))
@@ -1536,11 +1543,11 @@ def page_abouts():
     about_expander = st.expander("", True)
     with about_expander:
         if choice == "machina":
-            st.subheader(load_md_file("ABOUT_machina_A.md"))
+            st.subheader(load_md_file("ABOUT_machina I.md"))
             LOGO_TEXTO = load_info(st.session_state.tema)
             LOGO_IMAGE = "./images/matrix/" + st.session_state.tema + ".jpg"
             write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
-            st.subheader(load_md_file("ABOUT_machina_D.md"))
+            st.subheader(load_md_file("ABOUT_machina II.md"))
         else:
             st.subheader(load_about_md(choice))
 
