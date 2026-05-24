@@ -165,8 +165,8 @@ def apply_styles():
         <style>
         .reportview-container .main .block-container{
             padding-top: 0rem;
-            padding-right: 0.08rem;
-            padding-left: 0.08rem;
+            padding-right: 0.04rem;
+            padding-left: 0.04rem;
             padding-bottom: 0rem;
             max-width: 100vw;
         }
@@ -222,7 +222,7 @@ def apply_styles():
 
         /* Palco :: ajuste fino de área útil */
         div[data-testid="stVerticalBlock"] {
-            gap: 0.35rem;
+            gap: 0.18rem;
         }
 
         div[data-testid="stExpander"] {
@@ -267,6 +267,17 @@ def apply_styles():
 
         
 
+
+        /* Sintonia fina :: subir páginas */
+        iframe[title="extra_streamlit_components.TabBar.tab_bar"] {
+            margin-top: 0 !important;
+            margin-bottom: 0 !important;
+        }
+
+        div[data-testid="stElementContainer"] {
+            margin-top: 0 !important;
+        }
+
         /* Free Gramado :: liberar área útil real */
         section.main > div.block-container {
             max-width: 100vw !important;
@@ -277,10 +288,10 @@ def apply_styles():
 
         /* Gramado :: território principal */
         .main .block-container {
-            padding-top: 0.18rem !important;
+            padding-top: 0.02rem !important;
             padding-left: 0.04rem !important;
             padding-right: 0.04rem !important;
-            padding-bottom: 0.20rem !important;
+            padding-bottom: 0.16rem !important;
             max-width: 100vw !important;
             width: 100% !important;
         }
@@ -288,7 +299,7 @@ def apply_styles():
         .machina-gramado {
             background: #eef8ee;
             border-radius: 18px;
-            padding: 0.10rem 0.10rem 0.24rem 0.10rem;
+            padding: 0.04rem 0.10rem 0.20rem 0.10rem;
             min-height: 78vh;
             overflow-x: hidden;
             overflow-y: auto;
@@ -301,7 +312,7 @@ def apply_styles():
         div[data-testid="stVerticalBlock"] > div[data-testid="stVerticalBlock"]:first-child {
             background: #eef8ee !important;
             border-radius: 18px !important;
-            padding: 0.14rem 0.16rem 0.28rem 0.16rem !important;
+            padding: 0.04rem 0.14rem 0.22rem 0.14rem !important;
         }
 
 
@@ -309,13 +320,13 @@ def apply_styles():
             height: 1px;
             width: 100%;
             background: rgba(0, 0, 0, 0.12);
-            margin: 0.20rem 0rem 0.35rem 0rem;
+            margin: 0.04rem 0rem 0.12rem 0rem;
         }
 
         .machina-palco-central {
             background: rgba(255, 255, 255, 0.72);
             border-radius: 18px;
-            padding: 0.14rem 0.14rem 0.18rem 0.14rem;
+            padding: 0.08rem 0.14rem 0.16rem 0.14rem;
             min-height: 61vh;
             overflow-x: hidden;
         }
