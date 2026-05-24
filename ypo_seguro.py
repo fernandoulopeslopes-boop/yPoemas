@@ -14,7 +14,7 @@ from lay_2_ypo import gera_poema
 
 ABOUTS_LIST = [
     "comentários", "prefácil", "machina", "off-machina", "machina-IA", "livros", "outros autores",
-    "imagens", "poly", "tradittore", "bibliografia", "samizdàt", "notes", "license", "index",
+    "imagens", "poly", "tradittore", "bibliografia", "pontuação", "samizdàt", "notes", "license", "index",
 ]
 
 ABOUTS_FILES = {
@@ -29,6 +29,7 @@ ABOUTS_FILES = {
     "poly": ["ABOUT_poly.md"],
     "tradittore": ["ABOUT_tradittore.md"],
     "bibliografia": ["ABOUT_bibliografia.md"],
+    "pontuação": ["ABOUT_pontuação.md"],
     "samizdàt": ["ABOUT_samizdàt.md"],
     "notes": ["ABOUT_notes.md"],
     "license": ["ABOUT_license.md"],
@@ -141,6 +142,15 @@ def apply_styles():
         """,
         unsafe_allow_html=True,
     )
+
+    st.markdown("""
+    <style>
+    .stButton > button {
+        white-space: nowrap !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
 
     st.markdown(
         """
@@ -777,11 +787,29 @@ def load_info(nome_tema):
 @st.cache_data
 def load_index():  # Load indexes numbers for all themes
     index_list = []
-    with open(os.path.join("./md_files/ABOUT_INDEX.md"), encoding="utf-8") as lista:
+
+    # Padrão curatorial atual: ABOUT_index.md
+    # Fallback histórico: ABOUT_INDEX.md
+    index_candidates = [
+        os.path.join("./md_files/ABOUT_index.md"),
+        os.path.join("./md_files/ABOUT_INDEX.md"),
+    ]
+
+    index_file = None
+    for candidate in index_candidates:
+        if os.path.exists(candidate):
+            index_file = candidate
+            break
+
+    if index_file is None:
+        return index_list
+
+    with open(index_file, encoding="utf-8") as lista:
         for line in lista:
             index_list.append(line)
 
     return index_list
+
 
 
 def load_lypo():  # Load last yPoema & replace '\n' with '<br>' for translator returned text
