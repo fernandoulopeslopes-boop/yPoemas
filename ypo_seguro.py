@@ -268,6 +268,22 @@ def apply_styles():
         
 
 
+
+        /* Sintonia fina :: TabBar no eixo do gramado */
+        iframe[title="extra_streamlit_components.TabBar.tab_bar"] {
+            display: block !important;
+            margin: -0.22rem auto 0.02rem auto !important;
+            padding: 0 !important;
+            max-width: 72% !important;
+        }
+
+        div[data-testid="stElementContainer"]:has(iframe[title="extra_streamlit_components.TabBar.tab_bar"]) {
+            display: flex !important;
+            justify-content: center !important;
+            margin-top: -0.22rem !important;
+            margin-bottom: 0.00rem !important;
+        }
+
         /* Sintonia fina :: subir páginas */
         iframe[title="extra_streamlit_components.TabBar.tab_bar"] {
             margin-top: 0 !important;
@@ -288,7 +304,7 @@ def apply_styles():
 
         /* Gramado :: território principal */
         .main .block-container {
-            padding-top: 0.02rem !important;
+            padding-top: 0.00rem !important;
             padding-left: 0.04rem !important;
             padding-right: 0.04rem !important;
             padding-bottom: 0.16rem !important;
@@ -312,7 +328,7 @@ def apply_styles():
         div[data-testid="stVerticalBlock"] > div[data-testid="stVerticalBlock"]:first-child {
             background: #eef8ee !important;
             border-radius: 18px !important;
-            padding: 0.04rem 0.14rem 0.22rem 0.14rem !important;
+            padding: 0.00rem 0.14rem 0.22rem 0.14rem !important;
         }
 
 
@@ -320,7 +336,7 @@ def apply_styles():
             height: 1px;
             width: 100%;
             background: rgba(0, 0, 0, 0.12);
-            margin: 0.04rem 0rem 0.12rem 0rem;
+            margin: 0.02rem 0rem 0.10rem 0rem;
         }
 
         .machina-palco-central {
