@@ -272,8 +272,8 @@ def apply_styles():
         /* Território sem dono :: tudo obedece ao gramado */
         iframe[title="extra_streamlit_components.TabBar.tab_bar"] {
             display: block !important;
-            width: 82% !important;
-            max-width: 82% !important;
+            width: 100% !important;
+            max-width: 100% !important;
             margin: -0.18rem auto 0.02rem auto !important;
             padding: 0 !important;
         }
@@ -338,12 +338,13 @@ def apply_styles():
 
 
         .machina-divider {
-            height: 1px;
+            height: 0 !important;
             width: 100% !important;
             max-width: 100% !important;
-            background: rgba(0, 0, 0, 0.12);
-            margin: 0.02rem 0rem 0.10rem 0rem;
+            background: transparent !important;
+            margin: 0 !important;
             padding: 0 !important;
+            border: 0 !important;
         }
 
 
@@ -446,6 +447,7 @@ def close_gramado():
 
 
 def gramado_divider():
+    """Divider invisível: o eixo visual agora é dado pelos nav_buttons."""
     st.markdown("<div class='machina-divider'></div>", unsafe_allow_html=True)
 
 
