@@ -285,6 +285,8 @@ def apply_styles():
             margin-bottom: 0rem !important;
             padding-left: 0 !important;
             padding-right: 0 !important;
+            display: flex !important;
+            justify-content: center !important;
         }
 
         /* Sintonia fina :: subir páginas */
@@ -359,11 +361,12 @@ def apply_styles():
         .machina-palco-central {
             background: rgba(255, 255, 255, 0.72);
             border-radius: 18px;
-            padding: 0.08rem 0.06rem 0.16rem 0.06rem;
+            padding: 0.08rem 0.00rem 0.16rem 0.00rem;
             min-height: 61vh;
             overflow-x: hidden;
             width: 100% !important;
             max-width: 100% !important;
+            box-sizing: border-box !important;
         }
 
         .machina-moldura-lateral {
@@ -1679,10 +1682,8 @@ def main():
         gramado_divider()
         draw_check_buttons()
 
-        margem_esq, palco, margem_dir = st.columns([0.01, 9.98, 0.01])
+        palco = st.container()
 
-        with margem_esq:
-            st.empty()
 
         with palco:
             palco_container = open_palco()
@@ -1726,8 +1727,6 @@ def main():
                     unsafe_allow_html=True,
                 )
 
-        with margem_dir:
-            st.empty()
 
     with st.sidebar:
         st.image("./images/" + magy)
