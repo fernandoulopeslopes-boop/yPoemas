@@ -272,8 +272,8 @@ def apply_styles():
         /* Território sem dono :: tudo obedece ao gramado */
         iframe[title="extra_streamlit_components.TabBar.tab_bar"] {
             display: block !important;
-            width: 100% !important;
-            max-width: 100% !important;
+            width: 82% !important;
+            max-width: 82% !important;
             margin: -0.18rem auto 0.02rem auto !important;
             padding: 0 !important;
         }
@@ -285,10 +285,8 @@ def apply_styles():
             margin-bottom: 0rem !important;
             padding-left: 0 !important;
             padding-right: 0 !important;
-            display: flex !important;
-            justify-content: center !important;
-            align-items: center !important;
-            text-align: center !important;
+            display: grid !important;
+            place-items: center !important;
         }
 
         /* Sintonia fina :: subir páginas */
