@@ -1,4 +1,5 @@
-### Manual do Pensador   
+Manual do Pensador   
+___
 - Axioma Zero: O pensador não tem chave Liga-Desliga.  
 - Axioma Hum: Dormir, aparentemente, desdiz o Axioma Zero.  
 ___
