@@ -5,7 +5,7 @@ ___
 ___
 ### Modos de Funcionamento  
 ___
-### VIGÍLIA  
+### modo VIGÍLIA  
 - Status = *Criar:*  
 > Sempre que houver algum trabalho a ser feito:  
 > escrever, dançar, ler, cantar, projetar, aprender, etc...  
@@ -31,7 +31,7 @@ ___
 > Os pensamentos tornam-se recorrentes.  
 > Ao não encontrar saída, o modo *IMPASSE* entra em ação.  
 ___
-### SONHO  
+### modo SONHO  
 - Status = *Divagar:*  
 > Exploração aleatória de outros sentidos e possibilidades de si mesmo.  
 > Nem tudo é apreendido ou aproveitado.  
@@ -39,7 +39,7 @@ ___
 - Status = *Acordar:*  
 > O modo *VIGÍLIA* é acionado automaticamente.  
 ___
-### CONTEMPLAR  
+### modo CONTEMPLAR  
 - Status = *Ligar:*  
 > As informações acontecem de fora para dentro.  
 > Exemplos: ouvir música, ver filmes, curtir a natureza,  
@@ -48,7 +48,7 @@ ___
 - Status = *Desligar:*  
 > Aciona-se o modo *VIGÍLIA* ou o modo *SONHO*.  
 ___
-### IMPASSE  
+### modo IMPASSE  
 - Status = *Cair na Real:*  
 > Há desencontro entre as informações.  
 > Nada parece fazer sentido.  
@@ -62,7 +62,7 @@ ___
 > - não entrar em modo *VIAGEM*  
 > - não voltar ao modo *IMPASSE*  
 ___
-### PÂNICO:  
+### modo PÂNICO:  
 > As saídas são:  
 > - ligar para o seu terapeuta ou procurar um se não tiver.  
 > - respirar fundo e contar até dez, várias vezes, até cair na real.  
@@ -73,14 +73,14 @@ ___
 > - em alguns casos orações podem funcionar.  
 > - se nada funcionar, tentar o modo *HAPPY_HOUR* ou *VIAGEM*.  
 ___
-### HAPPY_HOUR  
+### modo HAPPY_HOUR  
 - Status = *Único:*  
 > - geralmente causado pela ingestão de substâncias que alteram as sinapses.  
 > - pode causar verborragia ou falas desencontradas de nexo.  
 > - alterações de percepção não são raras.  
 > - requer a presença de amores & amigos.  
 ___
-### VIAGEM  
+### modo VIAGEM  
 - Status = *Vários:*  
 > - meios de transporte: carro, avião, ônibus, trem, navio, neurônios, drogas lícitas ou ilícitas.  
 > - os pensamentos vagueiam por diversos assuntos, randomicamente, sem se deter sobre nenhum tema específico.  
