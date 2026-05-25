@@ -451,7 +451,6 @@ apply_styles()
 init_session_state()
 
 
-
 def open_gramado():
     """Cria um container real para o gramado.
 
