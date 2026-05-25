@@ -96,8 +96,6 @@ ___
 > - desfaça-se do óbvio, da mesmice, das filas e dos engarrafamentos.  
 > - tente descobrir onde o novo está presente.  
 > - doe-se ao futuro.  
-> - o prazer é o próprio pensar.  
+> - o prazer é o próprio *não pensar*.  
 ___
 Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de fazer Poesia**
-<eof>
-
