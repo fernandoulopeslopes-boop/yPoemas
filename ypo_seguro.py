@@ -13,8 +13,8 @@ from extra_streamlit_components import TabBar as stx
 from lay_2_ypo import gera_poema
 
 ABOUTS_LIST = [
-    "comentários", "prefácil", "machina", "off-machina", "machina-IA", "livros", "outros autores",
-    "imagens", "poly", "pensares", "tradittore", "bibliografia", "pontuação", "samizdàt", "notes", "license", "index",
+    "comentários", "prefácil", "machina", "off-machina", "machina-IA", "livros", "outros autores", "notes", 
+    "imagens", "poly", "tradittore", "bibliografia", "pontuação", "samizdàt", "license", "index", "pensares",
 ]
 
 ABOUTS_FILES = {
@@ -25,16 +25,16 @@ ABOUTS_FILES = {
     "machina-IA": ["ABOUT_machina-IA.md"],
     "livros": ["ABOUT_livros.md"],
     "outros autores": ["ABOUT_outros_autores.md", "ABOUT_outros autores.md"],
+    "notes": ["ABOUT_notes.md"],
     "imagens": ["ABOUT_imagens.md"],
     "poly": ["ABOUT_poly.md"],
-    "pensares": ["ABOUT_pensares.md"],
     "tradittore": ["ABOUT_tradittore.md"],
     "bibliografia": ["ABOUT_bibliografia.md"],
     "pontuação": ["ABOUT_pontuação.md"],
     "samizdàt": ["ABOUT_samizdàt.md"],
-    "notes": ["ABOUT_notes.md"],
     "license": ["ABOUT_license.md"],
     "index": ["ABOUT_index.md", "ABOUT_INDEX.md"],
+    "pensares": ["ABOUT_pensares.md"],
 }
 
 BOOKS_LIST = [
@@ -92,7 +92,7 @@ IDIOMAS_OFICIAIS = [
 # -----------------------------------------------------------------------------
 st.set_page_config(
     page_title="a máquina de fazer Poesia - yPoemas",
-    page_icon=":star:",
+    page_icon="🌿",
     layout="wide",
     initial_sidebar_state="auto",
 )
@@ -325,6 +325,86 @@ def apply_styles():
             margin-bottom: 0.30rem !important;
         }
 
+
+        /* Lista de páginas alinhada ao eixo central da Machina */
+        div[data-testid="stElementContainer"]:has(iframe[title="extra_streamlit_components.TabBar.tab_bar"]) {
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            width: 100% !important;
+            text-align: center !important;
+        }
+
+        iframe[title="extra_streamlit_components.TabBar.tab_bar"] {
+            display: block !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+
+
+        /* Títulos do yPoemas centralizados no palco */
+        .machina-titulo-poema,
+        .titulo-poema,
+        div[data-testid="stMarkdownContainer"] h1,
+        div[data-testid="stMarkdownContainer"] h2,
+        div[data-testid="stMarkdownContainer"] h3 {
+            text-align: center !important;
+            width: 100% !important;
+            display: block !important;
+        }
+
+        .machina-titulo-poema,
+        .titulo-poema {
+            font-size: 1.24rem !important;
+            font-weight: 500 !important;
+            letter-spacing: 0.03rem !important;
+            margin-top: 0.10rem !important;
+            margin-bottom: 0.30rem !important;
+        }
+
+
+        /* Fonte principal da Machina */
+        html, body, [class*="css"], .stApp {
+            font-family: "Trebuchet MS", Trebuchet, Arial, sans-serif !important;
+        }
+
+
+        /* Páginas com centro :: casa própria da lista de páginas */
+        .machina-tabbar-house {
+            width: 100% !important;
+            max-width: 100% !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            margin: 0 auto !important;
+            padding: 0 !important;
+            box-sizing: border-box !important;
+        }
+
+        div[data-testid="stElementContainer"]:has(iframe[title="extra_streamlit_components.TabBar.tab_bar"]) {
+            width: 100% !important;
+            max-width: 100% !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            text-align: center !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+
+        iframe[title="extra_streamlit_components.TabBar.tab_bar"] {
+            display: block !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            padding: 0 !important;
+        }
+
 /* Gramado :: território principal */
         .main .block-container {
             padding-top: 0.00rem !important;
@@ -429,7 +509,7 @@ def init_session_state():
         "arts": [],
         "auto": False,
         "rand": False,
-        "stage_font": "IBM Plex Sans",
+        "stage_font": "Trebuchet",
         "stage_size": 21,
 
         # chave de ouro
@@ -658,7 +738,7 @@ def load_help(idiom):
     returns.append(translate("escolhe tema ao acaso"))
     returns.append(translate("próximo tema"))
     returns.append(translate("mais lidos..."))
-    returns.append(translate("gera nova versão do tema"))
+    returns.append(translate("nova versão do tema"))
     returns.append(translate("arte"))
     returns.append(translate("voz"))
 
@@ -1686,6 +1766,7 @@ def main():
     gramado = open_gramado()
 
     with gramado:
+        st.markdown("<div class='machina-tabbar-house'>", unsafe_allow_html=True)
         chosen_id = stx.tab_bar(
             data=[
                 stx.TabBarItemData(id=1, title="mini", description=""),
@@ -1696,6 +1777,7 @@ def main():
             ],
             default=2,
         )
+        st.markdown("</div>", unsafe_allow_html=True)
 
         chosen_id = str(chosen_id)
 
