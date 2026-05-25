@@ -14,7 +14,7 @@ from lay_2_ypo import gera_poema
 
 ABOUTS_LIST = [
     "comentários", "prefácil", "machina", "off-machina", "machina-IA", "livros", "outros autores",
-    "imagens", "poly", "tradittore", "bibliografia", "pontuação", "samizdàt", "notes", "pensares", "license", "index",
+    "imagens", "poly", "pensares", "tradittore", "bibliografia", "pontuação", "samizdàt", "notes", "license", "index",
 ]
 
 ABOUTS_FILES = {
@@ -27,6 +27,7 @@ ABOUTS_FILES = {
     "outros autores": ["ABOUT_outros_autores.md", "ABOUT_outros autores.md"],
     "imagens": ["ABOUT_imagens.md"],
     "poly": ["ABOUT_poly.md"],
+    "pensares": ["ABOUT_pensares.md"],
     "tradittore": ["ABOUT_tradittore.md"],
     "bibliografia": ["ABOUT_bibliografia.md"],
     "pontuação": ["ABOUT_pontuação.md"],
@@ -305,7 +306,26 @@ def apply_styles():
             padding-right: 0.04rem !important;
         }
 
-        /* Gramado :: território principal */
+        
+        /* Centralização óptica dos títulos markdown */
+        div[data-testid="stMarkdownContainer"] h1,
+        div[data-testid="stMarkdownContainer"] h2,
+        div[data-testid="stMarkdownContainer"] h3 {
+            text-align: center !important;
+        }
+
+        /* Títulos dos yPoemas :: eixo emocional do palco */
+        .machina-titulo-poema,
+        .titulo-poema {
+            text-align: center !important;
+            font-size: 1.24rem !important;
+            font-weight: 500 !important;
+            letter-spacing: 0.03rem !important;
+            margin-top: 0.10rem !important;
+            margin-bottom: 0.30rem !important;
+        }
+
+/* Gramado :: território principal */
         .main .block-container {
             padding-top: 0.00rem !important;
             padding-left: 0.04rem !important;
