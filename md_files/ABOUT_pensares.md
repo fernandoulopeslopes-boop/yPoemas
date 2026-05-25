@@ -13,10 +13,10 @@ ___
 
 - Status = *Falar:*  
 > Pode ser sozinho, com as paredes ou com outros eus.  
->> A qualidade/profundidade/pertinência desse Status  
->> depende da qualidade/quantidade do(s) interlocutor(es).  
->>> Caso os interlocutores sejam internos, alguns diálogos  
->>> podem ser inúteis e nem sempre será alcançado um consenso.  
+> A qualidade/profundidade/pertinência desse Status  
+> depende da qualidade/quantidade do(s) interlocutor(es).  
+> Caso os interlocutores sejam internos, alguns diálogos  
+> podem ser inúteis e nem sempre será alcançado um consenso.  
 
 - Status = *Automático:*  
 > acordar, tomar banho e café, rezar, ir trabalhar, produzir ou não,  
@@ -53,22 +53,23 @@ ___
 > Há desencontro entre as informações.  
 > Nada parece fazer sentido.  
 > A vida é pequena e não vale a pena.  
->> As saídas são:  
->> - entrar em modo *SONHO*  
->> - entrar em modo *VIGÍLIA*  
->> - entrar em modo *CONTEMPLAR*  
->> - entrar em modo *HAPPY_HOUR*  
->> - não entrar em modo *VIAGEM*  
->> - não voltar ao modo *IMPASSE*  
-
+  
+> As saídas são:  
+> - entrar em modo *SONHO*  
+> - entrar em modo *VIGÍLIA*  
+> - entrar em modo *CONTEMPLAR*  
+> - entrar em modo *HAPPY_HOUR*  
+> - não entrar em modo *VIAGEM*  
+> - não voltar ao modo *IMPASSE*  
+___
 ### PÂNICO:  
 > As saídas são:  
 > - ligar para o seu terapeuta ou procurar um se não tiver.  
 > - respirar fundo e contar até dez, várias vezes, até cair na real.  
 > - fazer trabalhos corriqueiros do cotidiano  
->> (lavar louça, cozinhar, varrer a casa, tomar banho de cachoeira...)  
+>   (lavar louça, cozinhar, varrer a casa, tomar banho de cachoeira...)  
 > - tomar 6 miligramas de sertralina ou equivalente.  
->>  Pode ser substituído por vinho, cerveja, cachaça ou whisky.  
+>   Pode ser substituído por vinho, cerveja, cachaça ou whisky.  
 > - em alguns casos orações podem funcionar.  
 > - se nada funcionar, tentar o modo *HAPPY_HOUR* ou *VIAGEM*.  
 ___
@@ -84,9 +85,9 @@ ___
 > - meios de transporte: carro, avião, ônibus, trem, navio, neurônios, drogas lícitas ou ilícitas.  
 > - os pensamentos vagueiam por diversos assuntos, randomicamente, sem se deter sobre nenhum tema específico.  
 > - aproveita-se aqui o passeio em si mesmo.  
->> - quando sem palpite, entrar em *HAPPY_HOUR*, à qualquer hora do dia.  
->> - se nada disso funcionar corretamente, aperte *O BOTÃO*.  
-___
+> - quando sem palpite, entrar em *HAPPY_HOUR*, à qualquer hora do dia.  
+> - se nada disso funcionar corretamente, aperte *O BOTÃO*.  
+___  
 ### O BOTÃO  
 - Status = *Relax:*  
 > - dê-se férias.  
