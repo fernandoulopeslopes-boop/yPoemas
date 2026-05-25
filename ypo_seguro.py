@@ -557,10 +557,8 @@ def pick_lang():  # lista oficial de idiomas + P.O.L.Y.
         st.session_state.lang = selected["lang"]
         st.session_state.poly_file = selected["poly_file"]
 
-    if st.session_state.lang != st.session_state.last_lang:
-        st.success(translate("idioma atual") + " ➪ " + st.session_state.lang)
-
-
+    #if st.session_state.lang != st.session_state.last_lang:
+    #    st.success(translate("idioma atual") + " ➪ " + st.session_state.lang)
 
 
 FONTES_MACHINA = [
