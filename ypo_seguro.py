@@ -1702,7 +1702,7 @@ def main():
 
         chosen_id = str(chosen_id)
 
-        gramado_divider()
+        #gramado_divider()
         draw_check_buttons()
 
         palco = st.container()
