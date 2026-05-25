@@ -721,9 +721,9 @@ def show_icons():  # https://api.whatsapp.com/
         st.sidebar.markdown(
             f"""
             <nav>
-            <a href='https://www.facebook.com/nandoulopes' target='_blank'> face • </a>
+            <a href='https://www.facebook.com/nandoulopes' target='_blank'>• face • </a>
             <a href='mailto:lopes.fernando@hotmail.com' target='_blank'> e-mail • </a>
-            <a href='https://www.instagram.com/fernando.lopes.942/' target='_blank'> insta  </a>
+            <a href='https://www.instagram.com/fernando.lopes.942/' target='_blank'> insta • </a>
             <a href='https://web.whatsapp.com/send?phone=+5512991368181' target='_blank'> zapp  •</a>
             </nav>
             """,
