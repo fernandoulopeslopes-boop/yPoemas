@@ -207,7 +207,7 @@ def apply_styles():
         .logo-text {
             font-weight: 600;
             font-size: 21px;
-            font-family: 'IBM Plex Sans';
+            font-family: 'Trebuchet';
             color: #000000;
             padding-top: 0px;
             padding-left: 8px;
@@ -218,7 +218,6 @@ def apply_styles():
             margin-right: 0px;
             padding-right: 0px;
         }
-
 
 
         /* Palco :: ajuste fino de área útil */
@@ -267,9 +266,6 @@ def apply_styles():
         }
 
         
-
-
-
         /* Território sem dono :: lista de páginas no topo e centrada */
         iframe[title="extra_streamlit_components.TabBar.tab_bar"] {
             display: block !important;
@@ -467,9 +463,7 @@ def palco_status(book=None, pos=None, total=None):
     return f"🌿  {st.session_state.lang} ( {book} ) ( {pos} / {total} )"
 
 
-
 ### bof: tools
-
 
 
 def translate(input_text):
@@ -494,7 +488,6 @@ def translate(input_text):
         return output_text
     except Exception:
         return "Arquivo muito grande para ser traduzido."
-
 
 
 def pick_lang():  # lista oficial de idiomas + P.O.L.Y.
@@ -541,9 +534,6 @@ def pick_lang():  # lista oficial de idiomas + P.O.L.Y.
         st.session_state.lang = selected["lang"]
         st.session_state.poly_file = selected["poly_file"]
 
-    #if st.session_state.lang != st.session_state.last_lang:
-    #    st.success(translate("idioma atual") + " ➪ " + st.session_state.lang)
-
 
 FONTES_MACHINA = [
     ("IBM Plex Sans", "IBM Plex Sans"),
@@ -587,7 +577,7 @@ def pick_stage_font():
     labels = [label for label, fonte in FONTES_MACHINA]
     lookup = {label: fonte for label, fonte in FONTES_MACHINA}
 
-    current_font = st.session_state.get("stage_font", "IBM Plex Sans")
+    current_font = st.session_state.get("stage_font", "Trebuchet")
     current_label = next(
         (label for label, fonte in FONTES_MACHINA if fonte == current_font),
         labels[0],
@@ -625,15 +615,14 @@ def show_icons():  # https://api.whatsapp.com/
         st.sidebar.markdown(
             f"""
             <nav>
-            <a href='https://www.facebook.com/nandoulopes' target='_blank'>••  face </a>
+            <a href='https://www.facebook.com/nandoulopes' target='_blank'>••   face </a>
             <a href='mailto:lopes.fernando@hotmail.com' target='_blank'> e-mail  </a>
             <a href='https://www.instagram.com/fernando.lopes.942/' target='_blank'> insta  </a>
-            <a href='https://web.whatsapp.com/send?phone=+5512991368181' target='_blank'> zapp  ••</a>
+            <a href='https://web.whatsapp.com/send?phone=+5512991368181' target='_blank'> zapp   ••</a>
             </nav>
             """,
             unsafe_allow_html=True,
         )
-
 
 
 def load_help(idiom):
