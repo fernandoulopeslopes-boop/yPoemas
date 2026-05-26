@@ -1010,11 +1010,11 @@ def page_mini():
                 save_typo.write(curr_ypoema)
                 save_typo.close()
             curr_ypoema = load_typo()
-			
-        update_readings(st.session_state.tema)
 
+        update_readings(st.session_state.tema)
+		
 		LOGO_TEXTO = curr_ypoema
-		LOGO_IMAGE = None
+        LOGO_IMAGE = None
 
         if st.session_state.draw:
             LOGO_IMAGE = load_arts(st.session_state.tema)
