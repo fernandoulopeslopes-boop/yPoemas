@@ -1722,7 +1722,7 @@ def main():
 
     show_icons()
     close_gramado()
-    ##$ st.sidebar.state = True
+
 
 if __name__ == "__main__":
     main()
