@@ -358,17 +358,6 @@ def apply_styles():
         }
 
 
-        .machina-divider {
-            height: 0 !important;
-            width: 100% !important;
-            max-width: 100% !important;
-            background: transparent !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            border: 0 !important;
-        }
-
-
         /* Território sem dono :: expander/palco no mesmo eixo */
         div[data-testid="stExpander"] {
             width: 100% !important;
@@ -464,11 +453,6 @@ def open_gramado():
 def close_gramado():
     """Mantida apenas por compatibilidade histórica."""
     return None
-
-
-def gramado_divider():
-    """Divider invisível: o eixo visual agora é dado pelos nav_buttons."""
-    st.markdown("<div class='machina-divider'></div>", unsafe_allow_html=True)
 
 
 def open_palco():
@@ -1699,12 +1683,8 @@ def main():
 
         chosen_id = str(chosen_id)
 
-        #gramado_divider()
         draw_check_buttons()
-
         palco = st.container()
-
-
         with palco:
             palco_container = open_palco()
 
