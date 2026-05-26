@@ -55,10 +55,25 @@ PAGE_IMAGES = {
 
 VOICES_EDGE_TTS = {
     "pt": "pt-BR-AntonioNeural",
-    "en": "en-US-GuyNeural",
     "es": "es-ES-AlvaroNeural",
     "fr": "fr-FR-HenriNeural",
     "it": "it-IT-DiegoNeural",
+    "en": "en-GB-RyanNeural",
+    "en": "en-US-GuyNeural",
+    "gl": "gl-ES-RoiNeural",
+    "eu": "eu-ES-AnderNeural",
+    "de": "de-DE-ConradNeural",
+    "da": "da-DK-JeppeNeural",
+    "nl": "nl-NL-MaartenNeural",
+    "pl": "pl-PL-MarekNeural",
+    "ro": "ro-RO-EmilNeural",
+    "nb": "nb-NO-FinnNeural",
+    "fi": "fi-FI-SelmaNeural",
+    "is": "is-IS-GunnarNeural",
+    "hu": "hu-HU-TamasNeural",
+    "sv": "sv-SE-MattiasNeural",
+    "ca": "ca-ES-EnricNeural",
+    "ru": "ru-RU-DmitryNeural",
 }
 
 IDIOMAS_OFICIAIS = [
@@ -92,7 +107,7 @@ IDIOMAS_OFICIAIS = [
 # -----------------------------------------------------------------------------
 st.set_page_config(
     page_title="a máquina de fazer Poesia - yPoemas",
-    page_icon="🌿",
+    page_icon=":star:",
     layout="wide",
     initial_sidebar_state="auto",
 )
@@ -452,11 +467,6 @@ def open_gramado():
     return st.container()
 
 
-def close_gramado():
-    """Mantida apenas por compatibilidade histórica."""
-    return None
-
-
 def open_palco():
     """Cria um container real para o palco."""
     return st.container()
@@ -468,9 +478,7 @@ def palco_status(book=None, pos=None, total=None):
         return f"🌿  {st.session_state.lang} ( {book} )"
     return f"🌿  {st.session_state.lang} ( {book} ) ( {pos} / {total} )"
 
-
 ### bof: tools
-
 
 def translate(input_text):
     """Traduz textos de apoio e yPoemas quando o idioma atual não é português."""
@@ -1665,16 +1673,19 @@ def main():
     gramado = open_gramado()
 
     with gramado:
-        chosen_id = stx.tab_bar(
-            data=[
-                stx.TabBarItemData(id=1, title="mini", description=""),
-                stx.TabBarItemData(id=2, title="yPoemas", description=""),
-                stx.TabBarItemData(id=3, title="eureka", description=""),
-                stx.TabBarItemData(id=4, title="off-mach", description=""),
-                stx.TabBarItemData(id=5, title="about", description=""),
-            ],
-            default=2,
-        )
+        _pag_esq, _pag_centro, _pag_dir = st.columns([0.15, 9.7, 0.15])
+
+        with _pag_centro:
+            chosen_id = stx.tab_bar(
+                data=[
+                    stx.TabBarItemData(id=1, title="mini", description=""),
+                    stx.TabBarItemData(id=2, title="yPoemas", description=""),
+                    stx.TabBarItemData(id=3, title="eureka", description=""),
+                    stx.TabBarItemData(id=4, title="off-mach", description=""),
+                    stx.TabBarItemData(id=5, title="about", description=""),
+                ],
+                default=2,
+            )
 
         chosen_id = str(chosen_id)
 
