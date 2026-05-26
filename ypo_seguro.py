@@ -1665,7 +1665,7 @@ def main():
     gramado = open_gramado()
 
     with gramado:
-        _pag_esq, _pag_centro, _pag_dir = st.columns([0.15, 9.7, 0.15])
+        _pag_esq, _pag_centro, _pag_dir = st.columns([1.2, 6.6, 1.2])
 
         with _pag_centro:
             chosen_id = stx.tab_bar(
