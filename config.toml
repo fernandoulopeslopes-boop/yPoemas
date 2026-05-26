@@ -1,0 +1,4 @@
+[server]
+runOnSave = true
+fileWatcherType = "poll"
+headless = true
