@@ -790,8 +790,6 @@ def load_info(nome_tema):
 
         return result
 
-1.9, 3.55])
-
     help_tips = load_help(st.session_state.lang)
     help_rand = help_tips[1]
     help_more = help_tips[4]
