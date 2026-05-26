@@ -1010,7 +1010,7 @@ def page_mini():
                 save_typo.write(curr_ypoema)
                 save_typo.close()
             curr_ypoema = load_typo()
-
+			
         update_readings(st.session_state.tema)
 		
 		LOGO_TEXTO = curr_ypoema
