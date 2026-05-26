@@ -723,39 +723,14 @@ def load_index():
     return index_list
 
 
-def load_lypo():  # Load last yPoema & replace '\n' with '<br>' for translator returned text
+def load_lypo():
     lypo_text = ""
-    lypo_user = "LYPO_" + IPAddres
+    lypo_user = "LYPO_" + st.session_state.session_uuid
     with open(os.path.join("./temp/" + lypo_user), encoding="utf-8", errors="replace") as script:
         for line in script:
             line = line.strip()
             lypo_text += line + "<br>"
-
     return lypo_text
-
-
-def load_typo():  # Load translated yPoema & clean translator returned bugs in text
-    typo_text = ""
-    typo_user = "TYPO_" + IPAddres
-    with open(os.path.join("./temp/" + typo_user), encoding="utf-8", errors="replace") as script:
-        for line in script:  # just 1 line
-            line = line.strip()
-            if " >" in line:
-                line = line.replace(" >", "\n")
-            elif "< " in line:
-                line = line.replace("< ", "\n")
-            elif " br " in line:
-                line = line.replace(" br", "\n")
-            elif "br " in line:
-                line = line.replace("br ", "\n")
-            elif " br" in line:
-                line = line.replace(" br", "\n")
-            line = line.replace("< <", ">")
-            line = line.replace("> >", ">")
-            typo_text += line + "<br>"
-
-    return typo_text
-
 
 def load_typo():
     typo_text = ""
@@ -777,6 +752,7 @@ def load_typo():
             line = line.replace("> >", ">")
             typo_text += line + "<br>"
     return typo_text
+
 
 def load_all_offs():
     return OFF_BOOKS_LIST
@@ -800,16 +776,19 @@ def load_book_pages(book):
             book_pages.append(pipe_line[1])
     return book_pages
 
+
 def load_poema(nome_tema, seed_eureka):
     script = gera_poema(nome_tema, seed_eureka)
     novo_ypoema = ""
     lypo_user = "LYPO_" + st.session_state.session_uuid
     with open(os.path.join("./temp/" + lypo_user), "w", encoding="utf-8") as save_lypo:
-        save_lypo.write(
-            nome_tema
-        )
+        save_lypo.write(nome_tema)
         save_lypo.write("\n")
+        first_line = True
         for line in script:
+            if first_line and line.strip() == "":
+                continue  # pula primeira linha vazia do gera_poema
+            first_line = False
             if line == "\n":
                 save_lypo.write("\n")
                 novo_ypoema += "<br>"
