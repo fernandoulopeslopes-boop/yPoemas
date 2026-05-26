@@ -13,9 +13,29 @@ from extra_streamlit_components import TabBar as stx
 from lay_2_ypo import gera_poema
 
 ABOUTS_LIST = [
-    "comments", "prefácil", "machina", "off-machina", "MACHINA-IA", "livros", "outros autores",
-    "imagens", "poly", "traduttore", "bibliografia", "samizdát", "notes", "license", "index",
+    "comentários", "prefácil", "machina", "off-machina", "machina-IA", "livros", "outros autores",
+    "imagens", "poly", "pensares", "tradittore", "bibliografia", "pontuação", "samizdàt", "notes", "license", "index",
 ]
+
+ABOUTS_FILES = {
+    "comentários": ["ABOUT_comentários.md"],
+    "prefácil": ["ABOUT_prefácil.md"],
+    "machina": ["ABOUT_machina I.md", "ABOUT_machina II.md"],
+    "off-machina": ["ABOUT_off-machina.md"],
+    "machina-IA": ["ABOUT_machina-IA.md"],
+    "livros": ["ABOUT_livros.md"],
+    "outros autores": ["ABOUT_outros_autores.md", "ABOUT_outros autores.md"],
+    "imagens": ["ABOUT_imagens.md"],
+    "poly": ["ABOUT_poly.md"],
+    "pensares": ["ABOUT_pensares.md"],
+    "tradittore": ["ABOUT_tradittore.md"],
+    "bibliografia": ["ABOUT_bibliografia.md"],
+    "pontuação": ["ABOUT_pontuação.md"],
+    "samizdàt": ["ABOUT_samizdàt.md"],
+    "notes": ["ABOUT_notes.md"],
+    "license": ["ABOUT_license.md"],
+    "index": ["ABOUT_index.md", "ABOUT_INDEX.md"],
+}
 
 BOOKS_LIST = [
     "todos os temas", "livro vivo", "poemas", "jocosos", "ensaios", "variações", 
@@ -25,12 +45,12 @@ BOOKS_LIST = [
 
 OFF_BOOKS_LIST = [
     "a_torre_de_papel", "quase_que_eu_Poesia", "faz_de_conto", "um_romance",
-    "linguafiada", "livro_vivo", "desvoto", "ensaio", "urbano", "essencial", "secreto",
+    "linguafiada", "livro_vivo", "desvoto", "ensaios", "urbano", "essencial", "secreto",
 ]
 
 PAGE_IMAGES = {
     "1": "img_mini.jpg", "2": "img_ypoemas.jpg", "3": "img_eureka.jpg",
-    "4": "img_off-machina.jpg", "5": "img_books.jpg", "6": "img_poly.jpg", "7": "img_about.jpg",
+    "4": "img_off-machina.jpg", "5": "img_about.jpg",
 }
 
 VOICES_EDGE_TTS = {
@@ -73,7 +93,7 @@ IDIOMAS_OFICIAIS = [
 st.set_page_config(
     page_title="a máquina de fazer Poesia - yPoemas",
     page_icon=":star:",
-    layout="centered",
+    layout="wide",
     initial_sidebar_state="auto",
 )
 
@@ -119,20 +139,37 @@ def apply_styles():
         <style>
         /*#MainMenu {visibility: hidden;}*/
         footer {visibility: hidden;}
-        </style>
+        
+        /* Machina :: botões sem quebra de linha */
+        div[data-testid="stButton"] button,
+        div[data-testid="stButton"] button p {
+            white-space: nowrap !important;
+            word-break: keep-all !important;
+            overflow-wrap: normal !important;
+        }
+</style>
         """,
         unsafe_allow_html=True,
     )
+
+    st.markdown("""
+    <style>
+    .stButton > button {
+        white-space: nowrap !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
 
     st.markdown(
         """
         <style>
         .reportview-container .main .block-container{
             padding-top: 0rem;
-            padding-right: 0.25rem;
-            padding-left: 0.25rem;
+            padding-right: 0.04rem;
+            padding-left: 0.04rem;
             padding-bottom: 0rem;
-            max-width: 94vw;
+            max-width: 100vw;
         }
         </style>
         """,
@@ -143,14 +180,17 @@ def apply_styles():
         """
         <style>
         [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
-            width: 310px;
-            min-width: 310px;
-            max-width: 310px;
+            width: 25vw;
+            min-width: 25vw;
+            max-width: 25vw;
         }
+
+        /* Sidebar :: calibragem temporária com dragster visível */
         [data-testid="stSidebarResizer"],
         [data-testid="stSidebar"] [role="separator"] {
             display: none !important;
             width: 0 !important;
+            opacity: 0.45 !important;
         }
         mark {
             background-color: powderblue;
@@ -167,7 +207,7 @@ def apply_styles():
         .logo-text {
             font-weight: 600;
             font-size: 21px;
-            font-family: 'IBM Plex Sans';
+            font-family: 'Trebuchet';
             color: #000000;
             padding-top: 0px;
             padding-left: 8px;
@@ -180,10 +220,9 @@ def apply_styles():
         }
 
 
-
         /* Palco :: ajuste fino de área útil */
         div[data-testid="stVerticalBlock"] {
-            gap: 0.35rem;
+            gap: 0.18rem;
         }
 
         div[data-testid="stExpander"] {
@@ -227,37 +266,114 @@ def apply_styles():
         }
 
         
-        /* Gramado :: território principal */
-        .main .block-container {
-            padding-top: 0.25rem !important;
-            padding-left: 0.35rem !important;
-            padding-right: 0.35rem !important;
-            padding-bottom: 0.25rem !important;
+        /* Território sem dono :: lista de páginas no topo e centrada */
+        iframe[title="extra_streamlit_components.TabBar.tab_bar"] {
+            display: block !important;
+            width: fit-content !important;
+            max-width: 100% !important;
+            margin: -0.62rem auto 0rem auto !important;
+            padding: 0 !important;
+        }
+
+        div[data-testid="stElementContainer"]:has(iframe[title="extra_streamlit_components.TabBar.tab_bar"]) {
+            width: 100% !important;
+            max-width: 100% !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: flex-start !important;
+            margin-top: -0.62rem !important;
+            margin-bottom: 0rem !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+
+        /* Sintonia fina :: subir páginas */
+        iframe[title="extra_streamlit_components.TabBar.tab_bar"] {
+            margin-top: -0.62rem !important;
+            margin-bottom: 0 !important;
+        }
+
+        div[data-testid="stElementContainer"] {
+            margin-top: 0 !important;
+        }
+
+        /* Free Gramado :: liberar área útil real */
+        section.main > div.block-container {
             max-width: 100vw !important;
+            width: 100% !important;
+            padding-left: 0.04rem !important;
+            padding-right: 0.04rem !important;
+        }
+
+        
+        /* Centralização óptica dos títulos markdown */
+        div[data-testid="stMarkdownContainer"] h1,
+        div[data-testid="stMarkdownContainer"] h2,
+        div[data-testid="stMarkdownContainer"] h3 {
+            text-align: center !important;
+        }
+
+        /* Títulos dos yPoemas :: eixo emocional do palco */
+        .machina-titulo-poema,
+        .titulo-poema {
+            text-align: center !important;
+            font-size: 1.24rem !important;
+            font-weight: 500 !important;
+            letter-spacing: 0.03rem !important;
+            margin-top: 0.10rem !important;
+            margin-bottom: 0.30rem !important;
+        }
+
+/* Gramado :: território principal */
+        .main .block-container {
+            padding-top: 0.00rem !important;
+            padding-left: 0.04rem !important;
+            padding-right: 0.04rem !important;
+            padding-bottom: 0.16rem !important;
+            max-width: 100vw !important;
+            width: 100% !important;
         }
 
         .machina-gramado {
             background: #eef8ee;
             border-radius: 18px;
-            padding: 0.35rem 0.55rem 0.55rem 0.55rem;
+            padding: 0.04rem 0.10rem 0.20rem 0.10rem;
             min-height: 78vh;
             overflow-x: hidden;
             overflow-y: auto;
         }
 
-        .machina-divider {
-            height: 1px;
-            width: 100%;
-            background: rgba(0, 0, 0, 0.12);
-            margin: 0.20rem 0rem 0.35rem 0rem;
+        /* Gramado real: primeiro container criado no main */
+        div[data-testid="stAppViewContainer"] main
+        div[data-testid="stVerticalBlock"] > div[data-testid="stVerticalBlockBorderWrapper"]:first-child,
+        div[data-testid="stAppViewContainer"] main
+        div[data-testid="stVerticalBlock"] > div[data-testid="stVerticalBlock"]:first-child {
+            background: #eef8ee !important;
+            border-radius: 18px !important;
+            padding: 0.00rem 0.14rem 0.22rem 0.14rem !important;
+        }
+
+
+        /* Território sem dono :: expander/palco no mesmo eixo */
+        div[data-testid="stExpander"] {
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+
+        div[data-testid="stExpander"] details {
+            width: 100% !important;
+            max-width: 100% !important;
         }
 
         .machina-palco-central {
             background: rgba(255, 255, 255, 0.72);
             border-radius: 18px;
-            padding: 0.45rem 0.55rem 0.35rem 0.55rem;
+            padding: 0.08rem 0.00rem 0.16rem 0.00rem;
             min-height: 61vh;
             overflow-x: hidden;
+            width: 100% !important;
+            max-width: 100% !important;
+            box-sizing: border-box !important;
         }
 
         .machina-moldura-lateral {
@@ -320,29 +436,34 @@ apply_styles()
 init_session_state()
 
 
-
 def open_gramado():
-    st.markdown("<div class='machina-gramado'>", unsafe_allow_html=True)
+    """Cria um container real para o gramado.
+
+    Importante:
+    st.markdown("<div>") não envolve elementos Streamlit seguintes.
+    O gramado precisa ser um container usado com `with gramado:`.
+    """
+    return st.container()
 
 
 def close_gramado():
-    st.markdown("</div>", unsafe_allow_html=True)
+    """Mantida apenas por compatibilidade histórica."""
+    return None
 
 
-def gramado_divider():
-    st.markdown("<div class='machina-divider'></div>", unsafe_allow_html=True)
+def open_palco():
+    """Cria um container real para o palco."""
+    return st.container()
 
 
 def palco_status(book=None, pos=None, total=None):
     book = book or st.session_state.get("book", "")
     if pos is None or total is None:
-        return f"⚫  {st.session_state.lang} ( {book} )"
-    return f"⚫  {st.session_state.lang} ( {book} ) ( {pos} / {total} )"
-
+        return f"🌿  {st.session_state.lang} ( {book} )"
+    return f"🌿  {st.session_state.lang} ( {book} ) ( {pos} / {total} )"
 
 
 ### bof: tools
-
 
 
 def translate(input_text):
@@ -413,11 +534,6 @@ def pick_lang():  # lista oficial de idiomas + P.O.L.Y.
         st.session_state.lang = selected["lang"]
         st.session_state.poly_file = selected["poly_file"]
 
-    if st.session_state.lang != st.session_state.last_lang:
-        st.success(translate("idioma atual") + " ➪ " + st.session_state.lang)
-
-
-
 
 FONTES_MACHINA = [
     ("IBM Plex Sans", "IBM Plex Sans"),
@@ -461,7 +577,7 @@ def pick_stage_font():
     labels = [label for label, fonte in FONTES_MACHINA]
     lookup = {label: fonte for label, fonte in FONTES_MACHINA}
 
-    current_font = st.session_state.get("stage_font", "IBM Plex Sans")
+    current_font = st.session_state.get("stage_font", "Trebuchet")
     current_label = next(
         (label for label, fonte in FONTES_MACHINA if fonte == current_font),
         labels[0],
@@ -499,15 +615,14 @@ def show_icons():  # https://api.whatsapp.com/
         st.sidebar.markdown(
             f"""
             <nav>
-            <a href='https://www.facebook.com/nandoulopes' target='_blank'>••  face </a>
+            <a href='https://www.facebook.com/nandoulopes' target='_blank'>••   face </a>
             <a href='mailto:lopes.fernando@hotmail.com' target='_blank'> e-mail  </a>
             <a href='https://www.instagram.com/fernando.lopes.942/' target='_blank'> insta  </a>
-            <a href='https://web.whatsapp.com/send?phone=+5512991368181' target='_blank'> zapp  ••</a>
+            <a href='https://web.whatsapp.com/send?phone=+5512991368181' target='_blank'> zapp   ••</a>
             </nav>
             """,
             unsafe_allow_html=True,
         )
-
 
 
 def load_help(idiom):
@@ -736,11 +851,29 @@ def load_info(nome_tema):
 @st.cache_data
 def load_index():  # Load indexes numbers for all themes
     index_list = []
-    with open(os.path.join("./md_files/ABOUT_INDEX.md"), encoding="utf-8") as lista:
+
+    # Padrão curatorial atual: ABOUT_index.md
+    # Fallback histórico: ABOUT_INDEX.md
+    index_candidates = [
+        os.path.join("./md_files/ABOUT_index.md"),
+        os.path.join("./md_files/ABOUT_INDEX.md"),
+    ]
+
+    index_file = None
+    for candidate in index_candidates:
+        if os.path.exists(candidate):
+            index_file = candidate
+            break
+
+    if index_file is None:
+        return index_list
+
+    with open(index_file, encoding="utf-8") as lista:
         for line in lista:
             index_list.append(line)
 
     return index_list
+
 
 
 def load_lypo():  # Load last yPoema & replace '\n' with '<br>' for translator returned text
@@ -973,7 +1106,7 @@ def page_mini():
     if st.session_state.mini > maxy_mini:  # just in case
         st.session_state.mini = 0
 
-    foo1, more, rand, auto, foo2 = st.columns([3.8, 1, 1, 1.25, 3.8])
+    foo1, more, rand, auto, foo2 = st.columns([3.55, 1, 1, 1.9, 3.55])
 
     help_tips = load_help(st.session_state.lang)
     help_rand = help_tips[1]
@@ -996,8 +1129,7 @@ def page_mini():
         st.session_state.rand = False
 
     st.session_state.tema = temas_list[st.session_state.mini]
-    analise = say_number(st.session_state.tema)
-    more = more.button("✚", help=help_more + " • " + analise)
+    more = more.button("✚", help=help_more)
 
     if more:
         st.session_state.rand = False
@@ -1137,7 +1269,7 @@ def page_ypoemas():
 
     if lnew:
         what_book = (
-            "⚫  "
+            "🌿  "
             + st.session_state.lang
             + " ( "
             + st.session_state.book
@@ -1225,7 +1357,7 @@ def page_eureka():
             part_line = this_line.partition(" : ")
             palas = part_line[0]
             fonte = part_line[2]
-            seed_tema = fonte[0:-5]
+            seed_tema = fonte.partition("_")[0]
             if (palas is None) or (fonte is None):
                 continue
             else:
@@ -1256,7 +1388,17 @@ def page_eureka():
                 info_find += translate('" em ' + str(len(soma_tema)) + " temas")
 
             if rand:
-                st.session_state.eureka = random.randrange(0, len(seed_list))
+                old_eureka = st.session_state.get("eureka", 0)
+                if len(seed_list) > 1:
+                    new_eureka = random.randrange(0, len(seed_list))
+                    while new_eureka == old_eureka:
+                        new_eureka = random.randrange(0, len(seed_list))
+                    st.session_state.eureka = new_eureka
+                else:
+                    st.session_state.eureka = 0
+
+                # O selectbox precisa refletir a ocorrência sorteada.
+                st.session_state["opt_ocur"] = st.session_state.eureka
 
             with occurrences:
                 options = list(range(len(seed_list)))
@@ -1268,11 +1410,13 @@ def page_eureka():
                     key="opt_ocur",
                 )
 
-            st.session_state.eureka = opt_ocur
+            if not rand:
+                st.session_state.eureka = opt_ocur
+
             this_seed = seed_list[st.session_state.eureka]
             part_line = this_seed.partition(" ➪ ")
             nome_tema = part_line[2]
-            seed_tema = nome_tema[0:-5]
+            seed_tema = nome_tema.partition("_")[0]
 
             st.session_state.tema = seed_tema
 
@@ -1403,7 +1547,7 @@ def page_off_machina():  # available off_machina_books
 
     if lnew:
         what_book = (
-            "⚫  "
+            "🌿  "
             + st.session_state.lang
             + " ( "
             + str(st.session_state.off_take + 1)
@@ -1461,55 +1605,25 @@ def page_off_machina():  # available off_machina_books
 
 
 
-def page_polys():  # available languages
-    polys, ok = st.columns([9.3, 0.7])
-    with polys:
-        poly_list = []
-        poly_pais = []
-        poly_ling = []
-        with open(
-            os.path.join("./base/" + st.session_state.poly_file), encoding="utf-8"
-        ) as poly:
-            for line in poly:
-                poly_list.append(line)
-                this_line = line.strip("\n")
-                part_line = this_line.partition(" : ")
-                poly_pais.append(translate(part_line[0]))
-                poly_ling.append(part_line[2])
-        poly.close()
+def load_about_md(title):
+    """Carrega ABOUTs pelo padrão curatorial explícito.
 
-        options = list(range(len(poly_list)))
-        opt_poly = st.selectbox(
-            "↓  lista: " + str(len(poly_list)) + " idiomas",
-            options,
-            index=st.session_state.poly_take,
-            format_func=lambda x: poly_list[x],
-            key="opt_poly",
-        )
+    Padrão principal: ABOUT_nome_titulo.md.
+    Sem uppercase automático: nome de arquivo é assunto de curadoria.
+    """
+    candidates = ABOUTS_FILES.get(title, ["ABOUT_" + title.replace(" ", "_") + ".md"])
 
-    with ok:
-        doit = st.button("✔", help="confirm ?")
+    last_file = candidates[-1] if candidates else title
+    for file_name in candidates:
+        full_path = os.path.join("./md_files/" + file_name)
+        if os.path.exists(full_path):
+            return load_md_file(file_name)
 
-    if doit:
-        poly_pais = poly_pais[opt_poly]
-        poly_ling = poly_ling[opt_poly]
-        st.session_state.poly_name = translate(poly_pais)
-        st.session_state.poly_lang = poly_ling
-        st.session_state.poly_take = opt_poly
-
-        st.session_state.last_lang = st.session_state.lang
-        st.session_state.lang = st.session_state.poly_lang
-
-    lnew = True
-    if lnew:
-        poly_expander = st.expander("", True)
-        with poly_expander:
-            st.subheader(load_md_file("MANUAL_POLY.md"))
+    return translate("ooops... arquivo ( " + last_file + " ) não pode ser aberto.")
 
 
 def page_abouts():
     abouts_list = ABOUTS_LIST
-
 
     options = list(range(len(abouts_list)))
     sobrios = "↓  " + translate("sobre")
@@ -1520,19 +1634,18 @@ def page_abouts():
         key="opt_abouts",
     )
 
-    lnew = True
-    if lnew:
-        choice = abouts_list[opt_abouts].upper()
-        about_expander = st.expander("", True)
-        with about_expander:
-            if choice == "MACHINA":
-                st.subheader(load_md_file("ABOUT_MACHINA_A.md"))
-                LOGO_TEXTO = load_info(st.session_state.tema)
-                LOGO_IMAGE = "./images/matrix/" + st.session_state.tema + ".jpg"
-                write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
-                st.subheader(load_md_file("ABOUT_MACHINA_D.md"))
-            else:
-                st.subheader(load_md_file("ABOUT_" + choice + ".md"))
+    choice = abouts_list[opt_abouts]
+
+    about_expander = st.expander("", True)
+    with about_expander:
+        if choice == "machina":
+            st.subheader(load_md_file("ABOUT_machina I.md"))
+            LOGO_TEXTO = load_info(st.session_state.tema)
+            LOGO_IMAGE = "./images/matrix/" + st.session_state.tema + ".jpg"
+            write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
+            st.subheader(load_md_file("ABOUT_machina II.md"))
+        else:
+            st.subheader(load_about_md(choice))
 
 
 ### eof: pages
@@ -1543,75 +1656,66 @@ def main():
     pick_book_sidebar()
     pick_stage_font()
 
-    open_gramado()
+    gramado = open_gramado()
 
-    chosen_id = stx.tab_bar(
-        data=[
-            stx.TabBarItemData(id=1, title="mini", description=""),
-            stx.TabBarItemData(id=2, title="yPoemas", description=""),
-            stx.TabBarItemData(id=3, title="eureka", description=""),
-            stx.TabBarItemData(id=4, title="off-mach", description=""),
-            stx.TabBarItemData(id=5, title="poly", description=""),
-            stx.TabBarItemData(id=6, title="about", description=""),
-        ],
-        default=2,
-    )
+    with gramado:
+        chosen_id = stx.tab_bar(
+            data=[
+                stx.TabBarItemData(id=1, title="mini", description=""),
+                stx.TabBarItemData(id=2, title="yPoemas", description=""),
+                stx.TabBarItemData(id=3, title="eureka", description=""),
+                stx.TabBarItemData(id=4, title="off-mach", description=""),
+                stx.TabBarItemData(id=5, title="about", description=""),
+            ],
+            default=2,
+        )
 
-    chosen_id = str(chosen_id)
+        chosen_id = str(chosen_id)
 
-    gramado_divider()
-    draw_check_buttons()
+        draw_check_buttons()
+        palco = st.container()
+        with palco:
+            palco_container = open_palco()
 
-    margem_esq, palco, margem_dir = st.columns([1.05, 7.9, 1.05])
+            with palco_container:
+                if chosen_id == "1":
+                    magy = "img_mini.jpg"
+                    page_mini()
+                    status = palco_status("mini")
+                elif chosen_id == "2":
+                    magy = "img_ypoemas.jpg"
+                    page_ypoemas()
+                    status = palco_status(
+                        st.session_state.book,
+                        st.session_state.get("take", 0) + 1,
+                        len(load_temas(st.session_state.book)),
+                    )
+                elif chosen_id == "3":
+                    magy = "img_eureka.jpg"
+                    page_eureka()
+                    status = palco_status("eureka")
+                elif chosen_id == "4":
+                    magy = "img_off-machina.jpg"
+                    page_off_machina()
+                    status = palco_status("off-machina")
+                elif chosen_id == "5":
+                    magy = "img_about.jpg"
+                    page_abouts()
+                    status = palco_status("about")
+                else:
+                    magy = "img_ypoemas.jpg"
+                    page_ypoemas()
+                    status = palco_status(
+                        st.session_state.book,
+                        st.session_state.get("take", 0) + 1,
+                        len(load_temas(st.session_state.book)),
+                    )
 
-    with margem_esq:
-        st.markdown("<div class='machina-moldura-lateral'></div>", unsafe_allow_html=True)
+                st.markdown(
+                    f"<div class='machina-rodape-palco'>{status}</div>",
+                    unsafe_allow_html=True,
+                )
 
-    with palco:
-        st.markdown("<div class='machina-palco-central'>", unsafe_allow_html=True)
-
-        if chosen_id == "1":
-            magy = "img_mini.jpg"
-            page_mini()
-            status = palco_status("mini")
-        elif chosen_id == "2":
-            magy = "img_ypoemas.jpg"
-            page_ypoemas()
-            status = palco_status(
-                st.session_state.book,
-                st.session_state.get("take", 0) + 1,
-                len(load_temas(st.session_state.book)),
-            )
-        elif chosen_id == "3":
-            magy = "img_eureka.jpg"
-            page_eureka()
-            status = palco_status("eureka")
-        elif chosen_id == "4":
-            magy = "img_off-machina.jpg"
-            page_off_machina()
-            status = palco_status("off-machina")
-        elif chosen_id == "5":
-            magy = "img_poly.jpg"
-            page_polys()
-            status = palco_status("poly")
-        elif chosen_id == "6":
-            magy = "img_about.jpg"
-            page_abouts()
-            status = palco_status("about")
-        else:
-            magy = "img_ypoemas.jpg"
-            page_ypoemas()
-            status = palco_status(
-                st.session_state.book,
-                st.session_state.get("take", 0) + 1,
-                len(load_temas(st.session_state.book)),
-            )
-
-        st.markdown(f"<div class='machina-rodape-palco'>{status}</div>", unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
-
-    with margem_dir:
-        st.markdown("<div class='machina-moldura-lateral'></div>", unsafe_allow_html=True)
 
     with st.sidebar:
         st.image("./images/" + magy)
@@ -1619,7 +1723,6 @@ def main():
     show_icons()
     close_gramado()
     ##$ st.sidebar.state = True
-
 
 if __name__ == "__main__":
     main()
