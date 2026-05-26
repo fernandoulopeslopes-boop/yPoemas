@@ -795,6 +795,8 @@ def load_poema(nome_tema, seed_eureka):
             else:
                 save_lypo.write(line + "\n")
                 novo_ypoema += line + "<br>"
+            
+    novo_ypoema = novo_ypoema.strip("<br>")
     return novo_ypoema
 
 @st.cache_data
