@@ -85,10 +85,6 @@ IDIOMAS_OFICIAIS = [
     ("Magyar", "Hungria", "hu", "poly_hu.txt"),
 ]
 
-# -----------------------------------------------------------------------------
-# Configuração inicial da página Streamlit.
-# Deve permanecer antes de qualquer saída visual do Streamlit.
-# -----------------------------------------------------------------------------
 st.set_page_config(
     page_title="a máquina de fazer Poesia - yPoemas",
     page_icon=":star:",
@@ -97,7 +93,6 @@ st.set_page_config(
 )
 
 def have_internet(host="1.1.1.1", port=80, timeout=3):
-    """Verifica conexão antes de ativar tradução e voz neural."""
     try:
         socket.setdefaulttimeout(timeout)
         socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
@@ -105,7 +100,6 @@ def have_internet(host="1.1.1.1", port=80, timeout=3):
     except OSError:
         return False
 
-# Recursos externos opcionais.
 GoogleTranslator = None
 edge_tts = None
 
@@ -122,32 +116,28 @@ if have_internet():
 else:
     st.warning("Internet não conectada. Traduções e Vozes Neurais indisponíveis.")
 
-# Identificador atual usado por LYPO/TYPO.
-# Mantido neste CLEAN por preservar a persistência do último yPoema gerado.
 hostname = socket.gethostname()
 IPAddres = socket.gethostbyname(hostname)
 
 def apply_styles():
-    """Aplica os estilos básicos da Machina e preserva o Palco sem controles."""
     st.markdown(
         """
         <style>
         footer {visibility: hidden;}
-
         div[data-testid="stButton"] button,
         div[data-testid="stButton"] button p {
             white-space: nowrap!important;
             word-break: keep-all!important;
             overflow-wrap: normal!important;
         }
-</style>
+        </style>
         """,
         unsafe_allow_html=True,
     )
 
     st.markdown("""
     <style>
-   .stButton > button {
+.stButton > button {
         white-space: nowrap!important;
     }
     </style>
@@ -156,7 +146,7 @@ def apply_styles():
     st.markdown(
         """
         <style>
-       .reportview-container.main.block-container{
+   .reportview-container.main.block-container{
             padding-top: 0rem;
             padding-right: 0.04rem;
             padding-left: 0.04rem;
@@ -176,7 +166,6 @@ def apply_styles():
             min-width: 25vw;
             max-width: 25vw;
         }
-
         [data-testid="stSidebarResizer"],
         [data-testid="stSidebar"] [role="separator"] {
             display: none!important;
@@ -187,15 +176,15 @@ def apply_styles():
             background-color: powderblue;
             color: black;
         }
-       .container {
+   .container {
             display: flex;
             gap: 8px;
             width: 100%;
         }
-       .header {
+   .header {
             text-align:center;
         }
-       .logo-text {
+   .logo-text {
             font-weight: 600;
             font-size: 21px;
             font-family: 'Trebuchet';
@@ -203,37 +192,29 @@ def apply_styles():
             padding-top: 0px;
             padding-left: 8px;
         }
-
-       .logo-img {
+   .logo-img {
             float:right;
             margin-right: 0px;
             padding-right: 0px;
         }
-
         div[data-testid="stVerticalBlock"] {
             gap: 0.18rem;
         }
-
         div[data-testid="stExpander"] {
             margin-top: 0rem;
         }
-
         div[data-testid="stExpander"] details {
             padding-top: 0rem;
         }
-
         div[data-testid="stExpander"] [data-testid="stMarkdownContainer"] {
             margin-top: 0rem;
         }
-
         [data-testid="stSidebar"] {
             background-color: #eef6fb!important;
         }
-
         [data-testid="stSidebar"] > div:first-child {
             background-color: #eef6fb!important;
         }
-
         [data-testid="stSidebar"].stButton button {
             white-space: nowrap!important;
             word-break: keep-all!important;
@@ -241,15 +222,12 @@ def apply_styles():
             padding-right: 0.25rem!important;
             min-width: 100%!important;
         }
-
         [data-testid="stSidebar"] div[data-testid="stVerticalBlock"] {
             gap: 0.85rem!important;
         }
-
         [data-testid="stSidebar"] div[data-testid="stElementContainer"] {
             margin-bottom: 0.12rem!important;
         }
-
         iframe[title="extra_streamlit_components.TabBar.tab_bar"] {
             display: block!important;
             width: 100%!important;
@@ -261,7 +239,6 @@ def apply_styles():
             box-shadow: none!important;
             background: transparent!important;
         }
-
         div[data-testid="stElementContainer"]:has(iframe[title="extra_streamlit_components.TabBar.tab_bar"]) {
             width: 100%!important;
             max-width: 100%!important;
@@ -275,31 +252,26 @@ def apply_styles():
             box-shadow: none!important;
             background: transparent!important;
         }
-
         iframe[title="extra_streamlit_components.TabBar.tab_bar"] {
             margin-top: -0.62rem!important;
             margin-bottom: 0!important;
         }
-
         div[data-testid="stElementContainer"] {
             margin-top: 0!important;
         }
-
         section.main > div.block-container {
             max-width: 100vw!important;
             width: 100%!important;
             padding-left: 0.04rem!important;
             padding-right: 0.04rem!important;
         }
-
         div[data-testid="stMarkdownContainer"] h1,
         div[data-testid="stMarkdownContainer"] h2,
         div[data-testid="stMarkdownContainer"] h3 {
             text-align: center!important;
         }
-
-       .machina-titulo-poema,
-       .titulo-poema {
+   .machina-titulo-poema,
+   .titulo-poema {
             text-align: center!important;
             font-size: 1.24rem!important;
             font-weight: 500!important;
@@ -307,8 +279,7 @@ def apply_styles():
             margin-top: 0.10rem!important;
             margin-bottom: 0.30rem!important;
         }
-
-       .main.block-container {
+   .main.block-container {
             padding-top: 0.00rem!important;
             padding-left: 0.04rem!important;
             padding-right: 0.04rem!important;
@@ -316,8 +287,7 @@ def apply_styles():
             max-width: 100vw!important;
             width: 100%!important;
         }
-
-       .machina-gramado {
+   .machina-gramado {
             background: #eef8ee;
             border-radius: 18px;
             padding: 0.04rem 0.10rem 0.20rem 0.10rem;
@@ -325,7 +295,6 @@ def apply_styles():
             overflow-x: hidden;
             overflow-y: auto;
         }
-
         div[data-testid="stAppViewContainer"] main
         div[data-testid="stVerticalBlock"] > div[data-testid="stVerticalBlockBorderWrapper"]:first-child,
         div[data-testid="stAppViewContainer"] main
@@ -334,18 +303,15 @@ def apply_styles():
             border-radius: 18px!important;
             padding: 0.00rem 0.14rem 0.22rem 0.14rem!important;
         }
-
         div[data-testid="stExpander"] {
             width: 100%!important;
             max-width: 100%!important;
         }
-
         div[data-testid="stExpander"] details {
             width: 100%!important;
             max-width: 100%!important;
         }
-
-       .machina-palco-central {
+   .machina-palco-central {
             background: rgba(255, 255, 255, 0.72);
             border-radius: 18px;
             padding: 0.08rem 0.00rem 0.16rem 0.00rem;
@@ -355,26 +321,22 @@ def apply_styles():
             max-width: 100%!important;
             box-sizing: border-box!important;
         }
-
-       .machina-moldura-lateral {
+   .machina-moldura-lateral {
             min-height: 61vh;
         }
-
-       .machina-rodape-palco {
+   .machina-rodape-palco {
             font-size: 0.82rem;
             opacity: 0.72;
             text-align: center;
             margin-top: 0.35rem;
             padding-bottom: 0.1rem;
         }
-
         </style>
         """,
         unsafe_allow_html=True,
     )
 
 def init_session_state():
-    """Inicializa o estado vivo da Machina no Streamlit."""
     defaults = {
         "lang": "pt",
         "book": "poemas",
@@ -411,15 +373,12 @@ apply_styles()
 init_session_state()
 
 def open_gramado():
-    """Cria um container real para o gramado."""
     return st.container()
 
 def close_gramado():
-    """Mantida apenas por compatibilidade histórica."""
     return None
 
 def open_palco():
-    """Cria um container real para o palco."""
     return st.container()
 
 def palco_status(book=None, pos=None, total=None):
@@ -428,10 +387,7 @@ def palco_status(book=None, pos=None, total=None):
         return f"🌿 {st.session_state.lang} ( {book} )"
     return f"🌿 {st.session_state.lang} ( {book} ) ( {pos} / {total} )"
 
-### bof: tools
-
 def translate(input_text):
-    """Traduz textos de apoio e yPoemas quando o idioma atual não é português."""
     if st.session_state.lang == "pt":
         return input_text
 
@@ -512,7 +468,6 @@ FONTES_MACHINA = [
 ]
 
 def pick_book_sidebar():
-    """Escolhe o livro yPoemas diretamente no Centro de Comando."""
     books_list = BOOKS_LIST
     current = st.session_state.book
     if current not in books_list:
@@ -531,7 +486,6 @@ def pick_book_sidebar():
         st.session_state.take = 0
 
 def pick_stage_font():
-    """Escolhe fonte e corpo de leitura do Palco."""
     labels = [label for label, fonte in FONTES_MACHINA]
     lookup = {label: fonte for label, fonte in FONTES_MACHINA}
 
@@ -632,9 +586,6 @@ def atoi(text):
 def natural_keys(text):
     return [atoi(c) for c in re.split(r"(\d+)", text)]
 
-### eof: tools
-### bof: update themes readings
-
 def update_visy():
     with open(os.path.join("./temp/visitors.txt"), "r", encoding="utf-8") as visitors:
         tots = int(visitors.read())
@@ -716,9 +667,6 @@ def list_readings():
         key="opt_readings",
     )
 
-### eof: update themes readings
-### bof: loaders
-
 @st.cache_data
 def load_md_file(file):
     try:
@@ -790,6 +738,235 @@ def load_info(nome_tema):
 
         return result
 
+@st.cache_data
+def load_index():
+    index_list = []
+    index_candidates = [
+        os.path.join("./md_files/ABOUT_index.md"),
+        os.path.join("./md_files/ABOUT_INDEX.md"),
+    ]
+
+    index_file = None
+    for candidate in index_candidates:
+        if os.path.exists(candidate):
+            index_file = candidate
+            break
+
+    if index_file is None:
+        return index_list
+
+    with open(index_file, encoding="utf-8") as lista:
+        for line in lista:
+            index_list.append(line)
+
+    return index_list
+
+@st.cache_data
+def load_lypo():
+    lypo_text = ""
+    lypo_user = "LYPO_" + IPAddres
+    with open(os.path.join("./temp/" + lypo_user), encoding="utf-8", errors="replace") as script:
+        for line in script:
+            line = line.strip()
+            lypo_text += line + "<br>"
+
+    return lypo_text
+
+@st.cache_data
+def load_typo():
+    typo_text = ""
+    typo_user = "TYPO_" + IPAddres
+    with open(os.path.join("./temp/" + typo_user), encoding="utf-8", errors="replace") as script:
+        for line in script:
+            line = line.strip()
+            if " >" in line:
+                line = line.replace(" >", "\n")
+            elif "< " in line:
+                line = line.replace("< ", "\n")
+            elif " br " in line:
+                line = line.replace(" br", "\n")
+            elif "br " in line:
+                line = line.replace("br ", "\n")
+            elif " br" in line:
+                line = line.replace(" br", "\n")
+            line = line.replace("< <", ">")
+            line = line.replace("> >", ">")
+            typo_text += line + "<br>"
+
+    return typo_text
+
+def load_all_offs():
+    return OFF_BOOKS_LIST
+
+@st.cache_data
+def load_off_book(book):
+    book_full = []
+    full_name = os.path.join("./off_machina/", book) + ".Pip"
+    with open(full_name, encoding="utf-8") as file:
+        for line in file:
+            if line.startswith("|"):
+                book_full.append(line)
+
+    return book_full
+
+@st.cache_data
+def load_book_pages(book):
+    book_pages = []
+    for line in book:
+        if line.startswith("<EOF>"):
+            break
+
+        if line.startswith("|"):
+            pipe_line = line.split("|")
+            book_pages.append(pipe_line[1])
+
+    return book_pages
+
+@st.cache_data
+def load_poema(nome_tema, seed_eureka, _ip_placeholder=IPAddres):
+    script = gera_poema(nome_tema, seed_eureka)
+    novo_ypoema = ""
+    lypo_user = "LYPO_" + _ip_placeholder
+
+    with open(os.path.join("./temp/" + lypo_user), "w", encoding="utf-8") as save_lypo:
+        save_lypo.write(nome_tema)
+        save_lypo.write("\n")
+        for line in script:
+            if line == "\n":
+                save_lypo.write("\n")
+                novo_ypoema += "<br>"
+            else:
+                save_lypo.write(line + "\n")
+                novo_ypoema += line + "<br>"
+    save_lypo.close()
+    return novo_ypoema
+
+@st.cache_data
+def load_images():
+    images_list = []
+    with open(os.path.join("./base/images.txt"), encoding="utf-8") as lista:
+        for line in lista:
+            images_list.append(line)
+
+    return images_list
+
+def load_arts(nome_tema):
+    path = "./images/machina/"
+    path_list = load_images()
+    for line in path_list:
+        if line.startswith(nome_tema):
+            this_line = line.strip("\n")
+            part_line = this_line.partition(" : ")
+            if nome_tema == part_line[0]:
+                path = "./images/" + part_line[2] + "/"
+                break
+
+    arts_list = []
+    for file in os.listdir(path):
+        if file.endswith(".jpg"):
+            arts_list.append(file)
+
+    sorte = random.randrange(0, len(arts_list))
+    image = arts_list[sorte]
+
+    if image in st.session_state.arts:
+        while image in st.session_state.arts:
+            sorte = random.randrange(0, len(arts_list))
+            image = arts_list[sorte]
+        st.session_state.arts.append(image)
+        image = st.session_state.arts[-1]
+    else:
+        st.session_state.arts.append(image)
+
+    if len(st.session_state.arts) > 36:
+        del st.session_state.arts[0]
+
+    logo = path + image
+
+    return logo
+
+def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):
+    if LOGO_IMAGE is None:
+        st.markdown(
+            f"""
+            <div class='container'>
+                <p class='logo-text' style="font-family:{st.session_state.get('stage_font', 'IBM Plex Sans')}; font-size:{st.session_state.get('stage_size', 21)}px;">{LOGO_TEXTO}</p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+    else:
+        st.markdown(
+            f"""
+            <div class='container'>
+                <img class='logo-img' src='data:image/jpg;base64,{base64.b64encode(open(LOGO_IMAGE, 'rb').read()).decode()}'>
+                <p class='logo-text' style="font-family:{st.session_state.get('stage_font', 'IBM Plex Sans')}; font-size:{st.session_state.get('stage_size', 21)}px;">{LOGO_TEXTO}</p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+def talk(text):
+    if edge_tts is None:
+        st.warning("Motor de voz neural indisponível.")
+        return
+
+    text_clean = text.replace("<br>", " ").replace("< br>", "").replace("<br >", "").replace("<br/>", " ")
+
+    selected_voice = VOICES_EDGE_TTS.get(st.session_state.lang, "pt-BR-AntonioNeural")
+
+    async def generate_audio():
+        communicate = edge_tts.Communicate(text_clean, selected_voice)
+        audio_bytes = b""
+        async for chunk in communicate.stream():
+            if chunk["type"] == "audio":
+                audio_bytes += chunk["data"]
+        return audio_bytes
+
+    try:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        audio_output = loop.run_until_complete(generate_audio())
+        st.audio(audio_output, format="audio/mp3")
+    except Exception as e:
+        st.error(f"Erro na voz neural: {e}")
+
+def say_number(tema):
+    analise = "nonono"
+    indexes = load_index()
+    for line in indexes:
+        if line.startswith(tema):
+            this_line = line.strip("\n")
+            part_line = this_line.partition(" : ")
+            analise = part_line[2]
+            break
+
+    return translate(analise)
+
+if st.session_state.visy:
+    update_visy()
+
+    temas_list = load_temas("poemas")
+    maxy_ypoemas = len(temas_list)
+    st.session_state.take = random.randrange(0, maxy_ypoemas)
+    st.session_state.tema = temas_list[st.session_state.take]
+
+    temas_list = load_temas("todos os temas")
+    maxy_mini = len(temas_list)
+    st.session_state.mini = random.randrange(0, maxy_mini)
+
+    st.session_state.draw = True
+    st.session_state.visy = False
+
+def page_mini():
+    temas_list = load_temas("todos os temas")
+    maxy_mini = len(temas_list)
+
+    if st.session_state.mini > maxy_mini:
+        st.session_state.mini = 0
+
+    foo1, more, rand, auto, foo2 = st.columns([3.55, 1, 1, 1.9, 3.55])
+
     help_tips = load_help(st.session_state.lang)
     help_rand = help_tips[1]
     help_more = help_tips[4]
@@ -823,7 +1000,6 @@ def load_info(nome_tema):
             st.session_state.tema = temas_list[st.session_state.mini]
 
         curr_ypoema = load_poema(st.session_state.tema, "")
-        curr_ypoema = load_lypo()
 
         if st.session_state.lang!= "pt":
             curr_ypoema = translate(curr_ypoema)
@@ -836,7 +1012,8 @@ def load_info(nome_tema):
             curr_ypoema = load_typo()
 
         update_readings(st.session_state.tema)
-        LOGO_TEXTO = curr_ypoema
+		
+		        LOGO_TEXTO = curr_ypoema
         LOGO_IMAGE = None
 
         if st.session_state.draw:
@@ -852,6 +1029,7 @@ def load_info(nome_tema):
 
             if st.session_state.talk:
                 talk(curr_ypoema)
+
         else:
             while st.session_state.auto:
                 if st.session_state.rand:
@@ -859,7 +1037,6 @@ def load_info(nome_tema):
                     st.session_state.tema = temas_list[st.session_state.mini]
 
                 curr_ypoema = load_poema(st.session_state.tema, "")
-                curr_ypoema = load_lypo()
 
                 if st.session_state.lang!= "pt":
                     curr_ypoema = translate(curr_ypoema)
@@ -957,7 +1134,6 @@ def page_ypoemas():
         ypoemas_expander = st.expander(what_book, expanded=True)
         with ypoemas_expander:
             curr_ypoema = load_poema(st.session_state.tema, "")
-            curr_ypoema = load_lypo()
 
             if st.session_state.lang!= "pt":
                 curr_ypoema = translate(curr_ypoema)
@@ -1089,7 +1265,6 @@ def page_eureka():
             st.session_state.tema = seed_tema
 
             curr_ypoema = load_poema(seed_tema, this_seed)
-            curr_ypoema = load_lypo()
 
             if st.session_state.lang!= "pt":
                 curr_ypoema = translate(curr_ypoema)
@@ -1227,7 +1402,6 @@ def page_off_machina():
             if "@ " in pipe_line[1]:
                 nome_tema = pipe_line[1].replace("@ ", "")
                 off_book_text = load_poema(nome_tema, "")
-                off_book_text = "<br>" + load_lypo()
             else:
                 for text in pipe_line:
                     off_book_text += text + "<br>"
@@ -1265,7 +1439,6 @@ def page_off_machina():
             talk(off_book_text)
 
 def load_about_md(title):
-    """Carrega ABOUTs pelo padrão curatorial explícito."""
     candidates = ABOUTS_FILES.get(title, ["ABOUT_" + title.replace(" ", "_") + ".md"])
 
     last_file = candidates[-1] if candidates else title
@@ -1300,8 +1473,6 @@ def page_abouts():
             st.subheader(load_md_file("ABOUT_machina II.md"))
         else:
             st.subheader(load_about_md(choice))
-
-### eof: pages
 
 def main():
     pick_lang()
