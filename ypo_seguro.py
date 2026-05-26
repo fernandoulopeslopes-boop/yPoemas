@@ -266,25 +266,31 @@ def apply_styles():
         }
 
         
-        /* Território sem dono :: lista de páginas no topo e centrada */
+        /* Território sem dono :: lista de páginas no topo, sem linha fantasma */
         iframe[title="extra_streamlit_components.TabBar.tab_bar"] {
             display: block !important;
-            width: fit-content !important;
+            width: 100% !important;
             max-width: 100% !important;
-            margin: -0.62rem auto 0rem auto !important;
+            margin: -0.62rem 0 0 0 !important;
             padding: 0 !important;
+            border: 0 !important;
+            outline: 0 !important;
+            box-shadow: none !important;
+            background: transparent !important;
         }
 
         div[data-testid="stElementContainer"]:has(iframe[title="extra_streamlit_components.TabBar.tab_bar"]) {
             width: 100% !important;
             max-width: 100% !important;
-            display: flex !important;
-            justify-content: center !important;
-            align-items: flex-start !important;
+            display: block !important;
             margin-top: -0.62rem !important;
             margin-bottom: 0rem !important;
             padding-left: 0 !important;
             padding-right: 0 !important;
+            border: 0 !important;
+            outline: 0 !important;
+            box-shadow: none !important;
+            background: transparent !important;
         }
 
         /* Sintonia fina :: subir páginas */
@@ -1659,16 +1665,19 @@ def main():
     gramado = open_gramado()
 
     with gramado:
-        chosen_id = stx.tab_bar(
-            data=[
-                stx.TabBarItemData(id=1, title="mini", description=""),
-                stx.TabBarItemData(id=2, title="yPoemas", description=""),
-                stx.TabBarItemData(id=3, title="eureka", description=""),
-                stx.TabBarItemData(id=4, title="off-mach", description=""),
-                stx.TabBarItemData(id=5, title="about", description=""),
-            ],
-            default=2,
-        )
+        _pag_esq, _pag_centro, _pag_dir = st.columns([0.15, 9.7, 0.15])
+
+        with _pag_centro:
+            chosen_id = stx.tab_bar(
+                data=[
+                    stx.TabBarItemData(id=1, title="mini", description=""),
+                    stx.TabBarItemData(id=2, title="yPoemas", description=""),
+                    stx.TabBarItemData(id=3, title="eureka", description=""),
+                    stx.TabBarItemData(id=4, title="off-mach", description=""),
+                    stx.TabBarItemData(id=5, title="about", description=""),
+                ],
+                default=2,
+            )
 
         chosen_id = str(chosen_id)
 
@@ -1722,7 +1731,7 @@ def main():
 
     show_icons()
     close_gramado()
-
+    ##$ st.sidebar.state = True
 
 if __name__ == "__main__":
     main()
