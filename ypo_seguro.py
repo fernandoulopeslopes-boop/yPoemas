@@ -723,36 +723,22 @@ def load_index():
     return index_list
 
 
-def limpa_poema_br(texto):
-    """Remove <br> duplicados e limpa quebras pra HTML"""
-    if not texto:
-        return ""
-    # Remove <br> no início/fim
-    texto = texto.strip()
-    texto = re.sub(r'^(<br\s*/?>)+', '', texto, flags=re.IGNORECASE)
-    texto = re.sub(r'(<br\s*/?>)+$', '', texto, flags=re.IGNORECASE)
-    # Troca 3+ <br> por 2
-    texto = re.sub(r'(<br\s*/?>\s*){3,}', '<br><br>', texto, flags=re.IGNORECASE)
-    # Remove espaços antes/depois de <br>
-    texto = re.sub(r'\s*<br\s*/?>\s*', '<br>', texto, flags=re.IGNORECASE)
-    return texto
-
-
-def load_lypo():
+def load_lypo():  # Load last yPoema & replace '\n' with '<br>' for translator returned text
     lypo_text = ""
-    lypo_user = "LYPO_" + st.session_state.session_uuid
+    lypo_user = "LYPO_" + IPAddres
     with open(os.path.join("./temp/" + lypo_user), encoding="utf-8", errors="replace") as script:
         for line in script:
             line = line.strip()
-            if line:  # ignora linha vazia
-                lypo_text += line + "<br>"
-    return limpa_poema_br(lypo_text)  # limpa aqui
+            lypo_text += line + "<br>"
 
-def load_typo():
+    return lypo_text
+
+
+def load_typo():  # Load translated yPoema & clean translator returned bugs in text
     typo_text = ""
-    typo_user = "TYPO_" + st.session_state.session_uuid
+    typo_user = "TYPO_" + IPAddres
     with open(os.path.join("./temp/" + typo_user), encoding="utf-8", errors="replace") as script:
-        for line in script:
+        for line in script:  # just 1 line
             line = line.strip()
             if " >" in line:
                 line = line.replace(" >", "\n")
@@ -766,9 +752,9 @@ def load_typo():
                 line = line.replace(" br", "\n")
             line = line.replace("< <", ">")
             line = line.replace("> >", ">")
-            if line:  # ignora linha vazia
-                typo_text += line + "<br>"
-    return limpa_poema_br(typo_text)  # limpa aqui
+            typo_text += line + "<br>"
+
+    return typo_text
 
 
 def load_typo():
