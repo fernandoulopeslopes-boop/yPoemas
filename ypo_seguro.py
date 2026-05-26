@@ -69,6 +69,7 @@ IDIOMAS_OFICIAIS = [
     ("Italiano", "Itália", "it", "poly_it.txt"),
     ("Français", "França", "fr", "poly_fr.txt"),
     ("Latin", "Latim", "la", "poly_la.txt"),
+    ("Esperanto", "eo", "poly_eo.txt"),
     ("English", "Inglaterra", "en", "poly_en.txt"),
     ("Deutsch", "Alemanha", "de", "poly_de.txt"),
     ("Català", "Catalunha", "ca", "poly_ca.txt"),
@@ -722,7 +723,6 @@ def load_index():
             index_list.append(line)
     return index_list
 
-
 def load_lypo():
     lypo_text = ""
     lypo_user = "LYPO_" + st.session_state.session_uuid
@@ -753,7 +753,6 @@ def load_typo():
             typo_text += line + "<br>"
     return typo_text
 
-
 def load_all_offs():
     return OFF_BOOKS_LIST
 
@@ -776,27 +775,22 @@ def load_book_pages(book):
             book_pages.append(pipe_line[1])
     return book_pages
 
-
 def load_poema(nome_tema, seed_eureka):
     script = gera_poema(nome_tema, seed_eureka)
     novo_ypoema = ""
     lypo_user = "LYPO_" + st.session_state.session_uuid
     with open(os.path.join("./temp/" + lypo_user), "w", encoding="utf-8") as save_lypo:
-        save_lypo.write(nome_tema)
+        save_lypo.write(
+            nome_tema
+        )
         save_lypo.write("\n")
-        first_line = True
         for line in script:
-            if first_line and line.strip() == "":
-                continue  # pula primeira linha vazia do gera_poema
-            first_line = False
             if line == "\n":
                 save_lypo.write("\n")
                 novo_ypoema += "<br>"
             else:
                 save_lypo.write(line + "\n")
                 novo_ypoema += line + "<br>"
-            
-    novo_ypoema = novo_ypoema.strip("<br>")
     return novo_ypoema
 
 @st.cache_data
