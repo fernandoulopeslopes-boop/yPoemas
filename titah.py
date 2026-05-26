@@ -1013,7 +1013,7 @@ def page_mini():
 
         update_readings(st.session_state.tema)
 		
-		LOGO_TEXTO = curr_ypoema
+        LOGO_TEXTO = curr_ypoema
         LOGO_IMAGE = None
 
         if st.session_state.draw:
