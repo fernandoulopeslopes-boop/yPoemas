@@ -438,7 +438,7 @@ def init_session_state():
         "arts": [],
         "auto": False,
         "rand": False,
-        "stage_font": "IBM Plex Sans",
+        "stage_font": "Trebuchet",
         "stage_size": 21,
 
         # chave de ouro
@@ -597,7 +597,7 @@ def pick_stage_font():
         labels[0],
     )
 
-    corpos = list(range(18, 25))
+    corpos = list(range(15, 25))
     current_size = st.session_state.get("stage_size", 21)
     if current_size not in corpos:
         current_size = 21
