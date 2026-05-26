@@ -621,9 +621,9 @@ def show_icons():  # https://api.whatsapp.com/
         st.sidebar.markdown(
             f"""
             <nav>
-            <a href='https://www.facebook.com/nandoulopes' target='_blank'>••   face </a>
-            <a href='mailto:lopes.fernando@hotmail.com' target='_blank'> e-mail  </a>
-            <a href='https://www.instagram.com/fernando.lopes.942/' target='_blank'> insta  </a>
+            <a href='https://www.facebook.com/nandoulopes' target='_blank'>••   face  </a>
+            <a href='mailto:lopes.fernando@hotmail.com' target='_blank'> e-mail   </a>
+            <a href='https://www.instagram.com/fernando.lopes.942/' target='_blank'> insta   </a>
             <a href='https://web.whatsapp.com/send?phone=+5512991368181' target='_blank'> zapp   ••</a>
             </nav>
             """,
@@ -1665,16 +1665,19 @@ def main():
     gramado = open_gramado()
 
     with gramado:
-        chosen_id = stx.tab_bar(
-            data=[
-                stx.TabBarItemData(id=1, title="mini", description=""),
-                stx.TabBarItemData(id=2, title="yPoemas", description=""),
-                stx.TabBarItemData(id=3, title="eureka", description=""),
-                stx.TabBarItemData(id=4, title="off-mach", description=""),
-                stx.TabBarItemData(id=5, title="about", description=""),
-            ],
-            default=2,
-        )
+        _pag_esq, _pag_centro, _pag_dir = st.columns([1.2, 6.6, 1.2])
+
+        with _pag_centro:
+            chosen_id = stx.tab_bar(
+                data=[
+                    stx.TabBarItemData(id=1, title="mini", description=""),
+                    stx.TabBarItemData(id=2, title="yPoemas", description=""),
+                    stx.TabBarItemData(id=3, title="eureka", description=""),
+                    stx.TabBarItemData(id=4, title="off-mach", description=""),
+                    stx.TabBarItemData(id=5, title="about", description=""),
+                ],
+                default=2,
+            )
 
         chosen_id = str(chosen_id)
 
