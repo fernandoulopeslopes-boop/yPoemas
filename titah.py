@@ -54,26 +54,11 @@ PAGE_IMAGES = {
 }
 
 VOICES_EDGE_TTS = {
-    "pt": "pt-BR-FranciscaNeural",
+    "pt": "pt-BR-AntonioNeural",
+    "en": "en-US-GuyNeural",
     "es": "es-ES-AlvaroNeural",
     "fr": "fr-FR-HenriNeural",
     "it": "it-IT-DiegoNeural",
-    "en": "en-GB-RyanNeural",
-    "en": "en-US-GuyNeural",
-    "gl": "gl-ES-RoiNeural",
-    "eu": "eu-ES-AnderNeural",
-    "de": "de-DE-ConradNeural",
-    "da": "da-DK-JeppeNeural",
-    "nl": "nl-NL-MaartenNeural",
-    "pl": "pl-PL-MarekNeural",
-    "ro": "ro-RO-EmilNeural",
-    "nb": "nb-NO-FinnNeural",
-    "fi": "fi-FI-SelmaNeural",
-    "is": "is-IS-GunnarNeural",
-    "hu": "hu-HU-TamasNeural",
-    "sv": "sv-SE-MattiasNeural",
-    "ca": "ca-ES-EnricNeural",
-    "ru": "ru-RU-DmitryNeural",
 }
 
 IDIOMAS_OFICIAIS = [
@@ -222,7 +207,7 @@ def apply_styles():
         .logo-text {
             font-weight: 600;
             font-size: 21px;
-            font-family: 'Trebuchet';
+            font-family: 'IBM Plex Sans';
             color: #000000;
             padding-top: 0px;
             padding-left: 8px;
@@ -233,6 +218,7 @@ def apply_styles():
             margin-right: 0px;
             padding-right: 0px;
         }
+
 
 
         /* Palco :: ajuste fino de área útil */
@@ -281,31 +267,28 @@ def apply_styles():
         }
 
         
-        /* Território sem dono :: lista de páginas no topo, sem linha fantasma */
+
+
+
+        /* Território sem dono :: lista de páginas no topo e centrada */
         iframe[title="extra_streamlit_components.TabBar.tab_bar"] {
             display: block !important;
-            width: 100% !important;
+            width: fit-content !important;
             max-width: 100% !important;
-            margin: -0.62rem 0 0 0 !important;
+            margin: -0.62rem auto 0rem auto !important;
             padding: 0 !important;
-            border: 0 !important;
-            outline: 0 !important;
-            box-shadow: none !important;
-            background: transparent !important;
         }
 
         div[data-testid="stElementContainer"]:has(iframe[title="extra_streamlit_components.TabBar.tab_bar"]) {
             width: 100% !important;
             max-width: 100% !important;
-            display: block !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: flex-start !important;
             margin-top: -0.62rem !important;
             margin-bottom: 0rem !important;
             padding-left: 0 !important;
             padding-right: 0 !important;
-            border: 0 !important;
-            outline: 0 !important;
-            box-shadow: none !important;
-            background: transparent !important;
         }
 
         /* Sintonia fina :: subir páginas */
@@ -375,6 +358,17 @@ def apply_styles():
         }
 
 
+        .machina-divider {
+            height: 0 !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            background: transparent !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border: 0 !important;
+        }
+
+
         /* Território sem dono :: expander/palco no mesmo eixo */
         div[data-testid="stExpander"] {
             width: 100% !important;
@@ -438,7 +432,7 @@ def init_session_state():
         "arts": [],
         "auto": False,
         "rand": False,
-        "stage_font": "Trebuchet",
+        "stage_font": "IBM Plex Sans",
         "stage_size": 21,
 
         # chave de ouro
@@ -457,6 +451,7 @@ apply_styles()
 init_session_state()
 
 
+
 def open_gramado():
     """Cria um container real para o gramado.
 
@@ -465,6 +460,16 @@ def open_gramado():
     O gramado precisa ser um container usado com `with gramado:`.
     """
     return st.container()
+
+
+def close_gramado():
+    """Mantida apenas por compatibilidade histórica."""
+    return None
+
+
+def gramado_divider():
+    """Divider invisível: o eixo visual agora é dado pelos nav_buttons."""
+    st.markdown("<div class='machina-divider'></div>", unsafe_allow_html=True)
 
 
 def open_palco():
@@ -478,7 +483,11 @@ def palco_status(book=None, pos=None, total=None):
         return f"🌿  {st.session_state.lang} ( {book} )"
     return f"🌿  {st.session_state.lang} ( {book} ) ( {pos} / {total} )"
 
+
+
 ### bof: tools
+
+
 
 def translate(input_text):
     """Traduz textos de apoio e yPoemas quando o idioma atual não é português."""
@@ -502,6 +511,7 @@ def translate(input_text):
         return output_text
     except Exception:
         return "Arquivo muito grande para ser traduzido."
+
 
 
 def pick_lang():  # lista oficial de idiomas + P.O.L.Y.
@@ -548,6 +558,11 @@ def pick_lang():  # lista oficial de idiomas + P.O.L.Y.
         st.session_state.lang = selected["lang"]
         st.session_state.poly_file = selected["poly_file"]
 
+    if st.session_state.lang != st.session_state.last_lang:
+        st.success(translate("idioma atual") + " ➪ " + st.session_state.lang)
+
+
+
 
 FONTES_MACHINA = [
     ("IBM Plex Sans", "IBM Plex Sans"),
@@ -566,119 +581,24 @@ FONTES_MACHINA = [
 ]
 
 
-def _coerce_take(value, temas_list):
-    """Converte diferentes formas de seleção de tema para índice inteiro válido."""
-    if not temas_list:
-        return 0
-
-    if isinstance(value, int):
-        take = value
-    elif isinstance(value, str):
-        if value.isdigit():
-            take = int(value)
-        elif value in temas_list:
-            take = temas_list.index(value)
-        else:
-            take = 0
-    else:
-        take = 0
-
-    if take < 0 or take >= len(temas_list):
-        take = 0
-    return take
-
-
-def _sync_book_theme_state():
-    """Mantém o estado canônico (book/take/tema) consistente."""
-    books_list = BOOKS_LIST
-    current_book = st.session_state.get("book", books_list[0])
-    if current_book not in books_list:
-        current_book = books_list[0]
-    st.session_state.book = current_book
-
-    temas_list = load_temas(current_book)
-    if not temas_list:
-        st.session_state.take = 0
-        st.session_state.tema = ""
-        return
-
-    take = _coerce_take(st.session_state.get("take", 0), temas_list)
-    st.session_state.take = take
-    st.session_state.tema = temas_list[take]
-
-
-def _on_sidebar_book_change():
-    choice = st.session_state.get("sidebar_book_select", st.session_state.book)
-    st.session_state.book = choice
-    st.session_state.take = 0
-    _sync_book_theme_state()
-    st.rerun()
-
-
-def _on_palco_book_change():
-    choice = st.session_state.get("palco_book_select", st.session_state.book)
-    st.session_state.book = choice
-    st.session_state.take = 0
-    _sync_book_theme_state()
-    st.rerun()
-
-
-def _on_palco_theme_change():
-    temas_list = load_temas(st.session_state.book)
-    if not temas_list:
-        st.session_state.take = 0
-        st.session_state.tema = ""
-        st.rerun()
-
-    take = _coerce_take(
-        st.session_state.get("opt_take_palco", st.session_state.get("take", 0)),
-        temas_list,
-    )
-    st.session_state.take = take
-    st.session_state.tema = temas_list[take]
-    st.rerun()
-
-
-def pick_book_sidebar(where="sidebar"):
-    """Escolhe o livro yPoemas na sidebar ou no palco."""
-    _sync_book_theme_state()
-
+def pick_book_sidebar():
+    """Escolhe o livro yPoemas diretamente no Centro de Comando."""
     books_list = BOOKS_LIST
     current = st.session_state.book
-    key = "sidebar_book_select" if where == "sidebar" else "palco_book_select"
+    if current not in books_list:
+        current = books_list[0]
+        st.session_state.book = current
 
-    container = st.sidebar if where == "sidebar" else st
-    if where == "sidebar":
-        label = translate("livros yPoemas disponíveis...")
-    else:
-        label = f"{len(books_list)} " + translate("livros disponíveis...")
-    callback = _on_sidebar_book_change if where == "sidebar" else _on_palco_book_change
-
-    container.selectbox(
-        label,
+    choice = st.sidebar.selectbox(
+        translate("livros yPoemas disponíveis..."),
         books_list,
         index=books_list.index(current),
-        key=key,
-        on_change=callback,
+        key="sidebar_book_select",
     )
 
-
-def pick_tema_palco():
-    """Escolhe o tema atual do livro diretamente no palco."""
-    _sync_book_theme_state()
-    temas_list = load_temas(st.session_state.book)
-    if not temas_list:
-        return
-
-    options = list(range(len(temas_list)))
-    st.selectbox(
-        f"↓  {len(temas_list)} " + translate("temas"),
-        options,
-        index=_coerce_take(st.session_state.get("take", 0), temas_list),
-        format_func=lambda z: temas_list[z],
-        key="opt_take_palco",
-        on_change=_on_palco_theme_change,
-    )
+    if choice != st.session_state.book:
+        st.session_state.book = choice
+        st.session_state.take = 0
 
 
 def pick_stage_font():
@@ -686,13 +606,13 @@ def pick_stage_font():
     labels = [label for label, fonte in FONTES_MACHINA]
     lookup = {label: fonte for label, fonte in FONTES_MACHINA}
 
-    current_font = st.session_state.get("stage_font", "Trebuchet")
+    current_font = st.session_state.get("stage_font", "IBM Plex Sans")
     current_label = next(
         (label for label, fonte in FONTES_MACHINA if fonte == current_font),
         labels[0],
     )
 
-    corpos = list(range(15, 25))
+    corpos = list(range(18, 25))
     current_size = st.session_state.get("stage_size", 21)
     if current_size not in corpos:
         current_size = 21
@@ -724,14 +644,15 @@ def show_icons():  # https://api.whatsapp.com/
         st.sidebar.markdown(
             f"""
             <nav>
-            <a href='https://www.facebook.com/nandoulopes' target='_blank'>•••   face </a>
-            <a href='mailto:lopes.fernando@hotmail.com' target='_blank'>  e-mail   </a>
-            <a href='https://www.instagram.com/fernando.lopes.942/' target='_blank'>  insta  </a>
-            <a href='https://web.whatsapp.com/send?phone=+5512991368181' target='_blank'>  zapp  •••</a>
+            <a href='https://www.facebook.com/nandoulopes' target='_blank'>••  face </a>
+            <a href='mailto:lopes.fernando@hotmail.com' target='_blank'> e-mail  </a>
+            <a href='https://www.instagram.com/fernando.lopes.942/' target='_blank'> insta  </a>
+            <a href='https://web.whatsapp.com/send?phone=+5512991368181' target='_blank'> zapp  ••</a>
             </nav>
             """,
             unsafe_allow_html=True,
         )
+
 
 
 def load_help(idiom):
@@ -1127,7 +1048,7 @@ def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
         st.markdown(
             f"""
             <div class='container'>
-                <p class='logo-text' style="font-family:{st.session_state.get('stage_font', 'Trebuchet MS')}; font-size:{st.session_state.get('stage_size', 21)}px;">{LOGO_TEXTO}</p>
+                <p class='logo-text' style="font-family:{st.session_state.get('stage_font', 'IBM Plex Sans')}; font-size:{st.session_state.get('stage_size', 21)}px;">{LOGO_TEXTO}</p>
             </div>
             """,
             unsafe_allow_html=True,
@@ -1137,7 +1058,7 @@ def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
             f"""
             <div class='container'>
                 <img class='logo-img' src='data:image/jpg;base64,{base64.b64encode(open(LOGO_IMAGE, 'rb').read()).decode()}'>
-                <p class='logo-text' style="font-family:{st.session_state.get('stage_font', 'Trebuchet MS')}; font-size:{st.session_state.get('stage_size', 21)}px;">{LOGO_TEXTO}</p>
+                <p class='logo-text' style="font-family:{st.session_state.get('stage_font', 'IBM Plex Sans')}; font-size:{st.session_state.get('stage_size', 21)}px;">{LOGO_TEXTO}</p>
             </div>
             """,
             unsafe_allow_html=True,
@@ -1329,54 +1250,48 @@ def page_ypoemas():
     ):  # just in case
         st.session_state.take = 0
 
-    col_livros, col_nav, col_temas = st.columns([3.15, 5.3, 3.15])
+    foo1, more, last, rand, nest, manu, foo2 = st.columns([3, 1, 1, 1, 1, 1, 3])
 
-    with col_livros:
-        pick_book_sidebar("palco")
+    help_tips = load_help(st.session_state.lang)
+    help_last = help_tips[0]
+    help_rand = help_tips[1]
+    help_nest = help_tips[2]
+    help_more = help_tips[4]
 
-    with col_nav:
-        help_tips = load_help(st.session_state.lang)
-        help_last = help_tips[0]
-        help_rand = help_tips[1]
-        help_nest = help_tips[2]
-        help_more = help_tips[4]
-
-        nav_cols = st.columns([1, 1, 1, 1, 1])
-        more = nav_cols[0].button("✚", help=help_more, use_container_width=True)
-        last = nav_cols[1].button("◀", help=help_last, use_container_width=True)
-        rand = nav_cols[2].button("✻", help=help_rand, use_container_width=True)
-        nest = nav_cols[3].button("▶", help=help_nest, use_container_width=True)
-        manu = nav_cols[4].button("?", help="help !!!", use_container_width=True)
-
-    temas_list = load_temas(st.session_state.book)
-    maxy_ypoemas = len(temas_list) - 1
-    if st.session_state.take > maxy_ypoemas or st.session_state.take < 0:
-        st.session_state.take = 0
+    more = more.button("✚", help=help_more)
+    last = last.button("◀", help=help_last)
+    rand = rand.button("✻", help=help_rand)
+    nest = nest.button("▶", help=help_nest)
+    manu = manu.button("?", help="help !!!")
 
     if last:
         st.session_state.take -= 1
         if st.session_state.take < 0:
             st.session_state.take = maxy_ypoemas
-        _sync_book_theme_state()
-        st.rerun()
 
     if rand:
-        st.session_state.take = random.randrange(0, maxy_ypoemas + 1)
-        _sync_book_theme_state()
-        st.rerun()
+        st.session_state.take = random.randrange(0, maxy_ypoemas)
 
     if nest:
         st.session_state.take += 1
         if st.session_state.take > maxy_ypoemas:
             st.session_state.take = 0
-        _sync_book_theme_state()
-        st.rerun()
 
-    with col_temas:
-        pick_tema_palco()
+    if not st.session_state.draw:
+        options = list(range(len(temas_list)))
+        sobrios = "↓  " + translate("lista de Temas")
+        opt_take = st.selectbox(
+            sobrios,
+            options,
+            index=st.session_state.take,
+            format_func=lambda z: temas_list[z],
+            key="opt_take",
+        )
 
-    temas_list = load_temas(st.session_state.book)
-    _sync_book_theme_state()
+        if opt_take != st.session_state.take:
+            st.session_state.take = opt_take
+
+    st.session_state.tema = temas_list[st.session_state.take]
 
     lnew = True
     if manu:
@@ -1774,24 +1689,25 @@ def main():
     gramado = open_gramado()
 
     with gramado:
-        _pag_esq, _pag_centro, _pag_dir = st.columns([0.15, 9.7, 0.15])
-
-        with _pag_centro:
-            chosen_id = stx.tab_bar(
-                data=[
-                    stx.TabBarItemData(id=1, title="mini", description=""),
-                    stx.TabBarItemData(id=2, title="yPoemas", description=""),
-                    stx.TabBarItemData(id=3, title="eureka", description=""),
-                    stx.TabBarItemData(id=4, title="off-mach", description=""),
-                    stx.TabBarItemData(id=5, title="about", description=""),
-                ],
-                default=2,
-            )
+        chosen_id = stx.tab_bar(
+            data=[
+                stx.TabBarItemData(id=1, title="mini", description=""),
+                stx.TabBarItemData(id=2, title="yPoemas", description=""),
+                stx.TabBarItemData(id=3, title="eureka", description=""),
+                stx.TabBarItemData(id=4, title="off-mach", description=""),
+                stx.TabBarItemData(id=5, title="about", description=""),
+            ],
+            default=2,
+        )
 
         chosen_id = str(chosen_id)
 
+        gramado_divider()
         draw_check_buttons()
+
         palco = st.container()
+
+
         with palco:
             palco_container = open_palco()
 
@@ -1839,7 +1755,9 @@ def main():
         st.image("./images/" + magy)
 
     show_icons()
+    close_gramado()
     ##$ st.sidebar.state = True
+
 
 if __name__ == "__main__":
     main()
