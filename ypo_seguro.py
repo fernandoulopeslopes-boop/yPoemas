@@ -615,18 +615,11 @@ def _prepare_book_widget(key):
         del st.session_state[key]
 
 
-def _theme_widget_key(book=None):
-    """Gera uma key de widget própria para cada livro."""
-    current_book = book or st.session_state.book
-    return f"opt_take_palco_{current_book}"
-
-
 def _prepare_theme_widget():
-    """Faz o widget de temas nascer obedecendo ao `take` do livro atual."""
+    """Faz a lista de temas nascer já espelhando o `take` atual."""
     temas_list = load_temas(st.session_state.book)
     current = _coerce_take(st.session_state.get("take", 0), temas_list)
-    theme_key = _theme_widget_key()
-    st.session_state[theme_key] = current
+    st.session_state["opt_take_palco"] = current
 
 
 def _on_sidebar_book_change():
@@ -634,7 +627,6 @@ def _on_sidebar_book_change():
     if choice != st.session_state.book:
         st.session_state.book = choice
         st.session_state.take = 0
-        st.session_state[_theme_widget_key(choice)] = 0
     _sync_book_theme_state()
 
 
@@ -643,7 +635,6 @@ def _on_palco_book_change():
     if choice != st.session_state.book:
         st.session_state.book = choice
         st.session_state.take = 0
-        st.session_state[_theme_widget_key(choice)] = 0
     _sync_book_theme_state()
 
 
@@ -654,9 +645,8 @@ def _on_palco_theme_change():
         st.session_state.tema = ""
         return
 
-    theme_key = _theme_widget_key()
     take = _coerce_take(
-        st.session_state.get(theme_key, st.session_state.get("take", 0)),
+        st.session_state.get("opt_take_palco", st.session_state.get("take", 0)),
         temas_list,
     )
 
@@ -698,13 +688,12 @@ def pick_tema_palco():
 
     _prepare_theme_widget()
     options = list(range(len(temas_list)))
-    theme_key = _theme_widget_key()
     st.selectbox(
         f"↓  {len(temas_list)} " + translate("temas"),
         options,
         index=_coerce_take(st.session_state.get("take", 0), temas_list),
         format_func=lambda z: temas_list[z],
-        key=theme_key,
+        key="opt_take_palco",
         on_change=_on_palco_theme_change,
     )
 
