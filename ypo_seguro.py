@@ -600,6 +600,20 @@ def _index_from_current_theme(temas_list):
     return _coerce_take(st.session_state.get("take", 0), temas_list)
 
 
+def _update_theme_dependents(temas_list):
+    """Sempre que o tema muda, recalcula índice e reflexo visual em tempo real."""
+    if not temas_list:
+        st.session_state.take = 0
+        st.session_state.tema = ""
+        st.session_state["opt_take_palco"] = 0
+        return
+
+    take = _index_from_current_theme(temas_list)
+    st.session_state.take = take
+    st.session_state.tema = temas_list[take]
+    st.session_state["opt_take_palco"] = take
+
+
 def _sync_book_theme_state():
     """Mantém o estado canônico (book/take/tema) consistente."""
     books_list = BOOKS_LIST
@@ -609,15 +623,7 @@ def _sync_book_theme_state():
     st.session_state.book = current_book
 
     temas_list = load_temas(current_book)
-    if not temas_list:
-        st.session_state.take = 0
-        st.session_state.tema = ""
-        return
-
-    take = _index_from_current_theme(temas_list)
-
-    st.session_state.take = take
-    st.session_state.tema = temas_list[take]
+    _update_theme_dependents(temas_list)
 
 
 def _prepare_book_widget(key):
@@ -639,6 +645,7 @@ def _on_sidebar_book_change():
     if choice != st.session_state.book:
         st.session_state.book = choice
         st.session_state.take = 0
+        st.session_state.tema = ""
     _sync_book_theme_state()
 
 
@@ -647,6 +654,7 @@ def _on_palco_book_change():
     if choice != st.session_state.book:
         st.session_state.book = choice
         st.session_state.take = 0
+        st.session_state.tema = ""
     _sync_book_theme_state()
 
 
@@ -1388,17 +1396,20 @@ def page_ypoemas():
         st.session_state.take -= 1
         if st.session_state.take < 0:
             st.session_state.take = maxy_ypoemas
-        _sync_book_theme_state()
+        st.session_state.tema = temas_list[st.session_state.take]
+        _update_theme_dependents(temas_list)
 
     if rand:
         st.session_state.take = random.randrange(0, maxy_ypoemas + 1)
-        _sync_book_theme_state()
+        st.session_state.tema = temas_list[st.session_state.take]
+        _update_theme_dependents(temas_list)
 
     if nest:
         st.session_state.take += 1
         if st.session_state.take > maxy_ypoemas:
             st.session_state.take = 0
-        _sync_book_theme_state()
+        st.session_state.tema = temas_list[st.session_state.take]
+        _update_theme_dependents(temas_list)
 
     with col_temas:
         pick_tema_palco()
