@@ -566,6 +566,28 @@ FONTES_MACHINA = [
 ]
 
 
+def _coerce_take(value, temas_list):
+    """Converte diferentes formas de seleção de tema para índice inteiro válido."""
+    if not temas_list:
+        return 0
+
+    if isinstance(value, int):
+        take = value
+    elif isinstance(value, str):
+        if value.isdigit():
+            take = int(value)
+        elif value in temas_list:
+            take = temas_list.index(value)
+        else:
+            take = 0
+    else:
+        take = 0
+
+    if take < 0 or take >= len(temas_list):
+        take = 0
+    return take
+
+
 def _sync_book_theme_state():
     """Mantém o estado canônico (book/take/tema) consistente."""
     books_list = BOOKS_LIST
@@ -580,9 +602,7 @@ def _sync_book_theme_state():
         st.session_state.tema = ""
         return
 
-    take = st.session_state.get("take", 0)
-    if take < 0 or take >= len(temas_list):
-        take = 0
+    take = _coerce_take(st.session_state.get("take", 0), temas_list)
 
     st.session_state.take = take
     st.session_state.tema = temas_list[take]
@@ -596,10 +616,13 @@ def _prepare_book_widget(key):
 
 
 def _prepare_theme_widget():
-    """Faz o widget de temas espelhar `take` sem impor valor em reruns."""
-    current = st.session_state.get("take", 0)
-    if "opt_take_palco" in st.session_state and st.session_state.get("opt_take_palco") != current:
-        del st.session_state["opt_take_palco"]
+    """Normaliza o widget de temas para espelhar o `take` sem impor valor indevido."""
+    temas_list = load_temas(st.session_state.book)
+    current = _coerce_take(st.session_state.get("take", 0), temas_list)
+    raw_value = st.session_state.get("opt_take_palco", current)
+    normalized = _coerce_take(raw_value, temas_list)
+    if normalized != raw_value:
+        st.session_state["opt_take_palco"] = normalized
 
 
 def _on_sidebar_book_change():
@@ -625,9 +648,10 @@ def _on_palco_theme_change():
         st.session_state.tema = ""
         return
 
-    take = st.session_state.get("opt_take_palco", st.session_state.get("take", 0))
-    if take < 0 or take >= len(temas_list):
-        take = 0
+    take = _coerce_take(
+        st.session_state.get("opt_take_palco", st.session_state.get("take", 0)),
+        temas_list,
+    )
 
     st.session_state.take = take
     st.session_state.tema = temas_list[take]
@@ -670,7 +694,7 @@ def pick_tema_palco():
     st.selectbox(
         f"↓  {len(temas_list)} " + translate("temas"),
         options,
-        index=st.session_state.get("take", 0),
+        index=_coerce_take(st.session_state.get("take", 0), temas_list),
         format_func=lambda z: temas_list[z],
         key="opt_take_palco",
         on_change=_on_palco_theme_change,
