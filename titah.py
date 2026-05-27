@@ -635,8 +635,6 @@ def pick_book_sidebar(where="sidebar"):
     )
     callback = _on_sidebar_book_change if where == "sidebar" else _on_palco_book_change
 
-    st.session_state[key] = current
-
     container.selectbox(
         label,
         books_list,
@@ -655,8 +653,6 @@ def pick_tema_palco():
         return
 
     options = list(range(len(temas_list)))
-    st.session_state["opt_take_palco"] = st.session_state.get("take", 0)
-
     st.selectbox(
         "↓  " + translate("lista de Temas"),
         options,
@@ -1344,14 +1340,12 @@ def page_ypoemas():
         if st.session_state.take < 0:
             st.session_state.take = maxy_ypoemas
         st.session_state.tema = temas_list[st.session_state.take]
-        st.session_state["opt_take_palco"] = st.session_state.take
         if "opt_take" in st.session_state:
             st.session_state["opt_take"] = st.session_state.take
 
     if rand:
         st.session_state.take = random.randrange(0, maxy_ypoemas)
         st.session_state.tema = temas_list[st.session_state.take]
-        st.session_state["opt_take_palco"] = st.session_state.take
         if "opt_take" in st.session_state:
             st.session_state["opt_take"] = st.session_state.take
 
@@ -1360,7 +1354,6 @@ def page_ypoemas():
         if st.session_state.take > maxy_ypoemas:
             st.session_state.take = 0
         st.session_state.tema = temas_list[st.session_state.take]
-        st.session_state["opt_take_palco"] = st.session_state.take
         if "opt_take" in st.session_state:
             st.session_state["opt_take"] = st.session_state.take
 
