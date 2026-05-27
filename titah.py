@@ -576,9 +576,18 @@ def pick_book_sidebar(where="sidebar"):
 
     key = "sidebar_book_select" if where == "sidebar" else "palco_book_select"
     container = st.sidebar if where == "sidebar" else st
+    label = (
+        translate("livros yPoemas disponíveis...")
+        if where == "sidebar"
+        else translate("livros disponíveis...")
+    )
+
+    # mantém os dois seletores sincronizados
+    if key not in st.session_state or st.session_state.get(key) != current:
+        st.session_state[key] = current
 
     choice = container.selectbox(
-        translate("livros yPoemas disponíveis..."),
+        label,
         books_list,
         index=books_list.index(current),
         key=key,
@@ -587,6 +596,12 @@ def pick_book_sidebar(where="sidebar"):
     if choice != st.session_state.book:
         st.session_state.book = choice
         st.session_state.take = 0
+        st.session_state["sidebar_book_select"] = choice
+        st.session_state["palco_book_select"] = choice
+        st.session_state["opt_take_palco"] = 0
+        if "opt_take" in st.session_state:
+            st.session_state["opt_take"] = 0
+        st.rerun()
 
 
 def pick_tema_palco():
@@ -599,6 +614,12 @@ def pick_tema_palco():
     if st.session_state.take > maxy_ypoemas or st.session_state.take < 0:
         st.session_state.take = 0
 
+    if (
+        "opt_take_palco" not in st.session_state
+        or st.session_state.get("opt_take_palco") != st.session_state.take
+    ):
+        st.session_state["opt_take_palco"] = st.session_state.take
+
     options = list(range(len(temas_list)))
     opt_take_palco = st.selectbox(
         "↓  " + translate("lista de Temas"),
@@ -610,6 +631,9 @@ def pick_tema_palco():
 
     if opt_take_palco != st.session_state.take:
         st.session_state.take = opt_take_palco
+        if "opt_take" in st.session_state:
+            st.session_state["opt_take"] = opt_take_palco
+        st.rerun()
 
 
 def pick_stage_font():
@@ -1058,7 +1082,7 @@ def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
         st.markdown(
             f"""
             <div class='container'>
-                <p class='logo-text' style="font-family:{st.session_state.get('stage_font', 'IBM Plex Sans')}; font-size:{st.session_state.get('stage_size', 21)}px;">{LOGO_TEXTO}</p>
+                <p class='logo-text' style="font-family:{st.session_state.get('stage_font', 'Trebuchet MS')}; font-size:{st.session_state.get('stage_size', 21)}px;">{LOGO_TEXTO}</p>
             </div>
             """,
             unsafe_allow_html=True,
@@ -1068,7 +1092,7 @@ def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
             f"""
             <div class='container'>
                 <img class='logo-img' src='data:image/jpg;base64,{base64.b64encode(open(LOGO_IMAGE, 'rb').read()).decode()}'>
-                <p class='logo-text' style="font-family:{st.session_state.get('stage_font', 'IBM Plex Sans')}; font-size:{st.session_state.get('stage_size', 21)}px;">{LOGO_TEXTO}</p>
+                <p class='logo-text' style="font-family:{st.session_state.get('stage_font', 'Trebuchet MS')}; font-size:{st.session_state.get('stage_size', 21)}px;">{LOGO_TEXTO}</p>
             </div>
             """,
             unsafe_allow_html=True,
@@ -1260,7 +1284,7 @@ def page_ypoemas():
     ):  # just in case
         st.session_state.take = 0
 
-    col_livros, col_nav, col_temas = st.columns([4.2, 3.2, 4.2])
+    col_livros, col_nav, col_temas = st.columns([3.15, 5.3, 3.15])
 
     with col_livros:
         pick_book_sidebar("palco")
