@@ -600,6 +600,12 @@ def _index_from_current_theme(temas_list):
     return _coerce_take(st.session_state.get("take", 0), temas_list)
 
 
+def _theme_widget_key(temas_list):
+    """Cria uma key nova sempre que livro ou índice atual mudarem."""
+    current = _index_from_current_theme(temas_list)
+    return f"opt_take_palco_{st.session_state.book}_{current}"
+
+
 def _update_theme_dependents(temas_list):
     """Sempre que o tema muda, recalcula índice e reflexo visual em tempo real."""
     if not temas_list:
@@ -707,17 +713,23 @@ def pick_tema_palco():
     if not temas_list:
         return
 
-    _prepare_theme_widget()
     current = _index_from_current_theme(temas_list)
+    st.session_state["opt_take_palco"] = current
+    theme_key = _theme_widget_key(temas_list)
     options = list(range(len(temas_list)))
-    st.selectbox(
+
+    selected = st.selectbox(
         f"↓  {len(temas_list)} " + translate("temas"),
         options,
         index=current,
         format_func=lambda z: temas_list[z],
-        key="opt_take_palco",
-        on_change=_on_palco_theme_change,
+        key=theme_key,
     )
+
+    if selected != current:
+        st.session_state.take = selected
+        st.session_state.tema = temas_list[selected]
+        st.session_state["opt_take_palco"] = selected
 
 
 def pick_stage_font():
