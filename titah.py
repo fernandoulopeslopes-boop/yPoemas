@@ -566,24 +566,50 @@ FONTES_MACHINA = [
 ]
 
 
-def pick_book_sidebar():
-    """Escolhe o livro yPoemas diretamente no Centro de Comando."""
+def pick_book_sidebar(where="sidebar"):
+    """Escolhe o livro yPoemas na sidebar ou no palco."""
     books_list = BOOKS_LIST
     current = st.session_state.book
     if current not in books_list:
         current = books_list[0]
         st.session_state.book = current
 
-    choice = st.sidebar.selectbox(
+    key = "sidebar_book_select" if where == "sidebar" else "palco_book_select"
+    container = st.sidebar if where == "sidebar" else st
+
+    choice = container.selectbox(
         translate("livros yPoemas disponíveis..."),
         books_list,
         index=books_list.index(current),
-        key="sidebar_book_select",
+        key=key,
     )
 
     if choice != st.session_state.book:
         st.session_state.book = choice
         st.session_state.take = 0
+
+
+def pick_tema_palco():
+    """Escolhe o tema atual do livro diretamente no palco."""
+    temas_list = load_temas(st.session_state.book)
+    if not temas_list:
+        return
+
+    maxy_ypoemas = len(temas_list) - 1
+    if st.session_state.take > maxy_ypoemas or st.session_state.take < 0:
+        st.session_state.take = 0
+
+    options = list(range(len(temas_list)))
+    opt_take_palco = st.selectbox(
+        "↓  " + translate("lista de Temas"),
+        options,
+        index=st.session_state.take,
+        format_func=lambda z: temas_list[z],
+        key="opt_take_palco",
+    )
+
+    if opt_take_palco != st.session_state.take:
+        st.session_state.take = opt_take_palco
 
 
 def pick_stage_font():
@@ -1234,19 +1260,29 @@ def page_ypoemas():
     ):  # just in case
         st.session_state.take = 0
 
-    foo1, more, last, rand, nest, manu, foo2 = st.columns([3, 1, 1, 1, 1, 1, 3])
+    col_livros, col_nav, col_temas = st.columns([4.2, 3.2, 4.2])
 
-    help_tips = load_help(st.session_state.lang)
-    help_last = help_tips[0]
-    help_rand = help_tips[1]
-    help_nest = help_tips[2]
-    help_more = help_tips[4]
+    with col_livros:
+        pick_book_sidebar("palco")
 
-    more = more.button("✚", help=help_more)
-    last = last.button("◀", help=help_last)
-    rand = rand.button("✻", help=help_rand)
-    nest = nest.button("▶", help=help_nest)
-    manu = manu.button("?", help="help !!!")
+    with col_nav:
+        help_tips = load_help(st.session_state.lang)
+        help_last = help_tips[0]
+        help_rand = help_tips[1]
+        help_nest = help_tips[2]
+        help_more = help_tips[4]
+
+        nav_cols = st.columns([1, 1, 1, 1, 1])
+        more = nav_cols[0].button("✚", help=help_more, use_container_width=True)
+        last = nav_cols[1].button("◀", help=help_last, use_container_width=True)
+        rand = nav_cols[2].button("✻", help=help_rand, use_container_width=True)
+        nest = nav_cols[3].button("▶", help=help_nest, use_container_width=True)
+        manu = nav_cols[4].button("?", help="help !!!", use_container_width=True)
+
+    temas_list = load_temas(st.session_state.book)
+    maxy_ypoemas = len(temas_list) - 1
+    if st.session_state.take > maxy_ypoemas or st.session_state.take < 0:
+        st.session_state.take = 0
 
     if last:
         st.session_state.take -= 1
@@ -1261,20 +1297,10 @@ def page_ypoemas():
         if st.session_state.take > maxy_ypoemas:
             st.session_state.take = 0
 
-    if not st.session_state.draw:
-        options = list(range(len(temas_list)))
-        sobrios = "↓  " + translate("lista de Temas")
-        opt_take = st.selectbox(
-            sobrios,
-            options,
-            index=st.session_state.take,
-            format_func=lambda z: temas_list[z],
-            key="opt_take",
-        )
+    with col_temas:
+        pick_tema_palco()
 
-        if opt_take != st.session_state.take:
-            st.session_state.take = opt_take
-
+    temas_list = load_temas(st.session_state.book)
     st.session_state.tema = temas_list[st.session_state.take]
 
     lnew = True
