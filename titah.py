@@ -53,20 +53,6 @@ PAGE_IMAGES = {
     "4": "img_off-machina.jpg", "5": "img_about.jpg",
 }
 
-    vozes_neurais = {
-        "Português": "Francisca_neural", "English": "brian_neural", "Español": "enrique_neural",
-        "Français": "DeniseNeural", "Deutsch": "hans_neural", "Italiano": "giorgio_neural",
-        "Dansk": "mads_neural", "Suomi": "jari_neural", "Nederlands": "ruben_neural",
-        "Norsk": "henrik_neural", "Suécia": "hugo_neural", "Polski": "jacek_neural",
-        "Română": "alexandru_neural", "Magyar": "tamas_neural", "Català": "jordi_neural",
-        "Islandska": "karl_neural", "Euskara": "jon_neural", "Galego": "roi_neural",
-        "Slovenčina": "filip_neural", "Slovenščina": "luka_neural", "Portuñol": "miguel_neural",
-        "Lëtzebuergesch": "marc_neural", "Russia": "maxim_neural"
-    }
-    
-    voz = vozes_neurais.get(st.session_state.idioma, "voz_neural")
-
-
 VOICES_EDGE_TTS = {
     "pt": "pt-BR-FranciscaNeural",
     "es": "es-ES-AlvaroNeural",
