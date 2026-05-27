@@ -657,39 +657,28 @@ def _on_palco_theme_change():
     st.session_state.tema = temas_list[take]
 
 
-def pick_book_sidebar():
-    """Escolhe o livro yPoemas diretamente na sidebar."""
+def pick_book_sidebar(where="sidebar"):
+    """Escolhe o livro yPoemas na sidebar ou no palco."""
     _sync_book_theme_state()
 
     books_list = BOOKS_LIST
     current = st.session_state.book
-    key = "sidebar_book_select"
+    key = "sidebar_book_select" if where == "sidebar" else "palco_book_select"
     _prepare_book_widget(key)
 
-    st.sidebar.selectbox(
-        translate("livros yPoemas disponíveis..."),
+    container = st.sidebar if where == "sidebar" else st
+    if where == "sidebar":
+        label = translate("livros yPoemas disponíveis...")
+    else:
+        label = f"{len(books_list)} " + translate("livros disponíveis...")
+    callback = _on_sidebar_book_change if where == "sidebar" else _on_palco_book_change
+
+    container.selectbox(
+        label,
         books_list,
         index=books_list.index(current),
         key=key,
-        on_change=_on_sidebar_book_change,
-    )
-
-
-def pick_book_palco():
-    """Escolhe o livro yPoemas diretamente no palco."""
-    _sync_book_theme_state()
-
-    books_list = BOOKS_LIST
-    current = st.session_state.book
-    key = "palco_book_select"
-    _prepare_book_widget(key)
-
-    st.selectbox(
-        f"{len(books_list)} " + translate("livros disponíveis..."),
-        books_list,
-        index=books_list.index(current),
-        key=key,
-        on_change=_on_palco_book_change,
+        on_change=callback,
     )
 
 
@@ -1363,7 +1352,7 @@ def page_ypoemas():
     col_livros, col_nav, col_temas = st.columns([3.15, 5.3, 3.15])
 
     with col_livros:
-        pick_book_palco()
+        pick_book_sidebar("palco")
 
     with col_nav:
         help_tips = load_help(st.session_state.lang)
@@ -1796,7 +1785,6 @@ def page_abouts():
 
 def main():
     pick_lang()
-    pick_book_sidebar()
     pick_stage_font()
 
     gramado = open_gramado()
@@ -1817,6 +1805,9 @@ def main():
             )
 
         chosen_id = str(chosen_id)
+
+        if chosen_id != "2":
+            pick_book_sidebar()
 
         draw_check_buttons()
         palco = st.container()
