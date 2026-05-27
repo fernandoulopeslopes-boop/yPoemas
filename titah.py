@@ -567,7 +567,7 @@ FONTES_MACHINA = [
 
 
 def _sync_book_theme_widgets():
-    """Mantém os widgets como espelhos do estado canônico (book/take/tema)."""
+    """Mantém apenas o estado canônico (book/take/tema) consistente."""
     books_list = BOOKS_LIST
     current_book = st.session_state.get("book", books_list[0])
     if current_book not in books_list:
@@ -584,12 +584,6 @@ def _sync_book_theme_widgets():
     else:
         st.session_state.take = 0
         st.session_state.tema = ""
-
-    st.session_state["sidebar_book_select"] = current_book
-    st.session_state["palco_book_select"] = current_book
-    st.session_state["opt_take_palco"] = st.session_state.get("take", 0)
-    if "opt_take" in st.session_state:
-        st.session_state["opt_take"] = st.session_state.get("take", 0)
 
 
 def _on_sidebar_book_change():
@@ -641,6 +635,8 @@ def pick_book_sidebar(where="sidebar"):
     )
     callback = _on_sidebar_book_change if where == "sidebar" else _on_palco_book_change
 
+    st.session_state[key] = current
+
     container.selectbox(
         label,
         books_list,
@@ -659,6 +655,8 @@ def pick_tema_palco():
         return
 
     options = list(range(len(temas_list)))
+    st.session_state["opt_take_palco"] = st.session_state.get("take", 0)
+
     st.selectbox(
         "↓  " + translate("lista de Temas"),
         options,
