@@ -588,6 +588,18 @@ def _coerce_take(value, temas_list):
     return take
 
 
+def _index_from_current_theme(temas_list):
+    """Deriva o índice certo a partir do tema atual dentro do livro corrente."""
+    if not temas_list:
+        return 0
+
+    current_theme = st.session_state.get("tema", "")
+    if current_theme in temas_list:
+        return temas_list.index(current_theme)
+
+    return _coerce_take(st.session_state.get("take", 0), temas_list)
+
+
 def _sync_book_theme_state():
     """Mantém o estado canônico (book/take/tema) consistente."""
     books_list = BOOKS_LIST
@@ -602,7 +614,7 @@ def _sync_book_theme_state():
         st.session_state.tema = ""
         return
 
-    take = _coerce_take(st.session_state.get("take", 0), temas_list)
+    take = _index_from_current_theme(temas_list)
 
     st.session_state.take = take
     st.session_state.tema = temas_list[take]
@@ -616,9 +628,9 @@ def _prepare_book_widget(key):
 
 
 def _prepare_theme_widget():
-    """Faz a lista de temas nascer já espelhando o `take` atual."""
+    """Faz a lista de temas espelhar o tema atual do livro corrente."""
     temas_list = load_temas(st.session_state.book)
-    current = _coerce_take(st.session_state.get("take", 0), temas_list)
+    current = _index_from_current_theme(temas_list)
     st.session_state["opt_take_palco"] = current
 
 
@@ -652,6 +664,7 @@ def _on_palco_theme_change():
 
     st.session_state.take = take
     st.session_state.tema = temas_list[take]
+    st.session_state["opt_take_palco"] = take
 
 
 def pick_book_sidebar(where="sidebar"):
@@ -687,11 +700,12 @@ def pick_tema_palco():
         return
 
     _prepare_theme_widget()
+    current = _index_from_current_theme(temas_list)
     options = list(range(len(temas_list)))
     st.selectbox(
         f"↓  {len(temas_list)} " + translate("temas"),
         options,
-        index=_coerce_take(st.session_state.get("take", 0), temas_list),
+        index=current,
         format_func=lambda z: temas_list[z],
         key="opt_take_palco",
         on_change=_on_palco_theme_change,
