@@ -614,23 +614,21 @@ def pick_tema_palco():
     if st.session_state.take > maxy_ypoemas or st.session_state.take < 0:
         st.session_state.take = 0
 
-    if (
-        "opt_take_palco" not in st.session_state
-        or st.session_state.get("opt_take_palco") != st.session_state.take
-    ):
+    if "opt_take_palco" not in st.session_state:
         st.session_state["opt_take_palco"] = st.session_state.take
 
     options = list(range(len(temas_list)))
     opt_take_palco = st.selectbox(
         "↓  " + translate("lista de Temas"),
         options,
-        index=st.session_state.take,
+        index=st.session_state.get("opt_take_palco", st.session_state.take),
         format_func=lambda z: temas_list[z],
         key="opt_take_palco",
     )
 
     if opt_take_palco != st.session_state.take:
         st.session_state.take = opt_take_palco
+        st.session_state.tema = temas_list[opt_take_palco]
         if "opt_take" in st.session_state:
             st.session_state["opt_take"] = opt_take_palco
         st.rerun()
@@ -1312,14 +1310,23 @@ def page_ypoemas():
         st.session_state.take -= 1
         if st.session_state.take < 0:
             st.session_state.take = maxy_ypoemas
+        st.session_state["opt_take_palco"] = st.session_state.take
+        if "opt_take" in st.session_state:
+            st.session_state["opt_take"] = st.session_state.take
 
     if rand:
         st.session_state.take = random.randrange(0, maxy_ypoemas)
+        st.session_state["opt_take_palco"] = st.session_state.take
+        if "opt_take" in st.session_state:
+            st.session_state["opt_take"] = st.session_state.take
 
     if nest:
         st.session_state.take += 1
         if st.session_state.take > maxy_ypoemas:
             st.session_state.take = 0
+        st.session_state["opt_take_palco"] = st.session_state.take
+        if "opt_take" in st.session_state:
+            st.session_state["opt_take"] = st.session_state.take
 
     with col_temas:
         pick_tema_palco()
