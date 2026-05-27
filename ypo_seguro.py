@@ -1423,11 +1423,12 @@ def page_ypoemas():
         st.session_state.tema = temas_list[st.session_state.take]
         _update_theme_dependents(temas_list)
 
-    with col_temas:
-        pick_tema_palco()
-
     temas_list = load_temas(st.session_state.book)
     _sync_book_theme_state()
+    temas_list = load_temas(st.session_state.book)
+
+    with col_temas:
+        pick_tema_palco()
 
     lnew = True
     if manu:
