@@ -14,7 +14,7 @@ from lay_2_ypo import gera_poema
 
 ABOUTS_LIST = [
     "comentários", "prefácil", "machina", "off-machina", "machina-IA", "livros", "outros autores",
-    "imagens", "poly", "pensares", "tradittore", "bibliografia", "pontuação", "samizdàt", "notes", "chave", "license", "index",
+    "imagens", "poly", "pensares", "tradittore", "bibliografia", "pontuação", "samizdàt", "notes", "", "license", "index",
 ]
 
 ABOUTS_FILES = {
@@ -442,7 +442,7 @@ def init_session_state():
         "stage_font": "Trebuchet",
         "stage_size": 21,
 
-        # chave de ouro
+        #  de ouro
         "key_open": False,
         "key_poema_texto": "",
         "key_poema_tema": "",
