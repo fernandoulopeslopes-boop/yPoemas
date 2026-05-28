@@ -386,6 +386,15 @@ def apply_styles():
             max-width: 100% !important;
             padding-left: 0 !important;
             padding-right: 0 !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+
+        div[data-testid="stExpander"] summary {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
         }
 
         div[data-testid="stExpander"] div[data-testid="stVerticalBlock"] {
@@ -733,7 +742,7 @@ def pick_book_sidebar(where="sidebar"):
 
     container = st.sidebar if where == "sidebar" else st
     if where == "sidebar":
-        label = translate("livros yPoemas disponíveis...")
+        label = translate("yPoemas disponíveis...")
     else:
         label = f"{len(books_list)} " + translate("livros disponíveis...")
     callback = _on_sidebar_book_change if where == "sidebar" else _on_palco_book_change
@@ -1357,54 +1366,66 @@ def page_mini():
         if st.session_state.draw:
             LOGO_IMAGE = load_arts(st.session_state.tema)
 
-        mini_place_holder = st.empty()
-        mini_place_holder.empty()
-        st.write("")
+        mini_status = (
+            "🌿  "
+            + st.session_state.lang
+            + " - "
+            + st.session_state.tema
+            + " ( "
+            + str(st.session_state.mini + 1)
+            + " / "
+            + str(len(temas_list))
+            + " )"
+        )
+        mini_expander = st.expander(mini_status, expanded=True)
+        with mini_expander:
+            mini_place_holder = st.empty()
+            mini_place_holder.empty()
+            st.write("")
 
-        if st.session_state.auto == False:
-            with mini_place_holder:
-                write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
-
-            if st.session_state.talk:
-                talk(curr_ypoema)
-
-        else:
-            while st.session_state.auto:
-                if st.session_state.rand:
-                    st.session_state.mini = random.randrange(0, maxy_mini)
-                    st.session_state.tema = temas_list[st.session_state.mini]
-
-                if st.session_state.lang != st.session_state.last_lang:
-                    curr_ypoema = load_lypo()  # changes in lang, keep LYPO
-                else:
-                    curr_ypoema = load_poema(st.session_state.tema, "")
-                    curr_ypoema = load_lypo()
-
-                if st.session_state.lang != "pt":  # translate if idioma <> pt
-                    curr_ypoema = translate(curr_ypoema)
-                    typo_user = "TYPO_" + IPAddres
-                    with open(
-                        os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
-                    ) as save_typo:
-                        save_typo.write(curr_ypoema)
-                        save_typo.close()
-                    curr_ypoema = load_typo()  # to normalize line breaks in text
-
-                update_readings(st.session_state.tema)
-                LOGO_TEXTO = curr_ypoema
-                LOGO_IMAGE = None
-
-                if st.session_state.draw:
-                    LOGO_IMAGE = load_arts(st.session_state.tema)
-
+            if st.session_state.auto == False:
                 with mini_place_holder:
-                    mini_place_holder.empty()
                     write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
-                    secs = wait_time
-                    while secs >= 0:
-                        time.sleep(1)
-                        secs -= 1
 
+                if st.session_state.talk:
+                    talk(curr_ypoema)
+
+            else:
+                while st.session_state.auto:
+                    if st.session_state.rand:
+                        st.session_state.mini = random.randrange(0, maxy_mini)
+                        st.session_state.tema = temas_list[st.session_state.mini]
+
+                    if st.session_state.lang != st.session_state.last_lang:
+                        curr_ypoema = load_lypo()  # changes in lang, keep LYPO
+                    else:
+                        curr_ypoema = load_poema(st.session_state.tema, "")
+                        curr_ypoema = load_lypo()
+
+                    if st.session_state.lang != "pt":  # translate if idioma <> pt
+                        curr_ypoema = translate(curr_ypoema)
+                        typo_user = "TYPO_" + IPAddres
+                        with open(
+                            os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
+                        ) as save_typo:
+                            save_typo.write(curr_ypoema)
+                            save_typo.close()
+                        curr_ypoema = load_typo()  # to normalize line breaks in text
+
+                    update_readings(st.session_state.tema)
+                    LOGO_TEXTO = curr_ypoema
+                    LOGO_IMAGE = None
+
+                    if st.session_state.draw:
+                        LOGO_IMAGE = load_arts(st.session_state.tema)
+
+                    with mini_place_holder:
+                        mini_place_holder.empty()
+                        write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
+                        secs = wait_time
+                        while secs >= 0:
+                            time.sleep(1)
+                            secs -= 1
 
 def page_ypoemas():
     temas_list = load_temas(st.session_state.book)
@@ -1912,7 +1933,7 @@ def main():
                 if chosen_id == "1":
                     magy = "img_mini.jpg"
                     page_mini()
-                    status = palco_status("mini")
+                    status = f"🌿  {st.session_state.lang} - {st.session_state.tema} ( {st.session_state.mini + 1} / {len(load_temas("todos os temas"))} )"
                 elif chosen_id == "2":
                     magy = "img_ypoemas.jpg"
                     page_ypoemas()
@@ -1948,7 +1969,7 @@ def main():
                 )
 
 
-    ## show_icons()
+    show_icons()
     ##$ st.sidebar.state = True
 
 if __name__ == "__main__":
