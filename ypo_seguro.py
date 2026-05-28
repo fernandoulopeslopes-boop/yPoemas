@@ -1436,7 +1436,7 @@ def page_ypoemas():
     ):  # just in case
         st.session_state.take = 0
 
-    col_livros, col_nav, col_temas = st.columns([3.6, 2.8, 3.6])
+    col_livros, col_nav, col_temas = st.columns([3, 4, 3.)
 
     with col_livros:
         pick_book_sidebar("palco")
