@@ -1557,7 +1557,8 @@ def page_eureka():
 
     with seed:
         find_what = st.text_input(
-            label=translate("digite algo para buscar..."),
+            label=translate("buscar por..."),
+            help=translate("digite uma palavra - ou parte dela - que você goste..."),
         )
 
     with more:
