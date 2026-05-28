@@ -196,9 +196,9 @@ def apply_styles():
         """
         <style>
         [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
-            width: 25vw;
-            min-width: 25vw;
-            max-width: 25vw;
+            width: 315px !important;
+            min-width: 315px !important;
+            max-width: 315px !important;
         }
 
         /* Sidebar :: calibragem temporária com dragster visível */
@@ -1926,7 +1926,7 @@ def main():
     gramado = open_gramado()
 
     with gramado:
-        _pag_esq, _pag_centro, _pag_dir = st.columns([0.01, 9.98, 0.01])
+        _pag_esq, _pag_centro, _pag_dir = st.columns([0.03, 9.94, 0.03])
 
         with _pag_centro:
             chosen_id = stx.tab_bar(
@@ -1956,7 +1956,7 @@ def main():
         with st.sidebar:
             st.image("./images/" + magy)
 
-        #show_icons()
+        show_icons()
 
         if chosen_id == "2":
             draw_sidebar_panel_buttons(chosen_id)
