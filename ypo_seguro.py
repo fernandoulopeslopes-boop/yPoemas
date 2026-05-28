@@ -1880,12 +1880,10 @@ def page_abouts():
 
 
 def render_sidebar_for_page(chosen_id):
-    """Renderiza a sidebar na ordem curatorial correta."""
+    """Renderiza a sidebar da Machina sem a lista de livros."""
     pick_lang()
-    pick_book_sidebar()
     pick_stage_font()
     draw_check_buttons()
-    draw_sidebar_panel_buttons(chosen_id)
 
 
 
@@ -1923,8 +1921,12 @@ def main():
         with st.sidebar:
             st.image("./images/" + magy)
 
-        if chosen_id == "2" and st.session_state.get("sidebar_panel", "Machina") == "CIA":
-            render_cia_sidebar()
+        show_icons()
+
+        if chosen_id == "2":
+            draw_sidebar_panel_buttons(chosen_id)
+            if st.session_state.get("sidebar_panel", "Machina") == "CIA":
+                render_cia_sidebar()
 
         palco = st.container()
         with palco:
@@ -1970,7 +1972,6 @@ def main():
                 )
 
 
-    show_icons()
     ##$ st.sidebar.state = True
 
 if __name__ == "__main__":
