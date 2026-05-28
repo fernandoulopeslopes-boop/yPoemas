@@ -14,7 +14,7 @@ from lay_2_ypo import gera_poema
 
 ABOUTS_LIST = [
     "comentários", "prefácil", "machina", "off-machina", "machina-IA", "livros", "outros autores",
-    "imagens", "poly", "pensares", "tradittore", "bibliografia", "pontuação", "samizdàt", "notes", "chave", "license", "index",
+    "imagens", "poly", "pensares", "tradittore", "bibliografia", "pontuação", "samizdàt", "notes", "license", "index",
 ]
 
 ABOUTS_FILES = {
@@ -33,7 +33,6 @@ ABOUTS_FILES = {
     "pontuação": ["ABOUT_pontuação.md"],
     "samizdàt": ["ABOUT_samizdàt.md"],
     "notes": ["ABOUT_notes.md"],
-    "chave": ["ABOUT_chave de ouro.md"],
     "license": ["ABOUT_license.md"],
     "index": ["ABOUT_index.md", "ABOUT_INDEX.md"],
 }
@@ -323,8 +322,8 @@ def apply_styles():
         section.main > div.block-container {
             max-width: 100vw !important;
             width: 100% !important;
-            padding-left: 0.04rem !important;
-            padding-right: 0.04rem !important;
+            padding-left: 0.00rem !important;
+            padding-right: 0.00rem !important;
         }
 
         
@@ -349,8 +348,8 @@ def apply_styles():
 /* Gramado :: território principal */
         .main .block-container {
             padding-top: 0.00rem !important;
-            padding-left: 0.04rem !important;
-            padding-right: 0.04rem !important;
+            padding-left: 0.00rem !important;
+            padding-right: 0.00rem !important;
             padding-bottom: 0.16rem !important;
             max-width: 100vw !important;
             width: 100% !important;
@@ -372,7 +371,7 @@ def apply_styles():
         div[data-testid="stVerticalBlock"] > div[data-testid="stVerticalBlock"]:first-child {
             background: #eef8ee !important;
             border-radius: 18px !important;
-            padding: 0.00rem 0.14rem 0.22rem 0.14rem !important;
+            padding: 0.00rem 0.06rem 0.22rem 0.06rem !important;
         }
 
 
@@ -441,14 +440,15 @@ def init_session_state():
         "rand": False,
         "stage_font": "Trebuchet",
         "stage_size": 21,
+        "sidebar_panel": "Machina",
+        "cia_name": "",
+        "cia_mood": "Sintática",
 
-        #  de ouro
+        # chave de ouro
         "key_open": False,
         "key_poema_texto": "",
         "key_poema_tema": "",
         "key_analise": "",
-        "show_copy_payload": False,
-        "copy_text_payload": "",
     }
 
     for key, value in defaults.items():
@@ -567,6 +567,46 @@ FONTES_MACHINA = [
     ("JetBrains Mono", "JetBrains Mono"),
     ("Courier", "Courier New"),
 ]
+
+CIA_WORD_1 = ["Informação", "Invenção", "Imaginação", "Imagética", "Injeção"]
+CIA_WORD_2 = ["Analítica", "Artificial", "Analógica", "Afetiva", "Adicional", "Ampliada", "Avançada", "Acadêmica"]
+CIA_MOODS = [
+    "Sintática",
+    "Sintética",
+    "Formal",
+    "Resumida",
+    "Rápida",
+    "Completa",
+]
+
+
+def ensure_cia_name(force=False):
+    """Gera um nome mutável para a CIA e o preserva durante a sessão."""
+    if force or not st.session_state.get("cia_name"):
+        st.session_state["cia_name"] = (
+            "Centro de "
+            + random.choice(CIA_WORD_1)
+            + " "
+            + random.choice(CIA_WORD_2)
+        )
+
+
+def render_cia_sidebar():
+    """Centro de Controle da Chave, exclusivo de yPoemas."""
+    ensure_cia_name()
+    st.sidebar.markdown("### CIA")
+    st.sidebar.caption(st.session_state.get("cia_name", "Centro de Informação Analítica"))
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("**moods**")
+
+    for mood in CIA_MOODS:
+        if mood == st.session_state.get("cia_mood", CIA_MOODS[0]):
+            st.sidebar.markdown(f"**• {mood}**")
+        else:
+            st.sidebar.markdown(f"• {mood}")
+
+    st.sidebar.caption("CIA v0: 1 mood funcional, mapa visual completo.")
+
 
 
 def _coerce_take(value, temas_list):
@@ -1167,31 +1207,6 @@ def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
         )
 
 
-
-def render_copy_text_icon(text_to_copy):
-    """Mostra um mini botão nativo e, ao clicar, abre um bloco nativo com cópia."""
-    col_space, col_btn = st.columns([9.6, 0.4])
-    with col_btn:
-        clicked = st.button(
-            "📚",
-            key=f"copy_poema_btn_{st.session_state.get('tema','')}",
-            help="copiar texto",
-            use_container_width=True,
-        )
-    if clicked:
-        st.session_state["copy_text_payload"] = text_to_copy
-        st.session_state["show_copy_payload"] = True
-
-    if st.session_state.get("show_copy_payload", False):
-        payload = st.session_state.get("copy_text_payload", text_to_copy)
-        st.code(payload, language=None)
-        if st.button(
-            "fechar cópia",
-            key=f"close_copy_payload_{st.session_state.get('tema','')}",
-        ):
-            st.session_state["show_copy_payload"] = False
-
-
 def talk(text):
     """Lê o yPoema no idioma atual usando edge-tts, quando disponível."""
     if edge_tts is None:
@@ -1464,8 +1479,6 @@ def page_ypoemas():
             if st.session_state.draw:
                 LOGO_IMAGE = load_arts(st.session_state.tema)
 
-            copy_text = curr_ypoema.replace("<br>", "\n").replace("<br/>", "\n")
-            render_copy_text_icon(copy_text)
             write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
 
             if manu:
@@ -1480,6 +1493,15 @@ def page_ypoemas():
 
         if st.session_state.talk:
             talk(curr_ypoema)
+
+        if st.session_state.get("sidebar_panel") == "CIA":
+            with st.expander("🗝 Chave de Ouro — CIA v0", expanded=True):
+                st.markdown(
+                    "Mood ativo: **" + st.session_state.get("cia_mood", CIA_MOODS[0]) + "**  \n"
+                    + "Tema em foco: **" + st.session_state.tema + "**  \n"
+                    + "\nDescoberta da Chave em construção. O palco está preparado para a convivência entre yPoema e Chave.",
+                    unsafe_allow_html=False,
+                )
 
         # st.markdown(get_binary_file_downloader_html('./temp/'+'LYPO_' + IPAddres, '➪ '+st.session_state.tema), unsafe_allow_html=True)
 
@@ -1813,9 +1835,31 @@ def page_abouts():
 ### eof: pages
 
 
+def render_sidebar_for_page(chosen_id):
+    """Renderiza o Centro de Controle da Machina ou a CIA conforme a página."""
+    if chosen_id == "2":
+        panel = st.sidebar.radio(
+            "Centro",
+            ["Machina", "CIA"],
+            index=0 if st.session_state.get("sidebar_panel", "Machina") == "Machina" else 1,
+            key="sidebar_panel",
+            horizontal=False,
+        )
+
+        if panel == "Machina":
+            pick_book_sidebar()
+            draw_check_buttons()
+        else:
+            render_cia_sidebar()
+    else:
+        st.session_state["sidebar_panel"] = "Machina"
+        pick_book_sidebar()
+        draw_check_buttons()
+
+
+
 def main():
     pick_lang()
-    pick_book_sidebar()
     pick_stage_font()
 
     gramado = open_gramado()
@@ -1837,7 +1881,7 @@ def main():
 
         chosen_id = str(chosen_id)
 
-        draw_check_buttons()
+        render_sidebar_for_page(chosen_id)
         palco = st.container()
         with palco:
             palco_container = open_palco()
