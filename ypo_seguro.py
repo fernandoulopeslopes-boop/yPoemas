@@ -641,57 +641,138 @@ def draw_sidebar_panel_buttons(chosen_id):
 
 
 def _coerce_take(value, temas_list):
-    """Garante um índice inteiro válido dentro da lista de temas."""
+    """Converte diferentes formas de seleção de tema para índice inteiro válido."""
     if not temas_list:
         return 0
-    try:
-        take = int(value)
-    except (TypeError, ValueError):
+
+    if isinstance(value, int):
+        take = value
+    elif isinstance(value, str):
+        if value.isdigit():
+            take = int(value)
+        elif value in temas_list:
+            take = temas_list.index(value)
+        else:
+            take = 0
+    else:
         take = 0
+
     if take < 0 or take >= len(temas_list):
         take = 0
     return take
 
 
-def pick_book_sidebar(where="sidebar"):
-    """Escolhe o livro yPoemas no palco; preservado por compatibilidade."""
+def _sync_book_theme_state():
+    """Mantém o estado canônico (book/take/tema) consistente."""
     books_list = BOOKS_LIST
-    current = st.session_state.get("book", books_list[0])
-    if current not in books_list:
-        current = books_list[0]
-        st.session_state.book = current
+    current_book = st.session_state.get("book", books_list[0])
+    if current_book not in books_list:
+        current_book = books_list[0]
+    st.session_state.book = current_book
 
-    label = translate("yPoemas disponíveis...") if where == "sidebar" else f"{len(books_list)} " + translate("livros disponíveis...")
-    container = st.sidebar if where == "sidebar" else st
+    temas_list = load_temas(current_book)
+    if not temas_list:
+        st.session_state.take = 0
+        st.session_state.tema = ""
+        return
+
+    take = _coerce_take(st.session_state.get("take", 0), temas_list)
+
+    st.session_state.take = take
+    st.session_state.tema = temas_list[take]
+
+
+def _prepare_book_widget(key):
+    """Faz o widget espelhar `book` sem tomar conta do estado."""
+    current = st.session_state.book
+    if key in st.session_state and st.session_state.get(key) != current:
+        del st.session_state[key]
+
+
+def _prepare_theme_widget():
+    """Normaliza o widget de temas para espelhar o `take` sem impor valor indevido."""
+    temas_list = load_temas(st.session_state.book)
+    current = _coerce_take(st.session_state.get("take", 0), temas_list)
+    raw_value = st.session_state.get("opt_take_palco", current)
+    normalized = _coerce_take(raw_value, temas_list)
+    if normalized != raw_value:
+        st.session_state["opt_take_palco"] = normalized
+
+
+def _on_sidebar_book_change():
+    choice = st.session_state.get("sidebar_book_select", st.session_state.book)
+    if choice != st.session_state.book:
+        st.session_state.book = choice
+        st.session_state.take = 0
+    _sync_book_theme_state()
+
+
+def _on_palco_book_change():
+    choice = st.session_state.get("palco_book_select", st.session_state.book)
+    if choice != st.session_state.book:
+        st.session_state.book = choice
+        st.session_state.take = 0
+    _sync_book_theme_state()
+
+
+def _on_palco_theme_change():
+    temas_list = load_temas(st.session_state.book)
+    if not temas_list:
+        st.session_state.take = 0
+        st.session_state.tema = ""
+        return
+
+    take = _coerce_take(
+        st.session_state.get("opt_take_palco", st.session_state.get("take", 0)),
+        temas_list,
+    )
+
+    st.session_state.take = take
+    st.session_state.tema = temas_list[take]
+
+
+def pick_book_sidebar(where="sidebar"):
+    """Escolhe o livro yPoemas na sidebar ou no palco."""
+    _sync_book_theme_state()
+
+    books_list = BOOKS_LIST
+    current = st.session_state.book
     key = "sidebar_book_select" if where == "sidebar" else "palco_book_select"
+    _prepare_book_widget(key)
 
-    choice = container.selectbox(
+    container = st.sidebar if where == "sidebar" else st
+    if where == "sidebar":
+        label = translate("yPoemas disponíveis...")
+    else:
+        label = f"{len(books_list)} " + translate("livros disponíveis...")
+    callback = _on_sidebar_book_change if where == "sidebar" else _on_palco_book_change
+
+    container.selectbox(
         label,
         books_list,
         index=books_list.index(current),
         key=key,
+        on_change=callback,
     )
 
-    if choice != st.session_state.book:
-        st.session_state.book = choice
-        st.session_state.take = 0
 
-
-def pick_tema_palco(temas_list):
-    """Escolhe o tema atual do livro diretamente no palco usando apenas take."""
+def pick_tema_palco():
+    """Escolhe o tema atual do livro diretamente no palco."""
+    _sync_book_theme_state()
+    temas_list = load_temas(st.session_state.book)
     if not temas_list:
-        return 0
+        return
 
-    current = _coerce_take(st.session_state.get("take", 0), temas_list)
+    _prepare_theme_widget()
     options = list(range(len(temas_list)))
-    selected = st.selectbox(
+    st.selectbox(
         f"↓  {len(temas_list)} " + translate("temas"),
         options,
-        index=current,
+        index=_coerce_take(st.session_state.get("take", 0), temas_list),
         format_func=lambda z: temas_list[z],
-        key="opt_take",
+        key="opt_take_palco",
+        on_change=_on_palco_theme_change,
     )
-    return _coerce_take(selected, temas_list)
 
 
 def pick_stage_font():
@@ -1349,16 +1430,15 @@ def page_mini():
 def page_ypoemas():
     temas_list = load_temas(st.session_state.book)
     maxy_ypoemas = len(temas_list) - 1
-    st.session_state.take = _coerce_take(st.session_state.get("take", 0), temas_list)
+    if (
+        st.session_state.take > maxy_ypoemas or st.session_state.take < 0
+    ):  # just in case
+        st.session_state.take = 0
 
     col_livros, col_nav, col_temas = st.columns([3.6, 2.8, 3.6])
 
     with col_livros:
         pick_book_sidebar("palco")
-
-    temas_list = load_temas(st.session_state.book)
-    maxy_ypoemas = len(temas_list) - 1
-    st.session_state.take = _coerce_take(st.session_state.get("take", 0), temas_list)
 
     with col_nav:
         help_tips = load_help(st.session_state.lang)
@@ -1374,27 +1454,32 @@ def page_ypoemas():
         nest = nav_cols[3].button("▶", help=help_nest, use_container_width=True)
         manu = nav_cols[4].button("?", help="help !!!", use_container_width=True)
 
-    if last and temas_list:
+    temas_list = load_temas(st.session_state.book)
+    maxy_ypoemas = len(temas_list) - 1
+    if st.session_state.take > maxy_ypoemas or st.session_state.take < 0:
+        st.session_state.take = 0
+
+    if last:
         st.session_state.take -= 1
         if st.session_state.take < 0:
             st.session_state.take = maxy_ypoemas
+        _sync_book_theme_state()
 
-    if rand and temas_list:
+    if rand:
         st.session_state.take = random.randrange(0, maxy_ypoemas + 1)
+        _sync_book_theme_state()
 
-    if nest and temas_list:
+    if nest:
         st.session_state.take += 1
         if st.session_state.take > maxy_ypoemas:
             st.session_state.take = 0
+        _sync_book_theme_state()
 
     with col_temas:
-        if temas_list:
-            opt_take = pick_tema_palco(temas_list)
-            if opt_take != st.session_state.take:
-                st.session_state.take = opt_take
+        pick_tema_palco()
 
-    st.session_state.take = _coerce_take(st.session_state.get("take", 0), temas_list)
-    st.session_state.tema = temas_list[st.session_state.take] if temas_list else ""
+    temas_list = load_temas(st.session_state.book)
+    _sync_book_theme_state()
 
     lnew = True
     if manu:
@@ -1416,17 +1501,20 @@ def page_ypoemas():
         ypoemas_expander = st.expander(what_book, expanded=True)
         with ypoemas_expander:
             if st.session_state.lang != st.session_state.last_lang:
-                curr_ypoema = load_lypo()
+                curr_ypoema = load_lypo()  # changes in lang, keep LYPO
             else:
                 curr_ypoema = load_poema(st.session_state.tema, "")
                 curr_ypoema = load_lypo()
 
-            if st.session_state.lang != "pt":
+            if st.session_state.lang != "pt":  # translate if idioma <> pt
                 curr_ypoema = translate(curr_ypoema)
                 typo_user = "TYPO_" + IPAddres
-                with open(os.path.join("./temp/" + typo_user), "w", encoding="utf-8") as save_typo:
+                with open(
+                    os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
+                ) as save_typo:
                     save_typo.write(curr_ypoema)
-                curr_ypoema = load_typo()
+                    save_typo.close()
+                curr_ypoema = load_typo()  # to normalize line breaks in text
 
             update_readings(st.session_state.tema)
             LOGO_TEXTO = curr_ypoema
@@ -1438,7 +1526,7 @@ def page_ypoemas():
 
             if manu:
                 LOGO_TEXTO = load_info(st.session_state.tema)
-                if st.session_state.lang != "pt":
+                if st.session_state.lang != "pt":  # translate if idioma <> pt
                     LOGO_TEXTO = translate(LOGO_TEXTO)
 
                 LOGO_IMAGE = (
@@ -1448,6 +1536,17 @@ def page_ypoemas():
 
         if st.session_state.talk:
             talk(curr_ypoema)
+
+        if st.session_state.get("sidebar_panel") == "CIA":
+            with st.expander("🗝 Chave de Ouro — CIA v0", expanded=True):
+                st.markdown(
+                    "Mood ativo: **" + st.session_state.get("cia_mood", CIA_MOODS[0]) + "**  \n"
+                    + "Tema em foco: **" + st.session_state.tema + "**  \n"
+                    + "\nDescoberta da Chave em construção. O palco está preparado para a convivência entre yPoema e Chave.",
+                    unsafe_allow_html=False,
+                )
+
+        # st.markdown(get_binary_file_downloader_html('./temp/'+'LYPO_' + IPAddres, '➪ '+st.session_state.tema), unsafe_allow_html=True)
 
 def page_eureka():
     help_tips = load_help(st.session_state.lang)
