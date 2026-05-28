@@ -680,19 +680,23 @@ def pick_book_sidebar(where="sidebar"):
 
 
 def pick_tema_palco(temas_list):
-    """Escolhe o tema atual do livro diretamente no palco, guiado só por take."""
+    """Escolhe o tema atual do livro diretamente no palco, usando o próprio tema como verdade."""
     if not temas_list:
         return 0
 
-    current = _coerce_take(st.session_state.get("take", 0), temas_list)
-    options = list(range(len(temas_list)))
-    selected = st.selectbox(
+    current_theme = st.session_state.get("tema", "")
+    if current_theme not in temas_list:
+        current_take = _coerce_take(st.session_state.get("take", 0), temas_list)
+        current_theme = temas_list[current_take]
+
+    selected_theme = st.selectbox(
         f"↓  {len(temas_list)} " + translate("temas"),
-        options,
-        index=current,
-        format_func=lambda z: temas_list[z],
+        temas_list,
+        index=temas_list.index(current_theme),
     )
-    return _coerce_take(selected, temas_list)
+
+    st.session_state.tema = selected_theme
+    return temas_list.index(selected_theme)
 
 
 def pick_stage_font():
