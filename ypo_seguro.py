@@ -700,14 +700,6 @@ def _prepare_theme_widget():
         st.session_state["opt_take_palco"] = normalized
 
 
-def _on_sidebar_book_change():
-    choice = st.session_state.get("sidebar_book_select", st.session_state.book)
-    if choice != st.session_state.book:
-        st.session_state.book = choice
-        st.session_state.take = 0
-    _sync_book_theme_state()
-
-
 def _on_palco_book_change():
     choice = st.session_state.get("palco_book_select", st.session_state.book)
     if choice != st.session_state.book:
@@ -732,32 +724,26 @@ def _on_palco_theme_change():
     st.session_state.tema = temas_list[take]
 
 
-def pick_book_sidebar(where="sidebar"):
-    """Escolhe o livro yPoemas na sidebar ou no palco."""
+def pick_book_palco():
+    """Escolhe o livro yPoemas diretamente no palco."""
     _sync_book_theme_state()
 
     books_list = BOOKS_LIST
     current = st.session_state.book
-    key = "sidebar_book_select" if where == "sidebar" else "palco_book_select"
+    key = "palco_book_select"
     _prepare_book_widget(key)
 
-    container = st.sidebar if where == "sidebar" else st
-    if where == "sidebar":
-        label = translate("yPoemas disponíveis...")
-    else:
-        label = f"{len(books_list)} " + translate("livros disponíveis...")
-    callback = _on_sidebar_book_change if where == "sidebar" else _on_palco_book_change
-
-    container.selectbox(
-        label,
+    st.selectbox(
+        f"{len(books_list)} " + translate("livros disponíveis..."),
         books_list,
         index=books_list.index(current),
         key=key,
-        on_change=callback,
+        on_change=_on_palco_book_change,
     )
 
 
 def pick_tema_palco():
+
     """Escolhe o tema atual do livro diretamente no palco."""
     _sync_book_theme_state()
     temas_list = load_temas(st.session_state.book)
@@ -1439,7 +1425,7 @@ def page_ypoemas():
     col_livros, col_nav, col_temas = st.columns([3, 4, 3])
 
     with col_livros:
-        pick_book_sidebar("palco")
+        pick_book_palco()
 
     with col_nav:
         help_tips = load_help(st.session_state.lang)
