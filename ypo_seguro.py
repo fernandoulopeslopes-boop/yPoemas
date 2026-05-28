@@ -8,6 +8,7 @@ import asyncio
 from datetime import datetime
 
 import streamlit as st
+import streamlit.components.v1 as components
 from extra_streamlit_components import TabBar as stx
 
 from lay_2_ypo import gera_poema
@@ -1879,6 +1880,40 @@ def page_abouts():
 ### eof: pages
 
 
+
+def render_sidebar_width_meter():
+    """Mostra a largura atual da sidebar durante o ajuste fino."""
+    components.html(
+        """
+        <div id="machina-sidebar-width"
+             style="font-family: Trebuchet MS, sans-serif; font-size: 12px; opacity: 0.8; padding: 0.1rem 0 0.2rem 0;">
+          largura atual da sidebar: ...
+        </div>
+        <script>
+        const target = window.parent.document.querySelector('[data-testid="stSidebar"] > div:first-child');
+        const label = document.getElementById("machina-sidebar-width");
+
+        function updateWidth() {
+          if (!target || !label) return;
+          const width = Math.round(target.getBoundingClientRect().width);
+          label.textContent = `largura atual da sidebar: ${width}px`;
+        }
+
+        updateWidth();
+
+        const observer = target ? new ResizeObserver(updateWidth) : null;
+        if (observer && target) observer.observe(target);
+
+        window.addEventListener("load", updateWidth);
+        window.addEventListener("resize", updateWidth);
+        window.addEventListener("mousemove", updateWidth);
+        document.addEventListener("mousemove", updateWidth);
+        </script>
+        """,
+        height=28,
+    )
+
+
 def render_sidebar_for_page(chosen_id):
     """Renderiza a sidebar da Machina sem a lista de livros."""
     pick_lang()
@@ -1927,6 +1962,9 @@ def main():
             draw_sidebar_panel_buttons(chosen_id)
             if st.session_state.get("sidebar_panel", "Machina") == "CIA":
                 render_cia_sidebar()
+
+        with st.sidebar:
+            render_sidebar_width_meter()
 
         palco = st.container()
         with palco:
