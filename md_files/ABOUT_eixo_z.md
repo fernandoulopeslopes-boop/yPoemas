@@ -1,5 +1,5 @@
-**∞**  
-**O eixo Z e os ítimos**  
+sobre o eixo Z e os ítimos  
+
 > O trabalho criativo está na escolha das palavras  
   que em algum momento farão parte dos **ítimos**.  
 
