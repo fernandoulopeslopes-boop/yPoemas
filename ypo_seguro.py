@@ -1948,7 +1948,7 @@ def main():
                 )
 
 
-    show_icons()
+    ## show_icons()
     ##$ st.sidebar.state = True
 
 if __name__ == "__main__":
