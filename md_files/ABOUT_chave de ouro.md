@@ -1,3 +1,5 @@
+# a chave de ouro...
+
 A Chave de Ouro não é um enfeite, nem um extra lateral da Machina.  
 Ela é o momento em que o poema gerado deixa de ser apenas leitura  
 e passa a ser também objeto de descoberta.  
