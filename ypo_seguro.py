@@ -615,6 +615,21 @@ def render_cia_sidebar():
     st.sidebar.caption("CIA v0: 1 mood funcional, mapa visual completo.")
 
 
+def draw_sidebar_panel_buttons(chosen_id):
+    """Alterna entre Machina e CIA com botões horizontais, apenas em yPoemas."""
+    if chosen_id != "2":
+        st.session_state["sidebar_panel"] = "Machina"
+        return
+
+    col_mach, col_cia = st.sidebar.columns([1, 1])
+    with col_mach:
+        if st.button("Machina", key="sidebar_panel_machina", use_container_width=True):
+            st.session_state["sidebar_panel"] = "Machina"
+    with col_cia:
+        if st.button("CIA", key="sidebar_panel_cia", use_container_width=True):
+            st.session_state["sidebar_panel"] = "CIA"
+
+
 
 def _coerce_take(value, temas_list):
     """Converte diferentes formas de seleção de tema para índice inteiro válido."""
@@ -1399,7 +1414,7 @@ def page_ypoemas():
     ):  # just in case
         st.session_state.take = 0
 
-    col_livros, col_nav, col_temas = st.columns([3.15, 5.3, 3.15])
+    col_livros, col_nav, col_temas = st.columns([3.6, 2.8, 3.6])
 
     with col_livros:
         pick_book_sidebar("palco")
@@ -1843,37 +1858,20 @@ def page_abouts():
 
 
 def render_sidebar_for_page(chosen_id):
-    """Renderiza o Centro de Controle da Machina ou a CIA conforme a página."""
-    if chosen_id == "2":
-        panel = st.sidebar.radio(
-            "",
-            ["Machina", "CIA"],
-            index=0 if st.session_state.get("sidebar_panel", "Machina") == "Machina" else 1,
-            key="sidebar_panel",
-            horizontal=True,
-            label_visibility="collapsed",
-        )
-
-        if panel == "Machina":
-            pick_book_sidebar()
-            draw_check_buttons()
-        else:
-            render_cia_sidebar()
-    else:
-        st.session_state["sidebar_panel"] = "Machina"
-        pick_book_sidebar()
-        draw_check_buttons()
+    """Renderiza a sidebar na ordem curatorial correta."""
+    pick_lang()
+    pick_book_sidebar()
+    pick_stage_font()
+    draw_check_buttons()
+    draw_sidebar_panel_buttons(chosen_id)
 
 
 
 def main():
-    pick_lang()
-    pick_stage_font()
-
     gramado = open_gramado()
 
     with gramado:
-        _pag_esq, _pag_centro, _pag_dir = st.columns([0.15, 9.7, 0.15])
+        _pag_esq, _pag_centro, _pag_dir = st.columns([0.03, 9.94, 0.03])
 
         with _pag_centro:
             chosen_id = stx.tab_bar(
@@ -1898,10 +1896,14 @@ def main():
         }
         magy = page_image_map.get(chosen_id, "img_ypoemas.jpg")
 
+        render_sidebar_for_page(chosen_id)
+
         with st.sidebar:
             st.image("./images/" + magy)
 
-        render_sidebar_for_page(chosen_id)
+        if chosen_id == "2" and st.session_state.get("sidebar_panel", "Machina") == "CIA":
+            render_cia_sidebar()
+
         palco = st.container()
         with palco:
             palco_container = open_palco()
