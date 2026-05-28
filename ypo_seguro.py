@@ -14,7 +14,7 @@ from lay_2_ypo import gera_poema
 
 ABOUTS_LIST = [
     "comentários", "prefácil", "machina", "off-machina", "machina-IA", "livros", "outros autores",
-    "imagens", "poly", "pensares", "tradittore", "bibliografia", "pontuação", "samizdàt", "notes", "", "license", "index",
+    "imagens", "poly", "pensares", "tradittore", "bibliografia", "pontuação", "samizdàt", "notes", "chave", "license", "index",
 ]
 
 ABOUTS_FILES = {
