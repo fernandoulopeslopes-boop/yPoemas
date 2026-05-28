@@ -371,7 +371,7 @@ def apply_styles():
         div[data-testid="stVerticalBlock"] > div[data-testid="stVerticalBlock"]:first-child {
             background: #eef8ee !important;
             border-radius: 18px !important;
-            padding: 0.00rem 0.06rem 0.22rem 0.06rem !important;
+            padding: 0.00rem 0.00rem 0.22rem 0.00rem !important;
         }
 
 
@@ -384,6 +384,13 @@ def apply_styles():
         div[data-testid="stExpander"] details {
             width: 100% !important;
             max-width: 100% !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+
+        div[data-testid="stExpander"] div[data-testid="stVerticalBlock"] {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
         }
 
         .machina-palco-central {
@@ -1839,11 +1846,12 @@ def render_sidebar_for_page(chosen_id):
     """Renderiza o Centro de Controle da Machina ou a CIA conforme a página."""
     if chosen_id == "2":
         panel = st.sidebar.radio(
-            "Centro",
+            "",
             ["Machina", "CIA"],
             index=0 if st.session_state.get("sidebar_panel", "Machina") == "Machina" else 1,
             key="sidebar_panel",
-            horizontal=False,
+            horizontal=True,
+            label_visibility="collapsed",
         )
 
         if panel == "Machina":
@@ -1880,6 +1888,18 @@ def main():
             )
 
         chosen_id = str(chosen_id)
+
+        page_image_map = {
+            "1": "img_mini.jpg",
+            "2": "img_ypoemas.jpg",
+            "3": "img_eureka.jpg",
+            "4": "img_off-machina.jpg",
+            "5": "img_about.jpg",
+        }
+        magy = page_image_map.get(chosen_id, "img_ypoemas.jpg")
+
+        with st.sidebar:
+            st.image("./images/" + magy)
 
         render_sidebar_for_page(chosen_id)
         palco = st.container()
@@ -1925,9 +1945,6 @@ def main():
                     unsafe_allow_html=True,
                 )
 
-
-    with st.sidebar:
-        st.image("./images/" + magy)
 
     show_icons()
     ##$ st.sidebar.state = True
