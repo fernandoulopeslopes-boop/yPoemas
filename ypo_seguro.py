@@ -426,6 +426,22 @@ def apply_styles():
             padding-bottom: 0.1rem;
         }
 
+        .cia-stage-box {
+            background: rgba(255, 255, 255, 0.58);
+            border-radius: 16px;
+            padding: 0.25rem 0.55rem 0.35rem 0.55rem;
+            min-height: 61vh;
+            box-sizing: border-box;
+        }
+
+        .cia-stage-title {
+            text-align: center;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            opacity: 0.88;
+        }
+
         </style>
         """,
         unsafe_allow_html=True,
@@ -608,12 +624,73 @@ def ensure_cia_name(force=False):
         )
 
 
+def generate_poema_preview(nome_tema, seed_eureka=""):
+    """Gera um poema inline sem sobrescrever o LYPO em disco."""
+    try:
+        script = gera_poema(nome_tema, seed_eureka)
+    except Exception:
+        return nome_tema
+
+    text_lines = [nome_tema]
+    for line in script:
+        if line == "\n":
+            text_lines.append("")
+        else:
+            text_lines.append(line)
+    return "<br>".join(text_lines)
+
+
+def build_cia_header():
+    """Cabeçalho poético da CIA, gerado pela própria Machina."""
+    ensure_cia_name()
+    header = generate_poema_preview("Cia", "")
+    if st.session_state.lang != "pt":
+        header = translate(header)
+        typo_user = "TYPO_" + IPAddres
+        with open(os.path.join("./temp/" + typo_user), "w", encoding="utf-8") as save_typo:
+            save_typo.write(header)
+        header = load_typo()
+    return header
+
+
+def build_cia_analysis(curr_ypoema):
+    """Primeira leitura funcional da CIA: mood Sintática."""
+    raw_parts = [part.strip() for part in curr_ypoema.replace("<br/>", "<br>").split("<br>")]
+    lines = [part for part in raw_parts if part]
+    poema_lines = lines[1:] if len(lines) > 1 else []
+    qtd_linhas = len(poema_lines)
+    qtd_palavras = sum(len(line.split()) for line in poema_lines)
+
+    mood = st.session_state.get("cia_mood", CIA_MOODS[0])
+    tema = st.session_state.get("tema", "")
+
+    body = []
+    body.append(f"Mood ativo: **{mood}**")
+    body.append(f"Tema em foco: **{tema}**")
+    body.append("")
+    body.append(f"Leitura sintática inicial: o poema em foco se organiza em **{qtd_linhas} linhas** e cerca de **{qtd_palavras} palavras**.")
+    body.append("")
+    body.append("Nesta v0, a CIA observa o desenho do texto: como a abertura arma o campo de sentido, como o corpo sustenta o andamento e como o fecho desloca ou fecha a leitura.")
+    body.append("")
+    body.append("A casa da Chave já está de pé: poema à esquerda, leitura à direita, ambos convivendo no mesmo palco.")
+    return "  \n".join(body)
+
+
+def render_cia_stage(curr_ypoema):
+    """Renderiza o texto da Chave no lado direito do palco."""
+    st.markdown("<div class='cia-stage-box'>", unsafe_allow_html=True)
+    st.markdown("<div class='cia-stage-title'>CIA</div>", unsafe_allow_html=True)
+    write_ypoema(build_cia_header(), None)
+    st.markdown(build_cia_analysis(curr_ypoema), unsafe_allow_html=False)
+    st.markdown("</div>", unsafe_allow_html=True)
+
+
+
 def render_cia_sidebar():
     """Centro de Controle da Chave, exclusivo de yPoemas."""
     ensure_cia_name()
     st.sidebar.markdown("### CIA")
     st.sidebar.caption(st.session_state.get("cia_name", "Centro de Informação Analítica"))
-    st.sidebar.markdown("---")
     st.sidebar.markdown("**moods**")
 
     for mood in CIA_MOODS:
@@ -1506,10 +1583,18 @@ def page_ypoemas():
             update_readings(st.session_state.tema)
             LOGO_TEXTO = curr_ypoema
             LOGO_IMAGE = None
-            if st.session_state.draw:
+
+            if st.session_state.get("sidebar_panel") != "CIA" and st.session_state.draw:
                 LOGO_IMAGE = load_arts(st.session_state.tema)
 
-            write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
+            if st.session_state.get("sidebar_panel") == "CIA":
+                col_poema, col_cia = st.columns([5, 5])
+                with col_poema:
+                    write_ypoema(LOGO_TEXTO, None)
+                with col_cia:
+                    render_cia_stage(curr_ypoema)
+            else:
+                write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
 
             if manu:
                 LOGO_TEXTO = load_info(st.session_state.tema)
@@ -1523,15 +1608,6 @@ def page_ypoemas():
 
         if st.session_state.talk:
             talk(curr_ypoema)
-
-        if st.session_state.get("sidebar_panel") == "CIA":
-            with st.expander("🗝 Chave de Ouro — CIA v0", expanded=True):
-                st.markdown(
-                    "Mood ativo: **" + st.session_state.get("cia_mood", CIA_MOODS[0]) + "**  \n"
-                    + "Tema em foco: **" + st.session_state.tema + "**  \n"
-                    + "\nDescoberta da Chave em construção. O palco está preparado para a convivência entre yPoema e Chave.",
-                    unsafe_allow_html=False,
-                )
 
         # st.markdown(get_binary_file_downloader_html('./temp/'+'LYPO_' + IPAddres, '➪ '+st.session_state.tema), unsafe_allow_html=True)
 
