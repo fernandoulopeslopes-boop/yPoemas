@@ -476,7 +476,7 @@ def init_session_state():
         "sidebar_panel": "Machina",
         "cia_name": "",
         "cia_mood": "Sintática",
-        "cia_line0_offset_px": -365,
+        "cia_line0_offset_px": -370,
 
         # chave de ouro
         "key_open": False,
