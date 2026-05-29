@@ -718,9 +718,7 @@ def build_cia_analysis(curr_ypoema):
     body.append(
         "A leitura sintática não resume o poema: ela observa como frase, pausa, corte e pontuação participam da construção do sentido."
     )
-    return "  
-".join(body)
-
+PLACEHOLDER
 
 def render_cia_stage(curr_ypoema):
     """Renderiza o texto da Chave no lado direito do palco, sem arrulho de títulos repetidos."""
