@@ -476,7 +476,7 @@ def init_session_state():
         "sidebar_panel": "Machina",
         "cia_name": "",
         "cia_mood": "Sintática",
-        "cia_line0_offset_px": -400,
+        "cia_line0_offset_px": -355,
 
         # chave de ouro
         "key_open": False,
@@ -672,7 +672,7 @@ def build_cia_analysis(curr_ypoema):
     body.append(f"Mood ativo: **{mood}**")
     body.append(f"Tema em foco: **{tema}**")
     body.append("")
-    body.append(f"Leitura sintática inicial: o poema em foco se organiza em **{qtd_linhas} linhas** e cerca de **{qtd_palavras} palavras**.")
+    body.append(f"Leitura sintática inicial: o poema em foco se organiza em **{qtd_linhas} linhas** e **{qtd_palavras} palavras**.")
     body.append("")
     body.append("Nesta v0, a CIA observa o desenho do texto: como a abertura arma o campo de sentido, como o corpo sustenta o andamento e como o fecho desloca ou fecha a leitura.")
     body.append("")
@@ -2078,9 +2078,6 @@ def main():
                     f"<div class='machina-rodape-palco'>{status}</div>",
                     unsafe_allow_html=True,
                 )
-
-
-    ##$ st.sidebar.state = True
 
 if __name__ == "__main__":
     main()
