@@ -483,6 +483,8 @@ def init_session_state():
         "key_poema_texto": "",
         "key_poema_tema": "",
         "key_analise": "",
+        "cia_dossie_texto": "",
+        "cia_dossie_nome": "",
     }
 
     for key, value in defaults.items():
@@ -641,6 +643,42 @@ def generate_poema_preview(nome_tema, seed_eureka=""):
     return "<br>".join(text_lines)
 
 
+def build_theme_dossier(nome_tema, nome_livro, n_copias=7):
+    """Gera um dossiê textual com N amostras do tema atual para análise da CIA."""
+    blocos = []
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
+    blocos.extend([
+        f"TEMA: {nome_tema}",
+        f"LIVRO: {nome_livro}",
+        f"QTD_AMOSTRAS: {n_copias}",
+        f"GERADO_EM: {timestamp}",
+        "",
+        "BASE REAL DE ANÁLISE DA CIA",
+        "",
+    ])
+
+    for i in range(1, n_copias + 1):
+        try:
+            script = gera_poema(nome_tema, "")
+        except Exception as exc:
+            blocos.append(f"=== AMOSTRA {i} ===")
+            blocos.append(f"erro ao gerar amostra: {exc}")
+            blocos.append("")
+            continue
+
+        blocos.append(f"=== AMOSTRA {i} ===")
+        blocos.append(nome_tema)
+        for line in script:
+            if line == "\n":
+                blocos.append("")
+            else:
+                blocos.append(str(line))
+        blocos.append("")
+
+    return "\n".join(blocos)
+
+
+
 def build_cia_header():
     """Descrição poética da CIA, gerada pela própria Machina sem repetir o título."""
     ensure_cia_name()
@@ -658,7 +696,7 @@ def build_cia_header():
 
 
 def build_cia_analysis(curr_ypoema):
-    """Leitura sintática da CIA: base gramatical correta e leitura livre do efeito."""
+    """Primeira leitura funcional da CIA: mood Sintática."""
     raw_parts = [part.strip() for part in curr_ypoema.replace("<br/>", "<br>").split("<br>")]
     lines = [part for part in raw_parts if part]
     poema_lines = lines[1:] if len(lines) > 1 else []
@@ -666,59 +704,19 @@ def build_cia_analysis(curr_ypoema):
     qtd_palavras = sum(len(line.split()) for line in poema_lines)
 
     mood = st.session_state.get("cia_mood", CIA_MOODS[0])
-    if mood != "Sintática":
-        return "Este mood ainda está em construção na CIA."
+    tema = st.session_state.get("tema", "")
 
     body = []
-    body.append(
-        f"Sintaticamente, o poema se organiza em **{qtd_linhas} linhas** e **{qtd_palavras} palavras**, com o enunciado sendo recortado pelas quebras de verso."
-    )
-
-    joined_text = " ".join(poema_lines)
-    has_ellipsis = "..." in joined_text or "…" in joined_text
-    has_colon = ":" in joined_text
-    has_semicolon = ";" in joined_text
-    has_question = "?" in joined_text
-    has_exclamation = "!" in joined_text
-    has_parentheses = "(" in joined_text or ")" in joined_text
-    has_quotes = '"' in joined_text or "“" in joined_text or "”" in joined_text or "'" in joined_text
-
-    syntax_notes = []
-    if has_parentheses:
-        syntax_notes.append("os parênteses criam um inciso e introduzem uma segunda voz dentro do próprio enunciado")
-    if has_colon:
-        syntax_notes.append("os dois-pontos armam uma abertura de desdobramento")
-    if has_semicolon:
-        syntax_notes.append("o ponto e vírgula separa segmentos sem romper totalmente a continuidade")
-    if has_question:
-        syntax_notes.append("a interrogação desloca a frase para um regime de tensão ou busca")
-    if has_exclamation:
-        syntax_notes.append("a exclamação intensifica a emissão")
-    if has_ellipsis:
-        syntax_notes.append("as reticências mantêm a sintaxe em suspensão")
-    if has_quotes:
-        syntax_notes.append("as aspas destacam uma palavra ou um registro dentro da frase")
-
-    if syntax_notes:
-        body.append("")
-        body.append("Neste texto, " + "; ".join(syntax_notes) + ".")
-
-    abertura = poema_lines[0] if poema_lines else ""
-    fecho = poema_lines[-1] if poema_lines else ""
-    if abertura or fecho:
-        body.append("")
-        parts = []
-        if abertura:
-            parts.append(f"A abertura por **“{abertura}”** instala o primeiro gesto sintático do poema")
-        if fecho and fecho != abertura:
-            parts.append(f"o fecho em **“{fecho}”** redefine ou recolhe esse percurso")
-        body.append(", enquanto ".join(parts) + ".")
-
+    body.append(f"Mood ativo: **{mood}**")
+    body.append(f"Tema em foco: **{tema}**")
     body.append("")
-    body.append(
-        "A leitura sintática não resume o poema: ela observa como frase, pausa, corte e pontuação participam da construção do sentido."
-    )
+    body.append(f"Leitura sintática inicial: o poema em foco se organiza em **{qtd_linhas} linhas** e **{qtd_palavras} palavras**.")
+    body.append("")
+    body.append("Nesta v0, a CIA observa o desenho do texto: como a abertura arma o campo de sentido, como o corpo sustenta o andamento e como o fecho desloca ou fecha a leitura.")
+    body.append("")
+    body.append("A casa da Chave já está de pé: poema à esquerda, leitura à direita, ambos convivendo no mesmo palco.")
     return "  \n".join(body)
+
 
 def render_cia_stage(curr_ypoema):
     """Renderiza o texto da Chave no lado direito do palco, sem arrulho de títulos repetidos."""
@@ -1559,12 +1557,13 @@ def page_ypoemas():
         help_nest = help_tips[2]
         help_more = help_tips[4]
 
-        nav_cols = st.columns([1, 1, 1, 1, 1])
+        nav_cols = st.columns([1, 1, 1, 1, 1, 1])
         more = nav_cols[0].button("✚", help=help_more, use_container_width=True)
         last = nav_cols[1].button("◀", help=help_last, use_container_width=True)
         rand = nav_cols[2].button("✻", help=help_rand, use_container_width=True)
         nest = nav_cols[3].button("▶", help=help_nest, use_container_width=True)
-        manu = nav_cols[4].button("?", help="help !!!", use_container_width=True)
+        dossier = nav_cols[4].button("📚", help="gerar dossiê do tema (N=7)", use_container_width=True)
+        manu = nav_cols[5].button("?", help="help !!!", use_container_width=True)
 
     temas_list = load_temas(st.session_state.book)
     maxy_ypoemas = len(temas_list) - 1
@@ -1593,6 +1592,16 @@ def page_ypoemas():
     temas_list = load_temas(st.session_state.book)
     _sync_book_theme_state()
 
+    if dossier:
+        dossier_texto = build_theme_dossier(
+            st.session_state.tema,
+            st.session_state.book,
+            n_copias=7,
+        )
+        dossier_nome = "CIA_dossie_" + st.session_state.tema.replace(" ", "_") + "_N7.txt"
+        st.session_state.cia_dossie_texto = dossier_texto
+        st.session_state.cia_dossie_nome = dossier_nome
+
     lnew = True
     if manu:
         st.subheader(load_md_file("MANUAL_YPOEMAS.md"))
@@ -1612,6 +1621,14 @@ def page_ypoemas():
 
         ypoemas_expander = st.expander(what_book, expanded=True)
         with ypoemas_expander:
+            if st.session_state.get("cia_dossie_texto"):
+                st.download_button(
+                    "baixar dossiê do tema (N=7)",
+                    data=st.session_state.get("cia_dossie_texto", ""),
+                    file_name=st.session_state.get("cia_dossie_nome", "CIA_dossie_tema_N7.txt"),
+                    mime="text/plain",
+                    key="download_cia_dossie_tema",
+                )
             if st.session_state.lang != st.session_state.last_lang:
                 curr_ypoema = load_lypo()  # changes in lang, keep LYPO
             else:
@@ -2118,8 +2135,6 @@ def main():
                     f"<div class='machina-rodape-palco'>{status}</div>",
                     unsafe_allow_html=True,
                 )
-
-
 
 if __name__ == "__main__":
     main()
