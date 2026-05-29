@@ -658,74 +658,68 @@ def build_cia_header():
 
 
 def build_cia_analysis(curr_ypoema):
-    """Primeira leitura funcional da CIA: mood Sintática."""
-    raw_segments = curr_ypoema.replace("<br/>", "<br>").split("<br>")
-    cleaned = [segment.strip() for segment in raw_segments]
-
-    title = cleaned[0] if cleaned and cleaned[0] else st.session_state.get("tema", "")
-    poem_lines = [line for line in cleaned[1:] if line]
-    qtd_linhas = len(poem_lines)
-    qtd_palavras = sum(len(line.split()) for line in poem_lines)
-
-    stanzas = []
-    current_stanza = []
-    for segment in cleaned[1:]:
-        if segment:
-            current_stanza.append(segment)
-        else:
-            if current_stanza:
-                stanzas.append(current_stanza)
-                current_stanza = []
-    if current_stanza:
-        stanzas.append(current_stanza)
-
-    qtd_blocos = len(stanzas) if stanzas else 1
-    abertura = poem_lines[0] if poem_lines else ""
-    fecho = poem_lines[-1] if poem_lines else ""
-    linha_media = poem_lines[len(poem_lines) // 2] if poem_lines else ""
+    """Leitura sintática da CIA: base gramatical correta e leitura livre do efeito."""
+    raw_parts = [part.strip() for part in curr_ypoema.replace("<br/>", "<br>").split("<br>")]
+    lines = [part for part in raw_parts if part]
+    poema_lines = lines[1:] if len(lines) > 1 else []
+    qtd_linhas = len(poema_lines)
+    qtd_palavras = sum(len(line.split()) for line in poema_lines)
 
     mood = st.session_state.get("cia_mood", CIA_MOODS[0])
-    tema = st.session_state.get("tema", title)
-
     if mood != "Sintática":
-        body = []
-        body.append(f"Mood ativo: **{mood}**")
-        body.append(f"Tema em foco: **{tema}**")
-        body.append("")
-        body.append("Este mood ainda está em construção na CIA.")
-        return "  \n".join(body)
+        return "Este mood ainda está em construção na CIA."
 
     body = []
-    body.append(f"Mood ativo: **{mood}**")
-    body.append(f"Tema em foco: **{tema}**")
+    body.append(
+        f"Sintaticamente, o poema se organiza em **{qtd_linhas} linhas** e **{qtd_palavras} palavras**, com o enunciado sendo recortado pelas quebras de verso."
+    )
+
+    joined_text = " ".join(poema_lines)
+    has_ellipsis = "..." in joined_text or "…" in joined_text
+    has_colon = ":" in joined_text
+    has_semicolon = ";" in joined_text
+    has_question = "?" in joined_text
+    has_exclamation = "!" in joined_text
+    has_parentheses = "(" in joined_text or ")" in joined_text
+    has_quotes = '"' in joined_text or "“" in joined_text or "”" in joined_text or "'" in joined_text
+
+    syntax_notes = []
+    if has_parentheses:
+        syntax_notes.append("os parênteses criam um inciso e introduzem uma segunda voz dentro do próprio enunciado")
+    if has_colon:
+        syntax_notes.append("os dois-pontos armam uma abertura de desdobramento")
+    if has_semicolon:
+        syntax_notes.append("o ponto e vírgula separa segmentos sem romper totalmente a continuidade")
+    if has_question:
+        syntax_notes.append("a interrogação desloca a frase para um regime de tensão ou busca")
+    if has_exclamation:
+        syntax_notes.append("a exclamação intensifica a emissão")
+    if has_ellipsis:
+        syntax_notes.append("as reticências mantêm a sintaxe em suspensão")
+    if has_quotes:
+        syntax_notes.append("as aspas destacam uma palavra ou um registro dentro da frase")
+
+    if syntax_notes:
+        body.append("")
+        body.append("Neste texto, " + "; ".join(syntax_notes) + ".")
+
+    abertura = poema_lines[0] if poema_lines else ""
+    fecho = poema_lines[-1] if poema_lines else ""
+    if abertura or fecho:
+        body.append("")
+        parts = []
+        if abertura:
+            parts.append(f"A abertura por **“{abertura}”** instala o primeiro gesto sintático do poema")
+        if fecho and fecho != abertura:
+            parts.append(f"o fecho em **“{fecho}”** redefine ou recolhe esse percurso")
+        body.append(", enquanto ".join(parts) + ".")
+
     body.append("")
     body.append(
-        f"Leitura sintática: o poema em foco se organiza em **{qtd_linhas} linhas**, **{qtd_palavras} palavras** e **{qtd_blocos} bloco{'s' if qtd_blocos != 1 else ''}**."
+        "A leitura sintática não resume o poema: ela observa como frase, pausa, corte e pontuação participam da construção do sentido."
     )
-    body.append("")
-
-    if abertura:
-        body.append(
-            f"A abertura entra por **“{abertura}”** e arma logo o campo de leitura: é ela que dá o primeiro pulso do texto e entrega o seu modo de entrada."
-        )
-        body.append("")
-
-    if linha_media and linha_media not in {abertura, fecho}:
-        body.append(
-            f"No corpo, o poema sustenta o andamento sem se dispersar. A linha **“{linha_media}”** ajuda a perceber esse eixo de sustentação: ela segura a passagem entre entrada e desfecho."
-        )
-        body.append("")
-
-    if fecho:
-        body.append(
-            f"O fecho em **“{fecho}”** não funciona como enfeite final: ele recolhe a pressão do percurso e decide se o texto fecha, desloca ou deixa a leitura em suspenso."
-        )
-        body.append("")
-
-    body.append(
-        "Nesta leitura sintática, a CIA observa menos o que o poema 'explica' e mais **como** ele se monta: entrada, andamento, corte e fecho."
-    )
-    return "  \n".join(body)
+    return "  
+".join(body)
 
 
 def render_cia_stage(curr_ypoema):
@@ -1999,6 +1993,37 @@ def page_abouts():
 
 
 
+def render_sidebar_width_meter():
+    """Mostra a largura atual da sidebar durante o ajuste fino."""
+    components.html(
+        """
+        <div id="machina-sidebar-width"
+             style="font-family: Trebuchet MS, sans-serif; font-size: 12px; opacity: 0.8; padding: 0.1rem 0 0.2rem 0;">
+          largura atual da sidebar: ...
+        </div>
+        <script>
+        const target = window.parent.document.querySelector('[data-testid="stSidebar"] > div:first-child');
+        const label = document.getElementById("machina-sidebar-width");
+
+        function updateWidth() {
+          if (!target || !label) return;
+          const width = Math.round(target.getBoundingClientRect().width);
+          label.textContent = `largura atual da sidebar: ${width}px`;
+        }
+
+        updateWidth();
+
+        const observer = target ? new ResizeObserver(updateWidth) : null;
+        if (observer && target) observer.observe(target);
+
+        window.addEventListener("load", updateWidth);
+        window.addEventListener("resize", updateWidth);
+        window.addEventListener("mousemove", updateWidth);
+        document.addEventListener("mousemove", updateWidth);
+        </script>
+        """,
+        height=28,
+    )
 
 
 def render_sidebar_for_page(chosen_id):
@@ -2050,6 +2075,8 @@ def main():
             if st.session_state.get("sidebar_panel", "Machina") == "CIA":
                 render_cia_sidebar()
 
+        with st.sidebar:
+            render_sidebar_width_meter()
 
         palco = st.container()
         with palco:
