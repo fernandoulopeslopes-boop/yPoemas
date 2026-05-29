@@ -430,13 +430,13 @@ def apply_styles():
             background: rgba(255, 255, 255, 0.58);
             border-radius: 16px;
             padding: 0.25rem 0.55rem 0.35rem 0.55rem;
-            min-height: 61vh;
+            min-height: 1.4;
             box-sizing: border-box;
         }
 
         .cia-stage-title {
             text-align: center;
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-weight: 600;
             margin-bottom: 0.25rem;
             opacity: 0.88;
