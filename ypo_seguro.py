@@ -641,7 +641,7 @@ def generate_poema_preview(nome_tema, seed_eureka=""):
 
 
 def build_cia_header():
-    """Cabeçalho poético da CIA, gerado pela própria Machina."""
+    """Descrição poética da CIA, gerada pela própria Machina sem repetir o título."""
     ensure_cia_name()
     header = generate_poema_preview("Cia", "")
     if st.session_state.lang != "pt":
@@ -650,7 +650,10 @@ def build_cia_header():
         with open(os.path.join("./temp/" + typo_user), "w", encoding="utf-8") as save_typo:
             save_typo.write(header)
         header = load_typo()
-    return header
+
+    parts = [part.strip() for part in header.replace("<br/>", "<br>").split("<br>")]
+    body_parts = [part for part in parts[1:] if part] if len(parts) > 1 else [part for part in parts if part]
+    return "<br>".join(body_parts)
 
 
 def build_cia_analysis(curr_ypoema):
@@ -677,9 +680,8 @@ def build_cia_analysis(curr_ypoema):
 
 
 def render_cia_stage(curr_ypoema):
-    """Renderiza o texto da Chave no lado direito do palco."""
+    """Renderiza o texto da Chave no lado direito do palco, sem arrulho de títulos repetidos."""
     st.markdown("<div class='cia-stage-box'>", unsafe_allow_html=True)
-    st.markdown("<div class='cia-stage-title'>CIA</div>", unsafe_allow_html=True)
     write_ypoema(build_cia_header(), None)
     st.markdown(build_cia_analysis(curr_ypoema), unsafe_allow_html=False)
     st.markdown("</div>", unsafe_allow_html=True)
