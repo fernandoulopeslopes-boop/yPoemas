@@ -18,6 +18,7 @@ Bula
 Cadência
 Cartaz
 Cia
+Cia_abertura
 Circular
 Ciuminho
 Clandestino
