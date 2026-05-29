@@ -485,6 +485,8 @@ def init_session_state():
         "key_analise": "",
         "cia_dossie_texto": "",
         "cia_dossie_nome": "",
+        "cia_dossie_path": "",
+        "cia_dossie_status": "",
     }
 
     for key, value in defaults.items():
@@ -1599,8 +1601,14 @@ def page_ypoemas():
             n_copias=7,
         )
         dossier_nome = "CIA_dossie_" + st.session_state.tema.replace(" ", "_") + "_N7.txt"
+        dossier_path = os.path.join("./temp", dossier_nome)
+        with open(dossier_path, "w", encoding="utf-8") as fout:
+            fout.write(dossier_texto)
+
         st.session_state.cia_dossie_texto = dossier_texto
         st.session_state.cia_dossie_nome = dossier_nome
+        st.session_state.cia_dossie_path = dossier_path
+        st.session_state.cia_dossie_status = f"dossiê gerado: {dossier_nome}"
 
     lnew = True
     if manu:
@@ -1621,6 +1629,8 @@ def page_ypoemas():
 
         ypoemas_expander = st.expander(what_book, expanded=True)
         with ypoemas_expander:
+            if st.session_state.get("cia_dossie_status"):
+                st.caption(st.session_state.get("cia_dossie_status"))
             if st.session_state.get("cia_dossie_texto"):
                 st.download_button(
                     "baixar dossiê do tema (N=7)",
@@ -2135,6 +2145,6 @@ def main():
                     f"<div class='machina-rodape-palco'>{status}</div>",
                     unsafe_allow_html=True,
                 )
-
+                
 if __name__ == "__main__":
     main()
