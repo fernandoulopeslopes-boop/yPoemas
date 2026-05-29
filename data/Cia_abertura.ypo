@@ -10,11 +10,11 @@
 |01|05|Abertura_0105|F|2|1|para |com intenção de|
 |01|06|Abertura_0106|T|3|1|explicar o|dar respostas ao|indicar caminhos ao|
 |01|07|Abertura_0107|T|4|1|mundo|obvio|texto|escrito|
-|01|08|Abertura_0108|F|1|1|:|.|...|
+|01|08|Abertura_0108|F|3|1|:|.|...|
 |02|01|Abertura_0201|F|1|1|Chega para|
 |02|02|Abertura_0202|T|3|1|perceber|destacar|pontuar|
 |02|03|Abertura_0203|F|1|1|o quê,|
-|02|04|Abertura_0104|T|5|1|no texto, |no yPoema, |no resultado, |no contexto, |nas entrelinhas,|
+|02|04|Abertura_0104|T|5|1|no texto,|no yPoema,|no resultado,|no contexto,|nas entrelinhas,|
 |02|05|Abertura_0205|T|5|1|organiza a|traz sentido à|conduz a|há por traz da|"se esconde" na|
 |02|06|Abertura_0206|F|1|1|leitura.|
 |03|00|
@@ -29,10 +29,10 @@
 |05|02|Abertura_0502|T|1|1|uma imagem|uma "sombra"|
 |05|03|Abertura_0503|F|1|1|que parece|
 |05|04|Abertura_0504|T|4|1|lateral,|deslocada,|perdida,|"nas nuvens",|
-|05|05|Abertura_0505|T|1|1|mas sustenta o centro.|mas mantém o centro.|
+|05|05|Abertura_0505|T|2|1|mas sustenta o centro.|mas mantém o centro.|
 |06|00|
 |06|01|Abertura_0601|F|1|1|Nada aqui|
-|06|02|Abertura_0602|F|1|1|acontece|entra|
+|06|02|Abertura_0602|F|2|1|acontece|entra|
 |06|03|Abertura_0603|T|3|1|por enfeite.|ao acaso.|por acidente.|
 |07|00|
 |07|01|Abertura_0701|T|3|1|Cada escolha|Cada rodada|Cada sorteio|
