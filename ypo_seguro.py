@@ -223,7 +223,7 @@ def apply_styles():
         .logo-text {
             font-weight: 600;
             font-size: 21px;
-            font-family: 'Trebuchet';
+            font-family: 'Trebuchet MS';
             color: #000000;
             padding-top: 0px;
             padding-left: 8px;
@@ -587,7 +587,7 @@ def pick_lang():  # lista oficial de idiomas + P.O.L.Y.
 
 
 FONTES_MACHINA = [
-    ("IBM Plex Sans", "IBM Plex Sans"),
+    ("Trebuchet", "Trebuchet MS"),
     ("Inter", "Inter"),
     ("Spectral", "Spectral"),
     ("EB Garamond", "EB Garamond"),
@@ -595,11 +595,11 @@ FONTES_MACHINA = [
     ("Cormorant Garamond", "Cormorant Garamond"),
     ("Palatino", "Palatino Linotype"),
     ("Georgia", "Georgia"),
-    ("Trebuchet", "Trebuchet MS"),
     ("Atkinson Hyperlegible", "Atkinson Hyperlegible"),
     ("OpenDyslexic", "OpenDyslexic"),
     ("JetBrains Mono", "JetBrains Mono"),
     ("Courier", "Courier New"),
+    ("IBM Plex Sans", "IBM Plex Sans"),
 ]
 
 CIA_WORD_1 = ["Informação", "Invenção", "Imaginação", "Imagética", "Injeção"]
@@ -2078,6 +2078,9 @@ def main():
                     f"<div class='machina-rodape-palco'>{status}</div>",
                     unsafe_allow_html=True,
                 )
+
+
+    ##$ st.sidebar.state = True
 
 if __name__ == "__main__":
     main()
