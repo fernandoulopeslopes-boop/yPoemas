@@ -476,6 +476,7 @@ def init_session_state():
         "sidebar_panel": "Machina",
         "cia_name": "",
         "cia_mood": "Sintática",
+        "cia_line0_offset_px": 0,
 
         # chave de ouro
         "key_open": False,
@@ -681,7 +682,11 @@ def build_cia_analysis(curr_ypoema):
 
 def render_cia_stage(curr_ypoema):
     """Renderiza o texto da Chave no lado direito do palco, sem arrulho de títulos repetidos."""
-    st.markdown("<div class='cia-stage-box'>", unsafe_allow_html=True)
+    cia_offset = int(st.session_state.get("cia_line0_offset_px", 0))
+    st.markdown(
+        f"<div class='cia-stage-box' style='margin-top:{cia_offset}px;'>",
+        unsafe_allow_html=True,
+    )
     write_ypoema(build_cia_header(), None)
     st.markdown(build_cia_analysis(curr_ypoema), unsafe_allow_html=False)
     st.markdown("</div>", unsafe_allow_html=True)
@@ -702,6 +707,7 @@ def render_cia_sidebar():
             st.sidebar.markdown(f"• {mood}")
 
     st.sidebar.caption("CIA v0: 1 mood funcional, mapa visual completo.")
+    st.sidebar.caption(f"linha 0 CIA: {st.session_state.get('cia_line0_offset_px', 0)} px")
 
 
 def draw_sidebar_panel_buttons(chosen_id):
