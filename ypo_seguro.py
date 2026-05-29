@@ -485,7 +485,6 @@ def init_session_state():
         "key_analise": "",
         "cia_dossie_texto": "",
         "cia_dossie_nome": "",
-        "cia_dossie_path": "",
         "cia_dossie_status": "",
     }
 
@@ -645,36 +644,45 @@ def generate_poema_preview(nome_tema, seed_eureka=""):
     return "<br>".join(text_lines)
 
 
-def build_theme_dossier(nome_tema, nome_livro, n_copias=7):
-    """Gera um dossiê textual com N amostras do tema atual para análise da CIA."""
-    blocos = []
+def build_book_dossier(nome_livro, n_copias=7):
+    """Gera uma base CIA do livro em foco, com N amostras para cada tema."""
+    temas = load_temas(nome_livro)
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
-    blocos.extend([
-        f"TEMA: {nome_tema}",
+    blocos = [
         f"LIVRO: {nome_livro}",
-        f"QTD_AMOSTRAS: {n_copias}",
+        f"QTD_TEMAS: {len(temas)}",
+        f"QTD_AMOSTRAS_POR_TEMA: {n_copias}",
         f"GERADO_EM: {timestamp}",
         "",
         "BASE REAL DE ANÁLISE DA CIA",
         "",
-    ])
+    ]
 
-    for i in range(1, n_copias + 1):
-        try:
-            script = gera_poema(nome_tema, "")
-        except Exception as exc:
-            blocos.append(f"=== AMOSTRA {i} ===")
-            blocos.append(f"erro ao gerar amostra: {exc}")
-            blocos.append("")
-            continue
-
-        blocos.append(f"=== AMOSTRA {i} ===")
-        blocos.append(nome_tema)
-        for line in script:
-            if line == "\n":
+    for tema in temas:
+        blocos.append("=" * 72)
+        blocos.append(f"TEMA: {tema}")
+        blocos.append("=" * 72)
+        blocos.append("")
+        for i in range(1, n_copias + 1):
+            try:
+                script = gera_poema(tema, "")
+            except Exception as exc:
+                blocos.append(f"=== AMOSTRA {i} ===")
+                blocos.append(f"erro ao gerar amostra: {exc}")
                 blocos.append("")
-            else:
-                blocos.append(str(line))
+                continue
+
+            blocos.append(f"=== AMOSTRA {i} ===")
+            blocos.append(tema)
+            blocos.append("")
+            for line in script:
+                if line == "\n":
+                    blocos.append("")
+                else:
+                    blocos.append(str(line))
+            blocos.append("")
+
+        blocos.append("")
         blocos.append("")
 
     return "\n".join(blocos)
@@ -1564,7 +1572,7 @@ def page_ypoemas():
         last = nav_cols[1].button("◀", help=help_last, use_container_width=True)
         rand = nav_cols[2].button("✻", help=help_rand, use_container_width=True)
         nest = nav_cols[3].button("▶", help=help_nest, use_container_width=True)
-        dossier = nav_cols[4].button("📚", help="gerar dossiê do tema (N=7)", use_container_width=True)
+        dossier = nav_cols[4].button("📚", help="gerar base CIA do livro em foco (N=7 por tema)", use_container_width=True)
         manu = nav_cols[5].button("?", help="help !!!", use_container_width=True)
 
     temas_list = load_temas(st.session_state.book)
@@ -1595,20 +1603,16 @@ def page_ypoemas():
     _sync_book_theme_state()
 
     if dossier:
-        dossier_texto = build_theme_dossier(
-            st.session_state.tema,
-            st.session_state.book,
-            n_copias=7,
+        dossie_texto = build_book_dossier(st.session_state.book, n_copias=7)
+        dossie_nome = "CIA_base_" + st.session_state.book.replace(" ", "_") + "_N7.txt"
+        dossie_path = os.path.join("./temp", dossie_nome)
+        with open(dossie_path, "w", encoding="utf-8") as fout:
+            fout.write(dossie_texto)
+        st.session_state.cia_dossie_texto = dossie_texto
+        st.session_state.cia_dossie_nome = dossie_nome
+        st.session_state.cia_dossie_status = (
+            "base CIA gerada: " + dossie_nome + " (" + str(len(load_temas(st.session_state.book))) + " temas)"
         )
-        dossier_nome = "CIA_dossie_" + st.session_state.tema.replace(" ", "_") + "_N7.txt"
-        dossier_path = os.path.join("./temp", dossier_nome)
-        with open(dossier_path, "w", encoding="utf-8") as fout:
-            fout.write(dossier_texto)
-
-        st.session_state.cia_dossie_texto = dossier_texto
-        st.session_state.cia_dossie_nome = dossier_nome
-        st.session_state.cia_dossie_path = dossier_path
-        st.session_state.cia_dossie_status = f"dossiê gerado: {dossier_nome}"
 
     lnew = True
     if manu:
@@ -1633,11 +1637,11 @@ def page_ypoemas():
                 st.caption(st.session_state.get("cia_dossie_status"))
             if st.session_state.get("cia_dossie_texto"):
                 st.download_button(
-                    "baixar dossiê do tema (N=7)",
+                    "baixar base CIA do livro (N=7)",
                     data=st.session_state.get("cia_dossie_texto", ""),
-                    file_name=st.session_state.get("cia_dossie_nome", "CIA_dossie_tema_N7.txt"),
+                    file_name=st.session_state.get("cia_dossie_nome", "CIA_base_livro_N7.txt"),
                     mime="text/plain",
-                    key="download_cia_dossie_tema",
+                    key="download_cia_base_livro",
                 )
             if st.session_state.lang != st.session_state.last_lang:
                 curr_ypoema = load_lypo()  # changes in lang, keep LYPO
@@ -2145,6 +2149,8 @@ def main():
                     f"<div class='machina-rodape-palco'>{status}</div>",
                     unsafe_allow_html=True,
                 )
-                
+
+
+
 if __name__ == "__main__":
     main()
