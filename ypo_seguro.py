@@ -693,24 +693,21 @@ def build_cia_analysis(curr_ypoema):
 
     perguntas = [line for line in poema_lines if "?" in line]
     if perguntas:
-        candidates.append({
-            "figura": "interrogação",
-            "text": f"Em **“{perguntas[0]}”** há **interrogação**. A frase abre o poema para a incerteza, para a provocação ou para a espera de resposta, em vez de afirmar de saída."
-        })
+        candidates.append(
+            f"Em **“{perguntas[0]}”** há **interrogação**. A frase abre o poema para a incerteza, para a provocação ou para a espera de resposta, em vez de afirmar de saída."
+        )
 
     reticencias = [line for line in poema_lines if "..." in line or "…" in line]
     if reticencias:
-        candidates.append({
-            "figura": "suspensão sintática",
-            "text": f"As **reticências** de **“{reticencias[0]}”** funcionam como **suspensão sintática**: o verso retém o fechamento e espalha o sentido para além da linha."
-        })
+        candidates.append(
+            f"As **reticências** de **“{reticencias[0]}”** funcionam como **suspensão sintática**: o verso retém o fechamento e espalha o sentido para além da linha."
+        )
 
     incisos = [line for line in poema_lines if "(" in line or ")" in line]
     if incisos:
-        candidates.append({
-            "figura": "inciso parentético",
-            "text": f"O verso **“{incisos[0]}”** entra como **inciso parentético**. Ele desvia a frase principal sem quebrar o andamento e altera a respiração do texto."
-        })
+        candidates.append(
+            f"O verso **“{incisos[0]}”** entra como **inciso parentético**. Ele desvia a frase principal sem quebrar o andamento e altera a respiração do texto."
+        )
 
     first_tokens = {}
     first_two = {}
@@ -727,37 +724,32 @@ def build_cia_analysis(curr_ypoema):
 
     if parallel_key:
         exemplos = first_two[parallel_key][:2]
-        candidates.append({
-            "figura": "paralelismo sintático",
-            "text": f"Há **paralelismo sintático** entre **“{exemplos[0]}”** e **“{exemplos[1]}”**. A estrutura reaparece em molde próximo e cria cadência com reforço de sentido."
-        })
+        candidates.append(
+            f"Há **paralelismo sintático** entre **“{exemplos[0]}”** e **“{exemplos[1]}”**. A estrutura reaparece em molde próximo e cria cadência com reforço de sentido."
+        )
     elif anafora_key:
         exemplos = first_tokens[anafora_key][:2]
-        candidates.append({
-            "figura": "anáfora",
-            "text": f"A repetição inicial de **“{exemplos[0]}”** e **“{exemplos[1]}”** produz **anáfora**. O poema insiste no mesmo arranque frasal para firmar seu movimento."
-        })
+        candidates.append(
+            f"A repetição inicial de **“{exemplos[0]}”** e **“{exemplos[1]}”** produz **anáfora**. O poema insiste no mesmo arranque frasal para firmar seu movimento."
+        )
 
     enumeracoes = [line for line in poema_lines if line.count(",") >= 2]
     if enumeracoes:
-        candidates.append({
-            "figura": "enumeração",
-            "text": f"Em **“{enumeracoes[0]}”** aparece **enumeração**. O acúmulo de termos organiza o pensamento por justaposição e amplia o campo semântico do verso."
-        })
+        candidates.append(
+            f"Em **“{enumeracoes[0]}”** aparece **enumeração**. O acúmulo de termos organiza o pensamento por justaposição e amplia o campo semântico do verso."
+        )
 
     subordinadas = [line for line in poema_lines if re.search(r"\b(se|quando|embora|porque|que)\b", line.lower())]
     coordenadas = [line for line in poema_lines if re.search(r"\b(e|ou|mas)\b", line.lower()) and "," in line]
 
     if subordinadas:
-        candidates.append({
-            "figura": "subordinação",
-            "text": f"Em **“{subordinadas[0]}”** há **subordinação** visível. A frase depende de condição, tempo ou explicação para avançar, e isso articula o andamento do texto."
-        })
+        candidates.append(
+            f"Em **“{subordinadas[0]}”** há **subordinação** visível. A frase depende de condição, tempo ou explicação para avançar, e isso articula o andamento do texto."
+        )
     elif coordenadas:
-        candidates.append({
-            "figura": "coordenação",
-            "text": f"Em **“{coordenadas[0]}”** há **coordenação** explícita. Os segmentos se articulam sem perder autonomia e o verso ganha soma ou contraste."
-        })
+        candidates.append(
+            f"Em **“{coordenadas[0]}”** há **coordenação** explícita. Os segmentos se articulam sem perder autonomia e o verso ganha soma ou contraste."
+        )
 
     cortes = []
     for i, line in enumerate(poema_lines[:-1]):
@@ -766,10 +758,9 @@ def build_cia_analysis(curr_ypoema):
             cortes.append((line, nxt))
     if cortes:
         l1, l2 = cortes[0]
-        candidates.append({
-            "figura": "quebra entre verso e frase",
-            "text": f"Há **quebra entre verso e frase** no corte entre **“{l1}”** e **“{l2}”**. A sintaxe atravessa o fim do verso e empurra a leitura para diante."
-        })
+        candidates.append(
+            f"Há **quebra entre verso e frase** no corte entre **“{l1}”** e **“{l2}”**. A sintaxe atravessa o fim do verso e empurra a leitura para diante."
+        )
 
     if not candidates:
         st.session_state.tema_last_analise = tema
@@ -777,38 +768,36 @@ def build_cia_analysis(curr_ypoema):
 
     repeated_theme = tema == st.session_state.get("tema_last_analise", "")
 
-    # Critério da Sintática: injetar de 2 a 5 figuras reais quando disponíveis.
     max_figures = min(5, len(candidates))
     min_figures = min(2, len(candidates))
-    if repeated_theme:
-        target_count = max_figures
-    else:
-        target_count = max_figures if max_figures <= 3 else random.randint(min_figures, max_figures)
+    target_count = max_figures if max_figures <= 3 else random.randint(min_figures, max_figures)
 
     chosen = candidates[:]
     random.shuffle(chosen)
     chosen = chosen[:target_count]
 
-    # Varia a ordem de apresentação para fugir da mesma impressão estrutural.
-    if repeated_theme and len(chosen) > 1:
-        random.shuffle(chosen)
-
-    body = [item["text"] for item in chosen]
-
     fecho = poema_lines[-1]
     fecho_variants = [
         f"O fecho em **“{fecho}”** merece atenção porque concentra um último deslocamento do poema. Mesmo quando a figura central aparece antes, é ali que a leitura recolhe ou reabre o que ficou em tensão.",
         f"A última linha — **“{fecho}”** — pesa no conjunto porque ali o poema recolhe parte da pressão sintática que vinha distribuindo antes.",
-        f"Vale olhar o fecho em **“{fecho}”**: nele o poema concentra ou desloca aquilo que a sintaxe foi armando ao longo das linhas.",
+        f"No fecho, **“{fecho}”** concentra ou desvia aquilo que a sintaxe foi armando ao longo das linhas.",
+        f"Convém não perder de vista o fecho em **“{fecho}”**: a linha final recompõe, desloca ou reaperta a tensão do poema.",
+        f"O verso final — **“{fecho}”** — não entra como sobra. Ele recolhe uma energia sintática que vinha se distribuindo nas linhas anteriores.",
+        f"Também o fechamento em **“{fecho}”** pede leitura: é ali que o poema decide se recolhe, desloca ou reabre o seu impulso.",
     ]
     closing_variants = [
         "Nesta leitura, a Sintática não resume o poema: ela nomeia o que aparece com nitidez e lê o efeito dessas escolhas na construção do sentido.",
         "Aqui a leitura sintática não procura resumir o poema, mas reconhecer figuras visíveis e medir o que elas fazem no andamento do texto.",
         "O foco desta leitura não é o tema em abstrato, mas a engrenagem verbal do poema: nomear o que aparece e ler o efeito de cada escolha.",
+        "A leitura sintática se firma menos no assunto do poema do que nas formas que o fazem avançar, hesitar, insistir ou se fechar.",
+        "O que interessa aqui não é resumir o poema, mas acompanhar como a construção verbal distribui força, pausa, dependência e corte.",
+        "Esta leitura se ocupa menos de explicar o poema do que de perceber como a sintaxe sustenta, torce ou desloca o seu sentido.",
     ]
 
-    body.append(random.choice(fecho_variants))
-    body.append(random.choice(closing_variants))
+    body = chosen + [random.choice(fecho_variants), random.choice(closing_variants)]
+    random.shuffle(body)
+    if repeated_theme and len(body) > 2:
+        random.shuffle(body)
 
     st.session_state.tema_last_analise = tema
     return "  \n\n".join(body)
