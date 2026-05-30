@@ -925,12 +925,15 @@ def render_cia_stage(curr_ypoema):
     if mood == "Sintética":
         analysis_html = _to_html_block(build_cia_analysis_sintetica(curr_ypoema))
         content = analysis_html
-    else:
+    elif mood == "Sintática":
         analysis_html = _to_html_block(build_cia_analysis(curr_ypoema))
         analysis_free_html = _to_html_block(build_cia_analysis_free(curr_ypoema))
         content = f"""{analysis_html}
             <div class='cia-stage-sep'><strong>Análise da análise</strong></div>
             {analysis_free_html}"""
+    else:
+        analysis_html = _to_html_block("Este mood ainda não entrou em operação na CIA.")
+        content = analysis_html
 
     st.markdown(
         f"""
@@ -962,13 +965,18 @@ def render_cia_sidebar():
     ensure_cia_name()
     st.sidebar.markdown("### CIA")
     st.sidebar.caption(st.session_state.get("cia_name", "Centro de Informação Analítica"))
-    st.sidebar.markdown("**moods**")
 
-    for mood in CIA_MOODS:
-        if mood == st.session_state.get("cia_mood", CIA_MOODS[0]):
-            st.sidebar.markdown(f"**• {mood}**")
-        else:
-            st.sidebar.markdown(f"• {mood}")
+    current_mood = st.session_state.get("cia_mood", CIA_MOODS[0])
+    if current_mood not in CIA_MOODS:
+        current_mood = CIA_MOODS[0]
+
+    selected_mood = st.sidebar.selectbox(
+        "mood",
+        CIA_MOODS,
+        index=CIA_MOODS.index(current_mood),
+        key="cia_mood_dropdown",
+    )
+    st.session_state.cia_mood = selected_mood
 
 
 def draw_sidebar_panel_buttons(chosen_id):
