@@ -436,9 +436,7 @@ def apply_styles():
         }
 
         .cia-stage-body {
-            font-family: 'Trebuchet MS';
-            font-size: 16px;
-            line-height: 1.42;
+            line-height: 1.35;
         }
 
         .cia-stage-title {
@@ -690,7 +688,7 @@ def build_cia_analysis(curr_ypoema):
 
 
 def render_cia_stage(curr_ypoema):
-    """Renderiza o texto da Chave no lado direito do palco, com fonte/corpo próprios aplicados no palco."""
+    """Renderiza o texto da Chave no lado direito do palco, com fonte/corpo realmente controlados no texto da análise."""
     cia_offset = int(st.session_state.get("cia_line0_offset_px", 0))
     cia_font = st.session_state.get("cia_font", "Trebuchet MS")
     cia_size = int(st.session_state.get("cia_size", 16))
@@ -702,18 +700,33 @@ def render_cia_stage(curr_ypoema):
     write_ypoema(build_cia_header(), None)
 
     analysis_html = build_cia_analysis(curr_ypoema)
-    analysis_html = analysis_html.replace("**requer apuração manual**", "<strong>requer apuração manual</strong>")
-    analysis_html = analysis_html.replace("**", "<strong>", 1) if analysis_html.count("**") >= 2 else analysis_html
 
-    # Convert markdown emphasis and line breaks to HTML in a controlled, minimal way.
+    # Convert bold markdown to HTML
     while "**" in analysis_html:
         analysis_html = analysis_html.replace("**", "<strong>", 1)
         analysis_html = analysis_html.replace("**", "</strong>", 1)
-    analysis_html = analysis_html.replace("  \n", "<br><br>")
-    analysis_html = analysis_html.replace("\n", "<br>")
+
+    # Normalize paragraph spacing: exactly one blank line between paragraphs
+    analysis_html = analysis_html.replace("  \n", "\n")
+    analysis_html = analysis_html.replace("\r\n", "\n")
+    analysis_html = re.sub(r"\n{3,}", "\n\n", analysis_html)
+    paragraphs = [p.strip() for p in analysis_html.split("\n\n") if p.strip()]
+    analysis_html = "".join(f"<p>{p.replace(chr(10), '<br>')}</p>" for p in paragraphs)
 
     st.markdown(
-        f"<div class='cia-stage-body' style=\"font-family:{cia_font}; font-size:{cia_size}px;\">{analysis_html}</div>",
+        f"""
+        <style>
+        .cia-stage-box .cia-stage-text p {{
+            margin: 0 0 1em 0;
+        }}
+        .cia-stage-box .cia-stage-text p:last-child {{
+            margin-bottom: 0;
+        }}
+        </style>
+        <div class='cia-stage-text' style="font-family:{cia_font}; font-size:{cia_size}px; line-height:1.35;">
+            {analysis_html}
+        </div>
+        """,
         unsafe_allow_html=True,
     )
     st.markdown("</div>", unsafe_allow_html=True)
