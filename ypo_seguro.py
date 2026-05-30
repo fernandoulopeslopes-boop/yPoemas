@@ -1047,6 +1047,76 @@ def build_cia_analysis_resumida(curr_ypoema):
     random.shuffle(body)
     return "  \n\n".join(body)
 
+
+def build_cia_analysis_completa(curr_ypoema):
+    """Leitura completa: articula entrada, núcleo, forma e fecho sem virar aula."""
+    raw_parts = [part.strip() for part in curr_ypoema.replace("<br/>", "<br>").split("<br>")]
+    lines = [part for part in raw_parts if part]
+    poema_lines = lines[1:] if len(lines) > 1 else []
+
+    if not poema_lines:
+        return "**requer apuração manual**"
+
+    import random
+    abertura = poema_lines[0]
+    fecho = poema_lines[-1]
+    meio = poema_lines[len(poema_lines) // 2]
+    destaque = next((line for line in poema_lines if "..." in line or "?" in line), meio)
+    qtd_linhas = len(poema_lines)
+
+    entradas = [
+        f"Desde **“{abertura}”**, o poema arma um campo de leitura que não se limita ao que diz literalmente: a entrada já instala direção, tom e tensão.",
+        f"Logo em **“{abertura}”**, o texto fixa um eixo de leitura. O poema não começa apenas: ele já orienta o modo como quer ser acompanhado.",
+        f"Em **“{abertura}”**, a abertura do poema já pesa como gesto inaugural. O que vem depois parece nascer sob essa primeira pressão verbal.",
+        f"**“{abertura}”** funciona como porta de entrada e também como decisão de percurso: o poema já se declara no modo como começa.",
+    ]
+
+    nucleos = [
+        f"No corpo do texto, **“{destaque}”** concentra parte importante da sua força. É ali que linguagem, imagem ou tensão verbal se tornam mais nítidas.",
+        f"Há um centro de gravidade em **“{destaque}”**. O poema parece reunir ali o seu ponto de maior densidade e, a partir dele, irradiar sentido.",
+        f"Em **“{destaque}”**, o texto adensa seu movimento. O que até ali vinha sendo sugerido ganha espessura e se oferece com mais nitidez.",
+        f"O núcleo do poema se deixa perceber em **“{destaque}”**: a linguagem deixa de apenas conduzir e passa a pesar mais diretamente sobre a leitura.",
+    ]
+
+    formas = [
+        f"Formalmente, o poema se sustenta em **{qtd_linhas} linhas** que trabalham menos por dispersão do que por concentração. O desenho visível acompanha esse adensamento.",
+        f"O andamento formal não é neutro: a distribuição das **{qtd_linhas} linhas** participa do efeito do poema e regula seu ritmo de aparição.",
+        f"A forma visível do texto — suas **{qtd_linhas} linhas**, pausas e cortes — ajuda a organizar a leitura como arquitetura, não como mero suporte.",
+        f"Também o desenho do poema pesa na experiência de leitura: suas **{qtd_linhas} linhas** funcionam como moldura ativa do que se concentra no texto.",
+    ]
+
+    amplificacoes = [
+        "Por isso a leitura não se esgota no tema declarado. O poema vale também pelo modo como organiza pressão, intervalo, reaparição e eco.",
+        "O que fica não é só o assunto, mas a forma como o poema sustenta seu próprio clima e distribui suas forças ao longo do percurso.",
+        "A força do texto não está apenas no que nomeia, mas no modo como regula sua intensidade e a devolve ao leitor em camadas.",
+        "O poema não depende apenas do que afirma: depende de como conduz, interrompe, reaperta e libera o seu próprio movimento.",
+    ]
+
+    fechos = [
+        f"No encerramento, **“{fecho}”** recolhe esse movimento e devolve o poema com outra concentração. O fecho não apaga o resto: o reorganiza.",
+        f"O fecho em **“{fecho}”** pesa porque concentra o que vinha sendo distribuído. O poema termina, mas deixa uma pressão residual trabalhando.",
+        f"Em **“{fecho}”**, o texto encontra sua última forma de intensidade. O final não serve só para concluir: ele redefine o conjunto.",
+        f"A linha final — **“{fecho}”** — funciona como ponto de recolhimento. É ali que o poema devolve ao leitor a sua forma mais concentrada.",
+    ]
+
+    conclusoes = [
+        "A análise completa tenta acompanhar esse conjunto sem transformar o poema em explicação. O objetivo é ler sua arquitetura viva: entrada, núcleo, forma, irradiação e fecho.",
+        "O que importa aqui é sustentar uma leitura mais ampla sem esmagar o poema. A completude, neste caso, vem da articulação, não do excesso.",
+        "Ler de modo completo não significa dizer tudo, mas acompanhar o máximo possível do que o poema faz com seus meios.",
+        "A completude desta leitura está menos no volume do comentário do que na articulação das forças que o poema realmente põe em jogo.",
+    ]
+
+    body = [
+        random.choice(entradas),
+        random.choice(nucleos),
+        random.choice(formas),
+        random.choice(amplificacoes),
+        random.choice(fechos),
+        random.choice(conclusoes),
+    ]
+    random.shuffle(body)
+    return "  \n\n".join(body)
+
 def render_cia_stage(curr_ypoema):
     """Renderiza a análise da CIA; na Sintática, mantém o anexo comparativo. Na Sintética, entrega só a leitura."""
     cia_offset = int(st.session_state.get("cia_line0_offset_px", 0))
@@ -1086,6 +1156,9 @@ def render_cia_stage(curr_ypoema):
         content = analysis_html
     elif mood == "Resumida":
         analysis_html = _to_html_block(build_cia_analysis_resumida(curr_ypoema))
+        content = analysis_html
+    elif mood == "Completa":
+        analysis_html = _to_html_block(build_cia_analysis_completa(curr_ypoema))
         content = analysis_html
     else:
         analysis_html = _to_html_block("Este mood ainda não entrou em operação na CIA.")
