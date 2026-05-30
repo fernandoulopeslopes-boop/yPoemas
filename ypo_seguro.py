@@ -483,9 +483,6 @@ def init_session_state():
         "key_poema_texto": "",
         "key_poema_tema": "",
         "key_analise": "",
-        "cia_dossie_texto": "",
-        "cia_dossie_nome": "",
-        "cia_dossie_status": "",
     }
 
     for key, value in defaults.items():
@@ -644,42 +641,6 @@ def generate_poema_preview(nome_tema, seed_eureka=""):
     return "<br>".join(text_lines)
 
 
-def build_theme_dossier(nome_tema, nome_livro, n_copias=7):
-    """Gera 7 variações do tema em foco para a abertura da CIA."""
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
-    blocos = [
-        f"TEMA: {nome_tema}",
-        f"LIVRO: {nome_livro}",
-        f"QTD_AMOSTRAS: {n_copias}",
-        f"GERADO_EM: {timestamp}",
-        "",
-        "ABERTURA DA CIA",
-        "",
-    ]
-
-    for i in range(1, n_copias + 1):
-        try:
-            script = gera_poema(nome_tema, "")
-        except Exception as exc:
-            blocos.append(f"=== AMOSTRA {i} ===")
-            blocos.append(f"erro ao gerar amostra: {exc}")
-            blocos.append("")
-            continue
-
-        blocos.append(f"=== AMOSTRA {i} ===")
-        blocos.append(nome_tema)
-        blocos.append("")
-        for line in script:
-            if line == "\n":
-                blocos.append("")
-            else:
-                blocos.append(str(line))
-        blocos.append("")
-
-    return "\n".join(blocos)
-
-
-
 def build_cia_header():
     """Descrição poética da CIA, gerada pela própria Machina sem repetir o título."""
     ensure_cia_name()
@@ -696,8 +657,19 @@ def build_cia_header():
     return "<br>".join(body_parts)
 
 
+def _cia_first_token(line):
+    token = line.strip().split(" ")[0] if line.strip() else ""
+    token = token.strip("“”\"'()[]{}.,;:!?…-").lower()
+    return token
+
+
+def _cia_first_two_tokens(line):
+    parts = [p.strip("“”\"'()[]{}.,;:!?…-").lower() for p in line.strip().split()[:2]]
+    return " ".join([p for p in parts if p])
+
+
 def build_cia_analysis(curr_ypoema):
-    """Primeira leitura funcional da CIA: mood Sintática."""
+    """Primeiro tijolo da Sintática: nomeia figuras visíveis e lê seu efeito."""
     raw_parts = [part.strip() for part in curr_ypoema.replace("<br/>", "<br>").split("<br>")]
     lines = [part for part in raw_parts if part]
     poema_lines = lines[1:] if len(lines) > 1 else []
@@ -705,17 +677,100 @@ def build_cia_analysis(curr_ypoema):
     qtd_palavras = sum(len(line.split()) for line in poema_lines)
 
     mood = st.session_state.get("cia_mood", CIA_MOODS[0])
-    tema = st.session_state.get("tema", "")
+
+    if mood != "Sintática":
+        return "Este mood ainda não entrou em operação na CIA."
+
+    if not poema_lines:
+        return "Sem texto em foco, a Sintática não tem onde pousar."
 
     body = []
-    body.append(f"Mood ativo: **{mood}**")
-    body.append(f"Tema em foco: **{tema}**")
-    body.append("")
-    body.append(f"Leitura sintática inicial: o poema em foco se organiza em **{qtd_linhas} linhas** e **{qtd_palavras} palavras**.")
-    body.append("")
-    body.append("Nesta v0, a CIA observa o desenho do texto: como a abertura arma o campo de sentido, como o corpo sustenta o andamento e como o fecho desloca ou fecha a leitura.")
-    body.append("")
-    body.append("A casa da Chave já está de pé: poema à esquerda, leitura à direita, ambos convivendo no mesmo palco.")
+    body.append(f"O poema se arma em **{qtd_linhas} linhas** e **{qtd_palavras} palavras**, mas a leitura sintática começa menos pela contagem do que pela construção das frases.")
+
+    # interrogação
+    perguntas = [line for line in poema_lines if "?" in line]
+    if perguntas:
+        body.append(
+            f"Há **interrogação** em **“{perguntas[0]}”**. A pergunta não serve só como assunto: ela instala uma sintaxe de abertura, incerteza ou provocação."
+        )
+
+    # reticências / suspensão
+    reticencias = [line for line in poema_lines if "..." in line or "…" in line]
+    if reticencias:
+        body.append(
+            f"As **reticências** de **“{reticencias[0]}”** introduzem **suspensão sintática**: a frase se contém, adia o fechamento e deixa o sentido vibrando além do verso."
+        )
+
+    # inciso parentético
+    incisos = [line for line in poema_lines if "(" in line or ")" in line]
+    if incisos:
+        body.append(
+            f"O verso **“{incisos[0]}”** funciona como **inciso parentético**. Ele entra lateralmente, mas reorganiza a respiração do texto e muda o regime de leitura."
+        )
+
+    # anáfora / paralelismo
+    first_tokens = {}
+    first_two = {}
+    for line in poema_lines:
+        t1 = _cia_first_token(line)
+        t2 = _cia_first_two_tokens(line)
+        if t1:
+            first_tokens.setdefault(t1, []).append(line)
+        if t2:
+            first_two.setdefault(t2, []).append(line)
+
+    parallel_key = next((k for k, v in first_two.items() if len(v) >= 2 and len(k.split()) == 2), None)
+    anafora_key = next((k for k, v in first_tokens.items() if len(v) >= 2), None)
+
+    if parallel_key:
+        exemplos = first_two[parallel_key][:2]
+        body.append(
+            f"Há **paralelismo sintático** na repetição de arranjo em **“{exemplos[0]}”** e **“{exemplos[1]}”**. A estrutura reaparece quase no mesmo molde e produz cadência com reforço de sentido."
+        )
+    elif anafora_key:
+        exemplos = first_tokens[anafora_key][:2]
+        body.append(
+            f"A repetição inicial em **“{exemplos[0]}”** e **“{exemplos[1]}”** cria **anáfora**. O retorno do mesmo arranque sintático sustenta a insistência do poema."
+        )
+
+    # enumeração
+    enumeracoes = [line for line in poema_lines if line.count(",") >= 2]
+    if enumeracoes:
+        body.append(
+            f"Em **“{enumeracoes[0]}”** aparece **enumeração**. O acúmulo de termos não é decorativo: ele encadeia o pensamento por justaposição e alarga o campo semântico."
+        )
+
+    # coordenação / subordinação bem visíveis
+    subordinadas = [line for line in poema_lines if re.search(r"\b(se|quando|embora|porque|que)\b", line.lower())]
+    coordenadas = [line for line in poema_lines if re.search(r"\b(e|ou|mas)\b", line.lower()) and "," in line]
+
+    if subordinadas:
+        body.append(
+            f"Em **“{subordinadas[0]}”** a presença de conectivo visível mostra **subordinação**. A frase passa a depender de uma condição, de um tempo ou de uma explicação para avançar."
+        )
+    elif coordenadas:
+        body.append(
+            f"Em **“{coordenadas[0]}”** há **coordenação** explícita. A articulação entre segmentos vai somando ou contrapondo elementos sem dissolver a autonomia de cada parte."
+        )
+
+    # quebra entre verso e frase
+    cortes = []
+    for i, line in enumerate(poema_lines[:-1]):
+        nxt = poema_lines[i + 1]
+        if line and line[-1] not in ".?!:;…)":
+            cutsafe = (nxt[:1].islower() or len(line.split()) <= 4)
+            if cutsafe:
+                cortes.append((line, nxt))
+    if cortes:
+        l1, l2 = cortes[0]
+        body.append(
+            f"Há **quebra entre verso e frase** no corte entre **“{l1}”** e **“{l2}”**. A sintaxe não se encerra no fim do verso: ela atravessa a linha e cria impulso de continuação."
+        )
+
+    # fallback if only metrics
+    if len(body) == 1:
+        body.append("**requer apuração manual**")
+
     return "  \n".join(body)
 
 
@@ -1558,13 +1613,12 @@ def page_ypoemas():
         help_nest = help_tips[2]
         help_more = help_tips[4]
 
-        nav_cols = st.columns([1, 1, 1, 1, 1, 1])
+        nav_cols = st.columns([1, 1, 1, 1, 1])
         more = nav_cols[0].button("✚", help=help_more, use_container_width=True)
         last = nav_cols[1].button("◀", help=help_last, use_container_width=True)
         rand = nav_cols[2].button("✻", help=help_rand, use_container_width=True)
         nest = nav_cols[3].button("▶", help=help_nest, use_container_width=True)
-        dossier = nav_cols[4].button("📚", help="gerar 7 variações do tema em foco para a abertura da CIA", use_container_width=True)
-        manu = nav_cols[5].button("?", help="help !!!", use_container_width=True)
+        manu = nav_cols[4].button("?", help="help !!!", use_container_width=True)
 
     temas_list = load_temas(st.session_state.book)
     maxy_ypoemas = len(temas_list) - 1
@@ -1593,20 +1647,6 @@ def page_ypoemas():
     temas_list = load_temas(st.session_state.book)
     _sync_book_theme_state()
 
-    if dossier:
-        dossie_texto = build_theme_dossier(
-            st.session_state.tema,
-            st.session_state.book,
-            n_copias=7,
-        )
-        dossie_nome = "CIA_abertura_" + st.session_state.tema.replace(" ", "_") + "_N7.txt"
-        dossie_path = os.path.join("./temp", dossie_nome)
-        with open(dossie_path, "w", encoding="utf-8") as fout:
-            fout.write(dossie_texto)
-        st.session_state.cia_dossie_texto = dossie_texto
-        st.session_state.cia_dossie_nome = dossie_nome
-        st.session_state.cia_dossie_status = "abertura CIA gerada: " + dossie_nome
-
     lnew = True
     if manu:
         st.subheader(load_md_file("MANUAL_YPOEMAS.md"))
@@ -1626,16 +1666,6 @@ def page_ypoemas():
 
         ypoemas_expander = st.expander(what_book, expanded=True)
         with ypoemas_expander:
-            if st.session_state.get("cia_dossie_status"):
-                st.caption(st.session_state.get("cia_dossie_status"))
-            if st.session_state.get("cia_dossie_texto"):
-                st.download_button(
-                    "baixar abertura CIA do tema (N=7)",
-                    data=st.session_state.get("cia_dossie_texto", ""),
-                    file_name=st.session_state.get("cia_dossie_nome", "CIA_abertura_tema_N7.txt"),
-                    mime="text/plain",
-                    key="download_cia_abertura_tema",
-                )
             if st.session_state.lang != st.session_state.last_lang:
                 curr_ypoema = load_lypo()  # changes in lang, keep LYPO
             else:
