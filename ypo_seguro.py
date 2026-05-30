@@ -998,6 +998,55 @@ def build_cia_analysis_formal(curr_ypoema):
     chosen = chosen[:count]
     return "  \n\n".join(chosen)
 
+
+def build_cia_analysis_resumida(curr_ypoema):
+    """Leitura resumida: diz o essencial com clareza, sem alongar a análise."""
+    raw_parts = [part.strip() for part in curr_ypoema.replace("<br/>", "<br>").split("<br>")]
+    lines = [part for part in raw_parts if part]
+    poema_lines = lines[1:] if len(lines) > 1 else []
+
+    if not poema_lines:
+        return "**requer apuração manual**"
+
+    import random
+
+    abertura = poema_lines[0]
+    fecho = poema_lines[-1]
+    meio = poema_lines[len(poema_lines) // 2]
+    destaque = next((line for line in poema_lines if "..." in line or "?" in line or "," in line), meio)
+
+    p1 = random.choice([
+        f"Desde **“{abertura}”**, o poema arma um campo de sentido concentrado e conduz a leitura sem dispersão.",
+        f"A entrada em **“{abertura}”** já define o tom do poema e organiza o caminho do que vem depois.",
+        f"Logo em **“{abertura}”**, o texto fixa um impulso central e mantém a leitura sob essa pressão inicial.",
+        f"**“{abertura}”** já basta para abrir o eixo do poema e indicar a direção do seu movimento.",
+    ])
+
+    p2 = random.choice([
+        f"No centro, **“{destaque}”** ajuda a perceber onde o poema ganha densidade e faz sua linguagem pesar mais.",
+        f"Em **“{destaque}”**, o poema concentra parte importante da sua força e mostra com mais nitidez o que está em jogo.",
+        f"Há um ponto de maior pressão em **“{destaque}”**, onde o texto parece condensar melhor sua energia.",
+        f"**“{destaque}”** marca um núcleo do poema: ali a leitura se adensa e o texto se define melhor.",
+    ])
+
+    p3 = random.choice([
+        f"O fecho em **“{fecho}”** recolhe esse movimento e devolve o poema em forma mais concentrada.",
+        f"Em **“{fecho}”**, o poema condensa o essencial e fecha a leitura com mais nitidez.",
+        f"**“{fecho}”** funciona como recolhimento do que vinha sendo armado e dá ao texto sua última pressão.",
+        f"No verso final — **“{fecho}”** — o poema concentra o que vinha espalhado e fecha com mais força.",
+    ])
+
+    p4 = random.choice([
+        "O resultado é um poema breve, mas não leve: ele diz pouco em extensão e mais em concentração.",
+        "O texto trabalha por condensação: avança sem excessos e deixa um resto de eco depois do fim.",
+        "Há economia de meios, mas não pobreza de efeito: o poema se sustenta pela concentração do que escolhe dizer.",
+        "A força do poema está em sua contenção: ele evita espalhar-se e ganha densidade por isso.",
+    ])
+
+    body = [p1, p2, p3, p4]
+    random.shuffle(body)
+    return "  \n\n".join(body)
+
 def render_cia_stage(curr_ypoema):
     """Renderiza a análise da CIA; na Sintática, mantém o anexo comparativo. Na Sintética, entrega só a leitura."""
     cia_offset = int(st.session_state.get("cia_line0_offset_px", 0))
@@ -1034,6 +1083,9 @@ def render_cia_stage(curr_ypoema):
             {analysis_free_html}"""
     elif mood == "Formal":
         analysis_html = _to_html_block(build_cia_analysis_formal(curr_ypoema))
+        content = analysis_html
+    elif mood == "Resumida":
+        analysis_html = _to_html_block(build_cia_analysis_resumida(curr_ypoema))
         content = analysis_html
     else:
         analysis_html = _to_html_block("Este mood ainda não entrou em operação na CIA.")
