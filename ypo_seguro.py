@@ -612,14 +612,7 @@ FONTES_MACHINA = [
 
 CIA_WORD_1 = ["Informação", "Invenção", "Imaginação", "Imagética", "Injeção"]
 CIA_WORD_2 = ["Analítica", "Artificial", "Analógica", "Afetiva", "Adicional", "Ampliada", "Avançada", "Acadêmica"]
-CIA_MOODS = [
-    "Sintática",
-    "Sintética",
-    "Formal",
-    "Resumida",
-    "Rápida",
-    "Completa",
-]
+CIA_MOODS = ["Sintática", "Sintética", "Formal", "Resumida", "Completa", ]
 
 
 def ensure_cia_name(force=False):
