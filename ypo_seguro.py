@@ -432,6 +432,13 @@ def apply_styles():
             padding: 0.25rem 0.55rem 0.35rem 0.55rem;
             min-height: 1.4;
             box-sizing: border-box;
+            overflow-x: hidden;
+        }
+
+        .cia-stage-body {
+            font-family: 'Trebuchet MS';
+            font-size: 16px;
+            line-height: 1.42;
         }
 
         .cia-stage-title {
@@ -477,6 +484,8 @@ def init_session_state():
         "cia_name": "",
         "cia_mood": "Sintática",
         "cia_line0_offset_px": -385,
+        "cia_font": "Trebuchet MS",
+        "cia_size": 16,
 
         # chave de ouro
         "key_open": False,
@@ -657,19 +666,8 @@ def build_cia_header():
     return "<br>".join(body_parts)
 
 
-def _cia_first_token(line):
-    token = line.strip().split(" ")[0] if line.strip() else ""
-    token = token.strip("“”\"'()[]{}.,;:!?…-").lower()
-    return token
-
-
-def _cia_first_two_tokens(line):
-    parts = [p.strip("“”\"'()[]{}.,;:!?…-").lower() for p in line.strip().split()[:2]]
-    return " ".join([p for p in parts if p])
-
-
 def build_cia_analysis(curr_ypoema):
-    """Primeiro tijolo da Sintática: nomeia figuras visíveis e lê seu efeito."""
+    """Primeira leitura funcional da CIA: mood Sintática."""
     raw_parts = [part.strip() for part in curr_ypoema.replace("<br/>", "<br>").split("<br>")]
     lines = [part for part in raw_parts if part]
     poema_lines = lines[1:] if len(lines) > 1 else []
@@ -677,114 +675,75 @@ def build_cia_analysis(curr_ypoema):
     qtd_palavras = sum(len(line.split()) for line in poema_lines)
 
     mood = st.session_state.get("cia_mood", CIA_MOODS[0])
-
-    if mood != "Sintática":
-        return "Este mood ainda não entrou em operação na CIA."
-
-    if not poema_lines:
-        return "Sem texto em foco, a Sintática não tem onde pousar."
+    tema = st.session_state.get("tema", "")
 
     body = []
-    body.append(f"O poema se arma em **{qtd_linhas} linhas** e **{qtd_palavras} palavras**, mas a leitura sintática começa menos pela contagem do que pela construção das frases.")
-
-    # interrogação
-    perguntas = [line for line in poema_lines if "?" in line]
-    if perguntas:
-        body.append(
-            f"Há **interrogação** em **“{perguntas[0]}”**. A pergunta não serve só como assunto: ela instala uma sintaxe de abertura, incerteza ou provocação."
-        )
-
-    # reticências / suspensão
-    reticencias = [line for line in poema_lines if "..." in line or "…" in line]
-    if reticencias:
-        body.append(
-            f"As **reticências** de **“{reticencias[0]}”** introduzem **suspensão sintática**: a frase se contém, adia o fechamento e deixa o sentido vibrando além do verso."
-        )
-
-    # inciso parentético
-    incisos = [line for line in poema_lines if "(" in line or ")" in line]
-    if incisos:
-        body.append(
-            f"O verso **“{incisos[0]}”** funciona como **inciso parentético**. Ele entra lateralmente, mas reorganiza a respiração do texto e muda o regime de leitura."
-        )
-
-    # anáfora / paralelismo
-    first_tokens = {}
-    first_two = {}
-    for line in poema_lines:
-        t1 = _cia_first_token(line)
-        t2 = _cia_first_two_tokens(line)
-        if t1:
-            first_tokens.setdefault(t1, []).append(line)
-        if t2:
-            first_two.setdefault(t2, []).append(line)
-
-    parallel_key = next((k for k, v in first_two.items() if len(v) >= 2 and len(k.split()) == 2), None)
-    anafora_key = next((k for k, v in first_tokens.items() if len(v) >= 2), None)
-
-    if parallel_key:
-        exemplos = first_two[parallel_key][:2]
-        body.append(
-            f"Há **paralelismo sintático** na repetição de arranjo em **“{exemplos[0]}”** e **“{exemplos[1]}”**. A estrutura reaparece quase no mesmo molde e produz cadência com reforço de sentido."
-        )
-    elif anafora_key:
-        exemplos = first_tokens[anafora_key][:2]
-        body.append(
-            f"A repetição inicial em **“{exemplos[0]}”** e **“{exemplos[1]}”** cria **anáfora**. O retorno do mesmo arranque sintático sustenta a insistência do poema."
-        )
-
-    # enumeração
-    enumeracoes = [line for line in poema_lines if line.count(",") >= 2]
-    if enumeracoes:
-        body.append(
-            f"Em **“{enumeracoes[0]}”** aparece **enumeração**. O acúmulo de termos não é decorativo: ele encadeia o pensamento por justaposição e alarga o campo semântico."
-        )
-
-    # coordenação / subordinação bem visíveis
-    subordinadas = [line for line in poema_lines if re.search(r"\b(se|quando|embora|porque|que)\b", line.lower())]
-    coordenadas = [line for line in poema_lines if re.search(r"\b(e|ou|mas)\b", line.lower()) and "," in line]
-
-    if subordinadas:
-        body.append(
-            f"Em **“{subordinadas[0]}”** a presença de conectivo visível mostra **subordinação**. A frase passa a depender de uma condição, de um tempo ou de uma explicação para avançar."
-        )
-    elif coordenadas:
-        body.append(
-            f"Em **“{coordenadas[0]}”** há **coordenação** explícita. A articulação entre segmentos vai somando ou contrapondo elementos sem dissolver a autonomia de cada parte."
-        )
-
-    # quebra entre verso e frase
-    cortes = []
-    for i, line in enumerate(poema_lines[:-1]):
-        nxt = poema_lines[i + 1]
-        if line and line[-1] not in ".?!:;…)":
-            cutsafe = (nxt[:1].islower() or len(line.split()) <= 4)
-            if cutsafe:
-                cortes.append((line, nxt))
-    if cortes:
-        l1, l2 = cortes[0]
-        body.append(
-            f"Há **quebra entre verso e frase** no corte entre **“{l1}”** e **“{l2}”**. A sintaxe não se encerra no fim do verso: ela atravessa a linha e cria impulso de continuação."
-        )
-
-    # fallback if only metrics
-    if len(body) == 1:
-        body.append("**requer apuração manual**")
-
+    body.append(f"Mood ativo: **{mood}**")
+    body.append(f"Tema em foco: **{tema}**")
+    body.append("")
+    body.append(f"Leitura sintática inicial: o poema em foco se organiza em **{qtd_linhas} linhas** e **{qtd_palavras} palavras**.")
+    body.append("")
+    body.append("Nesta v0, a CIA observa o desenho do texto: como a abertura arma o campo de sentido, como o corpo sustenta o andamento e como o fecho desloca ou fecha a leitura.")
+    body.append("")
+    body.append("A casa da Chave já está de pé: poema à esquerda, leitura à direita, ambos convivendo no mesmo palco.")
     return "  \n".join(body)
 
 
 def render_cia_stage(curr_ypoema):
     """Renderiza o texto da Chave no lado direito do palco, sem arrulho de títulos repetidos."""
     cia_offset = int(st.session_state.get("cia_line0_offset_px", 0))
+    cia_font = st.session_state.get("cia_font", "Trebuchet MS")
+    cia_size = int(st.session_state.get("cia_size", 16))
     st.markdown(
         f"<div class='cia-stage-box' style='margin-top:{cia_offset}px;'>",
         unsafe_allow_html=True,
     )
     write_ypoema(build_cia_header(), None)
+    st.markdown(
+        f"<div class='cia-stage-body' style=\"font-family:{cia_font}; font-size:{cia_size}px;\">",
+        unsafe_allow_html=True,
+    )
     st.markdown(build_cia_analysis(curr_ypoema), unsafe_allow_html=False)
     st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
 
+
+def pick_cia_font():
+    """Escolhe fonte e corpo da área CIA."""
+    labels = [label for label, fonte in FONTES_MACHINA]
+    lookup = {label: fonte for label, fonte in FONTES_MACHINA}
+
+    current_font = st.session_state.get("cia_font", "Trebuchet MS")
+    current_label = next(
+        (label for label, fonte in FONTES_MACHINA if fonte == current_font),
+        labels[0],
+    )
+
+    corpos = list(range(13, 22))
+    current_size = st.session_state.get("cia_size", 16)
+    if current_size not in corpos:
+        current_size = 16
+
+    col_font, col_corpo = st.sidebar.columns([2.1, 0.9])
+
+    with col_font:
+        choice = st.selectbox(
+            "fonte cia",
+            labels,
+            index=labels.index(current_label),
+            key="sidebar_cia_font_select",
+        )
+
+    with col_corpo:
+        size = st.selectbox(
+            "corpo cia",
+            corpos,
+            index=corpos.index(current_size),
+            key="sidebar_cia_size_select",
+        )
+
+    st.session_state.cia_font = lookup[choice]
+    st.session_state.cia_size = size
 
 
 def render_cia_sidebar():
@@ -792,6 +751,7 @@ def render_cia_sidebar():
     ensure_cia_name()
     st.sidebar.markdown("### CIA")
     st.sidebar.caption(st.session_state.get("cia_name", "Centro de Informação Analítica"))
+    pick_cia_font()
     st.sidebar.markdown("**moods**")
 
     for mood in CIA_MOODS:
