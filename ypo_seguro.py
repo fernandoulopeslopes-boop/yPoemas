@@ -827,7 +827,7 @@ def render_cia_stage(curr_ypoema):
             margin-bottom: 0;
         }}
         </style>
-        <div class='cia-stage-text' style="font-family:{cia_font}; font-size:{cia_size}px; line-height:1.35;">
+        <div class='cia-stage-text' style="font-family:{cia_font}; font-size:{cia_size}px; line-height:1.42;">
             {analysis_html}
         </div>
         """,
