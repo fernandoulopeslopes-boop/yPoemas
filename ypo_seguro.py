@@ -681,9 +681,7 @@ def build_cia_analysis(curr_ypoema):
     body.append("")
     body.append(f"Leitura sintática inicial: o poema em foco se organiza em **{qtd_linhas} linhas** e **{qtd_palavras} palavras**.")
     body.append("")
-    body.append("Nesta v0, a CIA observa o desenho do texto: como a abertura arma o campo de sentido, como o corpo sustenta o andamento e como o fecho desloca ou fecha a leitura.")
     body.append("")
-    body.append("A casa da Chave já está de pé: poema à esquerda, leitura à direita, ambos convivendo no mesmo palco.")
     return "  \n".join(body)
 
 
