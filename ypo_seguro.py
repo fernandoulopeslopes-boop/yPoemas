@@ -802,11 +802,68 @@ def build_cia_analysis(curr_ypoema):
     st.session_state.tema_last_analise = tema
     return "  \n\n".join(body)
 
+
+def build_cia_analysis_free(curr_ypoema):
+    """Leitura livre do mesmo texto em foco, sem usar o manual da CIA."""
+    raw_parts = [part.strip() for part in curr_ypoema.replace("<br/>", "<br>").split("<br>")]
+    lines = [part for part in raw_parts if part]
+    poema_lines = lines[1:] if len(lines) > 1 else []
+
+    if not poema_lines:
+        return "Sem texto em foco para a análise livre."
+
+    abertura = poema_lines[0]
+    fecho = poema_lines[-1]
+    meio = poema_lines[len(poema_lines) // 2]
+    longas = [line for line in poema_lines if "," in line or "..." in line or "?" in line]
+    destaque = longas[0] if longas else meio
+
+    p1_options = [
+        f"Sem o manual da CIA, a leitura deste poema começa por uma impressão mais direta: **“{abertura}”** não abre apenas o texto, abre também um modo de respirar o que vem depois.",
+        f"Lido sem régua prévia, este poema se impõe primeiro por sua entrada: **“{abertura}”** já instala um clima verbal que pede atenção antes de qualquer classificação.",
+        f"Numa leitura livre, **“{abertura}”** funciona menos como começo e mais como chave de acesso: dali o poema já decide o seu passo.",
+    ]
+    p2_options = [
+        f"No corpo do texto, **“{destaque}”** chama atenção porque parece condensar a sua energia: há ali um empuxo de linguagem que não depende de nome técnico para ser percebido.",
+        f"O miolo do poema ganha força em **“{destaque}”**. É o ponto em que a linguagem deixa de apenas dizer e passa a pressionar o leitor com mais densidade.",
+        f"Há um centro de gravidade em **“{destaque}”**. Mesmo sem manual, percebe-se que alguma coisa ali reorganiza o modo de ler o restante do poema.",
+    ]
+    p3_options = [
+        f"O fecho em **“{fecho}”** não chega como sobra. Ele recolhe a tensão anterior e devolve o poema ao leitor com outro peso.",
+        f"Já o fechamento — **“{fecho}”** — parece decidir o destino do texto: não encerra só, também desloca o que veio antes.",
+        f"Quando chega a **“{fecho}”**, o poema muda de temperatura. O verso final concentra uma última força e redefine o que ficou ecoando.",
+    ]
+    p4_options = [
+        "Nesta leitura paralela, o objetivo não é provar nada, mas perceber como o poema vive mesmo antes de ser enquadrado por uma régua analítica.",
+        "A análise livre não substitui a da CIA: ela serve de contraste, para mostrar o que o texto sustenta mesmo sem apoio de manual.",
+        "O interesse desta leitura está justamente aí: ver o que o poema oferece quando é lido como acontecimento único, sem memória anterior de tema.",
+    ]
+
+    import random
+    body = [
+        random.choice(p1_options),
+        random.choice(p2_options),
+        random.choice(p3_options),
+        random.choice(p4_options),
+    ]
+    return "  \n\n".join(body)
+
 def render_cia_stage(curr_ypoema):
-    """Renderiza o texto da Chave no lado direito do palco, com fonte/corpo realmente controlados no texto da análise."""
+    """Renderiza a análise da CIA e, em seguida, uma análise livre do mesmo texto."""
     cia_offset = int(st.session_state.get("cia_line0_offset_px", 0))
     cia_font = st.session_state.get("cia_font", "Trebuchet MS")
-    cia_size = int(st.session_state.get("cia_size", 16))
+    cia_size = int(st.session_state.get("cia_size", 18))
+
+    def _to_html_block(markdown_text):
+        html = markdown_text
+        while "**" in html:
+            html = html.replace("**", "<strong>", 1)
+            html = html.replace("**", "</strong>", 1)
+        html = html.replace("  \n", "\n")
+        html = html.replace("\r\n", "\n")
+        html = re.sub(r"\n{3,}", "\n\n", html)
+        paragraphs = [p.strip() for p in html.split("\n\n") if p.strip()]
+        return "".join(f"<p>{p.replace(chr(10), '<br>')}</p>" for p in paragraphs)
 
     st.markdown(
         f"<div class='cia-stage-box' style='margin-top:{cia_offset}px;'>",
@@ -815,32 +872,29 @@ def render_cia_stage(curr_ypoema):
     write_ypoema(build_cia_header(), None)
     st.markdown("&nbsp;", unsafe_allow_html=True)
 
-    analysis_html = build_cia_analysis(curr_ypoema)
-
-    # Convert bold markdown to HTML
-    while "**" in analysis_html:
-        analysis_html = analysis_html.replace("**", "<strong>", 1)
-        analysis_html = analysis_html.replace("**", "</strong>", 1)
-
-    # Normalize paragraph spacing: exactly one blank line between paragraphs
-    analysis_html = analysis_html.replace("  \n", "\n")
-    analysis_html = analysis_html.replace("\r\n", "\n")
-    analysis_html = re.sub(r"\n{3,}", "\n\n", analysis_html)
-    paragraphs = [p.strip() for p in analysis_html.split("\n\n") if p.strip()]
-    analysis_html = "".join(f"<p>{p.replace(chr(10), '<br>')}</p>" for p in paragraphs)
+    analysis_html = _to_html_block(build_cia_analysis(curr_ypoema))
+    analysis_free_html = _to_html_block(build_cia_analysis_free(curr_ypoema))
 
     st.markdown(
         f"""
         <style>
         .cia-stage-box .cia-stage-text p {{
-            margin: 0 0 1em 0;
+            margin: 0 0 1.15em 0;
         }}
         .cia-stage-box .cia-stage-text p:last-child {{
             margin-bottom: 0;
         }}
+        .cia-stage-box .cia-stage-sep {{
+            margin: 1.25em 0 1em 0;
+            padding-top: 0.8em;
+            border-top: 1px solid rgba(0,0,0,0.12);
+            opacity: 0.95;
+        }}
         </style>
         <div class='cia-stage-text' style="font-family:{cia_font}; font-size:{cia_size}px; line-height:1.42;">
             {analysis_html}
+            <div class='cia-stage-sep'><strong>Análise da análise</strong></div>
+            {analysis_free_html}
         </div>
         """,
         unsafe_allow_html=True,
