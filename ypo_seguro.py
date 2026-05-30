@@ -668,6 +668,55 @@ def _cia_first_two_tokens(line):
     return " ".join([p for p in parts if p])
 
 
+def build_machina_reading(poema_lines):
+    """Pequena leitura viva do texto, anterior ao mood, para não deixar passar o inusitado."""
+    if not poema_lines:
+        return ""
+
+    current_year = datetime.now().year
+
+    # 1) datas futuras / anos deslocados
+    for line in poema_lines:
+        years = re.findall(r"\b(1[89]\d{2}|20\d{2}|21\d{2})\b", line)
+        future_years = [y for y in years if int(y) > current_year]
+        if future_years:
+            return random.choice([
+                f"Há um deslocamento particularmente vivo em **“{line}”**: a data futura abre o poema para um tempo que ainda não chegou, mas já pesa dentro dele.",
+                f"Em **“{line}”**, a projeção para o futuro não passa despercebida. Ela empurra o poema para fora do presente e lhe dá uma ousadia temporal muito própria.",
+                f"A data futura em **“{line}”** muda o regime de leitura do texto: o poema deixa de falar só do agora e passa a respirar adiante.",
+            ])
+
+    # 2) referência ou nome inesperado dentro do verso
+    for line in poema_lines:
+        words = line.split()
+        if len(words) > 1:
+            inner_caps = [w.strip("“”\"'()[]{}.,;:!?…-") for w in words[1:] if w[:1].isupper()]
+            if inner_caps:
+                return random.choice([
+                    f"Há uma surpresa boa em **“{line}”**: a referência inesperada puxa o poema para fora do previsível e lhe dá um brilho próprio.",
+                    f"Em **“{line}”**, o texto ganha uma abertura particular. O nome ou referência que entra ali desloca o campo do poema e amplia a leitura.",
+                    f"Esse verso — **“{line}”** — chama atenção pela referência que carrega. Ela dá ao poema uma vida mais particular do que a leitura técnica, sozinha, daria conta de mostrar.",
+                ])
+
+    # 3) imagem ou formulação fora da curva
+    marked = [line for line in poema_lines if "..." in line or "?" in line or ":" in line or ";" in line]
+    if marked:
+        line = marked[0]
+        return random.choice([
+            f"Há algo de especialmente vivo em **“{line}”**. O verso foge do esperado e deixa uma impressão que não é só técnica.",
+            f"**“{line}”** funciona como pequena pérola do texto: ali o poema parece ganhar uma temperatura própria, mais ousada ou mais inesperada.",
+            f"Neste ponto — **“{line}”** — o poema oferece uma surpresa que vale por si mesma. É uma dessas linhas que pedem mais do que leitura mecânica.",
+        ])
+
+    # 4) fecho particularmente feliz
+    fecho = poema_lines[-1]
+    return random.choice([
+        f"O fecho em **“{fecho}”** guarda uma qualidade difícil de reduzir a esquema. Há ali um resto de vida que ultrapassa a engrenagem da análise.",
+        f"Também o verso final — **“{fecho}”** — merece um olhar menos técnico: ele concentra uma beleza ou um estranhamento que o poema soube guardar para o fim.",
+        f"Em **“{fecho}”**, o poema deixa algo que não se esgota na análise. O verso final guarda um pequeno excesso de vida própria.",
+    ])
+
+
 def build_cia_analysis(curr_ypoema):
     """CIA v.1: leitura sintática real no palco, com ordem variável e injeção de 2 a 5 figuras."""
     raw_parts = [part.strip() for part in curr_ypoema.replace("<br/>", "<br>").split("<br>")]
@@ -787,7 +836,8 @@ def build_cia_analysis(curr_ypoema):
         "Esta leitura se ocupa menos de explicar o poema do que de perceber como a sintaxe sustenta, torce ou desloca o seu sentido.",
     ]
 
-    body = chosen + [random.choice(fecho_variants), random.choice(closing_variants)]
+    body = chosen + [random.choice(fecho_variants), build_machina_reading(poema_lines), random.choice(closing_variants)]
+    body = [b for b in body if b]
     random.shuffle(body)
     if repeated_theme and len(body) > 2:
         random.shuffle(body)
@@ -886,7 +936,8 @@ def build_cia_analysis_sintetica(curr_ypoema):
         "Trata-se de reduzir a dispersão e fazer aparecer o núcleo do poema sem apagar a sua vibração.",
     ])
 
-    body = [p1, p2, p3, p4]
+    body = [p1, p2, p3, build_machina_reading(poema_lines), p4]
+    body = [b for b in body if b]
     random.shuffle(body)
     return "  \n\n".join(body)
 
@@ -989,6 +1040,9 @@ def build_cia_analysis_formal(curr_ypoema):
     chosen = p_options[:]
     random.shuffle(chosen)
     chosen = chosen[:count]
+    chosen.append(build_machina_reading(poema_lines))
+    chosen = [c for c in chosen if c]
+    random.shuffle(chosen)
     return "  \n\n".join(chosen)
 
 
@@ -1105,8 +1159,10 @@ def build_cia_analysis_completa(curr_ypoema):
         random.choice(formas),
         random.choice(amplificacoes),
         random.choice(fechos),
+        build_machina_reading(poema_lines),
         random.choice(conclusoes),
     ]
+    body = [b for b in body if b]
     random.shuffle(body)
     return "  \n\n".join(body)
 
