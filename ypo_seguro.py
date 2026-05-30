@@ -616,7 +616,7 @@ CIA_MOODS = ["Sintática", "Sintética", "Formal", "Resumida", "Completa", ]
 
 
 def ensure_cia_name(force=False):
-    """Gera um nome mutável para a CIA e o preserva durante a sessão."""
+    """Gera um nome mutável para a leitura e o preserva durante a sessão."""
     if force or not st.session_state.get("cia_name"):
         st.session_state["cia_name"] = (
             "Centro de "
@@ -643,7 +643,7 @@ def generate_poema_preview(nome_tema, seed_eureka=""):
 
 
 def build_cia_header():
-    """Descrição poética da CIA, gerada pela própria Machina sem repetir o título."""
+    """Descrição poética desta leitura, gerada pela própria Machina sem repetir o título."""
     ensure_cia_name()
     header = generate_poema_preview("Cia", "")
     if st.session_state.lang != "pt":
@@ -677,7 +677,7 @@ def build_cia_analysis(curr_ypoema):
     tema = st.session_state.get("tema", "")
 
     if mood != "Sintática":
-        return "Este mood ainda não entrou em operação na CIA."
+        return "Este mood ainda não entrou em operação."
 
     if not poema_lines:
         return "**requer apuração manual**"
@@ -779,7 +779,7 @@ def build_cia_analysis(curr_ypoema):
         f"Também o fechamento em **“{fecho}”** pede leitura: é ali que o poema decide se recolhe, desloca ou reabre o seu impulso.",
     ]
     closing_variants = [
-        "Nesta leitura, a Sintática não resume o poema: ela nomeia o que aparece com nitidez e lê o efeito dessas escolhas na construção do sentido.",
+        "A Sintática não resume o poema: ela nomeia o que aparece com nitidez e lê o efeito dessas escolhas na construção do sentido.",
         "Aqui a leitura sintática não procura resumir o poema, mas reconhecer figuras visíveis e medir o que elas fazem no andamento do texto.",
         "O foco desta leitura não é o tema em abstrato, mas a engrenagem verbal do poema: nomear o que aparece e ler o efeito de cada escolha.",
         "A leitura sintática se firma menos no assunto do poema do que nas formas que o fazem avançar, hesitar, insistir ou se fechar.",
@@ -797,7 +797,7 @@ def build_cia_analysis(curr_ypoema):
 
 
 def build_cia_analysis_free(curr_ypoema):
-    """Leitura livre do mesmo texto em foco, sem usar o manual da CIA."""
+    """Leitura livre do mesmo texto em foco, sem usar o manual desta leitura."""
     raw_parts = [part.strip() for part in curr_ypoema.replace("<br/>", "<br>").split("<br>")]
     lines = [part for part in raw_parts if part]
     poema_lines = lines[1:] if len(lines) > 1 else []
@@ -812,7 +812,7 @@ def build_cia_analysis_free(curr_ypoema):
     destaque = longas[0] if longas else meio
 
     p1_options = [
-        f"Sem o manual da CIA, a leitura deste poema começa por uma impressão mais direta: **“{abertura}”** não abre apenas o texto, abre também um modo de respirar o que vem depois.",
+        f"A leitura deste poema começa por uma impressão mais direta: **“{abertura}”** não abre apenas o texto, abre também um modo de respirar o que vem depois.",
         f"Lido sem régua prévia, este poema se impõe primeiro por sua entrada: **“{abertura}”** já instala um clima verbal que pede atenção antes de qualquer classificação.",
         f"Numa leitura livre, **“{abertura}”** funciona menos como começo e mais como chave de acesso: dali o poema já decide o seu passo.",
     ]
@@ -828,7 +828,7 @@ def build_cia_analysis_free(curr_ypoema):
     ]
     p4_options = [
         "Nesta leitura paralela, o objetivo não é provar nada, mas perceber como o poema vive mesmo antes de ser enquadrado por uma régua analítica.",
-        "A análise livre não substitui a da CIA: ela serve de contraste, para mostrar o que o texto sustenta mesmo sem apoio de manual.",
+        "Esta leitura paralela serve de contraste, para mostrar o que o texto sustenta mesmo sem apoio prévio.",
         "O interesse desta leitura está justamente aí: ver o que o poema oferece quando é lido como acontecimento único, sem memória anterior de tema.",
     ]
 
@@ -1111,7 +1111,7 @@ def build_cia_analysis_completa(curr_ypoema):
     return "  \n\n".join(body)
 
 def render_cia_stage(curr_ypoema):
-    """Renderiza a análise da CIA; na Sintática, mantém o anexo comparativo. Na Sintética, entrega só a leitura."""
+    """Renderiza a análise desta leitura; na Sintática, mantém o anexo comparativo. Na Sintética, entrega só a leitura."""
     cia_offset = int(st.session_state.get("cia_line0_offset_px", 0))
     cia_font = st.session_state.get("cia_font", "Trebuchet MS")
     cia_size = int(st.session_state.get("cia_size", 18))
@@ -1154,7 +1154,7 @@ def render_cia_stage(curr_ypoema):
         analysis_html = _to_html_block(build_cia_analysis_completa(curr_ypoema))
         content = analysis_html
     else:
-        analysis_html = _to_html_block("Este mood ainda não entrou em operação na CIA.")
+        analysis_html = _to_html_block("Este mood ainda não entrou em operação.")
         content = analysis_html
 
     st.markdown(
