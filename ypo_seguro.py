@@ -665,7 +665,7 @@ def build_cia_header():
 
 
 def build_cia_analysis(curr_ypoema):
-    """Primeira leitura funcional da CIA: mood Sintática."""
+    """CIA v1: leitura sintática em operação."""
     raw_parts = [part.strip() for part in curr_ypoema.replace("<br/>", "<br>").split("<br>")]
     lines = [part for part in raw_parts if part]
     poema_lines = lines[1:] if len(lines) > 1 else []
@@ -698,7 +698,7 @@ def render_cia_stage(curr_ypoema):
         unsafe_allow_html=True,
     )
     write_ypoema(build_cia_header(), None)
-    st.write("")
+    st.markdown("&nbsp;", unsafe_allow_html=True)
 
     analysis_html = build_cia_analysis(curr_ypoema)
 
@@ -745,9 +745,6 @@ def render_cia_sidebar():
             st.sidebar.markdown(f"**• {mood}**")
         else:
             st.sidebar.markdown(f"• {mood}")
-
-    st.sidebar.caption("CIA v0: 1 mood funcional, mapa visual completo.")
-    st.sidebar.caption(f"linha 0 CIA: {st.session_state.get('cia_line0_offset_px', 0)} px")
 
 
 def draw_sidebar_panel_buttons(chosen_id):
@@ -2118,8 +2115,6 @@ def main():
                     f"<div class='machina-rodape-palco'>{status}</div>",
                     unsafe_allow_html=True,
                 )
-
-
 
 if __name__ == "__main__":
     main()
