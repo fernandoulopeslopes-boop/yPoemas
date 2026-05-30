@@ -690,21 +690,32 @@ def build_cia_analysis(curr_ypoema):
 
 
 def render_cia_stage(curr_ypoema):
-    """Renderiza o texto da Chave no lado direito do palco, sem arrulho de títulos repetidos."""
+    """Renderiza o texto da Chave no lado direito do palco, com fonte/corpo próprios aplicados no palco."""
     cia_offset = int(st.session_state.get("cia_line0_offset_px", 0))
     cia_font = st.session_state.get("cia_font", "Trebuchet MS")
     cia_size = int(st.session_state.get("cia_size", 16))
+
     st.markdown(
         f"<div class='cia-stage-box' style='margin-top:{cia_offset}px;'>",
         unsafe_allow_html=True,
     )
     write_ypoema(build_cia_header(), None)
+
+    analysis_html = build_cia_analysis(curr_ypoema)
+    analysis_html = analysis_html.replace("**requer apuração manual**", "<strong>requer apuração manual</strong>")
+    analysis_html = analysis_html.replace("**", "<strong>", 1) if analysis_html.count("**") >= 2 else analysis_html
+
+    # Convert markdown emphasis and line breaks to HTML in a controlled, minimal way.
+    while "**" in analysis_html:
+        analysis_html = analysis_html.replace("**", "<strong>", 1)
+        analysis_html = analysis_html.replace("**", "</strong>", 1)
+    analysis_html = analysis_html.replace("  \n", "<br><br>")
+    analysis_html = analysis_html.replace("\n", "<br>")
+
     st.markdown(
-        f"<div class='cia-stage-body' style=\"font-family:{cia_font}; font-size:{cia_size}px;\">",
+        f"<div class='cia-stage-body' style=\"font-family:{cia_font}; font-size:{cia_size}px;\">{analysis_html}</div>",
         unsafe_allow_html=True,
     )
-    st.markdown(build_cia_analysis(curr_ypoema), unsafe_allow_html=False)
-    st.markdown("</div>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
 
 
