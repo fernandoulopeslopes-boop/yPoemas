@@ -483,7 +483,7 @@ def init_session_state():
         "cia_mood": "Sintática",
         "cia_line0_offset_px": -385,
         "cia_font": "Trebuchet MS",
-        "cia_size": 16,
+        "cia_size": 18,
 
         # chave de ouro
         "key_open": False,
@@ -698,6 +698,7 @@ def render_cia_stage(curr_ypoema):
         unsafe_allow_html=True,
     )
     write_ypoema(build_cia_header(), None)
+    st.write("")
 
     analysis_html = build_cia_analysis(curr_ypoema)
 
@@ -732,50 +733,11 @@ def render_cia_stage(curr_ypoema):
     st.markdown("</div>", unsafe_allow_html=True)
 
 
-def pick_cia_font():
-    """Escolhe fonte e corpo da área CIA."""
-    labels = [label for label, fonte in FONTES_MACHINA]
-    lookup = {label: fonte for label, fonte in FONTES_MACHINA}
-
-    current_font = st.session_state.get("cia_font", "Trebuchet MS")
-    current_label = next(
-        (label for label, fonte in FONTES_MACHINA if fonte == current_font),
-        labels[0],
-    )
-
-    corpos = list(range(13, 22))
-    current_size = st.session_state.get("cia_size", 16)
-    if current_size not in corpos:
-        current_size = 16
-
-    col_font, col_corpo = st.sidebar.columns([2.1, 0.9])
-
-    with col_font:
-        choice = st.selectbox(
-            "fonte cia",
-            labels,
-            index=labels.index(current_label),
-            key="sidebar_cia_font_select",
-        )
-
-    with col_corpo:
-        size = st.selectbox(
-            "corpo cia",
-            corpos,
-            index=corpos.index(current_size),
-            key="sidebar_cia_size_select",
-        )
-
-    st.session_state.cia_font = lookup[choice]
-    st.session_state.cia_size = size
-
-
 def render_cia_sidebar():
     """Centro de Controle da Chave, exclusivo de yPoemas."""
     ensure_cia_name()
     st.sidebar.markdown("### CIA")
     st.sidebar.caption(st.session_state.get("cia_name", "Centro de Informação Analítica"))
-    pick_cia_font()
     st.sidebar.markdown("**moods**")
 
     for mood in CIA_MOODS:
