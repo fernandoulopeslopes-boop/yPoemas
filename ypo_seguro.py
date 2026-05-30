@@ -848,11 +848,61 @@ def build_cia_analysis_free(curr_ypoema):
     ]
     return "  \n\n".join(body)
 
+
+def build_cia_analysis_sintetica(curr_ypoema):
+    """Leitura sintética: condensa o núcleo do poema sem virar comentário longo."""
+    raw_parts = [part.strip() for part in curr_ypoema.replace("<br/>", "<br>").split("<br>")]
+    lines = [part for part in raw_parts if part]
+    poema_lines = lines[1:] if len(lines) > 1 else []
+
+    if not poema_lines:
+        return "**requer apuração manual**"
+
+    abertura = poema_lines[0]
+    fecho = poema_lines[-1]
+    meio = poema_lines[len(poema_lines) // 2]
+    destaque = next((line for line in poema_lines if "..." in line or "?" in line), meio)
+
+    import random
+
+    p1 = random.choice([
+        f"O poema se organiza como uma travessia breve, mas densa: **“{abertura}”** já instala o seu campo de força e empurra a leitura para um centro de tensão.",
+        f"Desde **“{abertura}”**, o poema abre um campo condensado de sentido. Ele não se espalha: concentra.",
+        f"A entrada em **“{abertura}”** já sugere o núcleo do texto: um movimento que parece simples, mas guarda pressão por dentro.",
+        f"Logo em **“{abertura}”**, o poema arma o seu eixo e evita dispersão. Tudo tende a convergir para esse impulso inicial.",
+    ])
+
+    p2 = random.choice([
+        f"No miolo, **“{destaque}”** ajuda a perceber que o poema trabalha menos por explicação do que por concentração de imagem, gesto ou tensão verbal.",
+        f"O centro do poema ganha nitidez em **“{destaque}”**. É ali que a linguagem deixa de apenas dizer e passa a condensar o que está em jogo.",
+        f"Há um núcleo de força em **“{destaque}”**. O poema parece reunir ali o seu modo de existir: breve na forma, denso na carga.",
+        f"Em **“{destaque}”**, o texto mostra seu procedimento mais forte: dizer pouco, mas deixar muito reverberando ao redor.",
+    ])
+
+    p3 = random.choice([
+        f"O fecho em **“{fecho}”** recolhe essa pressão e devolve o poema em estado mais concentrado. A síntese não fecha tudo: deixa resto, eco, insistência.",
+        f"Quando chega a **“{fecho}”**, o poema se concentra ainda mais. O verso final funciona como recolhimento do que vinha sendo armado.",
+        f"O fechamento em **“{fecho}”** resume sem empobrecer. Ele condensa a energia do texto e a devolve com mais nitidez.",
+        f"Em **“{fecho}”**, o poema não apenas termina: ele concentra o essencial e deixa a leitura reverberando depois do fim.",
+    ])
+
+    p4 = random.choice([
+        "Nesta leitura sintética, o foco não está em nomear figuras, mas em entregar o núcleo do poema sem dissolver sua atmosfera.",
+        "A análise sintética procura condensar o que o poema põe em jogo, preservando seu clima e sua tensão.",
+        "Aqui a síntese não funciona como atalho pobre, mas como concentração do que o poema tem de mais vivo.",
+        "O trabalho da Sintética é este: reduzir a dispersão e fazer aparecer o núcleo do poema sem apagar a sua vibração.",
+    ])
+
+    body = [p1, p2, p3, p4]
+    random.shuffle(body)
+    return "  \n\n".join(body)
+
 def render_cia_stage(curr_ypoema):
-    """Renderiza a análise da CIA e, em seguida, uma análise livre do mesmo texto."""
+    """Renderiza a análise da CIA; na Sintática, mantém o anexo comparativo. Na Sintética, entrega só a leitura."""
     cia_offset = int(st.session_state.get("cia_line0_offset_px", 0))
     cia_font = st.session_state.get("cia_font", "Trebuchet MS")
     cia_size = int(st.session_state.get("cia_size", 18))
+    mood = st.session_state.get("cia_mood", CIA_MOODS[0])
 
     def _to_html_block(markdown_text):
         html = markdown_text
@@ -872,8 +922,15 @@ def render_cia_stage(curr_ypoema):
     write_ypoema(build_cia_header(), None)
     st.markdown("&nbsp;", unsafe_allow_html=True)
 
-    analysis_html = _to_html_block(build_cia_analysis(curr_ypoema))
-    analysis_free_html = _to_html_block(build_cia_analysis_free(curr_ypoema))
+    if mood == "Sintética":
+        analysis_html = _to_html_block(build_cia_analysis_sintetica(curr_ypoema))
+        content = analysis_html
+    else:
+        analysis_html = _to_html_block(build_cia_analysis(curr_ypoema))
+        analysis_free_html = _to_html_block(build_cia_analysis_free(curr_ypoema))
+        content = f"""{analysis_html}
+            <div class='cia-stage-sep'><strong>Análise da análise</strong></div>
+            {analysis_free_html}"""
 
     st.markdown(
         f"""
@@ -892,9 +949,7 @@ def render_cia_stage(curr_ypoema):
         }}
         </style>
         <div class='cia-stage-text' style="font-family:{cia_font}; font-size:{cia_size}px; line-height:1.42;">
-            {analysis_html}
-            <div class='cia-stage-sep'><strong>Análise da análise</strong></div>
-            {analysis_free_html}
+            {content}
         </div>
         """,
         unsafe_allow_html=True,
