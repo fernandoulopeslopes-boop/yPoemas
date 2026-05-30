@@ -895,7 +895,7 @@ def pick_stage_font():
         labels[0],
     )
 
-    corpos = list(range(14, 26))
+    corpos = list(range(15, 25))
     current_size = st.session_state.get("stage_size", 21)
     if current_size not in corpos:
         current_size = 21
@@ -1988,37 +1988,6 @@ def page_abouts():
 
 
 
-def render_sidebar_width_meter():
-    """Mostra a largura atual da sidebar durante o ajuste fino."""
-    components.html(
-        """
-        <div id="machina-sidebar-width"
-             style="font-family: Trebuchet MS, sans-serif; font-size: 12px; opacity: 0.8; padding: 0.1rem 0 0.2rem 0;">
-          largura atual da sidebar: ...
-        </div>
-        <script>
-        const target = window.parent.document.querySelector('[data-testid="stSidebar"] > div:first-child');
-        const label = document.getElementById("machina-sidebar-width");
-
-        function updateWidth() {
-          if (!target || !label) return;
-          const width = Math.round(target.getBoundingClientRect().width);
-          label.textContent = `largura atual da sidebar: ${width}px`;
-        }
-
-        updateWidth();
-
-        const observer = target ? new ResizeObserver(updateWidth) : null;
-        if (observer && target) observer.observe(target);
-
-        window.addEventListener("load", updateWidth);
-        window.addEventListener("resize", updateWidth);
-        window.addEventListener("mousemove", updateWidth);
-        document.addEventListener("mousemove", updateWidth);
-        </script>
-        """,
-        height=28,
-    )
 
 
 def render_sidebar_for_page(chosen_id):
@@ -2070,8 +2039,6 @@ def main():
             if st.session_state.get("sidebar_panel", "Machina") == "CIA":
                 render_cia_sidebar()
 
-        with st.sidebar:
-            render_sidebar_width_meter()
 
         palco = st.container()
         with palco:
@@ -2115,6 +2082,8 @@ def main():
                     f"<div class='machina-rodape-palco'>{status}</div>",
                     unsafe_allow_html=True,
                 )
+
+
 
 if __name__ == "__main__":
     main()
