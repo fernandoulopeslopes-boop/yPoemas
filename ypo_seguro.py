@@ -484,6 +484,7 @@ def init_session_state():
         "cia_line0_offset_px": -385,
         "cia_font": "Trebuchet MS",
         "cia_size": 18,
+        "tema_last_analise": "",
 
         # chave de ouro
         "key_open": False,
@@ -675,14 +676,12 @@ def _cia_first_two_tokens(line):
 
 
 def build_cia_analysis(curr_ypoema):
-    """CIA v.1: primeira leitura sintática real no palco."""
+    """CIA v.1: primeira leitura sintática real no palco, com variação de ordem quando o tema se repete."""
     raw_parts = [part.strip() for part in curr_ypoema.replace("<br/>", "<br>").split("<br>")]
     lines = [part for part in raw_parts if part]
     poema_lines = lines[1:] if len(lines) > 1 else []
-    qtd_linhas = len(poema_lines)
-    qtd_palavras = sum(len(line.split()) for line in poema_lines)
-
     mood = st.session_state.get("cia_mood", CIA_MOODS[0])
+    tema = st.session_state.get("tema", "")
 
     if mood != "Sintática":
         return "Este mood ainda não entrou em operação na CIA."
@@ -690,27 +689,27 @@ def build_cia_analysis(curr_ypoema):
     if not poema_lines:
         return "**requer apuração manual**"
 
-    body = []
+    paragraphs = []
     achados = 0
 
     perguntas = [line for line in poema_lines if "?" in line]
     if perguntas:
-        body.append(
+        paragraphs.append(
             f"Em **“{perguntas[0]}”** há **interrogação**. A frase abre o poema para a incerteza, para a provocação ou para a espera de resposta, em vez de afirmar de saída."
         )
         achados += 1
 
     reticencias = [line for line in poema_lines if "..." in line or "…" in line]
     if reticencias:
-        body.append(
-            f"As **reticências** de **“{reticencias[0]}”** funcionam como **suspensão sintática**: o verso segura o fechamento e deixa o sentido reverberando além da linha."
+        paragraphs.append(
+            f"As **reticências** de **“{reticencias[0]}”** funcionam como **suspensão sintática**: o verso retém o fechamento e espalha o sentido para além da linha."
         )
         achados += 1
 
     incisos = [line for line in poema_lines if "(" in line or ")" in line]
     if incisos:
-        body.append(
-            f"O verso **“{incisos[0]}”** entra como **inciso parentético**. Ele desloca a frase principal sem quebrar o poema e altera a respiração da leitura."
+        paragraphs.append(
+            f"O verso **“{incisos[0]}”** entra como **inciso parentético**. Ele desvia a frase principal sem quebrar o andamento e altera a respiração do texto."
         )
         achados += 1
 
@@ -729,21 +728,21 @@ def build_cia_analysis(curr_ypoema):
 
     if parallel_key:
         exemplos = first_two[parallel_key][:2]
-        body.append(
-            f"Há **paralelismo sintático** entre **“{exemplos[0]}”** e **“{exemplos[1]}”**. A estrutura reaparece quase no mesmo molde e cria cadência com reforço de sentido."
+        paragraphs.append(
+            f"Há **paralelismo sintático** entre **“{exemplos[0]}”** e **“{exemplos[1]}”**. A estrutura reaparece em molde próximo e cria cadência com reforço de sentido."
         )
         achados += 1
     elif anafora_key:
         exemplos = first_tokens[anafora_key][:2]
-        body.append(
+        paragraphs.append(
             f"A repetição inicial de **“{exemplos[0]}”** e **“{exemplos[1]}”** produz **anáfora**. O poema insiste no mesmo arranque frasal para firmar seu movimento."
         )
         achados += 1
 
     enumeracoes = [line for line in poema_lines if line.count(",") >= 2]
     if enumeracoes:
-        body.append(
-            f"Em **“{enumeracoes[0]}”** aparece **enumeração**. O acúmulo de termos organiza o pensamento por justaposição e expande o campo semântico do verso."
+        paragraphs.append(
+            f"Em **“{enumeracoes[0]}”** aparece **enumeração**. O acúmulo de termos organiza o pensamento por justaposição e amplia o campo semântico do verso."
         )
         achados += 1
 
@@ -751,12 +750,12 @@ def build_cia_analysis(curr_ypoema):
     coordenadas = [line for line in poema_lines if re.search(r"\b(e|ou|mas)\b", line.lower()) and "," in line]
 
     if subordinadas:
-        body.append(
+        paragraphs.append(
             f"Em **“{subordinadas[0]}”** há **subordinação** visível. A frase depende de condição, tempo ou explicação para avançar, e isso articula o andamento do texto."
         )
         achados += 1
     elif coordenadas:
-        body.append(
+        paragraphs.append(
             f"Em **“{coordenadas[0]}”** há **coordenação** explícita. Os segmentos se articulam sem perder autonomia e o verso ganha soma ou contraste."
         )
         achados += 1
@@ -768,26 +767,35 @@ def build_cia_analysis(curr_ypoema):
             cortes.append((line, nxt))
     if cortes:
         l1, l2 = cortes[0]
-        body.append(
+        paragraphs.append(
             f"Há **quebra entre verso e frase** no corte entre **“{l1}”** e **“{l2}”**. A sintaxe atravessa o fim do verso e empurra a leitura para diante."
         )
         achados += 1
 
-    if poema_lines:
-        fecho = poema_lines[-1]
-        if achados >= 1:
-            body.append(
-                f"O fecho em **“{fecho}”** merece atenção porque concentra o último deslocamento do poema. Mesmo quando a figura central aparece antes, é ali que a leitura recolhe ou reabre o que vinha sendo armado."
-            )
-
     if achados == 0:
+        st.session_state.tema_last_analise = tema
         return "**requer apuração manual**"
 
-    body.append(
-        f"Nesta leitura, a Sintática não resume o poema: ela nomeia o que aparece com nitidez e lê o efeito dessas escolhas na construção do sentido."
+    fecho = poema_lines[-1]
+    fecho_paragraph = (
+        f"O fecho em **“{fecho}”** merece atenção porque concentra um último deslocamento do poema. Mesmo quando a figura central aparece antes, é ali que a leitura recolhe ou reabre o que ficou em tensão."
+    )
+    closing_paragraph = (
+        "Nesta leitura, a Sintática não resume o poema: ela nomeia o que aparece com nitidez e lê o efeito dessas escolhas na construção do sentido."
     )
 
-    return "  \n".join(body)
+    repeated_theme = tema == st.session_state.get("tema_last_analise", "")
+
+    core = paragraphs[:]
+    if repeated_theme and len(core) > 1:
+        # Rotate core paragraphs to avoid same visible pattern for the same theme
+        core = core[1:] + core[:1]
+        if len(core) > 3:
+            core = [core[0], core[2], core[1]] + core[3:]
+
+    body = core + [fecho_paragraph, closing_paragraph]
+    st.session_state.tema_last_analise = tema
+    return "  \n\n".join(body)
 
 
 def render_cia_stage(curr_ypoema):
