@@ -887,15 +887,116 @@ def build_cia_analysis_sintetica(curr_ypoema):
     ])
 
     p4 = random.choice([
-        "Nesta leitura sintética, o foco não está em nomear figuras, mas em entregar o núcleo do poema sem dissolver sua atmosfera.",
-        "A análise sintética procura condensar o que o poema põe em jogo, preservando seu clima e sua tensão.",
-        "Aqui a síntese não funciona como atalho pobre, mas como concentração do que o poema tem de mais vivo.",
-        "O trabalho da Sintética é este: reduzir a dispersão e fazer aparecer o núcleo do poema sem apagar a sua vibração.",
+        "O foco aqui não está em nomear figuras, mas em entregar o núcleo do poema sem dissolver sua atmosfera.",
+        "O texto condensa o que o poema põe em jogo, preservando seu clima e sua tensão.",
+        "A síntese não funciona como atalho pobre, mas como concentração do que o poema tem de mais vivo.",
+        "Trata-se de reduzir a dispersão e fazer aparecer o núcleo do poema sem apagar a sua vibração.",
     ])
 
     body = [p1, p2, p3, p4]
     random.shuffle(body)
     return "  \n\n".join(body)
+
+
+def build_cia_analysis_formal(curr_ypoema):
+    """Leitura formal: observa desenho, blocos, ritmo, repetições, quebras e fecho."""
+    raw_parts = [part.strip() for part in curr_ypoema.replace("<br/>", "<br>").split("<br>")]
+    lines = [part for part in raw_parts if part]
+    poema_lines = lines[1:] if len(lines) > 1 else []
+
+    if not poema_lines:
+        return "**requer apuração manual**"
+
+    import random
+
+    qtd_linhas = len(poema_lines)
+    blocos = 1
+    current_nonempty = False
+    raw_lines = curr_ypoema.replace("<br/>", "<br>").split("<br>")
+    raw_poem = raw_lines[1:] if len(raw_lines) > 1 else []
+    for line in raw_poem:
+        if line.strip():
+            if not current_nonempty:
+                blocos += 0 if blocos == 1 and any(l.strip() for l in raw_poem[:1]) else 1
+            current_nonempty = True
+        else:
+            current_nonempty = False
+    # simpler visible block count
+    blocos = max(1, sum(1 for i, line in enumerate(raw_poem) if line.strip() and (i == 0 or not raw_poem[i-1].strip())))
+
+    curtas = sum(1 for line in poema_lines if len(line.split()) <= 4)
+    longas = sum(1 for line in poema_lines if len(line.split()) >= 7)
+    reticencias = [line for line in poema_lines if "..." in line or "…" in line]
+    perguntas = [line for line in poema_lines if "?" in line]
+    repeticoes_iniciais = {}
+    for line in poema_lines:
+        first = line.split()[0].strip("“”\"'()[]{}.,;:!?…-").lower() if line.split() else ""
+        if first:
+            repeticoes_iniciais[first] = repeticoes_iniciais.get(first, 0) + 1
+    repetido = next((k for k, v in repeticoes_iniciais.items() if v >= 2), None)
+
+    p_options = []
+
+    p_options.append(
+        random.choice([
+            f"Formalmente, o poema se apresenta em **{qtd_linhas} linhas** distribuídas em **{blocos} bloco{'s' if blocos != 1 else ''}**, e esse desenho já participa do sentido antes mesmo de qualquer interpretação.",
+            f"A forma visível do poema importa desde o primeiro olhar: **{qtd_linhas} linhas** e **{blocos} bloco{'s' if blocos != 1 else ''}** organizam a leitura como arquitetura, não como mero suporte.",
+            f"O desenho do poema já impõe um modo de leitura: **{qtd_linhas} linhas** repartidas em **{blocos} bloco{'s' if blocos != 1 else ''}**, com distribuição que pesa no andamento do texto.",
+        ])
+    )
+
+    if curtas or longas:
+        p_options.append(
+            random.choice([
+                f"O ritmo visual nasce também da alternância entre versos mais curtos e mais longos. Aqui, há **{curtas} linhas breves** e **{longas} linhas mais extensas**, o que evita monotonia e regula o fôlego da leitura.",
+                f"A composição trabalha com diferença de extensão entre os versos: **{curtas} linhas breves** convivem com **{longas} linhas mais largas**, e isso dá pulsação ao conjunto.",
+                f"O andamento formal se deixa notar na medida dos versos: linhas breves contra linhas mais amplas criam variação de fôlego e impedem um desenho uniforme.",
+            ])
+        )
+
+    if repetido:
+        p_options.append(
+            random.choice([
+                f"A repetição inicial de **“{repetido}”** ajuda a firmar a ossatura do poema. Formalmente, esse retorno cria eixo, insistência e reconhecimento.",
+                f"Há uma recorrência visível no início de certos versos com **“{repetido}”**. Essa repetição não é só verbal: ela organiza o desenho e dá unidade ao texto.",
+                f"O retorno de **“{repetido}”** em posição inicial atua como marca formal de coesão. O poema se reconhece também por essa insistência.",
+            ])
+        )
+
+    if reticencias or perguntas:
+        mark = reticencias[0] if reticencias else perguntas[0]
+        p_options.append(
+            random.choice([
+                f"No plano formal, **“{mark}”** chama atenção porque a pontuação deixa de ser acessória e passa a desenhar o andamento do poema.",
+                f"A pontuação em **“{mark}”** pesa formalmente: ela interfere no tempo de leitura e na forma como o verso se oferece ao olhar e à escuta.",
+                f"Há um uso visível de pontuação em **“{mark}”** que participa do desenho do texto e modula o seu ritmo externo.",
+            ])
+        )
+
+    fecho = poema_lines[-1]
+    p_options.append(
+        random.choice([
+            f"O encerramento em **“{fecho}”** pesa formalmente porque funciona como linha de recolhimento: ali o poema decide a última forma do seu impulso.",
+            f"No fecho, **“{fecho}”** não apenas conclui: ele dá ao poema sua última configuração formal, como se a arquitetura inteira convergisse para essa linha.",
+            f"A linha final — **“{fecho}”** — vale também como solução formal do poema: é nela que o desenho se fecha, se dobra ou se reabre.",
+        ])
+    )
+
+    p_options.append(
+        random.choice([
+            "A leitura formal não procura resumir o poema, mas observar como extensão, blocos, ritmo, repetição, pontuação e fecho compõem a sua arquitetura.",
+            "O que interessa aqui é a forma em operação: como o poema distribui linhas, pausas, repetições e fechamento para construir presença.",
+            "A análise formal se concentra no desenho do texto: a maneira como ele ocupa a página, regula o ritmo e organiza o próprio aparecimento.",
+        ])
+    )
+
+    # choose 4-5 paragraphs and randomize order
+    import random
+    count = min(len(p_options), random.randint(4, min(5, len(p_options))))
+    chosen = p_options[:]
+    random.shuffle(chosen)
+    chosen = chosen[:count]
+    return "  \n\n".join(chosen)
 
 def render_cia_stage(curr_ypoema):
     """Renderiza a análise da CIA; na Sintática, mantém o anexo comparativo. Na Sintética, entrega só a leitura."""
@@ -931,6 +1032,9 @@ def render_cia_stage(curr_ypoema):
         content = f"""{analysis_html}
             <div class='cia-stage-sep'><strong>Análise da análise</strong></div>
             {analysis_free_html}"""
+    elif mood == "Formal":
+        analysis_html = _to_html_block(build_cia_analysis_formal(curr_ypoema))
+        content = analysis_html
     else:
         analysis_html = _to_html_block("Este mood ainda não entrou em operação na CIA.")
         content = analysis_html
@@ -975,6 +1079,7 @@ def render_cia_sidebar():
         CIA_MOODS,
         index=CIA_MOODS.index(current_mood),
         key="cia_mood_dropdown",
+        label_visibility="collapsed",
     )
     st.session_state.cia_mood = selected_mood
 
