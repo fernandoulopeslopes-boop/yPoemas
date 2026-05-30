@@ -664,8 +664,18 @@ def build_cia_header():
     return "<br>".join(body_parts)
 
 
+def _cia_first_token(line):
+    token = line.strip().split(" ")[0] if line.strip() else ""
+    return token.strip("“”\"'()[]{}.,;:!?…-").lower()
+
+
+def _cia_first_two_tokens(line):
+    parts = [p.strip("“”\"'()[]{}.,;:!?…-").lower() for p in line.strip().split()[:2]]
+    return " ".join([p for p in parts if p])
+
+
 def build_cia_analysis(curr_ypoema):
-    """CIA v1: leitura sintática em operação."""
+    """CIA v.1: primeira leitura sintática real no palco."""
     raw_parts = [part.strip() for part in curr_ypoema.replace("<br/>", "<br>").split("<br>")]
     lines = [part for part in raw_parts if part]
     poema_lines = lines[1:] if len(lines) > 1 else []
@@ -673,15 +683,110 @@ def build_cia_analysis(curr_ypoema):
     qtd_palavras = sum(len(line.split()) for line in poema_lines)
 
     mood = st.session_state.get("cia_mood", CIA_MOODS[0])
-    tema = st.session_state.get("tema", "")
+
+    if mood != "Sintática":
+        return "Este mood ainda não entrou em operação na CIA."
+
+    if not poema_lines:
+        return "**requer apuração manual**"
 
     body = []
-    body.append(f"Mood ativo: **{mood}**")
-    body.append(f"Tema em foco: **{tema}**")
-    body.append("")
-    body.append(f"Leitura sintática inicial: o poema em foco se organiza em **{qtd_linhas} linhas** e **{qtd_palavras} palavras**.")
-    body.append("")
-    body.append("")
+    achados = 0
+
+    perguntas = [line for line in poema_lines if "?" in line]
+    if perguntas:
+        body.append(
+            f"Em **“{perguntas[0]}”** há **interrogação**. A frase abre o poema para a incerteza, para a provocação ou para a espera de resposta, em vez de afirmar de saída."
+        )
+        achados += 1
+
+    reticencias = [line for line in poema_lines if "..." in line or "…" in line]
+    if reticencias:
+        body.append(
+            f"As **reticências** de **“{reticencias[0]}”** funcionam como **suspensão sintática**: o verso segura o fechamento e deixa o sentido reverberando além da linha."
+        )
+        achados += 1
+
+    incisos = [line for line in poema_lines if "(" in line or ")" in line]
+    if incisos:
+        body.append(
+            f"O verso **“{incisos[0]}”** entra como **inciso parentético**. Ele desloca a frase principal sem quebrar o poema e altera a respiração da leitura."
+        )
+        achados += 1
+
+    first_tokens = {}
+    first_two = {}
+    for line in poema_lines:
+        t1 = _cia_first_token(line)
+        t2 = _cia_first_two_tokens(line)
+        if t1:
+            first_tokens.setdefault(t1, []).append(line)
+        if t2:
+            first_two.setdefault(t2, []).append(line)
+
+    parallel_key = next((k for k, v in first_two.items() if len(v) >= 2 and len(k.split()) == 2), None)
+    anafora_key = next((k for k, v in first_tokens.items() if len(v) >= 2), None)
+
+    if parallel_key:
+        exemplos = first_two[parallel_key][:2]
+        body.append(
+            f"Há **paralelismo sintático** entre **“{exemplos[0]}”** e **“{exemplos[1]}”**. A estrutura reaparece quase no mesmo molde e cria cadência com reforço de sentido."
+        )
+        achados += 1
+    elif anafora_key:
+        exemplos = first_tokens[anafora_key][:2]
+        body.append(
+            f"A repetição inicial de **“{exemplos[0]}”** e **“{exemplos[1]}”** produz **anáfora**. O poema insiste no mesmo arranque frasal para firmar seu movimento."
+        )
+        achados += 1
+
+    enumeracoes = [line for line in poema_lines if line.count(",") >= 2]
+    if enumeracoes:
+        body.append(
+            f"Em **“{enumeracoes[0]}”** aparece **enumeração**. O acúmulo de termos organiza o pensamento por justaposição e expande o campo semântico do verso."
+        )
+        achados += 1
+
+    subordinadas = [line for line in poema_lines if re.search(r"\b(se|quando|embora|porque|que)\b", line.lower())]
+    coordenadas = [line for line in poema_lines if re.search(r"\b(e|ou|mas)\b", line.lower()) and "," in line]
+
+    if subordinadas:
+        body.append(
+            f"Em **“{subordinadas[0]}”** há **subordinação** visível. A frase depende de condição, tempo ou explicação para avançar, e isso articula o andamento do texto."
+        )
+        achados += 1
+    elif coordenadas:
+        body.append(
+            f"Em **“{coordenadas[0]}”** há **coordenação** explícita. Os segmentos se articulam sem perder autonomia e o verso ganha soma ou contraste."
+        )
+        achados += 1
+
+    cortes = []
+    for i, line in enumerate(poema_lines[:-1]):
+        nxt = poema_lines[i + 1]
+        if line and line[-1] not in ".?!:;…)" and (nxt[:1].islower() or len(line.split()) <= 4):
+            cortes.append((line, nxt))
+    if cortes:
+        l1, l2 = cortes[0]
+        body.append(
+            f"Há **quebra entre verso e frase** no corte entre **“{l1}”** e **“{l2}”**. A sintaxe atravessa o fim do verso e empurra a leitura para diante."
+        )
+        achados += 1
+
+    if poema_lines:
+        fecho = poema_lines[-1]
+        if achados >= 1:
+            body.append(
+                f"O fecho em **“{fecho}”** merece atenção porque concentra o último deslocamento do poema. Mesmo quando a figura central aparece antes, é ali que a leitura recolhe ou reabre o que vinha sendo armado."
+            )
+
+    if achados == 0:
+        return "**requer apuração manual**"
+
+    body.append(
+        f"Nesta leitura, a Sintática não resume o poema: ela nomeia o que aparece com nitidez e lê o efeito dessas escolhas na construção do sentido."
+    )
+
     return "  \n".join(body)
 
 
