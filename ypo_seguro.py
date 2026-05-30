@@ -984,7 +984,7 @@ def build_cia_analysis_formal(curr_ypoema):
 
     p_options.append(
         random.choice([
-            "A leitura formal não procura resumir o poema, mas observar como extensão, blocos, ritmo, repetição, pontuação e fecho compõem a sua arquitetura.",
+            "Aqui, extensão, blocos, ritmo, repetição, pontuação e fecho se articulam como arquitetura visível do poema: não são suporte neutro, mas parte ativa do seu modo de aparecer.",
             "O que interessa aqui é a forma em operação: como o poema distribui linhas, pausas, repetições e fechamento para construir presença.",
             "A análise formal se concentra no desenho do texto: a maneira como ele ocupa a página, regula o ritmo e organiza o próprio aparecimento.",
         ])
