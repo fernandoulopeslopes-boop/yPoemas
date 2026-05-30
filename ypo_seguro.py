@@ -1199,11 +1199,11 @@ def render_cia_sidebar():
     if current_mood not in CIA_MOODS:
         current_mood = CIA_MOODS[0]
 
-    selected_mood = st.sidebar.selectbox(
+    selected_mood = st.sidebar.radio(
         "mood",
         CIA_MOODS,
         index=CIA_MOODS.index(current_mood),
-        key="cia_mood_dropdown",
+        key="cia_mood_radio",
         label_visibility="collapsed",
     )
     st.session_state.cia_mood = selected_mood
