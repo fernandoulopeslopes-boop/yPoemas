@@ -1456,8 +1456,8 @@ def draw_sidebar_panel_buttons(chosen_id):
         if st.button("CIA", key="sidebar_panel_cia", use_container_width=True):
             st.session_state["sidebar_panel"] = "CIA"
 
-    if st.session_state.get("sidebar_panel", "Machina") == "Machina":
-        show_icons()
+    #if st.session_state.get("sidebar_panel", "Machina") == "Machina":
+    show_icons()
 
 
 def _coerce_take(value, temas_list):
@@ -2729,7 +2729,7 @@ def main():
         with st.sidebar:
             st.image("./images/" + magy)
 
-        show_icons()
+        #show_icons()
 
         if chosen_id == "2":
             draw_sidebar_panel_buttons(chosen_id)
