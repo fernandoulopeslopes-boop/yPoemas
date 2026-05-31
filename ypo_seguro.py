@@ -612,7 +612,7 @@ FONTES_MACHINA = [
 
 CIA_WORD_1 = ["Informação", "Invenção", "Imaginação", "Imagética", "Injeção"]
 CIA_WORD_2 = ["Analítica", "Artificial", "Analógica", "Afetiva", "Adicional", "Ampliada", "Avançada", "Acadêmica"]
-CIA_MOODS = ["Sintática", "Sintética", "Formal", "Resumida", "Completa", ]
+CIA_MOODS = ["Sintática", "Sintética", "Resumida", "Completa"]
 
 
 def ensure_cia_name(force=False):
@@ -656,6 +656,12 @@ def build_cia_header():
     parts = [part.strip() for part in header.replace("<br/>", "<br>").split("<br>")]
     body_parts = [part for part in parts[1:] if part] if len(parts) > 1 else [part for part in parts if part]
     return "<br>".join(body_parts)
+
+
+def build_cia_stage_title():
+    """Título objetivo da análise em foco."""
+    mood = st.session_state.get("cia_mood", "Sintática")
+    return f"Análise {mood}"
 
 
 def _cia_first_token(line):
@@ -1230,7 +1236,7 @@ def render_cia_stage(curr_ypoema):
         f"<div class='cia-stage-box' style='margin-top:{cia_offset}px;'>",
         unsafe_allow_html=True,
     )
-    write_ypoema(build_cia_header(), None)
+    st.markdown(f"**{build_cia_stage_title()}**")
     st.markdown("&nbsp;", unsafe_allow_html=True)
 
     if mood == "Sintética":
@@ -1242,8 +1248,8 @@ def render_cia_stage(curr_ypoema):
         content = f"""{analysis_html}
             <div class='cia-stage-sep'><strong>Análise da análise</strong></div>
             {analysis_free_html}"""
-    elif mood == "Formal":
-        analysis_html = _to_html_block(build_cia_analysis_formal(curr_ypoema))
+    elif mood == "Sintética":
+        analysis_html = _to_html_block(build_cia_analysis_sintetica(curr_ypoema))
         content = analysis_html
     elif mood == "Resumida":
         analysis_html = _to_html_block(build_cia_analysis_resumida(curr_ypoema))
@@ -1283,22 +1289,20 @@ def render_cia_stage(curr_ypoema):
 def render_cia_sidebar():
     """Centro de Controle da Chave, exclusivo de yPoemas."""
     ensure_cia_name()
-    st.sidebar.markdown("### CIA")
-    st.sidebar.caption(st.session_state.get("cia_name", "Centro de Informação Analítica"))
-
     current_mood = st.session_state.get("cia_mood", CIA_MOODS[0])
     if current_mood not in CIA_MOODS:
         current_mood = CIA_MOODS[0]
+        st.session_state.cia_mood = current_mood
 
-    selected_mood = st.sidebar.radio(
-        "mood",
-        CIA_MOODS,
-        index=CIA_MOODS.index(current_mood),
-        key="cia_mood_radio",
-        label_visibility="collapsed",
-    )
-    st.session_state.cia_mood = selected_mood
-
+    rows = [(0, 1), (2, 3)]
+    for left_idx, right_idx in rows:
+        col_left, col_right = st.sidebar.columns(2)
+        with col_left:
+            if st.button(CIA_MOODS[left_idx], key=f"cia_mood_btn_{left_idx}", use_container_width=True):
+                st.session_state.cia_mood = CIA_MOODS[left_idx]
+        with col_right:
+            if st.button(CIA_MOODS[right_idx], key=f"cia_mood_btn_{right_idx}", use_container_width=True):
+                st.session_state.cia_mood = CIA_MOODS[right_idx]
 
 def draw_sidebar_panel_buttons(chosen_id):
     """Alterna entre Machina e CIA com botões horizontais, apenas em yPoemas."""
