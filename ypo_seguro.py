@@ -2584,7 +2584,7 @@ def main():
                     stx.TabBarItemData(id=1, title="mini", description=""),
                     stx.TabBarItemData(id=2, title="yPoemas", description=""),
                     stx.TabBarItemData(id=3, title="eureka", description=""),
-                    stx.TabBarItemData(id=4, title="off-mach", description=""),
+                    stx.TabBarItemData(id=4, title="off-machina", description=""),
                     stx.TabBarItemData(id=5, title="about", description=""),
                 ],
                 default=2,
