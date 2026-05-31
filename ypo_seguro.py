@@ -59,8 +59,8 @@ VOICES_EDGE_TTS = {
     "es": "es-ES-AlvaroNeural",
     "fr": "fr-FR-HenriNeural",
     "it": "it-IT-DiegoNeural",
-    "en": "en-GB-RyanNeural",
-    "en": "en-US-GuyNeural",
+    "en-GB": "en-GB-RyanNeural",  # antes era "en"
+    "en-US": "en-US-GuyNeural",   # antes era "en" duplicado
     "gl": "gl-ES-RoiNeural",
     "eu": "eu-ES-AnderNeural",
     "de": "de-DE-ConradNeural",
