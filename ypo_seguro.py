@@ -261,6 +261,17 @@ def apply_styles():
 
         [data-testid="stSidebar"] > div:first-child {
             background-color: #eef6fb !important;
+            padding-top: 0 !important;
+        }
+
+        [data-testid="stSidebar"] [data-testid="stSidebarUserContent"] {
+            padding-top: 0 !important;
+            margin-top: -0.65rem !important;
+        }
+
+        [data-testid="stSidebar"] .block-container {
+            padding-top: 0 !important;
+            margin-top: 0 !important;
         }
 
         [data-testid="stSidebar"] .stButton button {
@@ -274,11 +285,17 @@ def apply_styles():
         
         /* Sidebar :: respiro vertical entre controles */
         [data-testid="stSidebar"] div[data-testid="stVerticalBlock"] {
-            gap: 0.85rem !important;
+            gap: 0.55rem !important;
         }
 
         [data-testid="stSidebar"] div[data-testid="stElementContainer"] {
-            margin-bottom: 0.12rem !important;
+            margin-bottom: 0.04rem !important;
+        }
+
+        [data-testid="stSidebar"] .stSelectbox,
+        [data-testid="stSidebar"] .stRadio {
+            margin-top: 0 !important;
+            margin-bottom: 0 !important;
         }
 
         
@@ -2589,7 +2606,7 @@ def main():
         with st.sidebar:
             st.image("./images/" + magy)
 
-        # show_icons()
+        show_icons()
 
         if chosen_id == "2":
             draw_sidebar_panel_buttons(chosen_id)
