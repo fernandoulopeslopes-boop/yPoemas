@@ -108,7 +108,7 @@ IDIOMAS_OFICIAIS = [
 # -----------------------------------------------------------------------------
 st.set_page_config(
     page_title="a máquina de fazer Poesia - yPoemas",
-    page_icon=":star:",
+    page_icon=":bulb:",
     layout="wide",
     initial_sidebar_state="auto",
 )
@@ -691,6 +691,17 @@ def _cia_first_two_tokens(line):
     return " ".join([p for p in parts if p])
 
 
+def _cia_is_attribution_line(line):
+    stripped = line.strip()
+    if not stripped:
+        return False
+    if stripped.startswith("(") and stripped.endswith(")"):
+        return True
+    if stripped.startswith("（") and stripped.endswith("）"):
+        return True
+    return False
+
+
 def build_machina_reading(poema_lines, used_lines=None, avoid_fecho=False):
     """Pequena leitura viva do texto, sem repetir logo de saída versos já usados em outros blocos."""
     if not poema_lines:
@@ -1105,7 +1116,7 @@ def build_cia_analysis_formal(curr_ypoema):
 
 
 def build_cia_analysis_resumida(curr_ypoema):
-    """Leitura resumida: diz o essencial com clareza, sem alongar a análise."""
+    """Mapa sintático ordenado: figura → trecho, seguindo a ocorrência no texto."""
     raw_parts = [part.strip() for part in curr_ypoema.replace("<br/>", "<br>").split("<br>")]
     lines = [part for part in raw_parts if part]
     poema_lines = lines[1:] if len(lines) > 1 else []
@@ -1113,51 +1124,78 @@ def build_cia_analysis_resumida(curr_ypoema):
     if not poema_lines:
         return "**requer apuração manual**"
 
-    import random
+    valid_lines = [line for line in poema_lines if not _cia_is_attribution_line(line)]
+    if not valid_lines:
+        return "**requer apuração manual**"
 
-    abertura = poema_lines[0]
-    fecho = poema_lines[-1]
-    meio = poema_lines[len(poema_lines) // 2]
-    destaque = next((line for line in poema_lines if "..." in line or "?" in line or "," in line), meio)
+    entries = []
 
-    p1 = random.choice([
-        f"Desde **“{abertura}”**, o poema arma um campo de sentido concentrado e conduz a leitura sem dispersão.",
-        f"A entrada em **“{abertura}”** já define o tom do poema e organiza o caminho do que vem depois.",
-        f"Logo em **“{abertura}”**, o texto fixa um impulso central e mantém a leitura sob essa pressão inicial.",
-        f"**“{abertura}”** já basta para abrir o eixo do poema e indicar a direção do seu movimento.",
-    ])
+    # Mapa por linha, de cima para baixo
+    first_tokens = {}
+    first_two = {}
+    for line in valid_lines:
+        t1 = _cia_first_token(line)
+        t2 = _cia_first_two_tokens(line)
+        if t1:
+            first_tokens.setdefault(t1, []).append(line)
+        if t2:
+            first_two.setdefault(t2, []).append(line)
 
-    p2 = random.choice([
-        f"No centro, **“{destaque}”** ajuda a perceber onde o poema ganha densidade e faz sua linguagem pesar mais.",
-        f"Em **“{destaque}”**, o poema concentra parte importante da sua força e mostra com mais nitidez o que está em jogo.",
-        f"Há um ponto de maior pressão em **“{destaque}”**, onde o texto parece condensar melhor sua energia.",
-        f"**“{destaque}”** marca um núcleo do poema: ali a leitura se adensa e o texto se define melhor.",
-    ])
+    parallel_pairs = set()
+    for key, vals in first_two.items():
+        if len(vals) >= 2 and len(key.split()) == 2:
+            parallel_pairs.add((vals[0], vals[1]))
 
-    p3 = random.choice([
-        f"O fecho em **“{fecho}”** recolhe esse movimento e devolve o poema em forma mais concentrada.",
-        f"Em **“{fecho}”**, o poema condensa o essencial e fecha a leitura com mais nitidez.",
-        f"**“{fecho}”** funciona como recolhimento do que vinha sendo armado e dá ao texto sua última pressão.",
-        f"No verso final — **“{fecho}”** — o poema concentra o que vinha espalhado e fecha com mais força.",
-    ])
+    anafora_lines = set()
+    for key, vals in first_tokens.items():
+        if len(vals) >= 2:
+            for line in vals:
+                anafora_lines.add(line)
 
-    p4 = random.choice([
-        "O resultado é um poema breve, mas não leve: ele diz pouco em extensão e mais em concentração.",
-        "O texto trabalha por condensação: avança sem excessos e deixa um resto de eco depois do fim.",
-        "Há economia de meios, mas não pobreza de efeito: o poema se sustenta pela concentração do que escolhe dizer.",
-        "A força do poema está em sua contenção: ele evita espalhar-se e ganha densidade por isso.",
-    ])
+    for idx, line in enumerate(valid_lines):
+        lower = line.lower()
 
-    used_lines = {abertura, destaque}
-    if fecho in used_lines:
-        machina = build_machina_reading(poema_lines, used_lines=used_lines)
-        body = [p1, p2, p4, machina]
-    else:
-        machina = build_machina_reading(poema_lines, used_lines=used_lines, avoid_fecho=True)
-        body = [p1, p2, p3, machina, p4]
-    body = [b for b in body if b]
-    random.shuffle(body)
-    return "  \n\n".join(body)
+        if "?" in line:
+            entries.append((idx, f"**interrogação** → “{line}”"))
+
+        if "..." in line or "…" in line:
+            entries.append((idx, f"**suspensão sintática** → “{line}”"))
+
+        if line.count(",") >= 2:
+            entries.append((idx, f"**enumeração** → “{line}”"))
+
+        if re.search(r"\b(se|quando|embora|porque|que)\b", lower):
+            entries.append((idx, f"**subordinação** → “{line}”"))
+        elif re.search(r"\b(e|ou|mas)\b", lower) and "," in line:
+            entries.append((idx, f"**coordenação** → “{line}”"))
+
+        if line in anafora_lines:
+            entries.append((idx, f"**anáfora / repetição inicial** → “{line}”"))
+
+        for l1, l2 in parallel_pairs:
+            if line == l1 or line == l2:
+                entries.append((idx, f"**paralelismo sintático** → “{line}”"))
+                break
+
+        if idx < len(valid_lines) - 1:
+            nxt = valid_lines[idx + 1]
+            if line and line[-1] not in ".?!:;…)" and (nxt[:1].islower() or len(line.split()) <= 4):
+                entries.append((idx, f"**frase em continuação** → “{line} / {nxt}”"))
+
+    # Ordenação pela ocorrência no texto, preservando entradas distintas
+    if not entries:
+        return "**requer apuração manual**"
+
+    entries.sort(key=lambda item: item[0])
+
+    seen = set()
+    ordered = []
+    for _, item in entries:
+        if item not in seen:
+            seen.add(item)
+            ordered.append(item)
+
+    return "  \n".join(ordered)
 
 
 def build_cia_analysis_completa(curr_ypoema):
