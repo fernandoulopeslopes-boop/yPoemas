@@ -1456,8 +1456,8 @@ def draw_sidebar_panel_buttons(chosen_id):
         if st.button("CIA", key="sidebar_panel_cia", use_container_width=True):
             st.session_state["sidebar_panel"] = "CIA"
 
-    #if st.session_state.get("sidebar_panel", "Machina") == "Machina":
-    show_icons()
+    if st.session_state.get("sidebar_panel", "Machina") == "Machina":
+        show_icons()
 
 
 def _coerce_take(value, temas_list):
@@ -2779,7 +2779,6 @@ def main():
                     f"<div class='machina-rodape-palco'>{status}</div>",
                     unsafe_allow_html=True,
                 )
-
 
 
 if __name__ == "__main__":
