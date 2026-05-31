@@ -1126,7 +1126,7 @@ def build_cia_analysis_formal(curr_ypoema):
 
 
 def build_cia_analysis_resumida(curr_ypoema):
-    """Mapa ordenado da construção do texto: figuras e trechos, de cima para baixo."""
+    """Mapa ordenado do texto: uma figura principal por trecho, de cima para baixo, fiel ao que realmente aparece."""
     raw_parts = [part.strip() for part in curr_ypoema.replace("<br/>", "<br>").split("<br>")]
     lines = [part for part in raw_parts if part]
     poema_lines = lines[1:] if len(lines) > 1 else []
@@ -1165,64 +1165,95 @@ def build_cia_analysis_resumida(curr_ypoema):
         if len(vals) >= 2:
             anafora_lines.update(vals)
 
-    blocks = []
+    priority = [
+        "interrogação",
+        "suspensão sintática",
+        "enumeração",
+        "subordinação",
+        "contraste",
+        "coordenação",
+        "paralelismo sintático",
+        "anáfora / repetição inicial",
+        "aliteração",
+        "assonância",
+        "encadeamento sintático",
+        "fecho de recusa",
+        "síntese valorativa",
+        "síntese imagética",
+    ]
 
-    for line in valid_lines:
+    entries = []
+
+    for idx, line in enumerate(valid_lines):
         lower = line.lower()
-        figures = []
-
-        if "?" in line:
-            figures.append("interrogação")
-
-        if "..." in line or "…" in line:
-            figures.append("suspensão sintática")
-
-        if line.count(",") >= 2:
-            figures.append("enumeração")
-
-        if re.search(r"(se|quando|embora|porque|que)", lower):
-            figures.append("subordinação")
-        elif re.search(r"(e|ou|mas)", lower) and "," in line:
-            figures.append("coordenação")
-
-        if line in parallel_lines:
-            figures.append("paralelismo sintático")
-
-        if line in anafora_lines:
-            figures.append("anáfora / repetição inicial")
-
         stripped_words = [w.strip("“”\"'()[]{}.,;:!?…-") for w in line.split() if w.strip("“”\"'()[]{}.,;:!?…-")]
         initials = [w[0].lower() for w in stripped_words if w]
         vowels = ["".join(ch for ch in w.lower() if ch in "aeiouáéíóúâêôãõà")[:1] for w in stripped_words if w]
 
+        candidates = []
+
+        if "?" in line:
+            candidates.append("interrogação")
+
+        if "..." in line or "…" in line:
+            candidates.append("suspensão sintática")
+
+        if line.count(",") >= 2:
+            candidates.append("enumeração")
+
+        if re.search(r"\b(se|quando|embora|porque|que)\b", lower):
+            candidates.append("subordinação")
+
+        if re.search(r"\b(mas|porém|contudo|todavia)\b", lower):
+            candidates.append("contraste")
+        elif re.search(r"\b(e|ou)\b", lower) and "," in line:
+            candidates.append("coordenação")
+
+        if line in parallel_lines:
+            candidates.append("paralelismo sintático")
+
+        if line in anafora_lines:
+            candidates.append("anáfora / repetição inicial")
+
         if len(initials) >= 3 and len(set(initials[: min(4, len(initials))])) == 1:
-            figures.append("aliteração")
+            candidates.append("aliteração")
+
         if len(vowels) >= 3:
             vv = [v for v in vowels if v]
             if vv and len(set(vv[: min(4, len(vv))])) == 1:
-                figures.append("assonância")
+                candidates.append("assonância")
 
-        if len(stripped_words) >= 3 and len(line.split()) <= 5 and line[-1] in ".:":
-            figures.append("síntese imagética")
-        if re.search(r"entre", lower) or re.search(r"junto-me", lower):
-            figures.append("encadeamento sintático")
+        if re.search(r"\b(entre|junto-me|junto)\b", lower):
+            candidates.append("encadeamento sintático")
 
-        if not figures:
+        if idx == len(valid_lines) - 1 and re.search(r"\b(esconjuro|recuso|nego|rejeito)\b", lower):
+            candidates.append("fecho de recusa")
+
+        if re.search(r"\b(sorte|bem|feliz|fontes|verdade|ouro|áureas|medidas)\b", lower) and line.endswith("."):
+            candidates.append("síntese valorativa")
+
+        if len(stripped_words) >= 3 and len(stripped_words) <= 6 and line.endswith((".", ":")):
+            candidates.append("síntese imagética")
+
+        if not candidates:
             continue
 
-        seen_figs = []
-        for fig in figures:
-            if fig not in seen_figs:
-                seen_figs.append(fig)
+        figura = next((item for item in priority if item in candidates), candidates[0])
+        entries.append((idx, figura, _cia_clip(line)))
 
-        block_lines = [f"**{fig}**" for fig in seen_figs]
-        block_lines.append(f"“{_cia_clip(line)}”")
-        blocks.append("  \n".join(block_lines))
-
-    if not blocks:
+    if not entries:
         return "**requer apuração manual**"
 
-    return "  \n\n".join(blocks)
+    seen = set()
+    ordered_blocks = []
+    for _, figura, trecho in entries:
+        key = (figura, trecho)
+        if key in seen:
+            continue
+        seen.add(key)
+        ordered_blocks.append(f"**{figura}**  \n“{trecho}”")
+
+    return "  \n\n".join(ordered_blocks)
 
 
 def build_cia_analysis_completa(curr_ypoema):
