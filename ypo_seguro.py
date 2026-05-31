@@ -108,7 +108,7 @@ IDIOMAS_OFICIAIS = [
 # -----------------------------------------------------------------------------
 st.set_page_config(
     page_title="a máquina de fazer Poesia - yPoemas",
-    page_icon=":bulb:",
+    page_icon=":star:",
     layout="wide",
     initial_sidebar_state="auto",
 )
@@ -1116,7 +1116,7 @@ def build_cia_analysis_formal(curr_ypoema):
 
 
 def build_cia_analysis_resumida(curr_ypoema):
-    """Mapa sintático ordenado: figura → trecho, seguindo a ocorrência no texto."""
+    """Mapa sintático ordenado: figura e trecho, em sequência de leitura e com máxima legibilidade."""
     raw_parts = [part.strip() for part in curr_ypoema.replace("<br/>", "<br>").split("<br>")]
     lines = [part for part in raw_parts if part]
     poema_lines = lines[1:] if len(lines) > 1 else []
@@ -1130,7 +1130,6 @@ def build_cia_analysis_resumida(curr_ypoema):
 
     entries = []
 
-    # Mapa por linha, de cima para baixo
     first_tokens = {}
     first_two = {}
     for line in valid_lines:
@@ -1156,46 +1155,42 @@ def build_cia_analysis_resumida(curr_ypoema):
         lower = line.lower()
 
         if "?" in line:
-            entries.append((idx, f"**interrogação** → “{line}”"))
+            entries.append((idx, "interrogação", line))
 
         if "..." in line or "…" in line:
-            entries.append((idx, f"**suspensão sintática** → “{line}”"))
+            entries.append((idx, "suspensão sintática", line))
 
         if line.count(",") >= 2:
-            entries.append((idx, f"**enumeração** → “{line}”"))
+            entries.append((idx, "enumeração", line))
 
         if re.search(r"\b(se|quando|embora|porque|que)\b", lower):
-            entries.append((idx, f"**subordinação** → “{line}”"))
+            entries.append((idx, "subordinação", line))
         elif re.search(r"\b(e|ou|mas)\b", lower) and "," in line:
-            entries.append((idx, f"**coordenação** → “{line}”"))
+            entries.append((idx, "coordenação", line))
 
         if line in anafora_lines:
-            entries.append((idx, f"**anáfora / repetição inicial** → “{line}”"))
+            entries.append((idx, "anáfora / repetição inicial", line))
 
         for l1, l2 in parallel_pairs:
             if line == l1 or line == l2:
-                entries.append((idx, f"**paralelismo sintático** → “{line}”"))
+                entries.append((idx, "paralelismo sintático", line))
                 break
 
-        if idx < len(valid_lines) - 1:
-            nxt = valid_lines[idx + 1]
-            if line and line[-1] not in ".?!:;…)" and (nxt[:1].islower() or len(line.split()) <= 4):
-                entries.append((idx, f"**frase em continuação** → “{line} / {nxt}”"))
-
-    # Ordenação pela ocorrência no texto, preservando entradas distintas
     if not entries:
         return "**requer apuração manual**"
 
     entries.sort(key=lambda item: item[0])
 
     seen = set()
-    ordered = []
-    for _, item in entries:
-        if item not in seen:
-            seen.add(item)
-            ordered.append(item)
+    ordered_blocks = []
+    for _, figura, trecho in entries:
+        key = (figura, trecho)
+        if key in seen:
+            continue
+        seen.add(key)
+        ordered_blocks.append(f"**{figura}**  \n“{trecho}”")
 
-    return "  \n".join(ordered)
+    return "  \n\n".join(ordered_blocks)
 
 
 def build_cia_analysis_completa(curr_ypoema):
