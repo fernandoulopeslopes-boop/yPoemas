@@ -703,10 +703,10 @@ def _cia_is_attribution_line(line):
 
 
 def _cia_clip(line, limit=45):
-    """Corta trechos longos para caber melhor na coluna da CIA."""
+    """Normaliza espaços e corta trechos longos para caber melhor na coluna da CIA."""
     if not line:
         return ""
-    clean = " ".join(str(line).split())
+    clean = re.sub(r"\s+", " ", str(line)).strip()
     if len(clean) <= limit:
         return clean
     return clean[: limit - 3].rstrip() + "..."
@@ -1126,7 +1126,7 @@ def build_cia_analysis_formal(curr_ypoema):
 
 
 def build_cia_analysis_resumida(curr_ypoema):
-    """Mapa ordenado do texto: uma figura principal por trecho, de cima para baixo, fiel ao que realmente aparece."""
+    """Mapa ordenado do texto: figura principal + trecho, fiel ao que realmente aparece no poema."""
     raw_parts = [part.strip() for part in curr_ypoema.replace("<br/>", "<br>").split("<br>")]
     lines = [part for part in raw_parts if part]
     poema_lines = lines[1:] if len(lines) > 1 else []
@@ -1165,23 +1165,6 @@ def build_cia_analysis_resumida(curr_ypoema):
         if len(vals) >= 2:
             anafora_lines.update(vals)
 
-    priority = [
-        "interrogação",
-        "suspensão sintática",
-        "enumeração",
-        "subordinação",
-        "contraste",
-        "coordenação",
-        "paralelismo sintático",
-        "anáfora / repetição inicial",
-        "aliteração",
-        "assonância",
-        "encadeamento sintático",
-        "fecho de recusa",
-        "síntese valorativa",
-        "síntese imagética",
-    ]
-
     entries = []
 
     for idx, line in enumerate(valid_lines):
@@ -1192,12 +1175,7 @@ def build_cia_analysis_resumida(curr_ypoema):
 
         candidates = []
 
-        if "?" in line:
-            candidates.append("interrogação")
-
-        if "..." in line or "…" in line:
-            candidates.append("suspensão sintática")
-
+        # Figuras / forças que ajudam a ler melhor o texto
         if line.count(",") >= 2:
             candidates.append("enumeração")
 
@@ -1215,14 +1193,6 @@ def build_cia_analysis_resumida(curr_ypoema):
         if line in anafora_lines:
             candidates.append("anáfora / repetição inicial")
 
-        if len(initials) >= 3 and len(set(initials[: min(4, len(initials))])) == 1:
-            candidates.append("aliteração")
-
-        if len(vowels) >= 3:
-            vv = [v for v in vowels if v]
-            if vv and len(set(vv[: min(4, len(vv))])) == 1:
-                candidates.append("assonância")
-
         if re.search(r"\b(entre|junto-me|junto)\b", lower):
             candidates.append("encadeamento sintático")
 
@@ -1232,11 +1202,44 @@ def build_cia_analysis_resumida(curr_ypoema):
         if re.search(r"\b(sorte|bem|feliz|fontes|verdade|ouro|áureas|medidas)\b", lower) and line.endswith("."):
             candidates.append("síntese valorativa")
 
-        if len(stripped_words) >= 3 and len(stripped_words) <= 6 and line.endswith((".", ":")):
+        if len(stripped_words) >= 3 and len(stripped_words) <= 7 and line.endswith((".", ":", "...", "…")):
             candidates.append("síntese imagética")
+
+        # Eixo do som
+        if len(initials) >= 3 and len(set(initials[: min(4, len(initials))])) == 1:
+            candidates.append("aliteração")
+
+        if len(vowels) >= 3:
+            vv = [v for v in vowels if v]
+            if vv and len(set(vv[: min(4, len(vv))])) == 1:
+                candidates.append("assonância")
+
+        # Pontuação vem por último: importante, mas não pode mandar sozinha
+        if "?" in line:
+            candidates.append("interrogação")
+
+        if "..." in line or "…" in line:
+            candidates.append("suspensão sintática")
 
         if not candidates:
             continue
+
+        priority = [
+            "enumeração",
+            "subordinação",
+            "contraste",
+            "paralelismo sintático",
+            "anáfora / repetição inicial",
+            "encadeamento sintático",
+            "fecho de recusa",
+            "síntese valorativa",
+            "síntese imagética",
+            "aliteração",
+            "assonância",
+            "interrogação",
+            "suspensão sintática",
+            "coordenação",
+        ]
 
         figura = next((item for item in priority if item in candidates), candidates[0])
         entries.append((idx, figura, _cia_clip(line)))
@@ -1244,9 +1247,31 @@ def build_cia_analysis_resumida(curr_ypoema):
     if not entries:
         return "**requer apuração manual**"
 
+    # Comprime sequências óbvias demais do mesmo fenômeno
+    compressed = []
+    i = 0
+    while i < len(entries):
+        idx, figura, trecho = entries[i]
+        j = i + 1
+        group = [trecho]
+        while j < len(entries) and entries[j][1] == figura and entries[j][0] == entries[j-1][0] + 1:
+            group.append(entries[j][2])
+            j += 1
+
+        if figura == "interrogação" and len(group) >= 3:
+            joined = _cia_clip(group[0] + " … " + group[-1], limit=45)
+            compressed.append(("cadeia interrogativa", joined))
+        elif figura == "suspensão sintática" and len(group) >= 2:
+            joined = _cia_clip(group[0] + " … " + group[-1], limit=45)
+            compressed.append(("suspensão recorrente", joined))
+        else:
+            for trecho_item in group:
+                compressed.append((figura, trecho_item))
+        i = j
+
     seen = set()
     ordered_blocks = []
-    for _, figura, trecho in entries:
+    for figura, trecho in compressed:
         key = (figura, trecho)
         if key in seen:
             continue
