@@ -85,6 +85,7 @@ IDIOMAS_OFICIAIS = [
     ("Latin", "Latim", "la", "poly_la.txt"),
     ("Esperanto", "Esperanto", "eo", "poly_eo.txt"),    
     ("English", "Inglaterra", "en", "poly_en.txt"),
+    ("English", "U.S.A.", "en", "poly_us.txt"),
     ("Deutsch", "Alemanha", "de", "poly_de.txt"),
     ("Català", "Catalunha", "ca", "poly_ca.txt"),
     ("Euskara", "Basco", "eu", "poly_eu.txt"),
