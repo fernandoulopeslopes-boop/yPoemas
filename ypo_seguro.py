@@ -2589,7 +2589,7 @@ def main():
         with st.sidebar:
             st.image("./images/" + magy)
 
-        show_icons()
+        # show_icons()
 
         if chosen_id == "2":
             draw_sidebar_panel_buttons(chosen_id)
