@@ -668,57 +668,78 @@ def _cia_first_two_tokens(line):
     return " ".join([p for p in parts if p])
 
 
-def build_machina_reading(poema_lines):
-    """Pequena leitura viva do texto, anterior ao mood, para não deixar passar o inusitado."""
+def build_machina_reading(poema_lines, used_lines=None, avoid_fecho=False):
+    """Pequena leitura viva do texto, sem repetir logo de saída versos já usados em outros blocos."""
     if not poema_lines:
         return ""
 
+    used_lines = set(used_lines or [])
     current_year = datetime.now().year
 
-    # 1) datas futuras / anos deslocados
+    def available(lines, skip_fecho=False):
+        pool = []
+        fecho = poema_lines[-1] if poema_lines else ""
+        for line in lines:
+            if not line or line in used_lines:
+                continue
+            if skip_fecho and line == fecho:
+                continue
+            pool.append(line)
+        return pool
+
+    future_candidates = []
     for line in poema_lines:
         years = re.findall(r"\b(1[89]\d{2}|20\d{2}|21\d{2})\b", line)
-        future_years = [y for y in years if int(y) > current_year]
-        if future_years:
-            return random.choice([
-                f"Há um deslocamento particularmente vivo em **“{line}”**: a data futura abre o poema para um tempo que ainda não chegou, mas já pesa dentro dele.",
-                f"Em **“{line}”**, a projeção para o futuro não passa despercebida. Ela empurra o poema para fora do presente e lhe dá uma ousadia temporal muito própria.",
-                f"A data futura em **“{line}”** muda o regime de leitura do texto: o poema deixa de falar só do agora e passa a respirar adiante.",
-            ])
+        if any(int(y) > current_year for y in years):
+            future_candidates.append(line)
+    pool = available(future_candidates, skip_fecho=avoid_fecho)
+    if pool:
+        line = random.choice(pool)
+        return random.choice([
+            f"Há um deslocamento particularmente vivo em **“{line}”**: a data futura abre o poema para um tempo que ainda não chegou, mas já pesa dentro dele.",
+            f"Em **“{line}”**, a projeção para o futuro não passa despercebida. Ela empurra o poema para fora do presente e lhe dá uma ousadia temporal muito própria.",
+            f"A data futura em **“{line}”** muda o regime de leitura do texto: o poema deixa de falar só do agora e passa a respirar adiante.",
+        ])
 
-    # 2) referência ou nome inesperado dentro do verso
+    ref_candidates = []
     for line in poema_lines:
         words = line.split()
         if len(words) > 1:
             inner_caps = [w.strip("“”\"'()[]{}.,;:!?…-") for w in words[1:] if w[:1].isupper()]
             if inner_caps:
-                return random.choice([
-                    f"Há uma surpresa boa em **“{line}”**: a referência inesperada puxa o poema para fora do previsível e lhe dá um brilho próprio.",
-                    f"Em **“{line}”**, o texto ganha uma abertura particular. O nome ou referência que entra ali desloca o campo do poema e amplia a leitura.",
-                    f"Esse verso — **“{line}”** — chama atenção pela referência que carrega. Ela dá ao poema uma vida mais particular do que a leitura técnica, sozinha, daria conta de mostrar.",
-                ])
+                ref_candidates.append(line)
+    pool = available(ref_candidates, skip_fecho=avoid_fecho)
+    if pool:
+        line = random.choice(pool)
+        return random.choice([
+            f"Há uma surpresa boa em **“{line}”**: a referência inesperada puxa o poema para fora do previsível e lhe dá um brilho próprio.",
+            f"Em **“{line}”**, o texto ganha uma abertura particular. O nome ou referência que entra ali desloca o campo do poema e amplia a leitura.",
+            f"Esse verso — **“{line}”** — chama atenção pela referência que carrega. Ela dá ao poema uma vida mais particular do que a leitura técnica, sozinha, daria conta de mostrar.",
+        ])
 
-    # 3) imagem ou formulação fora da curva
     marked = [line for line in poema_lines if "..." in line or "?" in line or ":" in line or ";" in line]
-    if marked:
-        line = marked[0]
+    pool = available(marked, skip_fecho=avoid_fecho)
+    if pool:
+        line = random.choice(pool)
         return random.choice([
             f"Há algo de especialmente vivo em **“{line}”**. O verso foge do esperado e deixa uma impressão que não é só técnica.",
             f"**“{line}”** funciona como pequena pérola do texto: ali o poema parece ganhar uma temperatura própria, mais ousada ou mais inesperada.",
             f"Neste ponto — **“{line}”** — o poema oferece uma surpresa que vale por si mesma. É uma dessas linhas que pedem mais do que leitura mecânica.",
         ])
 
-    # 4) fecho particularmente feliz
-    fecho = poema_lines[-1]
-    return random.choice([
-        f"O fecho em **“{fecho}”** guarda uma qualidade difícil de reduzir a esquema. Há ali um resto de vida que ultrapassa a engrenagem da análise.",
-        f"Também o verso final — **“{fecho}”** — merece um olhar menos técnico: ele concentra uma beleza ou um estranhamento que o poema soube guardar para o fim.",
-        f"Em **“{fecho}”**, o poema deixa algo que não se esgota na análise. O verso final guarda um pequeno excesso de vida própria.",
-    ])
+    fecho_pool = available([poema_lines[-1]] if poema_lines else [])
+    if fecho_pool:
+        fecho = fecho_pool[0]
+        return random.choice([
+            f"O fecho em **“{fecho}”** guarda uma qualidade difícil de reduzir a esquema. Há ali um resto de vida que ultrapassa a engrenagem da análise.",
+            f"Também o verso final — **“{fecho}”** — merece um olhar menos técnico: ele concentra uma beleza ou um estranhamento que o poema soube guardar para o fim.",
+            f"Em **“{fecho}”**, o poema deixa algo que não se esgota na análise. O verso final guarda um pequeno excesso de vida própria.",
+        ])
 
+    return ""
 
 def build_cia_analysis(curr_ypoema):
-    """CIA v.1: leitura sintática real no palco, com ordem variável e injeção de 2 a 5 figuras."""
+    """Leitura sintática real no palco, com ordem variável, sem redundância interna e com 2 a 5 figuras."""
     raw_parts = [part.strip() for part in curr_ypoema.replace("<br/>", "<br>").split("<br>")]
     lines = [part for part in raw_parts if part]
     poema_lines = lines[1:] if len(lines) > 1 else []
@@ -735,21 +756,17 @@ def build_cia_analysis(curr_ypoema):
 
     perguntas = [line for line in poema_lines if "?" in line]
     if perguntas:
-        candidates.append(
-            f"Em **“{perguntas[0]}”** há **interrogação**. A frase abre o poema para a incerteza, para a provocação ou para a espera de resposta, em vez de afirmar de saída."
-        )
+        line = perguntas[0]
+        candidates.append({"lines": [line], "text":
+            f"Em **“{line}”** há **interrogação**. A frase abre o poema para a incerteza, para a provocação ou para a espera de resposta, em vez de afirmar de saída."
+        })
 
     reticencias = [line for line in poema_lines if "..." in line or "…" in line]
     if reticencias:
-        candidates.append(
-            f"As **reticências** de **“{reticencias[0]}”** funcionam como **suspensão sintática**: o verso retém o fechamento e espalha o sentido para além da linha."
-        )
-
-    incisos = [line for line in poema_lines if "(" in line or ")" in line]
-    if incisos:
-        candidates.append(
-            f"O verso **“{incisos[0]}”** entra como **inciso parentético**. Ele desvia a frase principal sem quebrar o andamento e altera a respiração do texto."
-        )
+        line = reticencias[0]
+        candidates.append({"lines": [line], "text":
+            f"As **reticências** de **“{line}”** funcionam como **suspensão sintática**: o verso retém o fechamento e espalha o sentido para além da linha."
+        })
 
     first_tokens = {}
     first_two = {}
@@ -766,32 +783,35 @@ def build_cia_analysis(curr_ypoema):
 
     if parallel_key:
         exemplos = first_two[parallel_key][:2]
-        candidates.append(
+        candidates.append({"lines": exemplos, "text":
             f"Há **paralelismo sintático** entre **“{exemplos[0]}”** e **“{exemplos[1]}”**. A estrutura reaparece em molde próximo e cria cadência com reforço de sentido."
-        )
+        })
     elif anafora_key:
         exemplos = first_tokens[anafora_key][:2]
-        candidates.append(
+        candidates.append({"lines": exemplos, "text":
             f"A repetição inicial de **“{exemplos[0]}”** e **“{exemplos[1]}”** produz **anáfora**. O poema insiste no mesmo arranque frasal para firmar seu movimento."
-        )
+        })
 
     enumeracoes = [line for line in poema_lines if line.count(",") >= 2]
     if enumeracoes:
-        candidates.append(
-            f"Em **“{enumeracoes[0]}”** aparece **enumeração**. O acúmulo de termos organiza o pensamento por justaposição e amplia o campo semântico do verso."
-        )
+        line = enumeracoes[0]
+        candidates.append({"lines": [line], "text":
+            f"Em **“{line}”** aparece **enumeração**. O acúmulo de termos organiza o pensamento por justaposição e amplia o campo semântico do verso."
+        })
 
     subordinadas = [line for line in poema_lines if re.search(r"\b(se|quando|embora|porque|que)\b", line.lower())]
     coordenadas = [line for line in poema_lines if re.search(r"\b(e|ou|mas)\b", line.lower()) and "," in line]
 
     if subordinadas:
-        candidates.append(
-            f"Em **“{subordinadas[0]}”** há **subordinação** visível. A frase depende de condição, tempo ou explicação para avançar, e isso articula o andamento do texto."
-        )
+        line = subordinadas[0]
+        candidates.append({"lines": [line], "text":
+            f"Em **“{line}”** há **subordinação** visível. A frase depende de condição, tempo ou explicação para avançar, e isso articula o andamento do texto."
+        })
     elif coordenadas:
-        candidates.append(
-            f"Em **“{coordenadas[0]}”** há **coordenação** explícita. Os segmentos se articulam sem perder autonomia e o verso ganha soma ou contraste."
-        )
+        line = coordenadas[0]
+        candidates.append({"lines": [line], "text":
+            f"Em **“{line}”** há **coordenação** explícita. Os segmentos se articulam sem perder autonomia e o verso ganha soma ou contraste."
+        })
 
     cortes = []
     for i, line in enumerate(poema_lines[:-1]):
@@ -800,51 +820,59 @@ def build_cia_analysis(curr_ypoema):
             cortes.append((line, nxt))
     if cortes:
         l1, l2 = cortes[0]
-        candidates.append(
-            f"Há **quebra entre verso e frase** no corte entre **“{l1}”** e **“{l2}”**. A sintaxe atravessa o fim do verso e empurra a leitura para diante."
-        )
+        candidates.append({"lines": [l1, l2], "text":
+            f"O verso se encerra em **“{l1}”**, mas a frase prossegue em **“{l2}”**. A sintaxe atravessa a linha e empurra a leitura para diante."
+        })
 
     if not candidates:
         st.session_state.tema_last_analise = tema
         return "**requer apuração manual**"
 
     repeated_theme = tema == st.session_state.get("tema_last_analise", "")
-
     max_figures = min(5, len(candidates))
     min_figures = min(2, len(candidates))
     target_count = max_figures if max_figures <= 3 else random.randint(min_figures, max_figures)
 
-    chosen = candidates[:]
-    random.shuffle(chosen)
-    chosen = chosen[:target_count]
+    shuffled = candidates[:]
+    random.shuffle(shuffled)
+    chosen_meta = shuffled[:target_count]
+
+    used_lines = set()
+    body = []
+    for item in chosen_meta:
+        body.append(item["text"])
+        used_lines.update(item["lines"])
+
+    machina_block = build_machina_reading(poema_lines, used_lines=used_lines, avoid_fecho=True)
+    if machina_block:
+        body.append(machina_block)
 
     fecho = poema_lines[-1]
-    fecho_variants = [
-        f"O fecho em **“{fecho}”** merece atenção porque concentra um último deslocamento do poema. Mesmo quando a figura central aparece antes, é ali que a leitura recolhe ou reabre o que ficou em tensão.",
-        f"A última linha — **“{fecho}”** — pesa no conjunto porque ali o poema recolhe parte da pressão sintática que vinha distribuindo antes.",
-        f"No fecho, **“{fecho}”** concentra ou desvia aquilo que a sintaxe foi armando ao longo das linhas.",
-        f"Convém não perder de vista o fecho em **“{fecho}”**: a linha final recompõe, desloca ou reaperta a tensão do poema.",
-        f"O verso final — **“{fecho}”** — não entra como sobra. Ele recolhe uma energia sintática que vinha se distribuindo nas linhas anteriores.",
-        f"Também o fechamento em **“{fecho}”** pede leitura: é ali que o poema decide se recolhe, desloca ou reabre o seu impulso.",
-    ]
-    closing_variants = [
+    if fecho not in used_lines:
+        body.append(random.choice([
+            f"O fecho em **“{fecho}”** merece atenção porque concentra um último deslocamento do poema. Mesmo quando a figura central aparece antes, é ali que a leitura recolhe ou reabre o que ficou em tensão.",
+            f"A última linha — **“{fecho}”** — pesa no conjunto porque ali o poema recolhe parte da pressão sintática que vinha distribuindo antes.",
+            f"No fecho, **“{fecho}”** concentra ou desvia aquilo que a sintaxe foi armando ao longo das linhas.",
+            f"Convém não perder de vista o fecho em **“{fecho}”**: a linha final recompõe, desloca ou reaperta a tensão do poema.",
+            f"O verso final — **“{fecho}”** — não entra como sobra. Ele recolhe uma energia sintática que vinha se distribuindo nas linhas anteriores.",
+            f"Também o fechamento em **“{fecho}”** pede leitura: é ali que o poema decide se recolhe, desloca ou reabre o seu impulso.",
+        ]))
+
+    body.append(random.choice([
         "A Sintática não resume o poema: ela nomeia o que aparece com nitidez e lê o efeito dessas escolhas na construção do sentido.",
         "Aqui a leitura sintática não procura resumir o poema, mas reconhecer figuras visíveis e medir o que elas fazem no andamento do texto.",
         "O foco desta leitura não é o tema em abstrato, mas a engrenagem verbal do poema: nomear o que aparece e ler o efeito de cada escolha.",
         "A leitura sintática se firma menos no assunto do poema do que nas formas que o fazem avançar, hesitar, insistir ou se fechar.",
         "O que interessa aqui não é resumir o poema, mas acompanhar como a construção verbal distribui força, pausa, dependência e corte.",
         "Esta leitura se ocupa menos de explicar o poema do que de perceber como a sintaxe sustenta, torce ou desloca o seu sentido.",
-    ]
+    ]))
 
-    body = chosen + [random.choice(fecho_variants), build_machina_reading(poema_lines), random.choice(closing_variants)]
-    body = [b for b in body if b]
     random.shuffle(body)
     if repeated_theme and len(body) > 2:
         random.shuffle(body)
 
     st.session_state.tema_last_analise = tema
     return "  \n\n".join(body)
-
 
 def build_cia_analysis_free(curr_ypoema):
     """Leitura livre do mesmo texto em foco, sem usar o manual desta leitura."""
@@ -877,7 +905,7 @@ def build_cia_analysis_free(curr_ypoema):
         f"Quando chega a **“{fecho}”**, o poema muda de temperatura. O verso final concentra uma última força e redefine o que ficou ecoando.",
     ]
     p4_options = [
-        "Nesta leitura paralela, o objetivo não é provar nada, mas perceber como o poema vive mesmo antes de ser enquadrado por uma régua analítica.",
+        "O objetivo aqui não é provar nada, mas perceber como o poema vive mesmo antes de ser enquadrado por uma régua analítica.",
         "Esta leitura paralela serve de contraste, para mostrar o que o texto sustenta mesmo sem apoio prévio.",
         "O interesse desta leitura está justamente aí: ver o que o poema oferece quando é lido como acontecimento único, sem memória anterior de tema.",
     ]
@@ -936,7 +964,9 @@ def build_cia_analysis_sintetica(curr_ypoema):
         "Trata-se de reduzir a dispersão e fazer aparecer o núcleo do poema sem apagar a sua vibração.",
     ])
 
-    body = [p1, p2, p3, build_machina_reading(poema_lines), p4]
+    used_lines = {abertura, destaque}
+    machina = build_machina_reading(poema_lines, used_lines=used_lines, avoid_fecho=True)
+    body = [p1, p2, p3, machina, p4]
     body = [b for b in body if b]
     random.shuffle(body)
     return "  \n\n".join(body)
@@ -1040,7 +1070,12 @@ def build_cia_analysis_formal(curr_ypoema):
     chosen = p_options[:]
     random.shuffle(chosen)
     chosen = chosen[:count]
-    chosen.append(build_machina_reading(poema_lines))
+    used_lines = {mark} if (reticencias or perguntas) else set()
+    if repetido:
+        used_lines.add(repetido)
+    machina = build_machina_reading(poema_lines, used_lines=used_lines, avoid_fecho=True)
+    if machina:
+        chosen.append(machina)
     chosen = [c for c in chosen if c]
     random.shuffle(chosen)
     return "  \n\n".join(chosen)
@@ -1090,7 +1125,14 @@ def build_cia_analysis_resumida(curr_ypoema):
         "A força do poema está em sua contenção: ele evita espalhar-se e ganha densidade por isso.",
     ])
 
-    body = [p1, p2, p3, p4]
+    used_lines = {abertura, destaque}
+    if fecho in used_lines:
+        machina = build_machina_reading(poema_lines, used_lines=used_lines)
+        body = [p1, p2, p4, machina]
+    else:
+        machina = build_machina_reading(poema_lines, used_lines=used_lines, avoid_fecho=True)
+        body = [p1, p2, p3, machina, p4]
+    body = [b for b in body if b]
     random.shuffle(body)
     return "  \n\n".join(body)
 
@@ -1159,7 +1201,7 @@ def build_cia_analysis_completa(curr_ypoema):
         random.choice(formas),
         random.choice(amplificacoes),
         random.choice(fechos),
-        build_machina_reading(poema_lines),
+        build_machina_reading(poema_lines, used_lines={abertura, destaque}, avoid_fecho=True),
         random.choice(conclusoes),
     ]
     body = [b for b in body if b]
