@@ -2500,7 +2500,7 @@ def main():
     if st.session_state.get("sidebar_panel", "Machina") == "Machina":
         show_icons()
     close_gramado()
-    ##$ st.sidebar.state = True
+    ##$ st.sidebar.state = True 
 
 
 if __name__ == "__main__":
