@@ -1396,10 +1396,13 @@ def _prepare_theme_widget():
 
 
 def _on_palco_book_change():
-    choice = st.session_state.get("palco_book_select", st.session_state.book)
-    if choice != st.session_state.book:
+    current_book = st.session_state.get("book", BOOKS_LIST[0] if BOOKS_LIST else "poemas")
+    choice = st.session_state.get("palco_book_select", current_book)
+    if choice != current_book:
         st.session_state.book = choice
         st.session_state.take = 0
+    elif "book" not in st.session_state:
+        st.session_state.book = current_book
     _sync_book_theme_state()
 
 
