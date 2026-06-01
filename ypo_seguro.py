@@ -110,7 +110,7 @@ st.set_page_config(
     page_title="a máquina de fazer Poesia - yPoemas",
     page_icon=":star:",
     layout="wide",
-    initial_sidebar_state="auto",
+    initial_sidebar_state="expanded",
 )
 
 
@@ -254,9 +254,28 @@ def apply_styles():
         }
 
         
-        /* Sidebar :: Centro de Controle */
+        /* Sidebar :: Centro de Controle fixo */
+        [data-testid="collapsedControl"],
+        [data-testid="stSidebarCollapseButton"],
+        [data-testid="stSidebar"] [data-testid="stSidebarCollapseButton"] {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+
         [data-testid="stSidebar"] {
             background-color: #eef6fb !important;
+        }
+
+        [data-testid="stSidebar"] .machina-sidebar-title {
+            text-align: center;
+            font-family: 'Trebuchet MS';
+            font-size: 1.04rem;
+            font-weight: 600;
+            letter-spacing: 0.025rem;
+            margin: -0.15rem 0 0.25rem 0;
+            opacity: 0.88;
         }
 
         [data-testid="stSidebar"] > div:first-child {
@@ -615,7 +634,6 @@ CIA_WORD_2 = ["Analítica", "Artificial", "Analógica", "Afetiva", "Adicional", 
 CIA_MOODS = [
     "Sintática",
     "Sintética",
-    "Formal",
     "Resumida",
     "Rápida",
     "Completa",
@@ -999,6 +1017,43 @@ def build_cia_analysis_formal(curr_ypoema):
     return "  \n\n".join(chosen)
 
 
+def build_cia_analysis_rapida(curr_ypoema):
+    """Leitura rápida: primeiro clarão do poema, breve e diferente da resumida."""
+    raw_parts = [part.strip() for part in curr_ypoema.replace("<br/>", "<br>").split("<br>")]
+    lines = [part for part in raw_parts if part]
+    poema_lines = lines[1:] if len(lines) > 1 else []
+
+    if not poema_lines:
+        return "**requer apuração manual**"
+
+    abertura = poema_lines[0]
+    fecho = poema_lines[-1]
+    meio = poema_lines[len(poema_lines) // 2]
+    destaque = next((line for line in poema_lines if "..." in line or "…" in line or "?" in line or "," in line), meio)
+
+    p1 = random.choice([
+        f"Primeiro clarão: **“{abertura}”** já entrega o pulso do poema e chama o leitor para dentro sem pedir explicação prévia.",
+        f"A entrada em **“{abertura}”** funciona como impacto inicial: curta ou longa, ela já decide a temperatura da leitura.",
+        f"Lido de passagem, o poema começa a se abrir em **“{abertura}”**. É ali que o leitor recebe o primeiro sinal de direção.",
+    ])
+
+    p2 = random.choice([
+        f"O ponto que mais acende a leitura é **“{destaque}”**: o verso concentra uma pequena pressão de imagem, corte ou pensamento.",
+        f"Em **“{destaque}”**, o texto mostra seu gesto mais imediato. Não é resumo: é lampejo de entrada.",
+        f"A leitura rápida se fixa em **“{destaque}”** porque ali o poema parece piscar com mais força para o leitor.",
+    ])
+
+    p3 = random.choice([
+        f"O fecho em **“{fecho}”** deixa o último eco. A leitura rápida não fecha o poema: apenas aponta onde ele continua vibrando.",
+        f"Quando chega a **“{fecho}”**, o poema deixa uma impressão final que vale mais como eco do que como conclusão.",
+        f"A última linha — **“{fecho}”** — funciona como sinal de saída, mas ainda carrega o rastro do percurso.",
+    ])
+
+    body = [p1, p2, p3]
+    random.shuffle(body)
+    return "  \n\n".join(body)
+
+
 def build_cia_analysis_resumida(curr_ypoema):
     """Leitura resumida: diz o essencial com clareza, sem alongar a análise."""
     raw_parts = [part.strip() for part in curr_ypoema.replace("<br/>", "<br>").split("<br>")]
@@ -1151,11 +1206,11 @@ def render_cia_stage(curr_ypoema):
         content = f"""{analysis_html}
             <div class='cia-stage-sep'><strong>Análise da análise</strong></div>
             {analysis_free_html}"""
-    elif mood == "Formal":
-        analysis_html = _to_html_block(build_cia_analysis_formal(curr_ypoema))
-        content = analysis_html
     elif mood == "Resumida":
         analysis_html = _to_html_block(build_cia_analysis_resumida(curr_ypoema))
+        content = analysis_html
+    elif mood == "Rápida":
+        analysis_html = _to_html_block(build_cia_analysis_rapida(curr_ypoema))
         content = analysis_html
     elif mood == "Completa":
         analysis_html = _to_html_block(build_cia_analysis_completa(curr_ypoema))
@@ -2453,7 +2508,8 @@ def page_abouts():
 
 
 def render_sidebar_for_page(chosen_id):
-    """Renderiza a sidebar da Machina sem a lista de livros."""
+    """Renderiza o Centro de Controle fixo para o leitor."""
+    st.sidebar.markdown("<div class='machina-sidebar-title'>Centro de Controle</div>", unsafe_allow_html=True)
     pick_lang()
     pick_stage_font()
     draw_check_buttons()
@@ -2544,8 +2600,5 @@ def main():
                     f"<div class='machina-rodape-palco'>{status}</div>",
                     unsafe_allow_html=True,
                 )
-
-
-
 if __name__ == "__main__":
     main()
