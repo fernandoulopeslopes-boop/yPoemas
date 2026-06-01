@@ -1386,6 +1386,10 @@ def page_ypoemas():
 
             write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
 
+            if st.session_state.get("sidebar_panel", "Machina") == "CIA":
+                st.markdown("&nbsp;", unsafe_allow_html=True)
+                render_cia_stage(curr_ypoema)
+
             if manu:
                 LOGO_TEXTO = load_info(st.session_state.tema)
                 if st.session_state.lang != "pt":  # translate if idioma <> pt
@@ -2365,11 +2369,13 @@ def render_cia_stage(curr_ypoema):
 
 
 def render_cia_sidebar():
-    """Centro de Controle da Chave, exclusivo de yPoemas."""
+    """Centro de Controle da CIA, exclusivo de yPoemas."""
     current_mood = st.session_state.get("cia_mood", CIA_MOODS[0])
     if current_mood not in CIA_MOODS:
         current_mood = CIA_MOODS[0]
         st.session_state.cia_mood = current_mood
+
+    st.sidebar.markdown(f"**CIA** · {current_mood}")
 
     rows = [(0, 1), (2, 3)]
     for left_idx, right_idx in rows:
