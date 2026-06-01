@@ -293,7 +293,7 @@ def apply_styles():
         
         /* Sidebar :: respiro vertical entre controles */
         [data-testid="stSidebar"] div[data-testid="stVerticalBlock"] {
-            gap: 0.85rem !important;
+            gap: 0.56rem !important;
         }
 
         [data-testid="stSidebar"] div[data-testid="stElementContainer"] {
@@ -635,7 +635,6 @@ CIA_MOODS = [
     "Sintática",
     "Sintética",
     "Resumida",
-    "Rápida",
     "Completa",
 ]
 
@@ -1209,9 +1208,6 @@ def render_cia_stage(curr_ypoema):
     elif mood == "Resumida":
         analysis_html = _to_html_block(build_cia_analysis_resumida(curr_ypoema))
         content = analysis_html
-    elif mood == "Rápida":
-        analysis_html = _to_html_block(build_cia_analysis_rapida(curr_ypoema))
-        content = analysis_html
     elif mood == "Completa":
         analysis_html = _to_html_block(build_cia_analysis_completa(curr_ypoema))
         content = analysis_html
@@ -1245,11 +1241,7 @@ def render_cia_stage(curr_ypoema):
 
 
 def render_cia_sidebar():
-    """Centro de Controle da Chave, exclusivo de yPoemas."""
-    ensure_cia_name()
-    st.sidebar.markdown("### CIA")
-    st.sidebar.caption(st.session_state.get("cia_name", "Centro de Informação Analítica"))
-
+    """Renderiza apenas os moods da CIA, sem cabeçalho redundante."""
     current_mood = st.session_state.get("cia_mood", CIA_MOODS[0])
     if current_mood not in CIA_MOODS:
         current_mood = CIA_MOODS[0]
@@ -2508,8 +2500,7 @@ def page_abouts():
 
 
 def render_sidebar_for_page(chosen_id):
-    """Renderiza o Centro de Controle fixo para o leitor."""
-    st.sidebar.markdown("<div class='machina-sidebar-title'>Centro de Controle</div>", unsafe_allow_html=True)
+    """Renderiza os controles fixos do leitor."""
     pick_lang()
     pick_stage_font()
     draw_check_buttons()
@@ -2600,5 +2591,6 @@ def main():
                     f"<div class='machina-rodape-palco'>{status}</div>",
                     unsafe_allow_html=True,
                 )
+
 if __name__ == "__main__":
     main()
