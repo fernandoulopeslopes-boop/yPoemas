@@ -1098,7 +1098,6 @@ def build_cia_analysis_resumida(curr_ypoema):
             "síntese imagética",
             "aliteração",
             "assonância",
-            "interrogação",
             "suspensão sintática",
             "coordenação",
         ]
@@ -1119,10 +1118,7 @@ def build_cia_analysis_resumida(curr_ypoema):
             group.append(entries[j][2])
             j += 1
 
-        if figura == "interrogação" and len(group) >= 3:
-            joined = _cia_clip(group[0] + " … " + group[-1], limit=45)
-            compressed.append(("cadeia interrogativa", joined))
-        elif figura == "suspensão sintática" and len(group) >= 2:
+        if figura == "suspensão sintática" and len(group) >= 2:
             joined = _cia_clip(group[0] + " … " + group[-1], limit=45)
             compressed.append(("suspensão recorrente", joined))
         else:
@@ -1279,7 +1275,7 @@ def render_cia_stage(curr_ypoema):
 
 
 def render_cia_sidebar():
-    """Centro de Controle da Chave, exclusivo de yPoemas."""
+    """Sidebar da CIA: apenas abertura curta e botões dos moods."""
     current_mood = st.session_state.get("cia_mood", CIA_MOODS[0])
     if current_mood not in CIA_MOODS:
         current_mood = CIA_MOODS[0]
@@ -1288,7 +1284,8 @@ def render_cia_sidebar():
     titulo, corpo = build_cia_abertura()
     st.sidebar.markdown(f"**{titulo}**")
     if corpo:
-        st.sidebar.markdown("  \n\n".join(corpo))
+        abertura_texto = "  \n\n".join(corpo)
+        st.sidebar.markdown(abertura_texto)
 
     rows = [(0, 1), (2, 3)]
     for left_idx, right_idx in rows:
