@@ -1275,17 +1275,11 @@ def render_cia_stage(curr_ypoema):
 
 
 def render_cia_sidebar():
-    """Sidebar da CIA: apenas abertura curta e botões dos moods."""
+    """Sidebar da CIA: apenas botões dos moods."""
     current_mood = st.session_state.get("cia_mood", CIA_MOODS[0])
     if current_mood not in CIA_MOODS:
         current_mood = CIA_MOODS[0]
         st.session_state.cia_mood = current_mood
-
-    titulo, corpo = build_cia_abertura()
-    st.sidebar.markdown(f"**{titulo}**")
-    if corpo:
-        abertura_texto = "  \n\n".join(corpo)
-        st.sidebar.markdown(abertura_texto)
 
     rows = [(0, 1), (2, 3)]
     for left_idx, right_idx in rows:
