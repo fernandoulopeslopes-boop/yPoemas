@@ -659,17 +659,26 @@ def machina_copy_button(copy_text, key):
             key=key,
             before_copy_label="copiar",
             after_copy_label="texto copiado !!",
+            help="use Ctrl V para colar...",
         )
     except TypeError:
         try:
-            st_copy_to_clipboard(safe_text, key=key)
+            st_copy_to_clipboard(
+                safe_text,
+                key=key,
+                before_copy_label="copiar",
+                after_copy_label="texto copiado !!",
+            )
         except TypeError:
             try:
-                st_copy_to_clipboard(safe_text)
+                st_copy_to_clipboard(safe_text, key=key)
+            except TypeError:
+                try:
+                    st_copy_to_clipboard(safe_text)
+                except Exception:
+                    st.caption("copiar indisponível")
             except Exception:
                 st.caption("copiar indisponível")
-        except Exception:
-            st.caption("copiar indisponível")
     except Exception:
         st.caption("copiar indisponível")
 
@@ -2095,5 +2104,7 @@ def main():
                     f"<div class='machina-rodape-palco'>{status}</div>",
                     unsafe_allow_html=True,
                 )
+
+
 if __name__ == "__main__":
     main()
