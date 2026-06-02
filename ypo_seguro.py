@@ -296,6 +296,18 @@ def apply_styles():
             min-width: 100% !important;
         }
 
+        [data-testid="stSidebar"] div[data-testid="stButton"] {
+            margin-top: -0.08rem !important;
+            margin-bottom: -0.08rem !important;
+        }
+
+        [data-testid="stSidebar"] .stButton button {
+            min-height: 2.05rem !important;
+            padding-top: 0.16rem !important;
+            padding-bottom: 0.16rem !important;
+        }
+
+
         
         /* Sidebar :: respiro vertical entre controles */
         [data-testid="stSidebar"] div[data-testid="stVerticalBlock"] {
@@ -1169,14 +1181,20 @@ def build_cia_analysis_completa(curr_ypoema):
     return _cia_join([abertura] + meio + [fecho])
 
 def render_cia_stage(curr_ypoema):
-    """Renderiza a análise da CIA; na Sintática, mantém o anexo comparativo. Na Sintética, entrega só a leitura."""
+    """Renderiza a análise da CIA; traduz o conteúdo quando o leitor troca de idioma."""
     cia_offset = int(st.session_state.get("cia_line0_offset_px", 0))
     cia_font = st.session_state.get("cia_font", "Trebuchet MS")
     cia_size = int(st.session_state.get("cia_size", 18))
     mood = st.session_state.get("cia_mood", CIA_MOODS[0])
 
+    def _translate_analysis(markdown_text):
+        clean = str(markdown_text).strip()
+        if st.session_state.lang == "pt" or not clean:
+            return clean
+        return translate(clean)
+
     def _to_html_block(markdown_text):
-        html = markdown_text
+        html = _translate_analysis(markdown_text)
         while "**" in html:
             html = html.replace("**", "<strong>", 1)
             html = html.replace("**", "</strong>", 1)
@@ -1199,8 +1217,9 @@ def render_cia_stage(curr_ypoema):
     elif mood == "Sintática":
         analysis_html = _to_html_block(build_cia_analysis(curr_ypoema))
         analysis_free_html = _to_html_block(build_cia_analysis_free(curr_ypoema))
+        outro_angulo = translate("Outro ângulo") if st.session_state.lang != "pt" else "Outro ângulo"
         content = f"""{analysis_html}
-            <div class='cia-stage-sep'><strong>Outro ângulo</strong></div>
+            <div class='cia-stage-sep'><strong>{outro_angulo}</strong></div>
             {analysis_free_html}"""
     elif mood == "Formal":
         analysis_html = _to_html_block(build_cia_analysis_formal(curr_ypoema))
@@ -1241,19 +1260,29 @@ def render_cia_stage(curr_ypoema):
 
 
 def render_cia_sidebar():
-    """Renderiza apenas os moods da CIA, sem cabeçalho redundante."""
+    """Renderiza os moods da CIA em desenho compacto 2x2 + centro."""
     current_mood = st.session_state.get("cia_mood", CIA_MOODS[0])
     if current_mood not in CIA_MOODS:
         current_mood = CIA_MOODS[0]
+        st.session_state.cia_mood = current_mood
 
-    selected_mood = st.sidebar.radio(
-        "mood",
-        CIA_MOODS,
-        index=CIA_MOODS.index(current_mood),
-        key="cia_mood_radio",
-        label_visibility="collapsed",
-    )
-    st.session_state.cia_mood = selected_mood
+    rows = [("Sintática", "Sintética"), ("Formal", "Reduzida")]
+    for left_mood, right_mood in rows:
+        col_left, col_right = st.sidebar.columns(2)
+        with col_left:
+            label = f"• {left_mood}" if current_mood == left_mood else left_mood
+            if st.button(label, key=f"cia_mood_btn_{left_mood}", use_container_width=True):
+                st.session_state.cia_mood = left_mood
+        with col_right:
+            label = f"• {right_mood}" if current_mood == right_mood else right_mood
+            if st.button(label, key=f"cia_mood_btn_{right_mood}", use_container_width=True):
+                st.session_state.cia_mood = right_mood
+
+    col_l, col_c, col_r = st.sidebar.columns([0.5, 1.0, 0.5])
+    with col_c:
+        label = "• Completa" if current_mood == "Completa" else "Completa"
+        if st.button(label, key="cia_mood_btn_Completa", use_container_width=True):
+            st.session_state.cia_mood = "Completa"
 
 
 def draw_sidebar_panel_buttons(chosen_id):
