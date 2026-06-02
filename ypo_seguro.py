@@ -453,7 +453,25 @@ def apply_styles():
             overflow-x: hidden;
             width: 100% !important;
             max-width: 100% !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
             box-sizing: border-box !important;
+        }
+
+        /* Palco e divider :: mesma largura visual */
+        .machina-divider-palco {
+            width: 100% !important;
+            max-width: 100% !important;
+            margin: 0.04rem auto 0.16rem auto !important;
+            padding: 0 !important;
+            box-sizing: border-box !important;
+        }
+
+        .machina-divider-palco hr {
+            width: 100% !important;
+            margin: 0 !important;
+            border: 0 !important;
+            border-top: 1px solid rgba(0,0,0,0.18) !important;
         }
 
         .machina-moldura-lateral {
@@ -1920,6 +1938,8 @@ def main():
             )
 
         chosen_id = str(chosen_id)
+
+        st.markdown("<div class='machina-divider-palco'><hr></div>", unsafe_allow_html=True)
 
         page_image_map = {
             "1": "img_mini.jpg",
