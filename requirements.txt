@@ -1,6 +1,7 @@
 streamlit
 streamlit-antd-components
 extra-streamlit-components
+st-copy-to-clipboard
 altair
 protobuf
 setuptools
