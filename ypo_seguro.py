@@ -39,7 +39,7 @@ ABOUTS_FILES = {
 }
 
 BOOKS_LIST = [
-    "todos os temas", "livro vivo", "poemas", "jocosos", "ensaios", "variações", 
+    "todos os temas", "livro vivo", "poemas", "jocosos", "ensaios", "variações",
     "metalinguagem", "sociais", "outros autores", "signos_fem", "signos_mas",
     "todos os signos",
 ]
@@ -83,7 +83,7 @@ IDIOMAS_OFICIAIS = [
     ("Italiano", "Itália", "it", "poly_it.txt"),
     ("Français", "França", "fr", "poly_fr.txt"),
     ("Latin", "Latim", "la", "poly_la.txt"),
-    ("Esperanto", "Esperanto", "eo", "poly_eo.txt"),    
+    ("Esperanto", "Esperanto", "eo", "poly_eo.txt"),
     ("English", "Inglaterra", "en", "poly_en.txt"),
     ("Deutsch", "Alemanha", "de", "poly_de.txt"),
     ("Català", "Catalunha", "ca", "poly_ca.txt"),
@@ -155,7 +155,7 @@ def apply_styles():
         <style>
         /*#MainMenu {visibility: hidden;}*/
         footer {visibility: hidden;}
-        
+
         /* Machina :: botões sem quebra de linha */
         div[data-testid="stButton"] button,
         div[data-testid="stButton"] button p {
@@ -253,7 +253,7 @@ def apply_styles():
             margin-top: 0rem;
         }
 
-        
+
         /* Sidebar :: Centro de Controle fixo */
         [data-testid="collapsedControl"],
         [data-testid="stSidebarCollapseButton"],
@@ -312,7 +312,6 @@ def apply_styles():
         }
 
 
-        
         /* Sidebar :: respiro vertical entre controles */
         [data-testid="stSidebar"] div[data-testid="stVerticalBlock"] {
             gap: 0.50rem !important;
@@ -322,7 +321,7 @@ def apply_styles():
             margin-bottom: 0.12rem !important;
         }
 
-        
+
         /* Território sem dono :: lista de páginas no topo, sem linha fantasma */
         iframe[title="extra_streamlit_components.TabBar.tab_bar"] {
             display: block !important;
@@ -368,7 +367,7 @@ def apply_styles():
             padding-right: 0.00rem !important;
         }
 
-        
+
         /* Centralização óptica dos títulos markdown */
         div[data-testid="stMarkdownContainer"] h1,
         div[data-testid="stMarkdownContainer"] h2,
@@ -1301,7 +1300,6 @@ def draw_sidebar_panel_buttons(chosen_id):
             st.session_state["sidebar_panel"] = "CIA"
 
 
-
 def _coerce_take(value, temas_list):
     """Converte diferentes formas de seleção de tema para índice inteiro válido."""
     if not temas_list:
@@ -1716,7 +1714,6 @@ def load_index():  # Load indexes numbers for all themes
     return index_list
 
 
-
 def load_lypo():  # Load last yPoema & replace '\n' with '<br>' for translator returned text
     lypo_text = ""
     lypo_user = "LYPO_" + IPAddres
@@ -1853,7 +1850,7 @@ def load_arts(nome_tema):  # Select image for arts
 ### eof: loaders
 ### bof: functions
 
-        
+
 def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
     if LOGO_IMAGE is None:
         st.markdown(
@@ -1884,7 +1881,7 @@ def talk(text):
 
     # Limpeza para a voz não ler tags
     text_clean = text.replace("<br>", " ").replace("< br>", "").replace("<br >", "").replace("<br/>", " ")
-    
+
     # Mapeamento de vozes neurais de alta qualidade
     selected_voice = VOICES_EDGE_TTS.get(st.session_state.lang, "pt-BR-AntonioNeural")
 
@@ -1903,7 +1900,7 @@ def talk(text):
         st.audio(audio_output, format="audio/mp3")
     except Exception as e:
         st.error(f"Erro na voz neural: {e}")
-        
+
 def say_number(tema):  # search index title for eureka
     analise = "nonono"
     indexes = load_index()
@@ -2492,7 +2489,6 @@ def page_off_machina():  # available off_machina_books
             talk(off_book_text)
 
 
-
 def load_about_md(title):
     """Carrega ABOUTs pelo padrão curatorial explícito.
 
@@ -2539,15 +2535,11 @@ def page_abouts():
 ### eof: pages
 
 
-
-
-
 def render_sidebar_for_page(chosen_id):
     """Renderiza os controles fixos do leitor."""
     pick_lang()
     pick_stage_font()
     draw_check_buttons()
-
 
 
 def main():
@@ -2633,7 +2625,6 @@ def main():
                     f"<div class='machina-rodape-palco'>{status}</div>",
                     unsafe_allow_html=True,
                 )
-
 
 
 if __name__ == "__main__":
