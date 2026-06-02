@@ -398,7 +398,7 @@ def apply_styles():
         .machina-gramado {
             background: #eef8ee;
             border-radius: 18px;
-            padding: 0.04rem 0.10rem 0.20rem 0.10rem;
+            padding: 0.04rem 0.04rem 0.20rem 0.04rem;
             min-height: 78vh;
             overflow-x: hidden;
             overflow-y: auto;
@@ -474,6 +474,44 @@ def apply_styles():
             margin: 0 !important;
             border: 0 !important;
             border-top: 1px solid rgba(0,0,0,0.18) !important;
+        }
+
+
+        /* Home again fino :: ajuste óptico da lista de páginas */
+        .machina-topo-regua {
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            transform: translateX(0.42rem);
+        }
+
+        .machina-topo-regua div[data-testid="stElementContainer"] {
+            width: 100% !important;
+            max-width: 100% !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            border: 0 !important;
+            box-shadow: none !important;
+        }
+
+        /* Home again fino :: elimina linha fantasma sob os botões */
+        .machina-divider-regua + div,
+        .machina-divider-regua + div[data-testid="stElementContainer"] {
+            border: 0 !important;
+            box-shadow: none !important;
+            outline: 0 !important;
+        }
+
+        div[data-testid="stHorizontalBlock"] {
+            border: 0 !important;
+            box-shadow: none !important;
+            outline: 0 !important;
+        }
+
+        div[data-testid="stHorizontalBlock"] button {
+            border-bottom: 0 !important;
+            box-shadow: none !important;
+            outline: 0 !important;
         }
 
 
