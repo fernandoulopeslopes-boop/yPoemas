@@ -44,7 +44,7 @@ BOOKS_LIST = [
 ]
 
 OFF_BOOKS_LIST = [
-    "a_torre_de_papel", "quase_que_eu_Poesia", "faz_de_conto", "um_romance",
+    "a_torre_de_papel", "quase_que_eu_Poesia", "faz_de_conto", "um_romance", "parafernália",
     "linguafiada", "livro_vivo", "desvoto", "ensaios", "urbano", "essencial", "secreto",
 ]
 
