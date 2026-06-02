@@ -184,7 +184,7 @@ def apply_styles():
             padding-right: 0.04rem;
             padding-left: 0.04rem;
             padding-bottom: 0rem;
-            max-width: 100%;
+            max-width: 100vw;
         }
         </style>
         """,
@@ -326,7 +326,7 @@ def apply_styles():
             display: block !important;
             width: 100% !important;
             max-width: 100% !important;
-            margin: -0.62rem auto 0 auto !important;
+            margin: -0.62rem 0 0 0 !important;
             padding: 0 !important;
             border: 0 !important;
             outline: 0 !important;
@@ -360,7 +360,7 @@ def apply_styles():
 
         /* Free Gramado :: liberar área útil real */
         section.main > div.block-container {
-            max-width: 100% !important;
+            max-width: 100vw !important;
             width: 100% !important;
             padding-left: 0.00rem !important;
             padding-right: 0.00rem !important;
@@ -391,14 +391,14 @@ def apply_styles():
             padding-left: 0.00rem !important;
             padding-right: 0.00rem !important;
             padding-bottom: 0.16rem !important;
-            max-width: 100% !important;
+            max-width: 100vw !important;
             width: 100% !important;
         }
 
         .machina-gramado {
             background: #eef8ee;
             border-radius: 18px;
-            padding: 0.04rem 0.04rem 0.20rem 0.04rem;
+            padding: 0.04rem 0.10rem 0.20rem 0.10rem;
             min-height: 78vh;
             overflow-x: hidden;
             overflow-y: auto;
@@ -450,70 +450,8 @@ def apply_styles():
             overflow-x: hidden;
             width: 100% !important;
             max-width: 100% !important;
-            margin-left: auto !important;
-            margin-right: auto !important;
             box-sizing: border-box !important;
         }
-
-        /* Volta pra casa :: mesma régua para páginas, divider e palco */
-        .machina-topo-regua {
-            width: 100% !important;
-            max-width: 100% !important;
-            margin-left: auto !important;
-            margin-right: auto !important;
-            box-sizing: border-box !important;
-        }
-
-        .machina-divider-regua {
-            width: 100% !important;
-            max-width: 100% !important;
-            margin: 0.05rem auto 0.18rem auto !important;
-        }
-
-        .machina-divider-regua hr {
-            margin: 0 !important;
-            border: 0 !important;
-            border-top: 1px solid rgba(0,0,0,0.18) !important;
-        }
-
-
-        /* Home again fino :: ajuste óptico da lista de páginas */
-        .machina-topo-regua {
-            display: flex !important;
-            justify-content: center !important;
-            align-items: center !important;
-            transform: translateX(0.42rem);
-        }
-
-        .machina-topo-regua div[data-testid="stElementContainer"] {
-            width: 100% !important;
-            max-width: 100% !important;
-            margin-left: auto !important;
-            margin-right: auto !important;
-            border: 0 !important;
-            box-shadow: none !important;
-        }
-
-        /* Home again fino :: elimina linha fantasma sob os botões */
-        .machina-divider-regua + div,
-        .machina-divider-regua + div[data-testid="stElementContainer"] {
-            border: 0 !important;
-            box-shadow: none !important;
-            outline: 0 !important;
-        }
-
-        div[data-testid="stHorizontalBlock"] {
-            border: 0 !important;
-            box-shadow: none !important;
-            outline: 0 !important;
-        }
-
-        div[data-testid="stHorizontalBlock"] button {
-            border-bottom: 0 !important;
-            box-shadow: none !important;
-            outline: 0 !important;
-        }
-
 
         .machina-moldura-lateral {
             min-height: 61vh;
@@ -1107,27 +1045,11 @@ def build_cia_analysis_formal(curr_ypoema):
 
     desenvolvimento = []
 
-    extensoes = []
-    if curtas:
-        extensoes.append(f"**{curtas} linhas breves**")
-    if medias:
-        extensoes.append(f"**{medias} médias**")
-    if longas:
-        extensoes.append(f"**{longas} mais longas**")
-
-    if len(extensoes) >= 2:
-        extensoes_texto = ", ".join(extensoes[:-1]) + " e " + extensoes[-1]
-    elif extensoes:
-        extensoes_texto = extensoes[0]
-    else:
-        extensoes_texto = ""
-
-    if extensoes_texto:
-        desenvolvimento.append(random.choice([
-            f"A alternância de extensão também trabalha: {extensoes_texto} criam variação de fôlego, evitando que o poema avance em linha reta demais.",
-            f"O ritmo nasce da medida dos versos: {extensoes_texto} fazem a leitura acelerar, conter-se ou respirar conforme o desenho pede.",
-            f"A diferença entre versos de extensão distinta não é ornamento gráfico; ela distribui pausas e pressões dentro do próprio corpo do poema.",
-        ]))
+    desenvolvimento.append(random.choice([
+        f"A alternância de extensão também trabalha: **{curtas} linhas breves**, **{medias} médias** e **{longas} mais longas** criam variação de fôlego, evitando que o poema avance em linha reta demais.",
+        f"O ritmo nasce da medida dos versos: linhas breves, médias e longas se revezam e fazem a leitura acelerar, conter-se ou respirar conforme o desenho pede.",
+        f"A diferença entre versos curtos e extensos não é ornamento gráfico; ela distribui pausas e pressões dentro do próprio corpo do poema.",
+    ]))
 
     if repetido:
         desenvolvimento.append(random.choice([
@@ -2582,22 +2504,21 @@ def main():
     gramado = open_gramado()
 
     with gramado:
-        st.markdown("<div class='machina-topo-regua'>", unsafe_allow_html=True)
-        chosen_id = stx.tab_bar(
-            data=[
-                stx.TabBarItemData(id=1, title="mini", description=""),
-                stx.TabBarItemData(id=2, title="yPoemas", description=""),
-                stx.TabBarItemData(id=3, title="eureka", description=""),
-                stx.TabBarItemData(id=4, title="off-mach", description=""),
-                stx.TabBarItemData(id=5, title="about", description=""),
-            ],
-            default=2,
-        )
-        st.markdown("</div>", unsafe_allow_html=True)
+        _pag_esq, _pag_centro, _pag_dir = st.columns([0.03, 9.94, 0.03])
+
+        with _pag_centro:
+            chosen_id = stx.tab_bar(
+                data=[
+                    stx.TabBarItemData(id=1, title="mini", description=""),
+                    stx.TabBarItemData(id=2, title="yPoemas", description=""),
+                    stx.TabBarItemData(id=3, title="eureka", description=""),
+                    stx.TabBarItemData(id=4, title="off-mach", description=""),
+                    stx.TabBarItemData(id=5, title="about", description=""),
+                ],
+                default=2,
+            )
 
         chosen_id = str(chosen_id)
-
-        st.markdown("<div class='machina-divider-regua'><hr></div>", unsafe_allow_html=True)
 
         page_image_map = {
             "1": "img_mini.jpg",
