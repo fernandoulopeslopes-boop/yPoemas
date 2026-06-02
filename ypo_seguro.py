@@ -20,7 +20,6 @@ except Exception:
 from controle_cia import (
     CIA_MOODS,
     configure_cia,
-    build_cia_text_for_copy,
     draw_sidebar_panel_buttons,
     render_cia_sidebar,
     render_cia_stage,
@@ -613,7 +612,7 @@ def palco_status(book=None, pos=None, total=None):
 
 
 def machina_plain_text(html_text):
-    """Converte texto HTML/Markdown da Machina em texto simples para cópia."""
+    """Converte o texto visível da Machina em texto simples para cópia."""
     if html_text is None:
         return ""
 
@@ -634,7 +633,7 @@ def machina_plain_text(html_text):
 
 
 def machina_copy_button(copy_text, key):
-    """Renderiza botão de copiar no navegador; não quebra se o componente faltar."""
+    """Botão de cópia no navegador; se o componente faltar, não quebra a Machina."""
     safe_text = machina_plain_text(copy_text)
 
     if st_copy_to_clipboard is None:
@@ -1615,21 +1614,9 @@ def page_ypoemas():
             if st.session_state.get("sidebar_panel") != "CIA" and st.session_state.draw:
                 LOGO_IMAGE = load_arts(st.session_state.tema)
 
-            copy_payload = curr_ypoema
-            if st.session_state.get("sidebar_panel") == "CIA":
-                cia_copy_text = build_cia_text_for_copy(curr_ypoema)
-                copy_payload = (
-                    st.session_state.tema
-                    + "\n\n"
-                    + machina_plain_text(curr_ypoema)
-                    + "\n\n---\n\n"
-                    + machina_plain_text(cia_copy_text)
-                )
-
             copy_left, copy_right = st.columns([8.8, 1.2])
             with copy_right:
-                copy_key = "copy_ypoema_cia" if st.session_state.get("sidebar_panel") == "CIA" else "copy_ypoema_machina"
-                machina_copy_button(copy_payload, copy_key)
+                machina_copy_button(curr_ypoema, "copy_ypoema_only")
 
             if st.session_state.get("sidebar_panel") == "CIA":
                 col_poema, col_cia = st.columns([5, 5])
