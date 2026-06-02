@@ -184,7 +184,7 @@ def apply_styles():
             padding-right: 0.04rem;
             padding-left: 0.04rem;
             padding-bottom: 0rem;
-            max-width: 100vw;
+            max-width: 100%;
         }
         </style>
         """,
@@ -360,7 +360,7 @@ def apply_styles():
 
         /* Free Gramado :: liberar área útil real */
         section.main > div.block-container {
-            max-width: 100vw !important;
+            max-width: 100% !important;
             width: 100% !important;
             padding-left: 0.00rem !important;
             padding-right: 0.00rem !important;
@@ -391,7 +391,7 @@ def apply_styles():
             padding-left: 0.00rem !important;
             padding-right: 0.00rem !important;
             padding-bottom: 0.16rem !important;
-            max-width: 100vw !important;
+            max-width: 100% !important;
             width: 100% !important;
         }
 
