@@ -297,14 +297,18 @@ def apply_styles():
         }
 
         [data-testid="stSidebar"] div[data-testid="stButton"] {
-            margin-top: -0.08rem !important;
-            margin-bottom: -0.08rem !important;
+            margin-top: -0.12rem !important;
+            margin-bottom: -0.12rem !important;
         }
 
         [data-testid="stSidebar"] .stButton button {
-            min-height: 2.05rem !important;
-            padding-top: 0.16rem !important;
-            padding-bottom: 0.16rem !important;
+            min-height: 1.94rem !important;
+            padding-top: 0.11rem !important;
+            padding-bottom: 0.11rem !important;
+        }
+
+        [data-testid="stSidebar"] div[data-testid="stVerticalBlock"] {
+            gap: 0.68rem !important;
         }
 
 
@@ -1188,10 +1192,7 @@ def render_cia_stage(curr_ypoema):
     mood = st.session_state.get("cia_mood", CIA_MOODS[0])
 
     def _translate_analysis(markdown_text):
-        clean = str(markdown_text).strip()
-        if st.session_state.lang == "pt" or not clean:
-            return clean
-        return translate(clean)
+        return translate(str(markdown_text).strip())
 
     def _to_html_block(markdown_text):
         html = _translate_analysis(markdown_text)
@@ -1217,7 +1218,7 @@ def render_cia_stage(curr_ypoema):
     elif mood == "Sintática":
         analysis_html = _to_html_block(build_cia_analysis(curr_ypoema))
         analysis_free_html = _to_html_block(build_cia_analysis_free(curr_ypoema))
-        outro_angulo = translate("Outro ângulo") if st.session_state.lang != "pt" else "Outro ângulo"
+        outro_angulo = translate("Outro ângulo")
         content = f"""{analysis_html}
             <div class='cia-stage-sep'><strong>{outro_angulo}</strong></div>
             {analysis_free_html}"""
