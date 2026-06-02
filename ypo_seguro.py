@@ -50,7 +50,7 @@ OFF_BOOKS_LIST = [
 
 PAGE_IMAGES = {
     "1": "img_mini.jpg", "2": "img_ypoemas.jpg", "3": "img_eureka.jpg",
-    "4": "img_off-machina.jpg", "5": "img_about.jpg",
+    "4": "img_off-machina.jpg", "5": "img_about.jpg", "6": "img_about.jpg",
 }
 
 VOICES_EDGE_TTS = {
@@ -200,7 +200,6 @@ def apply_styles():
             max-width: 315px !important;
         }
 
-        /* Sidebar :: calibragem temporária com dragster visível */
         [data-testid="stSidebarResizer"],
         [data-testid="stSidebar"] [role="separator"] {
             display: none !important;
@@ -321,7 +320,6 @@ def apply_styles():
         }
 
 
-        /* Território sem dono :: lista de páginas no topo, sem linha fantasma */
         iframe[title="extra_streamlit_components.TabBar.tab_bar"] {
             display: block !important;
             width: 100% !important;
@@ -348,7 +346,6 @@ def apply_styles():
             background: transparent !important;
         }
 
-        /* Sintonia fina :: subir páginas */
         iframe[title="extra_streamlit_components.TabBar.tab_bar"] {
             margin-top: -0.62rem !important;
             margin-bottom: 0 !important;
@@ -358,7 +355,6 @@ def apply_styles():
             margin-top: 0 !important;
         }
 
-        /* Free Gramado :: liberar área útil real */
         section.main > div.block-container {
             max-width: 100vw !important;
             width: 100% !important;
@@ -415,7 +411,6 @@ def apply_styles():
         }
 
 
-        /* Território sem dono :: expander/palco no mesmo eixo */
         div[data-testid="stExpander"] {
             width: 100% !important;
             max-width: 100% !important;
@@ -529,6 +524,7 @@ def init_session_state():
         "book_em_analise": "",
         "take_em_analise": -1,
         "lang_em_analise": "",
+        "config_image": "",
 
         # chave de ouro
         "key_open": False,
@@ -1045,11 +1041,27 @@ def build_cia_analysis_formal(curr_ypoema):
 
     desenvolvimento = []
 
-    desenvolvimento.append(random.choice([
-        f"A alternância de extensão também trabalha: **{curtas} linhas breves**, **{medias} médias** e **{longas} mais longas** criam variação de fôlego, evitando que o poema avance em linha reta demais.",
-        f"O ritmo nasce da medida dos versos: linhas breves, médias e longas se revezam e fazem a leitura acelerar, conter-se ou respirar conforme o desenho pede.",
-        f"A diferença entre versos curtos e extensos não é ornamento gráfico; ela distribui pausas e pressões dentro do próprio corpo do poema.",
-    ]))
+    extensoes = []
+    if curtas:
+        extensoes.append(f"**{curtas} linhas breves**")
+    if medias:
+        extensoes.append(f"**{medias} médias**")
+    if longas:
+        extensoes.append(f"**{longas} mais longas**")
+
+    if len(extensoes) >= 2:
+        extensoes_texto = ", ".join(extensoes[:-1]) + " e " + extensoes[-1]
+    elif extensoes:
+        extensoes_texto = extensoes[0]
+    else:
+        extensoes_texto = ""
+
+    if extensoes_texto:
+        desenvolvimento.append(random.choice([
+            f"A alternância de extensão também trabalha: {extensoes_texto} criam variação de fôlego, evitando que o poema avance em linha reta demais.",
+            f"O ritmo nasce da medida dos versos: {extensoes_texto} fazem a leitura acelerar, conter-se ou respirar conforme o desenho pede.",
+            f"A diferença entre versos de extensão distinta não é ornamento gráfico; ela distribui pausas e pressões dentro do próprio corpo do poema.",
+        ]))
 
     if repetido:
         desenvolvimento.append(random.choice([
@@ -2490,6 +2502,236 @@ def page_abouts():
             st.subheader(load_about_md(choice))
 
 
+def _config_author_image():
+    """Escolhe uma imagem estável da pasta Authors, com fallback para imagens da Machina."""
+    if st.session_state.get("config_image"):
+        return st.session_state.config_image
+
+    image_dirs = [
+        "./images/Authors",
+        "./images/authors",
+        "./images/AUTHORS",
+        "./images",
+    ]
+    exts = (".jpg", ".jpeg", ".png", ".webp")
+
+    candidates = []
+    for image_dir in image_dirs:
+        if os.path.isdir(image_dir):
+            for name in os.listdir(image_dir):
+                lower = name.lower()
+                if lower.endswith(exts):
+                    if "zodiac" in lower or "zodiaco" in lower or "zodíaco" in lower:
+                        continue
+                    candidates.append(os.path.join(image_dir, name))
+            if candidates:
+                break
+
+    if not candidates:
+        candidates = [os.path.join("./images", PAGE_IMAGES.get("6", "img_about.jpg"))]
+
+    st.session_state.config_image = random.choice(candidates)
+    return st.session_state.config_image
+
+
+def pick_lang_config():
+    """Lista de idiomas em página, equivalente à antiga escolha da sidebar."""
+    options = []
+    lookup = {}
+
+    for nome, pais, code, poly_file in IDIOMAS_OFICIAIS:
+        label = f"{nome} — {pais}"
+        options.append(label)
+        lookup[label] = {
+            "lang": code,
+            "poly_file": poly_file,
+        }
+
+    current = next(
+        (
+            label
+            for label, data in lookup.items()
+            if data["lang"] == st.session_state.lang
+        ),
+        options[0],
+    )
+
+    choice = st.selectbox(
+        translate("idiomas disponíveis..."),
+        options,
+        index=options.index(current),
+        key="config_idioma_select",
+    )
+
+    selected = lookup[choice]
+    if st.session_state.lang != selected["lang"]:
+        st.session_state.last_lang = st.session_state.lang
+        st.session_state.lang = selected["lang"]
+        st.session_state.poly_file = selected["poly_file"]
+
+
+def pick_stage_font_config():
+    """Escolhe fonte e corpo de leitura dentro da CONFIG."""
+    labels = [label for label, fonte in FONTES_MACHINA]
+    lookup = {label: fonte for label, fonte in FONTES_MACHINA}
+
+    current_font = st.session_state.get("stage_font", "Trebuchet")
+    current_label = next(
+        (label for label, fonte in FONTES_MACHINA if fonte == current_font),
+        labels[0],
+    )
+
+    corpos = list(range(15, 25))
+    current_size = st.session_state.get("stage_size", 21)
+    if current_size not in corpos:
+        current_size = 21
+
+    col_font, col_corpo = st.columns([2.1, 0.9])
+
+    with col_font:
+        choice = st.selectbox(
+            translate("fontes & letras"),
+            labels,
+            index=labels.index(current_label),
+            key="config_font_select",
+        )
+
+    with col_corpo:
+        size = st.selectbox(
+            translate("corpo"),
+            corpos,
+            index=corpos.index(current_size),
+            key="config_size_select",
+        )
+
+    st.session_state.stage_font = lookup[choice]
+    st.session_state.stage_size = size
+
+
+def draw_check_buttons_config():
+    """Botões arte e voz em página."""
+    help_tips = load_help(st.session_state.lang)
+    help_draw = help_tips[5]
+    help_talk = help_tips[6]
+
+    col_arte, col_voz = st.columns([1, 1])
+
+    with col_arte:
+        if st.button(
+            translate("arte"),
+            key="config_ctrl_arte",
+            help=help_draw,
+            use_container_width=True,
+        ):
+            st.session_state.draw = not st.session_state.draw
+
+    with col_voz:
+        if st.button(
+            translate("voz"),
+            key="config_ctrl_voz",
+            help=help_talk,
+            use_container_width=True,
+        ):
+            st.session_state.talk = not st.session_state.talk
+
+
+def draw_config_panel_buttons():
+    """Alterna Machina / CIA dentro da CONFIG."""
+    col_mach, col_cia = st.columns([1, 1])
+    with col_mach:
+        label = "• Machina" if st.session_state.get("sidebar_panel", "Machina") == "Machina" else "Machina"
+        if st.button(label, key="config_panel_machina", use_container_width=True):
+            st.session_state["sidebar_panel"] = "Machina"
+    with col_cia:
+        label = "• CIA" if st.session_state.get("sidebar_panel", "Machina") == "CIA" else "CIA"
+        if st.button(label, key="config_panel_cia", use_container_width=True):
+            st.session_state["sidebar_panel"] = "CIA"
+
+
+def render_cia_config_moods():
+    """Moods da CIA em página, com o mesmo desenho compacto da sidebar."""
+    current_mood = st.session_state.get("cia_mood", CIA_MOODS[0])
+    if current_mood not in CIA_MOODS:
+        current_mood = CIA_MOODS[0]
+        st.session_state.cia_mood = current_mood
+
+    rows = [("Sintática", "Sintética"), ("Formal", "Reduzida")]
+    for left_mood, right_mood in rows:
+        col_left, col_right = st.columns(2)
+        with col_left:
+            label = f"• {left_mood}" if current_mood == left_mood else left_mood
+            if st.button(label, key=f"config_cia_mood_btn_{left_mood}", use_container_width=True):
+                st.session_state.cia_mood = left_mood
+        with col_right:
+            label = f"• {right_mood}" if current_mood == right_mood else right_mood
+            if st.button(label, key=f"config_cia_mood_btn_{right_mood}", use_container_width=True):
+                st.session_state.cia_mood = right_mood
+
+    col_l, col_c, col_r = st.columns([0.5, 1.0, 0.5])
+    with col_c:
+        label = "• Completa" if current_mood == "Completa" else "Completa"
+        if st.button(label, key="config_cia_mood_btn_Completa", use_container_width=True):
+            st.session_state.cia_mood = "Completa"
+
+
+def page_config():
+    """Página do leitor: sidebar paginada em versão experimental."""
+    st.markdown(
+        """
+        <style>
+        .config-card {
+            background: rgba(255, 255, 255, 0.58);
+            border-radius: 18px;
+            padding: 0.65rem 0.75rem 0.75rem 0.75rem;
+            margin-bottom: 0.55rem;
+        }
+        .config-title {
+            text-align: center;
+            font-size: 1.05rem;
+            font-weight: 600;
+            opacity: 0.82;
+            margin-bottom: 0.45rem;
+        }
+        .config-note {
+            text-align: center;
+            font-size: 0.84rem;
+            opacity: 0.72;
+            margin-top: 0.20rem;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    col_img, col_opts = st.columns([1.05, 1.55])
+
+    with col_img:
+        st.markdown("<div class='config-card'>", unsafe_allow_html=True)
+        try:
+            st.image(_config_author_image(), use_container_width=True)
+        except Exception:
+            st.image("./images/" + PAGE_IMAGES.get("6", "img_about.jpg"), use_container_width=True)
+        st.markdown(
+            f"<div class='config-note'>{translate('página do leitor')}</div>",
+            unsafe_allow_html=True,
+        )
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    with col_opts:
+        st.markdown("<div class='config-card'>", unsafe_allow_html=True)
+        pick_lang_config()
+        pick_stage_font_config()
+        st.markdown("</div>", unsafe_allow_html=True)
+
+        st.markdown("<div class='config-card'>", unsafe_allow_html=True)
+        draw_check_buttons_config()
+        draw_config_panel_buttons()
+        if st.session_state.get("sidebar_panel", "Machina") == "CIA":
+            st.markdown("&nbsp;", unsafe_allow_html=True)
+            render_cia_config_moods()
+        st.markdown("</div>", unsafe_allow_html=True)
+
+
 ### eof: pages
 
 
@@ -2514,20 +2756,14 @@ def main():
                     stx.TabBarItemData(id=3, title="eureka", description=""),
                     stx.TabBarItemData(id=4, title="off-mach", description=""),
                     stx.TabBarItemData(id=5, title="about", description=""),
+                    stx.TabBarItemData(id=6, title="config", description=""),
                 ],
                 default=2,
             )
 
         chosen_id = str(chosen_id)
 
-        page_image_map = {
-            "1": "img_mini.jpg",
-            "2": "img_ypoemas.jpg",
-            "3": "img_eureka.jpg",
-            "4": "img_off-machina.jpg",
-            "5": "img_about.jpg",
-        }
-        magy = page_image_map.get(chosen_id, "img_ypoemas.jpg")
+        magy = PAGE_IMAGES.get(chosen_id, "img_ypoemas.jpg")
 
         render_sidebar_for_page(chosen_id)
 
@@ -2547,11 +2783,9 @@ def main():
 
             with palco_container:
                 if chosen_id == "1":
-                    magy = "img_mini.jpg"
                     page_mini()
                     status = f"🌿  {st.session_state.lang} - {st.session_state.tema} ( {st.session_state.mini + 1} / {len(load_temas("todos os temas"))} )"
                 elif chosen_id == "2":
-                    magy = "img_ypoemas.jpg"
                     page_ypoemas()
                     status = palco_status(
                         st.session_state.book,
@@ -2559,19 +2793,18 @@ def main():
                         len(load_temas(st.session_state.book)),
                     )
                 elif chosen_id == "3":
-                    magy = "img_eureka.jpg"
                     page_eureka()
                     status = palco_status("eureka")
                 elif chosen_id == "4":
-                    magy = "img_off-machina.jpg"
                     page_off_machina()
                     status = palco_status("off-machina")
                 elif chosen_id == "5":
-                    magy = "img_about.jpg"
                     page_abouts()
                     status = palco_status("about")
+                elif chosen_id == "6":
+                    page_config()
+                    status = palco_status("config")
                 else:
-                    magy = "img_ypoemas.jpg"
                     page_ypoemas()
                     status = palco_status(
                         st.session_state.book,
