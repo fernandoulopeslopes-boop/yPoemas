@@ -504,6 +504,11 @@ def init_session_state():
         "cia_font": "Trebuchet MS",
         "cia_size": 18,
         "tema_last_analise": "",
+        "ypoema_em_analise": "",
+        "tema_em_analise": "",
+        "book_em_analise": "",
+        "take_em_analise": -1,
+        "lang_em_analise": "",
 
         # chave de ouro
         "key_open": False,
@@ -2097,23 +2102,46 @@ def page_ypoemas():
 
         ypoemas_expander = st.expander(what_book, expanded=True)
         with ypoemas_expander:
-            if st.session_state.lang != st.session_state.last_lang:
-                curr_ypoema = load_lypo()  # changes in lang, keep LYPO
+            cia_mode = st.session_state.get("sidebar_panel") == "CIA"
+            force_new_poema = bool(more or last or rand or nest)
+            same_analysis_text = (
+                st.session_state.get("ypoema_em_analise")
+                and st.session_state.get("tema_em_analise") == st.session_state.tema
+                and st.session_state.get("book_em_analise") == st.session_state.book
+                and st.session_state.get("take_em_analise") == st.session_state.take
+                and st.session_state.get("lang_em_analise") == st.session_state.lang
+            )
+
+            if cia_mode and same_analysis_text and not force_new_poema:
+                curr_ypoema = st.session_state.get("ypoema_em_analise", "")
+                generated_new_poema = False
             else:
-                curr_ypoema = load_poema(st.session_state.tema, "")
-                curr_ypoema = load_lypo()
+                if st.session_state.lang != st.session_state.last_lang:
+                    curr_ypoema = load_lypo()  # changes in lang, keep LYPO
+                else:
+                    curr_ypoema = load_poema(st.session_state.tema, "")
+                    curr_ypoema = load_lypo()
 
-            if st.session_state.lang != "pt":  # translate if idioma <> pt
-                curr_ypoema = translate(curr_ypoema)
-                typo_user = "TYPO_" + IPAddres
-                with open(
-                    os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
-                ) as save_typo:
-                    save_typo.write(curr_ypoema)
-                    save_typo.close()
-                curr_ypoema = load_typo()  # to normalize line breaks in text
+                if st.session_state.lang != "pt":  # translate if idioma <> pt
+                    curr_ypoema = translate(curr_ypoema)
+                    typo_user = "TYPO_" + IPAddres
+                    with open(
+                        os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
+                    ) as save_typo:
+                        save_typo.write(curr_ypoema)
+                        save_typo.close()
+                    curr_ypoema = load_typo()  # to normalize line breaks in text
 
-            update_readings(st.session_state.tema)
+                st.session_state.ypoema_em_analise = curr_ypoema
+                st.session_state.tema_em_analise = st.session_state.tema
+                st.session_state.book_em_analise = st.session_state.book
+                st.session_state.take_em_analise = st.session_state.take
+                st.session_state.lang_em_analise = st.session_state.lang
+                generated_new_poema = True
+
+            if generated_new_poema:
+                update_readings(st.session_state.tema)
+
             LOGO_TEXTO = curr_ypoema
             LOGO_IMAGE = None
 
@@ -2569,6 +2597,8 @@ def main():
                     f"<div class='machina-rodape-palco'>{status}</div>",
                     unsafe_allow_html=True,
                 )
+
+
 
 if __name__ == "__main__":
     main()
