@@ -11,9 +11,16 @@ import streamlit as st
 from extra_streamlit_components import TabBar as stx
 
 from lay_2_ypo import gera_poema
+
+try:
+    from st_copy_to_clipboard import st_copy_to_clipboard
+except Exception:
+    st_copy_to_clipboard = None
+
 from controle_cia import (
     CIA_MOODS,
     configure_cia,
+    build_cia_text_for_copy,
     draw_sidebar_panel_buttons,
     render_cia_sidebar,
     render_cia_stage,
@@ -603,6 +610,47 @@ def palco_status(book=None, pos=None, total=None):
     if pos is None or total is None:
         return f"🌿  {st.session_state.lang} ( {book} )"
     return f"🌿  {st.session_state.lang} ( {book} ) ( {pos} / {total} )"
+
+
+def machina_plain_text(html_text):
+    """Converte texto HTML/Markdown da Machina em texto simples para cópia."""
+    if html_text is None:
+        return ""
+
+    text = str(html_text)
+    for old, new in {
+        "<br>": "\n",
+        "<br/>": "\n",
+        "<br />": "\n",
+        "&nbsp;": " ",
+    }.items():
+        text = text.replace(old, new)
+
+    text = re.sub(r"<[^>]+>", "", text)
+    text = text.replace("**", "")
+    text = text.replace("\r\n", "\n").replace("\r", "\n")
+    text = re.sub(r"\n{3,}", "\n\n", text)
+    return text.strip()
+
+
+def machina_copy_button(copy_text, key):
+    """Renderiza botão de copiar no navegador; não quebra se o componente faltar."""
+    safe_text = machina_plain_text(copy_text)
+
+    if st_copy_to_clipboard is None:
+        st.caption("copiar indisponível")
+        return
+
+    try:
+        st_copy_to_clipboard(safe_text, key=key)
+    except TypeError:
+        try:
+            st_copy_to_clipboard(safe_text)
+        except Exception:
+            st.caption("copiar indisponível")
+    except Exception:
+        st.caption("copiar indisponível")
+
 
 ### bof: tools
 
@@ -1566,6 +1614,22 @@ def page_ypoemas():
 
             if st.session_state.get("sidebar_panel") != "CIA" and st.session_state.draw:
                 LOGO_IMAGE = load_arts(st.session_state.tema)
+
+            copy_payload = curr_ypoema
+            if st.session_state.get("sidebar_panel") == "CIA":
+                cia_copy_text = build_cia_text_for_copy(curr_ypoema)
+                copy_payload = (
+                    st.session_state.tema
+                    + "\n\n"
+                    + machina_plain_text(curr_ypoema)
+                    + "\n\n---\n\n"
+                    + machina_plain_text(cia_copy_text)
+                )
+
+            copy_left, copy_right = st.columns([8.8, 1.2])
+            with copy_right:
+                copy_key = "copy_ypoema_cia" if st.session_state.get("sidebar_panel") == "CIA" else "copy_ypoema_machina"
+                machina_copy_button(copy_payload, copy_key)
 
             if st.session_state.get("sidebar_panel") == "CIA":
                 col_poema, col_cia = st.columns([5, 5])
