@@ -641,10 +641,20 @@ def machina_copy_button(copy_text, key):
         return
 
     try:
-        st_copy_to_clipboard(safe_text, key=key)
+        st_copy_to_clipboard(
+            safe_text,
+            key=key,
+            before_copy_label="copiar",
+            after_copy_label="texto copiado !!",
+        )
     except TypeError:
         try:
-            st_copy_to_clipboard(safe_text)
+            st_copy_to_clipboard(safe_text, key=key)
+        except TypeError:
+            try:
+                st_copy_to_clipboard(safe_text)
+            except Exception:
+                st.caption("copiar indisponível")
         except Exception:
             st.caption("copiar indisponível")
     except Exception:
@@ -1616,7 +1626,8 @@ def page_ypoemas():
 
             copy_left, copy_right = st.columns([8.8, 1.2])
             with copy_right:
-                machina_copy_button(curr_ypoema, "copy_ypoema_only")
+                copy_key = "copy_ypoema_" + str(abs(hash(machina_plain_text(curr_ypoema))))
+                machina_copy_button(curr_ypoema, copy_key)
 
             if st.session_state.get("sidebar_panel") == "CIA":
                 col_poema, col_cia = st.columns([5, 5])
