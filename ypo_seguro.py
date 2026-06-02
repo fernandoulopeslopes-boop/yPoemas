@@ -332,7 +332,7 @@ def apply_styles():
             display: block !important;
             width: 100% !important;
             max-width: 100% !important;
-            margin: -0.62rem auto 0 auto !important;
+            margin: -0.62rem 0 0 0 !important;
             padding: 0 !important;
             border: 0 !important;
             outline: 0 !important;
@@ -457,22 +457,7 @@ def apply_styles():
             margin-right: auto !important;
             box-sizing: border-box !important;
         }
-
         /* Palco e divider :: mesma largura visual */
-        .machina-topo-regua {
-            width: 92% !important;
-            max-width: 92% !important;
-            display: flex !important;
-            justify-content: center !important;
-            align-items: center !important;
-            margin: 0 auto !important;
-            padding: 0 !important;
-            box-sizing: border-box !important;
-            border: 0 !important;
-            box-shadow: none !important;
-            outline: 0 !important;
-            transform: translateX(1.05rem);
-        }
 
         .machina-divider-palco {
             width: 100% !important;
@@ -498,39 +483,12 @@ def apply_styles():
 
         div[data-testid="stHorizontalBlock"],
         div[data-testid="stHorizontalBlock"] > div,
-        div[data-testid="stHorizontalBlock"] button,
-        div[data-testid="stHorizontalBlock"] button *,
-        div[data-testid="column"],
-        div[data-testid="column"] > div {
+        div[data-testid="stHorizontalBlock"] button {
             border: 0 !important;
-            border-top: 0 !important;
             border-bottom: 0 !important;
             box-shadow: none !important;
             outline: 0 !important;
-            background-image: none !important;
         }
-
-        div[data-testid="stHorizontalBlock"]::before,
-        div[data-testid="stHorizontalBlock"]::after,
-        div[data-testid="column"]::before,
-        div[data-testid="column"]::after {
-            content: none !important;
-            display: none !important;
-            border: 0 !important;
-            box-shadow: none !important;
-            background: transparent !important;
-        }
-
-        .machina-nav-clean,
-        .machina-nav-clean * {
-            border: 0 !important;
-            border-top: 0 !important;
-            border-bottom: 0 !important;
-            box-shadow: none !important;
-            outline: 0 !important;
-            background-image: none !important;
-        }
-
 
         .machina-moldura-lateral {
             min-height: 61vh;
@@ -1510,14 +1468,12 @@ def page_ypoemas():
         help_nest = help_tips[2]
         help_more = help_tips[4]
 
-        st.markdown("<div class='machina-nav-clean'>", unsafe_allow_html=True)
         nav_cols = st.columns([1, 1, 1, 1, 1])
         more = nav_cols[0].button("✚", help=help_more, use_container_width=True)
         last = nav_cols[1].button("◀", help=help_last, use_container_width=True)
         rand = nav_cols[2].button("✻", help=help_rand, use_container_width=True)
         nest = nav_cols[3].button("▶", help=help_nest, use_container_width=True)
         manu = nav_cols[4].button("?", help="help !!!", use_container_width=True)
-        st.markdown("</div>", unsafe_allow_html=True)
 
     temas_list = load_temas(st.session_state.book)
     maxy_ypoemas = len(temas_list) - 1
@@ -1983,18 +1939,19 @@ def main():
     gramado = open_gramado()
 
     with gramado:
-        st.markdown("<div class='machina-topo-regua'>", unsafe_allow_html=True)
-        chosen_id = stx.tab_bar(
-            data=[
-                stx.TabBarItemData(id=1, title="mini", description=""),
-                stx.TabBarItemData(id=2, title="yPoemas", description=""),
-                stx.TabBarItemData(id=3, title="eureka", description=""),
-                stx.TabBarItemData(id=4, title="off-mach", description=""),
-                stx.TabBarItemData(id=5, title="about", description=""),
-            ],
-            default=2,
-        )
-        st.markdown("</div>", unsafe_allow_html=True)
+        _pag_esq, _pag_centro, _pag_dir = st.columns([0.15, 9.7, 0.15])
+
+        with _pag_centro:
+            chosen_id = stx.tab_bar(
+                data=[
+                    stx.TabBarItemData(id=1, title="mini", description=""),
+                    stx.TabBarItemData(id=2, title="yPoemas", description=""),
+                    stx.TabBarItemData(id=3, title="eureka", description=""),
+                    stx.TabBarItemData(id=4, title="off-mach", description=""),
+                    stx.TabBarItemData(id=5, title="about", description=""),
+                ],
+                default=2,
+            )
 
         chosen_id = str(chosen_id)
 
