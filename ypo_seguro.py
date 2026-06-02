@@ -326,7 +326,7 @@ def apply_styles():
             display: block !important;
             width: 100% !important;
             max-width: 100% !important;
-            margin: -0.62rem 0 0 0 !important;
+            margin: -0.62rem auto 0 auto !important;
             padding: 0 !important;
             border: 0 !important;
             outline: 0 !important;
@@ -450,8 +450,32 @@ def apply_styles():
             overflow-x: hidden;
             width: 100% !important;
             max-width: 100% !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
             box-sizing: border-box !important;
         }
+
+        /* Volta pra casa :: mesma régua para páginas, divider e palco */
+        .machina-topo-regua {
+            width: 100% !important;
+            max-width: 100% !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            box-sizing: border-box !important;
+        }
+
+        .machina-divider-regua {
+            width: 100% !important;
+            max-width: 100% !important;
+            margin: 0.05rem auto 0.18rem auto !important;
+        }
+
+        .machina-divider-regua hr {
+            margin: 0 !important;
+            border: 0 !important;
+            border-top: 1px solid rgba(0,0,0,0.18) !important;
+        }
+
 
         .machina-moldura-lateral {
             min-height: 61vh;
@@ -2520,21 +2544,22 @@ def main():
     gramado = open_gramado()
 
     with gramado:
-        _pag_esq, _pag_centro, _pag_dir = st.columns([0.03, 9.94, 0.03])
-
-        with _pag_centro:
-            chosen_id = stx.tab_bar(
-                data=[
-                    stx.TabBarItemData(id=1, title="mini", description=""),
-                    stx.TabBarItemData(id=2, title="yPoemas", description=""),
-                    stx.TabBarItemData(id=3, title="eureka", description=""),
-                    stx.TabBarItemData(id=4, title="off-mach", description=""),
-                    stx.TabBarItemData(id=5, title="about", description=""),
-                ],
-                default=2,
-            )
+        st.markdown("<div class='machina-topo-regua'>", unsafe_allow_html=True)
+        chosen_id = stx.tab_bar(
+            data=[
+                stx.TabBarItemData(id=1, title="mini", description=""),
+                stx.TabBarItemData(id=2, title="yPoemas", description=""),
+                stx.TabBarItemData(id=3, title="eureka", description=""),
+                stx.TabBarItemData(id=4, title="off-mach", description=""),
+                stx.TabBarItemData(id=5, title="about", description=""),
+            ],
+            default=2,
+        )
+        st.markdown("</div>", unsafe_allow_html=True)
 
         chosen_id = str(chosen_id)
+
+        st.markdown("<div class='machina-divider-regua'><hr></div>", unsafe_allow_html=True)
 
         page_image_map = {
             "1": "img_mini.jpg",
