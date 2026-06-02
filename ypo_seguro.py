@@ -8,7 +8,6 @@ import asyncio
 from datetime import datetime
 
 import streamlit as st
-import streamlit.components.v1 as components
 from extra_streamlit_components import TabBar as stx
 
 from lay_2_ypo import gera_poema
@@ -1079,42 +1078,6 @@ def build_cia_analysis_formal(curr_ypoema):
 
     return _cia_join([abertura] + desenvolvimento + [fecho])
 
-def build_cia_analysis_rapida(curr_ypoema):
-    """Leitura rápida: primeiro clarão do poema, breve e diferente da resumida."""
-    raw_parts = [part.strip() for part in curr_ypoema.replace("<br/>", "<br>").split("<br>")]
-    lines = [part for part in raw_parts if part]
-    poema_lines = lines[1:] if len(lines) > 1 else []
-
-    if not poema_lines:
-        return "**requer apuração manual**"
-
-    abertura = poema_lines[0]
-    fecho = poema_lines[-1]
-    meio = poema_lines[len(poema_lines) // 2]
-    destaque = next((line for line in poema_lines if "..." in line or "…" in line or "?" in line or "," in line), meio)
-
-    p1 = random.choice([
-        f"Primeiro clarão: **“{abertura}”** já entrega o pulso do poema e chama o leitor para dentro sem pedir explicação prévia.",
-        f"A entrada em **“{abertura}”** funciona como impacto inicial: curta ou longa, ela já decide a temperatura da leitura.",
-        f"Lido de passagem, o poema começa a se abrir em **“{abertura}”**. É ali que o leitor recebe o primeiro sinal de direção.",
-    ])
-
-    p2 = random.choice([
-        f"O ponto que mais acende a leitura é **“{destaque}”**: o verso concentra uma pequena pressão de imagem, corte ou pensamento.",
-        f"Em **“{destaque}”**, o texto mostra seu gesto mais imediato. Não é resumo: é lampejo de entrada.",
-        f"A leitura rápida se fixa em **“{destaque}”** porque ali o poema parece piscar com mais força para o leitor.",
-    ])
-
-    p3 = random.choice([
-        f"O fecho em **“{fecho}”** deixa o último eco. A leitura rápida não fecha o poema: apenas aponta onde ele continua vibrando.",
-        f"Quando chega a **“{fecho}”**, o poema deixa uma impressão final que vale mais como eco do que como conclusão.",
-        f"A última linha — **“{fecho}”** — funciona como sinal de saída, mas ainda carrega o rastro do percurso.",
-    ])
-
-    body = [p1, p2, p3]
-    random.shuffle(body)
-    return "  \n\n".join(body)
-
 
 def build_cia_analysis_resumida(curr_ypoema):
     """Reduzida: leitura curta, objetiva e distinta da Sintética."""
@@ -1457,11 +1420,6 @@ def pick_stage_font():
 
     st.session_state.stage_font = lookup[choice]
     st.session_state.stage_size = size
-
-
-def show_icons():
-    """Redes sociais removidas da sidebar para reduzir scroll."""
-    return
 
 
 def load_help(idiom):
