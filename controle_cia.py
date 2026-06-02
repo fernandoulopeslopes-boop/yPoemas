@@ -139,6 +139,7 @@ def _cia_critico_abertura(poema_lines, used_lines):
     abertura = _cia_pick_unused([poema_lines[0]], used_lines, poema_lines[0])
     return random.choice([
         f"Desde **“{_cia_clip(abertura)}”**, o poema estabelece um campo de tensão que orienta a leitura sem entregar tudo de saída.",
+        f"A partir de **“{_cia_clip(abertura)}”**, o poema começa a organizar seu campo de forças e a preparar o caminho da leitura.",
         f"A entrada em **“{_cia_clip(abertura)}”** já define um modo de aproximação: o poema começa como gesto, não apenas como enunciado.",
         f"Logo em **“{_cia_clip(abertura)}”**, o texto escolhe seu passo e prepara a pressão que irá circular pelos versos.",
         f"**“{_cia_clip(abertura)}”** funciona como porta de entrada do poema: abre o percurso e já deixa uma tensão em suspensão.",
