@@ -112,13 +112,9 @@ def _cia_pick_unused(candidates, used_lines, fallback=""):
         if line and line not in used_lines:
             used_lines.add(line)
             return line
-    if fallback:
+    if fallback and fallback not in used_lines:
         used_lines.add(fallback)
         return fallback
-    for line in candidates:
-        if line:
-            used_lines.add(line)
-            return line
     return ""
 
 
@@ -177,16 +173,6 @@ def _cia_filter_candidates(candidates, used_lines, target_count, min_count=1):
         used_lines.update(item_lines)
         if len(chosen) >= target_count:
             break
-    if len(chosen) < min_count:
-        for item in shuffled:
-            if item in chosen:
-                continue
-            item_lines = set(item.get("lines", []))
-            # repetição só como último recurso, quando há pouco material no poema
-            chosen.append(item)
-            used_lines.update(item_lines)
-            if len(chosen) >= min_count:
-                break
     return chosen
 
 
@@ -291,6 +277,12 @@ def build_cia_analysis(curr_ypoema):
         target_count = max_figures if max_figures <= 2 else random.randint(min_figures, max_figures)
         chosen = _cia_filter_candidates(candidates, used_lines, target_count, min_figures)
         desenvolvimento = [item["text"] for item in chosen]
+        if not desenvolvimento:
+            desenvolvimento = [random.choice([
+                "A construção verbal do poema trabalha menos por explicação do que por pressão acumulada: cada linha desloca um pouco o eixo da leitura.",
+                "Mesmo sem uma figura dominante imediatamente nomeável, o poema sustenta seu efeito pela distribuição de cortes, pausas e retomadas.",
+                "A sintaxe opera como corrente subterrânea: o sentido avança por pequenas tensões, não por declaração direta.",
+            ])]
     else:
         desenvolvimento = [random.choice([
             "A construção verbal do poema trabalha menos por explicação do que por pressão acumulada: cada linha desloca um pouco o eixo da leitura.",
@@ -315,25 +307,39 @@ def build_cia_analysis_free(curr_ypoema):
     used = set(st.session_state.get("_cia_used_lines", []))
     local_used = set(used)
 
-    abertura_line = _cia_pick_unused([poema_lines[0]], local_used, poema_lines[0])
-    destaque_line = _cia_pick_unused(_cia_destaques(poema_lines), local_used, poema_lines[len(poema_lines) // 2])
-    fecho_line = _cia_pick_unused([poema_lines[-1]], local_used, poema_lines[-1])
+    abertura_line = _cia_pick_unused(poema_lines, local_used, "")
+    destaque_line = _cia_pick_unused(_cia_destaques(poema_lines), local_used, "")
+    fecho_line = _cia_pick_unused([poema_lines[-1]], local_used, "")
 
-    abertura = random.choice([
-        f"Outro ângulo surge já em **“{_cia_clip(abertura_line)}”**: o verso não apenas inicia o texto, mas define uma temperatura de leitura.",
-        f"Por outro caminho, **“{_cia_clip(abertura_line)}”** abre uma zona de expectativa. O poema começa antes de se explicar.",
-        f"Há uma entrada discreta, mas decisiva, em **“{_cia_clip(abertura_line)}”**: dali o texto já escolhe o seu modo de respirar.",
-    ])
+    if abertura_line:
+        abertura = random.choice([
+            f"Outro ângulo surge em **“{_cia_clip(abertura_line)}”**: o verso não apenas participa do texto, mas define uma temperatura de leitura.",
+            f"Por outro caminho, **“{_cia_clip(abertura_line)}”** abre uma zona de expectativa. O poema começa antes de se explicar.",
+            f"Há uma presença discreta, mas decisiva, em **“{_cia_clip(abertura_line)}”**: dali o texto escolhe outro modo de respirar.",
+        ])
+    else:
+        abertura = random.choice([
+            "Outro ângulo surge pela organização interna do poema: a leitura muda quando acompanha as passagens, não apenas os versos isolados.",
+            "Por outro caminho, o poema revela uma temperatura própria. O texto começa a pesar menos pelo enunciado e mais pelo modo como distribui sua tensão.",
+            "Há uma entrada crítica possível pela circulação do próprio texto: o poema respira por retomadas, desvios e zonas de adensamento.",
+        ])
 
-    desenvolvimento = random.choice([
-        f"No corpo do poema, **“{_cia_clip(destaque_line)}”** concentra uma energia própria. A formulação desloca a linguagem do uso comum e cria densidade.",
-        f"O ponto de maior pressão aparece em **“{_cia_clip(destaque_line)}”**. O verso não apenas comunica: cria uma zona de sentido ao redor de si.",
-        f"Em **“{_cia_clip(destaque_line)}”**, a linguagem ganha espessura. Há ali uma pequena torção que impede a leitura de seguir por caminho óbvio.",
-    ])
+    if destaque_line:
+        desenvolvimento = random.choice([
+            f"No corpo do poema, **“{_cia_clip(destaque_line)}”** concentra uma energia própria. A formulação desloca a linguagem do uso comum e cria densidade.",
+            f"O ponto de maior pressão aparece em **“{_cia_clip(destaque_line)}”**. O verso não apenas comunica: cria uma zona de sentido ao redor de si.",
+            f"Em **“{_cia_clip(destaque_line)}”**, a linguagem ganha espessura. Há ali uma pequena torção que impede a leitura de seguir por caminho óbvio.",
+        ])
+    else:
+        desenvolvimento = random.choice([
+            "No corpo do poema, a energia se distribui por passagens sucessivas. A leitura avança porque o texto desloca sua pressão de um ponto a outro.",
+            "A zona de maior força não precisa se concentrar em uma única citação: ela nasce do encadeamento entre imagem, ritmo e desvio.",
+            "A linguagem ganha espessura no conjunto. O poema cria densidade sem depender de um único ponto de apoio.",
+        ])
 
-    if fecho_line in {abertura_line, destaque_line} and len(poema_lines) > 2:
+    if (not fecho_line) or (fecho_line in {abertura_line, destaque_line} and len(poema_lines) > 2):
         fecho = random.choice([
-            "O encerramento recolhe essa tensão sem resolver tudo. O poema termina preservando uma zona de eco.",
+            "O encerramento recolhe a tensão sem resolver tudo. O poema termina preservando uma zona de eco.",
             "Ao final, a leitura não encontra uma explicação única, mas um resto de intensidade que continua trabalhando.",
             "O fim não domestica o percurso: apenas concentra sua última reverberação.",
         ])
