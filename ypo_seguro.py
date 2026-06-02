@@ -21,8 +21,8 @@ from controle_cia import (
 
 
 ABOUTS_LIST = [
-    "comentários", "prefácil", "machina", "off-machina", "machina-IA", "livros", "outros autores",
-    "imagens", "poly", "pensares", "tradittore", "bibliografia", "pontuação", "samizdàt", "notes", "license", "index",
+    "comentários", "prefácil", "machina", "off-machina", "outros autores", "livros", "bibliografia",
+    "notes", "imagens", "pontuação", "poly", "tradittore", "pensares", "machina-IA", "samizdàt", "index", "license",
 ]
 
 ABOUTS_FILES = {
@@ -332,7 +332,7 @@ def apply_styles():
             display: block !important;
             width: 100% !important;
             max-width: 100% !important;
-            margin: -0.62rem 0 0 0 !important;
+            margin: -0.62rem auto 0 auto !important;
             padding: 0 !important;
             border: 0 !important;
             outline: 0 !important;
@@ -459,19 +459,50 @@ def apply_styles():
         }
 
         /* Palco e divider :: mesma largura visual */
+        .machina-topo-regua {
+            width: 100% !important;
+            max-width: 100% !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            margin: 0 auto !important;
+            padding: 0 !important;
+            box-sizing: border-box !important;
+            border: 0 !important;
+            box-shadow: none !important;
+            outline: 0 !important;
+            transform: translateX(0.34rem);
+        }
+
         .machina-divider-palco {
             width: 100% !important;
             max-width: 100% !important;
             margin: 0.04rem auto 0.16rem auto !important;
             padding: 0 !important;
             box-sizing: border-box !important;
+            border: 0 !important;
+            box-shadow: none !important;
+            outline: 0 !important;
         }
 
         .machina-divider-palco hr {
             width: 100% !important;
+            max-width: 100% !important;
             margin: 0 !important;
+            padding: 0 !important;
             border: 0 !important;
             border-top: 1px solid rgba(0,0,0,0.18) !important;
+            box-shadow: none !important;
+            outline: 0 !important;
+        }
+
+        div[data-testid="stHorizontalBlock"],
+        div[data-testid="stHorizontalBlock"] > div,
+        div[data-testid="stHorizontalBlock"] button {
+            border: 0 !important;
+            border-bottom: 0 !important;
+            box-shadow: none !important;
+            outline: 0 !important;
         }
 
         .machina-moldura-lateral {
@@ -1923,23 +1954,22 @@ def main():
     gramado = open_gramado()
 
     with gramado:
-        _pag_esq, _pag_centro, _pag_dir = st.columns([0.03, 9.94, 0.03])
-
-        with _pag_centro:
-            chosen_id = stx.tab_bar(
-                data=[
-                    stx.TabBarItemData(id=1, title="mini", description=""),
-                    stx.TabBarItemData(id=2, title="yPoemas", description=""),
-                    stx.TabBarItemData(id=3, title="eureka", description=""),
-                    stx.TabBarItemData(id=4, title="off-mach", description=""),
-                    stx.TabBarItemData(id=5, title="about", description=""),
-                ],
-                default=2,
-            )
+        st.markdown("<div class='machina-topo-regua'>", unsafe_allow_html=True)
+        chosen_id = stx.tab_bar(
+            data=[
+                stx.TabBarItemData(id=1, title="mini", description=""),
+                stx.TabBarItemData(id=2, title="yPoemas", description=""),
+                stx.TabBarItemData(id=3, title="eureka", description=""),
+                stx.TabBarItemData(id=4, title="off-mach", description=""),
+                stx.TabBarItemData(id=5, title="about", description=""),
+            ],
+            default=2,
+        )
+        st.markdown("</div>", unsafe_allow_html=True)
 
         chosen_id = str(chosen_id)
 
-        st.markdown("<div class='machina-divider-palco'><hr></div>", unsafe_allow_html=True)
+        st.markdown("<div class='machina-divider-palco'><hr /></div>", unsafe_allow_html=True)
 
         page_image_map = {
             "1": "img_mini.jpg",
