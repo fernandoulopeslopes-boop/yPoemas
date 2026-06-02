@@ -154,6 +154,13 @@ def apply_styles():
         <style>
         /*#MainMenu {visibility: hidden;}*/
         footer {visibility: hidden;}
+        /* Sidebar removida: CONFIG assume os controles do leitor */
+        [data-testid="stSidebar"],
+        [data-testid="stSidebarResizer"],
+        [data-testid="collapsedControl"] {
+            display: none !important;
+        }
+
 
         /* Machina :: botões sem quebra de linha */
         div[data-testid="stButton"] button,
@@ -517,7 +524,7 @@ def init_session_state():
         "rand": False,
         "stage_font": "Trebuchet",
         "stage_size": 21,
-        "sidebar_panel": "Machina",
+        "sidebar_panel": "CIA",
         "cia_name": "",
         "cia_mood": "Sintática",
         "cia_line0_offset_px": -385,
@@ -1402,29 +1409,24 @@ def pick_tema_palco():
 
 
 def pick_cia_palco():
-    """Escolhe Machina ou uma análise da CIA no camarote central do palco."""
-    options = ["Machina"] + CIA_MOODS
+    """Escolhe a análise da CIA no camarote central do palco."""
+    options = CIA_MOODS
 
-    current_panel = st.session_state.get("sidebar_panel", "Machina")
-    current_mood = st.session_state.get("cia_mood", CIA_MOODS[0])
-
-    if current_panel == "CIA" and current_mood in CIA_MOODS:
-        current = current_mood
-    else:
-        current = "Machina"
+    current = st.session_state.get("cia_mood", CIA_MOODS[0])
+    if current not in options:
+        current = CIA_MOODS[0]
+        st.session_state["cia_mood"] = current
 
     choice = st.selectbox(
-        translate("análises"),
+        "",
         options,
         index=options.index(current),
         key="palco_cia_select",
+        label_visibility="collapsed",
     )
 
-    if choice == "Machina":
-        st.session_state["sidebar_panel"] = "Machina"
-    else:
-        st.session_state["sidebar_panel"] = "CIA"
-        st.session_state["cia_mood"] = choice
+    st.session_state["sidebar_panel"] = "CIA"
+    st.session_state["cia_mood"] = choice
 
 
 def pick_stage_font():
@@ -2743,10 +2745,6 @@ def page_config():
             st.image(_config_author_image(), use_container_width=True)
         except Exception:
             st.image("./images/" + PAGE_IMAGES.get("6", "img_about.jpg"), use_container_width=True)
-        st.markdown(
-            f"<div class='config-note'>{translate('página do leitor')}</div>",
-            unsafe_allow_html=True,
-        )
         st.markdown("</div>", unsafe_allow_html=True)
 
     with col_opts:
@@ -2792,16 +2790,6 @@ def main():
         chosen_id = str(chosen_id)
 
         magy = PAGE_IMAGES.get(chosen_id, "img_ypoemas.jpg")
-
-        render_sidebar_for_page(chosen_id)
-
-        with st.sidebar:
-            st.image("./images/" + magy)
-
-
-        if chosen_id != "2":
-            st.session_state["sidebar_panel"] = "Machina"
-
 
         palco = st.container()
         with palco:
