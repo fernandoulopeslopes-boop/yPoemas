@@ -400,6 +400,11 @@ def apply_styles():
             overflow-y: auto;
         }
 
+        /* yPoemas :: camarote central da CIA */
+        .main .block-container div[data-testid="stSelectbox"] {
+            margin-top: -0.12rem !important;
+        }
+
         /* Gramado real: primeiro container criado no main */
         div[data-testid="stAppViewContainer"] main
         div[data-testid="stVerticalBlock"] > div[data-testid="stVerticalBlockBorderWrapper"]:first-child,
@@ -1396,6 +1401,32 @@ def pick_tema_palco():
     )
 
 
+def pick_cia_palco():
+    """Escolhe Machina ou uma análise da CIA no camarote central do palco."""
+    options = ["Machina"] + CIA_MOODS
+
+    current_panel = st.session_state.get("sidebar_panel", "Machina")
+    current_mood = st.session_state.get("cia_mood", CIA_MOODS[0])
+
+    if current_panel == "CIA" and current_mood in CIA_MOODS:
+        current = current_mood
+    else:
+        current = "Machina"
+
+    choice = st.selectbox(
+        translate("análises"),
+        options,
+        index=options.index(current),
+        key="palco_cia_select",
+    )
+
+    if choice == "Machina":
+        st.session_state["sidebar_panel"] = "Machina"
+    else:
+        st.session_state["sidebar_panel"] = "CIA"
+        st.session_state["cia_mood"] = choice
+
+
 def pick_stage_font():
     """Escolhe fonte e corpo de leitura do Palco."""
     labels = [label for label, fonte in FONTES_MACHINA]
@@ -2058,6 +2089,7 @@ def page_ypoemas():
         rand = nav_cols[2].button("✻", help=help_rand, use_container_width=True)
         nest = nav_cols[3].button("▶", help=help_nest, use_container_width=True)
         manu = nav_cols[4].button("?", help="help !!!", use_container_width=True)
+        pick_cia_palco()
 
     temas_list = load_temas(st.session_state.book)
     maxy_ypoemas = len(temas_list) - 1
@@ -2725,10 +2757,6 @@ def page_config():
 
         st.markdown("<div class='config-card'>", unsafe_allow_html=True)
         draw_check_buttons_config()
-        draw_config_panel_buttons()
-        if st.session_state.get("sidebar_panel", "Machina") == "CIA":
-            st.markdown("&nbsp;", unsafe_allow_html=True)
-            render_cia_config_moods()
         st.markdown("</div>", unsafe_allow_html=True)
 
 
@@ -2771,10 +2799,8 @@ def main():
             st.image("./images/" + magy)
 
 
-        if chosen_id == "2":
-            draw_sidebar_panel_buttons(chosen_id)
-            if st.session_state.get("sidebar_panel", "Machina") == "CIA":
-                render_cia_sidebar()
+        if chosen_id != "2":
+            st.session_state["sidebar_panel"] = "Machina"
 
 
         palco = st.container()
