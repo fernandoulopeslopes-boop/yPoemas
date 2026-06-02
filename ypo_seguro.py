@@ -200,7 +200,6 @@ def apply_styles():
             max-width: 315px !important;
         }
 
-        /* Sidebar :: calibragem temporária com dragster visível */
         [data-testid="stSidebarResizer"],
         [data-testid="stSidebar"] [role="separator"] {
             display: none !important;
@@ -321,7 +320,6 @@ def apply_styles():
         }
 
 
-        /* Território sem dono :: lista de páginas no topo, sem linha fantasma */
         iframe[title="extra_streamlit_components.TabBar.tab_bar"] {
             display: block !important;
             width: 100% !important;
@@ -348,7 +346,6 @@ def apply_styles():
             background: transparent !important;
         }
 
-        /* Sintonia fina :: subir páginas */
         iframe[title="extra_streamlit_components.TabBar.tab_bar"] {
             margin-top: -0.62rem !important;
             margin-bottom: 0 !important;
@@ -358,7 +355,6 @@ def apply_styles():
             margin-top: 0 !important;
         }
 
-        /* Free Gramado :: liberar área útil real */
         section.main > div.block-container {
             max-width: 100vw !important;
             width: 100% !important;
@@ -415,7 +411,6 @@ def apply_styles():
         }
 
 
-        /* Território sem dono :: expander/palco no mesmo eixo */
         div[data-testid="stExpander"] {
             width: 100% !important;
             max-width: 100% !important;
@@ -1045,11 +1040,27 @@ def build_cia_analysis_formal(curr_ypoema):
 
     desenvolvimento = []
 
-    desenvolvimento.append(random.choice([
-        f"A alternância de extensão também trabalha: **{curtas} linhas breves**, **{medias} médias** e **{longas} mais longas** criam variação de fôlego, evitando que o poema avance em linha reta demais.",
-        f"O ritmo nasce da medida dos versos: linhas breves, médias e longas se revezam e fazem a leitura acelerar, conter-se ou respirar conforme o desenho pede.",
-        f"A diferença entre versos curtos e extensos não é ornamento gráfico; ela distribui pausas e pressões dentro do próprio corpo do poema.",
-    ]))
+    extensoes = []
+    if curtas:
+        extensoes.append(f"**{curtas} linhas breves**")
+    if medias:
+        extensoes.append(f"**{medias} médias**")
+    if longas:
+        extensoes.append(f"**{longas} mais longas**")
+
+    if len(extensoes) >= 2:
+        extensoes_texto = ", ".join(extensoes[:-1]) + " e " + extensoes[-1]
+    elif extensoes:
+        extensoes_texto = extensoes[0]
+    else:
+        extensoes_texto = ""
+
+    if extensoes_texto:
+        desenvolvimento.append(random.choice([
+            f"A alternância de extensão também trabalha: {extensoes_texto} criam variação de fôlego, evitando que o poema avance em linha reta demais.",
+            f"O ritmo nasce da medida dos versos: {extensoes_texto} fazem a leitura acelerar, conter-se ou respirar conforme o desenho pede.",
+            f"A diferença entre versos de extensão distinta não é ornamento gráfico; ela distribui pausas e pressões dentro do próprio corpo do poema.",
+        ]))
 
     if repetido:
         desenvolvimento.append(random.choice([
