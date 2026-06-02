@@ -280,6 +280,12 @@ def apply_styles():
 
         [data-testid="stSidebar"] > div:first-child {
             background-color: #eef6fb !important;
+            padding-top: 0.00rem !important;
+        }
+
+        /* Sidebar :: scroll_inho — sobe discretamente o primeiro controle */
+        [data-testid="stSidebar"] div[data-testid="stSidebarContent"] {
+            padding-top: 0.00rem !important;
         }
 
         [data-testid="stSidebar"] .stButton button {
@@ -293,7 +299,7 @@ def apply_styles():
         
         /* Sidebar :: respiro vertical entre controles */
         [data-testid="stSidebar"] div[data-testid="stVerticalBlock"] {
-            gap: 0.56rem !important;
+            gap: 0.50rem !important;
         }
 
         [data-testid="stSidebar"] div[data-testid="stElementContainer"] {
