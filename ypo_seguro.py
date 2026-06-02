@@ -331,7 +331,7 @@ def apply_styles():
             display: block !important;
             width: 100% !important;
             max-width: 100% !important;
-            margin: -0.62rem 0 0 0 !important;
+            margin: -0.62rem auto 0 auto !important;
             padding: 0 !important;
             border: 0 !important;
             outline: 0 !important;
@@ -524,7 +524,7 @@ def init_session_state():
         "rand": False,
         "stage_font": "Trebuchet",
         "stage_size": 21,
-        "sidebar_panel": "CIA",
+        "sidebar_panel": "Machina",
         "cia_name": "",
         "cia_mood": "Sintática",
         "cia_line0_offset_px": -385,
@@ -1409,13 +1409,16 @@ def pick_tema_palco():
 
 
 def pick_cia_palco():
-    """Escolhe a análise da CIA no camarote central do palco."""
-    options = CIA_MOODS
+    """Escolhe uma análise no camarote central; vazio mantém o palco do yPoema."""
+    options = [""] + CIA_MOODS
 
-    current = st.session_state.get("cia_mood", CIA_MOODS[0])
-    if current not in options:
-        current = CIA_MOODS[0]
-        st.session_state["cia_mood"] = current
+    current_panel = st.session_state.get("sidebar_panel", "Machina")
+    current_mood = st.session_state.get("cia_mood", CIA_MOODS[0])
+
+    if current_panel == "CIA" and current_mood in CIA_MOODS:
+        current = current_mood
+    else:
+        current = ""
 
     choice = st.selectbox(
         "",
@@ -1425,8 +1428,11 @@ def pick_cia_palco():
         label_visibility="collapsed",
     )
 
-    st.session_state["sidebar_panel"] = "CIA"
-    st.session_state["cia_mood"] = choice
+    if choice:
+        st.session_state["sidebar_panel"] = "CIA"
+        st.session_state["cia_mood"] = choice
+    else:
+        st.session_state["sidebar_panel"] = "Machina"
 
 
 def pick_stage_font():
@@ -2772,7 +2778,7 @@ def main():
     gramado = open_gramado()
 
     with gramado:
-        _pag_esq, _pag_centro, _pag_dir = st.columns([0.03, 9.94, 0.03])
+        _pag_esq, _pag_centro, _pag_dir = st.columns([0.50, 9.00, 0.50])
 
         with _pag_centro:
             chosen_id = stx.tab_bar(
