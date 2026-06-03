@@ -12,11 +12,6 @@ from extra_streamlit_components import TabBar as stx
 
 from lay_2_ypo import gera_poema
 
-try:
-    from st_copy_to_clipboard import st_copy_to_clipboard
-except Exception:
-    st_copy_to_clipboard = None
-
 from controle_cia import (
     CIA_MOODS,
     configure_cia,
@@ -24,6 +19,7 @@ from controle_cia import (
     render_cia_sidebar,
     render_cia_stage,
 )
+
 
 ABOUTS_LIST = [
     "comentários", "prefácil", "machina", "off-machina", "outros autores", "livros", "bibliografia",
@@ -168,16 +164,6 @@ def apply_styles():
         /*#MainMenu {visibility: hidden;}*/
         footer {visibility: hidden;}
 
-
-        /* Botões verdes 'mais' :: imagem em label markdown */
-        div[data-testid="stButton"] button img {
-            max-height: 24px !important;
-            height: 24px !important;
-            width: 24px !important;
-            vertical-align: middle !important;
-            margin: 0 auto !important;
-            display: inline-block !important;
-        }
 
         /* Machina :: botões sem quebra de linha */
         div[data-testid="stButton"] button,
@@ -619,65 +605,6 @@ def palco_status(book=None, pos=None, total=None):
     if pos is None or total is None:
         return f"🌿  {st.session_state.lang} ( {book} )"
     return f"🌿  {st.session_state.lang} ( {book} ) ( {pos} / {total} )"
-
-
-def machina_plain_text(html_text):
-    """Converte o texto visível da Machina em texto simples para cópia."""
-    if html_text is None:
-        return ""
-
-    text = str(html_text)
-    for old, new in {
-        "<br>": "\n",
-        "<br/>": "\n",
-        "<br />": "\n",
-        "&nbsp;": " ",
-    }.items():
-        text = text.replace(old, new)
-
-    text = re.sub(r"<[^>]+>", "", text)
-    text = text.replace("**", "")
-    text = text.replace("\r\n", "\n").replace("\r", "\n")
-    text = re.sub(r"\n{3,}", "\n\n", text)
-    return text.strip()
-
-
-def machina_copy_button(copy_text, key):
-    """Botão de cópia no navegador; se o componente faltar, não quebra a Machina."""
-    safe_text = machina_plain_text(copy_text)
-
-    if st_copy_to_clipboard is None:
-        st.caption("copiar indisponível")
-        return
-
-    try:
-        st_copy_to_clipboard(
-            safe_text,
-            key=key,
-            before_copy_label="copiar",
-            after_copy_label="texto copiado !!",
-            help="use Ctrl V para colar...",
-        )
-    except TypeError:
-        try:
-            st_copy_to_clipboard(
-                safe_text,
-                key=key,
-                before_copy_label="copiar",
-                after_copy_label="texto copiado !!",
-            )
-        except TypeError:
-            try:
-                st_copy_to_clipboard(safe_text, key=key)
-            except TypeError:
-                try:
-                    st_copy_to_clipboard(safe_text)
-                except Exception:
-                    st.caption("copiar indisponível")
-            except Exception:
-                st.caption("copiar indisponível")
-    except Exception:
-        st.caption("copiar indisponível")
 
 
 ### bof: tools
@@ -1429,7 +1356,7 @@ def page_mini():
         st.session_state.rand = False
 
     st.session_state.tema = temas_list[st.session_state.mini]
-    more = more.button("+", help=help_more)
+    more = more.button("✚", help=help_more)
 
     if more:
         st.session_state.rand = False
@@ -1545,7 +1472,7 @@ def page_ypoemas():
         help_more = help_tips[4]
 
         nav_cols = st.columns([1, 1, 1, 1, 1])
-        more = nav_cols[0].button("+", help=help_more, use_container_width=True)
+        more = nav_cols[0].button("✚", help=help_more, use_container_width=True)
         last = nav_cols[1].button("◀", help=help_last, use_container_width=True)
         rand = nav_cols[2].button("✻", help=help_rand, use_container_width=True)
         nest = nav_cols[3].button("▶", help=help_nest, use_container_width=True)
@@ -1643,11 +1570,6 @@ def page_ypoemas():
             if st.session_state.get("sidebar_panel") != "CIA" and st.session_state.draw:
                 LOGO_IMAGE = load_arts(st.session_state.tema)
 
-            copy_left, copy_right = st.columns([8.8, 1.2])
-            with copy_right:
-                copy_key = "copy_ypoema_" + str(abs(hash(machina_plain_text(curr_ypoema))))
-                machina_copy_button(curr_ypoema, copy_key)
-
             if st.session_state.get("sidebar_panel") == "CIA":
                 col_poema, col_cia = st.columns([5, 5])
                 with col_poema:
@@ -1686,7 +1608,7 @@ def page_eureka():
         )
 
     with more:
-        more = more.button("+", help=help_more)
+        more = more.button("✚", help=help_more)
 
     with rand:
         rand = rand.button("✻", help=help_rand)
