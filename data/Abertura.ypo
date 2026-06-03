@@ -1,14 +1,14 @@
 #
 # Abertura.ypo
 #
-|01|01|Zero_0101|F|1|1|Desde **|Partindo de **|Logo em **|Já de início **|A abertura com **|Na entrada com **|
-|01|02|Zero_0102|F|1|1|“{_cia_clip(abertura)}”**|
-|01|03|Zero_0103|F|1|1|o poema|o texto|o verso|o prólogo|
-|01|04|Zero_0104|F|1|1|estabelece|começa a organizar|escolhe|define|anuncia|prepara|
-|01|05|Zero_0105|F|1|1|o|seu|um|
-|01|06|Zero_0106|F|1|1|passo|campo|modo|eixo|
-|01|07|Zero_0107|F|1|1|de tensão|de forças|de aproximação|de suspensão|
-|01|08|Zero_0108|F|1|1|que prepara|que orienta|que abre portas para|
-|01|09|Zero_0109|F|1|1|a pressão|o trajeto|o caminho|o percurso|o enunciado|
-|01|10|Zero_0110|F|1|1|da leitura.|que virá.|que está por vir.|
+|01|01|Abertura_0101|F|1|1|Desde **|Partindo de **|Logo em **|Já de início **|A abertura com **|Na entrada com **|
+|01|02|Abertura_0102|F|1|1|“{_cia_clip(abertura)}”**|
+|02|03|Abertura_0203|F|1|1|o poema|o texto|o verso|o prólogo|
+|02|04|Abertura_0204|F|1|1|estabelece|começa a organizar|escolhe|define|anuncia|prepara|
+|02|05|Abertura_0205|F|1|1|o|seu|um|
+|02|06|Abertura_0206|F|1|1|passo|campo|modo|eixo|
+|02|07|Abertura_0207|F|1|1|de tensão|de forças|de aproximação|de suspensão|
+|03|08|Abertura_0308|F|1|1|que prepara|que orienta|que abre portas para|
+|03|09|Abertura_0309|F|1|1|a pressão|o trajeto|o caminho|o percurso|o enunciado|
+|03|10|Abertura_0310|F|1|1|da leitura.|que virá.|que está por vir.|
 <eof>
