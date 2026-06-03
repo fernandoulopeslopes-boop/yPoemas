@@ -556,6 +556,8 @@ def init_session_state():
         "rand": False,
         "stage_font": "Trebuchet",
         "stage_size": 21,
+        "curadoria_on": False,
+        "curadoria_item": "alterei um tema",
         "sidebar_panel": "Machina",
         "cia_name": "",
         "cia_mood": "Sintática",
@@ -605,6 +607,92 @@ def palco_status(book=None, pos=None, total=None):
     if pos is None or total is None:
         return f"🌿  {st.session_state.lang} ( {book} )"
     return f"🌿  {st.session_state.lang} ( {book} ) ( {pos} / {total} )"
+
+
+CURADORIA_KEY = "machina"
+
+CURADORIA_LIST = [
+    "alterei um tema",
+    "criei um tema novo",
+    "reconstrução geral",
+    "conferência documental",
+]
+
+CURADORIA_TEXTOS = {
+    "alterei um tema": [
+        "Use Build_One.",
+        "Quando mexer em um arquivo .ypo, rode Build_One para o tema alterado.",
+        "Atualizações esperadas: léxico/index, matrix e info.",
+        "Depois: conferir números, commit e deploy.",
+    ],
+    "criei um tema novo": [
+        "Checklist inicial:",
+        "1. incluir o novo tema em base/ativos.txt",
+        "2. incluir o novo tema em base/images.txt",
+        "3. incluir o novo tema em temp/readings.txt",
+        "4. incluir o novo tema em base/rol_*.txt",
+        "5. atualizar ABOUT_NOTES.md se necessário",
+        "Depois: rodar Build_One, conferir números, commit e deploy.",
+    ],
+    "reconstrução geral": [
+        "Use Build_All apenas quando a sincronização global fizer sentido.",
+        "Build_All atualiza léxico/index, matrix e info em uma passada geral.",
+        "Depois: conferir números, commit e deploy.",
+    ],
+    "conferência documental": [
+        "Objetivo: preservar a fidelidade das informações públicas da Machina.",
+        "Conferir: ABOUT_INDEX.md, lexico_pt.txt, matrix.txt, info.txt e gráfico 3D.",
+        "Os números documentais devem refletir a Machina atual.",
+    ],
+}
+
+
+def curadoria_ativa():
+    """Ativa a curadoria interna por chave discreta na URL."""
+    if st.session_state.get("curadoria_on"):
+        return True
+
+    try:
+        value = st.query_params.get("curadoria")
+    except Exception:
+        return False
+
+    if isinstance(value, list):
+        value = value[0] if value else ""
+
+    if value == CURADORIA_KEY:
+        st.session_state.curadoria_on = True
+        return True
+
+    return False
+
+
+def render_curadoria_sidebar():
+    """Troca temporariamente a lista de idiomas pela curadoria privada."""
+    st.sidebar.caption("curadoria interna")
+
+    current = st.session_state.get("curadoria_item", CURADORIA_LIST[0])
+    if current not in CURADORIA_LIST:
+        current = CURADORIA_LIST[0]
+
+    choice = st.sidebar.selectbox(
+        "rotina de curadoria...",
+        CURADORIA_LIST,
+        index=CURADORIA_LIST.index(current),
+        key="curadoria_select",
+    )
+    st.session_state.curadoria_item = choice
+
+    for line in CURADORIA_TEXTOS.get(choice, []):
+        st.sidebar.caption(line)
+
+    if st.sidebar.button("done", key="curadoria_done", use_container_width=True):
+        st.session_state.curadoria_on = False
+        try:
+            st.query_params.clear()
+        except Exception:
+            pass
+        st.rerun()
 
 
 ### bof: tools
@@ -1926,7 +2014,11 @@ def page_abouts():
 
 def render_sidebar_for_page(chosen_id):
     """Renderiza os controles fixos do leitor."""
-    pick_lang()
+    if curadoria_ativa():
+        render_curadoria_sidebar()
+    else:
+        pick_lang()
+
     pick_stage_font()
     draw_check_buttons()
 
