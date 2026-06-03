@@ -25,9 +25,6 @@ from controle_cia import (
     render_cia_stage,
 )
 
-
-MAIS_ICON_LABEL = "![mais](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAASUSURBVDhPrZN5UNRlGIB/Y05qmChqHlM6HcToTFmWpaaWhZCGqVBaoUxhk+Q1E9SglgmKSg6SGsihgGjg7oq4guziciwLu+wu/EBYrmVBjuUqMMDBA3DpaXYcNbA/e2bef755v2e+7z0E/meEkQf/pqe7l5v2uNFN741uOtv/pLW1jZaWlpGpD/lP4XVLPSZzBWKVidr6epqt9riOxVKHrlQkVZlOQY6GVmvryKvDhW1tbRj0BsrLyslvNHKmXk5oeTQBJXvxF/dwuDyCeMsl9C3lFOQZOB1zBo02n8F7g48LOzs7Sc2Qk12dS0aTgoDCvXiV+bGmZguedd/gafFltdkXz2tbCNAGkdaUTU61lqNRx1FkKrHduzdceE0sQ7SUc6Iyko1qb9bX+OBm3cA6sy+79CHsNhxinXkzrk2f8knlJjaovImojKG4vpKoiFisVusjod1eaqpAUVPAZs02NlR5s/KaJ4uNbuwQ/RnCxt/ATjGQxUXuuJV8jJfoycYcX7LqdaTI5ajVufeFNpuNtvY2FCY12zOC+KjIh2UGD5YWrGV+ritbDd8B97/jV/gDb+Z/yBLtapbpV+Cm82Sn4idkRenEJyXS3dODMDAwgMFgJEKXyKrMr1hg9MBFuZBXFMt5KXUJPqod3B7oo/t2Lx4pXzIxdg4zz85l+oWXcVEtZPnl9ZwukRAdcwqlMhNhaGiIWpOZkLxw3iv04l31GgL0u/i+8Ee+zdlNqDqCxoZaGhrMBCvD+EK2la/Tt+OT6ccc6SJcLiziiO43pAnJaLVahMHBQapEE3s0u3ireCmrrnyG5VYTHTc76LjVS8df3TTVWmipq6Pv7l367TUHeunHPcWLqZJnCdQGkpIsQRRFhP7+fkRtEUG5+3BOfx1nyTv46/YTXBDKgfwwEookNLY30dzeTHJZKmElkRyriOGXimhelS1nytnn2as7QPLvUvR6PcKdO3fQZOcTrjrJvERXJkpcGBc/g/EJU3ki0gFX6Upa+5pp67PiKl2FEDkOhzgnHOJm4Ch1wfnUUiK0CRwPj0SVlYXQ19dH1lUVF0Q5Hkk+TLs4l7FpUxmrmMyoSxNwz/Kgq6edG93trMj2QJA/jUPGFMZfmc6EFGfcznkjK7rIwZD9GIzG+01psVoprDSSUCVlruwNJmROYbTaEUH5FO6addhsQwzabLhq1iJkjONJ9UQcMifzguw14mtkJKWeIy4mCnv5Hm6KsbgYY1M523MDmH7qOcZmTUMocmS2dh57ioMJFIOZXTAPweDIGNUzOMbOxC/fn4o/zBz4eT9lZWWPNsVOVVU1584noTBlc1BzDOfEhQiXJyGonBgjd2L0ZSdGXXVCSJ3Ei2ffJqjwBNl1Wg4dCuFkxEnsvRgmtA94bW0t+gIjpWI1kkoFn6u2MV/6PpNOz8IxbhYLJB+wSbkNWV0WpupGDu8LRXr+PF1dXdg3bpjwAfa5zFXlkaPLI0fMR19dRmnHdUo7GjBaKtCY9ITHnuDIwTByMrNHXn9c+AD7iy2VZrTZOqKPx3N431Eif40iTZ5GcXHxyPSH/AMZWNpIexdF2AAAAABJRU5ErkJggg==)"
-
 ABOUTS_LIST = [
     "comentários", "prefácil", "machina", "off-machina", "outros autores", "livros", "bibliografia",
     "notes", "imagens", "pontuação", "poly", "tradittore", "pensares", "machina-IA", "samizdàt", "index", "license",
@@ -1432,7 +1429,7 @@ def page_mini():
         st.session_state.rand = False
 
     st.session_state.tema = temas_list[st.session_state.mini]
-    more = more.button(MAIS_ICON_LABEL, help=help_more)
+    more = more.button("+", help=help_more)
 
     if more:
         st.session_state.rand = False
@@ -1548,7 +1545,7 @@ def page_ypoemas():
         help_more = help_tips[4]
 
         nav_cols = st.columns([1, 1, 1, 1, 1])
-        more = nav_cols[0].button(MAIS_ICON_LABEL, help=help_more, use_container_width=True)
+        more = nav_cols[0].button("+", help=help_more, use_container_width=True)
         last = nav_cols[1].button("◀", help=help_last, use_container_width=True)
         rand = nav_cols[2].button("✻", help=help_rand, use_container_width=True)
         nest = nav_cols[3].button("▶", help=help_nest, use_container_width=True)
@@ -1689,7 +1686,7 @@ def page_eureka():
         )
 
     with more:
-        more = more.button(MAIS_ICON_LABEL, help=help_more)
+        more = more.button("+", help=help_more)
 
     with rand:
         rand = rand.button("✻", help=help_rand)
