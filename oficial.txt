@@ -117,6 +117,7 @@ TEMAS_ATIVOS = {
     'Reinos': 'joco',
     'Remedeio': 'joco',
     'Restos' : 'joco',
+    'Resumida' : 'metalinguagem',
     'Rever': 'poesia',
     'Rito': 'joco',
     'Salute': 'joco',
