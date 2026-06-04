@@ -5,8 +5,6 @@ import random
 import base64
 import socket
 import asyncio
-from datetime import datetime
-
 import streamlit as st
 from extra_streamlit_components import TabBar as stx
 
@@ -19,7 +17,6 @@ from readings import (
 
 
 from controle_cia import (
-    CIA_MOODS,
     configure_cia,
     draw_sidebar_panel_buttons,
     render_cia_sidebar,
@@ -1507,7 +1504,6 @@ def page_ypoemas():
         if st.session_state.talk:
             talk(curr_ypoema)
 
-        # st.markdown(get_binary_file_downloader_html('./temp/'+'LYPO_' + IPAddres, '➪ '+st.session_state.tema), unsafe_allow_html=True)
 
 def page_eureka():
     help_tips = load_help(st.session_state.lang)
