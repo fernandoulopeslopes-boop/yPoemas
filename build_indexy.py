@@ -11,7 +11,7 @@ import string
 from tools import load_temas_ativos
 
 
-def gera_indexy():
+def gera_indexy(progress_callback=None):
 
     start_time = time.time()
     escala = [
@@ -49,7 +49,9 @@ def gera_indexy():
     index_list = []
     acm_variatio = 0
 
-    for script in temas_list:  # loop to iterate all files.ypo
+    total_temas = len(temas_list)
+
+    for atual, script in enumerate(temas_list, start=1):  # loop to iterate all files.ypo
         try:
             with open(script, encoding="utf-8") as file:  # iterate file line by line
                 path = os.path.basename(script)
@@ -57,6 +59,9 @@ def gera_indexy():
                 tabela = os.path.splitext(path)[0]
                 tabela.replace(".ypo", " : ")
                 print(tabela)
+
+                if progress_callback:
+                    progress_callback(atual, total_temas, tabela)
 
                 usos_por_fonte = {}
                 qtd_itimos_list = []
