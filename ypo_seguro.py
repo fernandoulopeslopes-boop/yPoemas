@@ -70,8 +70,7 @@ VOICES_EDGE_TTS = {
     "es": "es-ES-AlvaroNeural",
     "fr": "fr-FR-HenriNeural",
     "it": "it-IT-DiegoNeural",
-    "en": "en-GB-RyanNeural",
-    "en": "en-US-GuyNeural",
+    "en": "en-US-AvaNeural",
     "gl": "gl-ES-RoiNeural",
     "eu": "eu-ES-AnderNeural",
     "de": "de-DE-ConradNeural",
@@ -79,7 +78,7 @@ VOICES_EDGE_TTS = {
     "nl": "nl-NL-MaartenNeural",
     "pl": "pl-PL-MarekNeural",
     "ro": "ro-RO-EmilNeural",
-    "nb": "nb-NO-FinnNeural",
+    "no": "nb-NO-PernilleNeural",
     "fi": "fi-FI-SelmaNeural",
     "is": "is-IS-GunnarNeural",
     "hu": "hu-HU-TamasNeural",
@@ -87,7 +86,6 @@ VOICES_EDGE_TTS = {
     "ca": "ca-ES-EnricNeural",
     "ru": "ru-RU-DmitryNeural",
 }
-
 IDIOMAS_OFICIAIS = [
     ("Português", "Brasil", "pt", "poly_pt.txt"),
     ("Español", "Espanha", "es", "poly_es.txt"),
@@ -1128,17 +1126,15 @@ def load_arts(nome_tema):  # Select image for arts
         if file.endswith(".jpg"):
             arts_list.append(file)
 
-    sorte = random.randrange(0, len(arts_list))
-    image = arts_list[sorte]
+    if not arts_list:
+        return None
 
-    if image in st.session_state.arts:  # insert new image
-        while image in st.session_state.arts:
-            sorte = random.randrange(0, len(arts_list))
-            image = arts_list[sorte]
-        st.session_state.arts.append(image)
-        image = st.session_state.arts[-1]
-    else:
-        st.session_state.arts.append(image)
+    available_arts = [image for image in arts_list if image not in st.session_state.arts]
+    if not available_arts:
+        available_arts = arts_list
+
+    image = random.choice(available_arts)
+    st.session_state.arts.append(image)
 
     if len(st.session_state.arts) > 36:  # remove first
         del st.session_state.arts[0]
@@ -1184,7 +1180,7 @@ def talk(text):
     text_clean = text.replace("<br>", " ").replace("< br>", "").replace("<br >", "").replace("<br/>", " ")
 
     # Mapeamento de vozes neurais de alta qualidade
-    selected_voice = VOICES_EDGE_TTS.get(st.session_state.lang, "pt-BR-AntonioNeural")
+    selected_voice = VOICES_EDGE_TTS.get(st.session_state.lang, "pt-BR-FranciscaNeural")
 
     async def generate_audio():
         communicate = edge_tts.Communicate(text_clean, selected_voice)
@@ -1242,7 +1238,7 @@ def page_mini():
     temas_list = load_temas("todos os temas")
     maxy_mini = len(temas_list)
 
-    if st.session_state.mini > maxy_mini:  # just in case
+    if st.session_state.mini >= maxy_mini:  # just in case
         st.session_state.mini = 0
 
     foo1, more, rand, auto, foo2 = st.columns([3.55, 1, 1, 1.9, 3.55])
@@ -1693,7 +1689,7 @@ def page_off_machina():  # available off_machina_books
             st.session_state.off_take = maxy_off_machina
 
     if rand:
-        st.session_state.off_take = random.randrange(0, maxy_off_machina)
+        st.session_state.off_take = random.randrange(0, maxy_off_machina + 1)
 
     if nest:
         st.session_state.off_take += 1
@@ -1763,7 +1759,8 @@ def page_off_machina():  # available off_machina_books
                 with capa:
                     if off_book_name == "livro_vivo":
                         LOGO_CAPA = load_arts("livro_vivo")
-                        st.image(LOGO_CAPA, width="stretch")
+                        if LOGO_CAPA:
+                            st.image(LOGO_CAPA, width="stretch")
                     else:
                         st.image(
                             "./off_machina/capa_" + off_book_name + ".jpg",
@@ -1850,12 +1847,17 @@ def _query_param_value(name):
             return ""
 
 
-def _ferramentas_private_active():
-    return _query_param_value("ferramentas").lower() == "machina"
+def _tools_machina_private_active():
+    return (
+        _query_param_value("tools_Machina").lower() == "machina"
+        or _query_param_value("ferramentas").lower() == "machina"
+    )
 
 
-def _close_ferramentas_private():
+def _close_tools_machina_private():
     try:
+        if "tools_Machina" in st.query_params:
+            del st.query_params["tools_Machina"]
         if "ferramentas" in st.query_params:
             del st.query_params["ferramentas"]
     except Exception:
@@ -1870,92 +1872,68 @@ def _close_ferramentas_private():
         st.experimental_rerun()
 
 
-def _run_build_script(label, script_name):
-    import runpy
-    import traceback
-
-    status = st.empty()
-
-    try:
-        if not os.path.exists(script_name):
-            status.error(f"erro ao executar {label}: arquivo {script_name} não encontrado.")
-            return
-
-        status.write(f"executando {label}...")
-        runpy.run_path(script_name, run_name="__main__")
-        status.success(f"{label} realizado com sucesso.")
-    except Exception:
-        status.error(f"erro ao executar {label}.")
-        st.code(traceback.format_exc())
-
-
-def _run_build_indexy_with_progress():
+def _run_build_all_with_progress():
     import traceback
 
     progress = st.progress(0)
     status = st.empty()
 
     try:
+        from build_lexico import gera_lexico
         from build_indexy import gera_indexy
+        from build_matrix import gera_matrix
+        from build_info import gera_info
 
-        def progresso(atual, total, tema):
-            if total <= 0:
-                progress.progress(0)
-            else:
-                progress.progress(min(atual / total, 1.0))
-            status.write(f"recalculando INDEXES: {atual} / {total} — {tema}")
+        status.write("gerando léxico...")
+        gera_lexico()
+        progress.progress(25)
 
-        status.write("recalculando INDEXES...")
-        gera_indexy(progress_callback=progresso)
-        progress.progress(1.0)
-        status.success("Build_indexy realizado com sucesso.")
+        status.write("gerando index / ABOUT_INDEX...")
+        gera_indexy()
+        progress.progress(50)
+
+        status.write("gerando matrix...")
+        gera_matrix()
+        progress.progress(75)
+
+        status.write("gerando info...")
+        gera_info()
+        progress.progress(100)
+
+        status.success("tools_Machina concluída.")
     except Exception:
         progress.progress(0)
-        status.error("erro ao executar Build_indexy.")
+        status.error("Erro em tools_Machina.")
         st.code(traceback.format_exc())
 
 
-def render_ferramentas_sidebar():
-    st.sidebar.markdown("### Caixa de Ferramentas")
+def render_tools_machina_sidebar():
+    st.sidebar.markdown("### tools_Machina")
 
     escolha = st.sidebar.selectbox(
         "↓ manutenção interna",
         [
             "aguardar",
-            "Build All",
-            "Recalcular INDEXES",
-            "Build Docs",
+            "Build All — atualizar números da Machina",
             "done",
         ],
         key="ferramentas_select",
     )
 
     if escolha == "done":
-        _close_ferramentas_private()
+        _close_tools_machina_private()
 
-    elif escolha == "Build All":
-        st.sidebar.caption("Executa build_all.py.")
+    if escolha == "Build All — atualizar números da Machina":
+        st.sidebar.warning("tools_Machina: atualiza léxico, ABOUT_INDEX, matrix e info.")
         if st.sidebar.button("executar Build All", key="executar_build_all", use_container_width=True):
             with st.sidebar:
-                _run_build_script("Build_all", "build_all.py")
-
-    elif escolha == "Recalcular INDEXES":
-        st.sidebar.caption("Recalcula ABOUT_INDEX.md com progresso por tema.")
-        if st.sidebar.button("executar Build_indexy", key="executar_build_indexy", use_container_width=True):
-            with st.sidebar:
-                _run_build_indexy_with_progress()
-
-    elif escolha == "Build Docs":
-        st.sidebar.caption("Executa build_docs.py, se existir.")
-        if st.sidebar.button("executar Build_docs", key="executar_build_docs", use_container_width=True):
-            with st.sidebar:
-                _run_build_script("Build_docs", "build_docs.py")
+                _run_build_all_with_progress()
 
 
 def render_sidebar_for_page(chosen_id):
     """Renderiza os controles fixos do leitor."""
-    if _ferramentas_private_active():
-        render_ferramentas_sidebar()
+    if _tools_machina_private_active():
+        render_tools_machina_sidebar()
         return
 
     pick_lang()
@@ -1992,14 +1970,7 @@ def main():
 
         st.markdown("<div class='machina-divider-palco'><hr /></div>", unsafe_allow_html=True)
 
-        page_image_map = {
-            "1": "img_mini.jpg",
-            "2": "img_ypoemas.jpg",
-            "3": "img_eureka.jpg",
-            "4": "img_off-machina.jpg",
-            "5": "img_about.jpg",
-        }
-        magy = page_image_map.get(chosen_id, "img_ypoemas.jpg")
+        magy = PAGE_IMAGES.get(chosen_id, "img_ypoemas.jpg")
 
         render_sidebar_for_page(chosen_id)
 
