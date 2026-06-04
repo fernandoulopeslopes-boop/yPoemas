@@ -90,6 +90,7 @@ Psiu : poesia
 Reger : poesia
 Reinos : joco
 Remedeio : joco
+Resumida : metalinguagem
 Rever : poesia
 Restos : poesia
 Rito : joco
