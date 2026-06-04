@@ -7,7 +7,6 @@ import string
     com todas as palavras em this_tema
 """
 
-
 def build_lexico(this_tema):
     start_time = time.time()
     file = os.path.join("./data", this_tema + ".ypo")
@@ -60,15 +59,9 @@ def build_lexico(this_tema):
 
                 list_lexico.append((palas + " : " + fonte) + "\n")
 
-    # rebuild lexico
-    # with open(os.path.join("./base/lexico_pt.txt"), "w", encoding="utf-8") as lex:
-    #    for line in list_lexico:
-    #        lex.write(line + "\n")
-
     # printing runtime
     print("Runtime:", time.time() - start_time)
     print('done !')
-
 
 # Driver Code:
 if __name__ == "__main__":
