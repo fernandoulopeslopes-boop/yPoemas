@@ -2,7 +2,7 @@
 # Abertura.ypo
 #
 |01|01|Abertura_0101|T|1|1|Desde **|Partindo de **|Logo em **|Já de início **|A abertura com **|Na entrada com **|
-|01|02|Abertura_0102|T|1|1|“{_cia_clip(abertura)}”**|
+|01|02|Abertura_0102|T|1|1|“{ABERTURA}”**|
 |02|03|Abertura_0203|T|1|1|o poema|o texto|o verso|o prólogo|
 |02|04|Abertura_0204|T|1|1|estabelece|começa a organizar|escolhe|define|anuncia|prepara|encontra|
 |02|05|Abertura_0205|T|1|1|o|seu|um|
