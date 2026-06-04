@@ -1870,34 +1870,48 @@ def _close_ferramentas_private():
         st.experimental_rerun()
 
 
-def _run_build_all_with_progress():
+def _run_build_script(label, script_name):
     import runpy
+    import traceback
+
+    status = st.empty()
+
+    try:
+        if not os.path.exists(script_name):
+            status.error(f"erro ao executar {label}: arquivo {script_name} não encontrado.")
+            return
+
+        status.write(f"executando {label}...")
+        runpy.run_path(script_name, run_name="__main__")
+        status.success(f"{label} realizado com sucesso.")
+    except Exception:
+        status.error(f"erro ao executar {label}.")
+        st.code(traceback.format_exc())
+
+
+def _run_build_indexy_with_progress():
     import traceback
 
     progress = st.progress(0)
     status = st.empty()
 
     try:
-        status.write("gerando léxico...")
-        runpy.run_path("build_lexico.py", run_name="__main__")
-        progress.progress(25)
+        from build_indexy import gera_indexy
 
-        status.write("gerando index / ABOUT_INDEX...")
-        runpy.run_path("build_indexy.py", run_name="__main__")
-        progress.progress(50)
+        def progresso(atual, total, tema):
+            if total <= 0:
+                progress.progress(0)
+            else:
+                progress.progress(min(atual / total, 1.0))
+            status.write(f"recalculando INDEXES: {atual} / {total} — {tema}")
 
-        status.write("gerando matrix / gráfico 3D...")
-        runpy.run_path("build_matrix.py", run_name="__main__")
-        progress.progress(75)
-
-        status.write("gerando info...")
-        runpy.run_path("build_info.py", run_name="__main__")
-        progress.progress(100)
-
-        status.success("Caixa de Ferramentas concluída.")
+        status.write("recalculando INDEXES...")
+        gera_indexy(progress_callback=progresso)
+        progress.progress(1.0)
+        status.success("Build_indexy realizado com sucesso.")
     except Exception:
         progress.progress(0)
-        status.error("Erro na Caixa de Ferramentas.")
+        status.error("erro ao executar Build_indexy.")
         st.code(traceback.format_exc())
 
 
@@ -1908,7 +1922,9 @@ def render_ferramentas_sidebar():
         "↓ manutenção interna",
         [
             "aguardar",
-            "Build All — atualizar números da Machina",
+            "Build All",
+            "Recalcular INDEXES",
+            "Build Docs",
             "done",
         ],
         key="ferramentas_select",
@@ -1917,11 +1933,23 @@ def render_ferramentas_sidebar():
     if escolha == "done":
         _close_ferramentas_private()
 
-    if escolha == "Build All — atualizar números da Machina":
-        st.sidebar.warning("Rotina interna: atualiza léxico, ABOUT_INDEX, matrix e info.")
+    elif escolha == "Build All":
+        st.sidebar.caption("Executa build_all.py.")
         if st.sidebar.button("executar Build All", key="executar_build_all", use_container_width=True):
             with st.sidebar:
-                _run_build_all_with_progress()
+                _run_build_script("Build_all", "build_all.py")
+
+    elif escolha == "Recalcular INDEXES":
+        st.sidebar.caption("Recalcula ABOUT_INDEX.md com progresso por tema.")
+        if st.sidebar.button("executar Build_indexy", key="executar_build_indexy", use_container_width=True):
+            with st.sidebar:
+                _run_build_indexy_with_progress()
+
+    elif escolha == "Build Docs":
+        st.sidebar.caption("Executa build_docs.py, se existir.")
+        if st.sidebar.button("executar Build_docs", key="executar_build_docs", use_container_width=True):
+            with st.sidebar:
+                _run_build_script("Build_docs", "build_docs.py")
 
 
 def render_sidebar_for_page(chosen_id):
