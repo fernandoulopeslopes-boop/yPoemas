@@ -1871,31 +1871,27 @@ def _close_ferramentas_private():
 
 
 def _run_build_all_with_progress():
+    import runpy
     import traceback
 
     progress = st.progress(0)
     status = st.empty()
 
     try:
-        from build_lexico import gera_lexico
-        from build_indexy import gera_indexy
-        from build_matrix import gera_matrix
-        from build_info import gera_info
-
         status.write("gerando léxico...")
-        gera_lexico()
+        runpy.run_path("build_lexico.py", run_name="__main__")
         progress.progress(25)
 
         status.write("gerando index / ABOUT_INDEX...")
-        gera_indexy()
+        runpy.run_path("build_indexy.py", run_name="__main__")
         progress.progress(50)
 
-        status.write("gerando matrix...")
-        gera_matrix()
+        status.write("gerando matrix / gráfico 3D...")
+        runpy.run_path("build_matrix.py", run_name="__main__")
         progress.progress(75)
 
         status.write("gerando info...")
-        gera_info()
+        runpy.run_path("build_info.py", run_name="__main__")
         progress.progress(100)
 
         status.success("Caixa de Ferramentas concluída.")
