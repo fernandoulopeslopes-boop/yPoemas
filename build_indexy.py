@@ -1,188 +1,197 @@
-""" build_indexy.py
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
-    Função para gerar ./md_files/ABOUT_INDEX.md
-    para todos os temas do ambiente ypo
+"""
+build_indexy.py
 
+Gera o índice combinatório dos temas da Machina para uso no ABOUT_index.md.
+
+Contrato usado pelo ypo_seguro.py / tools_Machina:
+    from build_indexy import gera_indexy
+    gera_indexy()
+
+Este módulo não depende de tools.py e não altera arquivos .ypo.
 """
 
 import os
-import time
-import string
-from tools import load_temas_ativos
+import sys
+from decimal import Decimal, getcontext
 
 
-def gera_indexy(progress_callback=None):
+BASE_DIR = "./base"
+DATA_DIR = "./data"
+MD_DIR = "./md_files"
 
-    start_time = time.time()
-    escala = [
-        "mil",
-        "milhões",
-        "bilhões",
-        "trilhões",
-        "quatrilhões",
-        "quintilhões",
-        "sextilhões",
-        "setilhões",
-        "octilhões",
-        "nonilhões",
-        "decilhões",
-        "undecilhões",
-        "dodecilhões",
-        "tredecilhões",
-        "quatuordecilhões",
-        "quindecilhões",
-        "sedecilhões",
-        "septendecilhões",
+_IGNORE_PREFIXES = ("#", "//", "--")
+
+
+def _clean_theme_name(value):
+    """Preserva o nome curatorial do tema; não usa capitalize."""
+    value = str(value).replace("\ufeff", "").strip()
+
+    if value.endswith(".ypo"):
+        value = os.path.splitext(os.path.basename(value))[0]
+
+    return value.strip()
+
+
+def _read_theme_list_from_file(path):
+    """Lê nomes de temas de um arquivo de lista da Machina."""
+    temas = []
+
+    if not os.path.exists(path):
+        return temas
+
+    with open(path, encoding="utf-8", errors="replace") as file:
+        for raw_line in file:
+            line = raw_line.strip()
+            if not line or line.startswith(_IGNORE_PREFIXES):
+                continue
+
+            if "|" in line:
+                parts = [part.strip() for part in line.split("|") if part.strip()]
+                if parts:
+                    line = parts[0]
+            elif " : " in line:
+                line = line.partition(" : ")[0]
+            elif ":" in line:
+                line = line.partition(":")[0]
+
+            tema = _clean_theme_name(line.replace(" ", ""))
+            if tema and tema not in temas:
+                temas.append(tema)
+
+    return temas
+
+
+def load_temas_ativos():
+    """Retorna os temas ativos sem depender de tools.py."""
+    candidates = [
+        os.path.join(BASE_DIR, "ativos.txt"),
+        os.path.join(BASE_DIR, "rol_todos os temas.txt"),
+        os.path.join(BASE_DIR, "rol_todos_os_temas.txt"),
     ]
 
-    temas_list = []
-    with open(os.path.join("./base/ativos.txt"), encoding="utf-8") as file:
-        for line in file:
-            this_line = line.strip("\n")
-            part_line = this_line.partition(" : ")
-            tema_ativo = part_line[0]
-            file = os.path.join("./data/" + tema_ativo + ".ypo")
-            temas_list.append(file)
+    temas = []
+    for candidate in candidates:
+        temas = _read_theme_list_from_file(candidate)
+        if temas:
+            break
 
-    error_list = []
-    table_list = []
-    index_list = []
-    acm_variatio = 0
-
-    total_temas = len(temas_list)
-
-    for atual, script in enumerate(temas_list, start=1):  # loop to iterate all files.ypo
-        try:
-            with open(script, encoding="utf-8") as file:  # iterate file line by line
-                path = os.path.basename(script)
-                os.path.splitext(path)
-                tabela = os.path.splitext(path)[0]
-                tabela.replace(".ypo", " : ")
-                print(tabela)
-
-                if progress_callback:
-                    progress_callback(atual, total_temas, tabela)
-
-                usos_por_fonte = {}
-                qtd_itimos_list = []
-
-                for line in file:
-                    if line.startswith("|"):
-                        alinhas = line.split("|")
-                        if len(alinhas) == 0:
-                            pass
-                        elif len(alinhas) >= 7:
-                            nova_fonte = alinhas[3]
-                            total_itimos = len(alinhas[7 : len(alinhas) - 1])
-
-                            usos = usos_por_fonte.get(nova_fonte, 0)
-                            saldo_itimos = total_itimos - usos
-
-                            if saldo_itimos <= 0:
-                                saldo_itimos = 1  # because "trois fois rien"
-
-                            qtd_itimos_list.append(saldo_itimos)
-                            usos_por_fonte[nova_fonte] = usos + 1
-
-            qtd_variatio = 1
-            for nany in qtd_itimos_list:
-                qtd_variatio = +(qtd_variatio * nany)
-            qtd_variatio = abs(qtd_variatio)
-            acm_variatio += qtd_variatio
-            num_variatio = f"{qtd_variatio:,}"
-
-            potent = "nonono"
-            pontos = num_variatio.count(",") - 1
-            if pontos >= 0:
-                potent = escala[pontos]
-
-            index_list.append(
-                tabela + " : " + f"{qtd_variatio:,}" + " (" + potent + ")"
-            )
-
-        except UnicodeDecodeError:
-            error_list.append(script)
-            pass
-
-    # reconstrói ABOUT_INDEX.md
-    with open(
-        os.path.join("./md_files/" + "ABOUT_INDEX.md"), "w", encoding="utf-8"
-    ) as file:
-        file.write("variações para cada tema:  \n")
-        file.write("___  \n")
-
-        for linhas in index_list:
-            file.write(linhas.replace(",", ".") + "  \n")  # add 2 spaces for md files
-
-        file.write("___\n")
-        file.write("[escala dos nomes das potências de 10]  \n")
-        file.write("  \n")
-        file.write("> mil=1.000|10e3|  \n")
-        file.write("> milhão=1.000.000|10e6|  \n")
-        file.write("> bilhão=1.000.000.000|10e9|  \n")
-        file.write("> trilhão=1.000.000.000.000|10e12|  \n")
-        file.write("> quatrilhão=1.000.000.000.000.000|10e15|  \n")
-        file.write("> quintilhão=1.000.000.000.000.000.000|10e18|  \n")
-        file.write("> sextilhão=1.000.000.000.000.000.000.000|10e21|  \n")
-        file.write("> setilhão=1.000.000.000.000.000.000.000.000|10e24|  \n")
-        file.write("> octilhão=1.000.000.000.000.000.000.000.000.000|10e27|  \n")
-        file.write("> nonilhão=1.000.000.000.000.000.000.000.000.000.000|10e30|  \n")
-        file.write(
-            "> decilhão=1.000.000.000.000.000.000.000.000.000.000.000|10e33|  \n"
-        )
-        file.write(
-            "> undecilhão=1.000.000.000.000.000.000.000.000.000.000.000.000|10e36|  \n"
-        )
-        file.write(
-            "> dodecilhão=1.000.000.000.000.000.000.000.000.000.000.000.000.000|10e39|  \n"
-        )
-        file.write(
-            "> tredecilhão=1.000.000.000.000.000.000.000.000.000.000.000.000.000.000|10e42|  \n"
-        )
-        file.write(
-            "> quatordecilhão=1.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000|10e45|  \n"
-        )
-        file.write(
-            "> quindecilhão=1.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000|10e48|  \n"
-        )
-        file.write(
-            "> sedecilhão=1.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000|10e51|  \n"
-        )
-        file.write(
-            "> septendecilhão=1.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000|10e54|  \n"
-        )
-        file.write("> googol=dez duotrigintilhões|10e100|  \n")
-        file.write("> googolplexo=quanto dá isso?|10e googol|  \n")
-        file.write(
-            "> googolplexiano=por enquanto, o maior número com nome|10e googolplexo|  \n"
-        )
-        file.write("  \n")
-        file.write(
-            "[fonte dos dados](http://www.fisica-interessante.com/matematica-divertida-ordens-classes-multiplos.html)  \n"
-        )
-        file.write("___\n")
-        file.write(
-            "Copyright © 1983-Hoje Nando Lopes - **yPoemas @ Machina de fazer Poesia**  \n"
+    if not temas and os.path.isdir(DATA_DIR):
+        temas = sorted(
+            os.path.splitext(file_name)[0]
+            for file_name in os.listdir(DATA_DIR)
+            if file_name.endswith(".ypo")
         )
 
-        num_variatio = f"{acm_variatio:,}"
-        potent = "nonono"
-        pontos = num_variatio.count(",") - 1
-        if pontos >= 0:
-            potent = escala[pontos]
-
-        acm_variatio = (
-            "Total de variações: " + f"{acm_variatio:,}" + " (" + potent + ")"
-        )
-        file.write(
-            "\n" + acm_variatio.replace(",", ".") + "\n"
-        )  # add 2 spaces for md files
-
-    print(error_list)
-    print(len(index_list))
-    print("Runtime:", time.time() - start_time)
+    return {tema: "ativo" for tema in temas}
 
 
-# Driver Code:
+def _choices_from_ypo_line(line):
+    """Conta opções de ítimos em uma linha .ypo válida."""
+    parts = line.rstrip("\n").split("|")
+
+    # Padrão:
+    # |linha|ideia|fonte|F|qtd_itimos|itimos_atual| itimo 1 | itimo 2 | ... |
+    if len(parts) >= 8:
+        choices = [part.strip() for part in parts[7:] if part.strip()]
+        if choices:
+            return len(choices)
+
+    return 1
+
+
+def _format_number(number):
+    """Formata número inteiro e notação científica sem depender de bibliotecas externas."""
+    if not isinstance(number, int):
+        return str(number)
+
+    digits = len(str(number))
+    if digits <= 18:
+        return str(number)
+
+    getcontext().prec = 8
+    scientific = f"{Decimal(number):.6E}"
+    return f"{number}  |  {scientific}"
+
+
+def zay_number(tema):
+    """Calcula a combinatória aproximada de um tema .ypo."""
+    tema = _clean_theme_name(tema)
+    file_path = os.path.join(DATA_DIR, tema + ".ypo")
+
+    if not os.path.exists(file_path):
+        return "arquivo .ypo não encontrado"
+
+    total = 1
+    valid_lines = 0
+
+    with open(file_path, encoding="utf-8", errors="replace") as ypo_file:
+        for line in ypo_file:
+            if not line.startswith("|"):
+                continue
+
+            total *= max(1, _choices_from_ypo_line(line))
+            valid_lines += 1
+
+    if valid_lines == 0:
+        return "sem linhas válidas"
+
+    return _format_number(total)
+
+
+def gera_indexy():
+    """Gera ABOUT_index.md e ABOUT_INDEX.md para compatibilidade histórica."""
+    lista_ativos = load_temas_ativos()
+    os.makedirs(MD_DIR, exist_ok=True)
+
+    linhas = []
+    for tema in sorted(lista_ativos.keys(), key=str.casefold):
+        numero = zay_number(tema)
+        linhas.append(f"{tema} : {numero}\n")
+
+    outputs = [
+        os.path.join(MD_DIR, "ABOUT_index.md"),
+        os.path.join(MD_DIR, "ABOUT_INDEX.md"),
+    ]
+
+    for output in outputs:
+        with open(output, "w", encoding="utf-8") as file:
+            file.writelines(linhas)
+
+    print(f"ABOUT_index gerado: {len(linhas)} temas")
+    return linhas
+
+
+def main():
+    lista_ativos = load_temas_ativos()
+
+    if len(sys.argv) < 2:
+        print("Uso: python build_indexy.py <tema>")
+        print("ou:  python build_indexy.py --all")
+        print("Temas disponíveis:")
+        for tema, tipo in lista_ativos.items():
+            print(f" {tema} : {tipo}")
+        return
+
+    tema = sys.argv[1]
+
+    if tema == "--all":
+        gera_indexy()
+        return
+
+    if tema not in lista_ativos:
+        print(f"Erro: tema '{tema}' não encontrado na lista de ativos")
+        return
+
+    numero = zay_number(tema)
+    tipo = lista_ativos[tema]
+
+    print(f"Tema: {tema}")
+    print(f"Tipo: {tipo}")
+    print(f"Número: {numero}")
+
+
 if __name__ == "__main__":
-    gera_indexy()
+    main()
