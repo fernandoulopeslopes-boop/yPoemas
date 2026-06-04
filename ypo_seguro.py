@@ -1,8 +1,3 @@
-"""
-?tools_Machina=machina
-ou ?ferramentas=machina
-"""
-
 import os
 import re
 import time
@@ -1837,110 +1832,9 @@ def page_abouts():
 ### eof: pages
 
 
-def _query_param_value(name):
-    try:
-        value = st.query_params.get(name, "")
-        if isinstance(value, list):
-            value = value[0] if value else ""
-        return str(value)
-    except Exception:
-        try:
-            params = st.experimental_get_query_params()
-            value = params.get(name, [""])
-            return str(value[0] if value else "")
-        except Exception:
-            return ""
-
-
-def _tools_machina_private_active():
-    return (
-        _query_param_value("tools_Machina").lower() == "machina"
-        or _query_param_value("ferramentas").lower() == "machina"
-    )
-
-
-def _close_tools_machina_private():
-    try:
-        if "tools_Machina" in st.query_params:
-            del st.query_params["tools_Machina"]
-        if "ferramentas" in st.query_params:
-            del st.query_params["ferramentas"]
-    except Exception:
-        try:
-            st.experimental_set_query_params()
-        except Exception:
-            pass
-
-    try:
-        st.rerun()
-    except Exception:
-        st.experimental_rerun()
-
-
-def _run_build_all_with_progress():
-    import traceback
-
-    progress = st.progress(0)
-    status = st.empty()
-
-    try:
-        from build_lexico import gera_lexico
-        from build_indexy import gera_indexy
-        from build_matrix import gera_matrix
-        from build_info import gera_info
-
-        status.write("gerando léxico...")
-        gera_lexico()
-        progress.progress(25)
-
-        status.write("gerando index / ABOUT_INDEX...")
-        gera_indexy()
-        progress.progress(50)
-
-        status.write("gerando matrix...")
-        gera_matrix()
-        progress.progress(75)
-
-        status.write("gerando info...")
-        gera_info()
-        progress.progress(100)
-
-        status.success("tools_Machina concluída.")
-    except Exception:
-        progress.progress(0)
-        status.error("Erro em tools_Machina.")
-        st.code(traceback.format_exc())
-
-
-def render_tools_machina_sidebar():
-    st.sidebar.markdown("### tools_Machina")
-
-    escolha = st.sidebar.selectbox(
-        "↓ manutenção interna",
-        [
-            "aguardar",
-            "Build All — atualizar números da Machina",
-            "done",
-        ],
-        key="ferramentas_select",
-    )
-
-    if escolha == "done":
-        _close_tools_machina_private()
-
-    if escolha == "Build All — atualizar números da Machina":
-        st.sidebar.warning("tools_Machina: atualiza léxico, ABOUT_INDEX, matrix e info.")
-        if st.sidebar.button("executar Build All", key="executar_build_all", use_container_width=True):
-            with st.sidebar:
-                _run_build_all_with_progress()
-
 
 def render_sidebar_for_page(chosen_id):
     """Renderiza os controles fixos do leitor."""
-    if _tools_machina_private_active():
-        render_tools_machina_sidebar()
-        return
-
     pick_lang()
     pick_stage_font()
     draw_check_buttons()
