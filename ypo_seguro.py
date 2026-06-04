@@ -1,3 +1,8 @@
+"""
+?tools_Machina=machina
+ou ?ferramentas=machina
+"""
+
 import os
 import re
 import time
