@@ -315,6 +315,12 @@ def apply_styles():
             padding-bottom: 0.11rem !important;
         }
 
+        [data-testid="stSidebar"] .stButton button p {
+            margin: 0 !important;
+            padding: 0 !important;
+            text-indent: 0 !important;
+        }
+
         [data-testid="stSidebar"] div[data-testid="stVerticalBlock"] {
             gap: 0.68rem !important;
         }
@@ -1916,8 +1922,8 @@ def render_cia_mood_selectbox():
 
     for raw_mood in CIA_MOOD_OPTIONS:
         mood = raw_mood.strip()
-        label = mood
-        if st.sidebar.button(label.strip(), key=f"cia_mood_list_btn_{mood.strip()}", use_container_width=False):
+        label = mood.strip()
+        if st.sidebar.button(label.strip(), key=f"cia_mood_list_btn_{mood.strip()}", use_container_width=True):
             st.session_state["cia_mood"] = mood.strip()
             st.session_state["cia_mood_select"] = mood.strip()
             st.session_state["cia_reading_mode"] = True
