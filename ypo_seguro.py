@@ -578,6 +578,20 @@ def apply_styles():
             padding-left: 0 !important;
         }
 
+        .cia-header-container {
+            width: 100% !important;
+            text-align: center !important;
+            display: block !important;
+        }
+
+        .cia-header-text {
+            width: 100% !important;
+            text-align: center !important;
+            padding-left: 0 !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+        }
+
         .cia-stage-title {
             text-align: center;
             font-size: 0.9rem;
@@ -1237,6 +1251,22 @@ def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
             """,
             unsafe_allow_html=True,
         )
+
+
+def write_cia_header(LOGO_TEXTO, LOGO_IMAGE=None):
+    """Renderiza o cabeçalho da CIA centralizado no Palco."""
+    if LOGO_IMAGE is not None:
+        write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
+        return
+
+    st.markdown(
+        f"""
+        <div class='cia-header-container'>
+            <p class='cia-header-text' style="font-family:{st.session_state.get('stage_font', 'Trebuchet MS')}; font-size:{st.session_state.get('stage_size', 21)}px;">{LOGO_TEXTO}</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 
 def talk(text):
@@ -2048,17 +2078,7 @@ def render_sidebar_filha():
 
 
 def render_sidebar_for_page(chosen_id):
-    """Renderiza os controles fixos do leitor.
-
-    No modo CIA, a lista de análises entra primeiro para abrir no sentido down.
-    """
-    if str(chosen_id) == "2" and st.session_state.get("sidebar_panel", "Machina") == "CIA":
-        render_cia_mood_selectbox()
-        pick_lang()
-        pick_stage_font()
-        draw_check_buttons()
-        return
-
+    """Renderiza os controles fixos do leitor."""
     pick_lang()
     pick_stage_font()
     draw_check_buttons()
@@ -2067,7 +2087,7 @@ def render_sidebar_for_page(chosen_id):
 configure_cia(
     translate_func=translate,
     load_typo_func=load_typo,
-    write_ypoema_func=write_ypoema,
+    write_ypoema_func=write_cia_header,
     ip_address=IPAddres,
 )
 
@@ -2109,6 +2129,7 @@ def main():
 
                 if st.session_state.get("sidebar_panel", "Machina") == "CIA":
                     st.session_state["cia_reading_mode"] = False
+                    render_cia_mood_selectbox()
                 else:
                     st.session_state["cia_reading_mode"] = False
                     st.session_state["cia_mood_select"] = st.session_state.get("cia_mood", "Sintática")
