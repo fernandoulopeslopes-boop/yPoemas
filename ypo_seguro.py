@@ -626,6 +626,42 @@ def init_session_state():
             st.session_state[key] = value
 
 
+def apply_sidebar_cia_mode_styles(chosen_id=None):
+    """Recolhe a sidebar para teste visual quando a CIA está em foco."""
+    cia_active = (
+        str(chosen_id) == "2"
+        and st.session_state.get("sidebar_panel", "Machina") == "CIA"
+    )
+
+    if cia_active:
+        st.markdown(
+            """
+            <style>
+            [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
+                width: 50px !important;
+                min-width: 50px !important;
+                max-width: 50px !important;
+                overflow-x: hidden !important;
+            }
+
+            [data-testid="stSidebar"] > div:first-child {
+                width: 50px !important;
+                min-width: 50px !important;
+                max-width: 50px !important;
+                overflow-x: hidden !important;
+            }
+
+            [data-testid="stSidebar"] div[data-testid="stSidebarContent"] {
+                padding-left: 0.10rem !important;
+                padding-right: 0.10rem !important;
+                overflow-x: hidden !important;
+            }
+            </style>
+            """,
+            unsafe_allow_html=True,
+        )
+
+
 apply_styles()
 init_session_state()
 
@@ -1944,8 +1980,11 @@ def main():
 
         if chosen_id == "2":
             draw_sidebar_panel_buttons(chosen_id)
+            apply_sidebar_cia_mode_styles(chosen_id)
             if st.session_state.get("sidebar_panel", "Machina") == "CIA":
                 render_cia_sidebar()
+        else:
+            apply_sidebar_cia_mode_styles(chosen_id)
 
 
         palco = st.container()
