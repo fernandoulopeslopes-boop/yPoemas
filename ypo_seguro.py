@@ -567,6 +567,17 @@ def apply_styles():
             line-height: 1.35;
         }
 
+        .cia-stage-box .container {
+            justify-content: center !important;
+            text-align: center !important;
+        }
+
+        .cia-stage-box .logo-text {
+            width: 100% !important;
+            text-align: center !important;
+            padding-left: 0 !important;
+        }
+
         .cia-stage-title {
             text-align: center;
             font-size: 0.9rem;
@@ -2037,7 +2048,17 @@ def render_sidebar_filha():
 
 
 def render_sidebar_for_page(chosen_id):
-    """Renderiza os controles fixos do leitor."""
+    """Renderiza os controles fixos do leitor.
+
+    No modo CIA, a lista de análises entra primeiro para abrir no sentido down.
+    """
+    if str(chosen_id) == "2" and st.session_state.get("sidebar_panel", "Machina") == "CIA":
+        render_cia_mood_selectbox()
+        pick_lang()
+        pick_stage_font()
+        draw_check_buttons()
+        return
+
     pick_lang()
     pick_stage_font()
     draw_check_buttons()
@@ -2088,7 +2109,6 @@ def main():
 
                 if st.session_state.get("sidebar_panel", "Machina") == "CIA":
                     st.session_state["cia_reading_mode"] = False
-                    render_cia_mood_selectbox()
                 else:
                     st.session_state["cia_reading_mode"] = False
                     st.session_state["cia_mood_select"] = st.session_state.get("cia_mood", "Sintática")
