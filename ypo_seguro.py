@@ -839,7 +839,7 @@ def pick_book_palco():
     _prepare_book_widget(key)
 
     st.selectbox(
-        "↓  " + str(len(books_list)) + " livros disponíveis...",
+        "↓  " + str(len(books_list)) + " livros",
         books_list,
         index=books_list.index(current),
         key=key,
