@@ -1908,15 +1908,14 @@ CIA_MOOD_OPTIONS = [
     "Completa",
 ]
 def render_cia_mood_selectbox():
-    """Lista expandida da CIA: mostra todos os tipos de análise no sentido down."""
-    current = st.session_state.get("cia_mood", "Sintática")
+    """Lista expandida da CIA: mostra os tipos de análise no sentido down, sem rótulo extra."""
+    current = st.session_state.get("cia_mood", "Sintática").strip()
     if current not in CIA_MOOD_OPTIONS:
         current = "Sintática"
         st.session_state["cia_mood"] = current
 
-    st.sidebar.markdown("↓  análises da CIA")
-
-    for mood in CIA_MOOD_OPTIONS:
+    for raw_mood in CIA_MOOD_OPTIONS:
+        mood = raw_mood.strip()
         label = f"• {mood}" if mood == current else mood
         if st.sidebar.button(label, key=f"cia_mood_list_btn_{mood}", use_container_width=True):
             st.session_state["cia_mood"] = mood
