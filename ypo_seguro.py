@@ -2039,6 +2039,14 @@ def main():
             if chosen_id == "2":
                 draw_sidebar_panel_buttons(chosen_id)
 
+                # Se o clique acabou de acionar a CIA, refaz o ciclo imediatamente.
+                # Assim a sidebar-filha já aparece no primeiro clique em CIA.
+                if st.session_state.get("sidebar_panel", "Machina") == "CIA":
+                    try:
+                        st.rerun()
+                    except Exception:
+                        st.experimental_rerun()
+
 
         palco = st.container()
         with palco:
