@@ -1917,9 +1917,9 @@ def render_cia_mood_selectbox():
     for raw_mood in CIA_MOOD_OPTIONS:
         mood = raw_mood.strip()
         label = mood
-        if st.sidebar.button(label, key=f"cia_mood_list_btn_{mood}", use_container_width=True):
-            st.session_state["cia_mood"] = mood
-            st.session_state["cia_mood_select"] = mood
+        if st.sidebar.button(label.strip(), key=f"cia_mood_list_btn_{mood.strip()}", use_container_width=False):
+            st.session_state["cia_mood"] = mood.strip()
+            st.session_state["cia_mood_select"] = mood.strip()
             st.session_state["cia_reading_mode"] = True
             try:
                 st.rerun()
