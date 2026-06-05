@@ -1914,23 +1914,31 @@ CIA_MOOD_OPTIONS = [
     "Completa",
 ]
 def render_cia_mood_selectbox():
-    """Lista expandida da CIA: mostra os tipos de análise no sentido down, sem rótulo extra."""
+    """Dropdown da CIA: sem lista expandida, sem slider vertical."""
+    options = CIA_MOOD_OPTIONS
+
     current = st.session_state.get("cia_mood", "Sintática").strip()
-    if current not in CIA_MOOD_OPTIONS:
+    if current not in options:
         current = "Sintática"
         st.session_state["cia_mood"] = current
 
-    for raw_mood in CIA_MOOD_OPTIONS:
-        mood = raw_mood.strip()
-        label = mood.strip()
-        if st.sidebar.button(label.strip(), key=f"cia_mood_list_btn_{mood.strip()}", use_container_width=True):
-            st.session_state["cia_mood"] = mood.strip()
-            st.session_state["cia_mood_select"] = mood.strip()
-            st.session_state["cia_reading_mode"] = True
-            try:
-                st.rerun()
-            except Exception:
-                st.experimental_rerun()
+    if st.session_state.get("cia_mood_select") not in options:
+        st.session_state["cia_mood_select"] = current
+
+    choice = st.sidebar.selectbox(
+        "↓",
+        options,
+        index=options.index(st.session_state.get("cia_mood_select", current)),
+        key="cia_mood_select",
+    )
+
+    if choice != st.session_state.get("cia_mood", "Sintática"):
+        st.session_state["cia_mood"] = choice
+        st.session_state["cia_reading_mode"] = True
+        try:
+            st.rerun()
+        except Exception:
+            st.experimental_rerun()
 
 
 def _cia_sidebar_filha_active(chosen_id):
