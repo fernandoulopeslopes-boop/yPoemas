@@ -1907,33 +1907,25 @@ CIA_MOOD_OPTIONS = [
     "Reduzida",
     "Completa",
 ]
-def _on_cia_mood_select():
-    """Escolhe o tipo de análise e abre o modo leitura com sidebar-filha."""
-    choice = st.session_state.get("cia_mood_select", st.session_state.get("cia_mood", "Sintática"))
-    if choice in CIA_MOOD_OPTIONS:
-        st.session_state["cia_mood"] = choice
-        st.session_state["cia_reading_mode"] = True
-
-
 def render_cia_mood_selectbox():
-    """Lista única da CIA: escolhe a análise antes de abrir a sidebar-filha."""
-    options = CIA_MOOD_OPTIONS
-
-    current = st.session_state.get("cia_mood_select", st.session_state.get("cia_mood", "Sintática"))
-    if current not in options:
-        current = st.session_state.get("cia_mood", "Sintática")
-    if current not in options:
+    """Lista expandida da CIA: mostra todos os tipos de análise no sentido down."""
+    current = st.session_state.get("cia_mood", "Sintática")
+    if current not in CIA_MOOD_OPTIONS:
         current = "Sintática"
+        st.session_state["cia_mood"] = current
 
-    st.session_state["cia_mood_select"] = current
+    st.sidebar.markdown("↓  análises da CIA")
 
-    st.sidebar.selectbox(
-        "↓  análises da CIA",
-        options,
-        index=options.index(current),
-        key="cia_mood_select",
-        on_change=_on_cia_mood_select,
-    )
+    for mood in CIA_MOOD_OPTIONS:
+        label = f"• {mood}" if mood == current else mood
+        if st.sidebar.button(label, key=f"cia_mood_list_btn_{mood}", use_container_width=True):
+            st.session_state["cia_mood"] = mood
+            st.session_state["cia_mood_select"] = mood
+            st.session_state["cia_reading_mode"] = True
+            try:
+                st.rerun()
+            except Exception:
+                st.experimental_rerun()
 
 
 def _cia_sidebar_filha_active(chosen_id):
