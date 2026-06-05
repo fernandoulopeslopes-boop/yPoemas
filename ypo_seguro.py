@@ -1419,7 +1419,15 @@ def page_ypoemas():
     ):  # just in case
         st.session_state.take = 0
 
-    col_livros, col_nav, col_temas = st.columns([3, 4, 3])
+    try:
+        col_livros, col_nav, col_temas = st.columns(
+            [3, 4, 3],
+            vertical_alignment="bottom",
+        )
+        machina_nav_needs_spacer = False
+    except TypeError:
+        col_livros, col_nav, col_temas = st.columns([3, 4, 3])
+        machina_nav_needs_spacer = True
 
     with col_livros:
         pick_book_palco()
@@ -1431,7 +1439,11 @@ def page_ypoemas():
         help_nest = help_tips[2]
         help_more = help_tips[4]
 
-        st.markdown("<div class='machina-nav-spacer'></div>", unsafe_allow_html=True)
+        if machina_nav_needs_spacer:
+            st.markdown(
+                "<div style='height:1.95rem; min-height:1.95rem;'></div>",
+                unsafe_allow_html=True,
+            )
         nav_cols = st.columns([1, 1, 1, 1, 1])
         more = nav_cols[0].button("✚", help=help_more, use_container_width=True)
         last = nav_cols[1].button("◀", help=help_last, use_container_width=True)
