@@ -604,7 +604,7 @@ def init_session_state():
         "cia_name": "",
         "cia_mood": "Sintática",
         "cia_reading_mode": False,
-        "cia_mood_select": "escolha a análise...",
+        "cia_mood_select": "Sintática",
         "cia_line0_offset_px": -385,
         "cia_font": "Trebuchet MS",
         "cia_size": 18,
@@ -1907,32 +1907,30 @@ CIA_MOOD_OPTIONS = [
     "Reduzida",
     "Completa",
 ]
-CIA_MOOD_PLACEHOLDER = "escolha a análise..."
-
-
 def _on_cia_mood_select():
     """Escolhe o tipo de análise e abre o modo leitura com sidebar-filha."""
-    choice = st.session_state.get("cia_mood_select", CIA_MOOD_PLACEHOLDER)
+    choice = st.session_state.get("cia_mood_select", st.session_state.get("cia_mood", "Sintática"))
     if choice in CIA_MOOD_OPTIONS:
         st.session_state["cia_mood"] = choice
         st.session_state["cia_reading_mode"] = True
-        try:
-            st.rerun()
-        except Exception:
-            st.experimental_rerun()
 
 
 def render_cia_mood_selectbox():
     """Lista única da CIA: escolhe a análise antes de abrir a sidebar-filha."""
-    options = [CIA_MOOD_PLACEHOLDER] + CIA_MOOD_OPTIONS
+    options = CIA_MOOD_OPTIONS
 
-    if st.session_state.get("cia_mood_select") not in options:
-        st.session_state["cia_mood_select"] = CIA_MOOD_PLACEHOLDER
+    current = st.session_state.get("cia_mood_select", st.session_state.get("cia_mood", "Sintática"))
+    if current not in options:
+        current = st.session_state.get("cia_mood", "Sintática")
+    if current not in options:
+        current = "Sintática"
+
+    st.session_state["cia_mood_select"] = current
 
     st.sidebar.selectbox(
         "↓  análises da CIA",
         options,
-        index=options.index(st.session_state.get("cia_mood_select", CIA_MOOD_PLACEHOLDER)),
+        index=options.index(current),
         key="cia_mood_select",
         on_change=_on_cia_mood_select,
     )
@@ -2026,7 +2024,7 @@ def render_sidebar_filha():
         if st.button(">", key="sidebar_filha_voltar_cia", help="voltar à lista da CIA", use_container_width=True):
             st.session_state["sidebar_panel"] = "CIA"
             st.session_state["cia_reading_mode"] = False
-            st.session_state["cia_mood_select"] = CIA_MOOD_PLACEHOLDER
+            st.session_state["cia_mood_select"] = st.session_state.get("cia_mood", "Sintática")
             try:
                 st.rerun()
             except Exception:
@@ -2088,7 +2086,7 @@ def main():
                     render_cia_mood_selectbox()
                 else:
                     st.session_state["cia_reading_mode"] = False
-                    st.session_state["cia_mood_select"] = CIA_MOOD_PLACEHOLDER
+                    st.session_state["cia_mood_select"] = st.session_state.get("cia_mood", "Sintática")
 
 
         palco = st.container()
