@@ -19,7 +19,6 @@ from readings import (
 from controle_cia import (
     configure_cia,
     draw_sidebar_panel_buttons,
-    render_cia_sidebar,
     render_cia_stage,
 )
 
@@ -604,6 +603,8 @@ def init_session_state():
         "sidebar_panel": "Machina",
         "cia_name": "",
         "cia_mood": "Sintática",
+        "cia_reading_mode": False,
+        "cia_mood_select": "escolha a análise...",
         "cia_line0_offset_px": -385,
         "cia_font": "Trebuchet MS",
         "cia_size": 18,
@@ -1899,14 +1900,55 @@ def page_abouts():
 
 
 SIDEBAR_FILHOTE_WIDTH_PX = 64
+CIA_MOOD_OPTIONS = [
+    "Sintática",
+    "Sintética",
+    "Formal",
+    "Reduzida",
+    "Completa",
+]
+CIA_MOOD_PLACEHOLDER = "escolha a análise..."
+
+
+def _on_cia_mood_select():
+    """Escolhe o tipo de análise e abre o modo leitura com sidebar-filha."""
+    choice = st.session_state.get("cia_mood_select", CIA_MOOD_PLACEHOLDER)
+    if choice in CIA_MOOD_OPTIONS:
+        st.session_state["cia_mood"] = choice
+        st.session_state["cia_reading_mode"] = True
+        try:
+            st.rerun()
+        except Exception:
+            st.experimental_rerun()
+
+
+def render_cia_mood_selectbox():
+    """Lista única da CIA: escolhe a análise antes de abrir a sidebar-filha."""
+    options = [CIA_MOOD_PLACEHOLDER] + CIA_MOOD_OPTIONS
+
+    if st.session_state.get("cia_mood_select") not in options:
+        st.session_state["cia_mood_select"] = CIA_MOOD_PLACEHOLDER
+
+    st.sidebar.selectbox(
+        "↓  análises da CIA",
+        options,
+        index=options.index(st.session_state.get("cia_mood_select", CIA_MOOD_PLACEHOLDER)),
+        key="cia_mood_select",
+        on_change=_on_cia_mood_select,
+    )
 
 
 def _cia_sidebar_filha_active(chosen_id):
     """Ativa a sidebar-filha somente na página yPoemas, quando a CIA está em foco."""
     if str(chosen_id) != "2":
         st.session_state["sidebar_panel"] = "Machina"
+        st.session_state["cia_reading_mode"] = False
         return False
-    return st.session_state.get("sidebar_panel", "Machina") == "CIA"
+
+    return (
+        st.session_state.get("sidebar_panel", "Machina") == "CIA"
+        and bool(st.session_state.get("cia_reading_mode", False))
+    )
 
 
 def apply_sidebar_mae_filha_styles(chosen_id):
@@ -1981,8 +2023,10 @@ def render_sidebar_filha():
     """Sidebar mínima da CIA: apenas retorno para a sidebar-mãe."""
     with st.sidebar:
         st.markdown("<div class='machina-sidebar-filha-spacer'></div>", unsafe_allow_html=True)
-        if st.button(">", key="sidebar_filha_voltar_machina", help="voltar à Machina", use_container_width=True):
-            st.session_state["sidebar_panel"] = "Machina"
+        if st.button(">", key="sidebar_filha_voltar_cia", help="voltar à lista da CIA", use_container_width=True):
+            st.session_state["sidebar_panel"] = "CIA"
+            st.session_state["cia_reading_mode"] = False
+            st.session_state["cia_mood_select"] = CIA_MOOD_PLACEHOLDER
             try:
                 st.rerun()
             except Exception:
@@ -2039,13 +2083,12 @@ def main():
             if chosen_id == "2":
                 draw_sidebar_panel_buttons(chosen_id)
 
-                # Se o clique acabou de acionar a CIA, refaz o ciclo imediatamente.
-                # Assim a sidebar-filha já aparece no primeiro clique em CIA.
                 if st.session_state.get("sidebar_panel", "Machina") == "CIA":
-                    try:
-                        st.rerun()
-                    except Exception:
-                        st.experimental_rerun()
+                    st.session_state["cia_reading_mode"] = False
+                    render_cia_mood_selectbox()
+                else:
+                    st.session_state["cia_reading_mode"] = False
+                    st.session_state["cia_mood_select"] = CIA_MOOD_PLACEHOLDER
 
 
         palco = st.container()
