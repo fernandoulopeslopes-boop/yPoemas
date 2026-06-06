@@ -24,7 +24,7 @@ from controle_cia import (
 
 
 ABOUTS_LIST = [
-    "comentários", "prefácil", "machina", "off-machina", "parceria_Machina-CIA", "outros autores", "livros", "bibliografia",
+    "comentários", "prefácil", "machina", "off-machina", "parceria_Machina_CIA", "outros autores", "livros", "bibliografia",
     "notes", "imagens", "pontuação", "poly", "tradittore", "pensares", "machina-IA", "samizdàt", "index", "license",
 ]
 
@@ -33,7 +33,7 @@ ABOUTS_FILES = {
     "prefácil": ["ABOUT_prefácil.md"],
     "machina": ["ABOUT_machina I.md", "ABOUT_machina II.md"],
     "off-machina": ["ABOUT_off-machina.md"],
-    "parceria_Machina-CIA": ["ABOUT_parceria_Machina-CIA"],
+    "parceria_Machina_CIA": ["ABOUT_parceria_Machina_CIA"],
     "machina-IA": ["ABOUT_machina-IA.md"],
     "livros": ["ABOUT_livros.md"],
     "outros autores": ["ABOUT_outros_autores.md", "ABOUT_outros autores.md"],
