@@ -592,6 +592,12 @@ def apply_styles():
             margin-right: auto !important;
         }
 
+        .cia-dropdown-down-space {
+            height: 220px !important;
+            min-height: 220px !important;
+            pointer-events: none !important;
+        }
+
         .cia-stage-title {
             text-align: center;
             font-size: 0.9rem;
@@ -1955,7 +1961,7 @@ CIA_MOOD_OPTIONS = [
     "Completa",
 ]
 def render_cia_mood_selectbox():
-    """Dropdown da CIA: sem lista expandida, sem slider vertical."""
+    """Dropdown da CIA: fica no rodapé visual, com área livre abaixo para abrir DOWN."""
     options = CIA_MOOD_OPTIONS
 
     current = st.session_state.get("cia_mood", "Sintática").strip()
@@ -1971,6 +1977,12 @@ def render_cia_mood_selectbox():
         options,
         index=options.index(st.session_state.get("cia_mood_select", current)),
         key="cia_mood_select",
+    )
+
+    # Área técnica invisível: evita que o dropdown suba e encubra arte/voz.
+    st.sidebar.markdown(
+        "<div class='cia-dropdown-down-space'></div>",
+        unsafe_allow_html=True,
     )
 
     if choice != st.session_state.get("cia_mood", "Sintática"):
