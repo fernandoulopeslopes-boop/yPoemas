@@ -1960,26 +1960,31 @@ CIA_MOOD_OPTIONS = [
     "Completa",
 ]
 def render_cia_mood_selectbox():
-    """Dropdown da CIA: fica no rodapé visual, com área livre abaixo para abrir DOWN."""
-    options = CIA_MOOD_OPTIONS
-
+    """Menu nativo da CIA: alternativa ao selectbox que insiste em abrir UP."""
     current = st.session_state.get("cia_mood", "Sintática").strip()
-    if current not in options:
+    if current not in CIA_MOOD_OPTIONS:
         current = "Sintática"
         st.session_state["cia_mood"] = current
 
-    if st.session_state.get("cia_mood_select") not in options:
-        st.session_state["cia_mood_select"] = current
+    try:
+        choice = st.sidebar.menu_button(
+            "↓  " + current,
+            CIA_MOOD_OPTIONS,
+            key="cia_mood_menu_button",
+            width="stretch",
+        )
+    except AttributeError:
+        choice = st.sidebar.selectbox(
+            "↓",
+            CIA_MOOD_OPTIONS,
+            index=CIA_MOOD_OPTIONS.index(current),
+            key="cia_mood_select",
+            label_visibility="collapsed",
+        )
 
-    choice = st.sidebar.selectbox(
-        "↓",
-        options,
-        index=options.index(st.session_state.get("cia_mood_select", current)),
-        key="cia_mood_select",
-    )
-
-    if choice != st.session_state.get("cia_mood", "Sintática"):
+    if choice and choice in CIA_MOOD_OPTIONS and choice != st.session_state.get("cia_mood", "Sintática"):
         st.session_state["cia_mood"] = choice
+        st.session_state["cia_mood_select"] = choice
         st.session_state["cia_reading_mode"] = True
         try:
             st.rerun()
