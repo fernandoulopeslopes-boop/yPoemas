@@ -9,7 +9,7 @@ ___
 >  
 > Ao lado serão listados os **verbetes** e as **ocorrências** da busca.  
 > Clique em qualquer **ocorrência** para gerar um novo yPoema.  
->> O **verbete** escolhido **aparecerá destacado no texto.**  
+> O **verbete** escolhido **aparecerá destacado no texto.**  
 
 >- Clique no botão **✚** para ler variações do mesmo tema.  
 >- Clique no botão **✻** para ler uma tema da lista ao acaso.  
