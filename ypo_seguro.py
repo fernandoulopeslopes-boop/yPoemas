@@ -24,7 +24,7 @@ from controle_cia import (
 
 
 ABOUTS_LIST = [
-    "comentários", "prefácil", "machina", "off-machina", "outros autores", "livros", "bibliografia",
+    "comentários", "prefácil", "machina", "off-machina", "parceria Machina-CIA", "outros autores", "livros", "bibliografia",
     "notes", "imagens", "pontuação", "poly", "tradittore", "pensares", "machina-IA", "samizdàt", "index", "license",
 ]
 
