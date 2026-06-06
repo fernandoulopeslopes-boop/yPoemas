@@ -1,7 +1,9 @@
 eureka: modo de usar  
 ___  
-> No topo da página, abaixo da frase **digite algo para buscar...**  
-> escreva o que gostaria de ler no ambiente da **máquina**.  
+> No topo da página, abaixo da frase **buscar por ...**  
+> escreva uma palavra - ou parte dela -
+> que gostaria de ler no ambiente da **máquina**.  
+> digite 3 ou mais letras 
 >    
 >- Clique em **✚** para buscar palavras com essas letras.  
 >  
