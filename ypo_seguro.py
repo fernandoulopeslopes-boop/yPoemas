@@ -33,7 +33,7 @@ ABOUTS_FILES = {
     "prefácil": ["ABOUT_prefácil.md"],
     "machina": ["ABOUT_machina I.md", "ABOUT_machina II.md"],
     "off-machina": ["ABOUT_off-machina.md"],
-    "parceria_Machina-CIA": ["ABOUT_parceria_Machina_CIA"],
+    "parceria_Machina-CIA": ["ABOUT_parceria-Machina_CIA"],
     "machina-IA": ["ABOUT_machina-IA.md"],
     "livros": ["ABOUT_livros.md"],
     "outros autores": ["ABOUT_outros_autores.md", "ABOUT_outros autores.md"],
