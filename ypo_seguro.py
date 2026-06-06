@@ -294,6 +294,11 @@ def apply_styles():
         /* Sidebar :: scroll_inho — sobe discretamente o primeiro controle */
         [data-testid="stSidebar"] div[data-testid="stSidebarContent"] {
             padding-top: 0.00rem !important;
+            margin-top: -0.55rem !important;
+        }
+
+        [data-testid="stSidebar"] div[data-testid="stElementContainer"]:first-child {
+            margin-top: -0.35rem !important;
         }
 
         [data-testid="stSidebar"] .stButton button {
@@ -590,12 +595,6 @@ def apply_styles():
             padding-left: 0 !important;
             margin-left: auto !important;
             margin-right: auto !important;
-        }
-
-        .cia-dropdown-down-space {
-            height: 220px !important;
-            min-height: 220px !important;
-            pointer-events: none !important;
         }
 
         .cia-stage-title {
@@ -1977,12 +1976,6 @@ def render_cia_mood_selectbox():
         options,
         index=options.index(st.session_state.get("cia_mood_select", current)),
         key="cia_mood_select",
-    )
-
-    # Área técnica invisível: evita que o dropdown suba e encubra arte/voz.
-    st.sidebar.markdown(
-        "<div class='cia-dropdown-down-space'></div>",
-        unsafe_allow_html=True,
     )
 
     if choice != st.session_state.get("cia_mood", "Sintática"):
