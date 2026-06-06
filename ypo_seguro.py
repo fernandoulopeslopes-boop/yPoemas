@@ -1259,15 +1259,18 @@ def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
 
 
 def write_cia_header(LOGO_TEXTO, LOGO_IMAGE=None):
-    """Renderiza o cabeçalho da CIA centralizado no Palco."""
+    """Renderiza o cabeçalho da CIA centralizado no Palco, com o mood ativo."""
     if LOGO_IMAGE is not None:
         write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
         return
 
+    mood = st.session_state.get("cia_mood", "")
+    mood_label = f" ({mood})" if mood else ""
+
     st.markdown(
         f"""
         <div class='cia-header-container'>
-            <p class='cia-header-text' style="font-family:{st.session_state.get('stage_font', 'Trebuchet MS')}; font-size:{st.session_state.get('stage_size', 21)}px;">{LOGO_TEXTO}</p>
+            <p class='cia-header-text' style="font-family:{st.session_state.get('stage_font', 'Trebuchet MS')}; font-size:{st.session_state.get('stage_size', 21)}px;">{LOGO_TEXTO}{mood_label}</p>
         </div>
         """,
         unsafe_allow_html=True,
