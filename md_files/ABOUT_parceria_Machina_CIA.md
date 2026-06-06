@@ -1,7 +1,7 @@
 # Machina - CIA 
 ---
 
-## 1. Ideia central 
+## 1. Ideia central
 
 A CIA não deve ser apenas uma ferramenta de análise acoplada à Machina.  
 Ela precisa ter **cara de Machina**.
