@@ -1,4 +1,4 @@
-# CIA–Machina  
+# Machina - CIA 
 ---
 
 ## 1. Ideia central 
