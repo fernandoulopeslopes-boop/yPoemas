@@ -123,7 +123,7 @@ IDIOMAS_OFICIAIS = [
 # -----------------------------------------------------------------------------
 st.set_page_config(
     page_title="a máquina de fazer Poesia - yPoemas",
-    page_icon=":bulb:",
+    page_icon="🌀",
     layout="wide",
     initial_sidebar_state="expanded",
 )
