@@ -41,12 +41,19 @@ Conduta comum a todos os moods:
 - função crítica respeitada;
 - consulta obrigatória às listas funcionais;
 - random apenas entre candidatos plausíveis;
-- nenhuma fórmula pode mentir sobre a função do FORTE_CANDIDATO.
+- nenhuma fórmula pode mentir sobre a função do FORTE_CANDIDATO;
+- nenhuma figura de análise deve ser nomeada sem constatação clara no texto;
+- repetição de trecho é ponto de fuga, não padrão.
 
 A primeira linha e o último verso continuam candidatos fortes, mas não são
 obrigações automáticas. O FECHO real recebe atenção especial porque, na
 arquitetura dos yPoemas, costuma carregar reverberação, resumo da ópera,
 estranheza produtiva ou convite à releitura.
+
+Hierarquia interna:
+1. regras fixas;
+2. regras variáveis adequadas ao texto;
+3. cartas na manga, com parcimônia, quando não houver encaixe seguro.
 """
 
 CIA_OPERACOES_CRITICAS = [
@@ -105,14 +112,129 @@ def _cia_count_sintatic_terms(text):
     return total
 
 
-def _cia_bloco_sintatico_reforco(poema_lines, used_lines):
-    """Garante lastro sintático sem virar aula seca de gramática."""
-    line = _cia_pick_role(poema_lines, "miolo", used_lines, poema_lines[len(poema_lines) // 2])
-    clip = _cia_clip(line)
+CIA_VERBOS_EXPLICITOS_COMUNS = {
+    "sou", "és", "é", "somos", "são", "era", "eram", "será", "serão",
+    "estou", "está", "estão", "estava", "estavam",
+    "tenho", "tem", "têm", "tinha", "tinham",
+    "vou", "vai", "vão", "fui", "foi", "foram",
+    "vejo", "veem", "vejo", "imagino", "busco", "buscar", "sabe", "sabem",
+    "sonhar", "viver", "descobrirá", "saberá", "pousem", "livrá-las",
+}
+
+
+def _cia_tokens_lower(line):
+    return [
+        token.strip("“”\"'()[]{}.,;:!?…-").lower()
+        for token in re.findall(r"[\wÀ-ÿ-]+", str(line or ""))
+        if token.strip("“”\"'()[]{}.,;:!?…-")
+    ]
+
+
+def _cia_has_explicit_verb(line):
+    """Heurística conservadora: só autoriza 'verbo' quando há forma verbal plausível."""
+    tokens = _cia_tokens_lower(line)
+    if not tokens:
+        return False
+    for token in tokens:
+        if token in CIA_VERBOS_EXPLICITOS_COMUNS:
+            return True
+        # Infinitivos e formas conjugadas comuns; evita marcar nomes curtos por acaso.
+        if len(token) >= 5 and re.search(
+            r"(ar|er|ir|ou|ei|ava|avam|ia|iam|ará|erá|irá|arei|erei|irei|asse|esse|isse|ando|endo|indo)$",
+            token,
+        ):
+            return True
+    return False
+
+
+def _cia_first_explicit_verb(line):
+    tokens = _cia_tokens_lower(line)
+    for token in tokens:
+        if token in CIA_VERBOS_EXPLICITOS_COMUNS:
+            return token
+        if len(token) >= 5 and re.search(
+            r"(ar|er|ir|ou|ei|ava|avam|ia|iam|ará|erá|irá|arei|erei|irei|asse|esse|isse|ando|endo|indo)$",
+            token,
+        ):
+            return token
+    return ""
+
+
+def _cia_find_nearby_explicit_verb(poema_lines, line, radius=2):
+    idx = _cia_line_index(poema_lines, line)
+    if idx < 0:
+        return "", ""
+    for dist in range(1, radius + 1):
+        for j in (idx - dist, idx + dist):
+            if 0 <= j < len(poema_lines):
+                verbo = _cia_first_explicit_verb(poema_lines[j])
+                if verbo:
+                    return verbo, poema_lines[j]
+    return "", ""
+
+
+def _cia_has_clear_subject(line):
+    clean = str(line or "").lower()
+    return bool(re.search(r"\b(eu|tu|ele|ela|nós|vós|eles|elas|algo|alguém|ninguém|quem|o que|a gente|as gentes|os momentos)\b", clean))
+
+
+def _cia_is_nominal_or_prepositional(line):
+    clean = str(line or "").strip().lower()
+    return bool(clean) and not _cia_has_explicit_verb(clean)
+
+
+def _cia_subordinacao_kind(line):
+    clean = str(line or "").lower()
+    if re.search(r"\bquando\b", clean):
+        return "tempo"
+    if re.search(r"\bse\b", clean):
+        return "condição"
+    if re.search(r"\bembora\b", clean):
+        return "concessão"
+    if re.search(r"\bporque\b", clean):
+        return "explicação"
+    if re.search(r"\bque\b", clean):
+        return "complementação ou retomada"
+    if re.search(r"\bonde\b", clean):
+        return "lugar ou origem"
+    return ""
+
+
+def _cia_carta_na_manga():
     return random.choice([
-        f"Em “{clip}”, a **sintaxe** organiza o verso como movimento interno: o **verbo** não apenas informa, mas põe a imagem em ação.",
-        f"Em “{clip}”, a **oração** ganha força pelo modo como distribui **sujeito**, **predicado** e pausa, deixando o sentido avançar por tensão.",
-        f"Em “{clip}”, a **pontuação** interfere no ritmo da **oração** e regula a entrada do leitor no movimento sintático do poema.",
+        "a impressão que fica é que o texto abre uma possibilidade de leitura sem obrigar uma explicação única.",
+        "aparentemente, o texto insinua uma passagem lateral e deixa ao leitor outras leituras possíveis.",
+        "o texto parece oferecer outros caminhos de leitura, sem entregar todos os seus vínculos de forma direta.",
+        "há caminhos quase ocultos para outros pontos do poema; a leitura avança por aproximação, não por prova única.",
+    ])
+
+
+def _cia_bloco_sintatico_reforco(poema_lines, used_lines):
+    """Garante lastro sintático sem nomear figura que o trecho não sustenta."""
+    line = _cia_pick_role_by_zones(
+        poema_lines,
+        "miolo",
+        used_lines,
+        poema_lines[len(poema_lines) // 2],
+        allowed_zones={"miolo", "inicial_proxima", "tardia"},
+    )
+    clip = _cia_clip(line)
+    if _cia_has_explicit_verb(line):
+        verbo = _cia_first_explicit_verb(line)
+        return random.choice([
+            f"Em “{clip}”, o **verbo** “{verbo}” põe a imagem em movimento e dá direção à **sintaxe** do verso.",
+            f"Em “{clip}”, a presença verbal de “{verbo}” sustenta a **oração** e organiza o avanço da leitura.",
+        ])
+    nearby_verb, nearby_line = _cia_find_nearby_explicit_verb(poema_lines, line)
+    if nearby_verb:
+        return (
+            f"Em “{clip}”, não há **verbo** explícito no trecho citado; "
+            f"o verso funciona como **complemento** da ação indicada por “{nearby_verb}” em “{_cia_clip(nearby_line)}”."
+        )
+    return random.choice([
+        f"Em “{clip}”, a construção nominal dispensa **verbo** explícito e sustenta a imagem por justaposição.",
+        f"Em “{clip}”, a leitura se apoia em sintagma nominal ou preposicional: a frase não age por **verbo**, mas por aproximação de imagens.",
+        f"Em “{clip}”, {_cia_carta_na_manga()}",
     ])
 
 
@@ -288,7 +410,13 @@ def _cia_regra_zero_abertura(poema_lines, line):
     """ABERTURA: escolhe formulação conforme posição/função real do candidato."""
     clip = _cia_clip(line)
     zone = _cia_line_zone(poema_lines, line)
-    if zone in ("final", "tardia"):
+    if zone == "final":
+        return random.choice([
+            f"No fecho real, “{clip}” recolhe parte do percurso e permite perceber como o texto vinha preparando sua reverberação.",
+            f"No último verso, “{clip}” concentra a chegada do poema e reorganiza retrospectivamente seu campo de forças.",
+            f"Em “{clip}”, o texto chega ao seu ponto de recolhimento: a leitura volta sobre o percurso sem forçar uma abertura artificial.",
+        ])
+    if zone == "tardia":
         return random.choice([
             f"Lido retroativamente, “{clip}” recolhe parte do percurso e permite perceber como o texto vinha preparando sua reverberação.",
             f"Quase no fecho, “{clip}” funciona como ponto de inflexão; dali o percurso anterior ganha outro rumo de leitura.",
@@ -357,8 +485,8 @@ def _cia_regra_zero_fecho(poema_lines, line):
     if zone == "inicial":
         return random.choice([
             f"O encerramento crítico pode retornar a “{clip}”: o começo reaparece como eco e dá outro peso ao percurso.",
-            f"Ao voltar para “{clip}”, a leitura fecha por retomada: o início ganha função de reverberação, não de simples abertura.",
-            f"O fecho da análise encontra em “{clip}” um gancho de retorno; o primeiro gesto passa a iluminar o fim.",
+            f"Ao retomar “{clip}”, a leitura fecha em <u>da capo</u>: o primeiro verso volta como chave de reverberação.",
+            f"No retorno a “{clip}”, a abertura reaparece como eco; o primeiro gesto passa a iluminar o fim.",
         ])
     op = random.choice(CIA_OPERACOES_CRITICAS)
     verbo = random.choice(CIA_VERBOS_SURGIMENTO)
@@ -620,37 +748,53 @@ def _cia_sintatica_add_candidate(candidates, grupo, lines_used, text):
 
 
 def _cia_sintatica_candidatos_balanceados(poema_lines, used_lines):
-    """Cria blocos de MIOLO por grupos de 'ordem de nobreza'.
+    """Cria blocos de MIOLO por constatação clara e repetição controlada.
 
-    Regra interna: não é quantidade por quantidade; é lastro sintático visível.
-    A Sintática tenta contemplar básico, articulação, expressivo e desenho/ritmo
-    quando houver pertinência e espaço.
+    Regra interna:
+    - figura técnica só entra quando o trecho a sustenta;
+    - candidato usado entra no bloqueio;
+    - repetição é ponto de fuga, não padrão.
     """
     inner = poema_lines[1:-1] if len(poema_lines) > 2 else poema_lines[:]
     candidates = []
 
-    # 1. Básico: sujeito / verbo / pronome / predicado.
-    pessoais = [line for line in inner if re.search(r"\b(eu|me|mim|meu|minha|nós|nosso|nossa|ele|ela|eles|elas|seu|sua)\b", line.lower())]
-    line = pessoais[0] if pessoais else (inner[0] if inner else "")
-    if line:
-        _cia_sintatica_add_candidate(
-            candidates,
-            "basico",
-            [line],
-            f"Em “{_cia_clip(line)}”, a análise encontra uma base verbal: o **sujeito** se deixa perceber pelo enunciado e o **verbo** organiza o gesto da frase."
-        )
+    # 1. Básico: verbo/sujeito/predicado apenas com constatação clara.
+    verbais = [line for line in inner if _cia_has_explicit_verb(line)]
+    if verbais:
+        line = verbais[0]
+        verbo = _cia_first_explicit_verb(line)
+        if _cia_has_clear_subject(line):
+            texto = f"Em “{_cia_clip(line)}”, o **verbo** “{verbo}” encontra apoio em um **sujeito** perceptível no próprio enunciado, organizando o gesto da frase."
+        else:
+            texto = f"Em “{_cia_clip(line)}”, o **verbo** “{verbo}” dá movimento ao verso; a **sintaxe** avança pela ação verbal, não por comentário abstrato."
+        _cia_sintatica_add_candidate(candidates, "basico", [line], texto)
+    else:
+        nominais = [line for line in inner if _cia_is_nominal_or_prepositional(line)]
+        if nominais:
+            line = nominais[0]
+            nearby_verb, nearby_line = _cia_find_nearby_explicit_verb(poema_lines, line)
+            if nearby_verb:
+                texto = (
+                    f"Em “{_cia_clip(line)}”, não há **verbo** explícito no trecho citado; "
+                    f"a construção funciona como **complemento** da ação indicada por “{nearby_verb}” em “{_cia_clip(nearby_line)}”."
+                )
+            else:
+                texto = f"Em “{_cia_clip(line)}”, a construção nominal dispensa **verbo** explícito e sustenta a imagem por aproximação sintática."
+            _cia_sintatica_add_candidate(candidates, "basico", [line], texto)
 
-    # 2. Articulação: oração / complemento / conectivo / coordenação / subordinação.
-    subordinadas = [line for line in inner if re.search(r"\b(se|quando|embora|porque|que)\b", line.lower())]
+    # 2. Articulação: só nomeia subordinação/conectivo quando o marcador existe.
+    articulacoes = [line for line in inner if _cia_subordinacao_kind(line)]
     coordenadas = [line for line in inner if re.search(r"\b(e|ou|mas)\b", line.lower())]
-    if subordinadas:
-        line = subordinadas[0]
-        _cia_sintatica_add_candidate(
-            candidates,
-            "articulacao",
-            [line],
-            f"Em “{_cia_clip(line)}”, a **subordinação** cria dependência interna: a **oração** avança por condição, tempo ou explicação, e não por simples sequência."
-        )
+    if articulacoes:
+        line = articulacoes[0]
+        kind = _cia_subordinacao_kind(line)
+        if "onde" in line.lower():
+            texto = f"Em “{_cia_clip(line)}”, o marcador “onde” abre uma **oração** de lugar ou origem; a articulação depende do que o período desenvolve ao redor."
+        elif "que" in line.lower() and not re.search(r"\b(se|quando|embora|porque)\b", line.lower()):
+            texto = f"Em “{_cia_clip(line)}”, o **conectivo** “que” cria dependência de complementação ou retomada; a **oração** não funciona como frase solta."
+        else:
+            texto = f"Em “{_cia_clip(line)}”, a **subordinação** cria dependência interna de {kind}; a **oração** avança por vínculo sintático claro."
+        _cia_sintatica_add_candidate(candidates, "articulacao", [line], texto)
     elif coordenadas:
         line = coordenadas[0]
         _cia_sintatica_add_candidate(
@@ -659,19 +803,11 @@ def _cia_sintatica_candidatos_balanceados(poema_lines, used_lines):
             [line],
             f"Em “{_cia_clip(line)}”, o **conectivo** articula a passagem entre partes da frase; a **coordenação** aproxima segmentos sem fundi-los por completo."
         )
-    elif inner:
-        line = inner[min(len(inner) - 1, len(inner) // 2)]
-        _cia_sintatica_add_candidate(
-            candidates,
-            "articulacao",
-            [line],
-            f"Em “{_cia_clip(line)}”, a **oração** funciona como unidade de articulação: o verso distribui imagem e **complemento** sem perder a direção do período."
-        )
 
-    # 3. Expressivo: elipse / enumeração / inciso / regência / pontuação / reticências.
+    # 3. Expressivo: pontuação/inciso/enumeração apenas quando há sinal claro.
     reticencias = [line for line in inner if "..." in line or "…" in line]
     perguntas = [line for line in inner if "?" in line]
-    incisos = [line for line in inner if "(" in line or ")" in line]
+    incisos = [line for line in inner if "(" in line or ")" in line or re.search(r",\s*por dizer\s*,", line.lower())]
     enumeracoes = [line for line in inner if line.count(",") >= 2]
     if reticencias:
         line = reticencias[0]
@@ -687,7 +823,7 @@ def _cia_sintatica_candidatos_balanceados(poema_lines, used_lines):
             candidates,
             "expressivo",
             [line],
-            f"Em “{_cia_clip(line)}”, a **pontuação** interrogativa não é ornamento: ela muda a pressão da **oração** e abre uma tensão de leitura."
+            f"Em “{_cia_clip(line)}”, a **pontuação** interrogativa muda a pressão da **oração** e abre uma tensão de leitura."
         )
     elif incisos:
         line = incisos[0]
@@ -703,18 +839,10 @@ def _cia_sintatica_candidatos_balanceados(poema_lines, used_lines):
             candidates,
             "expressivo",
             [line],
-            f"A **enumeração** em “{_cia_clip(line)}” trabalha por acúmulo: o verso amplia a frase sem perder o eixo do **predicado**."
-        )
-    elif inner:
-        line = inner[-1]
-        _cia_sintatica_add_candidate(
-            candidates,
-            "expressivo",
-            [line],
-            f"Em “{_cia_clip(line)}”, a **elipse** possível deixa uma falta trabalhando no verso; a frase sugere mais do que entrega."
+            f"A **enumeração** em “{_cia_clip(line)}” trabalha por acúmulo: o verso amplia a frase sem perder o eixo sintático."
         )
 
-    # 4. Desenho e ritmo: anáfora / paralelismo / repetição / deslocamento.
+    # 4. Desenho e ritmo: anáfora/paralelismo/deslocamento com bloqueio posterior.
     first_tokens = {}
     first_two = {}
     for line in inner:
@@ -765,7 +893,7 @@ def _cia_sintatica_candidatos_balanceados(poema_lines, used_lines):
                 f"Em “{_cia_clip(line)}”, o desenho do verso cria **deslocamento**: a leitura muda de eixo sem romper a unidade do período."
             )
 
-    # Remove candidatos que usariam verso já reservado, preservando o grupo se possível.
+    # Pré-filtro contra versos já reservados e grupos repetidos.
     filtered = []
     grupos = set()
     for item in candidates:
@@ -788,6 +916,9 @@ def _cia_sintatica_escolhe_miolos_balanceados(poema_lines, used_lines, abertura,
     candidatos = _cia_sintatica_candidatos_balanceados(poema_lines, used_lines)
 
     for item in candidatos:
+        item_lines = set(item.get("lines", []))
+        if item_lines and item_lines & used_lines:
+            continue
         teste = _cia_join(blocos + [item["text"], fecho])
         if _cia_count_sintatic_terms(teste) > termo_max:
             # Se passar muito do teto, ainda aceita quando faltar grupo essencial.
@@ -850,7 +981,7 @@ def build_cia_analysis(curr_ypoema):
     return _cia_join(blocos)
 
 def build_cia_analysis_free(curr_ypoema):
-    """Outro ângulo: leitura de contraste, sem mencionar método e sem repetir trechos por comodidade."""
+    """Outro ângulo: leitura de contraste, sem repetir trechos por comodidade."""
     poema_lines = _cia_poema_lines(curr_ypoema)
 
     if not poema_lines:
@@ -859,9 +990,27 @@ def build_cia_analysis_free(curr_ypoema):
     used = set(st.session_state.get("_cia_used_lines", []))
     local_used = set(used)
 
-    abertura_line = _cia_pick_role(poema_lines, "abertura", local_used, "")
-    destaque_line = _cia_pick_role(poema_lines, "miolo", local_used, "")
-    fecho_line = _cia_pick_role(poema_lines, "fecho", local_used, "")
+    abertura_line = _cia_pick_role_by_zones(
+        poema_lines,
+        "abertura",
+        local_used,
+        "",
+        allowed_zones={"inicial", "inicial_proxima", "miolo"},
+    )
+    if abertura_line:
+        local_used.add(abertura_line)
+    destaque_line = _cia_pick_role_by_zones(
+        poema_lines,
+        "miolo",
+        local_used,
+        "",
+        allowed_zones={"miolo", "inicial_proxima", "tardia"},
+    )
+    if destaque_line:
+        local_used.add(destaque_line)
+
+    # Outro ângulo não chama último verso de "quase": último verso é fecho real.
+    fecho_line = poema_lines[-1] if poema_lines else ""
 
     if abertura_line:
         abertura = _cia_regra_zero_abertura(poema_lines, abertura_line)
@@ -881,14 +1030,14 @@ def build_cia_analysis_free(curr_ypoema):
             "A linguagem ganha espessura no conjunto. O poema cria densidade sem depender de um único ponto de apoio.",
         ])
 
-    if (not fecho_line) or (fecho_line in {abertura_line, destaque_line} and len(poema_lines) > 2):
+    if fecho_line:
+        fecho = _cia_regra_zero_fecho(poema_lines, fecho_line)
+    else:
         fecho = random.choice([
             "O encerramento recolhe a tensão sem resolver tudo. O poema termina preservando uma zona de eco.",
             "Ao final, a leitura não encontra uma explicação única, mas um resto de intensidade que continua trabalhando.",
             "O fim não domestica o percurso: apenas concentra sua última reverberação.",
         ])
-    else:
-        fecho = _cia_regra_zero_fecho(poema_lines, fecho_line)
 
     return _cia_join([abertura, desenvolvimento, fecho])
 
