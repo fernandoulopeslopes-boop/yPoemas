@@ -290,18 +290,18 @@ def _cia_regra_zero_abertura(poema_lines, line):
     zone = _cia_line_zone(poema_lines, line)
     if zone in ("final", "tardia"):
         return random.choice([
-            f"Tomado como entrada retroativa, “{clip}” recolhe parte do percurso e permite reler o que veio antes.",
-            f"A leitura pode entrar pelo fim em “{clip}”: o verso não abre o poema, mas reorganiza retrospectivamente seu campo de forças.",
+            f"Lido retroativamente, “{clip}” recolhe parte do percurso e permite perceber como o texto vinha preparando sua reverberação.",
             f"Quase no fecho, “{clip}” funciona como ponto de inflexão; dali o percurso anterior ganha outro rumo de leitura.",
-            f"“{clip}” oferece uma entrada pelo avesso: em vez de inaugurar o texto, condensa uma tensão que já vinha se formando.",
+            f"Em “{clip}”, a tensão se condensa: o verso não inaugura o texto, mas reorganiza retrospectivamente seu campo de forças.",
+            f"“{clip}” concentra uma força tardia do poema e permite reler o caminho anterior sem forçar uma abertura artificial.",
         ])
     if zone == "miolo":
         op = random.choice(CIA_OPERACOES_CRITICAS)
         verbo = random.choice(CIA_VERBOS_SURGIMENTO)
         return random.choice([
-            f"Em “{clip}”, a leitura encontra um {op}: o verso {verbo} como ponto de entrada sem depender da ordem linear do texto.",
+            f"Em “{clip}”, a leitura encontra um {op}: o verso {verbo} como ponto de orientação sem depender da ordem linear do texto.",
             f"“{clip}” oferece um rumo de leitura pelo centro do poema; a partir daí, o percurso ganha outra organização.",
-            f"Quando “{clip}” {verbo} como ponto de entrada, o texto se deixa ler por uma passagem interna, não apenas pelo primeiro verso.",
+            f"Quando “{clip}” {verbo} no percurso, o texto se deixa ler por uma passagem interna, não apenas pelo primeiro verso.",
         ])
     return random.choice([
         f"“{clip}” abre um campo de forças e oferece um caminho de aproximação para o leitor.",
@@ -321,11 +321,17 @@ def _cia_regra_zero_miolo(poema_lines, line):
             f"Quando volta ao desenvolvimento, “{clip}” funciona como eixo de leitura: o início passa a iluminar o percurso.",
             f"No desenvolvimento, “{clip}” ganha outra função: não abre de novo o poema, mas ajuda a organizar sua tensão interna.",
         ])
-    if zone in ("final", "tardia"):
+    if zone == "final":
         return random.choice([
-            f"No desenvolvimento crítico, “{clip}” atua como aproximação do fecho: a imagem concentra uma tensão que o fim recolhe.",
-            f"“{clip}” aparece como zona de passagem para o encerramento, mudando o peso do que vinha sendo lido.",
+            f"No último verso, “{clip}” já é o fecho real do poema: a imagem concentra a tensão que o percurso vinha preparando.",
+            f"Como fecho real, “{clip}” recolhe o movimento anterior e faz o desenvolvimento chegar à sua reverberação.",
+            f"Em “{clip}”, o desenvolvimento encontra seu ponto de chegada: o verso não aproxima o fecho; ele concentra o próprio encerramento.",
+        ])
+    if zone == "tardia":
+        return random.choice([
             f"Quase no fim, “{clip}” adensa o percurso e prepara a reverberação que a leitura ainda precisa atravessar.",
+            f"“{clip}” aparece como zona de passagem para o encerramento, mudando o peso do que vinha sendo lido.",
+            f"Nessa passagem tardia, “{clip}” concentra uma tensão que o fecho poderá recolher sem parecer imposto.",
         ])
     op = random.choice(CIA_OPERACOES_CRITICAS)
     verbo = random.choice(CIA_VERBOS_SURGIMENTO)
@@ -445,6 +451,23 @@ def _cia_pick_role(poema_lines, role, used_lines, fallback=""):
     pool = pools.get(role, [])[:]
     random.shuffle(pool)
     return pool[0] if pool else fallback
+
+
+def _cia_pick_role_by_zones(poema_lines, role, used_lines, fallback="", allowed_zones=None):
+    """Escolhe candidato por função, mas respeita zonas permitidas para moods mais curtos.
+
+    Usado principalmente na Reduzida e em pontos sensíveis da Completa para evitar
+    que o último verso vire 'entrada' ou que a primeira linha vire 'fecho' sem
+    operação de eco/retomada explicitamente nomeada.
+    """
+    allowed_zones = set(allowed_zones or [])
+    pool = _cia_candidate_pools(poema_lines).get(role, [])[:]
+    filtered = [line for line in pool if _cia_line_zone(poema_lines, line) in allowed_zones]
+    random.shuffle(filtered)
+    chosen = _cia_pick_unused(filtered, used_lines, "")
+    if chosen:
+        return chosen
+    return fallback
 
 
 def _cia_critico_abertura(poema_lines, used_lines):
@@ -979,20 +1002,43 @@ def build_cia_analysis_formal(curr_ypoema):
 
 
 def build_cia_analysis_resumida(curr_ypoema):
-    """Reduzida: leitura curta, objetiva e distinta da Sintética."""
+    """Reduzida: leitura curta, objetiva e distinta da Sintética.
+
+    Na Reduzida, a brevidade aumenta o risco de inversão funcional.
+    Por isso, a REGRA_ZERO_CIA é aplicada com zonas mais rígidas:
+    abertura não usa último verso; fecho privilegia o fecho real.
+    """
     poema_lines = _cia_poema_lines(curr_ypoema)
 
     if not poema_lines:
         return "**requer apuração manual**"
 
     used_lines = set()
-    abertura_line = _cia_pick_role(poema_lines, "abertura", used_lines, poema_lines[0])
-    destaque_line = _cia_pick_role(poema_lines, "miolo", used_lines, poema_lines[len(poema_lines) // 2])
+    abertura_line = _cia_pick_role_by_zones(
+        poema_lines,
+        "abertura",
+        used_lines,
+        poema_lines[0],
+        allowed_zones={"inicial", "inicial_proxima"},
+    )
+    if abertura_line:
+        used_lines.add(abertura_line)
+
+    destaque_line = _cia_pick_role_by_zones(
+        poema_lines,
+        "miolo",
+        used_lines,
+        poema_lines[len(poema_lines) // 2],
+        allowed_zones={"miolo", "inicial_proxima", "tardia"},
+    )
+    if destaque_line:
+        used_lines.add(destaque_line)
 
     abertura = _cia_regra_zero_abertura(poema_lines, abertura_line)
     desenvolvimento = _cia_regra_zero_miolo(poema_lines, destaque_line)
 
-    fecho = _cia_critico_fecho(poema_lines, used_lines, prefer_specific=True)
+    fecho_line = poema_lines[-1]
+    fecho = _cia_regra_zero_fecho(poema_lines, fecho_line)
     return _cia_join([abertura, desenvolvimento, fecho])
 
 def build_cia_analysis_completa(curr_ypoema):
@@ -1005,7 +1051,13 @@ def build_cia_analysis_completa(curr_ypoema):
     used_lines = set()
     qtd_linhas = len(poema_lines)
     abertura_line = _cia_pick_role(poema_lines, "abertura", used_lines, poema_lines[0])
-    destaque_line = _cia_pick_role(poema_lines, "miolo", used_lines, poema_lines[len(poema_lines) // 2])
+    destaque_line = _cia_pick_role_by_zones(
+        poema_lines,
+        "miolo",
+        used_lines,
+        poema_lines[len(poema_lines) // 2],
+        allowed_zones={"miolo", "inicial_proxima", "tardia"},
+    )
 
     abertura = _cia_regra_zero_abertura(poema_lines, abertura_line)
     nucleo = _cia_regra_zero_miolo(poema_lines, destaque_line)
@@ -1040,11 +1092,14 @@ def render_cia_stage(curr_ypoema):
     def _translate_analysis(markdown_text):
         return _translate(str(markdown_text).strip())
 
-    def _to_html_block(markdown_text):
+    def _to_html_block(markdown_text, underline_strong=False):
         html = _translate_analysis(markdown_text)
         while "**" in html:
             html = html.replace("**", "<strong>", 1)
             html = html.replace("**", "</strong>", 1)
+        if underline_strong:
+            html = html.replace("<strong>", "<strong><u>")
+            html = html.replace("</strong>", "</u></strong>")
         html = html.replace("  \n", "\n")
         html = html.replace("\r\n", "\n")
         html = re.sub(r"\n{3,}", "\n\n", html)
@@ -1062,7 +1117,7 @@ def render_cia_stage(curr_ypoema):
         analysis_html = _to_html_block(build_cia_analysis_sintetica(curr_ypoema))
         content = analysis_html
     elif mood == "Sintática":
-        analysis_html = _to_html_block(build_cia_analysis(curr_ypoema))
+        analysis_html = _to_html_block(build_cia_analysis(curr_ypoema), underline_strong=True)
         analysis_free_html = _to_html_block(build_cia_analysis_free(curr_ypoema))
         outro_angulo = _translate("Outro ângulo")
         content = f"""{analysis_html}
