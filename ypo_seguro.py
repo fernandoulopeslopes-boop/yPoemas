@@ -626,42 +626,6 @@ def init_session_state():
             st.session_state[key] = value
 
 
-def apply_sidebar_cia_mode_styles(chosen_id=None):
-    """Recolhe a sidebar para teste visual quando a CIA está em foco."""
-    cia_active = (
-        str(chosen_id) == "2"
-        and st.session_state.get("sidebar_panel", "Machina") == "CIA"
-    )
-
-    if cia_active:
-        st.markdown(
-            """
-            <style>
-            [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
-                width: 50px !important;
-                min-width: 50px !important;
-                max-width: 50px !important;
-                overflow-x: hidden !important;
-            }
-
-            [data-testid="stSidebar"] > div:first-child {
-                width: 50px !important;
-                min-width: 50px !important;
-                max-width: 50px !important;
-                overflow-x: hidden !important;
-            }
-
-            [data-testid="stSidebar"] div[data-testid="stSidebarContent"] {
-                padding-left: 0.10rem !important;
-                padding-right: 0.10rem !important;
-                overflow-x: hidden !important;
-            }
-            </style>
-            """,
-            unsafe_allow_html=True,
-        )
-
-
 apply_styles()
 init_session_state()
 
@@ -1934,6 +1898,97 @@ def page_abouts():
 
 
 
+SIDEBAR_FILHOTE_WIDTH_PX = 64
+
+
+def _cia_sidebar_filha_active(chosen_id):
+    """Ativa a sidebar-filha somente na página yPoemas, quando a CIA está em foco."""
+    if str(chosen_id) != "2":
+        st.session_state["sidebar_panel"] = "Machina"
+        return False
+    return st.session_state.get("sidebar_panel", "Machina") == "CIA"
+
+
+def apply_sidebar_mae_filha_styles(chosen_id):
+    """Alterna a largura visual da sidebar entre mãe e filha."""
+    if _cia_sidebar_filha_active(chosen_id):
+        width = SIDEBAR_FILHOTE_WIDTH_PX
+        st.markdown(
+            f"""
+            <style>
+            [data-testid='stSidebar'][aria-expanded='true'],
+            section[data-testid='stSidebar'][aria-expanded='true'] {{
+                width: {width}px !important;
+                min-width: {width}px !important;
+                max-width: {width}px !important;
+            }}
+
+            [data-testid='stSidebar'][aria-expanded='true'] > div:first-child,
+            section[data-testid='stSidebar'][aria-expanded='true'] > div:first-child {{
+                width: {width}px !important;
+                min-width: {width}px !important;
+                max-width: {width}px !important;
+                padding-left: 0.20rem !important;
+                padding-right: 0.20rem !important;
+                overflow-x: hidden !important;
+            }}
+
+            [data-testid='stSidebar'] div[data-testid='stSidebarContent'] {{
+                padding-left: 0.20rem !important;
+                padding-right: 0.20rem !important;
+            }}
+
+            [data-testid='stSidebar'] .stButton button {{
+                min-width: 100% !important;
+                min-height: 3.0rem !important;
+                font-size: 1.85rem !important;
+                line-height: 1 !important;
+                padding: 0 !important;
+                border-radius: 14px !important;
+            }}
+
+            .machina-sidebar-filha-spacer {{
+                height: 42vh;
+            }}
+            </style>
+            """,
+            unsafe_allow_html=True,
+        )
+    else:
+        st.markdown(
+            """
+            <style>
+            [data-testid='stSidebar'][aria-expanded='true'],
+            section[data-testid='stSidebar'][aria-expanded='true'] {
+                width: 315px !important;
+                min-width: 315px !important;
+                max-width: 315px !important;
+            }
+
+            [data-testid='stSidebar'][aria-expanded='true'] > div:first-child,
+            section[data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
+                width: 315px !important;
+                min-width: 315px !important;
+                max-width: 315px !important;
+            }
+            </style>
+            """,
+            unsafe_allow_html=True,
+        )
+
+
+def render_sidebar_filha():
+    """Sidebar mínima da CIA: apenas retorno para a sidebar-mãe."""
+    with st.sidebar:
+        st.markdown("<div class='machina-sidebar-filha-spacer'></div>", unsafe_allow_html=True)
+        if st.button(">", key="sidebar_filha_voltar_machina", help="voltar à Machina", use_container_width=True):
+            st.session_state["sidebar_panel"] = "Machina"
+            try:
+                st.rerun()
+            except Exception:
+                st.experimental_rerun()
+
+
 def render_sidebar_for_page(chosen_id):
     """Renderiza os controles fixos do leitor."""
     pick_lang()
@@ -1971,20 +2026,26 @@ def main():
         st.markdown("<div class='machina-divider-palco'><hr /></div>", unsafe_allow_html=True)
 
         magy = PAGE_IMAGES.get(chosen_id, "img_ypoemas.jpg")
+        apply_sidebar_mae_filha_styles(chosen_id)
 
-        render_sidebar_for_page(chosen_id)
-
-        with st.sidebar:
-            st.image("./images/" + magy)
-
-
-        if chosen_id == "2":
-            draw_sidebar_panel_buttons(chosen_id)
-            apply_sidebar_cia_mode_styles(chosen_id)
-            if st.session_state.get("sidebar_panel", "Machina") == "CIA":
-                render_cia_sidebar()
+        if _cia_sidebar_filha_active(chosen_id):
+            render_sidebar_filha()
         else:
-            apply_sidebar_cia_mode_styles(chosen_id)
+            render_sidebar_for_page(chosen_id)
+
+            with st.sidebar:
+                st.image("./images/" + magy)
+
+            if chosen_id == "2":
+                draw_sidebar_panel_buttons(chosen_id)
+
+                # Se o clique acabou de acionar a CIA, refaz o ciclo imediatamente.
+                # Assim a sidebar-filha já aparece no primeiro clique em CIA.
+                if st.session_state.get("sidebar_panel", "Machina") == "CIA":
+                    try:
+                        st.rerun()
+                    except Exception:
+                        st.experimental_rerun()
 
 
         palco = st.container()
