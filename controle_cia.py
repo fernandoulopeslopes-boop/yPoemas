@@ -33,6 +33,47 @@ CIA_MOODS = [
 ]
 
 
+REGRA_ZERO_CIA = """
+REGRA_ZERO_CIA
+
+Conduta comum a todos os moods:
+- posição flexível;
+- função crítica respeitada;
+- consulta obrigatória às listas funcionais;
+- random apenas entre candidatos plausíveis;
+- nenhuma fórmula pode mentir sobre a função do FORTE_CANDIDATO.
+
+A primeira linha e o último verso continuam candidatos fortes, mas não são
+obrigações automáticas. O FECHO real recebe atenção especial porque, na
+arquitetura dos yPoemas, costuma carregar reverberação, resumo da ópera,
+estranheza produtiva ou convite à releitura.
+"""
+
+CIA_OPERACOES_CRITICAS = [
+    "deslocamento",
+    "virada",
+    "ponto de inflexão",
+    "mudança de eixo",
+    "transição",
+    "passagem",
+]
+
+CIA_VERBOS_SURGIMENTO = ["surge", "aparece", "desponta"]
+
+CIA_APOIOS_LEITURA = [
+    "onde pousar",
+    "uma âncora",
+    "um porto seguro",
+    "algum apoio",
+    "uma referência",
+    "um ponto de apoio",
+    "um rumo de leitura",
+    "um chão mínimo",
+    "um eixo de sustentação",
+    "um gancho",
+]
+
+
 def ensure_cia_name(force=False):
     """Gera um nome mutável para a CIA e o preserva durante a sessão."""
     if force or not st.session_state.get("cia_name"):
@@ -176,6 +217,110 @@ def _cia_score_candidate(line, idx, total):
     return score
 
 
+def _cia_line_index(poema_lines, line):
+    """Retorna a posição do verso no poema, sem quebrar se houver repetição."""
+    try:
+        return poema_lines.index(line)
+    except ValueError:
+        return -1
+
+
+def _cia_line_zone(poema_lines, line):
+    """Classifica a posição material do candidato para evitar fórmula mentirosa."""
+    total = len(poema_lines)
+    idx = _cia_line_index(poema_lines, line)
+    if idx < 0 or total <= 0:
+        return "indefinida"
+    if idx == 0:
+        return "inicial"
+    if idx == total - 1:
+        return "final"
+    if idx >= max(1, total - 2):
+        return "tardia"
+    if idx <= 1:
+        return "inicial_proxima"
+    return "miolo"
+
+
+def _cia_regra_zero_abertura(poema_lines, line):
+    """ABERTURA: escolhe formulação conforme posição/função real do candidato."""
+    clip = _cia_clip(line)
+    zone = _cia_line_zone(poema_lines, line)
+    if zone in ("final", "tardia"):
+        return random.choice([
+            f"Tomado como entrada retroativa, **“{clip}”** recolhe parte do percurso e permite reler o que veio antes.",
+            f"A leitura pode entrar pelo fim em **“{clip}”**: o verso não abre o poema, mas reorganiza retrospectivamente seu campo de forças.",
+            f"Quase no fecho, **“{clip}”** funciona como ponto de inflexão; dali o percurso anterior ganha outro rumo de leitura.",
+            f"**“{clip}”** oferece uma entrada pelo avesso: em vez de inaugurar o texto, condensa uma tensão que já vinha se formando.",
+        ])
+    if zone == "miolo":
+        op = random.choice(CIA_OPERACOES_CRITICAS)
+        verbo = random.choice(CIA_VERBOS_SURGIMENTO)
+        return random.choice([
+            f"Em **“{clip}”**, a leitura encontra um {op}: o verso {verbo} como ponto de entrada sem depender da ordem linear do texto.",
+            f"**“{clip}”** oferece um rumo de leitura pelo centro do poema; a partir daí, o percurso ganha outra organização.",
+            f"Quando **“{clip}”** {verbo} como ABERTURA crítica, o texto se deixa ler por uma passagem interna, não apenas pelo primeiro verso.",
+        ])
+    return random.choice([
+        f"**“{clip}”** abre um campo de forças e oferece um caminho de aproximação para o leitor.",
+        f"Desde **“{clip}”**, o poema encontra um portal de entrada: a leitura começa por ali e ganha direção.",
+        f"**“{clip}”** funciona como entrada crítica do poema; dali a leitura encontra seu primeiro ponto de apoio.",
+        f"Em **“{clip}”**, o texto arma seu gesto inicial e oferece ao leitor uma referência de aproximação.",
+    ])
+
+
+def _cia_regra_zero_miolo(poema_lines, line):
+    """MIOLO: comenta desenvolvimento/tensão sem presumir posição intermediária falsa."""
+    clip = _cia_clip(line)
+    zone = _cia_line_zone(poema_lines, line)
+    if zone == "inicial":
+        return random.choice([
+            f"Retomado no MIOLO, **“{clip}”** deixa de ser apenas entrada e passa a sustentar a direção crítica da leitura.",
+            f"Quando volta ao centro da análise, **“{clip}”** funciona como eixo de desenvolvimento: o início passa a iluminar o percurso.",
+            f"No desenvolvimento, **“{clip}”** ganha outra função: não abre de novo o poema, mas ajuda a organizar sua tensão interna.",
+        ])
+    if zone in ("final", "tardia"):
+        return random.choice([
+            f"No desenvolvimento crítico, **“{clip}”** atua como aproximação do fecho: a imagem concentra uma tensão que o fim recolhe.",
+            f"**“{clip}”** aparece como zona de passagem para o encerramento, mudando o peso do que vinha sendo lido.",
+            f"Quase no fim, **“{clip}”** adensa o percurso e prepara a reverberação que a leitura ainda precisa atravessar.",
+        ])
+    op = random.choice(CIA_OPERACOES_CRITICAS)
+    verbo = random.choice(CIA_VERBOS_SURGIMENTO)
+    return random.choice([
+        f"Em **“{clip}”**, a linguagem ganha densidade: o verso concentra imagem, tensão e atmosfera sem dissolver o mistério.",
+        f"Quando **“{clip}”** {verbo} no MIOLO, a leitura encontra um {op} que altera o peso do percurso.",
+        f"O centro de força passa por **“{clip}”**; ali o poema ganha espessura e evita seguir por caminho óbvio.",
+        f"Há em **“{clip}”** uma medula verbal: o texto se mostra breve na superfície e mais largo por dentro.",
+    ])
+
+
+def _cia_regra_zero_fecho(poema_lines, line):
+    """FECHO: preserva reverberação e dá atenção especial ao fecho real."""
+    clip = _cia_clip(line)
+    zone = _cia_line_zone(poema_lines, line)
+    if zone == "final":
+        return random.choice([
+            f"No fecho, **“{clip}”** recolhe o percurso sem esgotá-lo; a última linha concentra a pressão e deixa o poema ainda reverberando.",
+            f"A chegada a **“{clip}”** dá ao poema seu ponto de recolhimento: não fecha o sentido, mas organiza o eco do que veio antes.",
+            f"Em **“{clip}”**, o poema encontra uma saída que ainda preserva atrito. O fim recolhe a leitura sem transformar a tensão em resposta única.",
+            f"O FECHO real, **“{clip}”**, funciona como resumo da ópera: conserva estranheza e convida a leitura a voltar sobre o percurso.",
+        ])
+    if zone == "inicial":
+        return random.choice([
+            f"O encerramento crítico pode retornar a **“{clip}”**: o começo reaparece como eco e dá outro peso ao percurso.",
+            f"Ao voltar para **“{clip}”**, a leitura fecha por retomada: o início ganha função de reverberação, não de simples abertura.",
+            f"O fecho da análise encontra em **“{clip}”** um gancho de retorno; o primeiro gesto passa a iluminar o fim.",
+        ])
+    op = random.choice(CIA_OPERACOES_CRITICAS)
+    verbo = random.choice(CIA_VERBOS_SURGIMENTO)
+    return random.choice([
+        f"A reverberação pode voltar a **“{clip}”**: esse ponto reorganiza o percurso e faz o final ser lido por outra direção.",
+        f"O encerramento crítico se apoia em **“{clip}”** porque essa imagem aponta para a tensão que o fim recolhe.",
+        f"Mesmo fora da última linha, **“{clip}”** funciona como zona de eco: a análise retorna a esse ponto para deixar o poema vibrando.",
+        f"Na {op}, **“{clip}”** {verbo} como melhor reverberação possível sem apagar o impacto do FECHO real.",
+    ])
+
 def _cia_forte_candidatos(poema_lines, min_count=2, max_count=5):
     """Mapeia 2 a 5 FORTE_CANDIDATO para uso móvel na CIA.
 
@@ -235,9 +380,20 @@ def _cia_candidate_pools(poema_lines):
 
 
 def _cia_pick_role(poema_lines, role, used_lines, fallback=""):
-    """Escolhe um candidato funcional, embaralhando apenas opções plausíveis."""
+    """Escolhe um candidato funcional, embaralhando apenas opções plausíveis.
+
+    REGRA_ZERO_CIA: no FECHO, o último verso recebe atenção especial, sem virar
+    obrigação absoluta. A variação não pode atropelar impacto.
+    """
     pools = _cia_candidate_pools(poema_lines)
     pool = pools.get(role, [])[:]
+
+    if role == "fecho" and poema_lines:
+        last = poema_lines[-1]
+        if last in pool and last not in used_lines and random.random() < 0.62:
+            used_lines.add(last)
+            return last
+
     random.shuffle(pool)
     chosen = _cia_pick_unused(pool, used_lines, fallback)
     if chosen:
@@ -250,34 +406,16 @@ def _cia_pick_role(poema_lines, role, used_lines, fallback=""):
 
 
 def _cia_critico_abertura(poema_lines, used_lines):
-    """Primeiro bloco experimental: escolhe o melhor portal entre candidatos plausíveis."""
+    """Primeiro bloco: portal, inflexão ou entrada retroativa, conforme REGRA_ZERO_CIA."""
     abertura = _cia_pick_role(poema_lines, "abertura", used_lines, poema_lines[0])
-    return random.choice([
-        f"Desde **“{_cia_clip(abertura)}”**, o poema encontra um portal de entrada: a leitura começa por ali, mesmo quando esse ponto não coincide com a primeira linha.",
-        f"A partir de **“{_cia_clip(abertura)}”**, o texto abre seu campo de forças e oferece um caminho de aproximação para o leitor.",
-        f"**“{_cia_clip(abertura)}”** funciona como entrada crítica do poema: dali a leitura ganha direção sem precisar seguir a ordem linear do texto.",
-        f"Em **“{_cia_clip(abertura)}”**, a análise encontra um ponto de partida produtivo; o verso ilumina o percurso antes mesmo de explicá-lo.",
-        f"O primeiro gesto de leitura pode nascer em **“{_cia_clip(abertura)}”**: o poema se deixa atravessar por esse ponto de força.",
-    ])
+    return _cia_regra_zero_abertura(poema_lines, abertura)
 
 
 def _cia_critico_fecho(poema_lines, used_lines, prefer_specific=True):
-    """Último bloco experimental: escolhe a melhor reverberação final entre candidatos plausíveis."""
+    """Último bloco: melhor reverberação final entre candidatos plausíveis."""
     fecho = _cia_pick_role(poema_lines, "fecho", used_lines, poema_lines[-1])
     if prefer_specific and fecho:
-        is_last = fecho == poema_lines[-1]
-        if is_last:
-            return random.choice([
-                f"No fecho, **“{_cia_clip(fecho)}”** recolhe o percurso sem esgotá-lo; a última linha concentra a pressão e deixa o poema ainda reverberando.",
-                f"A chegada a **“{_cia_clip(fecho)}”** dá ao poema seu ponto de recolhimento: não fecha o sentido, mas organiza o eco do que veio antes.",
-                f"Em **“{_cia_clip(fecho)}”**, o poema encontra uma saída que ainda preserva atrito. O fim recolhe a leitura sem transformar a tensão em resposta única.",
-            ])
-        return random.choice([
-            f"A reverberação mais forte pode voltar a **“{_cia_clip(fecho)}”**: esse ponto reorganiza o percurso e faz o final ser lido por outra direção.",
-            f"O encerramento crítico se apoia em **“{_cia_clip(fecho)}”** porque ali o poema já apontava para a tensão que o fim apenas recolhe.",
-            f"Mesmo fora da última linha, **“{_cia_clip(fecho)}”** funciona como zona de eco: a análise retorna a esse ponto para deixar o poema vibrando.",
-            f"O fecho da leitura não precisa coincidir com o último verso; em **“{_cia_clip(fecho)}”**, o texto conserva sua melhor reverberação.",
-        ])
+        return _cia_regra_zero_fecho(poema_lines, fecho)
     return random.choice([
         "O fechamento recolhe as linhas de força sem reduzir o poema a uma resposta. A leitura termina com eco, não com explicação.",
         "O percurso crítico se encerra onde o poema preserva sua zona de ressonância: o sentido se organiza, mas não se deixa domesticar.",
@@ -327,7 +465,7 @@ def build_cia_analysis(curr_ypoema):
     if reticencias:
         line = reticencias[0]
         add([line],
-            f"As reticências de **“{_cia_clip(line)}”** suspendem o fechamento e deixam a frase continuar fora da linha, como se o sentido ainda estivesse procurando onde pousar."
+            f"As reticências de **“{_cia_clip(line)}”** suspendem o fechamento e deixam a frase continuar fora da linha, como se o sentido ainda estivesse procurando {random.choice(CIA_APOIOS_LEITURA)}."
         )
 
     incisos = [line for line in poema_lines if "(" in line or ")" in line]
@@ -390,7 +528,7 @@ def build_cia_analysis(curr_ypoema):
     if cortes:
         l1, l2 = cortes[0]
         add([l1, l2],
-            f"No corte entre **“{_cia_clip(l1)}”** e **“{_cia_clip(l2)}”**, a sintaxe atravessa a linha. A leitura é empurrada para diante antes de encontrar repouso."
+            f"Na {random.choice(CIA_OPERACOES_CRITICAS)} entre **“{_cia_clip(l1)}”** e **“{_cia_clip(l2)}”**, a sintaxe atravessa a linha. A leitura é empurrada para diante antes de encontrar {random.choice(CIA_APOIOS_LEITURA)}."
         )
 
     used_lines = set()
@@ -437,11 +575,7 @@ def build_cia_analysis_free(curr_ypoema):
     fecho_line = _cia_pick_role(poema_lines, "fecho", local_used, "")
 
     if abertura_line:
-        abertura = random.choice([
-            f"Outro ângulo surge em **“{_cia_clip(abertura_line)}”**: o verso não apenas participa do texto, mas define uma temperatura de leitura.",
-            f"Por outro caminho, **“{_cia_clip(abertura_line)}”** abre uma zona de expectativa. O poema começa antes de se explicar.",
-            f"Há uma presença discreta, mas decisiva, em **“{_cia_clip(abertura_line)}”**: dali o texto escolhe outro modo de respirar.",
-        ])
+        abertura = _cia_regra_zero_abertura(poema_lines, abertura_line)
     else:
         abertura = random.choice([
             "Outro ângulo surge pela organização interna do poema: a leitura muda quando acompanha as passagens, não apenas os versos isolados.",
@@ -450,11 +584,7 @@ def build_cia_analysis_free(curr_ypoema):
         ])
 
     if destaque_line:
-        desenvolvimento = random.choice([
-            f"No corpo do poema, **“{_cia_clip(destaque_line)}”** concentra uma energia própria. A formulação desloca a linguagem do uso comum e cria densidade.",
-            f"O ponto de maior pressão aparece em **“{_cia_clip(destaque_line)}”**. O verso não apenas comunica: cria uma zona de sentido ao redor de si.",
-            f"Em **“{_cia_clip(destaque_line)}”**, a linguagem ganha espessura. Há ali uma pequena torção que impede a leitura de seguir por caminho óbvio.",
-        ])
+        desenvolvimento = _cia_regra_zero_miolo(poema_lines, destaque_line)
     else:
         desenvolvimento = random.choice([
             "No corpo do poema, a energia se distribui por passagens sucessivas. A leitura avança porque o texto desloca sua pressão de um ponto a outro.",
@@ -469,11 +599,7 @@ def build_cia_analysis_free(curr_ypoema):
             "O fim não domestica o percurso: apenas concentra sua última reverberação.",
         ])
     else:
-        fecho = random.choice([
-            f"No encerramento, **“{_cia_clip(fecho_line)}”** recolhe a tensão anterior e devolve o poema com outro peso.",
-            f"A chegada a **“{_cia_clip(fecho_line)}”** desloca retrospectivamente o que veio antes e deixa o texto em estado de eco.",
-            f"Quando chega a **“{_cia_clip(fecho_line)}”**, o poema muda de temperatura e conserva uma pressão residual depois do fim.",
-        ])
+        fecho = _cia_regra_zero_fecho(poema_lines, fecho_line)
 
     return _cia_join([abertura, desenvolvimento, fecho])
 
@@ -489,17 +615,8 @@ def build_cia_analysis_sintetica(curr_ypoema):
     abertura_line = _cia_pick_role(poema_lines, "abertura", used_lines, poema_lines[0])
     destaque_line = _cia_pick_role(poema_lines, "miolo", used_lines, poema_lines[len(poema_lines) // 2])
 
-    abertura = random.choice([
-        f"Desde **“{_cia_clip(abertura_line)}”**, o poema se apresenta como concentração: pouco se espalha, muito se adensa.",
-        f"A entrada crítica por **“{_cia_clip(abertura_line)}”** arma o núcleo do texto, com uma pressão que prefere sugerir a explicar.",
-        f"Em **“{_cia_clip(abertura_line)}”**, o poema encontra um eixo possível e começa a trabalhar por condensação.",
-    ])
-
-    desenvolvimento = random.choice([
-        f"O centro de força passa por **“{_cia_clip(destaque_line)}”**. A formulação concentra imagem, tensão e atmosfera sem dissolver o mistério.",
-        f"Em **“{_cia_clip(destaque_line)}”**, a linguagem ganha densidade: o verso parece reunir o que o poema tem de mais vivo.",
-        f"Há em **“{_cia_clip(destaque_line)}”** uma medula verbal. O poema se mostra breve na superfície e mais largo por dentro.",
-    ])
+    abertura = _cia_regra_zero_abertura(poema_lines, abertura_line)
+    desenvolvimento = _cia_regra_zero_miolo(poema_lines, destaque_line)
 
     fecho = _cia_critico_fecho(poema_lines, used_lines, prefer_specific=True)
     return _cia_join([abertura, desenvolvimento, fecho])
@@ -606,17 +723,8 @@ def build_cia_analysis_resumida(curr_ypoema):
     abertura_line = _cia_pick_role(poema_lines, "abertura", used_lines, poema_lines[0])
     destaque_line = _cia_pick_role(poema_lines, "miolo", used_lines, poema_lines[len(poema_lines) // 2])
 
-    abertura = random.choice([
-        f"O percurso pode se abrir em **“{_cia_clip(abertura_line)}”**: ali a leitura encontra seu eixo mínimo.",
-        f"A entrada por **“{_cia_clip(abertura_line)}”** fixa um movimento possível do poema.",
-        f"Em **“{_cia_clip(abertura_line)}”**, o texto indica uma direção forte sem depender da ordem linear.",
-    ])
-
-    desenvolvimento = random.choice([
-        f"O ponto de maior concentração aparece em **“{_cia_clip(destaque_line)}”**: ali o poema reúne sua tensão mais visível.",
-        f"Em **“{_cia_clip(destaque_line)}”**, a leitura encontra o núcleo mais direto do texto.",
-        f"**“{_cia_clip(destaque_line)}”** resume a pressão central sem esgotar o poema.",
-    ])
+    abertura = _cia_regra_zero_abertura(poema_lines, abertura_line)
+    desenvolvimento = _cia_regra_zero_miolo(poema_lines, destaque_line)
 
     fecho = _cia_critico_fecho(poema_lines, used_lines, prefer_specific=True)
     return _cia_join([abertura, desenvolvimento, fecho])
@@ -633,17 +741,8 @@ def build_cia_analysis_completa(curr_ypoema):
     abertura_line = _cia_pick_role(poema_lines, "abertura", used_lines, poema_lines[0])
     destaque_line = _cia_pick_role(poema_lines, "miolo", used_lines, poema_lines[len(poema_lines) // 2])
 
-    abertura = random.choice([
-        f"Desde **“{_cia_clip(abertura_line)}”**, o poema arma um campo de leitura que não se limita ao enunciado: esse ponto instala direção, tom e tensão.",
-        f"Em **“{_cia_clip(abertura_line)}”**, o texto fixa um eixo possível. A leitura entra pelo ponto que melhor orienta o percurso.",
-        f"A abertura crítica por **“{_cia_clip(abertura_line)}”** pesa como gesto inaugural; o que vem depois parece responder a essa pressão verbal.",
-    ])
-
-    nucleo = random.choice([
-        f"No corpo do texto, **“{_cia_clip(destaque_line)}”** concentra parte decisiva da força verbal. A imagem ou tensão ali ganha espessura.",
-        f"Há um centro de gravidade em **“{_cia_clip(destaque_line)}”**. O poema reúne ali uma de suas zonas de maior densidade.",
-        f"Em **“{_cia_clip(destaque_line)}”**, o texto adensa seu movimento: a linguagem deixa de apenas conduzir e passa a pesar mais diretamente.",
-    ])
+    abertura = _cia_regra_zero_abertura(poema_lines, abertura_line)
+    nucleo = _cia_regra_zero_miolo(poema_lines, destaque_line)
 
     forma = random.choice([
         f"A distribuição em **{qtd_linhas} linhas** participa do efeito do poema: pausas e cortes regulam o ritmo de aparição do sentido.",
