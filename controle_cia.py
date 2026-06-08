@@ -571,9 +571,237 @@ def _cia_sintatica_bloco_generico(poema_lines, used_lines):
         f"a **oração** não apenas comunica uma imagem, mas distribui pausas, cortes e retomadas dentro da **sintaxe**."
     )
 
+CIA_SINTATICA_GRUPOS = {
+    "basico": ["sujeito", "verbo", "pronome", "predicado"],
+    "articulacao": ["oração", "complemento", "conectivo", "coordenação", "subordinação"],
+    "expressivo": ["elipse", "enumeração", "inciso", "regência", "pontuação", "reticências"],
+    "ritmo": ["anáfora", "paralelismo", "repetição", "deslocamento"],
+}
+
+
+def _cia_sintatica_grupos_presentes(text):
+    """Indica quais grupos da Sintática já apareceram no comentário."""
+    clean = str(text or "").lower()
+    presentes = set()
+    for grupo, termos in CIA_SINTATICA_GRUPOS.items():
+        for termo in termos:
+            if re.search(r"\*\*" + re.escape(termo) + r"\*\*", clean):
+                presentes.add(grupo)
+                break
+    return presentes
+
+
+def _cia_sintatica_add_candidate(candidates, grupo, lines_used, text):
+    cleaned = [line for line in lines_used if line]
+    candidates.append({"grupo": grupo, "lines": cleaned, "text": text})
+
+
+def _cia_sintatica_candidatos_balanceados(poema_lines, used_lines):
+    """Cria blocos de MIOLO por grupos de 'ordem de nobreza'.
+
+    Regra interna: não é quantidade por quantidade; é lastro sintático visível.
+    A Sintática tenta contemplar básico, articulação, expressivo e desenho/ritmo
+    quando houver pertinência e espaço.
+    """
+    inner = poema_lines[1:-1] if len(poema_lines) > 2 else poema_lines[:]
+    candidates = []
+
+    # 1. Básico: sujeito / verbo / pronome / predicado.
+    pessoais = [line for line in inner if re.search(r"\b(eu|me|mim|meu|minha|nós|nosso|nossa|ele|ela|eles|elas|seu|sua)\b", line.lower())]
+    line = pessoais[0] if pessoais else (inner[0] if inner else "")
+    if line:
+        _cia_sintatica_add_candidate(
+            candidates,
+            "basico",
+            [line],
+            f"Em “{_cia_clip(line)}”, a análise encontra uma base verbal: o **sujeito** se deixa perceber pelo enunciado e o **verbo** organiza o gesto da frase."
+        )
+
+    # 2. Articulação: oração / complemento / conectivo / coordenação / subordinação.
+    subordinadas = [line for line in inner if re.search(r"\b(se|quando|embora|porque|que)\b", line.lower())]
+    coordenadas = [line for line in inner if re.search(r"\b(e|ou|mas)\b", line.lower())]
+    if subordinadas:
+        line = subordinadas[0]
+        _cia_sintatica_add_candidate(
+            candidates,
+            "articulacao",
+            [line],
+            f"Em “{_cia_clip(line)}”, a **subordinação** cria dependência interna: a **oração** avança por condição, tempo ou explicação, e não por simples sequência."
+        )
+    elif coordenadas:
+        line = coordenadas[0]
+        _cia_sintatica_add_candidate(
+            candidates,
+            "articulacao",
+            [line],
+            f"Em “{_cia_clip(line)}”, o **conectivo** articula a passagem entre partes da frase; a **coordenação** aproxima segmentos sem fundi-los por completo."
+        )
+    elif inner:
+        line = inner[min(len(inner) - 1, len(inner) // 2)]
+        _cia_sintatica_add_candidate(
+            candidates,
+            "articulacao",
+            [line],
+            f"Em “{_cia_clip(line)}”, a **oração** funciona como unidade de articulação: o verso distribui imagem e **complemento** sem perder a direção do período."
+        )
+
+    # 3. Expressivo: elipse / enumeração / inciso / regência / pontuação / reticências.
+    reticencias = [line for line in inner if "..." in line or "…" in line]
+    perguntas = [line for line in inner if "?" in line]
+    incisos = [line for line in inner if "(" in line or ")" in line]
+    enumeracoes = [line for line in inner if line.count(",") >= 2]
+    if reticencias:
+        line = reticencias[0]
+        _cia_sintatica_add_candidate(
+            candidates,
+            "expressivo",
+            [line],
+            f"Em “{_cia_clip(line)}”, as **reticências** alongam a frase: a **pontuação** cria uma suspensão expressiva sem abandonar a direção sintática."
+        )
+    elif perguntas:
+        line = perguntas[0]
+        _cia_sintatica_add_candidate(
+            candidates,
+            "expressivo",
+            [line],
+            f"Em “{_cia_clip(line)}”, a **pontuação** interrogativa não é ornamento: ela muda a pressão da **oração** e abre uma tensão de leitura."
+        )
+    elif incisos:
+        line = incisos[0]
+        _cia_sintatica_add_candidate(
+            candidates,
+            "expressivo",
+            [line],
+            f"O **inciso** em “{_cia_clip(line)}” cria uma dobra interna: a frase se desvia por um instante e retorna com outra respiração."
+        )
+    elif enumeracoes:
+        line = enumeracoes[0]
+        _cia_sintatica_add_candidate(
+            candidates,
+            "expressivo",
+            [line],
+            f"A **enumeração** em “{_cia_clip(line)}” trabalha por acúmulo: o verso amplia a frase sem perder o eixo do **predicado**."
+        )
+    elif inner:
+        line = inner[-1]
+        _cia_sintatica_add_candidate(
+            candidates,
+            "expressivo",
+            [line],
+            f"Em “{_cia_clip(line)}”, a **elipse** possível deixa uma falta trabalhando no verso; a frase sugere mais do que entrega."
+        )
+
+    # 4. Desenho e ritmo: anáfora / paralelismo / repetição / deslocamento.
+    first_tokens = {}
+    first_two = {}
+    for line in inner:
+        t1 = _cia_first_token(line)
+        t2 = _cia_first_two_tokens(line)
+        if t1:
+            first_tokens.setdefault(t1, []).append(line)
+        if t2:
+            first_two.setdefault(t2, []).append(line)
+    parallel_key = next((k for k, v in first_two.items() if len(v) >= 2 and len(k.split()) == 2), None)
+    anafora_key = next((k for k, v in first_tokens.items() if len(v) >= 2), None)
+    if parallel_key:
+        exemplos = first_two[parallel_key][:2]
+        _cia_sintatica_add_candidate(
+            candidates,
+            "ritmo",
+            exemplos,
+            f"O **paralelismo** entre “{_cia_clip(exemplos[0])}” e “{_cia_clip(exemplos[1])}” organiza a cadência: a estrutura retorna, mas cada volta altera a pressão da leitura."
+        )
+    elif anafora_key:
+        exemplos = first_tokens[anafora_key][:2]
+        _cia_sintatica_add_candidate(
+            candidates,
+            "ritmo",
+            exemplos,
+            f"A **anáfora** entre “{_cia_clip(exemplos[0])}” e “{_cia_clip(exemplos[1])}” firma um eixo de **repetição** e dá cadência ao percurso."
+        )
+    else:
+        cortes = []
+        for i, line in enumerate(poema_lines[1:-2], start=1):
+            nxt = poema_lines[i + 1]
+            if line and line[-1] not in ".?!:;…)" and (nxt[:1].islower() or len(line.split()) <= 4):
+                cortes.append((line, nxt))
+        if cortes:
+            l1, l2 = cortes[0]
+            _cia_sintatica_add_candidate(
+                candidates,
+                "ritmo",
+                [l1, l2],
+                f"Na passagem entre “{_cia_clip(l1)}” e “{_cia_clip(l2)}”, há **deslocamento** de ritmo: o corte faz a frase atravessar a linha antes de encontrar novo apoio."
+            )
+        elif inner:
+            line = inner[min(len(inner) - 1, len(inner) // 2)]
+            _cia_sintatica_add_candidate(
+                candidates,
+                "ritmo",
+                [line],
+                f"Em “{_cia_clip(line)}”, o desenho do verso cria **deslocamento**: a leitura muda de eixo sem romper a unidade do período."
+            )
+
+    # Remove candidatos que usariam verso já reservado, preservando o grupo se possível.
+    filtered = []
+    grupos = set()
+    for item in candidates:
+        item_lines = set(item.get("lines", []))
+        if item_lines and item_lines & used_lines:
+            continue
+        if item.get("grupo") in grupos:
+            continue
+        filtered.append(item)
+        grupos.add(item.get("grupo"))
+    return filtered
+
+
+def _cia_sintatica_escolhe_miolos_balanceados(poema_lines, used_lines, abertura, fecho):
+    """Seleciona miolos suficientes para dar lastro acadêmico visível."""
+    blocos = [abertura]
+    termo_min = 4
+    termo_max = 8
+    grupos_alvo = {"basico", "articulacao", "expressivo", "ritmo"}
+    candidatos = _cia_sintatica_candidatos_balanceados(poema_lines, used_lines)
+
+    for item in candidatos:
+        teste = _cia_join(blocos + [item["text"], fecho])
+        if _cia_count_sintatic_terms(teste) > termo_max:
+            # Se passar muito do teto, ainda aceita quando faltar grupo essencial.
+            presentes = _cia_sintatica_grupos_presentes(_cia_join(blocos + [fecho]))
+            if item.get("grupo") in presentes:
+                continue
+        blocos.append(item["text"])
+        used_lines.update(item.get("lines", []))
+        presentes = _cia_sintatica_grupos_presentes(_cia_join(blocos + [fecho]))
+        if grupos_alvo.issubset(presentes) and _cia_count_sintatic_terms(_cia_join(blocos + [fecho])) >= termo_min:
+            break
+
+    if len(blocos) == 1:
+        blocos.append(_cia_sintatica_bloco_generico(poema_lines, used_lines))
+
+    blocos.append(fecho)
+
+    # Se ainda estiver pobre, acrescenta reforço antes do fecho.
+    if _cia_count_sintatic_terms(_cia_join(blocos)) < termo_min:
+        blocos.insert(-1, _cia_bloco_sintatico_reforco(poema_lines, used_lines))
+
+    return blocos
+
+
+def _cia_completa_bloco_sintatico(poema_lines, used_lines):
+    """Camada sintática leve para a análise Completa fazer jus ao nome."""
+    candidatos = _cia_sintatica_candidatos_balanceados(poema_lines, used_lines)
+    for alvo in ("expressivo", "articulacao", "ritmo", "basico"):
+        item = next((c for c in candidatos if c.get("grupo") == alvo), None)
+        if item:
+            used_lines.update(item.get("lines", []))
+            return "Na camada sintática, " + item["text"][0].lower() + item["text"][1:]
+    return _cia_bloco_sintatico_reforco(poema_lines, used_lines)
+
 
 def build_cia_analysis(curr_ypoema):
-    """Sintática acadêmica real: ABERTURA-MIOLO-FECHO, sem random estrutural."""
+    """Sintática acadêmica real: papéis bem distribuídos e cartilha ABERTURA-MIOLO-FECHO."""
     poema_lines = _cia_poema_lines(curr_ypoema)
     tema = st.session_state.get("tema", "")
 
@@ -585,110 +813,14 @@ def build_cia_analysis(curr_ypoema):
 
     # Cartilha fixa da Sintática: abertura = primeira linha real; fecho = último verso real.
     abertura = _cia_sintatica_abertura_academica(poema_lines)
+    fecho = _cia_sintatica_fecho_academico(poema_lines)
     used_lines.add(poema_lines[0])
     used_lines.add(poema_lines[-1])
 
-    candidates = []
-
-    def add(lines_used, text):
-        cleaned = [line for line in lines_used if line]
-        if cleaned and set(cleaned) & used_lines:
-            return
-        candidates.append({"lines": cleaned, "text": text})
-
-    # MIOLO: prioridade determinística por fenômeno sintático real.
-    perguntas = [line for line in poema_lines[1:-1] if "?" in line]
-    if perguntas:
-        line = perguntas[0]
-        add([line],
-            f"No desenvolvimento, “{_cia_clip(line)}” usa a **pontuação** interrogativa como força de deslocamento: a **oração** pergunta e, ao mesmo tempo, sustenta a tensão do percurso."
-        )
-
-    reticencias = [line for line in poema_lines[1:-1] if "..." in line or "…" in line]
-    if reticencias:
-        line = reticencias[0]
-        add([line],
-            f"No desenvolvimento, “{_cia_clip(line)}” mantém a frase em suspensão: as **reticências** alongam a **sintaxe** e criam uma passagem entre o que se diz e o que permanece aberto."
-        )
-
-    incisos = [line for line in poema_lines[1:-1] if "(" in line or ")" in line]
-    if incisos:
-        line = incisos[0]
-        add([line],
-            f"O **inciso** em “{_cia_clip(line)}” cria uma dobra interna: a **oração** se desvia por um instante e volta ao poema com outra respiração."
-        )
-
-    first_tokens = {}
-    first_two = {}
-    for line in poema_lines[1:-1]:
-        t1 = _cia_first_token(line)
-        t2 = _cia_first_two_tokens(line)
-        if t1:
-            first_tokens.setdefault(t1, []).append(line)
-        if t2:
-            first_two.setdefault(t2, []).append(line)
-
-    parallel_key = next((k for k, v in first_two.items() if len(v) >= 2 and len(k.split()) == 2), None)
-    anafora_key = next((k for k, v in first_tokens.items() if len(v) >= 2), None)
-
-    if parallel_key:
-        exemplos = first_two[parallel_key][:2]
-        add(exemplos,
-            f"O **paralelismo** entre “{_cia_clip(exemplos[0])}” e “{_cia_clip(exemplos[1])}” organiza a cadência: a estrutura retorna, mas cada volta altera a pressão da leitura."
-        )
-    elif anafora_key:
-        exemplos = first_tokens[anafora_key][:2]
-        add(exemplos,
-            f"A repetição inicial em “{_cia_clip(exemplos[0])}” e “{_cia_clip(exemplos[1])}” cria **anáfora**. O mesmo arranque firma um eixo verbal para o percurso."
-        )
-
-    enumeracoes = [line for line in poema_lines[1:-1] if line.count(",") >= 2]
-    if enumeracoes:
-        line = enumeracoes[0]
-        add([line],
-            f"A **enumeração** em “{_cia_clip(line)}” trabalha por acúmulo: o verso amplia a frase sem perder o eixo do **predicado**."
-        )
-
-    subordinadas = [line for line in poema_lines[1:-1] if re.search(r"\b(se|quando|embora|porque|que)\b", line.lower())]
-    coordenadas = [line for line in poema_lines[1:-1] if re.search(r"\b(e|ou|mas)\b", line.lower()) and "," in line]
-
-    if subordinadas:
-        line = subordinadas[0]
-        add([line],
-            f"Em “{_cia_clip(line)}”, a **subordinação** cria dependência interna: a **oração** avança por condição, tempo ou explicação, e não por simples sequência."
-        )
-    elif coordenadas:
-        line = coordenadas[0]
-        add([line],
-            f"A **coordenação** em “{_cia_clip(line)}” aproxima segmentos sem fundi-los por completo: a frase ganha soma, contraste ou desvio lateral."
-        )
-
-    cortes = []
-    for i, line in enumerate(poema_lines[1:-2], start=1):
-        nxt = poema_lines[i + 1]
-        if line and line[-1] not in ".?!:;…)" and (nxt[:1].islower() or len(line.split()) <= 4):
-            cortes.append((line, nxt))
-    if cortes:
-        l1, l2 = cortes[0]
-        add([l1, l2],
-            f"Na passagem entre “{_cia_clip(l1)}” e “{_cia_clip(l2)}”, a **sintaxe** atravessa a linha: o corte desloca a **oração** antes que a leitura encontre novo apoio."
-        )
-
-    if candidates:
-        item = candidates[0]
-        used_lines.update(item.get("lines", []))
-        miolo = item["text"]
-    else:
-        miolo = _cia_sintatica_bloco_generico(poema_lines, used_lines)
-
-    fecho = _cia_sintatica_fecho_academico(poema_lines)
-
-    # Controle de lastro acadêmico: Sintática precisa ter 2 a 5 termos gramaticais reais em negrito.
-    blocos = [abertura, miolo, fecho]
-    if _cia_count_sintatic_terms(_cia_join(blocos)) < 2:
-        blocos.insert(2, _cia_bloco_sintatico_reforco(poema_lines, used_lines))
-    while len(blocos) > 3 and _cia_count_sintatic_terms(_cia_join(blocos)) > 5:
-        blocos.pop(2)
+    # Regra interna: lastro sintático visível, com balanceamento por papéis.
+    # Não é quantidade por quantidade: a análise tenta contemplar básico,
+    # articulação, expressivo e desenho/ritmo quando houver pertinência e espaço.
+    blocos = _cia_sintatica_escolhe_miolos_balanceados(poema_lines, used_lines, abertura, fecho)
 
     st.session_state.tema_last_analise = tema
     st.session_state["_cia_used_lines"] = list(used_lines)
@@ -864,7 +996,7 @@ def build_cia_analysis_resumida(curr_ypoema):
     return _cia_join([abertura, desenvolvimento, fecho])
 
 def build_cia_analysis_completa(curr_ypoema):
-    """Completa: cartografia articulada com abertura, desenvolvimento e fecho fixos."""
+    """Completa: leitura ampla com imagem, forma, tensão, camada sintática e fecho."""
     poema_lines = _cia_poema_lines(curr_ypoema)
 
     if not poema_lines:
@@ -884,13 +1016,16 @@ def build_cia_analysis_completa(curr_ypoema):
         f"Também a forma pesa: as **{qtd_linhas} linhas** organizam o fôlego e modulam a intensidade do percurso.",
     ])
 
+    camada_sintatica = _cia_completa_bloco_sintatico(poema_lines, used_lines)
+
     ampliacao = random.choice([
         "O poema vale não só pelo que nomeia, mas pelo modo como organiza pressão, intervalo, reaparição e eco.",
         "A força do texto está no modo como regula sua intensidade e a devolve ao leitor em camadas.",
         "O texto conduz, interrompe, reaperta e libera o próprio movimento sem reduzir-se a uma explicação única.",
     ])
 
-    meio = [nucleo, forma, ampliacao]
+    # A Completa articula o conjunto: não é Sintática expandida, mas inclui uma parte sintática.
+    meio = [nucleo, forma, camada_sintatica, ampliacao]
     random.shuffle(meio)
     fecho = _cia_critico_fecho(poema_lines, used_lines, prefer_specific=True)
     return _cia_join([abertura] + meio + [fecho])
