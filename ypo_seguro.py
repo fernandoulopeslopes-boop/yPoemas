@@ -1265,7 +1265,7 @@ def write_cia_header(LOGO_TEXTO, LOGO_IMAGE=None):
         return
 
     mood = st.session_state.get("cia_mood", "")
-    mood_label = f" ({mood})" if mood else ""
+    mood_label = f" ({mood} · experimental)" if mood else " (experimental)"
 
     st.markdown(
         f"""
