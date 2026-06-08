@@ -19,7 +19,6 @@ from readings import (
 from controle_cia import (
     configure_cia,
     draw_sidebar_panel_buttons,
-    render_cia_sidebar,
     render_cia_stage,
 )
 
@@ -295,6 +294,11 @@ def apply_styles():
         /* Sidebar :: scroll_inho — sobe discretamente o primeiro controle */
         [data-testid="stSidebar"] div[data-testid="stSidebarContent"] {
             padding-top: 0.00rem !important;
+            margin-top: -0.55rem !important;
+        }
+
+        [data-testid="stSidebar"] div[data-testid="stElementContainer"]:first-child {
+            margin-top: -0.35rem !important;
         }
 
         [data-testid="stSidebar"] .stButton button {
@@ -314,6 +318,12 @@ def apply_styles():
             min-height: 1.94rem !important;
             padding-top: 0.11rem !important;
             padding-bottom: 0.11rem !important;
+        }
+
+        [data-testid="stSidebar"] .stButton button p {
+            margin: 0 !important;
+            padding: 0 !important;
+            text-indent: 0 !important;
         }
 
         [data-testid="stSidebar"] div[data-testid="stVerticalBlock"] {
@@ -562,6 +572,31 @@ def apply_styles():
             line-height: 1.35;
         }
 
+        .cia-stage-box .container {
+            justify-content: center !important;
+            text-align: center !important;
+        }
+
+        .cia-stage-box .logo-text {
+            width: 100% !important;
+            text-align: center !important;
+            padding-left: 0 !important;
+        }
+
+        .cia-header-container {
+            width: 100% !important;
+            text-align: center !important;
+            display: block !important;
+        }
+
+        .cia-header-text {
+            width: 100% !important;
+            text-align: center !important;
+            padding-left: 0 !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+        }
+
         .cia-stage-title {
             text-align: center;
             font-size: 0.9rem;
@@ -604,6 +639,8 @@ def init_session_state():
         "sidebar_panel": "Machina",
         "cia_name": "",
         "cia_mood": "Sintática",
+        "cia_reading_mode": False,
+        "cia_mood_select": "Sintática",
         "cia_line0_offset_px": -385,
         "cia_font": "Trebuchet MS",
         "cia_size": 18,
@@ -1219,6 +1256,22 @@ def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
             """,
             unsafe_allow_html=True,
         )
+
+
+def write_cia_header(LOGO_TEXTO, LOGO_IMAGE=None):
+    """Renderiza o cabeçalho da CIA centralizado no Palco."""
+    if LOGO_IMAGE is not None:
+        write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
+        return
+
+    st.markdown(
+        f"""
+        <div class='cia-header-container'>
+            <p class='cia-header-text' style="font-family:{st.session_state.get('stage_font', 'Trebuchet MS')}; font-size:{st.session_state.get('stage_size', 21)}px;">{LOGO_TEXTO}</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 
 def talk(text):
@@ -1899,14 +1952,57 @@ def page_abouts():
 
 
 SIDEBAR_FILHOTE_WIDTH_PX = 64
+CIA_MOOD_OPTIONS = [
+    "Sintática",
+    "Sintética",
+    "Formal",
+    "Reduzida",
+    "Completa",
+]
+def render_cia_mood_selectbox():
+    """Menu nativo da CIA: alternativa ao selectbox que insiste em abrir UP."""
+    current = st.session_state.get("cia_mood", "Sintática").strip()
+    if current not in CIA_MOOD_OPTIONS:
+        current = "Sintática"
+        st.session_state["cia_mood"] = current
+
+    try:
+        choice = st.sidebar.menu_button(
+            "↓  " + current,
+            CIA_MOOD_OPTIONS,
+            key="cia_mood_menu_button",
+            width="stretch",
+        )
+    except AttributeError:
+        choice = st.sidebar.selectbox(
+            "↓",
+            CIA_MOOD_OPTIONS,
+            index=CIA_MOOD_OPTIONS.index(current),
+            key="cia_mood_select",
+            label_visibility="collapsed",
+        )
+
+    if choice and choice in CIA_MOOD_OPTIONS and choice != st.session_state.get("cia_mood", "Sintática"):
+        st.session_state["cia_mood"] = choice
+        st.session_state["cia_mood_select"] = choice
+        st.session_state["cia_reading_mode"] = True
+        try:
+            st.rerun()
+        except Exception:
+            st.experimental_rerun()
 
 
 def _cia_sidebar_filha_active(chosen_id):
     """Ativa a sidebar-filha somente na página yPoemas, quando a CIA está em foco."""
     if str(chosen_id) != "2":
         st.session_state["sidebar_panel"] = "Machina"
+        st.session_state["cia_reading_mode"] = False
         return False
-    return st.session_state.get("sidebar_panel", "Machina") == "CIA"
+
+    return (
+        st.session_state.get("sidebar_panel", "Machina") == "CIA"
+        and bool(st.session_state.get("cia_reading_mode", False))
+    )
 
 
 def apply_sidebar_mae_filha_styles(chosen_id):
@@ -1981,8 +2077,10 @@ def render_sidebar_filha():
     """Sidebar mínima da CIA: apenas retorno para a sidebar-mãe."""
     with st.sidebar:
         st.markdown("<div class='machina-sidebar-filha-spacer'></div>", unsafe_allow_html=True)
-        if st.button(">", key="sidebar_filha_voltar_machina", help="voltar à Machina", use_container_width=True):
-            st.session_state["sidebar_panel"] = "Machina"
+        if st.button(">", key="sidebar_filha_voltar_cia", help="voltar à lista da CIA", use_container_width=True):
+            st.session_state["sidebar_panel"] = "CIA"
+            st.session_state["cia_reading_mode"] = False
+            st.session_state["cia_mood_select"] = st.session_state.get("cia_mood", "Sintática")
             try:
                 st.rerun()
             except Exception:
@@ -1999,7 +2097,7 @@ def render_sidebar_for_page(chosen_id):
 configure_cia(
     translate_func=translate,
     load_typo_func=load_typo,
-    write_ypoema_func=write_ypoema,
+    write_ypoema_func=write_cia_header,
     ip_address=IPAddres,
 )
 
@@ -2039,13 +2137,12 @@ def main():
             if chosen_id == "2":
                 draw_sidebar_panel_buttons(chosen_id)
 
-                # Se o clique acabou de acionar a CIA, refaz o ciclo imediatamente.
-                # Assim a sidebar-filha já aparece no primeiro clique em CIA.
                 if st.session_state.get("sidebar_panel", "Machina") == "CIA":
-                    try:
-                        st.rerun()
-                    except Exception:
-                        st.experimental_rerun()
+                    st.session_state["cia_reading_mode"] = False
+                    render_cia_mood_selectbox()
+                else:
+                    st.session_state["cia_reading_mode"] = False
+                    st.session_state["cia_mood_select"] = st.session_state.get("cia_mood", "Sintática")
 
 
         palco = st.container()
