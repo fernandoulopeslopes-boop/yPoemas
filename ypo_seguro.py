@@ -1,8 +1,3 @@
-"""
-?tools_Machina=machina
-ou ?ferramentas=machina
-"""
-
 import os
 import re
 import time
@@ -30,7 +25,7 @@ from controle_cia import (
 
 
 ABOUTS_LIST = [
-    "comentários", "prefácil", "machina", "off-machina", "outros autores", "livros", "bibliografia","icones",
+    "comentários", "prefácil", "machina", "off-machina", "outros autores", "livros", "bibliografia",
     "notes", "imagens", "pontuação", "poly", "tradittore", "pensares", "machina-IA", "samizdàt", "index", "license",
 ]
 
@@ -47,7 +42,6 @@ ABOUTS_FILES = {
     "pensares": ["ABOUT_pensares.md"],
     "tradittore": ["ABOUT_tradittore.md"],
     "bibliografia": ["ABOUT_bibliografia.md"],
-    "icones":["ABOUT_icones.md"],
     "pontuação": ["ABOUT_pontuação.md"],
     "samizdàt": ["ABOUT_samizdàt.md"],
     "notes": ["ABOUT_notes.md"],
@@ -499,6 +493,50 @@ def apply_styles():
             outline: 0 !important;
         }
 
+        /* Palco :: remove a sombra/linha fantasma entre labels e controles */
+        div[data-testid="stSelectbox"],
+        div[data-testid="stSelectbox"] > div,
+        div[data-testid="stSelectbox"] [data-baseweb="select"],
+        div[data-testid="stSelectbox"] [data-baseweb="select"] > div,
+        div[data-testid="stSelectbox"] [data-baseweb="select"] div,
+        div[data-testid="stButton"] > button,
+        div[data-testid="stButton"] > button:hover,
+        div[data-testid="stButton"] > button:focus,
+        div[data-testid="stButton"] > button:active {
+            border-top: 0 !important;
+            border-right: 0 !important;
+            border-bottom: 0 !important;
+            border-left: 0 !important;
+            box-shadow: none !important;
+            outline: 0 !important;
+        }
+
+        div[data-testid="stSelectbox"] [data-baseweb="select"] > div:hover,
+        div[data-testid="stSelectbox"] [data-baseweb="select"] > div:focus,
+        div[data-testid="stSelectbox"] [data-baseweb="select"] > div:focus-within {
+            border: 0 !important;
+            box-shadow: none !important;
+            outline: 0 !important;
+        }
+
+        /* Navegação :: solução invisível
+           Desce os botões para alinhar com os selectboxes de livros/temas.
+           A linha fantasma deixa de atravessar visualmente os botões. */
+        .machina-nav-spacer {
+            height: 1.72rem !important;
+            min-height: 1.72rem !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            line-height: 1.72rem !important;
+            font-size: 1px !important;
+        }
+
+        .machina-nav-spacer p {
+            margin: 0 !important;
+            padding: 0 !important;
+            line-height: 1.72rem !important;
+        }
+
         .machina-moldura-lateral {
             min-height: 61vh;
         }
@@ -586,6 +624,42 @@ def init_session_state():
     for key, value in defaults.items():
         if key not in st.session_state:
             st.session_state[key] = value
+
+
+def apply_sidebar_cia_mode_styles(chosen_id=None):
+    """Recolhe a sidebar para teste visual quando a CIA está em foco."""
+    cia_active = (
+        str(chosen_id) == "2"
+        and st.session_state.get("sidebar_panel", "Machina") == "CIA"
+    )
+
+    if cia_active:
+        st.markdown(
+            """
+            <style>
+            [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
+                width: 50px !important;
+                min-width: 50px !important;
+                max-width: 50px !important;
+                overflow-x: hidden !important;
+            }
+
+            [data-testid="stSidebar"] > div:first-child {
+                width: 50px !important;
+                min-width: 50px !important;
+                max-width: 50px !important;
+                overflow-x: hidden !important;
+            }
+
+            [data-testid="stSidebar"] div[data-testid="stSidebarContent"] {
+                padding-left: 0.10rem !important;
+                padding-right: 0.10rem !important;
+                overflow-x: hidden !important;
+            }
+            </style>
+            """,
+            unsafe_allow_html=True,
+        )
 
 
 apply_styles()
@@ -743,16 +817,22 @@ def _sync_book_theme_state():
     st.session_state.tema = temas_list[take]
 
 
+def _current_book():
+    """Retorna o livro atual sem depender de atributo já criado no session_state."""
+    book = st.session_state.get("book", BOOKS_LIST[0])
+    return book if book in BOOKS_LIST else BOOKS_LIST[0]
+
+
 def _prepare_book_widget(key):
     """Faz o widget espelhar `book` sem tomar conta do estado."""
-    current = st.session_state.book
+    current = _current_book()
     if key in st.session_state and st.session_state.get(key) != current:
         del st.session_state[key]
 
 
 def _prepare_theme_widget():
     """Normaliza o widget de temas para espelhar o `take` sem impor valor indevido."""
-    temas_list = load_temas(st.session_state.book)
+    temas_list = load_temas(_current_book())
     current = _coerce_take(st.session_state.get("take", 0), temas_list)
     raw_value = st.session_state.get("opt_take_palco", current)
     normalized = _coerce_take(raw_value, temas_list)
@@ -761,15 +841,16 @@ def _prepare_theme_widget():
 
 
 def _on_palco_book_change():
-    choice = st.session_state.get("palco_book_select", st.session_state.book)
-    if choice != st.session_state.book:
+    current_book = _current_book()
+    choice = st.session_state.get("palco_book_select", current_book)
+    if choice != current_book:
         st.session_state.book = choice
         st.session_state.take = 0
     _sync_book_theme_state()
 
 
 def _on_palco_theme_change():
-    temas_list = load_temas(st.session_state.book)
+    temas_list = load_temas(_current_book())
     if not temas_list:
         st.session_state.take = 0
         st.session_state.tema = ""
@@ -789,12 +870,12 @@ def pick_book_palco():
     _sync_book_theme_state()
 
     books_list = BOOKS_LIST
-    current = st.session_state.book
+    current = _current_book()
     key = "palco_book_select"
     _prepare_book_widget(key)
 
     st.selectbox(
-        f"{len(books_list)} " + translate("livros disponíveis..."),
+        "↓  " + str(len(books_list)) + " livros",
         books_list,
         index=books_list.index(current),
         key=key,
@@ -806,7 +887,7 @@ def pick_tema_palco():
 
     """Escolhe o tema atual do livro diretamente no palco."""
     _sync_book_theme_state()
-    temas_list = load_temas(st.session_state.book)
+    temas_list = load_temas(_current_book())
     if not temas_list:
         return
 
@@ -1366,14 +1447,23 @@ def page_mini():
                             secs -= 1
 
 def page_ypoemas():
-    temas_list = load_temas(st.session_state.book)
+    _sync_book_theme_state()
+    temas_list = load_temas(_current_book())
     maxy_ypoemas = len(temas_list) - 1
     if (
         st.session_state.take > maxy_ypoemas or st.session_state.take < 0
     ):  # just in case
         st.session_state.take = 0
 
-    col_livros, col_nav, col_temas = st.columns([3, 4, 3])
+    try:
+        col_livros, col_nav, col_temas = st.columns(
+            [3, 4, 3],
+            vertical_alignment="bottom",
+        )
+        machina_nav_needs_spacer = False
+    except TypeError:
+        col_livros, col_nav, col_temas = st.columns([3, 4, 3])
+        machina_nav_needs_spacer = True
 
     with col_livros:
         pick_book_palco()
@@ -1385,6 +1475,11 @@ def page_ypoemas():
         help_nest = help_tips[2]
         help_more = help_tips[4]
 
+        if machina_nav_needs_spacer:
+            st.markdown(
+                "<div style='height:1.95rem; min-height:1.95rem;'></div>",
+                unsafe_allow_html=True,
+            )
         nav_cols = st.columns([1, 1, 1, 1, 1])
         more = nav_cols[0].button("✚", help=help_more, use_container_width=True)
         last = nav_cols[1].button("◀", help=help_last, use_container_width=True)
@@ -1392,7 +1487,7 @@ def page_ypoemas():
         nest = nav_cols[3].button("▶", help=help_nest, use_container_width=True)
         manu = nav_cols[4].button("?", help="help !!!", use_container_width=True)
 
-    temas_list = load_temas(st.session_state.book)
+    temas_list = load_temas(_current_book())
     maxy_ypoemas = len(temas_list) - 1
     if st.session_state.take > maxy_ypoemas or st.session_state.take < 0:
         st.session_state.take = 0
@@ -1416,7 +1511,7 @@ def page_ypoemas():
     with col_temas:
         pick_tema_palco()
 
-    temas_list = load_temas(st.session_state.book)
+    temas_list = load_temas(_current_book())
     _sync_book_theme_state()
 
     lnew = True
@@ -1428,7 +1523,7 @@ def page_ypoemas():
             "🌿  "
             + st.session_state.lang
             + " ( "
-            + st.session_state.book
+            + _current_book()
             + " ) ( "
             + str(st.session_state.take + 1)
             + " / "
@@ -1443,7 +1538,7 @@ def page_ypoemas():
             same_analysis_text = (
                 st.session_state.get("ypoema_em_analise")
                 and st.session_state.get("tema_em_analise") == st.session_state.tema
-                and st.session_state.get("book_em_analise") == st.session_state.book
+                and st.session_state.get("book_em_analise") == _current_book()
                 and st.session_state.get("take_em_analise") == st.session_state.take
                 and st.session_state.get("lang_em_analise") == st.session_state.lang
             )
@@ -1470,7 +1565,7 @@ def page_ypoemas():
 
                 st.session_state.ypoema_em_analise = curr_ypoema
                 st.session_state.tema_em_analise = st.session_state.tema
-                st.session_state.book_em_analise = st.session_state.book
+                st.session_state.book_em_analise = _current_book()
                 st.session_state.take_em_analise = st.session_state.take
                 st.session_state.lang_em_analise = st.session_state.lang
                 generated_new_poema = True
@@ -1838,110 +1933,9 @@ def page_abouts():
 ### eof: pages
 
 
-def _query_param_value(name):
-    try:
-        value = st.query_params.get(name, "")
-        if isinstance(value, list):
-            value = value[0] if value else ""
-        return str(value)
-    except Exception:
-        try:
-            params = st.experimental_get_query_params()
-            value = params.get(name, [""])
-            return str(value[0] if value else "")
-        except Exception:
-            return ""
-
-
-def _tools_machina_private_active():
-    return (
-        _query_param_value("tools_Machina").lower() == "machina"
-        or _query_param_value("ferramentas").lower() == "machina"
-    )
-
-
-def _close_tools_machina_private():
-    try:
-        if "tools_Machina" in st.query_params:
-            del st.query_params["tools_Machina"]
-        if "ferramentas" in st.query_params:
-            del st.query_params["ferramentas"]
-    except Exception:
-        try:
-            st.experimental_set_query_params()
-        except Exception:
-            pass
-
-    try:
-        st.rerun()
-    except Exception:
-        st.experimental_rerun()
-
-
-def _run_build_all_with_progress():
-    import traceback
-
-    progress = st.progress(0)
-    status = st.empty()
-
-    try:
-        from build_lexico import gera_lexico
-        from build_indexy import gera_indexy
-        from build_matrix import gera_matrix
-        from build_info import gera_info
-
-        status.write("gerando léxico...")
-        gera_lexico()
-        progress.progress(25)
-
-        status.write("gerando index / ABOUT_INDEX...")
-        gera_indexy()
-        progress.progress(50)
-
-        status.write("gerando matrix...")
-        gera_matrix()
-        progress.progress(75)
-
-        status.write("gerando info...")
-        gera_info()
-        progress.progress(100)
-
-        status.success("tools_Machina concluída.")
-    except Exception:
-        progress.progress(0)
-        status.error("Erro em tools_Machina.")
-        st.code(traceback.format_exc())
-
-
-def render_tools_machina_sidebar():
-    st.sidebar.markdown("### tools_Machina")
-
-    escolha = st.sidebar.selectbox(
-        "↓ manutenção interna",
-        [
-            "aguardar",
-            "Build All — atualizar números da Machina",
-            "done",
-        ],
-        key="ferramentas_select",
-    )
-
-    if escolha == "done":
-        _close_tools_machina_private()
-
-    if escolha == "Build All — atualizar números da Machina":
-        st.sidebar.warning("tools_Machina: atualiza léxico, ABOUT_INDEX, matrix e info.")
-        if st.sidebar.button("executar Build All", key="executar_build_all", use_container_width=True):
-            with st.sidebar:
-                _run_build_all_with_progress()
-
 
 def render_sidebar_for_page(chosen_id):
     """Renderiza os controles fixos do leitor."""
-    if _tools_machina_private_active():
-        render_tools_machina_sidebar()
-        return
-
     pick_lang()
     pick_stage_font()
     draw_check_buttons()
@@ -1986,8 +1980,11 @@ def main():
 
         if chosen_id == "2":
             draw_sidebar_panel_buttons(chosen_id)
+            apply_sidebar_cia_mode_styles(chosen_id)
             if st.session_state.get("sidebar_panel", "Machina") == "CIA":
                 render_cia_sidebar()
+        else:
+            apply_sidebar_cia_mode_styles(chosen_id)
 
 
         palco = st.container()
@@ -2002,10 +1999,11 @@ def main():
                 elif chosen_id == "2":
                     magy = "img_ypoemas.jpg"
                     page_ypoemas()
+                    current_book = _current_book()
                     status = palco_status(
-                        st.session_state.book,
+                        current_book,
                         st.session_state.get("take", 0) + 1,
-                        len(load_temas(st.session_state.book)),
+                        len(load_temas(current_book)),
                     )
                 elif chosen_id == "3":
                     magy = "img_eureka.jpg"
@@ -2022,10 +2020,11 @@ def main():
                 else:
                     magy = "img_ypoemas.jpg"
                     page_ypoemas()
+                    current_book = _current_book()
                     status = palco_status(
-                        st.session_state.book,
+                        current_book,
                         st.session_state.get("take", 0) + 1,
-                        len(load_temas(st.session_state.book)),
+                        len(load_temas(current_book)),
                     )
 
                 st.markdown(
