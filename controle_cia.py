@@ -117,8 +117,14 @@ CIA_VERBOS_EXPLICITOS_COMUNS = {
     "estou", "está", "estão", "estava", "estavam",
     "tenho", "tem", "têm", "tinha", "tinham",
     "vou", "vai", "vão", "fui", "foi", "foram",
-    "vejo", "veem", "vejo", "imagino", "busco", "buscar", "sabe", "sabem",
+    "vejo", "veem", "imagino", "busco", "buscar", "sabe", "sabem",
     "sonhar", "viver", "descobrirá", "saberá", "pousem", "livrá-las",
+    "enquadra", "oferece", "recolhe", "condensa", "organiza", "prepara",
+}
+
+CIA_NAO_VERBOS = {
+    "quando", "onde", "que", "se", "porque", "embora", "mas", "ou", "e",
+    "como", "para", "por", "sem", "com", "num", "numa", "de", "do", "da",
 }
 
 
@@ -136,6 +142,8 @@ def _cia_has_explicit_verb(line):
     if not tokens:
         return False
     for token in tokens:
+        if token in CIA_NAO_VERBOS:
+            continue
         if token in CIA_VERBOS_EXPLICITOS_COMUNS:
             return True
         # Infinitivos e formas conjugadas comuns; evita marcar nomes curtos por acaso.
@@ -150,6 +158,8 @@ def _cia_has_explicit_verb(line):
 def _cia_first_explicit_verb(line):
     tokens = _cia_tokens_lower(line)
     for token in tokens:
+        if token in CIA_NAO_VERBOS:
+            continue
         if token in CIA_VERBOS_EXPLICITOS_COMUNS:
             return token
         if len(token) >= 5 and re.search(
@@ -206,6 +216,67 @@ def _cia_carta_na_manga():
         "aparentemente, o texto insinua uma passagem lateral e deixa ao leitor outras leituras possíveis.",
         "o texto parece oferecer outros caminhos de leitura, sem entregar todos os seus vínculos de forma direta.",
         "há caminhos quase ocultos para outros pontos do poema; a leitura avança por aproximação, não por prova única.",
+    ])
+
+
+CIA_PEROLA_LEXICO = {
+    "paz", "silêncio", "destino", "tempo", "sonho", "sonhar", "saudade",
+    "mistério", "mistérios", "deuses", "lamúrias", "certeza", "falácias",
+    "felizes", "improviso", "vida", "morte", "rota", "caminho",
+}
+
+
+def _cia_score_linha_perola(line, idx, total):
+    """Pontua linha-pérola: fotografia, mapa da mina, chave-mestra, bússola."""
+    clean = str(line or "").strip()
+    lower = clean.lower()
+    words = _cia_tokens_lower(clean)
+    score = 0
+
+    if not clean:
+        return 0
+    if 3 <= len(words) <= 8:
+        score += 2
+    if "..." in clean or "…" in clean:
+        score += 2
+    if "?" in clean:
+        score += 1
+    if idx not in (0, total - 1):
+        score += 2
+    if total > 3 and 1 < idx < total - 2:
+        score += 1
+    if any(w in CIA_PEROLA_LEXICO for w in words):
+        score += 2
+    if re.search(r"\b(cotoco|quase|nunca|sempre|além|sem|resto|deuses|lamúrias|falácias)\b", lower):
+        score += 2
+    if re.search(r"\b(paz|certeza|destino|tempo|sonhar|improviso)\b", lower):
+        score += 1
+    return score
+
+
+def _cia_linhas_perola(poema_lines, min_score=5):
+    """Detecta linhas que funcionam como fotografia/mapa da mina do poema."""
+    total = len(poema_lines)
+    scored = []
+    for idx, line in enumerate(poema_lines):
+        score = _cia_score_linha_perola(line, idx, total)
+        if score >= min_score:
+            scored.append((score, idx, line))
+    return [line for score, idx, line in sorted(scored, key=lambda item: (-item[0], item[1]))]
+
+
+def _cia_is_linha_perola(poema_lines, line):
+    return line in _cia_linhas_perola(poema_lines, min_score=5)
+
+
+def _cia_comentario_linha_perola(poema_lines, line):
+    clip = _cia_clip(line)
+    imagem = random.choice(["fotografia", "mapa da mina", "chave-mestra", "bússola"])
+    return random.choice([
+        f"“{clip}” funciona como {imagem} do poema: a linha condensa o percurso e oferece ao leitor outro ângulo de leitura.",
+        f"Em “{clip}”, o texto encontra uma {imagem}: a imagem concentra o caminho e muda o peso do que veio antes e depois.",
+        f"“{clip}” atua como linha-chave: mais do que passagem intermediária, oferece um rumo para reler o poema inteiro.",
+        f"Em “{clip}”, a leitura encontra uma fotografia do conjunto: o verso mostra, em pouco espaço, uma direção possível para atravessar o texto.",
     ])
 
 
@@ -377,6 +448,7 @@ def _cia_score_candidate(line, idx, total):
         score += 1
     if re.search(r"\b(se|quando|embora|porque|que|mas|ou|e)\b", line.lower()):
         score += 1
+    score += _cia_score_linha_perola(line, idx, total)
 
     return score
 
@@ -443,6 +515,8 @@ def _cia_regra_zero_miolo(poema_lines, line):
     """MIOLO: comenta desenvolvimento/tensão sem presumir posição intermediária falsa."""
     clip = _cia_clip(line)
     zone = _cia_line_zone(poema_lines, line)
+    if _cia_is_linha_perola(poema_lines, line):
+        return _cia_comentario_linha_perola(poema_lines, line)
     if zone == "inicial":
         return random.choice([
             f"Retomado no desenvolvimento, “{clip}” deixa de ser apenas entrada e passa a sustentar a direção crítica da leitura.",
@@ -467,7 +541,7 @@ def _cia_regra_zero_miolo(poema_lines, line):
         f"Em “{clip}”, a linguagem ganha densidade: o verso concentra imagem, tensão e atmosfera sem dissolver o mistério.",
         f"Quando “{clip}” {verbo} no desenvolvimento, a leitura encontra um {op} que altera o peso do percurso.",
         f"O centro de força passa por “{clip}”; ali o poema ganha espessura e evita seguir por caminho óbvio.",
-        f"Há em “{clip}” uma medula verbal: o texto se mostra breve na superfície e mais largo por dentro.",
+        f"Há em “{clip}” uma condensação de leitura: o texto se mostra breve na superfície e mais largo por dentro.",
     ])
 
 
@@ -479,7 +553,7 @@ def _cia_regra_zero_fecho(poema_lines, line):
         return random.choice([
             f"No fecho, “{clip}” recolhe o percurso sem esgotá-lo; a última linha concentra a pressão e deixa o poema ainda reverberando.",
             f"A chegada a “{clip}” dá ao poema seu ponto de recolhimento: não fecha o sentido, mas organiza o eco do que veio antes.",
-            f"Em “{clip}”, o poema encontra uma saída que ainda preserva atrito. O fim recolhe a leitura sem transformar a tensão em resposta única.",
+            f"Em “{clip}”, o poema encontra uma saída que ainda preserva atrito. O final recolhe a leitura sem transformar a tensão em resposta única.",
             f"O último verso, “{clip}”, funciona como resumo da ópera: conserva estranheza e convida a leitura a voltar sobre o percurso.",
         ])
     if zone == "inicial":
@@ -492,7 +566,7 @@ def _cia_regra_zero_fecho(poema_lines, line):
     verbo = random.choice(CIA_VERBOS_SURGIMENTO)
     return random.choice([
         f"A reverberação pode voltar a “{clip}”: esse ponto reorganiza o percurso e faz o final ser lido por outra direção.",
-        f"O encerramento crítico se apoia em “{clip}” porque essa imagem aponta para a tensão que o fim recolhe.",
+        f"O encerramento crítico se apoia em “{clip}” porque essa imagem aponta para a tensão que o final recolhe.",
         f"Mesmo fora da última linha, “{clip}” funciona como zona de eco: a análise retorna a esse ponto para deixar o poema vibrando.",
         f"Na {op}, “{clip}” {verbo} como reverberação possível sem apagar o impacto do último verso.",
     ])
@@ -543,10 +617,11 @@ def _cia_candidate_pools(poema_lines):
     perguntas = [line for line in fortes if "?" in line]
     suspensos = [line for line in fortes if "..." in line or "…" in line]
     marcados = [line for line in fortes if line.count(",") >= 1 or "(" in line or ")" in line]
+    chaves = _cia_linhas_perola(poema_lines)
 
-    lista_best_ABERTURA = _cia_unique([first] + perguntas + suspensos + fortes + [last])
-    lista_best_MIOLO = _cia_unique(marcados + fortes + [middle, first, last])
-    lista_best_FECHO = _cia_unique([last] + suspensos + perguntas + fortes + [first])
+    lista_best_ABERTURA = _cia_unique([first] + perguntas + suspensos + chaves + fortes + [last])
+    lista_best_MIOLO = _cia_unique(chaves + marcados + fortes + [middle, first, last])
+    lista_best_FECHO = _cia_unique([last] + suspensos + perguntas + chaves + fortes + [first])
 
     return {
         "abertura": lista_best_ABERTURA,
@@ -764,9 +839,15 @@ def _cia_sintatica_candidatos_balanceados(poema_lines, used_lines):
         line = verbais[0]
         verbo = _cia_first_explicit_verb(line)
         if _cia_has_clear_subject(line):
-            texto = f"Em “{_cia_clip(line)}”, o **verbo** “{verbo}” encontra apoio em um **sujeito** perceptível no próprio enunciado, organizando o gesto da frase."
+            texto = random.choice([
+                f"Em “{_cia_clip(line)}”, o **verbo** “{verbo}” encontra apoio em um **sujeito** perceptível no próprio enunciado, organizando o gesto da frase.",
+                f"Quando o **verbo** “{verbo}” dá movimento ao verso, a **sintaxe** avança por ação concreta e cria apoio para o enunciado.",
+            ])
         else:
-            texto = f"Em “{_cia_clip(line)}”, o **verbo** “{verbo}” dá movimento ao verso; a **sintaxe** avança pela ação verbal, não por comentário abstrato."
+            texto = random.choice([
+                f"Em “{_cia_clip(line)}”, o **verbo** “{verbo}” dá movimento ao verso; a **sintaxe** avança pela ação verbal, não por comentário abstrato.",
+                f"Quando o **verbo** “{verbo}” dá movimento ao verso, a **sintaxe** avança por ação concreta, não por comentário abstrato.",
+            ])
         _cia_sintatica_add_candidate(candidates, "basico", [line], texto)
     else:
         nominais = [line for line in inner if _cia_is_nominal_or_prepositional(line)]
