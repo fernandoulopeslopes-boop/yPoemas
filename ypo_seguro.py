@@ -651,6 +651,7 @@ def init_session_state():
         "take_em_analise": -1,
         "lang_em_analise": "",
         "cia_mood_changed": False,
+        "cia_force_new_poema": False,
 
         # chave de ouro
         "key_open": False,
@@ -815,8 +816,11 @@ def _sync_book_theme_state():
 
     take = _coerce_take(st.session_state.get("take", 0), temas_list)
 
+    old_take = st.session_state.get("take", 0)
     st.session_state.take = take
     st.session_state.tema = temas_list[take]
+    if take != old_take:
+        st.session_state["cia_force_new_poema"] = True
 
 
 def _current_book():
@@ -848,6 +852,7 @@ def _on_palco_book_change():
     if choice != current_book:
         st.session_state.book = choice
         st.session_state.take = 0
+        st.session_state["cia_force_new_poema"] = True
     _sync_book_theme_state()
 
 
@@ -863,8 +868,11 @@ def _on_palco_theme_change():
         temas_list,
     )
 
+    old_take = st.session_state.get("take", 0)
     st.session_state.take = take
     st.session_state.tema = temas_list[take]
+    if take != old_take:
+        st.session_state["cia_force_new_poema"] = True
 
 
 def pick_book_palco():
@@ -1569,20 +1577,23 @@ def page_ypoemas():
             )
 
             cia_mood_changed = bool(st.session_state.get("cia_mood_changed", False))
+            cia_force_new_poema = bool(st.session_state.get("cia_force_new_poema", False))
+            force_new_poema = bool(force_new_poema or cia_force_new_poema)
             preserve_cia_poema = (
                 cia_mode
                 and not force_new_poema
-                and (
-                    same_analysis_text
-                    or (cia_mood_changed and bool(st.session_state.get("ypoema_em_analise", "")))
-                )
+                and bool(st.session_state.get("ypoema_em_analise", ""))
             )
 
             if preserve_cia_poema:
+                # Troca de mood/analysis não chama load_poema(): muda só a camada CIA.
                 curr_ypoema = st.session_state.get("ypoema_em_analise", "")
                 generated_new_poema = False
                 st.session_state["cia_mood_changed"] = False
+                st.session_state["cia_force_new_poema"] = False
             else:
+                st.session_state["cia_mood_changed"] = False
+                st.session_state["cia_force_new_poema"] = False
                 if st.session_state.lang != st.session_state.last_lang:
                     curr_ypoema = load_lypo()  # changes in lang, keep LYPO
                 else:
@@ -1979,38 +1990,25 @@ CIA_MOOD_OPTIONS = [
     "Completa",
 ]
 def render_cia_mood_selectbox():
-    """Menu nativo da CIA: alternativa ao selectbox que insiste em abrir UP."""
+    """Lista da CIA sempre aberta: troca só a camada de análise."""
     current = st.session_state.get("cia_mood", "Sintática").strip()
     if current not in CIA_MOOD_OPTIONS:
         current = "Sintática"
         st.session_state["cia_mood"] = current
 
-    try:
-        choice = st.sidebar.menu_button(
-            "↓  " + current,
-            CIA_MOOD_OPTIONS,
-            key="cia_mood_menu_button",
-            width="stretch",
-        )
-    except AttributeError:
-        choice = st.sidebar.selectbox(
-            "↓",
-            CIA_MOOD_OPTIONS,
-            index=CIA_MOOD_OPTIONS.index(current),
-            key="cia_mood_select",
-            label_visibility="collapsed",
-        )
-
-    if choice and choice in CIA_MOOD_OPTIONS and choice != st.session_state.get("cia_mood", "Sintática"):
-        st.session_state["cia_mood"] = choice
-        st.session_state["cia_mood_select"] = choice
-        st.session_state["cia_reading_mode"] = True
-        st.session_state["cia_mood_changed"] = True
-        try:
-            st.rerun()
-        except Exception:
-            st.experimental_rerun()
-
+    with st.sidebar.expander("↓  análises CIA", expanded=True):
+        for mood in CIA_MOOD_OPTIONS:
+            label = f"• {mood}" if mood == current else mood
+            if st.button(label, key=f"cia_mood_list_{mood}", use_container_width=True):
+                if mood != st.session_state.get("cia_mood", "Sintática"):
+                    st.session_state["cia_mood"] = mood
+                    st.session_state["cia_mood_select"] = mood
+                    st.session_state["cia_reading_mode"] = True
+                    st.session_state["cia_mood_changed"] = True
+                    try:
+                        st.rerun()
+                    except Exception:
+                        st.experimental_rerun()
 
 def _cia_sidebar_filha_active(chosen_id):
     """Ativa a sidebar-filha somente na página yPoemas, quando a CIA está em foco."""
