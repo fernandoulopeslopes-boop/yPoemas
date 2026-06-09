@@ -650,6 +650,7 @@ def init_session_state():
         "book_em_analise": "",
         "take_em_analise": -1,
         "lang_em_analise": "",
+        "cia_mood_changed": False,
 
         # chave de ouro
         "key_open": False,
@@ -1567,9 +1568,20 @@ def page_ypoemas():
                 and st.session_state.get("lang_em_analise") == st.session_state.lang
             )
 
-            if cia_mode and same_analysis_text and not force_new_poema:
+            cia_mood_changed = bool(st.session_state.get("cia_mood_changed", False))
+            preserve_cia_poema = (
+                cia_mode
+                and not force_new_poema
+                and (
+                    same_analysis_text
+                    or (cia_mood_changed and bool(st.session_state.get("ypoema_em_analise", "")))
+                )
+            )
+
+            if preserve_cia_poema:
                 curr_ypoema = st.session_state.get("ypoema_em_analise", "")
                 generated_new_poema = False
+                st.session_state["cia_mood_changed"] = False
             else:
                 if st.session_state.lang != st.session_state.last_lang:
                     curr_ypoema = load_lypo()  # changes in lang, keep LYPO
@@ -1993,6 +2005,7 @@ def render_cia_mood_selectbox():
         st.session_state["cia_mood"] = choice
         st.session_state["cia_mood_select"] = choice
         st.session_state["cia_reading_mode"] = True
+        st.session_state["cia_mood_changed"] = True
         try:
             st.rerun()
         except Exception:
