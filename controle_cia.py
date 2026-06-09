@@ -125,7 +125,18 @@ CIA_VERBOS_EXPLICITOS_COMUNS = {
 CIA_NAO_VERBOS = {
     "quando", "onde", "que", "se", "porque", "embora", "mas", "ou", "e",
     "como", "para", "por", "sem", "com", "num", "numa", "de", "do", "da",
+    "carência", "lembrança", "certeza", "dúvida", "coisas", "coisa",
+    "apenas", "nem", "só", "pouco", "bom", "senso",
 }
+
+CIA_FALSOS_VERBOS_SUFFIX = (
+    "ência", "ança", "eza", "dade", "ção", "ções", "são", "mento", "mentos",
+)
+
+
+def _cia_is_false_verb_token(token):
+    token = str(token or "").lower().strip()
+    return token in CIA_NAO_VERBOS or token.endswith(CIA_FALSOS_VERBOS_SUFFIX)
 
 
 def _cia_tokens_lower(line):
@@ -142,7 +153,7 @@ def _cia_has_explicit_verb(line):
     if not tokens:
         return False
     for token in tokens:
-        if token in CIA_NAO_VERBOS:
+        if _cia_is_false_verb_token(token):
             continue
         if token in CIA_VERBOS_EXPLICITOS_COMUNS:
             return True
@@ -158,7 +169,7 @@ def _cia_has_explicit_verb(line):
 def _cia_first_explicit_verb(line):
     tokens = _cia_tokens_lower(line)
     for token in tokens:
-        if token in CIA_NAO_VERBOS:
+        if _cia_is_false_verb_token(token):
             continue
         if token in CIA_VERBOS_EXPLICITOS_COMUNS:
             return token
@@ -551,7 +562,9 @@ def _cia_regra_zero_fecho(poema_lines, line):
     zone = _cia_line_zone(poema_lines, line)
     if zone == "final":
         return random.choice([
-            f"No fecho, “{clip}” recolhe o percurso sem esgotá-lo; a última linha concentra a pressão e deixa o poema ainda reverberando.",
+            f"No fecho, “{clip}” recolhe o percurso sem esgotá-lo; a última linha concentra a pressão e oferece ressonâncias pelo poema.",
+            f"No fecho, “{clip}” recolhe o percurso sem esgotá-lo; a última linha concentra a pressão e cria ressonâncias pelo texto.",
+            f"No fecho, “{clip}” recolhe o percurso sem esgotá-lo; a última linha concentra a pressão e distribui ecos pelo percurso.",
             f"A chegada a “{clip}” dá ao poema seu ponto de recolhimento: não fecha o sentido, mas organiza o eco do que veio antes.",
             f"Em “{clip}”, o poema encontra uma saída que ainda preserva atrito. O final recolhe a leitura sem transformar a tensão em resposta única.",
             f"O último verso, “{clip}”, funciona como resumo da ópera: conserva estranheza e convida a leitura a voltar sobre o percurso.",
@@ -641,7 +654,7 @@ def _cia_pick_role(poema_lines, role, used_lines, fallback=""):
 
     if role == "fecho" and poema_lines:
         last = poema_lines[-1]
-        if last in pool and last not in used_lines and random.random() < 0.62:
+        if last in pool and last not in used_lines and random.random() < 0.82:
             used_lines.add(last)
             return last
 
@@ -681,6 +694,12 @@ def _cia_critico_abertura(poema_lines, used_lines):
 
 def _cia_critico_fecho(poema_lines, used_lines, prefer_specific=True):
     """Último bloco: melhor reverberação final entre candidatos plausíveis."""
+    if prefer_specific and poema_lines:
+        last = poema_lines[-1]
+        # Em poemas curtos, o fecho real costuma carregar a chave de recolhimento.
+        if len(poema_lines) <= 5 and last not in used_lines:
+            used_lines.add(last)
+            return _cia_regra_zero_fecho(poema_lines, last)
     fecho = _cia_pick_role(poema_lines, "fecho", used_lines, poema_lines[-1])
     if prefer_specific and fecho:
         return _cia_regra_zero_fecho(poema_lines, fecho)
@@ -1181,13 +1200,16 @@ def build_cia_analysis_formal(curr_ypoema):
 
     desenvolvimento = []
 
+    def _rotulo_qtd(qtd, singular, plural):
+        return f"**{qtd} {singular if qtd == 1 else plural}**"
+
     extensoes = []
     if curtas:
-        extensoes.append(f"**{curtas} linhas breves**")
+        extensoes.append(_rotulo_qtd(curtas, "linha breve", "linhas breves"))
     if medias:
-        extensoes.append(f"**{medias} médias**")
+        extensoes.append(_rotulo_qtd(medias, "linha média", "linhas médias"))
     if longas:
-        extensoes.append(f"**{longas} mais longas**")
+        extensoes.append(_rotulo_qtd(longas, "linha mais longa", "linhas mais longas"))
 
     if len(extensoes) >= 2:
         extensoes_texto = ", ".join(extensoes[:-1]) + " e " + extensoes[-1]
@@ -1197,9 +1219,11 @@ def build_cia_analysis_formal(curr_ypoema):
         extensoes_texto = ""
 
     if extensoes_texto:
+        verbo_criar = "cria" if (curtas + medias + longas) == 1 else "criam"
+        verbo_fazer = "faz" if (curtas + medias + longas) == 1 else "fazem"
         desenvolvimento.append(random.choice([
-            f"A alternância de extensão também trabalha: {extensoes_texto} criam variação de fôlego, evitando que o poema avance em linha reta demais.",
-            f"O ritmo nasce da medida dos versos: {extensoes_texto} fazem a leitura acelerar, conter-se ou respirar conforme o desenho pede.",
+            f"A alternância de extensão também trabalha: {extensoes_texto} {verbo_criar} variação de fôlego, evitando que o poema avance em linha reta demais.",
+            f"O ritmo nasce da medida dos versos: {extensoes_texto} {verbo_fazer} a leitura acelerar, conter-se ou respirar conforme o desenho pede.",
             f"A diferença entre versos de extensão distinta não é ornamento gráfico; ela distribui pausas e pressões dentro do próprio corpo do poema.",
         ]))
 
