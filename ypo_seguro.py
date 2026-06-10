@@ -2047,6 +2047,7 @@ BUILD_OPTIONS = [
     "Único: tema atual",
     "Lista: livro atual",
     "Lista: todos os temas",
+    "Diferenças: novo Index x index_anterior",
 ]
 
 
@@ -2062,7 +2063,7 @@ def _builds_unique(seq):
 
 
 def _builds_find_ypo_file(nome_tema):
-    """Localiza o .ypo sem escrever nada nele."""
+    """Localiza o .ypo na pasta DATA sem escrever nada nele."""
     safe = str(nome_tema or "").strip()
     if not safe:
         return None
@@ -2103,24 +2104,6 @@ def _builds_find_ypo_file(nome_tema):
     return None
 
 
-def _builds_index_variacoes(nome_tema):
-    """Obtém variações já registradas no index, sem recalcular o universo combinatório."""
-    try:
-        indexes = load_index()
-        for line in indexes:
-            clean = line.strip()
-            if not clean:
-                continue
-            part_line = clean.partition(" : ")
-            if part_line[1] and part_line[0].strip().upper() == str(nome_tema).strip().upper():
-                return part_line[2].strip()
-            if clean.upper().startswith(str(nome_tema).strip().upper()):
-                return clean.replace(str(nome_tema), "", 1).strip(" :-")
-    except Exception:
-        pass
-    return ""
-
-
 def _builds_parse_int(value):
     try:
         return int(str(value).strip())
@@ -2128,10 +2111,85 @@ def _builds_parse_int(value):
         return 0
 
 
+def _builds_parse_numero_index(value):
+    """Tenta transformar números antigos do index em inteiro comparável."""
+    raw = str(value or "").strip()
+    if not raw:
+        return None
+
+    candidate = raw.replace(" ", "").replace("\u00a0", "")
+    candidate = candidate.strip("|;:")
+
+    # 1.234.567 como separador de milhar.
+    if re.fullmatch(r"\d{1,3}(\.\d{3})+", candidate):
+        try:
+            return int(candidate.replace(".", ""))
+        except Exception:
+            return None
+
+    # Inteiro simples.
+    if re.fullmatch(r"\d+", candidate):
+        try:
+            return int(candidate)
+        except Exception:
+            return None
+
+    # Notação científica ou decimal sem fração relevante.
+    try:
+        from decimal import Decimal
+        normalized = candidate.replace(",", ".")
+        if re.fullmatch(r"\d+(\.\d+)?([eE][+-]?\d+)?", normalized):
+            decimal_value = Decimal(normalized)
+            if decimal_value == decimal_value.to_integral_value():
+                return int(decimal_value)
+    except Exception:
+        return None
+
+    return None
+
+
+def _builds_index_anterior_map():
+    """Lê o index anterior como referência de comparação."""
+    index_map = {}
+    try:
+        for line in load_index():
+            clean = str(line or "").strip()
+            if not clean or clean.startswith("#"):
+                continue
+
+            if clean.startswith("|"):
+                parts = [p.strip() for p in clean.split("|") if p.strip()]
+                if len(parts) >= 2:
+                    index_map[parts[0].upper()] = parts[1]
+                    continue
+
+            part_line = clean.partition(" : ")
+            if part_line[1]:
+                index_map[part_line[0].strip().upper()] = part_line[2].strip()
+                continue
+
+            match = re.match(r"^(.+?)\s*[:=]\s*(.+)$", clean)
+            if match:
+                index_map[match.group(1).strip().upper()] = match.group(2).strip()
+    except Exception:
+        pass
+    return index_map
+
+
+def _builds_index_anterior_variacoes(nome_tema):
+    return _builds_index_anterior_map().get(str(nome_tema or "").strip().upper(), "")
+
+
 def _builds_itimos_from_pipe(pipe):
-    """Extrai ítimos da estrutura .ypo sem pressupor uma única variante histórica."""
+    """Extrai ítimos reais da linha .ypo, respeitando barras quando existirem."""
     if len(pipe) >= 8:
-        tail = "|".join(pipe[7:]).strip()
+        partes_barra = [p.strip() for p in pipe[7:] if p.strip()]
+        if len(partes_barra) > 1:
+            return partes_barra
+        if len(partes_barra) == 1:
+            tail = partes_barra[0]
+        else:
+            tail = ""
     elif len(pipe) >= 7:
         tail = pipe[6].strip()
     else:
@@ -2140,7 +2198,7 @@ def _builds_itimos_from_pipe(pipe):
     if not tail:
         return []
 
-    # Muitos bancos usam ítimos separados por espaços, mantendo hífen/neologismo como unidade.
+    # Fallback para bancos históricos com ítimos separados por espaços.
     return [item.strip() for item in re.split(r"\s+", tail) if item.strip()]
 
 
@@ -2151,7 +2209,10 @@ def _builds_numeros_tema(nome_tema):
 
     linhas = 0
     qtd_itimos = 0
+    qtd_itimos_declarados = 0
+    variacoes = 1
     itimos_lista = []
+    divergencias = 0
 
     if ypo_file:
         try:
@@ -2161,26 +2222,54 @@ def _builds_numeros_tema(nome_tema):
                     if not line or not line.startswith("|"):
                         continue
                     pipe = line.split("|")
-                    linhas += 1
-                    qtd_itimos_linha = _builds_parse_int(pipe[5]) if len(pipe) > 5 else 0
                     itens = _builds_itimos_from_pipe(pipe)
+                    qtd_real_linha = len(itens)
+                    qtd_declarada_linha = _builds_parse_int(pipe[5]) if len(pipe) > 5 else 0
+                    qtd_para_variacao = qtd_real_linha or qtd_declarada_linha
+
+                    if qtd_para_variacao <= 0:
+                        continue
+
+                    linhas += 1
+                    variacoes *= qtd_para_variacao
+                    qtd_itimos += qtd_para_variacao
+                    qtd_itimos_declarados += qtd_declarada_linha
                     itimos_lista.extend(itens)
-                    qtd_itimos += qtd_itimos_linha if qtd_itimos_linha else len(itens)
+
+                    if qtd_declarada_linha and qtd_real_linha and qtd_declarada_linha != qtd_real_linha:
+                        divergencias += 1
         except Exception:
             ypo_file = None
+
+    if linhas == 0:
+        variacoes = 0
 
     palavras = []
     for item in itimos_lista:
         palavras.extend(re.findall(r"[A-Za-zÀ-ÖØ-öø-ÿ0-9]+(?:[-'][A-Za-zÀ-ÖØ-öø-ÿ0-9]+)*", item))
 
+    anterior_raw = _builds_index_anterior_variacoes(tema)
+    anterior_int = _builds_parse_numero_index(anterior_raw)
+
+    status = "OK"
+    if not ypo_file:
+        status = "SEM_ARQUIVO"
+    elif linhas == 0:
+        status = "SEM_LINHAS"
+    elif divergencias:
+        status = "CONFERIR_QTD_ITIMOS"
+
     return {
         "tema": tema,
-        "index_variacoes": _builds_index_variacoes(tema),
+        "index_anterior": anterior_raw,
+        "index_anterior_int": anterior_int,
+        "variacoes": variacoes,
         "linhas": linhas,
         "itimos": qtd_itimos,
+        "itimos_declarados": qtd_itimos_declarados,
         "palavras": len(palavras),
         "arquivo": ypo_file or "",
-        "status": "OK" if ypo_file else "CONFERIR",
+        "status": status,
     }
 
 
@@ -2188,15 +2277,32 @@ def _builds_linha_auxiliar(row):
     """Linha enxuta para lista auxiliar numérica."""
     return (
         f"|{row['tema']}|"
-        f"{row['index_variacoes']}|"
+        f"{row['variacoes']}|"
         f"{row['itimos']}|"
         f"{row['palavras']}|"
         f"{row['status']}|"
     )
 
 
+def _builds_linha_index(row):
+    """Linha do novo Index recalculado."""
+    return f"{row['tema']} : {row['variacoes']}"
+
+
+def _builds_linha_diferenca(row):
+    anterior_raw = row.get("index_anterior", "") or "—"
+    anterior_int = row.get("index_anterior_int")
+    novo = row.get("variacoes", 0)
+    if anterior_int is None:
+        diff = "—"
+    else:
+        delta = novo - anterior_int
+        diff = ("+" if delta > 0 else "") + str(delta)
+    return f"|{row['tema']}|{anterior_raw}|{novo}|{diff}|{row['status']}|"
+
+
 def _builds_temas_por_opcao(option):
-    if option == "Lista: todos os temas":
+    if option in ["Lista: todos os temas", "Diferenças: novo Index x index_anterior"]:
         try:
             return load_temas("todos os temas")
         except Exception:
@@ -2212,14 +2318,42 @@ def _builds_temas_por_opcao(option):
 def _builds_relatorio(option):
     temas = [t for t in _builds_temas_por_opcao(option) if str(t).strip()]
     rows = [_builds_numeros_tema(t) for t in temas]
+
+    novo_index = "\n".join(_builds_linha_index(row) for row in rows)
+
+    diff_rows = []
+    for row in rows:
+        anterior_int = row.get("index_anterior_int")
+        anterior_raw = row.get("index_anterior", "")
+        novo = row.get("variacoes", 0)
+        has_difference = (
+            row.get("status") != "OK"
+            or not anterior_raw
+            or anterior_int is None
+            or anterior_int != novo
+        )
+        if has_difference:
+            diff_rows.append(row)
+
     linhas = [
-        "# Machina_Builds :: números auxiliares",
-        "# formato: |tema|index/variações|ítimos|palavras|status|",
+        "# Machina_Builds :: números auxiliares recalculados",
+        "# formato: |tema|variações_recalculadas|ítimos|palavras|status|",
         "# fonte .ypo: somente leitura; nenhum .ypo é alterado",
         "",
     ]
     linhas.extend(_builds_linha_auxiliar(row) for row in rows)
-    return rows, "\n".join(linhas)
+    relatorio = "\n".join(linhas)
+
+    linhas_dif = [
+        "# Machina_Builds :: diferenças entre novo Index e index_anterior",
+        "# formato: |tema|anterior|novo|diferença|status|",
+        "# apenas temas com diferença real ou status para conferir",
+        "",
+    ]
+    linhas_dif.extend(_builds_linha_diferenca(row) for row in diff_rows)
+    diferencas = "\n".join(linhas_dif)
+
+    return rows, relatorio, novo_index, diff_rows, diferencas
 
 
 def render_builds_selectbox():
@@ -2241,11 +2375,11 @@ def render_builds_selectbox():
 def render_builds_stage():
     """Mostra números auxiliares no palco. Geração segura: leitura + download."""
     option = st.session_state.get("builds_option", BUILD_OPTIONS[0])
-    rows, report = _builds_relatorio(option)
+    rows, report, novo_index, diff_rows, diferencas = _builds_relatorio(option)
 
     st.markdown(
         "<div class='cia-stage-box'><p><strong>Machina_Builds</strong><br>"
-        "números auxiliares derivados — leitura técnica, sem alteração de .ypo.</p></div>",
+        "variações recalculadas a partir dos .ypo em DATA — leitura técnica, sem alteração de .ypo.</p></div>",
         unsafe_allow_html=True,
     )
 
@@ -2255,19 +2389,30 @@ def render_builds_stage():
 
     if option == "Único: tema atual":
         row = rows[0]
+        anterior = row['index_anterior'] or '—'
         st.markdown(
             f"""
             <div class='cia-stage-box'>
                 <p><strong>{row['tema']}</strong></p>
-                <p>index / variações: {row['index_variacoes'] or '—'}<br>
+                <p>index anterior: {anterior}<br>
+                variações recalculadas: {row['variacoes']}<br>
                 ítimos: {row['itimos']}<br>
                 palavras: {row['palavras']}<br>
+                linhas: {row['linhas']}<br>
                 status: {row['status']}</p>
                 <p><code>{_builds_linha_auxiliar(row)}</code></p>
             </div>
             """,
             unsafe_allow_html=True,
         )
+    elif option == "Diferenças: novo Index x index_anterior":
+        total = len(rows)
+        qtd_dif = len(diff_rows)
+        st.markdown(
+            f"<div class='cia-stage-box'><p>temas lidos: {total}<br>diferenças encontradas: {qtd_dif}</p></div>",
+            unsafe_allow_html=True,
+        )
+        st.text_area("diferenças", diferencas, height=360)
     else:
         total = len(rows)
         conferir = sum(1 for row in rows if row["status"] != "OK")
@@ -2281,6 +2426,20 @@ def render_builds_stage():
         "baixar lista auxiliar",
         data=report.encode("utf-8"),
         file_name="Machina_Builds_numeros_auxiliares.txt",
+        mime="text/plain",
+        use_container_width=True,
+    )
+    st.download_button(
+        "baixar novo Index",
+        data=novo_index.encode("utf-8"),
+        file_name="Machina_Builds_novo_index.txt",
+        mime="text/plain",
+        use_container_width=True,
+    )
+    st.download_button(
+        "baixar diferenças",
+        data=diferencas.encode("utf-8"),
+        file_name="Machina_Builds_diferencas_index.txt",
         mime="text/plain",
         use_container_width=True,
     )
@@ -2299,7 +2458,6 @@ def draw_sidebar_panel_buttons(chosen_id):
     with col_builds:
         if st.button("Builds", key="sidebar_panel_builds", use_container_width=True):
             st.session_state["sidebar_panel"] = "Builds"
-
 
 
 SIDEBAR_FILHOTE_WIDTH_PX = 64
