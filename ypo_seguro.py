@@ -1618,7 +1618,7 @@ def page_ypoemas():
 
         ypoemas_expander = st.expander(what_book, expanded=True)
         with ypoemas_expander:
-            cia_mode = st.session_state.get("sidebar_panel") == "CIA"
+            cia_mode = st.session_state.get("sidebar_panel") == "Builds"
             force_new_poema = bool(more or last or rand or nest)
             same_analysis_text = (
                 st.session_state.get("ypoema_em_analise")
@@ -1678,15 +1678,15 @@ def page_ypoemas():
             LOGO_TEXTO = curr_ypoema
             LOGO_IMAGE = None
 
-            if st.session_state.get("sidebar_panel") != "CIA" and st.session_state.draw:
+            if st.session_state.get("sidebar_panel") != "Builds" and st.session_state.draw:
                 LOGO_IMAGE = load_arts(st.session_state.tema)
 
-            if st.session_state.get("sidebar_panel") == "CIA":
-                col_poema, col_cia = st.columns([5, 5])
+            if st.session_state.get("sidebar_panel") == "Builds":
+                col_poema, col_builds = st.columns([5, 5])
                 with col_poema:
                     write_ypoema(LOGO_TEXTO, None)
-                with col_cia:
-                    render_cia_stage(curr_ypoema)
+                with col_builds:
+                    render_builds_stage()
             else:
                 write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
 
@@ -2036,6 +2036,272 @@ def page_abouts():
 
 
 
+
+# --- Machina_Builds: núcleo interno seguro ---------------------------------
+# Regras:
+# - lê os .ypo apenas como fonte;
+# - não altera, não normaliza e não regrava nenhum .ypo;
+# - gera somente números auxiliares derivados para curadoria/Help.
+
+BUILD_OPTIONS = [
+    "Único: tema atual",
+    "Lista: livro atual",
+    "Lista: todos os temas",
+]
+
+
+def _builds_unique(seq):
+    """Preserva ordem e elimina repetição."""
+    seen = set()
+    out = []
+    for item in seq:
+        if item not in seen:
+            seen.add(item)
+            out.append(item)
+    return out
+
+
+def _builds_find_ypo_file(nome_tema):
+    """Localiza o .ypo sem escrever nada nele."""
+    safe = str(nome_tema or "").strip()
+    if not safe:
+        return None
+
+    candidates = [
+        safe,
+        safe.replace(" ", "_"),
+        safe.replace("_", " "),
+        safe.capitalize(),
+        safe.title(),
+    ]
+
+    folders = [
+        "./DATA",
+        "./data",
+        ".DATA",
+        ".data",
+        "./base",
+        ".",
+    ]
+
+    for folder in folders:
+        for name in _builds_unique(candidates):
+            path = os.path.join(folder, name + ".ypo")
+            if os.path.exists(path):
+                return path
+
+    # Busca final controlada: só leitura.
+    for folder in folders:
+        if os.path.isdir(folder):
+            try:
+                for fname in os.listdir(folder):
+                    if fname.lower() == (safe.lower() + ".ypo"):
+                        return os.path.join(folder, fname)
+            except Exception:
+                pass
+
+    return None
+
+
+def _builds_index_variacoes(nome_tema):
+    """Obtém variações já registradas no index, sem recalcular o universo combinatório."""
+    try:
+        indexes = load_index()
+        for line in indexes:
+            clean = line.strip()
+            if not clean:
+                continue
+            part_line = clean.partition(" : ")
+            if part_line[1] and part_line[0].strip().upper() == str(nome_tema).strip().upper():
+                return part_line[2].strip()
+            if clean.upper().startswith(str(nome_tema).strip().upper()):
+                return clean.replace(str(nome_tema), "", 1).strip(" :-")
+    except Exception:
+        pass
+    return ""
+
+
+def _builds_parse_int(value):
+    try:
+        return int(str(value).strip())
+    except Exception:
+        return 0
+
+
+def _builds_itimos_from_pipe(pipe):
+    """Extrai ítimos da estrutura .ypo sem pressupor uma única variante histórica."""
+    if len(pipe) >= 8:
+        tail = "|".join(pipe[7:]).strip()
+    elif len(pipe) >= 7:
+        tail = pipe[6].strip()
+    else:
+        tail = ""
+
+    if not tail:
+        return []
+
+    # Muitos bancos usam ítimos separados por espaços, mantendo hífen/neologismo como unidade.
+    return [item.strip() for item in re.split(r"\s+", tail) if item.strip()]
+
+
+def _builds_numeros_tema(nome_tema):
+    """Calcula números derivados de um tema. Não altera o arquivo-fonte."""
+    tema = str(nome_tema or "").strip()
+    ypo_file = _builds_find_ypo_file(tema)
+
+    linhas = 0
+    qtd_itimos = 0
+    itimos_lista = []
+
+    if ypo_file:
+        try:
+            with open(ypo_file, "r", encoding="utf-8", errors="replace") as f:
+                for raw in f:
+                    line = raw.strip()
+                    if not line or not line.startswith("|"):
+                        continue
+                    pipe = line.split("|")
+                    linhas += 1
+                    qtd_itimos_linha = _builds_parse_int(pipe[5]) if len(pipe) > 5 else 0
+                    itens = _builds_itimos_from_pipe(pipe)
+                    itimos_lista.extend(itens)
+                    qtd_itimos += qtd_itimos_linha if qtd_itimos_linha else len(itens)
+        except Exception:
+            ypo_file = None
+
+    palavras = []
+    for item in itimos_lista:
+        palavras.extend(re.findall(r"[A-Za-zÀ-ÖØ-öø-ÿ0-9]+(?:[-'][A-Za-zÀ-ÖØ-öø-ÿ0-9]+)*", item))
+
+    return {
+        "tema": tema,
+        "index_variacoes": _builds_index_variacoes(tema),
+        "linhas": linhas,
+        "itimos": qtd_itimos,
+        "palavras": len(palavras),
+        "arquivo": ypo_file or "",
+        "status": "OK" if ypo_file else "CONFERIR",
+    }
+
+
+def _builds_linha_auxiliar(row):
+    """Linha enxuta para lista auxiliar numérica."""
+    return (
+        f"|{row['tema']}|"
+        f"{row['index_variacoes']}|"
+        f"{row['itimos']}|"
+        f"{row['palavras']}|"
+        f"{row['status']}|"
+    )
+
+
+def _builds_temas_por_opcao(option):
+    if option == "Lista: todos os temas":
+        try:
+            return load_temas("todos os temas")
+        except Exception:
+            return []
+    if option == "Lista: livro atual":
+        try:
+            return load_temas(_current_book())
+        except Exception:
+            return []
+    return [st.session_state.get("tema", "")]
+
+
+def _builds_relatorio(option):
+    temas = [t for t in _builds_temas_por_opcao(option) if str(t).strip()]
+    rows = [_builds_numeros_tema(t) for t in temas]
+    linhas = [
+        "# Machina_Builds :: números auxiliares",
+        "# formato: |tema|index/variações|ítimos|palavras|status|",
+        "# fonte .ypo: somente leitura; nenhum .ypo é alterado",
+        "",
+    ]
+    linhas.extend(_builds_linha_auxiliar(row) for row in rows)
+    return rows, "\n".join(linhas)
+
+
+def render_builds_selectbox():
+    """Dropdown do núcleo Builds no espaço antes ocupado pela CIA."""
+    current = st.session_state.get("builds_option", BUILD_OPTIONS[0])
+    if current not in BUILD_OPTIONS:
+        current = BUILD_OPTIONS[0]
+        st.session_state["builds_option"] = current
+
+    with st.sidebar.expander("↓  Builds", expanded=True):
+        st.selectbox(
+            "núcleo interno",
+            BUILD_OPTIONS,
+            index=BUILD_OPTIONS.index(current),
+            key="builds_option",
+        )
+
+
+def render_builds_stage():
+    """Mostra números auxiliares no palco. Geração segura: leitura + download."""
+    option = st.session_state.get("builds_option", BUILD_OPTIONS[0])
+    rows, report = _builds_relatorio(option)
+
+    st.markdown(
+        "<div class='cia-stage-box'><p><strong>Machina_Builds</strong><br>"
+        "números auxiliares derivados — leitura técnica, sem alteração de .ypo.</p></div>",
+        unsafe_allow_html=True,
+    )
+
+    if not rows:
+        st.warning("Nenhum tema encontrado para esta opção.")
+        return
+
+    if option == "Único: tema atual":
+        row = rows[0]
+        st.markdown(
+            f"""
+            <div class='cia-stage-box'>
+                <p><strong>{row['tema']}</strong></p>
+                <p>index / variações: {row['index_variacoes'] or '—'}<br>
+                ítimos: {row['itimos']}<br>
+                palavras: {row['palavras']}<br>
+                status: {row['status']}</p>
+                <p><code>{_builds_linha_auxiliar(row)}</code></p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+    else:
+        total = len(rows)
+        conferir = sum(1 for row in rows if row["status"] != "OK")
+        st.markdown(
+            f"<div class='cia-stage-box'><p>temas: {total}<br>conferir: {conferir}</p></div>",
+            unsafe_allow_html=True,
+        )
+        st.text_area("lista auxiliar", report, height=360)
+
+    st.download_button(
+        "baixar lista auxiliar",
+        data=report.encode("utf-8"),
+        file_name="Machina_Builds_numeros_auxiliares.txt",
+        mime="text/plain",
+        use_container_width=True,
+    )
+
+
+def draw_sidebar_panel_buttons(chosen_id):
+    """Versão interna: alterna entre Machina e Builds."""
+    if chosen_id != "2":
+        st.session_state["sidebar_panel"] = "Machina"
+        return
+
+    col_mach, col_builds = st.sidebar.columns([1, 1])
+    with col_mach:
+        if st.button("Machina", key="sidebar_panel_machina", use_container_width=True):
+            st.session_state["sidebar_panel"] = "Machina"
+    with col_builds:
+        if st.button("Builds", key="sidebar_panel_builds", use_container_width=True):
+            st.session_state["sidebar_panel"] = "Builds"
+
+
+
 SIDEBAR_FILHOTE_WIDTH_PX = 64
 CIA_MOOD_OPTIONS = [
     "Sintática",
@@ -2145,12 +2411,12 @@ def apply_sidebar_mae_filha_styles(chosen_id):
 
 
 def render_sidebar_filha():
-    """Compatibilidade: sidebar-filha desativada; a CIA permanece fixa."""
-    st.session_state["sidebar_panel"] = "CIA"
+    """Compatibilidade: sidebar-filha desativada; Builds permanece fixo."""
+    st.session_state["sidebar_panel"] = "Builds"
     st.session_state["cia_reading_mode"] = False
     render_sidebar_for_page("2")
     with st.sidebar:
-        render_cia_mood_selectbox()
+        render_builds_selectbox()
 
 
 def render_sidebar_for_page(chosen_id):
@@ -2200,19 +2466,19 @@ def main():
             if chosen_id == "2":
                 draw_sidebar_panel_buttons(chosen_id)
 
-                if st.session_state.get("sidebar_panel", "Machina") == "CIA":
+                if st.session_state.get("sidebar_panel", "Machina") == "Builds":
                     st.session_state["cia_reading_mode"] = False
-                    render_cia_mood_selectbox()
+                    render_builds_selectbox()
                 else:
                     st.session_state["cia_reading_mode"] = False
                     st.session_state["cia_mood_select"] = st.session_state.get("cia_mood", "Sintática")
 
             with st.sidebar:
-                cia_sidebar_publica = (
+                builds_sidebar_publica = (
                     chosen_id == "2"
-                    and st.session_state.get("sidebar_panel", "Machina") == "CIA"
+                    and st.session_state.get("sidebar_panel", "Machina") == "Builds"
                 )
-                if not cia_sidebar_publica:
+                if not builds_sidebar_publica:
                     st.image("./images/" + magy)
 
 
