@@ -424,12 +424,14 @@ def _cia_bloco_sintatico_reforco(poema_lines, used_lines):
 def ensure_cia_name(force=False):
     """Gera um nome mutável para a CIA e o preserva durante a sessão."""
     if force or not st.session_state.get("cia_name"):
-        st.session_state["cia_name"] = (
-            "Centro de "
-            + random.choice(CIA_WORD_1)
-            + " "
-            + random.choice(CIA_WORD_2)
-        )
+        st.session_state["cia_name"] = gera_poema("CIA", "")
+        
+#        (
+#            "Centro de "
+#            + random.choice(CIA_WORD_1)
+#            + " "
+#            + random.choice(CIA_WORD_2)
+#        )
 
 
 def generate_poema_preview(nome_tema, seed_eureka=""):
