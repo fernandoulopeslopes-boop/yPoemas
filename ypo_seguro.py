@@ -2197,14 +2197,6 @@ def main():
         else:
             render_sidebar_for_page(chosen_id)
 
-            with st.sidebar:
-                cia_sidebar_publica = (
-                    chosen_id == "2"
-                    and st.session_state.get("sidebar_panel", "Machina") == "CIA"
-                )
-                if not cia_sidebar_publica:
-                    st.image("./images/" + magy)
-
             if chosen_id == "2":
                 draw_sidebar_panel_buttons(chosen_id)
 
@@ -2214,6 +2206,14 @@ def main():
                 else:
                     st.session_state["cia_reading_mode"] = False
                     st.session_state["cia_mood_select"] = st.session_state.get("cia_mood", "Sintática")
+
+            with st.sidebar:
+                cia_sidebar_publica = (
+                    chosen_id == "2"
+                    and st.session_state.get("sidebar_panel", "Machina") == "CIA"
+                )
+                if not cia_sidebar_publica:
+                    st.image("./images/" + magy)
 
 
         palco = st.container()
