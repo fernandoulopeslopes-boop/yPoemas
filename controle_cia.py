@@ -22,8 +22,6 @@ def configure_cia(translate_func, load_typo_func, write_ypoema_func, ip_address)
     _ip_address = ip_address
 
 
-CIA_WORD_1 = ["Informação", "Invenção", "Imaginação", "Imagética", "Injeção"]
-CIA_WORD_2 = ["Analítica", "Artificial", "Analógica", "Afetiva", "Adicional", "Ampliada", "Avançada", "Acadêmica"]
 CIA_MOODS = [
     "Sintática",
     "Sintética",
@@ -422,16 +420,9 @@ def _cia_bloco_sintatico_reforco(poema_lines, used_lines):
 
 
 def ensure_cia_name(force=False):
-    """Gera um nome mutável para a CIA e o preserva durante a sessão."""
+    """Compatibilidade: o cabeçalho da CIA agora vem do tema Cia.ypo."""
     if force or not st.session_state.get("cia_name"):
-        st.session_state["cia_name"] = gera_poema("CIA", "")
-        
-#        (
-#            "Centro de "
-#            + random.choice(CIA_WORD_1)
-#            + " "
-#            + random.choice(CIA_WORD_2)
-#        )
+        st.session_state["cia_name"] = "Cia"
 
 
 def generate_poema_preview(nome_tema, seed_eureka=""):
@@ -451,8 +442,7 @@ def generate_poema_preview(nome_tema, seed_eureka=""):
 
 
 def build_cia_header():
-    """Descrição poética da CIA, gerada pela própria Machina sem repetir o título."""
-    ensure_cia_name()
+    """Descrição poética da CIA, gerada pela própria Machina via Cia.ypo."""
     header = generate_poema_preview("Cia", "")
     if st.session_state.lang != "pt":
         header = _translate(header)
