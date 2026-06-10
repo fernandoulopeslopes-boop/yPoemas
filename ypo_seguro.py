@@ -172,6 +172,14 @@ def apply_styles():
             word-break: keep-all !important;
             overflow-wrap: normal !important;
         }
+        .machina-palco-titulo {
+            display: block;
+            text-align: center;
+            text-decoration: underline;
+            text-underline-offset: 0.18em;
+            margin: 0 auto 0.35em auto;
+        }
+
 </style>
         """,
         unsafe_allow_html=True,
@@ -1248,7 +1256,32 @@ def load_arts(nome_tema):  # Select image for arts
 ### bof: functions
 
 
+def _palco_titulo_centralizado(LOGO_TEXTO):
+    """Centraliza e sublinha o título do texto no palco, mantendo o corpo intacto."""
+    texto = str(LOGO_TEXTO or "")
+    marcador = "<br>"
+    texto = texto.replace("<br/>", marcador).replace("<br />", marcador)
+
+    partes = texto.split(marcador)
+    if len(partes) <= 1:
+        return texto
+
+    titulo = partes[0].strip()
+    corpo = marcador.join(partes[1:]).strip()
+    if not titulo or not corpo:
+        return texto
+
+    return (
+        "<span class='machina-palco-titulo'>"
+        + titulo
+        + "</span>"
+        + marcador
+        + corpo
+    )
+
+
 def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
+    LOGO_TEXTO = _palco_titulo_centralizado(LOGO_TEXTO)
     if LOGO_IMAGE is None:
         st.markdown(
             f"""
@@ -2165,7 +2198,12 @@ def main():
             render_sidebar_for_page(chosen_id)
 
             with st.sidebar:
-                st.image("./images/" + magy)
+                cia_sidebar_publica = (
+                    chosen_id == "2"
+                    and st.session_state.get("sidebar_panel", "Machina") == "CIA"
+                )
+                if not cia_sidebar_publica:
+                    st.image("./images/" + magy)
 
             if chosen_id == "2":
                 draw_sidebar_panel_buttons(chosen_id)
