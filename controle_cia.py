@@ -127,6 +127,9 @@ CIA_NAO_VERBOS = {
     "como", "para", "por", "sem", "com", "num", "numa", "de", "do", "da",
     "carência", "lembrança", "certeza", "dúvida", "coisas", "coisa",
     "apenas", "nem", "só", "pouco", "bom", "senso",
+    "assembleia", "doutora", "auditora", "vitalícia", "abnp",
+    "bondade", "juventude", "carinho", "euforia", "cafuné",
+    "bem-querer", "bombril-febrileto", "alcol-gentilito", "senil-butileto",
 }
 
 CIA_FALSOS_VERBOS_SUFFIX = (
@@ -137,6 +140,26 @@ CIA_FALSOS_VERBOS_SUFFIX = (
 def _cia_is_false_verb_token(token):
     token = str(token or "").lower().strip()
     return token in CIA_NAO_VERBOS or token.endswith(CIA_FALSOS_VERBOS_SUFFIX)
+
+
+def _cia_token_has_nominal_context(line, token):
+    """Evita transformar matéria nominal em verbo só por terminação.
+
+    Ex.: “de mono-sulfito de bem-querer” ou “da Assembleia...”
+    pode conter palavras que lembram ação, mas funcionam como nome, título,
+    matéria afetiva, entidade ou composição inventada.
+    """
+    token = str(token or "").lower().strip()
+    clean = str(line or "").lower()
+    if not token:
+        return False
+    if token in CIA_NAO_VERBOS:
+        return True
+    if "-" in token and re.search(r"\b(de|do|da|dos|das)\s+(?:um\s+tal\s+|uma\s+tal\s+|algum\s+|alguma\s+)?[\wÀ-ÿ-]*" + re.escape(token) + r"\b", clean):
+        return True
+    if re.search(r"\b(de|do|da|dos|das)\s+(?:assembleia|bondade|carência|lembrança|certeza|dúvida|juventude|carinho|euforia|cafuné)\b", clean):
+        return True
+    return False
 
 
 def _cia_tokens_lower(line):
@@ -153,7 +176,7 @@ def _cia_has_explicit_verb(line):
     if not tokens:
         return False
     for token in tokens:
-        if _cia_is_false_verb_token(token):
+        if _cia_is_false_verb_token(token) or _cia_token_has_nominal_context(line, token):
             continue
         if token in CIA_VERBOS_EXPLICITOS_COMUNS:
             return True
@@ -169,7 +192,7 @@ def _cia_has_explicit_verb(line):
 def _cia_first_explicit_verb(line):
     tokens = _cia_tokens_lower(line)
     for token in tokens:
-        if _cia_is_false_verb_token(token):
+        if _cia_is_false_verb_token(token) or _cia_token_has_nominal_context(line, token):
             continue
         if token in CIA_VERBOS_EXPLICITOS_COMUNS:
             return token
@@ -228,6 +251,84 @@ def _cia_carta_na_manga():
         "o texto parece oferecer outros caminhos de leitura, sem entregar todos os seus vínculos de forma direta.",
         "há caminhos quase ocultos para outros pontos do poema; a leitura avança por aproximação, não por prova única.",
     ])
+
+
+def _cia_is_monoverso(poema_lines):
+    return len(poema_lines or []) == 1
+
+
+def _cia_is_poema_curto(poema_lines):
+    return 1 <= len(poema_lines or []) <= 3
+
+
+def _cia_is_micropercurso(poema_lines):
+    return len(poema_lines or []) == 3
+
+
+def _cia_analise_monoverso(poema_lines):
+    line = poema_lines[0]
+    clip = _cia_clip(line)
+    return _cia_join([
+        f"Em “{clip}”, o texto funciona como inscrição conceitual: mais do que desenvolver uma cena, nomeia um campo de leitura.",
+        f"A força da linha está na própria fórmula verbal e imagética: o verso oferece uma chave de entrada sem precisar simular percurso.",
+        f"A leitura se concentra nesse núcleo único; o poema não se alonga, mas abre um horizonte de aproximação.",
+    ])
+
+
+def _cia_abertura_micro(poema_lines):
+    clip = _cia_clip(poema_lines[0])
+    return random.choice([
+        f"Em “{clip}”, o texto arma seu primeiro impulso e oferece ao leitor uma referência de aproximação.",
+        f"“{clip}” instala a entrada do poema: a imagem inicial dá direção à pequena sequência.",
+        f"Desde “{clip}”, a leitura encontra o primeiro apoio do texto, ainda aberto ao deslocamento seguinte.",
+    ])
+
+
+def _cia_miolo_micro(poema_lines):
+    line = poema_lines[1] if len(poema_lines) > 1 else poema_lines[0]
+    clip = _cia_clip(line)
+    return random.choice([
+        f"“{clip}” funciona como passagem intermediária: a imagem desloca o primeiro impulso antes da saída final.",
+        f"Em “{clip}”, a pequena sequência muda de temperatura; o verso comenta o impulso inicial sem fingir percurso longo.",
+        f"“{clip}” abre o meio do poema: não amplia demais o caminho, mas altera a direção antes do fecho.",
+    ])
+
+
+def _cia_fecho_micro(poema_lines):
+    clip = _cia_clip(poema_lines[-1])
+    return random.choice([
+        f"No fecho, “{clip}” recolhe a pequena sequência sem esgotá-la; a última linha oferece ressonâncias pelo poema.",
+        f"Em “{clip}”, a saída final preserva abertura: o verso conclui sem transformar a imagem em resposta única.",
+        f"No último verso, “{clip}” concentra a chegada do micropercurso e deixa o texto respirando depois da linha final.",
+    ])
+
+
+def _cia_mapa_previo(poema_lines):
+    """Cartas abertas na mesa: candidatos dirigidos antes da redação."""
+    if not poema_lines:
+        return {"abertura": [], "miolo": [], "fecho": [], "chave": [], "coringas": [], "cartas": []}
+    total = len(poema_lines)
+    chaves = _cia_linhas_perola(poema_lines)
+    first, last = poema_lines[0], poema_lines[-1]
+    middle = poema_lines[total // 2]
+    fortes = _cia_forte_candidatos(poema_lines)
+    if total == 1:
+        return {"abertura": [first], "miolo": [first], "fecho": [first], "chave": [first], "coringas": [first], "cartas": []}
+    if total == 2:
+        return {"abertura": [first], "miolo": _cia_unique(chaves + [first, last]), "fecho": [last], "chave": _cia_unique(chaves + fortes), "coringas": fortes, "cartas": []}
+    if total == 3:
+        return {"abertura": [first], "miolo": [poema_lines[1]], "fecho": [last], "chave": _cia_unique(chaves + fortes), "coringas": fortes, "cartas": []}
+    perguntas = [line for line in fortes if "?" in line]
+    suspensos = [line for line in fortes if "..." in line or "…" in line]
+    marcados = [line for line in fortes if line.count(",") >= 1 or "(" in line or ")" in line]
+    return {
+        "abertura": _cia_unique([first] + perguntas + suspensos + chaves + fortes + [last]),
+        "miolo": _cia_unique(chaves + marcados + fortes + [middle, first, last]),
+        "fecho": _cia_unique([last] + suspensos + perguntas + chaves + fortes + [first]),
+        "chave": _cia_unique(chaves + fortes),
+        "coringas": _cia_unique(fortes + chaves),
+        "cartas": [],
+    }
 
 
 CIA_PEROLA_LEXICO = {
@@ -492,6 +593,12 @@ def _cia_line_zone(poema_lines, line):
 def _cia_regra_zero_abertura(poema_lines, line):
     """ABERTURA: escolhe formulação conforme posição/função real do candidato."""
     clip = _cia_clip(line)
+    if _cia_is_monoverso(poema_lines):
+        return random.choice([
+            f"Em “{clip}”, o texto funciona como inscrição conceitual: mais do que desenvolver uma cena, nomeia um campo de leitura.",
+            f"“{clip}” oferece uma chave de entrada em estado concentrado; a linha não simula percurso, abre um horizonte.",
+            f"Em “{clip}”, a leitura começa pelo núcleo único do poema, onde a imagem já nasce condensada.",
+        ])
     zone = _cia_line_zone(poema_lines, line)
     if zone == "final":
         return random.choice([
@@ -526,6 +633,15 @@ def _cia_regra_zero_miolo(poema_lines, line):
     """MIOLO: comenta desenvolvimento/tensão sem presumir posição intermediária falsa."""
     clip = _cia_clip(line)
     zone = _cia_line_zone(poema_lines, line)
+    if _cia_is_micropercurso(poema_lines):
+        if zone == "inicial":
+            return random.choice([
+                f"Retomado como primeiro impulso, “{clip}” ilumina a pequena sequência sem precisar fingir desenvolvimento longo.",
+                f"“{clip}” volta como apoio inicial: o verso orienta o micropercurso sem ocupar o lugar do fecho.",
+            ])
+        if zone == "final":
+            return _cia_fecho_micro(poema_lines)
+        return _cia_miolo_micro(poema_lines)
     if _cia_is_linha_perola(poema_lines, line):
         return _cia_comentario_linha_perola(poema_lines, line)
     if zone == "inicial":
@@ -559,6 +675,13 @@ def _cia_regra_zero_miolo(poema_lines, line):
 def _cia_regra_zero_fecho(poema_lines, line):
     """FECHO: preserva reverberação e dá atenção especial ao fecho real."""
     clip = _cia_clip(line)
+    if _cia_is_monoverso(poema_lines):
+        return random.choice([
+            f"A linha única, “{clip}”, conclui sem encerrar: sua força está em concentrar a leitura numa fórmula aberta.",
+            f"Em “{clip}”, o fecho coincide com a própria inscrição; o texto termina no mesmo ponto em que abre seu horizonte.",
+        ])
+    if _cia_is_micropercurso(poema_lines) and line == poema_lines[-1]:
+        return _cia_fecho_micro(poema_lines)
     zone = _cia_line_zone(poema_lines, line)
     if zone == "final":
         return random.choice([
@@ -614,32 +737,20 @@ def _cia_forte_candidatos(poema_lines, min_count=2, max_count=5):
 
 
 def _cia_candidate_pools(poema_lines):
-    """Cria listas funcionais para ABERTURA, MIOLO e FECHO.
+    """Cria listas funcionais já mapeadas antes da redação.
 
-    Um mesmo FORTE_CANDIDATO pode aparecer em mais de uma lista.
-    A ordem dos tratores não altera o viaduto: a posição depende da leitura.
+    As cartas ficam abertas na mesa: ABERTURA, MIOLO, FECHO, CHAVE,
+    CORINGAS e CARTAS_NA_MANGA. Os moods consultam esse mapa em vez de
+    escrever a partir de blocos isolados.
     """
-    fortes = _cia_forte_candidatos(poema_lines)
-    if not fortes:
-        return {"abertura": [], "miolo": [], "fecho": []}
-
-    first = poema_lines[0]
-    middle = poema_lines[len(poema_lines) // 2]
-    last = poema_lines[-1]
-
-    perguntas = [line for line in fortes if "?" in line]
-    suspensos = [line for line in fortes if "..." in line or "…" in line]
-    marcados = [line for line in fortes if line.count(",") >= 1 or "(" in line or ")" in line]
-    chaves = _cia_linhas_perola(poema_lines)
-
-    lista_best_ABERTURA = _cia_unique([first] + perguntas + suspensos + chaves + fortes + [last])
-    lista_best_MIOLO = _cia_unique(chaves + marcados + fortes + [middle, first, last])
-    lista_best_FECHO = _cia_unique([last] + suspensos + perguntas + chaves + fortes + [first])
-
+    mapa = _cia_mapa_previo(poema_lines)
     return {
-        "abertura": lista_best_ABERTURA,
-        "miolo": lista_best_MIOLO,
-        "fecho": lista_best_FECHO,
+        "abertura": mapa.get("abertura", []),
+        "miolo": mapa.get("miolo", []),
+        "fecho": mapa.get("fecho", []),
+        "chave": mapa.get("chave", []),
+        "coringas": mapa.get("coringas", []),
+        "cartas": mapa.get("cartas", []),
     }
 
 
@@ -774,9 +885,15 @@ def _cia_sintatica_abertura_academica(poema_lines):
             f"Na abertura, “{clip}” organiza a entrada por uma marca de pessoa: "
             f"o **sujeito** se insinua no enunciado e dá ao **verbo** um gesto de aproximação."
         )
+    if _cia_has_explicit_verb(line):
+        verbo = _cia_first_explicit_verb(line)
+        return (
+            f"Na abertura, “{clip}” firma o primeiro movimento verbal do poema: "
+            f"o **verbo** “{verbo}” dá ação ao enunciado e organiza a entrada da **sintaxe**."
+        )
     return (
-        f"Na abertura, “{clip}” firma o primeiro movimento verbal do poema: "
-        f"a **sintaxe** distribui a imagem inicial e prepara o **predicado** crítico da leitura."
+        f"Na abertura, “{clip}” funciona como construção nominal de entrada: "
+        f"a **sintaxe** ainda não age por **verbo** explícito, mas por nomeação, título e enquadramento."
     )
 
 
@@ -1063,6 +1180,10 @@ def build_cia_analysis(curr_ypoema):
         st.session_state["_cia_used_lines"] = []
         return "**requer apuração manual**"
 
+    if _cia_is_monoverso(poema_lines):
+        st.session_state["_cia_used_lines"] = list(poema_lines)
+        return _cia_analise_monoverso(poema_lines)
+
     used_lines = set()
 
     # Cartilha fixa da Sintática: abertura = primeira linha real; fecho = último verso real.
@@ -1109,8 +1230,15 @@ def build_cia_analysis_free(curr_ypoema):
     if destaque_line:
         local_used.add(destaque_line)
 
-    # Outro ângulo não chama último verso de "quase": último verso é fecho real.
-    fecho_line = poema_lines[-1] if poema_lines else ""
+    # Outro ângulo não repete trecho já usado na análise principal, salvo falta real de alternativa.
+    fecho_line = poema_lines[-1] if poema_lines and poema_lines[-1] not in local_used else ""
+
+    if _cia_is_poema_curto(poema_lines) and len(local_used) >= len(poema_lines):
+        return _cia_join([
+            "Por outro caminho, a leitura pode observar o modo como o texto condensa sua energia em poucas linhas, sem precisar repetir os mesmos pontos já vistos.",
+            "A força do conjunto está na passagem entre imagem, matéria verbal e saída final: cada linha trabalha uma função diferente dentro da pequena sequência.",
+            "O poema ganha fôlego justamente porque não explica demais; concentra, desloca e deixa uma última ressonância.",
+        ])
 
     if abertura_line:
         abertura = _cia_regra_zero_abertura(poema_lines, abertura_line)
@@ -1136,7 +1264,7 @@ def build_cia_analysis_free(curr_ypoema):
         fecho = random.choice([
             "O encerramento recolhe a tensão sem resolver tudo. O poema termina preservando uma zona de eco.",
             "Ao final, a leitura não encontra uma explicação única, mas um resto de intensidade que continua trabalhando.",
-            "O fim não domestica o percurso: apenas concentra sua última reverberação.",
+            "O final não domestica o percurso: apenas concentra sua última reverberação.",
         ])
 
     return _cia_join([abertura, desenvolvimento, fecho])
@@ -1148,6 +1276,11 @@ def build_cia_analysis_sintetica(curr_ypoema):
 
     if not poema_lines:
         return "**requer apuração manual**"
+
+    if _cia_is_monoverso(poema_lines):
+        return _cia_analise_monoverso(poema_lines)
+    if _cia_is_micropercurso(poema_lines):
+        return _cia_join([_cia_abertura_micro(poema_lines), _cia_miolo_micro(poema_lines), _cia_fecho_micro(poema_lines)])
 
     used_lines = set()
     abertura_line = _cia_pick_role(poema_lines, "abertura", used_lines, poema_lines[0])
@@ -1267,6 +1400,11 @@ def build_cia_analysis_resumida(curr_ypoema):
     if not poema_lines:
         return "**requer apuração manual**"
 
+    if _cia_is_monoverso(poema_lines):
+        return _cia_analise_monoverso(poema_lines)
+    if _cia_is_micropercurso(poema_lines):
+        return _cia_join([_cia_abertura_micro(poema_lines), _cia_miolo_micro(poema_lines), _cia_fecho_micro(poema_lines)])
+
     used_lines = set()
     abertura_line = _cia_pick_role_by_zones(
         poema_lines,
@@ -1301,6 +1439,16 @@ def build_cia_analysis_completa(curr_ypoema):
 
     if not poema_lines:
         return "**requer apuração manual**"
+
+    if _cia_is_monoverso(poema_lines):
+        return _cia_analise_monoverso(poema_lines)
+    if _cia_is_micropercurso(poema_lines):
+        qtd_linhas = len(poema_lines)
+        forma_curta = random.choice([
+            f"O desenho visível em **{qtd_linhas} linhas** participa do efeito: as quebras organizam uma pequena sequência de entrada, passagem e saída.",
+            f"A forma curta não é suporte neutro: em **{qtd_linhas} linhas**, o poema regula o fôlego e concentra sua invenção.",
+        ])
+        return _cia_join([_cia_abertura_micro(poema_lines), _cia_miolo_micro(poema_lines), forma_curta, _cia_fecho_micro(poema_lines)])
 
     used_lines = set()
     qtd_linhas = len(poema_lines)
