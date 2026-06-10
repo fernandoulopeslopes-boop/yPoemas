@@ -652,6 +652,9 @@ def init_session_state():
         "lang_em_analise": "",
         "cia_mood_changed": False,
         "cia_force_new_poema": False,
+        "cia_freeze_book": "",
+        "cia_freeze_take": -1,
+        "cia_freeze_tema": "",
 
         # chave de ouro
         "key_open": False,
@@ -1479,7 +1482,23 @@ def page_mini():
                             time.sleep(1)
                             secs -= 1
 
+def _restore_cia_freeze_before_sync():
+    """Troca de análise CIA não pode alterar livro/tema/take por gatilho lateral."""
+    if not st.session_state.get("cia_mood_changed", False):
+        return
+    frozen_book = st.session_state.get("cia_freeze_book", "")
+    frozen_take = st.session_state.get("cia_freeze_take", -1)
+    frozen_tema = st.session_state.get("cia_freeze_tema", "")
+    if frozen_book:
+        st.session_state.book = frozen_book
+    if isinstance(frozen_take, int) and frozen_take >= 0:
+        st.session_state.take = frozen_take
+    if frozen_tema:
+        st.session_state.tema = frozen_tema
+
+
 def page_ypoemas():
+    _restore_cia_freeze_before_sync()
     _sync_book_theme_state()
     temas_list = load_temas(_current_book())
     maxy_ypoemas = len(temas_list) - 1
@@ -1591,6 +1610,9 @@ def page_ypoemas():
                 generated_new_poema = False
                 st.session_state["cia_mood_changed"] = False
                 st.session_state["cia_force_new_poema"] = False
+                st.session_state["cia_freeze_book"] = ""
+                st.session_state["cia_freeze_take"] = -1
+                st.session_state["cia_freeze_tema"] = ""
             else:
                 st.session_state["cia_mood_changed"] = False
                 st.session_state["cia_force_new_poema"] = False
@@ -2001,6 +2023,9 @@ def render_cia_mood_selectbox():
             label = f"• {mood}" if mood == current else mood
             if st.button(label, key=f"cia_mood_list_{mood}", use_container_width=True):
                 if mood != st.session_state.get("cia_mood", "Sintática"):
+                    st.session_state["cia_freeze_book"] = st.session_state.get("book", "")
+                    st.session_state["cia_freeze_take"] = int(st.session_state.get("take", -1))
+                    st.session_state["cia_freeze_tema"] = st.session_state.get("tema", "")
                     st.session_state["cia_mood"] = mood
                     st.session_state["cia_mood_select"] = mood
                     st.session_state["cia_reading_mode"] = True
