@@ -1,6 +1,7 @@
 import os
 import re
 import time
+import shutil
 import random
 import base64
 import socket
@@ -2289,6 +2290,129 @@ def _builds_linha_index(row):
     return f"{row['tema']} : {row['variacoes']}"
 
 
+def _builds_index_file_path():
+    """Arquivo operacional do BUILD_ONE: base/index, em minúsculas."""
+    preferred = os.path.join("./base", "index")
+    if os.path.exists(preferred):
+        return preferred
+
+    # Fallbacks apenas para leitura/compatibilidade, sem mudar o alvo conceitual.
+    candidates = [
+        preferred,
+        os.path.join("./base", "index.txt"),
+        os.path.join("./base", "INDEX.txt"),
+    ]
+    for candidate in candidates:
+        if os.path.exists(candidate):
+            return candidate
+    return preferred
+
+
+def _builds_parse_index_line(clean):
+    """Extrai tema/valor de uma linha de index em formatos históricos simples."""
+    if not clean or clean.startswith("#"):
+        return "", ""
+
+    if clean.startswith("|"):
+        parts = [p.strip() for p in clean.split("|") if p.strip()]
+        if len(parts) >= 2:
+            return parts[0], parts[1]
+
+    part_line = clean.partition(" : ")
+    if part_line[1]:
+        return part_line[0].strip(), part_line[2].strip()
+
+    match = re.match(r"^(.+?)\s*[:=]\s*(.+)$", clean)
+    if match:
+        return match.group(1).strip(), match.group(2).strip()
+
+    return "", ""
+
+
+def _builds_find_index_line(nome_tema):
+    """Localiza a linha atual do tema em base/index."""
+    path = _builds_index_file_path()
+    tema_key = str(nome_tema or "").strip().upper()
+    if not os.path.exists(path):
+        return path, -1, ""
+
+    try:
+        with open(path, "r", encoding="utf-8", errors="replace") as f:
+            lines = f.readlines()
+        for i, line in enumerate(lines):
+            parsed_tema, _parsed_value = _builds_parse_index_line(line.strip())
+            if parsed_tema.upper() == tema_key:
+                return path, i, line.rstrip("\n")
+    except Exception:
+        pass
+
+    return path, -1, ""
+
+
+def _builds_corrige_linha_index(row):
+    """Corrige apenas a linha do tema atual em base/index, criando backup antes."""
+    path = _builds_index_file_path()
+    tema = row.get("tema", "")
+    nova_linha = _builds_linha_index(row)
+
+    if not os.path.exists(path):
+        return {
+            "ok": False,
+            "msg": "base/index não encontrado.",
+            "backup": "",
+            "antiga": "",
+            "nova": nova_linha,
+        }
+
+    try:
+        with open(path, "r", encoding="utf-8", errors="replace") as f:
+            lines = f.readlines()
+
+        backup = path + ".bak_" + time.strftime("%Y%m%d_%H%M%S")
+        shutil.copyfile(path, backup)
+
+        tema_key = str(tema or "").strip().upper()
+        found = -1
+        antiga = ""
+        for i, line in enumerate(lines):
+            parsed_tema, _parsed_value = _builds_parse_index_line(line.strip())
+            if parsed_tema.upper() == tema_key:
+                found = i
+                antiga = line.rstrip("\n")
+                break
+
+        if found >= 0:
+            newline = "\n" if lines[found].endswith("\n") else ""
+            lines[found] = nova_linha + newline
+            acao = "linha substituída"
+        else:
+            if lines and not lines[-1].endswith("\n"):
+                lines[-1] += "\n"
+            lines.append(nova_linha + "\n")
+            acao = "linha acrescentada"
+            antiga = "—"
+
+        with open(path, "w", encoding="utf-8") as f:
+            f.writelines(lines)
+
+        return {
+            "ok": True,
+            "msg": f"{acao} em base/index.",
+            "backup": backup,
+            "antiga": antiga,
+            "nova": nova_linha,
+        }
+    except Exception as e:
+        return {
+            "ok": False,
+            "msg": "falha ao corrigir base/index: " + str(e),
+            "backup": "",
+            "antiga": "",
+            "nova": nova_linha,
+        }
+
+
+
 def _builds_linha_diferenca(row):
     anterior_raw = row.get("index_anterior", "") or "—"
     anterior_int = row.get("index_anterior_int")
@@ -2390,10 +2514,16 @@ def render_builds_stage():
     if option == "Único: tema atual":
         row = rows[0]
         anterior = row['index_anterior'] or '—'
+        index_path, index_pos, index_line = _builds_find_index_line(row["tema"])
+        linha_atual = index_line or "—"
+        linha_nova = _builds_linha_index(row)
         st.markdown(
             f"""
             <div class='cia-stage-box'>
                 <p><strong>{row['tema']}</strong></p>
+                <p>arquivo-alvo: <code>{index_path}</code><br>
+                linha atual: <code>{linha_atual}</code><br>
+                linha nova: <code>{linha_nova}</code></p>
                 <p>index anterior: {anterior}<br>
                 variações recalculadas: {row['variacoes']}<br>
                 ítimos: {row['itimos']}<br>
@@ -2405,6 +2535,17 @@ def render_builds_stage():
             """,
             unsafe_allow_html=True,
         )
+
+        st.caption("BUILD_ONE operacional: cria backup e corrige apenas a linha deste tema em base/index.")
+        if st.button("corrigir linha em base/index", key="build_one_corrige_linha_index", use_container_width=True):
+            result = _builds_corrige_linha_index(row)
+            if result.get("ok"):
+                st.success(result.get("msg", "linha corrigida."))
+                st.write("backup:", result.get("backup", ""))
+                st.code("antes: " + result.get("antiga", ""))
+                st.code("depois: " + result.get("nova", ""))
+            else:
+                st.error(result.get("msg", "não foi possível corrigir base/index."))
     elif option == "Diferenças: novo Index x index_anterior":
         total = len(rows)
         qtd_dif = len(diff_rows)
