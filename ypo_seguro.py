@@ -1284,9 +1284,9 @@ def write_cia_header(LOGO_TEXTO, LOGO_IMAGE=None):
 
     st.markdown(
         f"""
-        <div class='cia-header-container'>
-            <p class='cia-header-text' style="font-family:{stage_font}; font-size:{stage_size}px; margin-bottom:0.12em;">{LOGO_TEXTO}</p>
-            <p class='cia-header-mood' style="font-family:{stage_font}; font-size:{mood_size}px; margin-top:0; opacity:0.92;">{mood_label}</p>
+        <div class='cia-header-container' style="text-align:center; width:100%; margin:0 auto 0.45em auto;">
+            <p class='cia-header-text' style="font-family:{stage_font}; font-size:{stage_size}px; margin:0 0 0.12em 0; text-align:center; text-decoration:underline; text-underline-offset:0.18em;">{LOGO_TEXTO}</p>
+            <p class='cia-header-mood' style="font-family:{stage_font}; font-size:{mood_size}px; margin:0; opacity:0.92; text-align:center; text-decoration:underline; text-underline-offset:0.18em;">{mood_label}</p>
         </div>
         """,
         unsafe_allow_html=True,
@@ -2028,7 +2028,7 @@ def render_cia_mood_selectbox():
                     st.session_state["cia_freeze_tema"] = st.session_state.get("tema", "")
                     st.session_state["cia_mood"] = mood
                     st.session_state["cia_mood_select"] = mood
-                    st.session_state["cia_reading_mode"] = True
+                    st.session_state["cia_reading_mode"] = False
                     st.session_state["cia_mood_changed"] = True
                     try:
                         st.rerun()
@@ -2036,16 +2036,11 @@ def render_cia_mood_selectbox():
                         st.experimental_rerun()
 
 def _cia_sidebar_filha_active(chosen_id):
-    """Ativa a sidebar-filha somente na página yPoemas, quando a CIA está em foco."""
+    """Mantém a sidebar CIA fixa; não recolhe para a coluna reduzida."""
     if str(chosen_id) != "2":
         st.session_state["sidebar_panel"] = "Machina"
         st.session_state["cia_reading_mode"] = False
-        return False
-
-    return (
-        st.session_state.get("sidebar_panel", "Machina") == "CIA"
-        and bool(st.session_state.get("cia_reading_mode", False))
-    )
+    return False
 
 
 def apply_sidebar_mae_filha_styles(chosen_id):
@@ -2117,17 +2112,12 @@ def apply_sidebar_mae_filha_styles(chosen_id):
 
 
 def render_sidebar_filha():
-    """Sidebar mínima da CIA: apenas retorno para a sidebar-mãe."""
+    """Compatibilidade: sidebar-filha desativada; a CIA permanece fixa."""
+    st.session_state["sidebar_panel"] = "CIA"
+    st.session_state["cia_reading_mode"] = False
+    render_sidebar_for_page("2")
     with st.sidebar:
-        st.markdown("<div class='machina-sidebar-filha-spacer'></div>", unsafe_allow_html=True)
-        if st.button(">", key="sidebar_filha_voltar_cia", help="voltar à lista da CIA", use_container_width=True):
-            st.session_state["sidebar_panel"] = "CIA"
-            st.session_state["cia_reading_mode"] = False
-            st.session_state["cia_mood_select"] = st.session_state.get("cia_mood", "Sintática")
-            try:
-                st.rerun()
-            except Exception:
-                st.experimental_rerun()
+        render_cia_mood_selectbox()
 
 
 def render_sidebar_for_page(chosen_id):
