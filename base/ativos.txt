@@ -18,6 +18,7 @@ Brado : joco
 Bula : joco
 Cadência : metalinguagem
 Cartaz : joco
+CIA : author
 Circular : poesia
 Ciuminho : beauty
 Clandestino : author
