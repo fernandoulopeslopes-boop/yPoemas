@@ -221,7 +221,7 @@ def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo y
 
     novo_poema.append(acerto_final(novo_verso))
 
-    if  "Nós" $ nome_tema:
+    if  "Nós" in nome_tema:
         novo_poema.append("\n")
         novo_poema.append(
             '<a href="https://thispersondoesnotexist.com/" target="_blank">... quem será essa pessoa que não existe?</a>'
