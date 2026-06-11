@@ -1580,7 +1580,12 @@ def page_ypoemas():
         st.session_state.take = 0
 
     if more:
-        st.session_state["cia_last_action"] = "nav"
+        # ✚ = recarregar / mais uma versão do mesmo tema.
+        # Congela livro/take/tema antes de qualquer sincronização lateral do Streamlit.
+        st.session_state["cia_last_action"] = "more_same_theme"
+        st.session_state["more_same_book"] = _current_book()
+        st.session_state["more_same_take"] = int(st.session_state.get("take", 0))
+        st.session_state["more_same_tema"] = st.session_state.get("tema", "")
 
     if last:
         st.session_state["cia_last_action"] = "nav"
@@ -1606,6 +1611,16 @@ def page_ypoemas():
 
     temas_list = load_temas(_current_book())
     _sync_book_theme_state()
+
+    if more and st.session_state.get("cia_last_action") == "more_same_theme":
+        frozen_book = st.session_state.get("more_same_book", _current_book())
+        frozen_take = int(st.session_state.get("more_same_take", st.session_state.get("take", 0)))
+        frozen_tema = st.session_state.get("more_same_tema", "")
+        st.session_state.book = frozen_book
+        st.session_state.take = frozen_take
+        if frozen_tema:
+            st.session_state.tema = frozen_tema
+        temas_list = load_temas(_current_book())
 
     lnew = True
     if manu:
@@ -1645,7 +1660,7 @@ def page_ypoemas():
                 or last
                 or rand
                 or nest
-                or cia_last_action in {"nav", "book_change", "theme_change"}
+                or cia_last_action in {"nav", "more_same_theme", "book_change", "theme_change"}
             )
 
             # Regra estrutural da CIA:
@@ -1697,6 +1712,9 @@ def page_ypoemas():
                 st.session_state.lang_em_analise = st.session_state.lang
                 generated_new_poema = True
                 st.session_state["cia_last_action"] = ""
+                st.session_state["more_same_book"] = ""
+                st.session_state["more_same_take"] = -1
+                st.session_state["more_same_tema"] = ""
 
             if generated_new_poema:
                 update_readings(st.session_state.tema)
