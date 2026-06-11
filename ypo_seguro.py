@@ -2286,9 +2286,35 @@ def _builds_linha_auxiliar(row):
     )
 
 
+def _builds_formata_milhar(value):
+    """Formata inteiros com ponto como separador de milhar."""
+    try:
+        return f"{int(value):,}".replace(",", ".")
+    except Exception:
+        return str(value)
+
+
+def _builds_formata_cientifica(value):
+    """Formata em notação científica com vírgula decimal e 3 casas."""
+    try:
+        valor = int(value)
+        if valor == 0:
+            return "0,000 e+00"
+        return f"{valor:.3e}".replace(".", ",")
+    except Exception:
+        return ""
+
+
 def _builds_linha_index(row):
-    """Linha do novo Index recalculado."""
-    return f"{row['tema']} : {row['variacoes']}"
+    """Linha do novo Index recalculado: grafia facilitada com pontos."""
+    return f"{row['tema']} : {_builds_formata_milhar(row['variacoes'])}"
+
+
+def _builds_linha_index_cientifica(row):
+    """Linha do novo Index com grafia facilitada + notação científica."""
+    inteiro = _builds_formata_milhar(row["variacoes"])
+    cientifica = _builds_formata_cientifica(row["variacoes"])
+    return f"{row['tema']} : {inteiro} = {cientifica}"
 
 
 def _builds_index_file_path():
@@ -2482,56 +2508,72 @@ def _builds_corrige_linha_index(row):
 
 
 
-def _builds_salva_nova_lista_index(novo_index):
-    """
-    Salva uma lista auxiliar nova em base/nova_lista_index.txt.
-    Não altera base/index e não toca em .ypo.
-    Se já existir, cria backup antes.
-    """
-    path = os.path.join("./base", "nova_lista_index.txt")
+def _builds_salva_texto_seguro(path, conteudo):
+    """Salva texto com backup se já existir."""
     backup = ""
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+
+    if os.path.exists(path):
+        backup = path + ".bak_" + time.strftime("%Y%m%d_%H%M%S")
+        shutil.copyfile(path, backup)
+
+    tmp_path = path + ".tmp_BUILD"
+    with open(tmp_path, "w", encoding="utf-8", newline="") as f:
+        f.write(str(conteudo).rstrip() + "\n")
+
+    with open(tmp_path, "r", encoding="utf-8", errors="replace") as f:
+        check = f.read().strip()
+
+    if not check:
+        try:
+            os.remove(tmp_path)
+        except Exception:
+            pass
+        return backup, False
+
+    os.replace(tmp_path, path)
+    return backup, True
+
+
+def _builds_salva_nova_lista_index(novo_index, novo_index_cientifico):
+    """
+    Salva duas listas auxiliares legíveis em ./base.
+    Não altera base/index e não toca em .ypo.
+    """
+    path_legivel = os.path.join("./base", "nova_lista_index.txt")
+    path_cientifica = os.path.join("./base", "nova_lista_index_cientifica.txt")
 
     try:
-        os.makedirs(os.path.dirname(path), exist_ok=True)
+        backup_legivel, ok_legivel = _builds_salva_texto_seguro(path_legivel, novo_index)
+        backup_cientifica, ok_cientifica = _builds_salva_texto_seguro(path_cientifica, novo_index_cientifico)
 
-        if os.path.exists(path):
-            backup = path + ".bak_" + time.strftime("%Y%m%d_%H%M%S")
-            shutil.copyfile(path, backup)
-
-        tmp_path = path + ".tmp_BUILD"
-        with open(tmp_path, "w", encoding="utf-8", newline="") as f:
-            f.write(str(novo_index).rstrip() + "\n")
-
-        with open(tmp_path, "r", encoding="utf-8", errors="replace") as f:
-            check = f.read().strip()
-
-        if not check:
-            try:
-                os.remove(tmp_path)
-            except Exception:
-                pass
+        if not ok_legivel or not ok_cientifica:
             return {
                 "ok": False,
-                "msg": "nova_lista_index.txt não foi salva: conteúdo vazio.",
-                "path": path,
-                "backup": backup,
+                "msg": "uma das listas não foi salva: conteúdo vazio.",
+                "path": path_legivel,
+                "path_cientifica": path_cientifica,
+                "backup": backup_legivel,
+                "backup_cientifica": backup_cientifica,
             }
-
-        os.replace(tmp_path, path)
 
         return {
             "ok": True,
-            "msg": "nova_lista_index.txt salva em ./base.",
-            "path": path,
-            "backup": backup,
+            "msg": "listas legíveis salvas em ./base.",
+            "path": path_legivel,
+            "path_cientifica": path_cientifica,
+            "backup": backup_legivel,
+            "backup_cientifica": backup_cientifica,
         }
 
     except Exception as e:
         return {
             "ok": False,
-            "msg": "falha ao salvar nova_lista_index.txt: " + str(e),
-            "path": path,
-            "backup": backup,
+            "msg": "falha ao salvar listas legíveis: " + str(e),
+            "path": path_legivel,
+            "path_cientifica": path_cientifica,
+            "backup": "",
+            "backup_cientifica": "",
         }
 
 
@@ -2566,6 +2608,7 @@ def _builds_relatorio(option):
     rows = [_builds_numeros_tema(t) for t in temas]
 
     novo_index = "\n".join(_builds_linha_index(row) for row in rows)
+    novo_index_cientifico = "\n".join(_builds_linha_index_cientifica(row) for row in rows)
 
     diff_rows = []
     for row in rows:
@@ -2599,7 +2642,7 @@ def _builds_relatorio(option):
     linhas_dif.extend(_builds_linha_diferenca(row) for row in diff_rows)
     diferencas = "\n".join(linhas_dif)
 
-    return rows, relatorio, novo_index, diff_rows, diferencas
+    return rows, relatorio, novo_index, novo_index_cientifico, diff_rows, diferencas
 
 
 def render_builds_selectbox():
@@ -2621,7 +2664,7 @@ def render_builds_selectbox():
 def render_builds_stage():
     """Mostra números auxiliares no palco. Geração segura: leitura + download."""
     option = st.session_state.get("builds_option", BUILD_OPTIONS[0])
-    rows, report, novo_index, diff_rows, diferencas = _builds_relatorio(option)
+    rows, report, novo_index, novo_index_cientifico, diff_rows, diferencas = _builds_relatorio(option)
 
     st.markdown(
         "<div class='cia-stage-box'><p><strong>Machina_Builds</strong><br>"
@@ -2671,21 +2714,28 @@ def render_builds_stage():
     elif option == "Gerar nova_lista_index.txt":
         total = len(rows)
         st.markdown(
-            f"<div class='cia-stage-box'><p>temas lidos: {total}<br>arquivo auxiliar: <code>./base/nova_lista_index.txt</code><br>base/index permanece intocado.</p></div>",
+            f"<div class='cia-stage-box'><p>temas lidos: {total}<br>"
+            f"arquivo 1: <code>./base/nova_lista_index.txt</code><br>"
+            f"arquivo 2: <code>./base/nova_lista_index_cientifica.txt</code><br>"
+            f"base/index permanece intocado.</p></div>",
             unsafe_allow_html=True,
         )
-        st.text_area("nova_lista_index.txt", novo_index, height=360)
+        st.text_area("nova_lista_index.txt — pontuação de milhar", novo_index, height=280)
+        st.text_area("nova_lista_index_cientifica.txt — pontuação de milhar + científica", novo_index_cientifico, height=280)
 
-        st.caption("Gera arquivo auxiliar novo. Não altera base/index e não toca em .ypo.")
-        if st.button("salvar nova_lista_index.txt", key="build_salva_nova_lista_index", use_container_width=True):
-            result = _builds_salva_nova_lista_index(novo_index)
+        st.caption("Gera arquivos auxiliares legíveis. Não altera base/index e não toca em .ypo.")
+        if st.button("salvar listas legíveis", key="build_salva_nova_lista_index", use_container_width=True):
+            result = _builds_salva_nova_lista_index(novo_index, novo_index_cientifico)
             if result.get("ok"):
-                st.success(result.get("msg", "nova_lista_index.txt salva."))
+                st.success(result.get("msg", "listas legíveis salvas."))
                 st.write("arquivo:", result.get("path", ""))
+                st.write("arquivo científico:", result.get("path_cientifica", ""))
                 if result.get("backup"):
                     st.write("backup anterior:", result.get("backup", ""))
+                if result.get("backup_cientifica"):
+                    st.write("backup científico anterior:", result.get("backup_cientifica", ""))
             else:
-                st.error(result.get("msg", "não foi possível salvar nova_lista_index.txt."))
+                st.error(result.get("msg", "não foi possível salvar as listas legíveis."))
 
     elif option == "Diferenças: novo Index x index_anterior":
         total = len(rows)
@@ -2712,9 +2762,16 @@ def render_builds_stage():
         use_container_width=True,
     )
     st.download_button(
-        "baixar novo Index",
+        "baixar nova_lista_index",
         data=novo_index.encode("utf-8"),
-        file_name="Machina_Builds_novo_index.txt",
+        file_name="nova_lista_index.txt",
+        mime="text/plain",
+        use_container_width=True,
+    )
+    st.download_button(
+        "baixar nova_lista_index_cientifica",
+        data=novo_index_cientifico.encode("utf-8"),
+        file_name="nova_lista_index_cientifica.txt",
         mime="text/plain",
         use_container_width=True,
     )
