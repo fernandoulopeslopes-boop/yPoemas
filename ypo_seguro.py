@@ -2607,8 +2607,16 @@ def _builds_relatorio(option):
     temas = [t for t in _builds_temas_por_opcao(option) if str(t).strip()]
     rows = [_builds_numeros_tema(t) for t in temas]
 
-    novo_index = "\n".join(_builds_linha_index(row) for row in rows)
-    novo_index_cientifico = "\n".join(_builds_linha_index_cientifica(row) for row in rows)
+    total_variacoes = sum(row.get("variacoes", 0) for row in rows)
+    total_row = {"tema": "TOTAL de variações/yPoemas no Ambiente Machina", "variacoes": total_variacoes}
+
+    novo_index_linhas = [_builds_linha_index(row) for row in rows]
+    novo_index_linhas.extend(["___", _builds_linha_index(total_row)])
+    novo_index = "\n".join(novo_index_linhas)
+
+    novo_index_cientifico_linhas = [_builds_linha_index_cientifica(row) for row in rows]
+    novo_index_cientifico_linhas.extend(["___", _builds_linha_index_cientifica(total_row)])
+    novo_index_cientifico = "\n".join(novo_index_cientifico_linhas)
 
     diff_rows = []
     for row in rows:
@@ -2715,6 +2723,7 @@ def render_builds_stage():
         total = len(rows)
         st.markdown(
             f"<div class='cia-stage-box'><p>temas lidos: {total}<br>"
+            f"linha separadora + TOTAL no final das duas listas<br>"
             f"arquivo 1: <code>./base/nova_lista_index.txt</code><br>"
             f"arquivo 2: <code>./base/nova_lista_index_cientifica.txt</code><br>"
             f"base/index permanece intocado.</p></div>",
@@ -2762,14 +2771,14 @@ def render_builds_stage():
         use_container_width=True,
     )
     st.download_button(
-        "baixar nova_lista_index",
+        "baixar nova_lista_index com TOTAL",
         data=novo_index.encode("utf-8"),
         file_name="nova_lista_index.txt",
         mime="text/plain",
         use_container_width=True,
     )
     st.download_button(
-        "baixar nova_lista_index_cientifica",
+        "baixar nova_lista_index_cientifica com TOTAL",
         data=novo_index_cientifico.encode("utf-8"),
         file_name="nova_lista_index_cientifica.txt",
         mime="text/plain",
