@@ -2049,6 +2049,7 @@ BUILD_OPTIONS = [
     "Lista: livro atual",
     "Lista: todos os temas",
     "Diferenças: novo Index x index_anterior",
+    "Gerar nova_lista_index.txt",
 ]
 
 
@@ -2480,6 +2481,60 @@ def _builds_corrige_linha_index(row):
         }
 
 
+
+def _builds_salva_nova_lista_index(novo_index):
+    """
+    Salva uma lista auxiliar nova em base/nova_lista_index.txt.
+    Não altera base/index e não toca em .ypo.
+    Se já existir, cria backup antes.
+    """
+    path = os.path.join("./base", "nova_lista_index.txt")
+    backup = ""
+
+    try:
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+
+        if os.path.exists(path):
+            backup = path + ".bak_" + time.strftime("%Y%m%d_%H%M%S")
+            shutil.copyfile(path, backup)
+
+        tmp_path = path + ".tmp_BUILD"
+        with open(tmp_path, "w", encoding="utf-8", newline="") as f:
+            f.write(str(novo_index).rstrip() + "\n")
+
+        with open(tmp_path, "r", encoding="utf-8", errors="replace") as f:
+            check = f.read().strip()
+
+        if not check:
+            try:
+                os.remove(tmp_path)
+            except Exception:
+                pass
+            return {
+                "ok": False,
+                "msg": "nova_lista_index.txt não foi salva: conteúdo vazio.",
+                "path": path,
+                "backup": backup,
+            }
+
+        os.replace(tmp_path, path)
+
+        return {
+            "ok": True,
+            "msg": "nova_lista_index.txt salva em ./base.",
+            "path": path,
+            "backup": backup,
+        }
+
+    except Exception as e:
+        return {
+            "ok": False,
+            "msg": "falha ao salvar nova_lista_index.txt: " + str(e),
+            "path": path,
+            "backup": backup,
+        }
+
+
 def _builds_linha_diferenca(row):
     anterior_raw = row.get("index_anterior", "") or "—"
     anterior_int = row.get("index_anterior_int")
@@ -2493,7 +2548,7 @@ def _builds_linha_diferenca(row):
 
 
 def _builds_temas_por_opcao(option):
-    if option in ["Lista: todos os temas", "Diferenças: novo Index x index_anterior"]:
+    if option in ["Lista: todos os temas", "Diferenças: novo Index x index_anterior", "Gerar nova_lista_index.txt"]:
         try:
             return load_temas("todos os temas")
         except Exception:
@@ -2613,6 +2668,25 @@ def render_builds_stage():
                 st.code("depois: " + result.get("nova", ""))
             else:
                 st.error(result.get("msg", "não foi possível corrigir base/index."))
+    elif option == "Gerar nova_lista_index.txt":
+        total = len(rows)
+        st.markdown(
+            f"<div class='cia-stage-box'><p>temas lidos: {total}<br>arquivo auxiliar: <code>./base/nova_lista_index.txt</code><br>base/index permanece intocado.</p></div>",
+            unsafe_allow_html=True,
+        )
+        st.text_area("nova_lista_index.txt", novo_index, height=360)
+
+        st.caption("Gera arquivo auxiliar novo. Não altera base/index e não toca em .ypo.")
+        if st.button("salvar nova_lista_index.txt", key="build_salva_nova_lista_index", use_container_width=True):
+            result = _builds_salva_nova_lista_index(novo_index)
+            if result.get("ok"):
+                st.success(result.get("msg", "nova_lista_index.txt salva."))
+                st.write("arquivo:", result.get("path", ""))
+                if result.get("backup"):
+                    st.write("backup anterior:", result.get("backup", ""))
+            else:
+                st.error(result.get("msg", "não foi possível salvar nova_lista_index.txt."))
+
     elif option == "Diferenças: novo Index x index_anterior":
         total = len(rows)
         qtd_dif = len(diff_rows)
