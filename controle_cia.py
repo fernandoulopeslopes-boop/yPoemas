@@ -112,8 +112,8 @@ def _cia_count_sintatic_terms(text):
 
 CIA_VERBOS_EXPLICITOS_COMUNS = {
     "sou", "és", "é", "somos", "são", "era", "eram", "será", "serão",
-    "estou", "está", "estão", "estava", "estavam",
-    "tenho", "tem", "têm", "tinha", "tinham",
+    "estou", "estás", "está", "estamos", "estão", "estive", "esteve", "estiveram", "estava", "estavam",
+    "tenho", "tens", "tem", "têm", "tinha", "tinham", "teve", "tiveram",
     "vou", "vai", "vão", "fui", "foi", "foram",
     "vejo", "veem", "imagino", "busco", "buscar", "sabe", "sabem",
     "sonhar", "viver", "descobrirá", "saberá", "pousem", "livrá-las",
@@ -200,6 +200,14 @@ def _cia_first_explicit_verb(line):
         ):
             return token
     return ""
+
+
+def _cia_verbo_label(verbo):
+    """Evita lematização mecânica do tipo está -> estár."""
+    verbo = str(verbo or "").strip()
+    if verbo.lower() in {"estou", "estás", "está", "estamos", "estão", "estive", "esteve", "estiveram", "estava", "estavam"}:
+        return f'a forma verbal “{verbo}” (estar)'
+    return f'o **verbo** “{verbo}”'
 
 
 def _cia_find_nearby_explicit_verb(poema_lines, line, radius=2):
@@ -966,15 +974,16 @@ def _cia_sintatica_candidatos_balanceados(poema_lines, used_lines):
     if verbais:
         line = verbais[0]
         verbo = _cia_first_explicit_verb(line)
+        verbo_label = _cia_verbo_label(verbo)
         if _cia_has_clear_subject(line):
             texto = random.choice([
-                f"Em “{_cia_clip(line)}”, o **verbo** “{verbo}” encontra apoio em um **sujeito** perceptível no próprio enunciado, organizando o gesto da frase.",
-                f"Quando o **verbo** “{verbo}” dá movimento ao verso, a **sintaxe** avança por ação concreta e cria apoio para o enunciado.",
+                f"Em “{_cia_clip(line)}”, {verbo_label} encontra apoio em um **sujeito** perceptível no próprio enunciado, organizando o gesto da frase.",
+                f"Quando {verbo_label} movimenta o verso, a **sintaxe** avança por ação concreta e cria apoio para o enunciado.",
             ])
         else:
             texto = random.choice([
-                f"Em “{_cia_clip(line)}”, o **verbo** “{verbo}” dá movimento ao verso; a **sintaxe** avança pela ação verbal, não por comentário abstrato.",
-                f"Quando o **verbo** “{verbo}” dá movimento ao verso, a **sintaxe** avança por ação concreta, não por comentário abstrato.",
+                f"Em “{_cia_clip(line)}”, {verbo_label} movimenta o verso; a **sintaxe** avança pela ação verbal, não por comentário abstrato.",
+                f"Quando {verbo_label} organiza o movimento do verso, a **sintaxe** avança por ação concreta, não por comentário abstrato.",
             ])
         _cia_sintatica_add_candidate(candidates, "basico", [line], texto)
     else:
@@ -1317,11 +1326,18 @@ def build_cia_analysis_formal(curr_ypoema):
             repeticoes_iniciais[first] = repeticoes_iniciais.get(first, 0) + 1
     repetido = next((k for k, v in repeticoes_iniciais.items() if v >= 2), None)
 
-    abertura = random.choice([
-        f"A primeira presença do poema é o seu desenho: **{qtd_linhas} linhas** em **{blocos} bloco{'s' if blocos != 1 else ''}** dão ao texto uma forma de chegada antes mesmo da interpretação.",
-        f"O poema se apresenta como arquitetura visível: **{qtd_linhas} linhas** e **{blocos} bloco{'s' if blocos != 1 else ''}** regulam o modo como a leitura entra no texto.",
-        f"Antes do sentido se explicar, há uma forma em cena: **{qtd_linhas} linhas** distribuídas em **{blocos} bloco{'s' if blocos != 1 else ''}** organizam o fôlego inicial da leitura.",
-    ])
+    if qtd_linhas == 14 and blocos == 4:
+        abertura = random.choice([
+            "A primeira presença do poema é o seu desenho: **14 linhas** em **4 blocos** desenham uma forma reconhecível de **soneto**, ainda que a Machina o faça respirar em chave própria.",
+            "O poema se apresenta como arquitetura visível: **14 linhas** distribuídas em **4 blocos** aproximam o texto do **soneto**, antes mesmo de qualquer interpretação.",
+            "Antes do sentido se explicar, a forma já se anuncia: **14 linhas** em **4 blocos** acionam a memória do **soneto** e organizam o fôlego inicial da leitura.",
+        ])
+    else:
+        abertura = random.choice([
+            f"A primeira presença do poema é o seu desenho: **{qtd_linhas} linhas** em **{blocos} bloco{'s' if blocos != 1 else ''}** dão ao texto uma forma de chegada antes mesmo da interpretação.",
+            f"O poema se apresenta como arquitetura visível: **{qtd_linhas} linhas** e **{blocos} bloco{'s' if blocos != 1 else ''}** regulam o modo como a leitura entra no texto.",
+            f"Antes do sentido se explicar, há uma forma em cena: **{qtd_linhas} linhas** distribuídas em **{blocos} bloco{'s' if blocos != 1 else ''}** organizam o fôlego inicial da leitura.",
+        ])
 
     desenvolvimento = []
 
