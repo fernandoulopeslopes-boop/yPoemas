@@ -2350,7 +2350,15 @@ def _builds_find_index_line(nome_tema):
 
 
 def _builds_corrige_linha_index(row):
-    """Corrige apenas a linha do tema atual em base/index, criando backup antes."""
+    """
+    Corrige apenas a linha do tema atual em base/index.
+    Salvaguardas:
+    - lê o arquivo inteiro;
+    - cria backup antes;
+    - escreve em arquivo temporário;
+    - valida a quantidade de linhas;
+    - só então substitui o index original.
+    """
     path = _builds_index_file_path()
     tema = row.get("tema", "")
     nova_linha = _builds_linha_index(row)
@@ -2358,50 +2366,110 @@ def _builds_corrige_linha_index(row):
     if not os.path.exists(path):
         return {
             "ok": False,
-            "msg": "base/index não encontrado.",
+            "msg": "base/index não encontrado. Nenhuma gravação feita.",
             "backup": "",
             "antiga": "",
             "nova": nova_linha,
         }
 
     try:
-        with open(path, "r", encoding="utf-8", errors="replace") as f:
-            lines = f.readlines()
+        with open(path, "r", encoding="utf-8", errors="replace", newline="") as f:
+            original_lines = f.readlines()
 
-        backup = path + ".bak_" + time.strftime("%Y%m%d_%H%M%S")
-        shutil.copyfile(path, backup)
+        if not original_lines:
+            return {
+                "ok": False,
+                "msg": "base/index está vazio. Nenhuma gravação feita.",
+                "backup": "",
+                "antiga": "",
+                "nova": nova_linha,
+            }
 
         tema_key = str(tema or "").strip().upper()
         found = -1
         antiga = ""
-        for i, line in enumerate(lines):
+
+        for i, line in enumerate(original_lines):
             parsed_tema, _parsed_value = _builds_parse_index_line(line.strip())
             if parsed_tema.upper() == tema_key:
                 found = i
-                antiga = line.rstrip("\n")
+                antiga = line.rstrip("\n").rstrip("\r")
                 break
 
+        new_lines = list(original_lines)
+
         if found >= 0:
-            newline = "\n" if lines[found].endswith("\n") else ""
-            lines[found] = nova_linha + newline
+            line_ending = "\n"
+            if original_lines[found].endswith("\r\n"):
+                line_ending = "\r\n"
+            elif original_lines[found].endswith("\n"):
+                line_ending = "\n"
+            else:
+                line_ending = ""
+            new_lines[found] = nova_linha + line_ending
             acao = "linha substituída"
+            expected_count = len(original_lines)
         else:
-            if lines and not lines[-1].endswith("\n"):
-                lines[-1] += "\n"
-            lines.append(nova_linha + "\n")
+            if new_lines and not new_lines[-1].endswith(("\n", "\r\n")):
+                new_lines[-1] += "\n"
+            new_lines.append(nova_linha + "\n")
             acao = "linha acrescentada"
             antiga = "—"
+            expected_count = len(original_lines) + 1
 
-        with open(path, "w", encoding="utf-8") as f:
-            f.writelines(lines)
+        # Trava contra o erro mais perigoso: perder o restante do index.
+        if len(new_lines) != expected_count:
+            return {
+                "ok": False,
+                "msg": "validação falhou: contagem de linhas inesperada. Nenhuma gravação feita.",
+                "backup": "",
+                "antiga": antiga,
+                "nova": nova_linha,
+            }
+
+        if len(original_lines) > 1 and len(new_lines) <= 1:
+            return {
+                "ok": False,
+                "msg": "validação falhou: a gravação reduziria o index a uma única linha. Nenhuma gravação feita.",
+                "backup": "",
+                "antiga": antiga,
+                "nova": nova_linha,
+            }
+
+        backup = path + ".bak_" + time.strftime("%Y%m%d_%H%M%S")
+        shutil.copyfile(path, backup)
+
+        tmp_path = path + ".tmp_BUILD_ONE"
+        with open(tmp_path, "w", encoding="utf-8", newline="") as f:
+            f.writelines(new_lines)
+
+        # Confere o temporário antes de substituir o original.
+        with open(tmp_path, "r", encoding="utf-8", errors="replace", newline="") as f:
+            check_lines = f.readlines()
+
+        if len(check_lines) != expected_count:
+            try:
+                os.remove(tmp_path)
+            except Exception:
+                pass
+            return {
+                "ok": False,
+                "msg": "validação do arquivo temporário falhou. Backup preservado; index original mantido.",
+                "backup": backup,
+                "antiga": antiga,
+                "nova": nova_linha,
+            }
+
+        os.replace(tmp_path, path)
 
         return {
             "ok": True,
-            "msg": f"{acao} em base/index.",
+            "msg": f"{acao} em base/index; arquivo inteiro preservado.",
             "backup": backup,
             "antiga": antiga,
             "nova": nova_linha,
         }
+
     except Exception as e:
         return {
             "ok": False,
@@ -2410,7 +2478,6 @@ def _builds_corrige_linha_index(row):
             "antiga": "",
             "nova": nova_linha,
         }
-
 
 
 def _builds_linha_diferenca(row):
@@ -2536,7 +2603,7 @@ def render_builds_stage():
             unsafe_allow_html=True,
         )
 
-        st.caption("BUILD_ONE operacional: cria backup e corrige apenas a linha deste tema em base/index.")
+        st.caption("BUILD_ONE operacional: cria backup, preserva o index inteiro e corrige apenas a linha deste tema em base/index.")
         if st.button("corrigir linha em base/index", key="build_one_corrige_linha_index", use_container_width=True):
             result = _builds_corrige_linha_index(row)
             if result.get("ok"):
