@@ -863,6 +863,7 @@ def _on_palco_book_change():
     if choice != current_book:
         st.session_state.book = choice
         st.session_state.take = 0
+        st.session_state["cia_last_action"] = "book_change"
         st.session_state["cia_force_new_poema"] = True
     _sync_book_theme_state()
 
@@ -883,6 +884,7 @@ def _on_palco_theme_change():
     st.session_state.take = take
     st.session_state.tema = temas_list[take]
     if take != old_take:
+        st.session_state["cia_last_action"] = "theme_change"
         st.session_state["cia_force_new_poema"] = True
 
 
@@ -1577,17 +1579,23 @@ def page_ypoemas():
     if st.session_state.take > maxy_ypoemas or st.session_state.take < 0:
         st.session_state.take = 0
 
+    if more:
+        st.session_state["cia_last_action"] = "nav"
+
     if last:
+        st.session_state["cia_last_action"] = "nav"
         st.session_state.take -= 1
         if st.session_state.take < 0:
             st.session_state.take = maxy_ypoemas
         _sync_book_theme_state()
 
     if rand:
+        st.session_state["cia_last_action"] = "nav"
         st.session_state.take = random.randrange(0, maxy_ypoemas + 1)
         _sync_book_theme_state()
 
     if nest:
+        st.session_state["cia_last_action"] = "nav"
         st.session_state.take += 1
         if st.session_state.take > maxy_ypoemas:
             st.session_state.take = 0
@@ -1630,11 +1638,27 @@ def page_ypoemas():
 
             cia_mood_changed = bool(st.session_state.get("cia_mood_changed", False))
             cia_force_new_poema = bool(st.session_state.get("cia_force_new_poema", False))
-            force_new_poema = bool(force_new_poema or cia_force_new_poema)
+            cia_last_action = st.session_state.get("cia_last_action", "")
+
+            explicit_poem_change = bool(
+                more
+                or last
+                or rand
+                or nest
+                or cia_last_action in {"nav", "book_change", "theme_change"}
+            )
+
+            # Regra estrutural da CIA:
+            # trocar tipo de análise muda só a lente; não troca o yPoema.
+            if cia_last_action == "cia_mood" or cia_mood_changed:
+                force_new_poema = False
+            else:
+                force_new_poema = bool(force_new_poema or explicit_poem_change or cia_force_new_poema)
+
             preserve_cia_poema = (
                 cia_mode
-                and not force_new_poema
                 and bool(st.session_state.get("ypoema_em_analise", ""))
+                and not force_new_poema
             )
 
             if preserve_cia_poema:
@@ -1646,6 +1670,7 @@ def page_ypoemas():
                 st.session_state["cia_freeze_book"] = ""
                 st.session_state["cia_freeze_take"] = -1
                 st.session_state["cia_freeze_tema"] = ""
+                st.session_state["cia_last_action"] = ""
             else:
                 st.session_state["cia_mood_changed"] = False
                 st.session_state["cia_force_new_poema"] = False
@@ -1671,6 +1696,7 @@ def page_ypoemas():
                 st.session_state.take_em_analise = st.session_state.take
                 st.session_state.lang_em_analise = st.session_state.lang
                 generated_new_poema = True
+                st.session_state["cia_last_action"] = ""
 
             if generated_new_poema:
                 update_readings(st.session_state.tema)
@@ -2062,6 +2088,7 @@ def render_cia_mood_selectbox():
                     st.session_state["cia_mood"] = mood
                     st.session_state["cia_mood_select"] = mood
                     st.session_state["cia_reading_mode"] = False
+                    st.session_state["cia_last_action"] = "cia_mood"
                     st.session_state["cia_mood_changed"] = True
                     try:
                         st.rerun()
