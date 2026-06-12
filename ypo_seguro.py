@@ -1258,6 +1258,41 @@ def load_arts(nome_tema):  # Select image for arts
 ### bof: functions
 
 
+def guia_do_leitor_cia():
+    """Guia curto do leitor para o modo CIA."""
+    return """
+### Guia do leitor da CIA
+
+A **CIA** não substitui a leitura do leitor.  
+Ela oferece lentes diferentes para observar o mesmo yPoema.
+
+A regra principal é simples:
+
+**mesmo yPoema → várias leituras → uma análise completa a outra**
+
+Ao trocar o tipo de análise, o texto analisado permanece o mesmo.  
+O que muda é a lente crítica.
+
+**Sintática**  
+Observa engrenagens da frase: forma verbal, sujeito, oração, pontuação, cortes e articulações internas.
+
+**Sintética**  
+Procura a tensão principal do yPoema, sem tentar explicar tudo.
+
+**Formal**  
+Lê o desenho visível: linhas, blocos, pausas, recorrências e arquitetura do texto.
+
+**Reduzida**  
+Oferece uma leitura breve, útil para uma primeira aproximação.
+
+**Completa**  
+Amplia a leitura em camadas: imagem, forma, ritmo, tensão e fecho.
+
+A comparação entre as análises é parte da experiência.  
+Nenhuma lente encerra o poema; cada uma abre outro modo de entrada.
+"""
+
+
 def _palco_titulo_centralizado(LOGO_TEXTO):
     """Centraliza e sublinha o título do texto no palco, mantendo o corpo intacto."""
     texto = str(LOGO_TEXTO or "")
@@ -1572,7 +1607,8 @@ def page_ypoemas():
         last = nav_cols[1].button("◀", help=help_last, use_container_width=True)
         rand = nav_cols[2].button("✻", help=help_rand, use_container_width=True)
         nest = nav_cols[3].button("▶", help=help_nest, use_container_width=True)
-        manu = nav_cols[4].button("?", help="help !!!", use_container_width=True)
+        manu_help = "guia do leitor da CIA" if st.session_state.get("sidebar_panel") == "CIA" else "help !!!"
+        manu = nav_cols[4].button("?", help=manu_help, use_container_width=True)
 
     temas_list = load_temas(_current_book())
     maxy_ypoemas = len(temas_list) - 1
@@ -1600,9 +1636,8 @@ def page_ypoemas():
         st.session_state.take = frozen_take
         if frozen_tema:
             st.session_state.tema = frozen_tema
-        # Sincroniza os widgets do palco antes de desenhá-los.
-        st.session_state["palco_book_select"] = frozen_book
-        st.session_state["opt_take_palco"] = frozen_take
+        # Não escrever em keys de widgets já instanciados pelo Streamlit.
+        # O congelamento é feito no estado canônico: book/take/tema.
 
     if last:
         st.session_state["cia_last_action"] = "nav"
@@ -1644,8 +1679,12 @@ def page_ypoemas():
             st.session_state.tema = temas_list[0] if temas_list else ""
 
     lnew = True
+    cia_mode_page = st.session_state.get("sidebar_panel") == "CIA"
     if manu:
-        st.subheader(load_md_file("MANUAL_YPOEMAS.md"))
+        if cia_mode_page:
+            st.markdown(guia_do_leitor_cia())
+        else:
+            st.subheader(load_md_file("MANUAL_YPOEMAS.md"))
 
     if lnew:
         what_book = (
