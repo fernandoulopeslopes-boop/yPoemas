@@ -1579,13 +1579,30 @@ def page_ypoemas():
     if st.session_state.take > maxy_ypoemas or st.session_state.take < 0:
         st.session_state.take = 0
 
+    # Âncora estável: usada pelo ✚ para evitar que qualquer callback de lista
+    # troque tema antes da geração de "mais uma versão do mesmo tema".
+    if not st.session_state.get("ypo_anchor_book"):
+        st.session_state["ypo_anchor_book"] = _current_book()
+        st.session_state["ypo_anchor_take"] = int(st.session_state.get("take", 0))
+        st.session_state["ypo_anchor_tema"] = st.session_state.get("tema", "")
+
     if more:
         # ✚ = recarregar / mais uma versão do mesmo tema.
-        # Congela livro/take/tema antes de qualquer sincronização lateral do Streamlit.
+        # Usa a última âncora estável, não o eventual valor alterado por callback.
+        frozen_book = st.session_state.get("ypo_anchor_book", _current_book())
+        frozen_take = int(st.session_state.get("ypo_anchor_take", st.session_state.get("take", 0)))
+        frozen_tema = st.session_state.get("ypo_anchor_tema", st.session_state.get("tema", ""))
         st.session_state["cia_last_action"] = "more_same_theme"
-        st.session_state["more_same_book"] = _current_book()
-        st.session_state["more_same_take"] = int(st.session_state.get("take", 0))
-        st.session_state["more_same_tema"] = st.session_state.get("tema", "")
+        st.session_state["more_same_book"] = frozen_book
+        st.session_state["more_same_take"] = frozen_take
+        st.session_state["more_same_tema"] = frozen_tema
+        st.session_state.book = frozen_book
+        st.session_state.take = frozen_take
+        if frozen_tema:
+            st.session_state.tema = frozen_tema
+        # Sincroniza os widgets do palco antes de desenhá-los.
+        st.session_state["palco_book_select"] = frozen_book
+        st.session_state["opt_take_palco"] = frozen_take
 
     if last:
         st.session_state["cia_last_action"] = "nav"
@@ -1621,6 +1638,10 @@ def page_ypoemas():
         if frozen_tema:
             st.session_state.tema = frozen_tema
         temas_list = load_temas(_current_book())
+        maxy_ypoemas = len(temas_list) - 1
+        if st.session_state.take > maxy_ypoemas or st.session_state.take < 0:
+            st.session_state.take = 0
+            st.session_state.tema = temas_list[0] if temas_list else ""
 
     lnew = True
     if manu:
@@ -1686,6 +1707,9 @@ def page_ypoemas():
                 st.session_state["cia_freeze_take"] = -1
                 st.session_state["cia_freeze_tema"] = ""
                 st.session_state["cia_last_action"] = ""
+                st.session_state["ypo_anchor_book"] = _current_book()
+                st.session_state["ypo_anchor_take"] = int(st.session_state.get("take", 0))
+                st.session_state["ypo_anchor_tema"] = st.session_state.get("tema", "")
             else:
                 st.session_state["cia_mood_changed"] = False
                 st.session_state["cia_force_new_poema"] = False
@@ -1715,6 +1739,9 @@ def page_ypoemas():
                 st.session_state["more_same_book"] = ""
                 st.session_state["more_same_take"] = -1
                 st.session_state["more_same_tema"] = ""
+                st.session_state["ypo_anchor_book"] = _current_book()
+                st.session_state["ypo_anchor_take"] = int(st.session_state.get("take", 0))
+                st.session_state["ypo_anchor_tema"] = st.session_state.get("tema", "")
 
             if generated_new_poema:
                 update_readings(st.session_state.tema)
