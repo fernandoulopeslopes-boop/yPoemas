@@ -2227,10 +2227,8 @@ def render_cia_mood_selectbox():
                     st.session_state["cia_reading_mode"] = False
                     st.session_state["cia_last_action"] = "cia_mood"
                     st.session_state["cia_mood_changed"] = True
-                    try:
-                        st.rerun()
-                    except Exception:
-                        st.experimental_rerun()
+                    # Sem rerun manual: o clique do Streamlit já atualiza a página uma vez.
+                    # Forçar st.rerun() aqui duplicava/triplicava recarregamentos.
 
 def _cia_sidebar_filha_active(chosen_id):
     """Mantém a sidebar CIA fixa; não recolhe para a coluna reduzida."""
