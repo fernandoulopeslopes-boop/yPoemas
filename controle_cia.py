@@ -1723,8 +1723,6 @@ def build_cia_index_html(curr_ypoema):
     row = _cia_index_numeros_tema(tema)
 
     return f"""
-        <p><strong>Index: {row['tema']}</strong></p>
-
         <p>Linhas: {row['linhas']}<br>
         Ítimos: {row['itimos']}<br>
         Palavras: {row['palavras']}</p>
