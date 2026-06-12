@@ -1713,7 +1713,7 @@ def _cia_index_numeros_tema(nome_tema):
 
 
 def build_cia_index_html(curr_ypoema):
-    """Lente Index: informação exata do tema em foco para leitor e manutenção manual."""
+    """Lente Index: informação exata do tema em foco para o leitor."""
     tema = (
         st.session_state.get("tema_atual_para_analise")
         or st.session_state.get("tema_em_analise")
@@ -1722,28 +1722,15 @@ def build_cia_index_html(curr_ypoema):
     )
     row = _cia_index_numeros_tema(tema)
 
-    linha = _cia_index_linha_index(row["tema"], row["variacoes"])
-    linha_cientifica = _cia_index_linha_index_cientifica(row["tema"], row["variacoes"])
-    linha_atual = row["index_line"] or "—"
-    arquivo = row["arquivo"] or "—"
-
     return f"""
-        <p><strong>Index do tema em foco</strong></p>
-        <p><strong>Tema:</strong> {row['tema']}<br>
-        <strong>Variações possíveis:</strong> {_cia_index_formata_milhar(row['variacoes'])}<br>
-        <strong>Notação científica:</strong> {_cia_index_formata_cientifica(row['variacoes'])}</p>
+        <p><strong>Index: {row['tema']}</strong></p>
 
-        <p>Este número é o cálculo combinatório do tema em foco: o produto dos ítimos ativos lidos no arquivo <code>.ypo</code>. Não é quantidade aproximada.</p>
+        <p>Linhas: {row['linhas']}<br>
+        Ítimos: {row['itimos']}<br>
+        Palavras: {row['palavras']}</p>
 
-        <p><strong>Linhas:</strong> {row['linhas']}<br>
-        <strong>Ítimos:</strong> {row['itimos']}<br>
-        <strong>Palavras:</strong> {row['palavras']}<br>
-        <strong>Status:</strong> {row['status']}</p>
-
-        <p><strong>Arquivo lido:</strong><br><code>{arquivo}</code></p>
-        <p><strong>Linha atual em base/index:</strong><br><code>{linha_atual}</code></p>
-        <p><strong>Linha pronta para copiar:</strong><br><code>{linha}</code></p>
-        <p><strong>Linha com notação científica:</strong><br><code>{linha_cientifica}</code></p>
+        <p>Variações possíveis: {_cia_index_formata_milhar(row['variacoes'])}<br>
+        Notação científica: {_cia_index_formata_cientifica(row['variacoes'])}</p>
     """
 
 def render_cia_stage(curr_ypoema):
