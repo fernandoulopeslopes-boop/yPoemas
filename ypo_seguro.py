@@ -864,6 +864,7 @@ def _on_palco_book_change():
         st.session_state.book = choice
         st.session_state.take = 0
         st.session_state["cia_last_action"] = "book_change"
+        st.session_state["ypoema_atual_para_analise"] = ""
         st.session_state["cia_force_new_poema"] = True
     _sync_book_theme_state()
 
@@ -885,6 +886,7 @@ def _on_palco_theme_change():
     st.session_state.tema = temas_list[take]
     if take != old_take:
         st.session_state["cia_last_action"] = "theme_change"
+        st.session_state["ypoema_atual_para_analise"] = ""
         st.session_state["cia_force_new_poema"] = True
 
 
@@ -1552,10 +1554,56 @@ def page_mini():
                             time.sleep(1)
                             secs -= 1
 
+def _cia_objeto_analise_existe():
+    """Objeto explícito de leitura da CIA: mesmo yPoema, várias lentes."""
+    return bool(st.session_state.get("ypoema_atual_para_analise", ""))
+
+
+def _cia_fixar_objeto_analise(curr_ypoema):
+    """Fixa livro/take/tema/yPoema como objeto atual da análise."""
+    st.session_state["book_atual_para_analise"] = _current_book()
+    st.session_state["take_atual_para_analise"] = int(st.session_state.get("take", 0))
+    st.session_state["tema_atual_para_analise"] = st.session_state.get("tema", "")
+    st.session_state["ypoema_atual_para_analise"] = curr_ypoema
+    st.session_state["lang_atual_para_analise"] = st.session_state.get("lang", "pt")
+
+    # Compatibilidade com a camada anterior.
+    st.session_state.ypoema_em_analise = curr_ypoema
+    st.session_state.tema_em_analise = st.session_state.get("tema", "")
+    st.session_state.book_em_analise = _current_book()
+    st.session_state.take_em_analise = int(st.session_state.get("take", 0))
+    st.session_state.lang_em_analise = st.session_state.get("lang", "pt")
+
+
+def _cia_restaurar_identidade_objeto():
+    """Recoloca o estado canônico no objeto que está sendo analisado."""
+    if not _cia_objeto_analise_existe():
+        return
+    book = st.session_state.get("book_atual_para_analise", "")
+    take = st.session_state.get("take_atual_para_analise", -1)
+    tema = st.session_state.get("tema_atual_para_analise", "")
+    if book:
+        st.session_state.book = book
+    try:
+        take = int(take)
+    except Exception:
+        take = -1
+    if take >= 0:
+        st.session_state.take = take
+    if tema:
+        st.session_state.tema = tema
+
+
 def _restore_cia_freeze_before_sync():
     """Troca de análise CIA não pode alterar livro/tema/take por gatilho lateral."""
     if not st.session_state.get("cia_mood_changed", False):
         return
+
+    # Preferir o objeto explícito já fixado pela CIA.
+    if _cia_objeto_analise_existe():
+        _cia_restaurar_identidade_objeto()
+        return
+
     frozen_book = st.session_state.get("cia_freeze_book", "")
     frozen_take = st.session_state.get("cia_freeze_take", -1)
     frozen_tema = st.session_state.get("cia_freeze_tema", "")
@@ -1641,6 +1689,7 @@ def page_ypoemas():
 
     if last:
         st.session_state["cia_last_action"] = "nav"
+        st.session_state["ypoema_atual_para_analise"] = ""
         st.session_state.take -= 1
         if st.session_state.take < 0:
             st.session_state.take = maxy_ypoemas
@@ -1648,11 +1697,13 @@ def page_ypoemas():
 
     if rand:
         st.session_state["cia_last_action"] = "nav"
+        st.session_state["ypoema_atual_para_analise"] = ""
         st.session_state.take = random.randrange(0, maxy_ypoemas + 1)
         _sync_book_theme_state()
 
     if nest:
         st.session_state["cia_last_action"] = "nav"
+        st.session_state["ypoema_atual_para_analise"] = ""
         st.session_state.take += 1
         if st.session_state.take > maxy_ypoemas:
             st.session_state.take = 0
@@ -1702,43 +1753,34 @@ def page_ypoemas():
         ypoemas_expander = st.expander(what_book, expanded=True)
         with ypoemas_expander:
             cia_mode = st.session_state.get("sidebar_panel") == "CIA"
-            force_new_poema = bool(more or last or rand or nest)
-            same_analysis_text = (
-                st.session_state.get("ypoema_em_analise")
-                and st.session_state.get("tema_em_analise") == st.session_state.tema
-                and st.session_state.get("book_em_analise") == _current_book()
-                and st.session_state.get("take_em_analise") == st.session_state.take
-                and st.session_state.get("lang_em_analise") == st.session_state.lang
-            )
-
             cia_mood_changed = bool(st.session_state.get("cia_mood_changed", False))
             cia_force_new_poema = bool(st.session_state.get("cia_force_new_poema", False))
             cia_last_action = st.session_state.get("cia_last_action", "")
 
             explicit_poem_change = bool(
-                more
-                or last
+                last
                 or rand
                 or nest
-                or cia_last_action in {"nav", "more_same_theme", "book_change", "theme_change"}
+                or cia_last_action in {"nav", "book_change", "theme_change"}
             )
+            more_same_theme = bool(more or cia_last_action == "more_same_theme")
 
-            # Regra estrutural da CIA:
-            # trocar tipo de análise muda só a lente; não troca o yPoema.
-            if cia_last_action == "cia_mood" or cia_mood_changed:
+            if cia_mode and (cia_mood_changed or cia_last_action == "cia_mood"):
+                _cia_restaurar_identidade_objeto()
                 force_new_poema = False
             else:
-                force_new_poema = bool(force_new_poema or explicit_poem_change or cia_force_new_poema)
+                force_new_poema = bool(explicit_poem_change or cia_force_new_poema or more_same_theme)
 
             preserve_cia_poema = (
                 cia_mode
-                and bool(st.session_state.get("ypoema_em_analise", ""))
+                and _cia_objeto_analise_existe()
                 and not force_new_poema
             )
 
             if preserve_cia_poema:
-                # Troca de mood/analysis não chama load_poema(): muda só a camada CIA.
-                curr_ypoema = st.session_state.get("ypoema_em_analise", "")
+                # Troca de lente CIA: usa exatamente o mesmo objeto de análise.
+                _cia_restaurar_identidade_objeto()
+                curr_ypoema = st.session_state.get("ypoema_atual_para_analise", "")
                 generated_new_poema = False
                 st.session_state["cia_mood_changed"] = False
                 st.session_state["cia_force_new_poema"] = False
@@ -1746,12 +1788,13 @@ def page_ypoemas():
                 st.session_state["cia_freeze_take"] = -1
                 st.session_state["cia_freeze_tema"] = ""
                 st.session_state["cia_last_action"] = ""
-                st.session_state["ypo_anchor_book"] = _current_book()
-                st.session_state["ypo_anchor_take"] = int(st.session_state.get("take", 0))
-                st.session_state["ypo_anchor_tema"] = st.session_state.get("tema", "")
             else:
                 st.session_state["cia_mood_changed"] = False
                 st.session_state["cia_force_new_poema"] = False
+
+                if cia_mode and more_same_theme and _cia_objeto_analise_existe():
+                    _cia_restaurar_identidade_objeto()
+
                 if st.session_state.lang != st.session_state.last_lang:
                     curr_ypoema = load_lypo()  # changes in lang, keep LYPO
                 else:
@@ -1768,11 +1811,15 @@ def page_ypoemas():
                         save_typo.close()
                     curr_ypoema = load_typo()  # to normalize line breaks in text
 
-                st.session_state.ypoema_em_analise = curr_ypoema
-                st.session_state.tema_em_analise = st.session_state.tema
-                st.session_state.book_em_analise = _current_book()
-                st.session_state.take_em_analise = st.session_state.take
-                st.session_state.lang_em_analise = st.session_state.lang
+                if cia_mode:
+                    _cia_fixar_objeto_analise(curr_ypoema)
+                else:
+                    st.session_state.ypoema_em_analise = curr_ypoema
+                    st.session_state.tema_em_analise = st.session_state.tema
+                    st.session_state.book_em_analise = _current_book()
+                    st.session_state.take_em_analise = st.session_state.take
+                    st.session_state.lang_em_analise = st.session_state.lang
+
                 generated_new_poema = True
                 st.session_state["cia_last_action"] = ""
                 st.session_state["more_same_book"] = ""
@@ -2153,6 +2200,7 @@ CIA_MOOD_OPTIONS = [
     "Formal",
     "Reduzida",
     "Completa",
+    "Index",
 ]
 def render_cia_mood_selectbox():
     """Lista da CIA sempre aberta: troca só a camada de análise."""
@@ -2166,9 +2214,14 @@ def render_cia_mood_selectbox():
             label = f"• {mood}" if mood == current else mood
             if st.button(label, key=f"cia_mood_list_{mood}", use_container_width=True):
                 if mood != st.session_state.get("cia_mood", "Sintática"):
-                    st.session_state["cia_freeze_book"] = st.session_state.get("book", "")
-                    st.session_state["cia_freeze_take"] = int(st.session_state.get("take", -1))
-                    st.session_state["cia_freeze_tema"] = st.session_state.get("tema", "")
+                    if _cia_objeto_analise_existe():
+                        st.session_state["cia_freeze_book"] = st.session_state.get("book_atual_para_analise", "")
+                        st.session_state["cia_freeze_take"] = int(st.session_state.get("take_atual_para_analise", -1))
+                        st.session_state["cia_freeze_tema"] = st.session_state.get("tema_atual_para_analise", "")
+                    else:
+                        st.session_state["cia_freeze_book"] = st.session_state.get("book", "")
+                        st.session_state["cia_freeze_take"] = int(st.session_state.get("take", -1))
+                        st.session_state["cia_freeze_tema"] = st.session_state.get("tema", "")
                     st.session_state["cia_mood"] = mood
                     st.session_state["cia_mood_select"] = mood
                     st.session_state["cia_reading_mode"] = False
