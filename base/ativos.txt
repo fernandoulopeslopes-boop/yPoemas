@@ -37,6 +37,7 @@ Elogio : beauty
 Enfrente : ensaio
 Epitafiando : poesia
 Escriba : author
+Escribo : ensaio
 Essa : metalinguagem
 Essas : ensaio
 Esses : ensaio
@@ -110,6 +111,7 @@ Sonoro : poesia
 Sopros : poesia
 Sos : joco
 Tempo : poesia
+Tempus : ensaio
 Tiro : author
 Tolero : poesia
 Usinas : poesia
