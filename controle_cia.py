@@ -28,6 +28,7 @@ CIA_MOODS = [
     "Formal",
     "Reduzida",
     "Completa",
+    "Index",
 ]
 
 
@@ -1492,6 +1493,259 @@ def build_cia_analysis_completa(curr_ypoema):
     fecho = _cia_critico_fecho(poema_lines, used_lines, prefer_specific=True)
     return _cia_join([abertura] + meio + [fecho])
 
+
+def _cia_index_unique(seq):
+    seen = set()
+    out = []
+    for item in seq:
+        if item not in seen:
+            seen.add(item)
+            out.append(item)
+    return out
+
+
+def _cia_index_find_ypo_file(nome_tema):
+    """Localiza o .ypo do tema em foco. Leitura apenas."""
+    safe = str(nome_tema or "").strip()
+    if not safe:
+        return ""
+
+    candidates = [
+        safe,
+        safe.replace(" ", "_"),
+        safe.replace("_", " "),
+        safe.capitalize(),
+        safe.title(),
+    ]
+
+    folders = ["./DATA", "./data", ".DATA", ".data", "./base", "."]
+    for folder in folders:
+        for name in _cia_index_unique(candidates):
+            path = os.path.join(folder, name + ".ypo")
+            if os.path.exists(path):
+                return path
+
+    for folder in folders:
+        if os.path.isdir(folder):
+            try:
+                for fname in os.listdir(folder):
+                    if fname.lower() == (safe.lower() + ".ypo"):
+                        return os.path.join(folder, fname)
+            except Exception:
+                pass
+    return ""
+
+
+def _cia_index_parse_int(value):
+    try:
+        return int(str(value).strip())
+    except Exception:
+        return 0
+
+
+def _cia_index_itimos_from_pipe(pipe):
+    """Extrai ítimos reais de uma linha .ypo, preservando formatos históricos."""
+    if len(pipe) >= 8:
+        partes_barra = [p.strip() for p in pipe[7:] if p.strip()]
+        if len(partes_barra) > 1:
+            return partes_barra
+        if len(partes_barra) == 1:
+            tail = partes_barra[0]
+        else:
+            tail = ""
+    elif len(pipe) >= 7:
+        tail = pipe[6].strip()
+    else:
+        tail = ""
+
+    if not tail:
+        return []
+
+    return [item.strip() for item in re.split(r"\s+", tail) if item.strip()]
+
+
+def _cia_index_formata_milhar(value):
+    try:
+        return f"{int(value):,}".replace(",", ".")
+    except Exception:
+        return str(value)
+
+
+def _cia_index_formata_cientifica(value):
+    try:
+        valor = int(value)
+        if valor == 0:
+            return "0,000e+00"
+        return f"{valor:.3e}".replace(".", ",")
+    except Exception:
+        return ""
+
+
+def _cia_index_linha_index(tema, variacoes):
+    return f"{tema} : {_cia_index_formata_milhar(variacoes)}"
+
+
+def _cia_index_linha_index_cientifica(tema, variacoes):
+    inteiro = _cia_index_formata_milhar(variacoes)
+    cientifica = _cia_index_formata_cientifica(variacoes)
+    return f"{tema} : {inteiro} = {cientifica}"
+
+
+def _cia_index_file_path():
+    candidates = [
+        os.path.join("./base", "index"),
+        os.path.join("./base", "index.txt"),
+        os.path.join("./base", "INDEX.txt"),
+    ]
+    for candidate in candidates:
+        if os.path.exists(candidate):
+            return candidate
+    return candidates[0]
+
+
+def _cia_index_parse_index_line(clean):
+    clean = str(clean or "").strip()
+    if not clean or clean.startswith("#"):
+        return "", ""
+
+    if clean.startswith("|"):
+        parts = [p.strip() for p in clean.split("|") if p.strip()]
+        if len(parts) >= 2:
+            return parts[0], parts[1]
+
+    part_line = clean.partition(" : ")
+    if part_line[1]:
+        return part_line[0].strip(), part_line[2].strip()
+
+    match = re.match(r"^(.+?)\s*[:=]\s*(.+)$", clean)
+    if match:
+        return match.group(1).strip(), match.group(2).strip()
+
+    return "", ""
+
+
+def _cia_index_find_index_line(nome_tema):
+    path = _cia_index_file_path()
+    tema_key = str(nome_tema or "").strip().upper()
+    if not os.path.exists(path):
+        return path, ""
+
+    try:
+        with open(path, "r", encoding="utf-8", errors="replace") as f:
+            for line in f:
+                parsed_tema, _parsed_value = _cia_index_parse_index_line(line.strip())
+                if parsed_tema.upper() == tema_key:
+                    return path, line.rstrip("\n")
+    except Exception:
+        pass
+
+    return path, ""
+
+
+def _cia_index_numeros_tema(nome_tema):
+    """Recalcula o INDEX do tema em foco. Não é estimativa; é produto combinatório lido do .ypo."""
+    tema = str(nome_tema or "").strip()
+    ypo_file = _cia_index_find_ypo_file(tema)
+
+    linhas = 0
+    qtd_itimos = 0
+    qtd_itimos_declarados = 0
+    variacoes = 1
+    itimos_lista = []
+    divergencias = 0
+
+    if ypo_file:
+        try:
+            with open(ypo_file, "r", encoding="utf-8", errors="replace") as f:
+                for raw in f:
+                    line = raw.strip()
+                    if not line or not line.startswith("|"):
+                        continue
+                    pipe = line.split("|")
+                    itens = _cia_index_itimos_from_pipe(pipe)
+                    qtd_real_linha = len(itens)
+                    qtd_declarada_linha = _cia_index_parse_int(pipe[5]) if len(pipe) > 5 else 0
+                    qtd_para_variacao = qtd_real_linha or qtd_declarada_linha
+
+                    if qtd_para_variacao <= 0:
+                        continue
+
+                    linhas += 1
+                    variacoes *= qtd_para_variacao
+                    qtd_itimos += qtd_para_variacao
+                    qtd_itimos_declarados += qtd_declarada_linha
+                    itimos_lista.extend(itens)
+
+                    if qtd_declarada_linha and qtd_real_linha and qtd_declarada_linha != qtd_real_linha:
+                        divergencias += 1
+        except Exception:
+            ypo_file = ""
+
+    if linhas == 0:
+        variacoes = 0
+
+    palavras = []
+    for item in itimos_lista:
+        palavras.extend(re.findall(r"[A-Za-zÀ-ÖØ-öø-ÿ0-9]+(?:[-'][A-Za-zÀ-ÖØ-öø-ÿ0-9]+)*", item))
+
+    status = "OK"
+    if not ypo_file:
+        status = "SEM_ARQUIVO"
+    elif linhas == 0:
+        status = "SEM_LINHAS"
+    elif divergencias:
+        status = "CONFERIR_QTD_ITIMOS"
+
+    index_path, index_line = _cia_index_find_index_line(tema)
+
+    return {
+        "tema": tema,
+        "arquivo": ypo_file,
+        "index_path": index_path,
+        "index_line": index_line,
+        "variacoes": variacoes,
+        "linhas": linhas,
+        "itimos": qtd_itimos,
+        "itimos_declarados": qtd_itimos_declarados,
+        "palavras": len(palavras),
+        "status": status,
+    }
+
+
+def build_cia_index_html(curr_ypoema):
+    """Lente Index: informação exata do tema em foco para leitor e manutenção manual."""
+    tema = (
+        st.session_state.get("tema_atual_para_analise")
+        or st.session_state.get("tema_em_analise")
+        or st.session_state.get("tema")
+        or ""
+    )
+    row = _cia_index_numeros_tema(tema)
+
+    linha = _cia_index_linha_index(row["tema"], row["variacoes"])
+    linha_cientifica = _cia_index_linha_index_cientifica(row["tema"], row["variacoes"])
+    linha_atual = row["index_line"] or "—"
+    arquivo = row["arquivo"] or "—"
+
+    return f"""
+        <p><strong>Index do tema em foco</strong></p>
+        <p><strong>Tema:</strong> {row['tema']}<br>
+        <strong>Variações possíveis:</strong> {_cia_index_formata_milhar(row['variacoes'])}<br>
+        <strong>Notação científica:</strong> {_cia_index_formata_cientifica(row['variacoes'])}</p>
+
+        <p>Este número é o cálculo combinatório do tema em foco: o produto dos ítimos ativos lidos no arquivo <code>.ypo</code>. Não é quantidade aproximada.</p>
+
+        <p><strong>Linhas:</strong> {row['linhas']}<br>
+        <strong>Ítimos:</strong> {row['itimos']}<br>
+        <strong>Palavras:</strong> {row['palavras']}<br>
+        <strong>Status:</strong> {row['status']}</p>
+
+        <p><strong>Arquivo lido:</strong><br><code>{arquivo}</code></p>
+        <p><strong>Linha atual em base/index:</strong><br><code>{linha_atual}</code></p>
+        <p><strong>Linha pronta para copiar:</strong><br><code>{linha}</code></p>
+        <p><strong>Linha com notação científica:</strong><br><code>{linha_cientifica}</code></p>
+    """
+
 def render_cia_stage(curr_ypoema):
     """Renderiza a análise da CIA; traduz o conteúdo quando o leitor troca de idioma."""
     cia_offset = int(st.session_state.get("cia_line0_offset_px", 0))
@@ -1542,6 +1796,8 @@ def render_cia_stage(curr_ypoema):
     elif mood == "Completa":
         analysis_html = _to_html_block(build_cia_analysis_completa(curr_ypoema))
         content = analysis_html
+    elif mood == "Index":
+        content = build_cia_index_html(curr_ypoema)
     else:
         analysis_html = _to_html_block("Este mood ainda não entrou em operação na CIA.")
         content = analysis_html
