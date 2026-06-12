@@ -112,6 +112,7 @@ Sonoro
 Sopros
 Sos
 Tempo
+Tempus
 Time
 Tiro
 Tolero
