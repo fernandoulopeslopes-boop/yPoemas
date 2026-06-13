@@ -244,6 +244,7 @@ def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo y
         
             for linha in lista_change:
                 file.write(linha)
+                st.warning(linha)
         
             for linha in lista_finais:
                 file.write(linha)
