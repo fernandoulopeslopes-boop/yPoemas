@@ -114,7 +114,7 @@ def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo y
                             itimos_atual = ( total_itimos - 1)  # because matrix começa em zero
                     else:
                         if total_itimos >= 1:
-                            itimos_atual = randrange(0, total_itimos - 1)  # pega ítimo random
+                            itimos_atual = randrange(0, total_itimos)  # pega ítimo random
                         else:
                             itimos_atual = 0  # just in case
                 else:  # apenas hum ítimo
