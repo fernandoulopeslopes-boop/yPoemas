@@ -12,7 +12,7 @@ def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo y
          ideia_numero = '01'  # ideia
          fonte_itimos = nome_tema + '_' + numero_linea + ideia_numero # fonte dos itimos. Pode haver re-uso !!!
          se_randomico = 'F'   # se_random
-         total_itimos = N     # qtd_itimos
+         total_itimos = 1     # qtd_itimos
          itimos_atual = 1     # itimos_atual
          array_itimos = []    # array com todos os itimos da ideia na linha
     return: novo_poema
@@ -246,6 +246,7 @@ def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo y
 
             for linha in lista_finais:
                 file.write(linha)
+            file.write("###")
 
         file.close()
 
