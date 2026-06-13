@@ -251,6 +251,7 @@ def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo y
             file.write("###")
         
         os.replace(tmp_path, path)
+        os.commit
 
     return novo_poema
 
