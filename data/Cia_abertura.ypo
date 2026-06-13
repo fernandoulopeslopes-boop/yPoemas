@@ -19,14 +19,14 @@
 |02|06|Abertura_0206|F|1|1|leitura.|
 |03|00|
 |03|01|Abertura_0301|T|3|1|Às vezes é|Pode ser|Talvez|
-|03|02|Abertura_0302|T|3|1|uma torção da|uma outra visão da|um novo sentido para a|
-|03|03|Abertura_0303|F|1|1|frase.|
+|03|02|Abertura_0302|T|3|1|uma torção|uma outra visão|um novo sentido|
+|03|03|Abertura_0303|F|1|1|da frase.|
 |04|01|Abertura_0301|T|5|1|Às vezes é|Pode ser|Talvez|Quiçá|Ou então|
 |04|02|Abertura_0402|T|4|1|uma pausa|um respiro|um lapso|um silêncio|uma linha em branco|uma vírgula|
 |04|03|Abertura_0403|F|1|1|que pesa mais|que é mais forte|
 |04|04|Abertura_0404|F|1|1|que uma palavra.|
 |05|01|Abertura_0501|T|5|1|Às vezes é|Pode ser|Talvez|Quiçá|Ou então|
-|05|02|Abertura_0502|T|1|1|uma imagem|uma "sombra"|
+|05|02|Abertura_0502|T|1|1|uma imagem|uma "sombra"|uma "ideia" oculta|uma trilha|
 |05|03|Abertura_0503|F|1|1|que parece|
 |05|04|Abertura_0504|T|4|1|lateral,|deslocada,|perdida,|"nas nuvens",|
 |05|05|Abertura_0505|T|2|1|mas sustenta o centro.|mas mantém o centro.|
