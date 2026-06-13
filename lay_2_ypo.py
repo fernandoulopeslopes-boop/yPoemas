@@ -394,8 +394,10 @@ def fala_data(dref):
 
 def fala_nome_cia():
     lista = gera_poema("Cia","")
-    nany = randrange(0, len(lista))
-    return(lista)
+    sigla = ""
+    FOR j=1 TO LEN(lista):
+        sigla += lista[j]
+    return(sigla)
 
 def fala_norma_abnp():
     """
