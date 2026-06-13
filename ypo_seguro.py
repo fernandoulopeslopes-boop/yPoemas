@@ -19,6 +19,7 @@ from readings import (
 from controle_cia import (
     configure_cia,
     draw_sidebar_panel_buttons,
+    render_cia_sidebar,
     render_cia_stage,
 )
 
@@ -172,14 +173,6 @@ def apply_styles():
             word-break: keep-all !important;
             overflow-wrap: normal !important;
         }
-        .machina-palco-titulo {
-            display: block;
-            text-align: center;
-            text-decoration: underline;
-            text-underline-offset: 0.18em;
-            margin: 0 auto 0.35em auto;
-        }
-
 </style>
         """,
         unsafe_allow_html=True,
@@ -302,11 +295,6 @@ def apply_styles():
         /* Sidebar :: scroll_inho — sobe discretamente o primeiro controle */
         [data-testid="stSidebar"] div[data-testid="stSidebarContent"] {
             padding-top: 0.00rem !important;
-            margin-top: -0.55rem !important;
-        }
-
-        [data-testid="stSidebar"] div[data-testid="stElementContainer"]:first-child {
-            margin-top: -0.35rem !important;
         }
 
         [data-testid="stSidebar"] .stButton button {
@@ -326,12 +314,6 @@ def apply_styles():
             min-height: 1.94rem !important;
             padding-top: 0.11rem !important;
             padding-bottom: 0.11rem !important;
-        }
-
-        [data-testid="stSidebar"] .stButton button p {
-            margin: 0 !important;
-            padding: 0 !important;
-            text-indent: 0 !important;
         }
 
         [data-testid="stSidebar"] div[data-testid="stVerticalBlock"] {
@@ -511,50 +493,6 @@ def apply_styles():
             outline: 0 !important;
         }
 
-        /* Palco :: remove a sombra/linha fantasma entre labels e controles */
-        div[data-testid="stSelectbox"],
-        div[data-testid="stSelectbox"] > div,
-        div[data-testid="stSelectbox"] [data-baseweb="select"],
-        div[data-testid="stSelectbox"] [data-baseweb="select"] > div,
-        div[data-testid="stSelectbox"] [data-baseweb="select"] div,
-        div[data-testid="stButton"] > button,
-        div[data-testid="stButton"] > button:hover,
-        div[data-testid="stButton"] > button:focus,
-        div[data-testid="stButton"] > button:active {
-            border-top: 0 !important;
-            border-right: 0 !important;
-            border-bottom: 0 !important;
-            border-left: 0 !important;
-            box-shadow: none !important;
-            outline: 0 !important;
-        }
-
-        div[data-testid="stSelectbox"] [data-baseweb="select"] > div:hover,
-        div[data-testid="stSelectbox"] [data-baseweb="select"] > div:focus,
-        div[data-testid="stSelectbox"] [data-baseweb="select"] > div:focus-within {
-            border: 0 !important;
-            box-shadow: none !important;
-            outline: 0 !important;
-        }
-
-        /* Navegação :: solução invisível
-           Desce os botões para alinhar com os selectboxes de livros/temas.
-           A linha fantasma deixa de atravessar visualmente os botões. */
-        .machina-nav-spacer {
-            height: 1.72rem !important;
-            min-height: 1.72rem !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            line-height: 1.72rem !important;
-            font-size: 1px !important;
-        }
-
-        .machina-nav-spacer p {
-            margin: 0 !important;
-            padding: 0 !important;
-            line-height: 1.72rem !important;
-        }
-
         .machina-moldura-lateral {
             min-height: 61vh;
         }
@@ -578,31 +516,6 @@ def apply_styles():
 
         .cia-stage-body {
             line-height: 1.35;
-        }
-
-        .cia-stage-box .container {
-            justify-content: center !important;
-            text-align: center !important;
-        }
-
-        .cia-stage-box .logo-text {
-            width: 100% !important;
-            text-align: center !important;
-            padding-left: 0 !important;
-        }
-
-        .cia-header-container {
-            width: 100% !important;
-            text-align: center !important;
-            display: block !important;
-        }
-
-        .cia-header-text {
-            width: 100% !important;
-            text-align: center !important;
-            padding-left: 0 !important;
-            margin-left: auto !important;
-            margin-right: auto !important;
         }
 
         .cia-stage-title {
@@ -647,8 +560,6 @@ def init_session_state():
         "sidebar_panel": "Machina",
         "cia_name": "",
         "cia_mood": "Sintática",
-        "cia_reading_mode": False,
-        "cia_mood_select": "Sintática",
         "cia_line0_offset_px": -385,
         "cia_font": "Trebuchet MS",
         "cia_size": 18,
@@ -658,11 +569,6 @@ def init_session_state():
         "book_em_analise": "",
         "take_em_analise": -1,
         "lang_em_analise": "",
-        "cia_mood_changed": False,
-        "cia_force_new_poema": False,
-        "cia_freeze_book": "",
-        "cia_freeze_take": -1,
-        "cia_freeze_tema": "",
 
         # chave de ouro
         "key_open": False,
@@ -827,29 +733,20 @@ def _sync_book_theme_state():
 
     take = _coerce_take(st.session_state.get("take", 0), temas_list)
 
-    old_take = st.session_state.get("take", 0)
     st.session_state.take = take
     st.session_state.tema = temas_list[take]
-    if take != old_take:
-        st.session_state["cia_force_new_poema"] = True
-
-
-def _current_book():
-    """Retorna o livro atual sem depender de atributo já criado no session_state."""
-    book = st.session_state.get("book", BOOKS_LIST[0])
-    return book if book in BOOKS_LIST else BOOKS_LIST[0]
 
 
 def _prepare_book_widget(key):
     """Faz o widget espelhar `book` sem tomar conta do estado."""
-    current = _current_book()
+    current = st.session_state.book
     if key in st.session_state and st.session_state.get(key) != current:
         del st.session_state[key]
 
 
 def _prepare_theme_widget():
     """Normaliza o widget de temas para espelhar o `take` sem impor valor indevido."""
-    temas_list = load_temas(_current_book())
+    temas_list = load_temas(st.session_state.book)
     current = _coerce_take(st.session_state.get("take", 0), temas_list)
     raw_value = st.session_state.get("opt_take_palco", current)
     normalized = _coerce_take(raw_value, temas_list)
@@ -858,19 +755,15 @@ def _prepare_theme_widget():
 
 
 def _on_palco_book_change():
-    current_book = _current_book()
-    choice = st.session_state.get("palco_book_select", current_book)
-    if choice != current_book:
+    choice = st.session_state.get("palco_book_select", st.session_state.book)
+    if choice != st.session_state.book:
         st.session_state.book = choice
         st.session_state.take = 0
-        st.session_state["cia_last_action"] = "book_change"
-        st.session_state["ypoema_atual_para_analise"] = ""
-        st.session_state["cia_force_new_poema"] = True
     _sync_book_theme_state()
 
 
 def _on_palco_theme_change():
-    temas_list = load_temas(_current_book())
+    temas_list = load_temas(st.session_state.book)
     if not temas_list:
         st.session_state.take = 0
         st.session_state.tema = ""
@@ -881,13 +774,8 @@ def _on_palco_theme_change():
         temas_list,
     )
 
-    old_take = st.session_state.get("take", 0)
     st.session_state.take = take
     st.session_state.tema = temas_list[take]
-    if take != old_take:
-        st.session_state["cia_last_action"] = "theme_change"
-        st.session_state["ypoema_atual_para_analise"] = ""
-        st.session_state["cia_force_new_poema"] = True
 
 
 def pick_book_palco():
@@ -895,12 +783,12 @@ def pick_book_palco():
     _sync_book_theme_state()
 
     books_list = BOOKS_LIST
-    current = _current_book()
+    current = st.session_state.book
     key = "palco_book_select"
     _prepare_book_widget(key)
 
     st.selectbox(
-        "↓  " + str(len(books_list)) + " livros",
+        f"{len(books_list)} " + translate("livros disponíveis..."),
         books_list,
         index=books_list.index(current),
         key=key,
@@ -912,7 +800,7 @@ def pick_tema_palco():
 
     """Escolhe o tema atual do livro diretamente no palco."""
     _sync_book_theme_state()
-    temas_list = load_temas(_current_book())
+    temas_list = load_temas(st.session_state.book)
     if not temas_list:
         return
 
@@ -1260,67 +1148,7 @@ def load_arts(nome_tema):  # Select image for arts
 ### bof: functions
 
 
-def guia_do_leitor_cia():
-    """Guia curto do leitor para o modo CIA."""
-    return """
-### Guia do leitor da CIA
-
-A **CIA** não substitui a leitura do leitor.  
-Ela oferece lentes diferentes para observar o mesmo yPoema.
-
-A regra principal é simples:
-
-**mesmo yPoema → várias leituras → uma análise completa a outra**
-
-Ao trocar o tipo de análise, o texto analisado permanece o mesmo.  
-O que muda é a lente crítica.
-
-**Sintática**  
-Observa engrenagens da frase: forma verbal, sujeito, oração, pontuação, cortes e articulações internas.
-
-**Sintética**  
-Procura a tensão principal do yPoema, sem tentar explicar tudo.
-
-**Formal**  
-Lê o desenho visível: linhas, blocos, pausas, recorrências e arquitetura do texto.
-
-**Reduzida**  
-Oferece uma leitura breve, útil para uma primeira aproximação.
-
-**Completa**  
-Amplia a leitura em camadas: imagem, forma, ritmo, tensão e fecho.
-
-A comparação entre as análises é parte da experiência.  
-Nenhuma lente encerra o poema; cada uma abre outro modo de entrada.
-"""
-
-
-def _palco_titulo_centralizado(LOGO_TEXTO):
-    """Centraliza e sublinha o título do texto no palco, mantendo o corpo intacto."""
-    texto = str(LOGO_TEXTO or "")
-    marcador = "<br>"
-    texto = texto.replace("<br/>", marcador).replace("<br />", marcador)
-
-    partes = texto.split(marcador)
-    if len(partes) <= 1:
-        return texto
-
-    titulo = partes[0].strip()
-    corpo = marcador.join(partes[1:]).strip()
-    if not titulo or not corpo:
-        return texto
-
-    return (
-        "<span class='machina-palco-titulo'>"
-        + titulo
-        + "</span>"
-        + marcador
-        + corpo
-    )
-
-
 def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
-    LOGO_TEXTO = _palco_titulo_centralizado(LOGO_TEXTO)
     if LOGO_IMAGE is None:
         st.markdown(
             f"""
@@ -1340,29 +1168,6 @@ def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
             """,
             unsafe_allow_html=True,
         )
-
-
-def write_cia_header(LOGO_TEXTO, LOGO_IMAGE=None):
-    """Renderiza o cabeçalho da CIA em duas linhas: descritivo + mood."""
-    if LOGO_IMAGE is not None:
-        write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
-        return
-
-    mood = st.session_state.get("cia_mood", "")
-    mood_label = f"({mood})" if mood else ""
-    stage_font = st.session_state.get('stage_font', 'Trebuchet MS')
-    stage_size = st.session_state.get('stage_size', 21)
-    mood_size = max(13, int(stage_size * 0.82))
-
-    st.markdown(
-        f"""
-        <div class='cia-header-container' style="text-align:center; width:100%; margin:0 auto 0.45em auto;">
-            <p class='cia-header-text' style="font-family:{stage_font}; font-size:{stage_size}px; margin:0 0 0.12em 0; text-align:center; text-decoration:underline; text-underline-offset:0.18em;">{LOGO_TEXTO}</p>
-            <p class='cia-header-mood' style="font-family:{stage_font}; font-size:{mood_size}px; margin:0; opacity:0.92; text-align:center; text-decoration:underline; text-underline-offset:0.18em;">{mood_label}</p>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
 
 
 def talk(text):
@@ -1554,86 +1359,15 @@ def page_mini():
                             time.sleep(1)
                             secs -= 1
 
-def _cia_objeto_analise_existe():
-    """Objeto explícito de leitura da CIA: mesmo yPoema, várias lentes."""
-    return bool(st.session_state.get("ypoema_atual_para_analise", ""))
-
-
-def _cia_fixar_objeto_analise(curr_ypoema):
-    """Fixa livro/take/tema/yPoema como objeto atual da análise."""
-    st.session_state["book_atual_para_analise"] = _current_book()
-    st.session_state["take_atual_para_analise"] = int(st.session_state.get("take", 0))
-    st.session_state["tema_atual_para_analise"] = st.session_state.get("tema", "")
-    st.session_state["ypoema_atual_para_analise"] = curr_ypoema
-    st.session_state["lang_atual_para_analise"] = st.session_state.get("lang", "pt")
-
-    # Compatibilidade com a camada anterior.
-    st.session_state.ypoema_em_analise = curr_ypoema
-    st.session_state.tema_em_analise = st.session_state.get("tema", "")
-    st.session_state.book_em_analise = _current_book()
-    st.session_state.take_em_analise = int(st.session_state.get("take", 0))
-    st.session_state.lang_em_analise = st.session_state.get("lang", "pt")
-
-
-def _cia_restaurar_identidade_objeto():
-    """Recoloca o estado canônico no objeto que está sendo analisado."""
-    if not _cia_objeto_analise_existe():
-        return
-    book = st.session_state.get("book_atual_para_analise", "")
-    take = st.session_state.get("take_atual_para_analise", -1)
-    tema = st.session_state.get("tema_atual_para_analise", "")
-    if book:
-        st.session_state.book = book
-    try:
-        take = int(take)
-    except Exception:
-        take = -1
-    if take >= 0:
-        st.session_state.take = take
-    if tema:
-        st.session_state.tema = tema
-
-
-def _restore_cia_freeze_before_sync():
-    """Troca de análise CIA não pode alterar livro/tema/take por gatilho lateral."""
-    if not st.session_state.get("cia_mood_changed", False):
-        return
-
-    # Preferir o objeto explícito já fixado pela CIA.
-    if _cia_objeto_analise_existe():
-        _cia_restaurar_identidade_objeto()
-        return
-
-    frozen_book = st.session_state.get("cia_freeze_book", "")
-    frozen_take = st.session_state.get("cia_freeze_take", -1)
-    frozen_tema = st.session_state.get("cia_freeze_tema", "")
-    if frozen_book:
-        st.session_state.book = frozen_book
-    if isinstance(frozen_take, int) and frozen_take >= 0:
-        st.session_state.take = frozen_take
-    if frozen_tema:
-        st.session_state.tema = frozen_tema
-
-
 def page_ypoemas():
-    _restore_cia_freeze_before_sync()
-    _sync_book_theme_state()
-    temas_list = load_temas(_current_book())
+    temas_list = load_temas(st.session_state.book)
     maxy_ypoemas = len(temas_list) - 1
     if (
         st.session_state.take > maxy_ypoemas or st.session_state.take < 0
     ):  # just in case
         st.session_state.take = 0
 
-    try:
-        col_livros, col_nav, col_temas = st.columns(
-            [3, 4, 3],
-            vertical_alignment="bottom",
-        )
-        machina_nav_needs_spacer = False
-    except TypeError:
-        col_livros, col_nav, col_temas = st.columns([3, 4, 3])
-        machina_nav_needs_spacer = True
+    col_livros, col_nav, col_temas = st.columns([3, 4, 3])
 
     with col_livros:
         pick_book_palco()
@@ -1645,65 +1379,29 @@ def page_ypoemas():
         help_nest = help_tips[2]
         help_more = help_tips[4]
 
-        if machina_nav_needs_spacer:
-            st.markdown(
-                "<div style='height:1.95rem; min-height:1.95rem;'></div>",
-                unsafe_allow_html=True,
-            )
         nav_cols = st.columns([1, 1, 1, 1, 1])
         more = nav_cols[0].button("✚", help=help_more, use_container_width=True)
         last = nav_cols[1].button("◀", help=help_last, use_container_width=True)
         rand = nav_cols[2].button("✻", help=help_rand, use_container_width=True)
         nest = nav_cols[3].button("▶", help=help_nest, use_container_width=True)
-        manu_help = "guia do leitor da CIA" if st.session_state.get("sidebar_panel") == "CIA" else "help !!!"
-        manu = nav_cols[4].button("?", help=manu_help, use_container_width=True)
+        manu = nav_cols[4].button("?", help="help !!!", use_container_width=True)
 
-    temas_list = load_temas(_current_book())
+    temas_list = load_temas(st.session_state.book)
     maxy_ypoemas = len(temas_list) - 1
     if st.session_state.take > maxy_ypoemas or st.session_state.take < 0:
         st.session_state.take = 0
 
-    # Âncora estável: usada pelo ✚ para evitar que qualquer callback de lista
-    # troque tema antes da geração de "mais uma versão do mesmo tema".
-    if not st.session_state.get("ypo_anchor_book"):
-        st.session_state["ypo_anchor_book"] = _current_book()
-        st.session_state["ypo_anchor_take"] = int(st.session_state.get("take", 0))
-        st.session_state["ypo_anchor_tema"] = st.session_state.get("tema", "")
-
-    if more:
-        # ✚ = recarregar / mais uma versão do mesmo tema.
-        # Usa a última âncora estável, não o eventual valor alterado por callback.
-        frozen_book = st.session_state.get("ypo_anchor_book", _current_book())
-        frozen_take = int(st.session_state.get("ypo_anchor_take", st.session_state.get("take", 0)))
-        frozen_tema = st.session_state.get("ypo_anchor_tema", st.session_state.get("tema", ""))
-        st.session_state["cia_last_action"] = "more_same_theme"
-        st.session_state["more_same_book"] = frozen_book
-        st.session_state["more_same_take"] = frozen_take
-        st.session_state["more_same_tema"] = frozen_tema
-        st.session_state.book = frozen_book
-        st.session_state.take = frozen_take
-        if frozen_tema:
-            st.session_state.tema = frozen_tema
-        # Não escrever em keys de widgets já instanciados pelo Streamlit.
-        # O congelamento é feito no estado canônico: book/take/tema.
-
     if last:
-        st.session_state["cia_last_action"] = "nav"
-        st.session_state["ypoema_atual_para_analise"] = ""
         st.session_state.take -= 1
         if st.session_state.take < 0:
             st.session_state.take = maxy_ypoemas
         _sync_book_theme_state()
 
     if rand:
-        st.session_state["cia_last_action"] = "nav"
-        st.session_state["ypoema_atual_para_analise"] = ""
         st.session_state.take = random.randrange(0, maxy_ypoemas + 1)
         _sync_book_theme_state()
 
     if nest:
-        st.session_state["cia_last_action"] = "nav"
-        st.session_state["ypoema_atual_para_analise"] = ""
         st.session_state.take += 1
         if st.session_state.take > maxy_ypoemas:
             st.session_state.take = 0
@@ -1712,37 +1410,19 @@ def page_ypoemas():
     with col_temas:
         pick_tema_palco()
 
-    temas_list = load_temas(_current_book())
+    temas_list = load_temas(st.session_state.book)
     _sync_book_theme_state()
 
-    if more and st.session_state.get("cia_last_action") == "more_same_theme":
-        frozen_book = st.session_state.get("more_same_book", _current_book())
-        frozen_take = int(st.session_state.get("more_same_take", st.session_state.get("take", 0)))
-        frozen_tema = st.session_state.get("more_same_tema", "")
-        st.session_state.book = frozen_book
-        st.session_state.take = frozen_take
-        if frozen_tema:
-            st.session_state.tema = frozen_tema
-        temas_list = load_temas(_current_book())
-        maxy_ypoemas = len(temas_list) - 1
-        if st.session_state.take > maxy_ypoemas or st.session_state.take < 0:
-            st.session_state.take = 0
-            st.session_state.tema = temas_list[0] if temas_list else ""
-
     lnew = True
-    cia_mode_page = st.session_state.get("sidebar_panel") == "CIA"
     if manu:
-        if cia_mode_page:
-            st.markdown(guia_do_leitor_cia())
-        else:
-            st.subheader(load_md_file("MANUAL_YPOEMAS.md"))
+        st.subheader(load_md_file("MANUAL_YPOEMAS.md"))
 
     if lnew:
         what_book = (
             "🌿  "
             + st.session_state.lang
             + " ( "
-            + _current_book()
+            + st.session_state.book
             + " ) ( "
             + str(st.session_state.take + 1)
             + " / "
@@ -1753,48 +1433,19 @@ def page_ypoemas():
         ypoemas_expander = st.expander(what_book, expanded=True)
         with ypoemas_expander:
             cia_mode = st.session_state.get("sidebar_panel") == "CIA"
-            cia_mood_changed = bool(st.session_state.get("cia_mood_changed", False))
-            cia_force_new_poema = bool(st.session_state.get("cia_force_new_poema", False))
-            cia_last_action = st.session_state.get("cia_last_action", "")
-
-            explicit_poem_change = bool(
-                last
-                or rand
-                or nest
-                or cia_last_action in {"nav", "book_change", "theme_change"}
-            )
-            more_same_theme = bool(more or cia_last_action == "more_same_theme")
-
-            if cia_mode and (cia_mood_changed or cia_last_action == "cia_mood"):
-                _cia_restaurar_identidade_objeto()
-                force_new_poema = False
-            else:
-                force_new_poema = bool(explicit_poem_change or cia_force_new_poema or more_same_theme)
-
-            preserve_cia_poema = (
-                cia_mode
-                and _cia_objeto_analise_existe()
-                and not force_new_poema
+            force_new_poema = bool(more or last or rand or nest)
+            same_analysis_text = (
+                st.session_state.get("ypoema_em_analise")
+                and st.session_state.get("tema_em_analise") == st.session_state.tema
+                and st.session_state.get("book_em_analise") == st.session_state.book
+                and st.session_state.get("take_em_analise") == st.session_state.take
+                and st.session_state.get("lang_em_analise") == st.session_state.lang
             )
 
-            if preserve_cia_poema:
-                # Troca de lente CIA: usa exatamente o mesmo objeto de análise.
-                _cia_restaurar_identidade_objeto()
-                curr_ypoema = st.session_state.get("ypoema_atual_para_analise", "")
+            if cia_mode and same_analysis_text and not force_new_poema:
+                curr_ypoema = st.session_state.get("ypoema_em_analise", "")
                 generated_new_poema = False
-                st.session_state["cia_mood_changed"] = False
-                st.session_state["cia_force_new_poema"] = False
-                st.session_state["cia_freeze_book"] = ""
-                st.session_state["cia_freeze_take"] = -1
-                st.session_state["cia_freeze_tema"] = ""
-                st.session_state["cia_last_action"] = ""
             else:
-                st.session_state["cia_mood_changed"] = False
-                st.session_state["cia_force_new_poema"] = False
-
-                if cia_mode and more_same_theme and _cia_objeto_analise_existe():
-                    _cia_restaurar_identidade_objeto()
-
                 if st.session_state.lang != st.session_state.last_lang:
                     curr_ypoema = load_lypo()  # changes in lang, keep LYPO
                 else:
@@ -1811,23 +1462,12 @@ def page_ypoemas():
                         save_typo.close()
                     curr_ypoema = load_typo()  # to normalize line breaks in text
 
-                if cia_mode:
-                    _cia_fixar_objeto_analise(curr_ypoema)
-                else:
-                    st.session_state.ypoema_em_analise = curr_ypoema
-                    st.session_state.tema_em_analise = st.session_state.tema
-                    st.session_state.book_em_analise = _current_book()
-                    st.session_state.take_em_analise = st.session_state.take
-                    st.session_state.lang_em_analise = st.session_state.lang
-
+                st.session_state.ypoema_em_analise = curr_ypoema
+                st.session_state.tema_em_analise = st.session_state.tema
+                st.session_state.book_em_analise = st.session_state.book
+                st.session_state.take_em_analise = st.session_state.take
+                st.session_state.lang_em_analise = st.session_state.lang
                 generated_new_poema = True
-                st.session_state["cia_last_action"] = ""
-                st.session_state["more_same_book"] = ""
-                st.session_state["more_same_take"] = -1
-                st.session_state["more_same_tema"] = ""
-                st.session_state["ypo_anchor_book"] = _current_book()
-                st.session_state["ypo_anchor_take"] = int(st.session_state.get("take", 0))
-                st.session_state["ypo_anchor_tema"] = st.session_state.get("tema", "")
 
             if generated_new_poema:
                 update_readings(st.session_state.tema)
@@ -2193,128 +1833,6 @@ def page_abouts():
 
 
 
-SIDEBAR_FILHOTE_WIDTH_PX = 64
-CIA_MOOD_OPTIONS = [
-    "Sintática",
-    "Sintética",
-    "Formal",
-    "Reduzida",
-    "Completa",
-    "Index",
-]
-def render_cia_mood_selectbox():
-    """Lista da CIA sempre aberta: troca só a camada de análise."""
-    current = st.session_state.get("cia_mood", "Sintática").strip()
-    if current not in CIA_MOOD_OPTIONS:
-        current = "Sintática"
-        st.session_state["cia_mood"] = current
-
-    with st.sidebar.expander("↓  análises CIA", expanded=True):
-        for mood in CIA_MOOD_OPTIONS:
-            label = f"• {mood}" if mood == current else mood
-            if st.button(label, key=f"cia_mood_list_{mood}", use_container_width=True):
-                if mood != st.session_state.get("cia_mood", "Sintática"):
-                    if _cia_objeto_analise_existe():
-                        st.session_state["cia_freeze_book"] = st.session_state.get("book_atual_para_analise", "")
-                        st.session_state["cia_freeze_take"] = int(st.session_state.get("take_atual_para_analise", -1))
-                        st.session_state["cia_freeze_tema"] = st.session_state.get("tema_atual_para_analise", "")
-                    else:
-                        st.session_state["cia_freeze_book"] = st.session_state.get("book", "")
-                        st.session_state["cia_freeze_take"] = int(st.session_state.get("take", -1))
-                        st.session_state["cia_freeze_tema"] = st.session_state.get("tema", "")
-                    st.session_state["cia_mood"] = mood
-                    st.session_state["cia_mood_select"] = mood
-                    st.session_state["cia_reading_mode"] = False
-                    st.session_state["cia_last_action"] = "cia_mood"
-                    st.session_state["cia_mood_changed"] = True
-                    # Sem rerun manual: o clique do Streamlit já atualiza a página uma vez.
-                    # Forçar st.rerun() aqui duplicava/triplicava recarregamentos.
-
-def _cia_sidebar_filha_active(chosen_id):
-    """Mantém a sidebar CIA fixa; não recolhe para a coluna reduzida."""
-    if str(chosen_id) != "2":
-        st.session_state["sidebar_panel"] = "Machina"
-        st.session_state["cia_reading_mode"] = False
-    return False
-
-
-def apply_sidebar_mae_filha_styles(chosen_id):
-    """Alterna a largura visual da sidebar entre mãe e filha."""
-    if _cia_sidebar_filha_active(chosen_id):
-        width = SIDEBAR_FILHOTE_WIDTH_PX
-        st.markdown(
-            f"""
-            <style>
-            [data-testid='stSidebar'][aria-expanded='true'],
-            section[data-testid='stSidebar'][aria-expanded='true'] {{
-                width: {width}px !important;
-                min-width: {width}px !important;
-                max-width: {width}px !important;
-            }}
-
-            [data-testid='stSidebar'][aria-expanded='true'] > div:first-child,
-            section[data-testid='stSidebar'][aria-expanded='true'] > div:first-child {{
-                width: {width}px !important;
-                min-width: {width}px !important;
-                max-width: {width}px !important;
-                padding-left: 0.20rem !important;
-                padding-right: 0.20rem !important;
-                overflow-x: hidden !important;
-            }}
-
-            [data-testid='stSidebar'] div[data-testid='stSidebarContent'] {{
-                padding-left: 0.20rem !important;
-                padding-right: 0.20rem !important;
-            }}
-
-            [data-testid='stSidebar'] .stButton button {{
-                min-width: 100% !important;
-                min-height: 3.0rem !important;
-                font-size: 1.85rem !important;
-                line-height: 1 !important;
-                padding: 0 !important;
-                border-radius: 14px !important;
-            }}
-
-            .machina-sidebar-filha-spacer {{
-                height: 42vh;
-            }}
-            </style>
-            """,
-            unsafe_allow_html=True,
-        )
-    else:
-        st.markdown(
-            """
-            <style>
-            [data-testid='stSidebar'][aria-expanded='true'],
-            section[data-testid='stSidebar'][aria-expanded='true'] {
-                width: 315px !important;
-                min-width: 315px !important;
-                max-width: 315px !important;
-            }
-
-            [data-testid='stSidebar'][aria-expanded='true'] > div:first-child,
-            section[data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
-                width: 315px !important;
-                min-width: 315px !important;
-                max-width: 315px !important;
-            }
-            </style>
-            """,
-            unsafe_allow_html=True,
-        )
-
-
-def render_sidebar_filha():
-    """Compatibilidade: sidebar-filha desativada; a CIA permanece fixa."""
-    st.session_state["sidebar_panel"] = "CIA"
-    st.session_state["cia_reading_mode"] = False
-    render_sidebar_for_page("2")
-    with st.sidebar:
-        render_cia_mood_selectbox()
-
-
 def render_sidebar_for_page(chosen_id):
     """Renderiza os controles fixos do leitor."""
     pick_lang()
@@ -2325,7 +1843,7 @@ def render_sidebar_for_page(chosen_id):
 configure_cia(
     translate_func=translate,
     load_typo_func=load_typo,
-    write_ypoema_func=write_cia_header,
+    write_ypoema_func=write_ypoema,
     ip_address=IPAddres,
 )
 
@@ -2352,30 +1870,17 @@ def main():
         st.markdown("<div class='machina-divider-palco'><hr /></div>", unsafe_allow_html=True)
 
         magy = PAGE_IMAGES.get(chosen_id, "img_ypoemas.jpg")
-        apply_sidebar_mae_filha_styles(chosen_id)
 
-        if _cia_sidebar_filha_active(chosen_id):
-            render_sidebar_filha()
-        else:
-            render_sidebar_for_page(chosen_id)
+        render_sidebar_for_page(chosen_id)
 
-            if chosen_id == "2":
-                draw_sidebar_panel_buttons(chosen_id)
+        with st.sidebar:
+            st.image("./images/" + magy)
 
-                if st.session_state.get("sidebar_panel", "Machina") == "CIA":
-                    st.session_state["cia_reading_mode"] = False
-                    render_cia_mood_selectbox()
-                else:
-                    st.session_state["cia_reading_mode"] = False
-                    st.session_state["cia_mood_select"] = st.session_state.get("cia_mood", "Sintática")
 
-            with st.sidebar:
-                cia_sidebar_publica = (
-                    chosen_id == "2"
-                    and st.session_state.get("sidebar_panel", "Machina") == "CIA"
-                )
-                if not cia_sidebar_publica:
-                    st.image("./images/" + magy)
+        if chosen_id == "2":
+            draw_sidebar_panel_buttons(chosen_id)
+            if st.session_state.get("sidebar_panel", "Machina") == "CIA":
+                render_cia_sidebar()
 
 
         palco = st.container()
@@ -2390,11 +1895,10 @@ def main():
                 elif chosen_id == "2":
                     magy = "img_ypoemas.jpg"
                     page_ypoemas()
-                    current_book = _current_book()
                     status = palco_status(
-                        current_book,
+                        st.session_state.book,
                         st.session_state.get("take", 0) + 1,
-                        len(load_temas(current_book)),
+                        len(load_temas(st.session_state.book)),
                     )
                 elif chosen_id == "3":
                     magy = "img_eureka.jpg"
@@ -2411,11 +1915,10 @@ def main():
                 else:
                     magy = "img_ypoemas.jpg"
                     page_ypoemas()
-                    current_book = _current_book()
                     status = palco_status(
-                        current_book,
+                        st.session_state.book,
                         st.session_state.get("take", 0) + 1,
-                        len(load_temas(current_book)),
+                        len(load_temas(st.session_state.book)),
                     )
 
                 st.markdown(
