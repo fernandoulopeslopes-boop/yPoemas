@@ -3,9 +3,9 @@
 *- 
 *- cia_abertura.ypo
 *- 
-|01|01|Abertura_0101|F|1|1|A|
+|01|01|Abertura_0101|F|1|1|a CIA ( |
 |01|02|Abertura_0102|F|1|1|< nome_cia >|
-|01|03|Abertura_0103|F|2|1|não chega ao|não aparece no|
+|01|03|Abertura_0103|F|2|1| ) não chega ao|não aparece no|
 |01|04|Abertura_0104|F|2|1|ambiente da Machina|entre os yPoemas|
 |01|05|Abertura_0105|F|2|1|para |com intenção de|
 |01|06|Abertura_0106|T|3|1|explicar o|dar respostas ao|indicar caminhos ao|
