@@ -395,7 +395,7 @@ def fala_data(dref):
 
 
 def fala_nome_cia():
-    pNome_Cia = gera_poema("CIA","")
+    pNome_Cia = gera_poema("Cia","")
     return(pNome_Cia)
 
 def fala_norma_abnp():
