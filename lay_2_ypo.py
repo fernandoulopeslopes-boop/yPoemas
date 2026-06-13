@@ -235,21 +235,22 @@ def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo y
         )
     else:
         # rebuild script with new positions
-        with open(
-            os.path.join("./data/" + nome_tema + ".ypo"), "w", encoding="utf-8"
-        ) as file:
+        path = os.path.join("./data", nome_tema + ".ypo")
+        tmp_path = path + ".tmp"
+        
+        with open(tmp_path, "w", encoding="utf-8", newline="") as file:
             for linha in lista_header:
                 file.write(linha)
-
+        
             for linha in lista_change:
                 file.write(linha)
-
+        
             for linha in lista_finais:
                 file.write(linha)
-                
+        
             file.write("###")
-
-        file.close()
+        
+        os.replace(tmp_path, path)
 
     return novo_poema
 
