@@ -5,6 +5,8 @@ import streamlit as st
 
 from random import randrange
 
+# new deploy test
+
 def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo yPoema
     """
     :param = script, tema
@@ -221,7 +223,7 @@ def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo y
 
     novo_poema.append(acerto_final(novo_verso))
 
-    if  "Nós" in nome_tema:
+    if nome_tema == "Nós":
         novo_poema.append("\n")
         novo_poema.append(
             '<a href="https://thispersondoesnotexist.com/" target="_blank">... quem será essa pessoa que não existe?</a>'
@@ -274,6 +276,10 @@ def acerto_final(texto):
         texto = texto.replace(" #", "")
     if "#" in texto:
         texto = texto.replace("#", "")
+    if "< nome_cia >" in texto:
+        texto = texto.replace("< nome_cia >", fala_nome_cia())
+    if "< pCity >" in texto:
+        texto = texto.replace("< pCity >", fala_cidade_fato())
     if "< pCity >" in texto:
         texto = texto.replace("< pCity >", fala_cidade_fato())
     if "< pCidadeOficio >" in texto:
@@ -288,12 +294,12 @@ def acerto_final(texto):
         texto = texto.replace("< dNormas >", fala_norma_abnp())
     if "< dPublic >" in texto:
         hoje = datetime.datetime.now().date()
-        rand = randrange(0, hoje.year * 5)
+        rand = randrange(0, hoje.year * 30)
         ontem = hoje - datetime.timedelta(days=rand)
         texto = texto.replace("< dPublic >", fala_data(ontem))
     if "< dOficio >" in texto:
         hoje = datetime.datetime.now().date()
-        rand = randrange(0, hoje.year * 5)
+        rand = randrange(0, hoje.year * 30)
         demain = hoje + datetime.timedelta(days=rand)
         texto = texto.replace("< dOficio >", fala_data(demain))
 
@@ -388,12 +394,16 @@ def fala_data(dref):
     return str(dia) + " de " + str(mestxt) + " de " + str(ano)
 
 
+def fala_nome_cia():
+    pNome_Cia = gera_poema("CIA","")
+    return(pNome_Cia)
+
 def fala_norma_abnp():
     """
     :return: data randômicamente 'anterior' à data atual
     """
     hoje = datetime.datetime.now().date()
-    rand = randrange(0, hoje.year * 5)
+    rand = randrange(0, hoje.year * 30)
     ontem = hoje - datetime.timedelta(days=rand)
     return str(ontem.day) + "/" + str(ontem.year)
 
@@ -427,7 +437,7 @@ def abre(nome_do_tema):
     return lista
 
 
-st.cache_data
+@st.cache(allow_output_mutation=True)
 def load_babel():
     lista = []
     with open(os.path.join("./base/babel.txt"), "r") as babel:
