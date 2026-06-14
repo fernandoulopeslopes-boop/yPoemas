@@ -28,6 +28,7 @@ Sinais
 Sonoro
 Sopros
 Tempo
+Tempus
 Usinas
 Veio
 Victor
