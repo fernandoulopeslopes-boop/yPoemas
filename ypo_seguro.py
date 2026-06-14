@@ -564,6 +564,8 @@ def init_session_state():
         "cia_font": "Trebuchet MS",
         "cia_size": 18,
         "tema_last_analise": "",
+        "force_new_ypoema": True,
+        "last_generation_token": "",
         "ypoema_em_analise": "",
         "tema_em_analise": "",
         "book_em_analise": "",
@@ -754,11 +756,25 @@ def _prepare_theme_widget():
         st.session_state["opt_take_palco"] = normalized
 
 
+def _sync_theme_widget_to_take():
+    """Faz a lista de temas refletir a navegação por botões."""
+    temas_list = load_temas(st.session_state.book)
+    if not temas_list:
+        return
+
+    current = _coerce_take(st.session_state.get("take", 0), temas_list)
+    st.session_state["opt_take_palco"] = current
+
+
 def _on_palco_book_change():
     choice = st.session_state.get("palco_book_select", st.session_state.book)
     if choice != st.session_state.book:
         st.session_state.book = choice
         st.session_state.take = 0
+        st.session_state.force_new_ypoema = True
+        st.session_state.last_generation_token = ""
+        if "opt_take_palco" in st.session_state:
+            del st.session_state["opt_take_palco"]
     _sync_book_theme_state()
 
 
@@ -769,10 +785,15 @@ def _on_palco_theme_change():
         st.session_state.tema = ""
         return
 
+    previous_take = _coerce_take(st.session_state.get("take", 0), temas_list)
     take = _coerce_take(
-        st.session_state.get("opt_take_palco", st.session_state.get("take", 0)),
+        st.session_state.get("opt_take_palco", previous_take),
         temas_list,
     )
+
+    if take != previous_take or st.session_state.tema != temas_list[take]:
+        st.session_state.force_new_ypoema = True
+        st.session_state.last_generation_token = ""
 
     st.session_state.take = take
     st.session_state.tema = temas_list[take]
@@ -1395,17 +1416,26 @@ def page_ypoemas():
         st.session_state.take -= 1
         if st.session_state.take < 0:
             st.session_state.take = maxy_ypoemas
+        st.session_state.force_new_ypoema = True
+        st.session_state.last_generation_token = ""
         _sync_book_theme_state()
+        _sync_theme_widget_to_take()
 
     if rand:
         st.session_state.take = random.randrange(0, maxy_ypoemas + 1)
+        st.session_state.force_new_ypoema = True
+        st.session_state.last_generation_token = ""
         _sync_book_theme_state()
+        _sync_theme_widget_to_take()
 
     if nest:
         st.session_state.take += 1
         if st.session_state.take > maxy_ypoemas:
             st.session_state.take = 0
+        st.session_state.force_new_ypoema = True
+        st.session_state.last_generation_token = ""
         _sync_book_theme_state()
+        _sync_theme_widget_to_take()
 
     with col_temas:
         pick_tema_palco()
@@ -1442,11 +1472,22 @@ def page_ypoemas():
                 and st.session_state.get("lang_em_analise") == st.session_state.lang
             )
 
+            generation_token = (
+                f"{st.session_state.book}|{st.session_state.take}|"
+                f"{st.session_state.tema}|{st.session_state.lang}"
+            )
+            force_new_poema = force_new_poema or bool(
+                st.session_state.get("force_new_ypoema", False)
+            )
+            force_new_poema = force_new_poema or (
+                st.session_state.get("last_generation_token", "") != generation_token
+            )
+
             if cia_mode and same_analysis_text and not force_new_poema:
                 curr_ypoema = st.session_state.get("ypoema_em_analise", "")
                 generated_new_poema = False
             else:
-                if st.session_state.lang != st.session_state.last_lang:
+                if st.session_state.lang != st.session_state.last_lang and not force_new_poema:
                     curr_ypoema = load_lypo()  # changes in lang, keep LYPO
                 else:
                     curr_ypoema = load_poema(st.session_state.tema, "")
@@ -1467,6 +1508,8 @@ def page_ypoemas():
                 st.session_state.book_em_analise = st.session_state.book
                 st.session_state.take_em_analise = st.session_state.take
                 st.session_state.lang_em_analise = st.session_state.lang
+                st.session_state.last_generation_token = generation_token
+                st.session_state.force_new_ypoema = False
                 generated_new_poema = True
 
             if generated_new_poema:
