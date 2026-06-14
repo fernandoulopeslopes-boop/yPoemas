@@ -752,7 +752,10 @@ def _prepare_theme_widget():
     current = _coerce_take(st.session_state.get("take", 0), temas_list)
     raw_value = st.session_state.get("opt_take_palco", current)
     normalized = _coerce_take(raw_value, temas_list)
-    if normalized != raw_value:
+
+    if normalized != current:
+        st.session_state["opt_take_palco"] = current
+    elif normalized != raw_value:
         st.session_state["opt_take_palco"] = normalized
 
 
@@ -773,9 +776,13 @@ def _on_palco_book_change():
         st.session_state.take = 0
         st.session_state.force_new_ypoema = True
         st.session_state.last_generation_token = ""
-        if "opt_take_palco" in st.session_state:
-            del st.session_state["opt_take_palco"]
+        st.session_state.ypoema_em_analise = ""
+        st.session_state.tema_em_analise = ""
+        st.session_state.book_em_analise = ""
+        st.session_state.take_em_analise = -1
+        st.session_state.lang_em_analise = ""
     _sync_book_theme_state()
+    st.session_state["opt_take_palco"] = st.session_state.take
 
 
 def _on_palco_theme_change():
@@ -815,6 +822,20 @@ def pick_book_palco():
         key=key,
         on_change=_on_palco_book_change,
     )
+
+    selected_book = st.session_state.get(key, st.session_state.book)
+    if selected_book != st.session_state.book:
+        st.session_state.book = selected_book
+        st.session_state.take = 0
+        st.session_state.force_new_ypoema = True
+        st.session_state.last_generation_token = ""
+        st.session_state.ypoema_em_analise = ""
+        st.session_state.tema_em_analise = ""
+        st.session_state.book_em_analise = ""
+        st.session_state.take_em_analise = -1
+        st.session_state.lang_em_analise = ""
+        _sync_book_theme_state()
+        st.session_state["opt_take_palco"] = st.session_state.take
 
 
 def pick_tema_palco():
@@ -1392,6 +1413,11 @@ def page_ypoemas():
 
     with col_livros:
         pick_book_palco()
+
+    _sync_book_theme_state()
+    st.session_state["opt_take_palco"] = st.session_state.take
+    temas_list = load_temas(st.session_state.book)
+    maxy_ypoemas = len(temas_list) - 1
 
     with col_nav:
         help_tips = load_help(st.session_state.lang)
