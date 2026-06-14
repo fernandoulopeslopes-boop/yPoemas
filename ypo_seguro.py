@@ -668,7 +668,7 @@ def pick_lang():  # lista oficial de idiomas + P.O.L.Y.
     )
 
     choice = st.sidebar.selectbox(
-        translate("idiomas disponíveis..."),
+        translate("🌿 idiomas disponíveis..."),
         options,
         index=options.index(current),
         key="idioma_oficial_select",
@@ -1016,7 +1016,7 @@ def load_info(nome_tema):
                     result = "<br>"
                     result += "<br>"
                     result += "<br>"
-                    result += "Titulo: " + nome_tema + "<br>"
+                    result += "🌿 Titulo: " + nome_tema + "<br>"
                     result += "Gênero: " + genero + "  " + "<br>"
                     result += "Imagem: " + imagem + "  " + "<br>"
                     result += "Versos: " + qtd_versos + "  " + "<br>"
