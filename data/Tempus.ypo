@@ -7,19 +7,21 @@
 |01|04|Tempus_0104|F|4|4|não volta.|passou.|foi-se.|já era.|
 |02|00|
 |02|01|Tempus_0201|F|1|1|O futuro,|
-|02|02|Tempus_0202|F|7|2|incerto|desigual|utópico|sonhado|impreciso|inventado|sublimado|
+|02|02|Tempus_0202|F|7|2|incerto|desigual|utópico|sonhado|impreciso|inventado|sublimado|infindo,|intermitente,|inexistente,|impaciente,|indefinido|
 |02|03|Tempus_0203|F|1|1|e|
-|02|04|Tempus_0204|F|5|4|infindo,|intermitente,|inexistente,|impaciente,|indefinido,|
-|02|05|Tempus_0205|T|4|3|não demora.|virá.|chegará.|não tem hora.|
+|02|04|Tempus_0202|T|5|4|incerto|desigual|utópico|sonhado|impreciso|inventado|sublimado|infindo,|intermitente,|inexistente,|impaciente,|indefinido|
+|02|05|Tempus_0205|T|4|3|, não demora.|, virá.|, chegará.|, não tem hora.|
 |03|00|
 |03|01|Tempus_0301|T|1|1|O presente,|
-|03|02|Tempus_0302|F|4|1|pulsando|urgindo|rugindo|revirando|
+|03|02|Tempus_0302|F|4|1|pulsando|urgindo|rugindo|revirando|inventando|
 |03|03|Tempus_0303|F|4|4|no dia-a-dia,|à cada segundo,|em tic-tacs,|surpresas,|
 |03|04|Tempus_0304|F|4|2|é agora:|impera:|é quem manda:|indaga:|
 |04|00|
-|04|01|Tempus_0401|T|1|1|Sendo um dia|
-|05|01|Tempus_0501|F|1|1|do outro diferente,|
-|06|01|Tempus_0601|F|1|1|o quê na gente pensa igual?|
+|04|01|Tempus_0401|T|1|1|Sendo um dia|Se cada dia é|
+|05|01|Tempus_0501|F|1|1|do outro|do ontem|do futuro|do amanhã|
+|05|02|Tempus_0502|F|1|1|diferente,|distinto,|desigual,|
+|06|01|Tempus_0601|T|1|1|o quê na gente|o quê nas gentes|o quê nas pessoas|o quê nos povos|
+|06|02|Tempus_0602|F|1|1|pensa igual?|nunca muda?|
 <EOF>
 # 
 #      Verbetes usados: 67
