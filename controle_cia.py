@@ -1736,8 +1736,8 @@ def build_cia_index_html(curr_ypoema):
 def render_cia_stage(curr_ypoema):
     """Renderiza a análise da CIA; traduz o conteúdo quando o leitor troca de idioma."""
     cia_offset = int(st.session_state.get("cia_line0_offset_px", 0))
-    cia_font = st.session_state.get("stage_font", st.session_state.get("cia_font", "Trebuchet MS"))
-    cia_size = int(st.session_state.get("cia_palco_size", st.session_state.get("cia_size", 18)))
+    cia_font = st.session_state.get("cia_font", "Trebuchet MS")
+    cia_size = int(st.session_state.get("cia_size", 18))
     mood = st.session_state.get("cia_mood", CIA_MOODS[0])
 
     def _translate_analysis(markdown_text):
