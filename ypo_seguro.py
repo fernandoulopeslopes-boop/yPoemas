@@ -1905,34 +1905,76 @@ def page_abouts():
 
 
 
-def draw_lista_novas_analises_button():
-    """Botão auxiliar da CIA/INDEX: gera lista de divergências combinatórias.
+def draw_lista_ficha_tecnica_button():
+    """Botões auxiliares da CIA/INDEX para limpar a ficha técnica dos .ypo.
 
-    Não altera .ypo, motor ou análises. Apenas chama build_lista_novas_analises.py
-    e oferece o TXT resultante para conferência manual.
+    INDEX limpo: gera lista_ficha_tecnica_divergencias.txt.
+    Corrigir rodapés: atualiza apenas as linhas técnicas do rodapé dos .ypo,
+    com backup e relatório.
     """
     st.markdown("<div style='height: 0.35rem'></div>", unsafe_allow_html=True)
 
-    if st.button("INDEX limpo", key="btn_lista_novas_analises", help="gera lista_novas_analises.txt", use_container_width=True):
+    if st.button(
+        "INDEX limpo",
+        key="btn_lista_ficha_tecnica_divergencias",
+        help="gera lista_ficha_tecnica_divergencias.txt",
+        use_container_width=True,
+    ):
         try:
-            mod = importlib.import_module("build_lista_novas_analises")
-            divergencias, problemas = mod.build_lista_novas_analises()
-            st.success(f"lista gerada: {len(divergencias)} divergência(s), {len(problemas)} problema(s).")
+            mod = importlib.import_module("build_ficha_tecnica_limpa_de_verdade")
+            divergencias, problemas = mod.build_lista_ficha_tecnica_divergencias()
+            st.success(
+                f"lista gerada: {len(divergencias)} tema(s) com divergência, "
+                f"{len(problemas)} problema(s)."
+            )
         except Exception as exc:
             st.error(f"não foi possível gerar a lista: {exc}")
 
-    output_path = os.path.join("./base", "lista_novas_analises.txt")
+    output_path = os.path.join("./base", "lista_ficha_tecnica_divergencias.txt")
     if os.path.exists(output_path):
         with open(output_path, "rb") as file:
             st.download_button(
                 "baixar lista",
                 data=file,
-                file_name="lista_novas_analises.txt",
+                file_name="lista_ficha_tecnica_divergencias.txt",
                 mime="text/plain",
-                key="download_lista_novas_analises",
+                key="download_lista_ficha_tecnica_divergencias",
                 use_container_width=True,
             )
 
+        if st.button(
+            "Corrigir rodapés",
+            key="btn_corrigir_rodapes_ficha_tecnica",
+            help="corrige apenas o rodapé técnico dos .ypo listados/recalculados, com backup",
+            use_container_width=True,
+        ):
+            try:
+                mod = importlib.import_module("build_ficha_tecnica_limpa_de_verdade")
+                corrigidos, problemas = mod.corrigir_rodapes_ficha_tecnica()
+                st.success(
+                    f"rodapés corrigidos: {len(corrigidos)} tema(s), "
+                    f"{len(problemas)} aviso(s)/problema(s)."
+                )
+                st.cache_data.clear()
+            except Exception as exc:
+                st.error(f"não foi possível corrigir os rodapés: {exc}")
+
+    report_path = os.path.join("./base", "relatorio_ficha_tecnica_corrigida.txt")
+    if os.path.exists(report_path):
+        with open(report_path, "rb") as file:
+            st.download_button(
+                "baixar relatório",
+                data=file,
+                file_name="relatorio_ficha_tecnica_corrigida.txt",
+                mime="text/plain",
+                key="download_relatorio_ficha_tecnica_corrigida",
+                use_container_width=True,
+            )
+
+
+# Compatibilidade com o nome anterior, se algum trecho antigo ainda chamar.
+def draw_lista_novas_analises_button():
+    draw_lista_ficha_tecnica_button()
 
 def render_sidebar_for_page(chosen_id):
     """Renderiza os controles fixos do leitor."""
@@ -1982,7 +2024,7 @@ def main():
             draw_sidebar_panel_buttons(chosen_id)
             if st.session_state.get("sidebar_panel", "Machina") == "CIA":
                 render_cia_sidebar()
-                draw_lista_novas_analises_button()
+                draw_lista_ficha_tecnica_button()
 
 
         palco = st.container()
