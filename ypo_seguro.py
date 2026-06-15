@@ -3,6 +3,7 @@ import re
 import time
 import random
 import base64
+import html
 import socket
 import asyncio
 import streamlit as st
@@ -652,6 +653,7 @@ def init_session_state():
         "cia_line0_offset_px": -385,
         "cia_font": "Trebuchet MS",
         "cia_size": 18,
+        "cia_palco_size": 18,
         "tema_last_analise": "",
         "ypoema_em_analise": "",
         "tema_em_analise": "",
@@ -1040,6 +1042,45 @@ def load_md_file(file):  # Open files for about's
     return file_text
 
 
+def render_help_ypoemas_mesma_fonte():
+    """Renderiza o Help yPoemas com a fonte/corpo escolhidos pelo leitor.
+
+    Cabeçalhos Markdown (#, ##, ###) viram apenas negrito para evitar
+    poluição visual e respeitar a escala do palco.
+    """
+    raw = load_md_file("MANUAL_YPOEMAS.md")
+    stage_font = st.session_state.get("stage_font", "Trebuchet MS")
+    stage_size = int(st.session_state.get("stage_size", 21))
+
+    html_lines = []
+    for raw_line in str(raw).splitlines():
+        line = raw_line.strip()
+        if not line:
+            html_lines.append("")
+            continue
+
+        heading = re.match(r"^#{1,6}\s+(.+)$", line)
+        if heading:
+            text = html.escape(heading.group(1).strip())
+            html_lines.append(f"<strong>{text}</strong>")
+            continue
+
+        text = html.escape(line)
+        text = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", text)
+        html_lines.append(text)
+
+    content = "<br>".join(html_lines)
+
+    st.markdown(
+        f"""
+        <div class='container'>
+            <p class='logo-text' style="font-family:{stage_font}; font-size:{stage_size}px; line-height:1.42;">{content}</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
 @st.cache_data
 def load_eureka(part_of_word):
     lexico_list = []
@@ -1319,13 +1360,30 @@ def _palco_titulo_centralizado(LOGO_TEXTO):
     )
 
 
-def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
+def _fonte_palco_leitor():
+    return st.session_state.get("stage_font", "Trebuchet MS")
+
+
+def _corpo_palco_leitor():
+    return int(st.session_state.get("stage_size", 21))
+
+
+def _corpo_palco_cia():
+    """Corpo protegido pela Machina quando yPoema e CIA dividem o palco."""
+    return int(st.session_state.get("cia_palco_size", st.session_state.get("cia_size", 18)))
+
+
+def write_ypoema_cia_palco(LOGO_TEXTO, LOGO_IMAGE=None):
+    """Renderiza o yPoema no palco da CIA: mesma fonte, corpo protegido."""
     LOGO_TEXTO = _palco_titulo_centralizado(LOGO_TEXTO)
+    stage_font = _fonte_palco_leitor()
+    palco_size = _corpo_palco_cia()
+
     if LOGO_IMAGE is None:
         st.markdown(
             f"""
             <div class='container'>
-                <p class='logo-text' style="font-family:{st.session_state.get('stage_font', 'Trebuchet MS')}; font-size:{st.session_state.get('stage_size', 21)}px;">{LOGO_TEXTO}</p>
+                <p class='logo-text' style="font-family:{stage_font}; font-size:{palco_size}px;">{LOGO_TEXTO}</p>
             </div>
             """,
             unsafe_allow_html=True,
@@ -1335,7 +1393,30 @@ def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
             f"""
             <div class='container'>
                 <img class='logo-img' src='data:image/jpg;base64,{base64.b64encode(open(LOGO_IMAGE, 'rb').read()).decode()}'>
-                <p class='logo-text' style="font-family:{st.session_state.get('stage_font', 'Trebuchet MS')}; font-size:{st.session_state.get('stage_size', 21)}px;">{LOGO_TEXTO}</p>
+                <p class='logo-text' style="font-family:{stage_font}; font-size:{palco_size}px;">{LOGO_TEXTO}</p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+
+def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
+    LOGO_TEXTO = _palco_titulo_centralizado(LOGO_TEXTO)
+    if LOGO_IMAGE is None:
+        st.markdown(
+            f"""
+            <div class='container'>
+                <p class='logo-text' style="font-family:{_fonte_palco_leitor()}; font-size:{_corpo_palco_leitor()}px;">{LOGO_TEXTO}</p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+    else:
+        st.markdown(
+            f"""
+            <div class='container'>
+                <img class='logo-img' src='data:image/jpg;base64,{base64.b64encode(open(LOGO_IMAGE, 'rb').read()).decode()}'>
+                <p class='logo-text' style="font-family:{_fonte_palco_leitor()}; font-size:{_corpo_palco_leitor()}px;">{LOGO_TEXTO}</p>
             </div>
             """,
             unsafe_allow_html=True,
@@ -1350,8 +1431,8 @@ def write_cia_header(LOGO_TEXTO, LOGO_IMAGE=None):
 
     mood = st.session_state.get("cia_mood", "")
     mood_label = f"({mood})" if mood else ""
-    stage_font = st.session_state.get('stage_font', 'Trebuchet MS')
-    stage_size = st.session_state.get('stage_size', 21)
+    stage_font = _fonte_palco_leitor()
+    stage_size = _corpo_palco_cia()
     mood_size = max(13, int(stage_size * 0.82))
 
     st.markdown(
@@ -1735,7 +1816,7 @@ def page_ypoemas():
         if cia_mode_page:
             st.markdown(guia_do_leitor_cia())
         else:
-            st.subheader(load_md_file("MANUAL_YPOEMAS.md"))
+            render_help_ypoemas_mesma_fonte()
 
     if lnew:
         what_book = (
@@ -1841,7 +1922,7 @@ def page_ypoemas():
             if st.session_state.get("sidebar_panel") == "CIA":
                 col_poema, col_cia = st.columns([5, 5])
                 with col_poema:
-                    write_ypoema(LOGO_TEXTO, None)
+                    write_ypoema_cia_palco(LOGO_TEXTO, None)
                 with col_cia:
                     render_cia_stage(curr_ypoema)
             else:
