@@ -998,6 +998,170 @@ def load_temas(book):  # List of themes inside a Book
     return book_list
 
 
+
+
+def ensure_matrix_image(nome_tema):
+    """Gera a imagem MATRIX do tema apenas quando ela ainda não existe.
+
+    Uso curatorial: o Help do yPoemas deve sempre ter a imagem
+    ./images/matrix/nome_do_tema.jpg, preservando o nome exato do tema.
+    Não altera .ypo, não altera motor, não altera ficha técnica.
+    """
+    tema = str(nome_tema).replace("\ufeff", "").strip()
+    if not tema:
+        return None
+
+    matrix_dir = os.path.join("./images", "matrix")
+    os.makedirs(matrix_dir, exist_ok=True)
+    matrix_path = os.path.join(matrix_dir, tema + ".jpg")
+
+    if os.path.exists(matrix_path):
+        return matrix_path
+
+    ypo_path = os.path.join("./data", tema + ".ypo")
+    if not os.path.exists(ypo_path):
+        return None
+
+    try:
+        import numpy as np
+        import matplotlib.pyplot as plt
+
+        curlin = "01"
+        linini = 1
+        x_pos = np.array([])
+        y_pos = np.array([])
+        z_pos = np.array([])
+        z_val = np.array([])
+
+        with open(ypo_path, encoding="utf-8", errors="replace") as file:
+            for line in file:
+                if not line.startswith("|"):
+                    continue
+
+                linhas = line.split("|")
+                if len(linhas) < 6:
+                    continue
+
+                try:
+                    newcol = int(linhas[2])
+                except ValueError:
+                    continue
+
+                if linhas[1] != curlin:
+                    linini += 1
+                    curlin = linhas[1]
+
+                if newcol == 0:
+                    x_pos = np.append(x_pos, linini)
+                    y_pos = np.append(y_pos, 0)
+                    z_pos = np.append(z_pos, 0)
+                    z_val = np.append(z_val, 0)
+                else:
+                    try:
+                        itimos = int(linhas[5])
+                    except ValueError:
+                        itimos = 0
+
+                    delta = 1
+                    x_pos = np.append(x_pos, linini - delta)
+                    y_pos = np.append(y_pos, newcol - delta)
+                    z_pos = np.append(z_pos, 0)
+                    z_val = np.append(z_val, itimos)
+
+        if len(x_pos) == 0:
+            return None
+
+        fg = plt.figure(figsize=(7, 7))
+        ax = fg.add_subplot(111, projection="3d")
+
+        x_val = np.ones(len(x_pos))
+        y_val = np.ones(len(y_pos))
+        z_pos = np.ones(len(z_pos))
+
+        ax.set_xlabel("x ➪ linhas", fontsize=14)
+        ax.set_ylabel("y ➪ versos", fontsize=14)
+        ax.set_zlabel("z ➪ ítimos", fontsize=14)
+        ax.view_init(elev=30, azim=-30)
+        ax.bar3d(
+            x_pos,
+            y_pos,
+            z_pos,
+            x_val,
+            y_val,
+            z_val,
+            color="#00ccaa",
+            alpha=0.85,
+            edgecolor="k",
+        )
+
+        plt.savefig(matrix_path, dpi=50)
+        plt.close(fg)
+        return matrix_path
+    except Exception:
+        try:
+            plt.close("all")
+        except Exception:
+            pass
+        return None
+
+
+def _extract_ypo_footer_info(nome_tema):
+    """Fallback discreto: lê ficha técnica do rodapé do .ypo quando info.txt falhar."""
+    tema = str(nome_tema).replace("\ufeff", "").strip()
+    ypo_path = os.path.join("./data", tema + ".ypo")
+    if not os.path.exists(ypo_path):
+        return "nonono"
+
+    versos = ""
+    usados = ""
+    tema_total = ""
+    banco = ""
+    analise = ""
+    cientifica = ""
+
+    try:
+        # Versos recalculado pelo número de linhas/versos ativos do tema.
+        seen = []
+        with open(ypo_path, encoding="utf-8", errors="replace") as file:
+            for line in file:
+                if line.startswith("|"):
+                    parts = line.split("|")
+                    if len(parts) > 1 and parts[1] not in seen:
+                        seen.append(parts[1])
+                elif "Verbetes usados:" in line:
+                    usados = line.split(":", 1)[1].strip().lstrip("#").strip()
+                elif "Verbetes do tema:" in line or "Verbetes do Tema:" in line:
+                    tema_total = line.split(":", 1)[1].strip().lstrip("#").strip()
+                elif "Banco de ítimos:" in line or "Banco de Ítimos:" in line:
+                    banco = line.split(":", 1)[1].strip().lstrip("#").strip()
+                elif "Análise combinatória:" in line:
+                    analise = line.split(":", 1)[1].strip().lstrip("#").strip()
+
+        versos = str(len(seen)) if seen else ""
+        if analise:
+            match = re.search(r"([0-9][0-9\.]*)(?:\s*\(([^)]*)\))?", analise)
+            if match:
+                numero = match.group(1)
+                try:
+                    cientifica = f"{float(numero.replace('.', '')):.3e}".replace(".", ",")
+                except Exception:
+                    cientifica = ""
+
+        result = "<br><br><br>"
+        result += "Titulo: " + tema + "<br>"
+        result += "Gênero: " + "" + "  " + "<br>"
+        result += "Imagem: " + "" + "  " + "<br>"
+        result += "Versos: " + versos + "  " + "<br>"
+        result += "Verbetes no texto: " + usados + "  " + "<br>"
+        result += "Verbetes do Tema: " + tema_total + "  " + "<br>"
+        result += "• Banco de Ítimos: " + banco + "  " + "<br>"
+        result += "Análise : " + analise + "  " + "<br>"
+        result += "Notação Científica: " + cientifica + "  " + "<br>"
+        result += "<br>"
+        return result
+    except Exception:
+        return "nonono"
+
 @st.cache_data
 def load_info(nome_tema):
     with open(os.path.join("./base/" + "info.txt"), "r", encoding="utf-8") as file:
@@ -1027,6 +1191,9 @@ def load_info(nome_tema):
                     result += "Análise : " + qtd_analiz + "  " + "<br>"
                     result += "Notação Científica: " + qtd_cienti + "  " + "<br>"
                     result += "<br>"
+
+        if result == "nonono":
+            result = _extract_ypo_footer_info(nome_tema)
 
         return result
 
@@ -1562,9 +1729,7 @@ def page_ypoemas():
                 if st.session_state.lang != "pt":  # translate if idioma <> pt
                     LOGO_TEXTO = translate(LOGO_TEXTO)
 
-                LOGO_IMAGE = (
-                    "./images/matrix/" + st.session_state.tema.capitalize() + ".jpg"
-                )
+                LOGO_IMAGE = ensure_matrix_image(st.session_state.tema)
                 write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
 
         if st.session_state.talk:
@@ -1707,7 +1872,7 @@ def page_eureka():
                 if st.session_state.lang != "pt":  # translate if idioma <> pt
                     LOGO_TEXTO = translate(LOGO_TEXTO)
 
-                LOGO_IMAGE = "./images/matrix/" + seed_tema.capitalize() + ".jpg"
+                LOGO_IMAGE = ensure_matrix_image(seed_tema)
                 write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
 
         else:
@@ -1892,7 +2057,7 @@ def page_abouts():
         if choice == "machina":
             st.subheader(load_md_file("ABOUT_machina I.md"))
             LOGO_TEXTO = load_info(st.session_state.tema)
-            LOGO_IMAGE = "./images/matrix/" + st.session_state.tema + ".jpg"
+            LOGO_IMAGE = ensure_matrix_image(st.session_state.tema)
             write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
             st.subheader(load_md_file("ABOUT_machina II.md"))
         else:
