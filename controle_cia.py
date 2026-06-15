@@ -1536,6 +1536,72 @@ def _cia_index_find_ypo_file(nome_tema):
     return ""
 
 
+def _cia_index_all_ypo_files():
+    """Lista os .ypo disponíveis para medir a grandeza da Machina. Leitura apenas."""
+    folders = ["./DATA", "./data", ".DATA", ".data", "./base", "."]
+    paths = []
+    seen = set()
+
+    for folder in folders:
+        if not os.path.isdir(folder):
+            continue
+        try:
+            for fname in os.listdir(folder):
+                if not fname.lower().endswith(".ypo"):
+                    continue
+                path = os.path.join(folder, fname)
+                key = os.path.abspath(path).lower()
+                if key in seen:
+                    continue
+                seen.add(key)
+                paths.append(path)
+        except Exception:
+            pass
+
+    return sorted(paths, key=lambda p: os.path.basename(p).lower())
+
+
+def _cia_index_norm_unique(value):
+    return re.sub(r"\s+", " ", str(value or "").strip()).casefold()
+
+
+def _cia_index_totais_machina():
+    """Totais reais e únicos de verbetes e ítimos em todos os .ypo encontrados."""
+    itimos_real = 0
+    itimos_unicos = set()
+    verbetes_real = 0
+    verbetes_unicos = set()
+
+    for ypo_file in _cia_index_all_ypo_files():
+        try:
+            with open(ypo_file, "r", encoding="utf-8", errors="replace") as f:
+                for raw in f:
+                    line = raw.strip()
+                    if not line or not line.startswith("|"):
+                        continue
+                    itens = _cia_index_itimos_from_pipe(line.split("|"))
+                    for item in itens:
+                        clean_item = str(item or "").strip()
+                        if not clean_item:
+                            continue
+                        itimos_real += 1
+                        itimos_unicos.add(_cia_index_norm_unique(clean_item))
+
+                        palavras = re.findall(r"[A-Za-zÀ-ÖØ-öø-ÿ0-9]+(?:[-'][A-Za-zÀ-ÖØ-öø-ÿ0-9]+)*", clean_item)
+                        verbetes_real += len(palavras)
+                        for palavra in palavras:
+                            verbetes_unicos.add(_cia_index_norm_unique(palavra))
+        except Exception:
+            pass
+
+    return {
+        "verbetes_real": verbetes_real,
+        "verbetes_unicos": len([v for v in verbetes_unicos if v]),
+        "itimos_real": itimos_real,
+        "itimos_unicos": len([v for v in itimos_unicos if v]),
+    }
+
+
 def _cia_index_parse_int(value):
     try:
         return int(str(value).strip())
@@ -1721,13 +1787,17 @@ def build_cia_index_html(curr_ypoema):
         or ""
     )
     row = _cia_index_numeros_tema(tema)
+    versos = len(_cia_poema_lines(curr_ypoema))
+    totais = _cia_index_totais_machina()
 
     return f"""
-        <p><strong>Index: {row['tema']}</strong></p>
-
         <p>Linhas: {row['linhas']}<br>
+        Versos: {versos}<br>
         Ítimos: {row['itimos']}<br>
         Palavras: {row['palavras']}</p>
+
+        <p>Total de verbetes na Machina: {_cia_index_formata_milhar(totais['verbetes_real'])} reais / {_cia_index_formata_milhar(totais['verbetes_unicos'])} únicos<br>
+        Total de ítimos na Machina: {_cia_index_formata_milhar(totais['itimos_real'])} reais / {_cia_index_formata_milhar(totais['itimos_unicos'])} únicos</p>
 
         <p>Variações possíveis: {_cia_index_formata_milhar(row['variacoes'])}<br>
         Notação científica: {_cia_index_formata_cientifica(row['variacoes'])}</p>
