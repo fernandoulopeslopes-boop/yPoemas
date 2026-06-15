@@ -1431,8 +1431,8 @@ def write_cia_header(LOGO_TEXTO, LOGO_IMAGE=None):
 
     mood = st.session_state.get("cia_mood", "")
     mood_label = f"({mood})" if mood else ""
-    stage_font = _fonte_palco_leitor()
-    stage_size = _corpo_palco_cia()
+    stage_font = st.session_state.get("cia_font", "Trebuchet MS")
+    stage_size = int(st.session_state.get("cia_size", 18))
     mood_size = max(13, int(stage_size * 0.82))
 
     st.markdown(
