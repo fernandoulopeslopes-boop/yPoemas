@@ -111,7 +111,7 @@ Sonoro : poesia
 Sopros : poesia
 Sos : joco
 Tempo : poesia
-Tempus : poesia
+Tempus : anima
 Tiro : author
 Tolero : poesia
 Usinas : poesia
