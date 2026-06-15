@@ -1794,10 +1794,12 @@ def build_cia_index_html(curr_ypoema):
         <p>Linhas: {row['linhas']}<br>
         Versos: {versos}<br>
         Ítimos: {row['itimos']}<br>
-        Palavras: {row['palavras']}</p>
+        Verbetes: {row['palavras']}</p>
 
-        <p>Total de verbetes na Machina: {_cia_index_formata_milhar(totais['verbetes_real'])} reais / {_cia_index_formata_milhar(totais['verbetes_unicos'])} únicos<br>
-        Total de ítimos na Machina: {_cia_index_formata_milhar(totais['itimos_real'])} reais / {_cia_index_formata_milhar(totais['itimos_unicos'])} únicos</p>
+        <p>Verbetes - total: {_cia_index_formata_milhar(totais['verbetes_real'])} reais<br>
+        Verbetes únicos: {_cia_index_formata_milhar(totais['verbetes_unicos'])} únicos<br>
+        Ítimos - total: {_cia_index_formata_milhar(totais['itimos_real'])} reais<br>
+        Ítimos únicos: {_cia_index_formata_milhar(totais['itimos_unicos'])} únicos</p>
 
         <p>Variações possíveis: {_cia_index_formata_milhar(row['variacoes'])}<br>
         Notação científica: {_cia_index_formata_cientifica(row['variacoes'])}</p>
