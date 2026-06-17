@@ -207,9 +207,9 @@ def apply_styles():
         """
         <style>
         [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
-            width: 315px !important;
-            min-width: 315px !important;
-            max-width: 315px !important;
+            width: 290px !important;
+            min-width: 290px !important;
+            max-width: 290px !important;
         }
 
         [data-testid="stSidebarResizer"],
