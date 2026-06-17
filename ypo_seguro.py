@@ -246,9 +246,9 @@ def apply_styles():
             padding-left: 8px;
         }
 
-        /* yPoema :: classe própria para fonte/corpo do leitor.
-           Evita que o corpo fixo de .logo-text prenda o tamanho do texto. */
         .machina-ypoema-text {
+            font-family: var(--machina-ypoema-font, 'Trebuchet MS') !important;
+            font-size: var(--machina-ypoema-size, 21px) !important;
             line-height: 1.35 !important;
         }
 
@@ -856,14 +856,19 @@ def _prepare_book_widget(key):
 
 
 def _prepare_theme_widget():
-    """Normaliza o widget de temas para espelhar o `take` sem impor valor indevido."""
+    """Normaliza o widget de temas para espelhar sempre o `take` atual."""
     temas_list = load_temas(_current_book())
     current = _coerce_take(st.session_state.get("take", 0), temas_list)
     raw_value = st.session_state.get("opt_take_palco", current)
     normalized = _coerce_take(raw_value, temas_list)
-    if normalized != raw_value:
-        st.session_state["opt_take_palco"] = normalized
 
+    # A lista de temas deve seguir o yPoema exibido no palco.
+    # Se navegação por botões alterou `take`, o widget precisa espelhar isso
+    # antes de ser instanciado pelo Streamlit neste ciclo.
+    if normalized != current:
+        st.session_state["opt_take_palco"] = current
+    elif normalized != raw_value:
+        st.session_state["opt_take_palco"] = normalized
 
 def _on_palco_book_change():
     current_book = _current_book()
@@ -1080,7 +1085,7 @@ def render_help_ypoemas_mesma_fonte():
     st.markdown(
         f"""
         <div class='container'>
-            <p class='logo-text' style="font-family:{stage_font}; font-size:{stage_size}px; line-height:1.42;">{content}</p>
+            <p class='logo-text machina-ypoema-text' style="--machina-ypoema-font:'{stage_font}'; --machina-ypoema-size:{stage_size}px; font-family:'{stage_font}' !important; font-size:{stage_size}px !important; line-height:1.42 !important;">{content}</p>
         </div>
         """,
         unsafe_allow_html=True,
@@ -1331,9 +1336,6 @@ Procura a tensão principal do yPoema, sem tentar explicar tudo.
 **Formal**  
 Lê o desenho visível: linhas, blocos, pausas, recorrências e arquitetura do texto.
 
-**Reduzida**  
-Oferece uma leitura breve, útil para uma primeira aproximação.
-
 **Completa**  
 Amplia a leitura em camadas: imagem, forma, ritmo, tensão e fecho.
 
@@ -1367,11 +1369,20 @@ def _palco_titulo_centralizado(LOGO_TEXTO):
 
 
 def _fonte_palco_leitor():
-    return st.session_state.get("stage_font", "Trebuchet MS")
+    """Fonte escolhida pelo leitor para o yPoema."""
+    fonte = st.session_state.get("stage_font", "Trebuchet MS")
+    if fonte == "Trebuchet":
+        fonte = "Trebuchet MS"
+    return fonte
 
 
 def _corpo_palco_leitor():
-    return int(st.session_state.get("stage_size", 21))
+    """Corpo escolhido pelo leitor para o yPoema."""
+    try:
+        corpo = int(st.session_state.get("stage_size", 21))
+    except Exception:
+        corpo = 21
+    return max(15, min(24, corpo))
 
 
 def _corpo_palco_cia():
@@ -1389,7 +1400,7 @@ def write_ypoema_cia_palco(LOGO_TEXTO, LOGO_IMAGE=None):
         st.markdown(
             f"""
             <div class='container'>
-                <p class='logo-text machina-ypoema-text' style="font-family:{stage_font} !important; font-size:{palco_size}px !important;">{LOGO_TEXTO}</p>
+                <p class='logo-text' style="font-family:{stage_font}; font-size:{palco_size}px;">{LOGO_TEXTO}</p>
             </div>
             """,
             unsafe_allow_html=True,
@@ -1399,7 +1410,7 @@ def write_ypoema_cia_palco(LOGO_TEXTO, LOGO_IMAGE=None):
             f"""
             <div class='container'>
                 <img class='logo-img' src='data:image/jpg;base64,{base64.b64encode(open(LOGO_IMAGE, 'rb').read()).decode()}'>
-                <p class='logo-text machina-ypoema-text' style="font-family:{stage_font} !important; font-size:{palco_size}px !important;">{LOGO_TEXTO}</p>
+                <p class='logo-text' style="font-family:{stage_font}; font-size:{palco_size}px;">{LOGO_TEXTO}</p>
             </div>
             """,
             unsafe_allow_html=True,
@@ -1408,11 +1419,20 @@ def write_ypoema_cia_palco(LOGO_TEXTO, LOGO_IMAGE=None):
 
 def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
     LOGO_TEXTO = _palco_titulo_centralizado(LOGO_TEXTO)
+    stage_font = _fonte_palco_leitor()
+    stage_size = _corpo_palco_leitor()
+    ypo_style = (
+        f"--machina-ypoema-font:'{stage_font}'; "
+        f"--machina-ypoema-size:{stage_size}px; "
+        f"font-family:'{stage_font}' !important; "
+        f"font-size:{stage_size}px !important;"
+    )
+
     if LOGO_IMAGE is None:
         st.markdown(
             f"""
             <div class='container'>
-                <p class='logo-text machina-ypoema-text' style="font-family:{_fonte_palco_leitor()} !important; font-size:{_corpo_palco_leitor()}px !important;">{LOGO_TEXTO}</p>
+                <p class='logo-text machina-ypoema-text' style="{ypo_style}">{LOGO_TEXTO}</p>
             </div>
             """,
             unsafe_allow_html=True,
@@ -1422,12 +1442,11 @@ def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
             f"""
             <div class='container'>
                 <img class='logo-img' src='data:image/jpg;base64,{base64.b64encode(open(LOGO_IMAGE, 'rb').read()).decode()}'>
-                <p class='logo-text machina-ypoema-text' style="font-family:{_fonte_palco_leitor()} !important; font-size:{_corpo_palco_leitor()}px !important;">{LOGO_TEXTO}</p>
+                <p class='logo-text machina-ypoema-text' style="{ypo_style}">{LOGO_TEXTO}</p>
             </div>
             """,
             unsafe_allow_html=True,
         )
-
 
 def write_cia_header(LOGO_TEXTO, LOGO_IMAGE=None):
     """Renderiza o cabeçalho da CIA em duas linhas: descritivo + mood."""
@@ -2285,16 +2304,20 @@ CIA_MOOD_OPTIONS = [
     "Sintática",
     "Sintética",
     "Formal",
-    "Reduzida",
     "Completa",
     "Index",
 ]
 def render_cia_mood_selectbox():
     """Lista da CIA sempre aberta: troca só a camada de análise."""
     current = st.session_state.get("cia_mood", "Sintática").strip()
+    if current == "Reduzida":
+        current = "Sintética"
+        st.session_state["cia_mood"] = current
+        st.session_state["cia_mood_select"] = current
     if current not in CIA_MOOD_OPTIONS:
         current = "Sintática"
         st.session_state["cia_mood"] = current
+        st.session_state["cia_mood_select"] = current
 
     with st.sidebar.expander("↓  análises CIA", expanded=True):
         for mood in CIA_MOOD_OPTIONS:
