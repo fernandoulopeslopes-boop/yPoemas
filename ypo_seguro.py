@@ -207,9 +207,9 @@ def apply_styles():
         """
         <style>
         [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
-            width: 315px !important;
-            min-width: 315px !important;
-            max-width: 315px !important;
+            width: 300px !important;
+            min-width: 300px !important;
+            max-width: 300px !important;
         }
 
         [data-testid="stSidebarResizer"],
@@ -381,7 +381,7 @@ def apply_styles():
         section.main > div.block-container {
             max-width: 100vw !important;
             width: 100% !important;
-            padding-left: 0.50rem !important;
+            padding-left: 1.0rem !important;
             padding-right: 0.00rem !important;
         }
 
