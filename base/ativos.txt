@@ -16,6 +16,7 @@ Bolero : poesia
 Brado : joco
 Bula : joco
 Cadência : metalinguagem
+Carroussel : ensaio
 Cartaz : joco
 CIA : author
 Circular : poesia
