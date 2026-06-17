@@ -753,14 +753,14 @@ def _sync_book_theme_state():
 
 def _prepare_book_widget(key):
     """Faz o widget espelhar `book` sem tomar conta do estado."""
-    current = st.session_state.book
+    current = st.session_state.get("book", "poemas")
     if key in st.session_state and st.session_state.get(key) != current:
         del st.session_state[key]
 
 
 def _prepare_theme_widget():
     """Normaliza o widget de temas para espelhar o `take` sem impor valor indevido."""
-    temas_list = load_temas(st.session_state.book)
+    temas_list = load_temas(st.session_state.get("book", "poemas"))
     current = _coerce_take(st.session_state.get("take", 0), temas_list)
     raw_value = st.session_state.get("opt_take_palco", current)
     normalized = _coerce_take(raw_value, temas_list)
@@ -773,7 +773,7 @@ def _prepare_theme_widget():
 
 def _sync_theme_widget_to_take():
     """Faz a lista de temas refletir a navegação por botões."""
-    temas_list = load_temas(st.session_state.book)
+    temas_list = load_temas(st.session_state.get("book", "poemas"))
     if not temas_list:
         return
 
@@ -782,8 +782,8 @@ def _sync_theme_widget_to_take():
 
 
 def _on_palco_book_change():
-    choice = st.session_state.get("palco_book_select", st.session_state.book)
-    if choice != st.session_state.book:
+    choice = st.session_state.get("palco_book_select", st.session_state.get("book", "poemas"))
+    if choice != st.session_state.get("book", "poemas"):
         st.session_state.book = choice
         st.session_state.take = 0
         st.session_state.force_new_ypoema = True
@@ -798,7 +798,7 @@ def _on_palco_book_change():
 
 
 def _on_palco_theme_change():
-    temas_list = load_temas(st.session_state.book)
+    temas_list = load_temas(st.session_state.get("book", "poemas"))
     if not temas_list:
         st.session_state.take = 0
         st.session_state.tema = ""
@@ -835,8 +835,8 @@ def pick_book_palco():
         on_change=_on_palco_book_change,
     )
 
-    selected_book = st.session_state.get(key, st.session_state.book)
-    if selected_book != st.session_state.book:
+    selected_book = st.session_state.get(key, st.session_state.get("book", "poemas"))
+    if selected_book != st.session_state.get("book", "poemas"):
         st.session_state.book = selected_book
         st.session_state.take = 0
         st.session_state.force_new_ypoema = True
@@ -854,7 +854,7 @@ def pick_tema_palco():
 
     """Escolhe o tema atual do livro diretamente no palco."""
     _sync_book_theme_state()
-    temas_list = load_temas(st.session_state.book)
+    temas_list = load_temas(st.session_state.get("book", "poemas"))
     if not temas_list:
         return
 
@@ -1609,7 +1609,7 @@ def page_mini():
                             secs -= 1
 
 def page_ypoemas():
-    temas_list = load_temas(st.session_state.book)
+    temas_list = load_temas(st.session_state.get("book", "poemas"))
     maxy_ypoemas = len(temas_list) - 1
     if (
         st.session_state.take > maxy_ypoemas or st.session_state.take < 0
@@ -1623,7 +1623,7 @@ def page_ypoemas():
 
     _sync_book_theme_state()
     st.session_state["opt_take_palco"] = st.session_state.take
-    temas_list = load_temas(st.session_state.book)
+    temas_list = load_temas(st.session_state.get("book", "poemas"))
     maxy_ypoemas = len(temas_list) - 1
 
     with col_nav:
@@ -1640,7 +1640,7 @@ def page_ypoemas():
         nest = nav_cols[3].button("▶", help=help_nest, use_container_width=True)
         manu = nav_cols[4].button("?", help="help !!!", use_container_width=True)
 
-    temas_list = load_temas(st.session_state.book)
+    temas_list = load_temas(st.session_state.get("book", "poemas"))
     maxy_ypoemas = len(temas_list) - 1
     if st.session_state.take > maxy_ypoemas or st.session_state.take < 0:
         st.session_state.take = 0
@@ -1673,7 +1673,7 @@ def page_ypoemas():
     with col_temas:
         pick_tema_palco()
 
-    temas_list = load_temas(st.session_state.book)
+    temas_list = load_temas(st.session_state.get("book", "poemas"))
     _sync_book_theme_state()
 
     lnew = True
