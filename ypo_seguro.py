@@ -252,6 +252,28 @@ def apply_styles():
             line-height: 1.35 !important;
         }
 
+        /* yPoema sem arte: ocupa o palco sem coluna fantasma */
+        .machina-ypoema-solo {
+            width: 100% !important;
+            max-width: 100% !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: flex-start !important;
+            box-sizing: border-box !important;
+            padding: 0.10rem 0.35rem 0.25rem 0.35rem !important;
+        }
+
+        .machina-ypoema-solo .machina-ypoema-text {
+            display: block !important;
+            width: auto !important;
+            max-width: min(78ch, 86%) !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            padding-left: 0 !important;
+            text-align: left !important;
+            box-sizing: border-box !important;
+        }
+
         .logo-img {
             float:right;
             margin-right: 0px;
@@ -1431,7 +1453,7 @@ def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
     if LOGO_IMAGE is None:
         st.markdown(
             f"""
-            <div class='container'>
+            <div class='machina-ypoema-solo'>
                 <p class='logo-text machina-ypoema-text' style="{ypo_style}">{LOGO_TEXTO}</p>
             </div>
             """,
