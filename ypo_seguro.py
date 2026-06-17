@@ -246,6 +246,12 @@ def apply_styles():
             padding-left: 8px;
         }
 
+        /* yPoema :: classe própria para fonte/corpo do leitor.
+           Evita que o corpo fixo de .logo-text prenda o tamanho do texto. */
+        .machina-ypoema-text {
+            line-height: 1.35 !important;
+        }
+
         .logo-img {
             float:right;
             margin-right: 0px;
@@ -1383,7 +1389,7 @@ def write_ypoema_cia_palco(LOGO_TEXTO, LOGO_IMAGE=None):
         st.markdown(
             f"""
             <div class='container'>
-                <p class='logo-text' style="font-family:{stage_font}; font-size:{palco_size}px;">{LOGO_TEXTO}</p>
+                <p class='logo-text machina-ypoema-text' style="font-family:{stage_font} !important; font-size:{palco_size}px !important;">{LOGO_TEXTO}</p>
             </div>
             """,
             unsafe_allow_html=True,
@@ -1393,7 +1399,7 @@ def write_ypoema_cia_palco(LOGO_TEXTO, LOGO_IMAGE=None):
             f"""
             <div class='container'>
                 <img class='logo-img' src='data:image/jpg;base64,{base64.b64encode(open(LOGO_IMAGE, 'rb').read()).decode()}'>
-                <p class='logo-text' style="font-family:{stage_font}; font-size:{palco_size}px;">{LOGO_TEXTO}</p>
+                <p class='logo-text machina-ypoema-text' style="font-family:{stage_font} !important; font-size:{palco_size}px !important;">{LOGO_TEXTO}</p>
             </div>
             """,
             unsafe_allow_html=True,
@@ -1406,7 +1412,7 @@ def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
         st.markdown(
             f"""
             <div class='container'>
-                <p class='logo-text' style="font-family:{_fonte_palco_leitor()}; font-size:{_corpo_palco_leitor()}px;">{LOGO_TEXTO}</p>
+                <p class='logo-text machina-ypoema-text' style="font-family:{_fonte_palco_leitor()} !important; font-size:{_corpo_palco_leitor()}px !important;">{LOGO_TEXTO}</p>
             </div>
             """,
             unsafe_allow_html=True,
@@ -1416,7 +1422,7 @@ def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
             f"""
             <div class='container'>
                 <img class='logo-img' src='data:image/jpg;base64,{base64.b64encode(open(LOGO_IMAGE, 'rb').read()).decode()}'>
-                <p class='logo-text' style="font-family:{_fonte_palco_leitor()}; font-size:{_corpo_palco_leitor()}px;">{LOGO_TEXTO}</p>
+                <p class='logo-text machina-ypoema-text' style="font-family:{_fonte_palco_leitor()} !important; font-size:{_corpo_palco_leitor()}px !important;">{LOGO_TEXTO}</p>
             </div>
             """,
             unsafe_allow_html=True,
