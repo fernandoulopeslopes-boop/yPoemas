@@ -16,6 +16,7 @@ Bolero
 Brado
 Bula
 Cadência
+Carroussel
 Cartaz
 Cia
 Cia_abertura
