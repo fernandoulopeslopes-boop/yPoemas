@@ -1,6 +1,7 @@
+Abertura : author
 Ais : ensaio
-Ana : Author
 Amaré : poesia
+Ana : author
 Anjos : author
 Aolero : ensaio
 Arerir : ensaio
@@ -17,8 +18,8 @@ Bolero : poesia
 Brado : joco
 Bula : joco
 Cadência : metalinguagem
-Carroussel : ensaio
 Cartaz : joco
+Carroussel: ensaio
 CIA : author
 Circular : poesia
 Ciuminho : beauty
@@ -38,11 +39,11 @@ Elogio : beauty
 Enfrente : ensaio
 Epitafiando : poesia
 Escriba : author
+Escribo : ensaio
 Essa : metalinguagem
 Essas : ensaio
 Esses : ensaio
 Estudo : joco
-Eus : anima
 Fatos : machina
 Feiras : metalinguagem
 Festim : poesia
@@ -50,6 +51,7 @@ Finalmentes : joco
 Frases : joco
 Fugaz : poesia
 Gula : beauty
+HaiKai : poesia
 i-Mundo : author
 Impar : ensaio
 Indolor : poesia
@@ -111,7 +113,7 @@ Sonoro : poesia
 Sopros : poesia
 Sos : joco
 Tempo : poesia
-Tempus : anima
+Tempus : ensaio
 Tiro : author
 Tolero : poesia
 Usinas : poesia
