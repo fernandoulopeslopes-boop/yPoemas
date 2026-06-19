@@ -7,6 +7,7 @@ import html
 import socket
 import asyncio
 import streamlit as st
+import streamlit.components.v1 as components
 from extra_streamlit_components import TabBar as stx
 
 from lay_2_ypo import gera_poema
@@ -699,6 +700,10 @@ def init_session_state():
         "key_poema_texto": "",
         "key_poema_tema": "",
         "key_analise": "",
+        "copy_qtd": 1,
+        "copy_qtd_widget": 1,
+        "copy_bundle_text": "",
+        "copy_bundle_token": 0,
     }
 
     for key, value in defaults.items():
@@ -1284,6 +1289,120 @@ def load_poema(nome_tema, seed_eureka):  # generate new yPoema
     save_lypo.close()  # save last generated in LYPO
 
     return novo_ypoema
+
+
+def _ypoema_html_to_text(ypoema_html):
+    """Converte o yPoema renderizado em HTML simples para texto copiável."""
+    texto = str(ypoema_html or "")
+    texto = texto.replace("<br/>", "\n").replace("<br />", "\n").replace("<br>", "\n")
+    texto = re.sub(r"<[^>]+>", "", texto)
+    texto = html.unescape(texto)
+    linhas = [linha.rstrip() for linha in texto.splitlines()]
+    while linhas and not linhas[-1].strip():
+        linhas.pop()
+    return "\n".join(linhas).strip()
+
+
+def _gerar_ypoema_texto_cru(nome_tema):
+    """Gera uma variação sem alterar LYPO/TYPO nem o yPoema do palco."""
+    script = gera_poema(nome_tema, "")
+    linhas = [nome_tema]
+    for line in script:
+        if line == "\n":
+            linhas.append("")
+        else:
+            linhas.append(str(line).rstrip("\n"))
+    while linhas and not linhas[-1].strip():
+        linhas.pop()
+    return "\n".join(linhas).strip()
+
+
+def montar_copias_ypoema(curr_ypoema, nome_tema, qtd):
+    """Monta 1..9 cópias/variações para leitura externa."""
+    try:
+        qtd = int(qtd)
+    except Exception:
+        qtd = 1
+    qtd = max(1, min(9, qtd))
+
+    partes = []
+    atual = _ypoema_html_to_text(curr_ypoema)
+
+    for n in range(1, qtd + 1):
+        if n == 1 and atual:
+            texto = atual
+        else:
+            texto = _gerar_ypoema_texto_cru(nome_tema)
+
+        partes.append(
+            f"{'=' * 40}\n"
+            f"{nome_tema} #{n}\n"
+            f"{'=' * 40}\n\n"
+            f"{texto}"
+        )
+
+    return "\n\n___\n\n".join(partes).strip()
+
+
+def render_copy_bundle_widget(texto, token):
+    """Widget leve: tenta copiar automaticamente e oferece botão de fallback."""
+    if not texto:
+        return
+
+    safe_text = html.escape(texto)
+    js_text = texto.replace("\\", "\\\\").replace("`", "\\`").replace("${", "\\${")
+
+    components.html(
+        f"""
+        <div style="font-family:system-ui, sans-serif; font-size:13px; padding:2px 0 6px 0;">
+            <button id="copy_btn_{token}" style="
+                border:0;
+                border-radius:8px;
+                padding:6px 10px;
+                cursor:pointer;
+                background:#eef6fb;
+                font-size:13px;">
+                📋 copiar yPoema(s)
+            </button>
+            <span id="copy_msg_{token}" style="margin-left:8px; opacity:.72;"></span>
+            <textarea id="copy_txt_{token}" style="
+                width:100%;
+                height:78px;
+                margin-top:6px;
+                font-family:monospace;
+                font-size:12px;
+                border:1px solid #ddd;
+                border-radius:8px;
+                padding:6px;">{safe_text}</textarea>
+        </div>
+        <script>
+        const txt_{token} = `{js_text}`;
+        const btn_{token} = document.getElementById("copy_btn_{token}");
+        const msg_{token} = document.getElementById("copy_msg_{token}");
+        const area_{token} = document.getElementById("copy_txt_{token}");
+
+        async function copyMachina_{token}() {{
+            try {{
+                await navigator.clipboard.writeText(txt_{token});
+                msg_{token}.innerText = "copiado";
+            }} catch (e) {{
+                area_{token}.focus();
+                area_{token}.select();
+                try {{
+                    document.execCommand("copy");
+                    msg_{token}.innerText = "copiado";
+                }} catch (err) {{
+                    msg_{token}.innerText = "selecione e copie";
+                }}
+            }}
+        }}
+
+        btn_{token}.addEventListener("click", copyMachina_{token});
+        copyMachina_{token}();
+        </script>
+        """,
+        height=142,
+    )
 
 
 @st.cache_data
@@ -1975,6 +2094,37 @@ def page_ypoemas():
             else:
                 write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
 
+            # Copiar 1..9 ocorrências do tema atual para leituras externas.
+            # Mantém o yPoema exibido como #1 e gera variações extras sem alterar o palco.
+            with st.form("copy_variacoes_form", clear_on_submit=False):
+                copy_left, copy_qtd_col, copy_btn_col, copy_right = st.columns([7.6, 0.85, 0.85, 7.6])
+                with copy_qtd_col:
+                    st.number_input(
+                        "cópias",
+                        min_value=1,
+                        max_value=9,
+                        step=1,
+                        key="copy_qtd_widget",
+                        label_visibility="collapsed",
+                    )
+                with copy_btn_col:
+                    copy_submit = st.form_submit_button("📋", use_container_width=True)
+
+            if copy_submit:
+                qtd_copias = int(st.session_state.get("copy_qtd_widget", 1))
+                st.session_state["copy_qtd"] = qtd_copias
+                st.session_state["copy_bundle_text"] = montar_copias_ypoema(
+                    curr_ypoema,
+                    st.session_state.get("tema", ""),
+                    qtd_copias,
+                )
+                st.session_state["copy_bundle_token"] = int(st.session_state.get("copy_bundle_token", 0)) + 1
+
+            render_copy_bundle_widget(
+                st.session_state.get("copy_bundle_text", ""),
+                int(st.session_state.get("copy_bundle_token", 0)),
+            )
+
             if manu:
                 LOGO_TEXTO = load_info(st.session_state.tema)
                 if st.session_state.lang != "pt":  # translate if idioma <> pt
@@ -2318,7 +2468,6 @@ def page_abouts():
 
 
 ### eof: pages
-
 
 
 SIDEBAR_FILHOTE_WIDTH_PX = 64
