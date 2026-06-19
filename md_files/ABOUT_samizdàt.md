@@ -18,5 +18,7 @@ cujos nomes se forjavam dentro desse mesmo princípio.
  
 p.ex.,
 Gosizdát: sigla de Gosudárstvnnoe izdátel'stvo "Editora Estatal"  
----  
+
+___
 Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de fazer Poesia**
+___
