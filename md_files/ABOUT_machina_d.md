@@ -1,5 +1,5 @@
-sobre o eixo Z e os ítimos  
-
+**∞**  
+**O eixo Z e os ítimos**  
 > O trabalho criativo está na escolha das palavras  
 que em algum momento farão parte dos **ítimos**.  
 
@@ -85,7 +85,7 @@ ordem alfabética,
 *Obviamente, os sinais de pontuação são parte muito  
 importante dos ítimos.*  
 ___  
-Copyright © 1983-Hoje Nando Lopes - **yPoemas @ Machina de  
+Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de  
 Fazer Poesia**  
 
 ---  

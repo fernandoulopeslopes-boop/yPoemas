@@ -1,7 +1,19 @@
-sobre o eixo Z e os ítimos  
-
+**∞**  
+**O eixo Z e os ítimos**  
 > O trabalho criativo está na escolha das palavras  
 que em algum momento farão parte dos **ítimos**.  
+Cada ítimo deve ser pertinente ao tema  
+e fazer sentido para o que vem antes e depois dele.  
+___  
+**Características**  
+Efêmero, inesperado, impermanente, imprevisível e aberto.  
+Não existe "leitura anterior" do tema.  
+Cada yPoema gerado é substituído pelo próximo.  
+
+**Por que é único?**  
+A possibilidade matemática de repetição depende das opções  
+no "Banco de Ítimos", variando de milhões a valores  
+astronômicos.  
 
 >> Cada ítimo deve, além de ser pertinente ao tema,  
 fazer sentido para o que vem **antes** e para o que vem  
@@ -24,14 +36,6 @@ tema.
 a cada nova geração de um texto,  
 insere-se o **acaso** no sorteio das palavras que dele farão  
 parte.  
-
-**Características**  
-> Efêmero, inesperado, impermanente, imprevisível e aberto.  
-
-> Não existe "leitura anterior" do tema.  
->> Cada yPoema gerado é substituído pelo próximo.  
->> O texto anterior é descartado e só se repetirá  
->> quando forem usadas todas as variações possíveis à ele.  
 
 > O objetivo não é esgotar o tema e sim explorar todas as  
 suas nuanças,  
@@ -56,9 +60,9 @@ O número varia de alguns milhões a valores quase
 astronômicos.  
 
 > Na página **mini** o botão '✚' mostra essas variações.  
-> Na página **yPoemas** o botão **[ ? ]** mostra essas  
+> Na página **yPoemas** o botão **[ ✚ ]** mostra essas  
 variações.  
-> Na página **eureka**  o botão **[ ? ]** mostra essas  
+> Na página **eureka**  o botão **[ ✚ ]** mostra essas  
 variações.  
 
 **[obs.]** - cerca de 12.800 verbetes únicos  
@@ -85,8 +89,9 @@ ordem alfabética,
 *Obviamente, os sinais de pontuação são parte muito  
 importante dos ítimos.*  
 ___  
-Copyright © 1983-Hoje Nando Lopes - **yPoemas @ Machina de  
-Fazer Poesia**  
+Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de  
+fazer Poesia**  
+<eof>  
 
 ---  
 Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de fazer Poesia**

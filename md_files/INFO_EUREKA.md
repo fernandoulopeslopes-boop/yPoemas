@@ -1,7 +1,10 @@
 Página interativa onde você  
 pode pesquisar por palavras  
 (ou parte delas) no ambiente  
-da **Machina de fazer Poesia**.  
-  
+da **máquina de fazer poesia**.  
+
 Os verbetes encontrados  
 aparecem **« destacados »** no texto.  
+
+---  
+Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de fazer Poesia**

@@ -1,7 +1,8 @@
-Apresentação minimalista com  
-alguns temas escolhidos  
-aleatoriamente pela **máquina**.  
-  
-**✚** gera novo texto para o tema  
-**✻** escolhe outro tema ao acaso  
-**☐** exibe temas automaticamente  
+Apresentação minimalista,  
+
+com temas escolhidos  
+--- aleatoriamente  ----  
+pela **máquina**.  
+
+---  
+Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de fazer Poesia**

@@ -1,14 +1,14 @@
-# Sobre as traduções  
-___
+## Sobre as traduções  
+___  
 
 **Traduttore, traditore.**  
 > É um provérbio italiano que, literalmente, significa  
 > que o tradutor é traidor mas que na realidade quer  
 > dizer que toda a tradução não corresponde exatamente  
-> ao sentido original da frase.
+> ao sentido original da frase.  
 
 **Os textos aqui traduzidos usam o Google Translate**  
-> Os textos originais foram escritos em "português".
+> Os textos originais foram escritos em "português".  
 
 > Existem 195 países no mundo hoje. Este total  
 > compreende 193 países integrantes da Organização  
@@ -48,19 +48,19 @@ ___
 ___  
 **Idiomas disponíveis:**  
 > - pt = Português [Porquê aprender outra língua?]  
->   (https://www.unibh.br/blog/por-que-aprender-um-novo-idioma-pode-alavancar-sua-carreira/)  
+> (https://www.unibh.br/blog/por-que-aprender-um-novo-idioma-pode-alavancar-sua-carreira/)  
 > - es = Espanhol [Porquê aprender outra língua?]  
->   (https://mx.unoi.com/2015/09/28/la-importancia-de-hablar-otro-idioma/)  
+> (https://mx.unoi.com/2015/09/28/la-importancia-de-hablar-otro-idioma/)  
 > - it = Italiano [Porquê aprender outra língua?]  
->   (https://www.serenacasagrande.com/2018/01/22/scuse-motivi-imparare-una-lingua-straniera/)  
+> (https://www.serenacasagrande.com/2018/01/22/scuse-motivi-imparare-una-lingua-straniera/)  
 > - fr = Francês [Porquê aprender outra língua?]  
->   (https://bilis.com/blog/8-bonnes-raisons-dapprendre-des-langues-etrangeres/)  
+> (https://bilis.com/blog/8-bonnes-raisons-dapprendre-des-langues-etrangeres/)  
 > - en = Inglês [Porquê aprender outra língua?]  
->   (https://www.leadwithlanguages.org/why-learn-languages/top-ten-reasons-to-learn-languages/)  
+> (https://www.leadwithlanguages.org/why-learn-languages/top-ten-reasons-to-learn-languages/)  
 > - ca = Catalão [Porquê aprender outra língua?]  
->   (https://bibliotecavirtual.diba.cat/salut/els-beneficis-d-aprendre-idiomes)  
+> (https://bibliotecavirtual.diba.cat/salut/els-beneficis-d-aprendre-idiomes)  
 > - de = Alemão [Porquê aprender outra língua?]  
->   (https://sprachenlust.de/warum-sprache-lernen/)  
+> (https://sprachenlust.de/warum-sprache-lernen/)  
 
 >> Idioma é um termo referente à língua usado para  
 >> identificar uma nação em relação às demais e está  
@@ -75,4 +75,7 @@ ___
 >> "idioma".  
 ___  
 Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a  
-Machina de fazer Poesia**
+Machina de fazer Poesia**  
+
+---  
+Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de fazer Poesia**

@@ -1,23 +1,29 @@
 sobre os livros **off-machina**  
-___
-> Os textos e poemas dos livros **off-machina** foram escritos  
+___  
+> Os textos e poemas dos livros **off-machina** foram  
+escritos  
 > em algum lugar no tempo entre os anos 1968 e 2022.  
-> Não há precisão pois não tenho o hábito de datar meus escritos.  
+> Não há precisão pois não tenho o hábito de datar meus  
+escritos.  
 > Assim como os textos da **Machina**, também são únicos.  
 > Porém, não imutáveis.  
-> Posso, graças à tecnologia, trocar uma palavra aqui, outra ali...  
-> Não o faço constantemente mas quem escreve há de saber a delícia que é.  
+> Posso, graças à tecnologia, trocar uma palavra aqui, outra  
+ali...  
+> Não o faço constantemente mas quem escreve há de saber a  
+delícia que é.  
 
 > Coincidentemente(?),  
-> todos os **livros**(1), afora o "Torre de Papel", têm 48 páginas.  
-> São mínimos.
+> todos os **livros**(1), afora o "Torre de Papel", têm 48  
+páginas.  
+> São mínimos.  
 
-___
+___  
 **Ladainha II**  
 
 > Por que o raciocínio, os músculos, os ossos?  
 > A automação, ócio dourado.  
-> O cérebro eletrônico, o músculo mecânico mais fáceis que um sorriso.  
+> O cérebro eletrônico, o músculo mecânico mais fáceis que  
+um sorriso.  
 
 > Por que o coração?  
 > O de metal não tornará o homem mais cordial,  
@@ -42,11 +48,13 @@ ___
 
 **Cassiano Ricardo** (1895-1974)  
 
-___
+___  
 (1) **livro**: substantivo masculino (Houaiss)  
 
-> Coleção de folhas de papel, impressas ou não, cortadas, dobradas  
-> e reunidas em cadernos cujos dorsos são unidos por meio de cola ou costura,  
+> Coleção de folhas de papel, impressas ou não, cortadas,  
+dobradas  
+> e reunidas em cadernos cujos dorsos são unidos por meio de  
+cola ou costura,  
 > formando um volume que se recobre com capa resistente.  
 
 > Considerado do ponto de vista do seu conteúdo:  
@@ -59,7 +67,13 @@ ___
 
 (1) **livro**: ABNT - NBR 6029: 3.31  
 
-> Publicação não periódica que contém acima de 49 páginas, excluídas as capas,  
-> e que é objeto de Número Internacional Normalizado para Livro (ISBN).  
-___
+> Publicação não periódica que contém acima de 49 páginas,  
+excluídas as capas,  
+> e que é objeto de Número Internacional Normalizado para  
+Livro (ISBN).  
+___  
+Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de  
+fazer Poesia**  
+
+---  
 Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de fazer Poesia**

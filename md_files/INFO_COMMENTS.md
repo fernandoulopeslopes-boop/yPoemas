@@ -4,3 +4,6 @@ admiradores, críticos literários
 e escritores que me deram a honra  
 de tê-los como convidados  
 na galeria da Machina.  
+
+---  
+Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de fazer Poesia**

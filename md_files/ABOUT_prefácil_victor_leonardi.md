@@ -107,7 +107,7 @@ possível**?
 
 [saber mais...](https://www.facebook.com/victor.leonardi.18)  
 ___  
-Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de  
+Copyright © 1983-Hoje Nando Lopes - **yPoemas @ Machina de  
 fazer Poesia**  
 
 ---  
