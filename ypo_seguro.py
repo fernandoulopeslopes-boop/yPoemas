@@ -1345,12 +1345,34 @@ def montar_copias_ypoema(curr_ypoema, nome_tema, qtd):
 
 
 def render_copy_bundle_widget(texto, token):
-    """Widget leve: tenta copiar automaticamente e oferece botão de fallback."""
+    """Mostra o pacote completo para copiar.
+
+    Regra deste GO:
+    - o texto final precisa conter TODAS as variações pedidas;
+    - o leitor precisa conseguir conferir o pacote inteiro;
+    - o botão JS é só atalho; o st.text_area é o fallback confiável.
+    """
     if not texto:
         return
 
-    safe_text = html.escape(texto)
-    js_text = texto.replace("\\", "\\\\").replace("`", "\\`").replace("${", "\\${")
+    texto = str(texto)
+    total_blocos = texto.count("\n========================================\n")
+    if texto.startswith("========================================"):
+        total_blocos += 1
+
+    # Fallback nativo e visível: mesmo se o clipboard do navegador/iframe falhar,
+    # este campo contém o pacote inteiro para Ctrl+A / Ctrl+C.
+    st.text_area(
+        f"pacote para copiar ({total_blocos} yPoema(s))",
+        value=texto,
+        height=420,
+        key=f"copy_bundle_textarea_{token}",
+        label_visibility="visible",
+    )
+
+    # Atalho JS: usa JSON para preservar quebras de linha, aspas, crases etc.
+    import json
+    js_text = json.dumps(texto, ensure_ascii=False)
 
     components.html(
         f"""
@@ -1362,46 +1384,28 @@ def render_copy_bundle_widget(texto, token):
                 cursor:pointer;
                 background:#eef6fb;
                 font-size:13px;">
-                📋 copiar yPoema(s)
+                📋 copiar pacote inteiro
             </button>
             <span id="copy_msg_{token}" style="margin-left:8px; opacity:.72;"></span>
-            <textarea id="copy_txt_{token}" style="
-                width:100%;
-                height:78px;
-                margin-top:6px;
-                font-family:monospace;
-                font-size:12px;
-                border:1px solid #ddd;
-                border-radius:8px;
-                padding:6px;">{safe_text}</textarea>
         </div>
         <script>
-        const txt_{token} = `{js_text}`;
+        const txt_{token} = {js_text};
         const btn_{token} = document.getElementById("copy_btn_{token}");
         const msg_{token} = document.getElementById("copy_msg_{token}");
-        const area_{token} = document.getElementById("copy_txt_{token}");
 
         async function copyMachina_{token}() {{
             try {{
                 await navigator.clipboard.writeText(txt_{token});
                 msg_{token}.innerText = "copiado";
             }} catch (e) {{
-                area_{token}.focus();
-                area_{token}.select();
-                try {{
-                    document.execCommand("copy");
-                    msg_{token}.innerText = "copiado";
-                }} catch (err) {{
-                    msg_{token}.innerText = "selecione e copie";
-                }}
+                msg_{token}.innerText = "use Ctrl+A / Ctrl+C no campo acima";
             }}
         }}
 
         btn_{token}.addEventListener("click", copyMachina_{token});
-        copyMachina_{token}();
         </script>
         """,
-        height=142,
+        height=52,
     )
 
 
