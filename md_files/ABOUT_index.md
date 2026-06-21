@@ -3,17 +3,14 @@ ___
 Abertura : 2.032.128 (milhões)  
 Ais : 275.148.900 (milhões)  
 Amaré : 1.217.382.566.400 (trilhões)  
-Anjos : 10.436.346.646.107.015.610.368.000.000.000  
-(nonilhões)  
+Anjos : 10.436.346.646.107.015.610.368.000.000.000 (nonilhões)  
 Aolero : 8.123.431.680.000 (trilhões)  
 Arerir : 9.229.440 (milhões)  
 Astros : 637.528.320 (milhões)  
 Atido : 834.290.150.400 (bilhões)  
-Augusto :  
-585.295.459.285.374.667.912.642.560.000.000.000.000  
-(undecilhões)  
+Augusto : 585.295.459.285.374.667.912.642.560.000.000.000.000 (undecilhões)  
 Avevida : 2.122.788.864 (bilhões)  
-Babel : 1 (nonono)  
+Babel : 1 (hum)  
 Batismo : 32.640 (mil)  
 Beaba : 17.923.368.960.000 (trilhões)  
 Becos : 298.456.756.332.134.400 (quatrilhões)  
@@ -30,8 +27,7 @@ Clandestino : 8.977.687.488 (bilhões)
 Clarice : 1.360.800.000 (bilhões)  
 Conto : 132.723.360.000.000 (trilhões)  
 Cordel : 1.048.110.000 (bilhões)  
-Críticas : 688.135.761.528.030.262.733.045.760.000  
-(octilhões)  
+Críticas : 688.135.761.528.030.262.733.045.760.000 (octilhões)  
 Crítico : 4.897.760.256 (bilhões)  
 Cromossomo : 2.779.486.617.600 (trilhões)  
 Cuores : 97.918.656.675.840.000.000 (quintilhões)  
@@ -68,9 +64,7 @@ Liberta : 5.530.639.564.800 (trilhões)
 Loremipsum : 1.843.200 (milhões)  
 Machbeth : 398.340.963.820.800 (trilhões)  
 Machbrait : 57.081.662.668.800.000 (quatrilhões)  
-Manifesto :  
-12.176.161.146.049.751.219.393.336.735.642.419.200.000  
-(dodecilhões)  
+Manifesto : 12.176.161.146.049.751.219.393.336.735.642.419.200.000 (dodecilhões)  
 Manusgrite : 160.526.499.840.000 (trilhões)  
 Manusgrito : 140.460.687.360.000 (trilhões)  
 Meteoro : 2.242.915.479.411.425.280.000 (sextilhões)  
@@ -81,13 +75,10 @@ Nós : 1.355.454.777.600 (trilhões)
 Oca : 29.932.156.800 (bilhões)  
 Ocio : 9.113.470.036.289.010.008.064.000.000.000 (nonilhões)  
 Oco : 26.606.361.600 (bilhões)  
-Oficia : 6.675.281.471.170.981.223.863.418.880.000.000  
-(decilhões)  
-Oficio : 6.675.281.471.170.981.223.863.418.880.000.000  
-(decilhões)  
+Oficia : 6.675.281.471.170.981.223.863.418.880.000.000 (decilhões)  
+Oficio : 6.675.281.471.170.981.223.863.418.880.000.000 (decilhões)  
 Ogiva : 1.749.081.527.424.000 (quatrilhões)  
-Olhares : 13.692.067.884.303.465.072.296.523.202.560.000.000  
-(undecilhões)  
+Olhares : 13.692.067.884.303.465.072.296.523.202.560.000.000 (undecilhões)  
 Palyndro : 967.680 (mil)  
 Papilio : 17.276.809.528.053.504.000 (quintilhões)  
 Paroles : 62.861.359.841.280.000 (quatrilhões)  
@@ -101,7 +92,7 @@ Preciso : 3.082.409.784.115.200 (quatrilhões)
 Prefácil : 9.735.705.551.878.225.920.000.000 (setilhões)  
 Psiu : 3.464.123.520 (bilhões)  
 Reger : 404.352.000 (milhões)  
-Reinos : 789.146.976.367.411.200 (quatrilhões)  
+Reinos : 789.146.976.367.411.200 (quatrilhões)   
 Remedeio : 1.967.232 (milhões)  
 Resumida : 1.584.000 (milhões)  
 Rever : 3.119.040 (milhões)  
@@ -121,9 +112,7 @@ SnowBall : 20.591.283.290.444.226.360.000.000 (setilhões)
 Sonoro : 1.192.320 (milhões)  
 Sopros : 47.340.453.888.000.000 (quatrilhões)  
 Sos : 6.111.356.719.104 (trilhões)  
-Tempo :  
-168.626.666.372.619.117.206.070.062.786.729.037.791.232.000.000.000  
-(quindecilhões)  
+Tempo : 168.626.666.372.619.117.206.070.062.786.729.037.791.232.000.000.000 (quindecilhões)  
 Tempus : 80.472.268.800 (bilhões)  
 Tiro : 2.661.866.527.320.000.000 (quintilhões)  
 Tolero : 5.073.477.650.841.600.000 (quintilhões)  
@@ -132,10 +121,8 @@ Veio : 1.099.536.809.681.861.591.040 (sextilhões)
 Victor : 308.998.800 (milhões)  
 Vozes : 393.120 (mil)  
 Zelo : 151.240.320 (milhões)  
-Zodiacaos : 14.365.992.237.323.928.993.792.000.000.000.000  
-(decilhões)  
-Zoia : 142.079.525.404.314.907.626.675.634.176.000.000.000  
-(undecilhões)  
+Zodiacaos : 14.365.992.237.323.928.993.792.000.000.000.000 (decilhões)  
+Zoia : 142.079.525.404.314.907.626.675.634.176.000.000.000 (undecilhões)  
 Aquarius=f : 107.811.000 (milhões)  
 Aquarius=m : 107.811.000 (milhões)  
 Aries=f : 1.848.000 (milhões)  
@@ -186,16 +173,11 @@ ___
 > googolplexiano=por enquanto, o maior número com nome|10e  
 googolplexo|  
 
-[fonte dos  
-dados](http://www.fisica-interessante.com/matematica-divertida-ordens-classes-multiplos.html)  
+[fonte dos dados](http://www.fisica-interessante.com/matematica-divertida-ordens-classes-multiplos.html)  
 ___  
-Copyright © 1983-Hoje Nando Lopes - **yPoemas @ Machina de  
-fazer Poesia**  
+Copyright © 1983-Hoje Nando Lopes - **yPoemas @ Machina de fazer Poesia**  
 Build_By_Lay_2_Ipo em _2026-06-16  
 
-Total de variações:  
-168.626.666.385.536.373.142.274.563.955.199.911.112.206.698.957.396  
-(quindecilhões)  
-
----  
+Total de variações: 168.626.666.385.536.373.142.274.563.955.199.911.112.206.698.957.396 (quindecilhões)  
+___
 Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de fazer Poesia**
