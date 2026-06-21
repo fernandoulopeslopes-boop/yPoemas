@@ -35,9 +35,5 @@ CONTRATO, ATO ILÍCITO
 OU DE OUTRA FORMA, DECORRENTE DE, FORA OU EM CONEXÃO COM O  
 SOFTWARE  
 OU O USO OU OUTRAS NEGOCIAÇÕES NO PROGRAMAS.  
-___  
-Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de  
-fazer Poesia**  
-
 ---  
 Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de fazer Poesia**
