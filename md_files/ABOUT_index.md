@@ -174,10 +174,7 @@ ___
 googolplexo|  
 
 [fonte dos dados](http://www.fisica-interessante.com/matematica-divertida-ordens-classes-multiplos.html)  
-___  
-Copyright © 1983-Hoje Nando Lopes - **yPoemas @ Machina de fazer Poesia**  
-Build_By_Lay_2_Ipo em _2026-06-16  
-
+___   
 Total de variações: 168.626.666.385.536.373.142.274.563.955.199.911.112.206.698.957.396 (quindecilhões)  
-___
-Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de fazer Poesia**
+___  
+Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de fazer Poesia**  
