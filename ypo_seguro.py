@@ -18,16 +18,10 @@ from readings import (
 )
 
 
-from controle_cia import (
-    configure_cia,
-    draw_sidebar_panel_buttons,
-    render_cia_stage,
-)
-
 
 ABOUTS_LIST = [
     "comentários", "prefácil", "machina", "off-machina", "outros autores", "livros", "bibliografia",
-    "notes", "imagens", "pontuação", "poly", "tradittore", "pensares", "machina-IA", "samizdàt", "index", "license",
+    "CIA", "notes", "imagens", "pontuação", "poly", "tradittore", "pensares", "machina-IA", "samizdàt", "index", "license",
 ]
 
 ABOUTS_FILES = {
@@ -43,6 +37,7 @@ ABOUTS_FILES = {
     "pensares": ["ABOUT_pensares.md"],
     "tradittore": ["ABOUT_tradittore.md"],
     "bibliografia": ["ABOUT_bibliografia.md"],
+    "CIA": ["ABOUT_palco_cia.md", "ABOUT_CIA.md"],
     "pontuação": ["ABOUT_pontuação.md"],
     "samizdàt": ["ABOUT_samizdàt.md"],
     "notes": ["ABOUT_notes.md"],
@@ -704,6 +699,7 @@ def init_session_state():
         "copy_qtd_widget": 1,
         "copy_bundle_text": "",
         "copy_bundle_token": 0,
+        "copy_bundle_qtd": 0,
     }
 
     for key, value in defaults.items():
@@ -904,7 +900,7 @@ def _on_palco_book_change():
         st.session_state.book = choice
         st.session_state.take = 0
         st.session_state["cia_last_action"] = "book_change"
-        st.session_state["ypoema_atual_para_analise"] = ""
+        limpar_palcos_auxiliares()
         st.session_state["cia_force_new_poema"] = True
     _sync_book_theme_state()
 
@@ -926,7 +922,7 @@ def _on_palco_theme_change():
     st.session_state.tema = temas_list[take]
     if take != old_take:
         st.session_state["cia_last_action"] = "theme_change"
-        st.session_state["ypoema_atual_para_analise"] = ""
+        limpar_palcos_auxiliares()
         st.session_state["cia_force_new_poema"] = True
 
 
@@ -1291,16 +1287,29 @@ def load_poema(nome_tema, seed_eureka):  # generate new yPoema
     return novo_ypoema
 
 
+def _trim_blank_edges_preservando_recuo(linhas):
+    """Remove só linhas vazias nas bordas, sem apagar recuos autorais.
+
+    Importante: recuos vindos do |$| podem chegar ao pacote como &emsp;.
+    Depois de html.unescape, &emsp; vira espaço largo real (\u2003).
+    Portanto não usar .strip() no texto inteiro, senão o recuo da primeira
+    linha desaparece.
+    """
+    linhas = [str(linha).rstrip() for linha in linhas]
+    while linhas and not linhas[0].strip():
+        linhas.pop(0)
+    while linhas and not linhas[-1].strip():
+        linhas.pop()
+    return "\n".join(linhas)
+
+
 def _ypoema_html_to_text(ypoema_html):
     """Converte o yPoema renderizado em HTML simples para texto copiável."""
     texto = str(ypoema_html or "")
     texto = texto.replace("<br/>", "\n").replace("<br />", "\n").replace("<br>", "\n")
     texto = re.sub(r"<[^>]+>", "", texto)
     texto = html.unescape(texto)
-    linhas = [linha.rstrip() for linha in texto.splitlines()]
-    while linhas and not linhas[-1].strip():
-        linhas.pop()
-    return "\n".join(linhas).strip()
+    return _trim_blank_edges_preservando_recuo(texto.splitlines())
 
 
 def _gerar_ypoema_texto_cru(nome_tema):
@@ -1311,14 +1320,27 @@ def _gerar_ypoema_texto_cru(nome_tema):
         if line == "\n":
             linhas.append("")
         else:
-            linhas.append(str(line).rstrip("\n"))
-    while linhas and not linhas[-1].strip():
-        linhas.pop()
-    return "\n".join(linhas).strip()
+            # Preserva recuos autorais do |$|: &emsp; vira espaço largo real.
+            linhas.append(html.unescape(str(line).rstrip("\n")))
+    return _trim_blank_edges_preservando_recuo(linhas)
+
+
+def _remover_titulo_inicial_duplicado(texto, nome_tema):
+    """Remove o título interno quando ele repete o nome do tema, preservando recuos."""
+    linhas = str(texto or "").splitlines()
+    while linhas and not linhas[0].strip():
+        linhas.pop(0)
+
+    if linhas and linhas[0].strip().casefold() == str(nome_tema or "").strip().casefold():
+        linhas.pop(0)
+        while linhas and not linhas[0].strip():
+            linhas.pop(0)
+
+    return _trim_blank_edges_preservando_recuo(linhas)
 
 
 def montar_copias_ypoema(curr_ypoema, nome_tema, qtd):
-    """Monta 1..9 cópias/variações para leitura externa."""
+    """Monta 1..9 cópias/variações para leitura externa, em desenho clean."""
     try:
         qtd = int(qtd)
     except Exception:
@@ -1334,17 +1356,18 @@ def montar_copias_ypoema(curr_ypoema, nome_tema, qtd):
         else:
             texto = _gerar_ypoema_texto_cru(nome_tema)
 
+        texto = _remover_titulo_inicial_duplicado(texto, nome_tema)
+
         partes.append(
-            f"{'=' * 40}\n"
-            f"{nome_tema} #{n}\n"
-            f"{'=' * 40}\n\n"
+            f"___\n\n"
+            f"{nome_tema} #{n}\n\n"
             f"{texto}"
         )
 
-    return "\n\n___\n\n".join(partes).strip()
+    return ("\n".join(partes).strip() + "\n___").strip()
 
 
-def render_copy_bundle_widget(texto, token):
+def render_copy_bundle_widget(texto, token, qtd_real=None):
     """Mostra o pacote completo para copiar.
 
     Regra deste GO:
@@ -1356,9 +1379,16 @@ def render_copy_bundle_widget(texto, token):
         return
 
     texto = str(texto)
-    total_blocos = texto.count("\n========================================\n")
-    if texto.startswith("========================================"):
-        total_blocos += 1
+    try:
+        total_blocos = int(qtd_real) if qtd_real is not None else 0
+    except Exception:
+        total_blocos = 0
+    if total_blocos < 1:
+        # Conta os blocos pelo desenho clean: cada yPoema começa com uma linha "___".
+        # Se houver "___" final de fechamento, ele não entra na conta.
+        marcadores = len(re.findall(r"(?m)^___\s*$", texto))
+        total_blocos = marcadores - 1 if texto.strip().endswith("___") and marcadores > 1 else marcadores
+        total_blocos = max(1, total_blocos)
 
     # Fallback nativo e visível: mesmo se o clipboard do navegador/iframe falhar,
     # este campo contém o pacote inteiro para Ctrl+A / Ctrl+C.
@@ -1458,19 +1488,19 @@ def load_arts(nome_tema):  # Select image for arts
 
 
 def guia_do_leitor_cia():
-    """Guia curto do leitor para o modo CIA."""
+    """ABOUT curto do palco da CIA."""
     return """
 ### Guia do leitor da CIA
 
 A **CIA** não substitui a leitura do leitor.  
-Ela oferece lentes diferentes para observar o mesmo yPoema.
+Ela oferece diferentes modos de observar o mesmo yPoema.
 
 A regra principal é simples:
 
 **mesmo yPoema → várias leituras → uma análise completa a outra**
 
-Ao trocar o tipo de análise, o texto analisado permanece o mesmo.  
-O que muda é a lente crítica.
+Ao trocar o tipo de análise, o yPoema permanece o mesmo.  
+O que muda é a leitura proposta.
 
 **Sintática**  
 Observa engrenagens da frase: forma verbal, sujeito, oração, pontuação, cortes e articulações internas.
@@ -1485,7 +1515,7 @@ Lê o desenho visível: linhas, blocos, pausas, recorrências e arquitetura do t
 Amplia a leitura em camadas: imagem, forma, ritmo, tensão e fecho.
 
 A comparação entre as análises é parte da experiência.  
-Nenhuma lente encerra o poema; cada uma abre outro modo de entrada.
+Nenhuma leitura encerra o poema; cada uma mostra outro modo de entrada.
 """
 
 
@@ -1805,20 +1835,52 @@ def page_mini():
                             time.sleep(1)
                             secs -= 1
 
-def _cia_objeto_analise_existe():
-    """Objeto explícito de leitura da CIA: mesmo yPoema, várias lentes."""
-    return bool(st.session_state.get("ypoema_atual_para_analise", ""))
+
+def limpar_copias_palco():
+    """Limpa o pacote de cópias: cópias pertencem ao tema que as gerou."""
+    st.session_state["copy_bundle_text"] = ""
+    st.session_state["copy_bundle_qtd"] = 0
+    st.session_state["copy_bundle_token"] = 0
+
+
+def limpar_cia_palco():
+    """A CIA nunca deixa rastros no palco da Machina."""
+    for key, value in {
+        "ypoema_atual_para_analise": "",
+        "tema_atual_para_analise": "",
+        "book_atual_para_analise": "",
+        "take_atual_para_analise": -1,
+        "lang_atual_para_analise": "",
+        "ypoema_em_analise": "",
+        "tema_em_analise": "",
+        "book_em_analise": "",
+        "take_em_analise": -1,
+        "lang_em_analise": "",
+        "cia_mood_changed": False,
+        "cia_force_new_poema": False,
+        "cia_freeze_book": "",
+        "cia_freeze_take": -1,
+        "cia_freeze_tema": "",
+        "cia_last_action": "",
+        "cia_reading_mode": False,
+    }.items():
+        st.session_state[key] = value
+
+
+def limpar_palcos_auxiliares():
+    """Mudou contexto? Cama limpa: sem CIA antiga, sem cópias antigas."""
+    limpar_copias_palco()
+    limpar_cia_palco()
 
 
 def _cia_fixar_objeto_analise(curr_ypoema):
-    """Fixa livro/take/tema/yPoema como objeto atual da análise."""
+    """Fixa apenas o yPoema visível; análise real_time pertence ao momento."""
     st.session_state["book_atual_para_analise"] = _current_book()
     st.session_state["take_atual_para_analise"] = int(st.session_state.get("take", 0))
     st.session_state["tema_atual_para_analise"] = st.session_state.get("tema", "")
     st.session_state["ypoema_atual_para_analise"] = curr_ypoema
     st.session_state["lang_atual_para_analise"] = st.session_state.get("lang", "pt")
 
-    # Compatibilidade com a camada anterior.
     st.session_state.ypoema_em_analise = curr_ypoema
     st.session_state.tema_em_analise = st.session_state.get("tema", "")
     st.session_state.book_em_analise = _current_book()
@@ -1826,44 +1888,9 @@ def _cia_fixar_objeto_analise(curr_ypoema):
     st.session_state.lang_em_analise = st.session_state.get("lang", "pt")
 
 
-def _cia_restaurar_identidade_objeto():
-    """Recoloca o estado canônico no objeto que está sendo analisado."""
-    if not _cia_objeto_analise_existe():
-        return
-    book = st.session_state.get("book_atual_para_analise", "")
-    take = st.session_state.get("take_atual_para_analise", -1)
-    tema = st.session_state.get("tema_atual_para_analise", "")
-    if book:
-        st.session_state.book = book
-    try:
-        take = int(take)
-    except Exception:
-        take = -1
-    if take >= 0:
-        st.session_state.take = take
-    if tema:
-        st.session_state.tema = tema
-
-
 def _restore_cia_freeze_before_sync():
-    """Troca de análise CIA não pode alterar livro/tema/take por gatilho lateral."""
-    if not st.session_state.get("cia_mood_changed", False):
-        return
-
-    # Preferir o objeto explícito já fixado pela CIA.
-    if _cia_objeto_analise_existe():
-        _cia_restaurar_identidade_objeto()
-        return
-
-    frozen_book = st.session_state.get("cia_freeze_book", "")
-    frozen_take = st.session_state.get("cia_freeze_take", -1)
-    frozen_tema = st.session_state.get("cia_freeze_tema", "")
-    if frozen_book:
-        st.session_state.book = frozen_book
-    if isinstance(frozen_take, int) and frozen_take >= 0:
-        st.session_state.take = frozen_take
-    if frozen_tema:
-        st.session_state.tema = frozen_tema
+    """CIA antiga removida: não há congelamento de tema/livro/take."""
+    return
 
 
 def page_ypoemas():
@@ -1940,7 +1967,7 @@ def page_ypoemas():
 
     if last:
         st.session_state["cia_last_action"] = "nav"
-        st.session_state["ypoema_atual_para_analise"] = ""
+        limpar_palcos_auxiliares()
         st.session_state.take -= 1
         if st.session_state.take < 0:
             st.session_state.take = maxy_ypoemas
@@ -1948,13 +1975,13 @@ def page_ypoemas():
 
     if rand:
         st.session_state["cia_last_action"] = "nav"
-        st.session_state["ypoema_atual_para_analise"] = ""
+        limpar_palcos_auxiliares()
         st.session_state.take = random.randrange(0, maxy_ypoemas + 1)
         _sync_book_theme_state()
 
     if nest:
         st.session_state["cia_last_action"] = "nav"
-        st.session_state["ypoema_atual_para_analise"] = ""
+        limpar_palcos_auxiliares()
         st.session_state.take += 1
         if st.session_state.take > maxy_ypoemas:
             st.session_state.take = 0
@@ -2004,81 +2031,40 @@ def page_ypoemas():
         ypoemas_expander = st.expander(what_book, expanded=True)
         with ypoemas_expander:
             cia_mode = st.session_state.get("sidebar_panel") == "CIA"
-            cia_mood_changed = bool(st.session_state.get("cia_mood_changed", False))
-            cia_force_new_poema = bool(st.session_state.get("cia_force_new_poema", False))
-            cia_last_action = st.session_state.get("cia_last_action", "")
 
-            explicit_poem_change = bool(
-                last
-                or rand
-                or nest
-                or cia_last_action in {"nav", "book_change", "theme_change"}
-            )
-            more_same_theme = bool(more or cia_last_action == "more_same_theme")
-
-            if cia_mode and (cia_mood_changed or cia_last_action == "cia_mood"):
-                _cia_restaurar_identidade_objeto()
-                force_new_poema = False
+            if st.session_state.lang != st.session_state.last_lang:
+                curr_ypoema = load_lypo()  # changes in lang, keep LYPO
             else:
-                force_new_poema = bool(explicit_poem_change or cia_force_new_poema or more_same_theme)
+                curr_ypoema = load_poema(st.session_state.tema, "")
+                curr_ypoema = load_lypo()
 
-            preserve_cia_poema = (
-                cia_mode
-                and _cia_objeto_analise_existe()
-                and not force_new_poema
-            )
+            if st.session_state.lang != "pt":  # translate if idioma <> pt
+                curr_ypoema = translate(curr_ypoema)
+                typo_user = "TYPO_" + IPAddres
+                with open(
+                    os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
+                ) as save_typo:
+                    save_typo.write(curr_ypoema)
+                    save_typo.close()
+                curr_ypoema = load_typo()  # to normalize line breaks in text
 
-            if preserve_cia_poema:
-                # Troca de lente CIA: usa exatamente o mesmo objeto de análise.
-                _cia_restaurar_identidade_objeto()
-                curr_ypoema = st.session_state.get("ypoema_atual_para_analise", "")
-                generated_new_poema = False
-                st.session_state["cia_mood_changed"] = False
-                st.session_state["cia_force_new_poema"] = False
-                st.session_state["cia_freeze_book"] = ""
-                st.session_state["cia_freeze_take"] = -1
-                st.session_state["cia_freeze_tema"] = ""
-                st.session_state["cia_last_action"] = ""
+            if cia_mode:
+                _cia_fixar_objeto_analise(curr_ypoema)
             else:
-                st.session_state["cia_mood_changed"] = False
-                st.session_state["cia_force_new_poema"] = False
+                st.session_state.ypoema_em_analise = curr_ypoema
+                st.session_state.tema_em_analise = st.session_state.tema
+                st.session_state.book_em_analise = _current_book()
+                st.session_state.take_em_analise = st.session_state.take
+                st.session_state.lang_em_analise = st.session_state.lang
 
-                if cia_mode and more_same_theme and _cia_objeto_analise_existe():
-                    _cia_restaurar_identidade_objeto()
-
-                if st.session_state.lang != st.session_state.last_lang:
-                    curr_ypoema = load_lypo()  # changes in lang, keep LYPO
-                else:
-                    curr_ypoema = load_poema(st.session_state.tema, "")
-                    curr_ypoema = load_lypo()
-
-                if st.session_state.lang != "pt":  # translate if idioma <> pt
-                    curr_ypoema = translate(curr_ypoema)
-                    typo_user = "TYPO_" + IPAddres
-                    with open(
-                        os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
-                    ) as save_typo:
-                        save_typo.write(curr_ypoema)
-                        save_typo.close()
-                    curr_ypoema = load_typo()  # to normalize line breaks in text
-
-                if cia_mode:
-                    _cia_fixar_objeto_analise(curr_ypoema)
-                else:
-                    st.session_state.ypoema_em_analise = curr_ypoema
-                    st.session_state.tema_em_analise = st.session_state.tema
-                    st.session_state.book_em_analise = _current_book()
-                    st.session_state.take_em_analise = st.session_state.take
-                    st.session_state.lang_em_analise = st.session_state.lang
-
-                generated_new_poema = True
-                st.session_state["cia_last_action"] = ""
-                st.session_state["more_same_book"] = ""
-                st.session_state["more_same_take"] = -1
-                st.session_state["more_same_tema"] = ""
-                st.session_state["ypo_anchor_book"] = _current_book()
-                st.session_state["ypo_anchor_take"] = int(st.session_state.get("take", 0))
-                st.session_state["ypo_anchor_tema"] = st.session_state.get("tema", "")
+            generated_new_poema = True
+            st.session_state["cia_last_action"] = ""
+            st.session_state["more_same_book"] = ""
+            st.session_state["more_same_take"] = -1
+            st.session_state["more_same_tema"] = ""
+            st.session_state["ypo_anchor_book"] = _current_book()
+            st.session_state["ypo_anchor_take"] = int(st.session_state.get("take", 0))
+            st.session_state["ypo_anchor_tema"] = st.session_state.get("tema", "")
 
             if generated_new_poema:
                 update_readings(st.session_state.tema)
@@ -2100,33 +2086,43 @@ def page_ypoemas():
 
             # Copiar 1..9 ocorrências do tema atual para leituras externas.
             # Mantém o yPoema exibido como #1 e gera variações extras sem alterar o palco.
-            with st.form("copy_variacoes_form", clear_on_submit=False):
-                copy_left, copy_qtd_col, copy_btn_col, copy_right = st.columns([7.6, 0.85, 0.85, 7.6])
-                with copy_qtd_col:
-                    st.number_input(
-                        "cópias",
-                        min_value=1,
-                        max_value=9,
-                        step=1,
-                        key="copy_qtd_widget",
-                        label_visibility="collapsed",
-                    )
-                with copy_btn_col:
-                    copy_submit = st.form_submit_button("📋", use_container_width=True)
+            #
+            # Importante: não usar st.number_input dentro de st.form aqui.
+            # Na prática ele estava ficando preso no valor antigo/default (=1) em alguns ciclos,
+            # e o hint nativo do input ainda poluía a tela. O selectbox 1..9 é estável e sem hint.
+            copy_left, copy_qtd_col, copy_btn_col, copy_right = st.columns([7.3, 1.10, 0.85, 7.3])
+            with copy_qtd_col:
+                qtd_copias = st.selectbox(
+                    "1 a 9",
+                    list(range(1, 10)),
+                    index=max(0, min(8, int(st.session_state.get("copy_qtd", 1)) - 1)),
+                    key="copy_qtd_widget",
+                    label_visibility="visible",
+                )
+
+            with copy_btn_col:
+                st.markdown(
+                    "<div style='height:1.72rem; min-height:1.72rem;'></div>",
+                    unsafe_allow_html=True,
+                )
+                copy_submit = st.button("📋", key="copy_variacoes_btn", use_container_width=True)
+
+            st.session_state["copy_qtd"] = int(qtd_copias)
 
             if copy_submit:
-                qtd_copias = int(st.session_state.get("copy_qtd_widget", 1))
-                st.session_state["copy_qtd"] = qtd_copias
+                qtd_copias = int(st.session_state.get("copy_qtd", 1))
                 st.session_state["copy_bundle_text"] = montar_copias_ypoema(
                     curr_ypoema,
                     st.session_state.get("tema", ""),
                     qtd_copias,
                 )
+                st.session_state["copy_bundle_qtd"] = qtd_copias
                 st.session_state["copy_bundle_token"] = int(st.session_state.get("copy_bundle_token", 0)) + 1
 
             render_copy_bundle_widget(
                 st.session_state.get("copy_bundle_text", ""),
                 int(st.session_state.get("copy_bundle_token", 0)),
+                st.session_state.get("copy_bundle_qtd", None),
             )
 
             if manu:
@@ -2482,38 +2478,141 @@ CIA_MOOD_OPTIONS = [
     "Completa",
     "Index",
 ]
+
+
+def _limpar_html_texto(texto):
+    texto = str(texto or "")
+    texto = re.sub(r"<br\s*/?>", "\n", texto, flags=re.I)
+    texto = re.sub(r"<[^>]+>", "", texto)
+    texto = html.unescape(texto)
+    return texto.strip()
+
+
+def _linhas_ypoema(texto):
+    return [ln.strip() for ln in _limpar_html_texto(texto).splitlines() if ln.strip()]
+
+
+def _cia_analise_real_time(curr_ypoema, mood):
+    """Leitura local, enxuta e em tempo real do yPoema visível.
+
+    Esta função substitui Controle_CIA/Conteudo_CIA: não usa estoque antigo,
+    não tenta valer para todas as variações e não interfere na Machina.
+    """
+    linhas = _linhas_ypoema(curr_ypoema)
+    tema = st.session_state.get("tema", "")
+    if not linhas:
+        return "A CIA não encontrou texto no palco para analisar."
+
+    primeira = linhas[0]
+    ultima = linhas[-1]
+    interrogacoes = sum(ln.count("?") for ln in linhas)
+    exclamacoes = sum(ln.count("!") for ln in linhas)
+    reticencias = sum(ln.count("...") + ln.count("…") for ln in linhas)
+
+    mood_norm = str(mood or "Sintática").lower()
+
+    if mood_norm == "index":
+        try:
+            idx = say_number(tema)
+        except Exception:
+            idx = "índice indisponível para este tema."
+        return (
+            f"Tema em foco: {tema}.\n\n"
+            f"Linhas visíveis: {len(linhas)}.\n\n"
+            f"INDEX: {idx}"
+        )
+
+    if mood_norm.startswith("sint") and "tica" in mood_norm:
+        partes = [
+            f"A leitura sintática observa o yPoema visível em {len(linhas)} linha(s).",
+            f"A abertura fixa o primeiro enquadramento em: “{primeira}”.",
+        ]
+        if len(linhas) > 2:
+            partes.append("O miolo sustenta a passagem entre a primeira imagem e o fecho, sem precisar explicar todo o percurso.")
+        partes.append(f"O fecho concentra a última tensão em: “{ultima}”.")
+        if interrogacoes:
+            partes.append("A pergunta desloca a conclusão e mantém a leitura em suspensão.")
+        if exclamacoes:
+            partes.append("A exclamação aumenta a pressão da frase sem transformar a leitura em sentença.")
+        if reticencias:
+            partes.append("As reticências deixam uma sobra de sentido para o leitor completar.")
+        return "\n\n".join(partes)
+
+    if mood_norm.startswith("formal"):
+        return "\n\n".join([
+            f"Formalmente, o yPoema se organiza em {len(linhas)} linha(s).",
+            "O desenho visível importa: cortes, pausas e distribuição das linhas orientam o ritmo antes mesmo da interpretação.",
+            "A leitura deve considerar a arquitetura do texto no palco, não um tema abstrato fora dele.",
+            f"O último bloco deixa o foco em: “{ultima}”.",
+        ])
+
+    if mood_norm.startswith("completa"):
+        return "\n\n".join([
+            f"Esta leitura parte do yPoema exibido agora, no tema {tema}.",
+            f"A abertura apresenta o primeiro gesto: “{primeira}”.",
+            "A forma conduz a atenção por aproximações sucessivas: imagem, pausa, deslocamento e retomada.",
+            f"O fecho — “{ultima}” — não encerra definitivamente o poema; apenas mostra um modo de saída.",
+            "A palavra final permanece sendo do leitor.",
+        ])
+
+    # Sintética
+    return "\n\n".join([
+        "A leitura sintética procura apenas a tensão principal do yPoema visível.",
+        f"Entre a abertura “{primeira}” e o fecho “{ultima}”, o texto cria uma pequena travessia de sentido.",
+        "O poema ganha força porque não precisa explicar tudo: mostra o suficiente para que o leitor complete o restante.",
+    ])
+
+
+def render_cia_stage(curr_ypoema):
+    """Palco da CIA: presença, sub-header e análise em tempo real."""
+    mood = st.session_state.get("cia_mood", "Sintática")
+    write_cia_header("Central de Inteligência Analítica", None)
+    analise = _cia_analise_real_time(curr_ypoema, mood)
+    cia_font = st.session_state.get("cia_font", "Trebuchet MS")
+    cia_size = int(st.session_state.get("cia_size", 18))
+    texto_html = html.escape(analise).replace("\n", "<br>")
+    st.markdown(
+        f"""
+        <div class='cia-real-time-stage' style="font-family:{cia_font}; font-size:{cia_size}px; line-height:1.55; text-align:left; margin:0 auto; max-width:42rem;">
+            {texto_html}
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def draw_sidebar_panel_buttons(chosen_id):
+    """Botões de presença no palco: Machina / CIA."""
+    if str(chosen_id) != "2":
+        return
+    with st.sidebar:
+        cols = st.columns(2)
+        if cols[0].button("Machina", key="sidebar_panel_machina", use_container_width=True):
+            st.session_state["sidebar_panel"] = "Machina"
+            limpar_cia_palco()
+        if cols[1].button("CIA", key="sidebar_panel_cia", use_container_width=True):
+            st.session_state["sidebar_panel"] = "CIA"
+            limpar_copias_palco()
+
+
 def render_cia_mood_selectbox():
-    """Lista da CIA sempre aberta: troca só a camada de análise."""
+    """Lista CIA: muda a leitura, não muda o yPoema."""
     current = st.session_state.get("cia_mood", "Sintática").strip()
     if current == "Reduzida":
         current = "Sintética"
-        st.session_state["cia_mood"] = current
-        st.session_state["cia_mood_select"] = current
     if current not in CIA_MOOD_OPTIONS:
         current = "Sintática"
-        st.session_state["cia_mood"] = current
-        st.session_state["cia_mood_select"] = current
+    st.session_state["cia_mood"] = current
+    st.session_state["cia_mood_select"] = current
 
     with st.sidebar.expander("↓  análises CIA", expanded=True):
         for mood in CIA_MOOD_OPTIONS:
             label = f"• {mood}" if mood == current else mood
             if st.button(label, key=f"cia_mood_list_{mood}", use_container_width=True):
-                if mood != st.session_state.get("cia_mood", "Sintática"):
-                    if _cia_objeto_analise_existe():
-                        st.session_state["cia_freeze_book"] = st.session_state.get("book_atual_para_analise", "")
-                        st.session_state["cia_freeze_take"] = int(st.session_state.get("take_atual_para_analise", -1))
-                        st.session_state["cia_freeze_tema"] = st.session_state.get("tema_atual_para_analise", "")
-                    else:
-                        st.session_state["cia_freeze_book"] = st.session_state.get("book", "")
-                        st.session_state["cia_freeze_take"] = int(st.session_state.get("take", -1))
-                        st.session_state["cia_freeze_tema"] = st.session_state.get("tema", "")
-                    st.session_state["cia_mood"] = mood
-                    st.session_state["cia_mood_select"] = mood
-                    st.session_state["cia_reading_mode"] = False
-                    st.session_state["cia_last_action"] = "cia_mood"
-                    st.session_state["cia_mood_changed"] = True
-                    # Sem rerun manual: o clique do Streamlit já atualiza a página uma vez.
-                    # Forçar st.rerun() aqui duplicava/triplicava recarregamentos.
+                st.session_state["cia_mood"] = mood
+                st.session_state["cia_mood_select"] = mood
+                st.session_state["cia_reading_mode"] = False
+
 
 def _cia_sidebar_filha_active(chosen_id):
     """Mantém a sidebar CIA fixa; não recolhe para a coluna reduzida."""
@@ -2606,13 +2705,6 @@ def render_sidebar_for_page(chosen_id):
     pick_stage_font()
     draw_check_buttons()
 
-
-configure_cia(
-    translate_func=translate,
-    load_typo_func=load_typo,
-    write_ypoema_func=write_cia_header,
-    ip_address=IPAddres,
-)
 
 def main():
     gramado = open_gramado()
