@@ -2,24 +2,24 @@
 *- Tempus.ypo
 *-
 |01|01|Tempus_0101|F|1|1|O passado,|
-|01|02|Tempus_0102|T|11|10|estampado|emoldurado|ensimesmado|incrustado|enraizado|envolvido|mergulhado|afogado|engasgado|confinado|escancarado|
-|01|03|Tempus_0103|T|7|7|na carne,|no tempo,|na gente,|na memória,|em lembranças,|em sentidos,|em feridas,|
-|01|04|Tempus_0104|F|5|2|não volta.|passou.|foi-se.|já era.|é quimera|
+|01|02|Tempus_0102|T|11|5|estampado|emoldurado|ensimesmado|incrustado|enraizado|envolvido|mergulhado|afogado|engasgado|confinado|escancarado|
+|01|03|Tempus_0103|T|7|1|na carne,|no tempo,|na gente,|na memória,|em lembranças,|em sentidos,|em feridas,|
+|01|04|Tempus_0104|F|5|1|não volta.|passou.|foi-se.|já era.|é quimera|
 |02|01|Tempus_0201|F|1|1|$|O futuro,|
-|02|02|Tempus_0202|F|13|7|incerto|desigual|utópico|sonhado|impreciso|inventado|sublimado|infindo|intermitente|inexistente|impaciente|indefinido|despareado|
+|02|02|Tempus_0202|F|13|6|incerto|desigual|utópico|sonhado|impreciso|inventado|sublimado|infindo|intermitente|inexistente|impaciente|indefinido|despareado|
 |02|03|Tempus_0203|F|1|1|e|
-|02|04|Tempus_0202|T|13|6|incerto|desigual|utópico|sonhado|impreciso|inventado|sublimado|infindo|intermitente|inexistente|impaciente|indefinido|despareado|
-|02|05|Tempus_0205|T|6|2|, não demora.|, virá.|, chegará.|, não tem hora.|, bate à porta.|, abre janelas.|
+|02|04|Tempus_0202|T|13|9|incerto|desigual|utópico|sonhado|impreciso|inventado|sublimado|infindo|intermitente|inexistente|impaciente|indefinido|despareado|
+|02|05|Tempus_0205|T|6|5|, não demora.|, virá.|, chegará.|, não tem hora.|, bate à porta.|, abre janelas.|
 |03|01|Tempus_0301|F|1|1|$$|O presente,|
-|03|02|Tempus_0302|F|7|4|pulsando|urgindo|rugindo|revirando|inventando|variando|mudando|
-|03|03|Tempus_0303|F|4|4|no dia-a-dia,|à cada segundo,|tic-tacs,|surpresas,|
-|03|04|Tempus_0304|F|8|2|é agora:|impera:|é quem manda:|indaga:|quer saber:|é o centro:|é na hora:|lidera:|
+|03|02|Tempus_0302|F|7|3|pulsando|urgindo|rugindo|revirando|inventando|variando|mudando|
+|03|03|Tempus_0303|F|4|3|no dia-a-dia,|à cada segundo,|tic-tacs,|surpresas,|
+|03|04|Tempus_0304|F|8|1|é agora:|impera:|é quem manda:|indaga:|quer saber:|é o centro:|é na hora:|lidera:|
 |04|00|
-|04|01|Tempus_0401|F|3|2|Sendo um dia|Se cada momento é|Se cada dia é|
-|05|01|Tempus_0501|F|4|1|do outro|do ontem|do futuro|do amanhã|
-|05|02|Tempus_0502|F|3|2|diferente,|distinto,|desigual,|
+|04|01|Tempus_0401|F|3|1|Sendo um dia|Se cada momento é|Se cada dia é|
+|05|01|Tempus_0501|F|4|4|do outro|do ontem|do futuro|do amanhã|
+|05|02|Tempus_0502|F|3|1|diferente,|distinto,|desigual,|
 |06|01|Tempus_0601|T|5|1|o quê na gente|o quê nas gentes|o quê nas pessoas|o quê nos povos|o quê cá dentro|
-|06|02|Tempus_0602|F|6|5|pensa igual?|nunca muda?|parece mais do mesmo?|se repete?|não se move?|desdenha surpresas?|
+|06|02|Tempus_0602|F|6|4|pensa igual?|nunca muda?|parece mais do mesmo?|se repete?|não se move?|desdenha surpresas?|
 <EOF>
 # 
 #      Verbetes usados: 67
@@ -30,5 +30,3 @@
 # 
 # Build_By_Lay_2_Ipo em 18/01/2021_09:15
 # 
-#####################
-###
