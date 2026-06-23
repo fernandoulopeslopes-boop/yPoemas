@@ -270,14 +270,23 @@ def _limpar_html_texto(texto):
     return texto.strip()
 
 
-def _linhas_ypoema(texto):
-    return [ln.strip() for ln in _limpar_html_texto(texto).splitlines() if ln.strip()]
+def _linhas_ypoema(texto, tema=None):
+    """Retorna só os versos/linhas analisáveis, sem contar o título do tema.
+
+    O LYPO guarda o nome do tema na primeira linha para tradução/persistência.
+    Para a CIA, essa primeira linha é moldura do palco, não verso do yPoema.
+    """
+    linhas = [ln.strip() for ln in _limpar_html_texto(texto).splitlines() if ln.strip()]
+    tema = str(tema if tema is not None else st.session_state.get("tema", "")).strip()
+    if tema and linhas and linhas[0].casefold() == tema.casefold():
+        linhas = linhas[1:]
+    return linhas
 
 
 def _cia_analise_real_time(curr_ypoema, mood):
     """Leitura local, enxuta e em tempo real do yPoema visível."""
-    linhas = _linhas_ypoema(curr_ypoema)
     tema = st.session_state.get("tema", "")
+    linhas = _linhas_ypoema(curr_ypoema, tema)
 
     if not linhas:
         return "A CIA não encontrou texto no palco para analisar."
