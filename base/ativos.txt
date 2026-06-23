@@ -1,4 +1,3 @@
-Abertura : author
 Ais : ensaio
 Amaré : poesia
 Ana : author
@@ -31,6 +30,7 @@ Críticas : joco
 Crítico : author
 Cromossomo : joco
 Cuores : poesia
+Demo : joco
 Destinos : poesia
 Distintos : beauty
 Dolores : poesia
@@ -39,11 +39,11 @@ Elogio : beauty
 Enfrente : ensaio
 Epitafiando : poesia
 Escriba : author
-Escribo : ensaio
 Essa : metalinguagem
 Essas : ensaio
 Esses : ensaio
 Estudo : joco
+Evidências : anima
 Fatos : machina
 Feiras : metalinguagem
 Festim : poesia
@@ -60,6 +60,7 @@ Insano : joco
 Joker : machina
 Lato : author
 Leituras : metalinguagem
+Lero : anima
 Liberta : poesia
 Loremipsum : ensaio
 Machbeth : author
@@ -72,17 +73,20 @@ Minuto : joco
 Mirante : poesia
 Nonono : ensaio
 Nós : poesia
+Ola : anima
 Oca : poesia
 Ocio : joco
 Oco : poesia
 Oficia : joco
 Oficio : author
 Ogiva : poesia
+Ola : machina
 Olhares : poesia
 Palyndro : ensaio
 Papilio : author
 Paroles : metalinguagem
 Passagens : poesia
+Paz : poesia
 Pedidos : poesia
 Perfil : joco
 Pessoa : author
@@ -94,7 +98,6 @@ Psiu : poesia
 Reger : poesia
 Reinos : joco
 Remedeio : joco
-Resumida : metalinguagem
 Rever : poesia
 Restos : poesia
 Rito : joco
