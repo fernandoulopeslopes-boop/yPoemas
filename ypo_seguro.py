@@ -8,6 +8,9 @@ import socket
 import asyncio
 import streamlit as st
 import streamlit.components.v1 as components
+
+APP_BUILD = "2026-06-24_a_sidebar_de_verdade__copy_reset"
+APP_BUILD_NOTES = "Sidebar nativa + respiro CIA + limpeza do pacote de cópias ao trocar yPoema."
 from extra_streamlit_components import TabBar as stx
 
 from lay_2_ypo import gera_poema
@@ -130,7 +133,7 @@ st.set_page_config(
     page_title="a máquina de fazer Poesia - yPoemas",
     page_icon=":bulb:",
     layout="wide",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state="collapsed",
 )
 
 
@@ -224,18 +227,6 @@ def apply_styles():
     st.markdown(
         """
         <style>
-        [data-testid='stSidebar'][aria-expanded='true'] > div:first-child {
-            width: 300px !important;
-            min-width: 300px !important;
-            max-width: 300px !important;
-        }
-
-        [data-testid="stSidebarResizer"],
-        [data-testid="stSidebar"] [role="separator"] {
-            display: none !important;
-            width: 0 !important;
-            opacity: 0.45 !important;
-        }
         mark {
             background-color: powderblue;
             color: black;
@@ -310,16 +301,7 @@ def apply_styles():
         }
 
 
-        /* Sidebar :: Centro de Controle fixo */
-        [data-testid="collapsedControl"],
-        [data-testid="stSidebarCollapseButton"],
-        [data-testid="stSidebar"] [data-testid="stSidebarCollapseButton"] {
-            display: none !important;
-            visibility: hidden !important;
-            opacity: 0 !important;
-            pointer-events: none !important;
-        }
-
+        /* Sidebar :: nativa/recolhível — oficina disponível, palco livre */
         [data-testid="stSidebar"] {
             background-color: #eef6fb !important;
         }
@@ -668,6 +650,7 @@ def init_session_state():
         "copy_bundle_text": "",
         "copy_bundle_token": 0,
         "copy_bundle_qtd": 0,
+        "copy_bundle_source": "",
     }
 
     for key, value in defaults.items():
@@ -677,6 +660,30 @@ def init_session_state():
 
 apply_styles()
 init_session_state()
+
+
+def _copy_bundle_source_key(curr_ypoema=""):
+    """Identidade do yPoema usado pelo pacote de cópias.
+
+    Evita que um pacote montado para um tema/variação continue visível
+    depois de troca de tema, livro, idioma ou nova variação.
+    """
+    texto = str(curr_ypoema or "")
+    return "|".join([
+        str(st.session_state.get("book", "")),
+        str(st.session_state.get("take", "")),
+        str(st.session_state.get("tema", "")),
+        str(st.session_state.get("lang", "")),
+        str(hash(texto)),
+    ])
+
+
+def limpar_copias_palco():
+    """Remove pacote de cópias antigo sem alterar a quantidade escolhida."""
+    st.session_state["copy_bundle_text"] = ""
+    st.session_state["copy_bundle_qtd"] = 0
+    st.session_state["copy_bundle_source"] = ""
+    st.session_state["copy_bundle_token"] = int(st.session_state.get("copy_bundle_token", 0)) + 1
 
 
 def open_gramado():
@@ -869,6 +876,7 @@ def _on_palco_book_change():
         st.session_state.take = 0
         st.session_state["cia_last_action"] = "book_change"
         limpar_cia_palco()
+        limpar_copias_palco()
         st.session_state["cia_force_new_poema"] = True
     _sync_book_theme_state()
 
@@ -891,6 +899,7 @@ def _on_palco_theme_change():
     if take != old_take:
         st.session_state["cia_last_action"] = "theme_change"
         limpar_cia_palco()
+        limpar_copias_palco()
         st.session_state["cia_force_new_poema"] = True
 
 
@@ -1575,7 +1584,7 @@ def write_cia_header(LOGO_TEXTO, LOGO_IMAGE=None):
 
     st.markdown(
         f"""
-        <div class='cia-header-container' style="text-align:center; width:100%; margin:0 auto 0.45em auto;">
+        <div class='cia-header-container' style="text-align:center; width:100%; margin:0 auto 1.15em auto;">
             <p class='cia-header-text' style="font-family:{stage_font}; font-size:{stage_size}px; margin:0 0 0.12em 0; text-align:center; text-decoration:underline; text-underline-offset:0.18em;">{LOGO_TEXTO}</p>
             <p class='cia-header-mood' style="font-family:{stage_font}; font-size:{mood_size}px; margin:0; opacity:0.92; text-align:center; text-decoration:underline; text-underline-offset:0.18em;">{mood_label}</p>
         </div>
@@ -1856,6 +1865,7 @@ def page_ypoemas():
     if last:
         st.session_state["cia_last_action"] = "nav"
         limpar_cia_palco()
+        limpar_copias_palco()
         st.session_state.take -= 1
         if st.session_state.take < 0:
             st.session_state.take = maxy_ypoemas
@@ -1864,12 +1874,14 @@ def page_ypoemas():
     if rand:
         st.session_state["cia_last_action"] = "nav"
         limpar_cia_palco()
+        limpar_copias_palco()
         st.session_state.take = random.randrange(0, maxy_ypoemas + 1)
         _sync_book_theme_state()
 
     if nest:
         st.session_state["cia_last_action"] = "nav"
         limpar_cia_palco()
+        limpar_copias_palco()
         st.session_state.take += 1
         if st.session_state.take > maxy_ypoemas:
             st.session_state.take = 0
@@ -2046,10 +2058,15 @@ def page_ypoemas():
                     qtd_copias,
                 )
                 st.session_state["copy_bundle_qtd"] = qtd_copias
+                st.session_state["copy_bundle_source"] = _copy_bundle_source_key(curr_ypoema)
                 st.session_state["copy_bundle_token"] = int(st.session_state.get("copy_bundle_token", 0)) + 1
 
+            copy_bundle_text = st.session_state.get("copy_bundle_text", "")
+            if st.session_state.get("copy_bundle_source", "") != _copy_bundle_source_key(curr_ypoema):
+                copy_bundle_text = ""
+
             render_copy_bundle_widget(
-                st.session_state.get("copy_bundle_text", ""),
+                copy_bundle_text,
                 int(st.session_state.get("copy_bundle_token", 0)),
                 st.session_state.get("copy_bundle_qtd", None),
             )
