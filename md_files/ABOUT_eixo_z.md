@@ -21,9 +21,15 @@ necessárias
 tema.  
 
 > A **máquina** deixa de ser máquina quando,  
-a cada nova geração de um texto,  
-insere-se o **acaso** no sorteio das palavras que dele farão  
-parte.  
+a cada nova geração de um texto, insere-se o **acaso**  
+no sorteio das palavras que dele farão parte.  
+
+> o **Eixo Z**  
+no mundo ocidental, escrevemos e lemos da direita para  
+a esquerda (X) e de cima para baixo (Y).  
+o "Eixo Z" imaginário é um terceiro "eixo de ítimos"  
+e na montagem dos yPoemas ele oferece outra lista de "ítimos"  
+que poderão fazer parte da linha de leitura que está sendo criada.  
 
 **Características**  
 > Efêmero, inesperado, impermanente, imprevisível e aberto.  
@@ -85,8 +91,6 @@ ordem alfabética,
 *Obviamente, os sinais de pontuação são parte muito  
 importante dos ítimos.*  
 ___  
-Copyright © 1983-Hoje Nando Lopes - **yPoemas @ Machina de  
-Fazer Poesia**  
 
----  
 Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de fazer Poesia**
+___
