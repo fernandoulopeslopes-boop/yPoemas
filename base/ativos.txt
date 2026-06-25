@@ -82,6 +82,7 @@ Oficio : author
 Ogiva : poesia
 Ola : machina
 Olhares : poesia
+Ores : author
 Palyndro : ensaio
 Papilio : author
 Paroles : metalinguagem
