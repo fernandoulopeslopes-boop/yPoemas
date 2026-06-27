@@ -9,8 +9,8 @@ import asyncio
 import streamlit as st
 import streamlit.components.v1 as components
 
-APP_BUILD = "2026-06-24_a_sidebar_de_verdade__copy_reset"
-APP_BUILD_NOTES = "Sidebar nativa + respiro CIA + limpeza do pacote de cópias ao trocar yPoema."
+APP_BUILD = "2026-06-26_subir_botao_copiar_5px"
+APP_BUILD_NOTES = "Off-Machina final + botão copiar menos é mais com ajuste vertical de 5px."
 from extra_streamlit_components import TabBar as stx
 
 from lay_2_ypo import gera_poema
@@ -1344,77 +1344,108 @@ def montar_copias_ypoema(curr_ypoema, nome_tema, qtd):
     return ("\n".join(partes).strip() + "\n___").strip()
 
 
-def render_copy_bundle_widget(texto, token, qtd_real=None):
-    """Mostra o pacote completo para copiar.
-
-    Regra deste GO:
-    - o texto final precisa conter TODAS as variações pedidas;
-    - o leitor precisa conseguir conferir o pacote inteiro;
-    - o botão JS é só atalho; o st.text_area é o fallback confiável.
-    """
-    if not texto:
-        return
-
-    texto = str(texto)
+def _copy_bundle_total_blocos(texto, qtd_real=None):
+    """Calcula quantidade real de blocos/yPoemas no pacote de cópias."""
     try:
         total_blocos = int(qtd_real) if qtd_real is not None else 0
     except Exception:
         total_blocos = 0
+
     if total_blocos < 1:
-        # Conta os blocos pelo desenho clean: cada yPoema começa com uma linha "___".
-        # Se houver "___" final de fechamento, ele não entra na conta.
-        marcadores = len(re.findall(r"(?m)^___\s*$", texto))
-        total_blocos = marcadores - 1 if texto.strip().endswith("___") and marcadores > 1 else marcadores
+        marcadores = len(re.findall(r"(?m)^___\s*$", str(texto or "")))
+        total_blocos = marcadores - 1 if str(texto or "").strip().endswith("___") and marcadores > 1 else marcadores
         total_blocos = max(1, total_blocos)
 
-    # Fallback nativo e visível: mesmo se o clipboard do navegador/iframe falhar,
-    # este campo contém o pacote inteiro para Ctrl+A / Ctrl+C.
+    return total_blocos
+
+
+def render_copy_bundle_button(texto, token):
+    """Botão HTML/JS: copia de verdade e troca o próprio texto para 'copiado'."""
+    import json
+
+    texto = str(texto or "")
+    js_text = json.dumps(texto, ensure_ascii=False)
+
+    components.html(
+        f"""
+        <div style="font-family:system-ui, sans-serif; padding:0; margin-top:-5px;">
+            <button id="copy_btn_{token}" style="
+                width:100%;
+                min-height:38px;
+                border:1px solid rgba(49,51,63,.22);
+                border-radius:8px;
+                padding:7px 12px;
+                cursor:pointer;
+                background:white;
+                color:rgb(49,51,63);
+                font-size:14px;
+                line-height:1.2;
+                white-space:nowrap;">
+                copiar...
+            </button>
+        </div>
+        <script>
+        const txt_{token} = {js_text};
+        const btn_{token} = document.getElementById("copy_btn_{token}");
+
+        async function fallbackCopy_{token}(text) {{
+            const ta = document.createElement("textarea");
+            ta.value = text;
+            ta.setAttribute("readonly", "");
+            ta.style.position = "fixed";
+            ta.style.left = "-9999px";
+            ta.style.top = "0";
+            document.body.appendChild(ta);
+            ta.focus();
+            ta.select();
+            const ok = document.execCommand("copy");
+            document.body.removeChild(ta);
+            return ok;
+        }}
+
+        if (btn_{token}) {{
+            btn_{token}.addEventListener("click", async function() {{
+                try {{
+                    if (navigator.clipboard && window.isSecureContext) {{
+                        await navigator.clipboard.writeText(txt_{token});
+                    }} else {{
+                        const ok = await fallbackCopy_{token}(txt_{token});
+                        if (!ok) throw new Error("fallback copy failed");
+                    }}
+                    btn_{token}.innerText = "copiado";
+                }} catch (e) {{
+                    try {{
+                        const ok = await fallbackCopy_{token}(txt_{token});
+                        btn_{token}.innerText = ok ? "copiado" : "copiar...";
+                    }} catch (e2) {{
+                        btn_{token}.innerText = "copiar...";
+                    }}
+                }}
+            }});
+        }}
+        </script>
+        """,
+        height=48,
+    )
+
+
+def render_copy_bundle_widget(texto, token, qtd_real=None):
+    """Mostra o pacote completo para conferência e fallback de cópia."""
+    if not texto:
+        return
+
+    texto = str(texto)
+    total_blocos = _copy_bundle_total_blocos(texto, qtd_real)
+
+    tema_label = str(st.session_state.get("tema", "") or "").strip()
+
     st.text_area(
-        f"pacote para copiar ({total_blocos} yPoema(s))",
+        f'pacote para copiar ({total_blocos}) ("{tema_label}")',
         value=texto,
         height=420,
         key=f"copy_bundle_textarea_{token}",
         label_visibility="visible",
     )
-
-    # Atalho JS: usa JSON para preservar quebras de linha, aspas, crases etc.
-    import json
-    js_text = json.dumps(texto, ensure_ascii=False)
-
-    components.html(
-        f"""
-        <div style="font-family:system-ui, sans-serif; font-size:13px; padding:2px 0 6px 0;">
-            <button id="copy_btn_{token}" style="
-                border:0;
-                border-radius:8px;
-                padding:6px 10px;
-                cursor:pointer;
-                background:#eef6fb;
-                font-size:13px;">
-                📋 copiar pacote inteiro
-            </button>
-            <span id="copy_msg_{token}" style="margin-left:8px; opacity:.72;"></span>
-        </div>
-        <script>
-        const txt_{token} = {js_text};
-        const btn_{token} = document.getElementById("copy_btn_{token}");
-        const msg_{token} = document.getElementById("copy_msg_{token}");
-
-        async function copyMachina_{token}() {{
-            try {{
-                await navigator.clipboard.writeText(txt_{token});
-                msg_{token}.innerText = "copiado";
-            }} catch (e) {{
-                msg_{token}.innerText = "use Ctrl+A / Ctrl+C no campo acima";
-            }}
-        }}
-
-        btn_{token}.addEventListener("click", copyMachina_{token});
-        </script>
-        """,
-        height=52,
-    )
-
 
 @st.cache_data
 def load_images():
@@ -2031,22 +2062,31 @@ def page_ypoemas():
             # Importante: não usar st.number_input dentro de st.form aqui.
             # Na prática ele estava ficando preso no valor antigo/default (=1) em alguns ciclos,
             # e o hint nativo do input ainda poluía a tela. O selectbox 1..9 é estável e sem hint.
-            copy_left, copy_qtd_col, copy_btn_col, copy_right = st.columns([7.3, 1.10, 0.85, 7.3])
+            copy_bundle_text = st.session_state.get("copy_bundle_text", "")
+            if st.session_state.get("copy_bundle_source", "") != _copy_bundle_source_key(curr_ypoema):
+                copy_bundle_text = ""
+
+            st.markdown("<br>", unsafe_allow_html=True)
+
+            # Cópias clean:
+            # [ gerar variações ] [ qtd ] [ copiar yPoemas gerados ]
+            copy_left, copy_generate_col, copy_qtd_col, copy_all_col, copy_right = st.columns([3.25, 3.5, 1.35, 3.4, 3.25])
+
+            with copy_generate_col:
+                copy_submit = st.button(
+                    "criar variações",
+                    key="copy_variacoes_btn",
+                    use_container_width=True,
+                )
+
             with copy_qtd_col:
                 qtd_copias = st.selectbox(
-                    "1 a 9",
+                    "quantidade de cópias",
                     list(range(1, 10)),
                     index=max(0, min(8, int(st.session_state.get("copy_qtd", 1)) - 1)),
                     key="copy_qtd_widget",
-                    label_visibility="visible",
+                    label_visibility="collapsed",
                 )
-
-            with copy_btn_col:
-                st.markdown(
-                    "<div style='height:1.72rem; min-height:1.72rem;'></div>",
-                    unsafe_allow_html=True,
-                )
-                copy_submit = st.button("📋", key="copy_variacoes_btn", use_container_width=True)
 
             st.session_state["copy_qtd"] = int(qtd_copias)
 
@@ -2060,10 +2100,16 @@ def page_ypoemas():
                 st.session_state["copy_bundle_qtd"] = qtd_copias
                 st.session_state["copy_bundle_source"] = _copy_bundle_source_key(curr_ypoema)
                 st.session_state["copy_bundle_token"] = int(st.session_state.get("copy_bundle_token", 0)) + 1
+                copy_bundle_text = st.session_state.get("copy_bundle_text", "")
 
-            copy_bundle_text = st.session_state.get("copy_bundle_text", "")
-            if st.session_state.get("copy_bundle_source", "") != _copy_bundle_source_key(curr_ypoema):
-                copy_bundle_text = ""
+            # O botão "copiar..." só aparece quando há pacote real na área de cópias.
+            # Novo tema ou nova geração recriam o token e o texto volta para "copiar...".
+            with copy_all_col:
+                if copy_bundle_text:
+                    render_copy_bundle_button(
+                        copy_bundle_text,
+                        int(st.session_state.get("copy_bundle_token", 0)),
+                    )
 
             render_copy_bundle_widget(
                 copy_bundle_text,
@@ -2233,49 +2279,86 @@ def page_eureka():
 
 
 def page_off_machina():  # available off_machina_books
+    nav_changed = False
     off_books_list = load_all_offs()
-    options = list(range(len(off_books_list)))
-    sobrios = "↓  " + translate("lista de Livros")
-    opt_off_book = st.selectbox(
-        sobrios,
-        options,
-        index=st.session_state.off_book,
-        format_func=lambda x: off_books_list[x],
-        key="opt_off_book",
-    )
+    if not off_books_list:
+        st.warning(translate("nenhum livro off-machina encontrado"))
+        return
+
+    if st.session_state.off_book < 0 or st.session_state.off_book >= len(off_books_list):
+        st.session_state.off_book = 0
+    if st.session_state.off_take < 0:
+        st.session_state.off_take = 0
+
+    # Header limpo, herdado do palco yPoemas:
+    # [ lista_livros ] [ ◀ ✻ ▶ ? ] [ lista_temas ]
+    try:
+        col_livros, col_nav, col_temas = st.columns(
+            [3, 4, 3],
+            vertical_alignment="bottom",
+        )
+        off_nav_needs_spacer = False
+    except TypeError:
+        col_livros, col_nav, col_temas = st.columns([3, 4, 3])
+        off_nav_needs_spacer = True
+
+    with col_livros:
+        options = list(range(len(off_books_list)))
+        sobrios = "↓  " + str(len(off_books_list)) + " livros"
+        opt_off_book = st.selectbox(
+            sobrios,
+            options,
+            index=st.session_state.off_book,
+            format_func=lambda x: off_books_list[x],
+            key="opt_off_book",
+        )
 
     if opt_off_book != st.session_state.off_book:
         st.session_state.off_book = opt_off_book
         st.session_state.off_take = 0
+        st.session_state["opt_off_take"] = 0
 
     off_book_name = off_books_list[st.session_state.off_book]
-
-    help_tips = load_help(st.session_state.lang)
-    help_last = help_tips[0]
-    help_rand = help_tips[1]
-    help_nest = help_tips[2]
-    help_love = help_tips[3]
-
-    foo1, last, rand, nest, love, manu, foo2 = st.columns([2.5, 1, 1, 1, 1, 1, 2.5])
-    last = last.button("◀", help=help_last)
-    rand = rand.button("✻", help=help_rand)
-    nest = nest.button("▶", help=help_nest)
-    love = love.button("❤", help=help_love)
-    manu = manu.button("?", help="help !!!")
-
     this_off_book = load_off_book(off_book_name)
     off_book_pagys = load_book_pages(this_off_book)
+
+    if not off_book_pagys:
+        st.warning(translate("nenhum título encontrado para este livro"))
+        return
+
     maxy_off_machina = len(off_book_pagys) - 1
+    if st.session_state.off_take > maxy_off_machina:
+        st.session_state.off_take = 0
+
+    with col_nav:
+        help_tips = load_help(st.session_state.lang)
+        help_last = help_tips[0]
+        help_rand = help_tips[1]
+        help_nest = help_tips[2]
+
+        if off_nav_needs_spacer:
+            st.markdown(
+                "<div style='height:1.95rem; min-height:1.95rem;'></div>",
+                unsafe_allow_html=True,
+            )
+        nav_cols = st.columns([1, 1, 1, 1])
+        last = nav_cols[0].button("◀", help=help_last, use_container_width=True)
+        rand = nav_cols[1].button("✻", help=help_rand, use_container_width=True)
+        nest = nav_cols[2].button("▶", help=help_nest, use_container_width=True)
+        manu = nav_cols[3].button("?", help="help !!!", use_container_width=True)
 
     if last:
+        nav_changed = True
         st.session_state.off_take -= 1
         if st.session_state.off_take < 0:
             st.session_state.off_take = maxy_off_machina
 
     if rand:
+        nav_changed = True
         st.session_state.off_take = random.randrange(0, maxy_off_machina + 1)
 
     if nest:
+        nav_changed = True
         st.session_state.off_take += 1
         if st.session_state.off_take > maxy_off_machina:
             st.session_state.off_take = 0
@@ -2283,9 +2366,14 @@ def page_off_machina():  # available off_machina_books
     if st.session_state.off_take > maxy_off_machina:  # just in case...
         st.session_state.off_take = 0
 
-    if not st.session_state.draw:
+    # Mantém a lista_temas sincronizada com os botões ◀ ✻ ▶,
+    # sem atropelar a seleção manual feita diretamente na lista.
+    if nav_changed:
+        st.session_state["opt_off_take"] = st.session_state.off_take
+
+    with col_temas:
         options = list(range(len(off_book_pagys)))
-        sobrios = "↓  " + translate("lista de Títulos")
+        sobrios = "↓ " + str(len(off_book_pagys)) + " temas"
         opt_off_take = st.selectbox(
             sobrios,
             options,
@@ -2294,21 +2382,13 @@ def page_off_machina():  # available off_machina_books
             key="opt_off_take",
         )
 
-        if opt_off_take != st.session_state.off_take:
-            st.session_state.off_take = opt_off_take
+    if opt_off_take != st.session_state.off_take:
+        st.session_state.off_take = opt_off_take
 
     lnew = True
     if manu:
         lnew = False
         st.subheader(load_md_file("MANUAL_OFF-MACHINA.md"))
-
-    if love:
-        lnew = False
-        list_readings()
-        st.markdown(
-            get_binary_file_downloader_html("./temp/read_list.txt", "views"),
-            unsafe_allow_html=True,
-        )
 
     if lnew:
         what_book = (
