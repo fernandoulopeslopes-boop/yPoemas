@@ -19,7 +19,6 @@ Bula : joco
 Cadência : metalinguagem
 Cartaz : joco
 Carroussel: ensaio
-CIA : author
 Circular : poesia
 Ciuminho : beauty
 Clandestino : author
@@ -122,6 +121,7 @@ Tempus : ensaio
 Tiro : author
 Tolero : poesia
 Una : author
+Una_abertura : author
 Usinas : poesia
 Veio : poesia
 Victor : author
