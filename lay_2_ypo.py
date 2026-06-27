@@ -277,8 +277,8 @@ def acerto_final(texto):
         texto = texto.replace(" #", "")
     if "#" in texto:
         texto = texto.replace("#", "")
-    if "< nome_cia >" in texto:
-        texto = texto.replace("< nome_cia >", fala_nome_cia())
+    if "< nome_una >" in texto:
+        texto = texto.replace("< nome_una >", fala_nome_una())
     if "< pCity >" in texto:
         texto = texto.replace("< pCity >", fala_cidade_fato())
     if "< pCity >" in texto:
@@ -395,12 +395,13 @@ def fala_data(dref):
     return str(dia) + " de " + str(mestxt) + " de " + str(ano)
 
 
-def fala_nome_cia():
-    lista = gera_poema("Cia","")
+def fala_nome_una():
+    lista = gera_poema("Una","")
     sigla = ""
     for line in lista:
         sigla += line + " "
     return(sigla)
+
 
 def fala_norma_abnp():
     """
