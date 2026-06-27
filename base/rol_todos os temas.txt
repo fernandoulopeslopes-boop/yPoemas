@@ -19,8 +19,6 @@ Bula
 Cadência
 Carroussel
 Cartaz
-Cia
-Cia_abertura
 Circular
 Ciuminho
 Clandestino
@@ -44,6 +42,7 @@ Essas
 Esses
 Estudo
 Eus
+Evidências
 Fatos
 Feiras
 Festim
@@ -60,6 +59,7 @@ Insano
 Joker
 Lato
 Leituras
+Lero
 Liberta
 Loremipsum
 Machbeth
@@ -110,6 +110,7 @@ Sinas
 Sn6=ball
 Sn8=ball
 SnowBall
+Solero
 Sonoro
 Sopros
 Sos
@@ -118,6 +119,8 @@ Tempus
 Time
 Tiro
 Tolero
+Una
+Una_abertura
 Usinas
 Veio
 Victor
