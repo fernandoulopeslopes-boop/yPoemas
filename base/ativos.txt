@@ -113,6 +113,7 @@ Sinas : ensaio
 Sn6=ball : ensaio
 Sn8=ball : ensaio
 SnowBall : ensaio
+Solero : author
 Sonoro : poesia
 Sopros : poesia
 Sos : joco
@@ -120,6 +121,7 @@ Tempo : poesia
 Tempus : ensaio
 Tiro : author
 Tolero : poesia
+Una : author
 Usinas : poesia
 Veio : poesia
 Victor : author
