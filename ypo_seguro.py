@@ -9,8 +9,8 @@ import asyncio
 import streamlit as st
 import streamlit.components.v1 as components
 
-APP_BUILD = "2026-06-28_imagem_ypoema_cada_um_no_seu_quadrado"
-APP_BUILD_NOTES = "LOGO_IMAGE preservado como curadoria; palco livre; sidebar contextual; About homenageia 1 autor por sessão."
+APP_BUILD = "2026-06-28_voz_para_nav_buttons"
+APP_BUILD_NOTES = "Voz saiu da sidebar e virou ação ♫ nos nav_buttons do palco."
 from extra_streamlit_components import TabBar as stx
 
 from lay_2_ypo import gera_poema
@@ -1035,19 +1035,8 @@ def load_help(idiom):
 
 
 def draw_check_buttons():
-    help_tips = load_help(st.session_state.lang)
-    help_talk = help_tips[6]
-
-    col_voz_esq, col_voz, col_voz_dir = st.sidebar.columns([1.2, 2.2, 1.2])
-
-    with col_voz:
-        if st.button(
-            translate("voz"),
-            key="ctrl_voz",
-            help=help_talk,
-            use_container_width=True,
-        ):
-            st.session_state.talk = not st.session_state.talk
+    """Voz saiu da sidebar: agora é ação ♫ nos botões do palco."""
+    return
 
 
 def get_binary_file_downloader_html(bin_file, file_label="File"):
@@ -1805,16 +1794,21 @@ def page_mini():
     if st.session_state.mini >= maxy_mini:  # just in case
         st.session_state.mini = 0
 
-    foo1, more, rand, auto, foo2 = st.columns([3.55, 1, 1, 1.9, 3.55])
+    foo1, more, rand, auto, voz_col, foo2 = st.columns([3.1, 1, 1, 1.9, 1, 3.1])
 
     help_tips = load_help(st.session_state.lang)
     help_rand = help_tips[1]
     help_more = help_tips[4]
+    help_talk = help_tips[6]
     rand = rand.button("✻", help=help_rand)
 
     with auto:
         if st.button("auto", key="mini_auto_button", help="modo automático", use_container_width=True):
             st.session_state.auto = not st.session_state.auto
+
+    with voz_col:
+        if st.button("♫", key="mini_voz_btn", help=help_talk, use_container_width=True):
+            st.session_state.talk = not st.session_state.talk
 
     if st.session_state.auto:
         st.session_state.talk = False
@@ -1959,12 +1953,14 @@ def page_ypoemas():
                 "<div style='height:1.95rem; min-height:1.95rem;'></div>",
                 unsafe_allow_html=True,
             )
-        nav_cols = st.columns([1, 1, 1, 1, 1])
+        nav_cols = st.columns([1, 1, 1, 1, 1, 1])
         more = nav_cols[0].button("✚", help=help_more, use_container_width=True)
         last = nav_cols[1].button("◀", help=help_last, use_container_width=True)
         rand = nav_cols[2].button("✻", help=help_rand, use_container_width=True)
         nest = nav_cols[3].button("▶", help=help_nest, use_container_width=True)
-        manu = nav_cols[4].button("?", help="help !!!", use_container_width=True)
+        if nav_cols[4].button("♫", help=help_tips[6], key="ypoemas_voz_btn", use_container_width=True):
+            st.session_state.talk = not st.session_state.talk
+        manu = nav_cols[5].button("?", help="help !!!", use_container_width=True)
 
     temas_list = load_temas(_current_book())
     maxy_ypoemas = len(temas_list) - 1
@@ -2167,8 +2163,9 @@ def page_eureka():
     help_tips = load_help(st.session_state.lang)
     help_rand = help_tips[1]
     help_more = help_tips[4]
+    help_talk = help_tips[6]
 
-    seed, more, rand, manu, occurrences = st.columns([2.5, 1.5, 1.5, 0.7, 4])
+    seed, more, rand, voz_col, manu, occurrences = st.columns([2.5, 1.3, 1.3, 0.8, 0.7, 3.9])
 
     with seed:
         find_what = st.text_input(
@@ -2181,6 +2178,10 @@ def page_eureka():
 
     with rand:
         rand = rand.button("✻", help=help_rand)
+
+    with voz_col:
+        if st.button("♫", key="eureka_voz_btn", help=help_talk, use_container_width=True):
+            st.session_state.talk = not st.session_state.talk
 
     with manu:
         manu = manu.button("?", help="help !!!")
@@ -2371,11 +2372,13 @@ def page_off_machina():  # available off_machina_books
                 "<div style='height:1.95rem; min-height:1.95rem;'></div>",
                 unsafe_allow_html=True,
             )
-        nav_cols = st.columns([1, 1, 1, 1])
+        nav_cols = st.columns([1, 1, 1, 1, 1])
         last = nav_cols[0].button("◀", help=help_last, use_container_width=True)
         rand = nav_cols[1].button("✻", help=help_rand, use_container_width=True)
         nest = nav_cols[2].button("▶", help=help_nest, use_container_width=True)
-        manu = nav_cols[3].button("?", help="help !!!", use_container_width=True)
+        if nav_cols[3].button("♫", help=help_tips[6], key="off_voz_btn", use_container_width=True):
+            st.session_state.talk = not st.session_state.talk
+        manu = nav_cols[4].button("?", help="help !!!", use_container_width=True)
 
     if last:
         nav_changed = True
