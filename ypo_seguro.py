@@ -9,8 +9,8 @@ import asyncio
 import streamlit as st
 import streamlit.components.v1 as components
 
-APP_BUILD = "2026-06-28_voz_para_nav_buttons"
-APP_BUILD_NOTES = "Voz saiu da sidebar e virou ação ♫ nos nav_buttons do palco."
+APP_BUILD = "2026-06-28_ajuste_sidebar_player_cabecalho"
+APP_BUILD_NOTES = "Sidebar ajustada; capas Off-Machina; player de voz logo abaixo dos nav_buttons; palco mais largo."
 from extra_streamlit_components import TabBar as stx
 
 from lay_2_ypo import gera_poema
@@ -347,11 +347,47 @@ def apply_styles():
 
         /* Sidebar :: respiro vertical entre controles */
         [data-testid="stSidebar"] div[data-testid="stVerticalBlock"] {
-            gap: 0.50rem !important;
+            gap: 0.28rem !important;
         }
 
         [data-testid="stSidebar"] div[data-testid="stElementContainer"] {
-            margin-bottom: 0.12rem !important;
+            margin-bottom: 0.02rem !important;
+        }
+
+        /* Sidebar :: módulo visual unificado — idioma e imagem com mesma largura */
+        [data-testid="stSidebar"] div[data-testid="stSelectbox"] {
+            max-width: 240px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+        }
+
+        .machina-sidebar-image-frame {
+            width: 240px !important;
+            height: 360px !important;
+            max-width: 100% !important;
+            margin: 0.18rem auto 0 auto !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+            border-radius: 8px !important;
+            background: transparent !important;
+            line-height: 0 !important;
+            box-sizing: border-box !important;
+        }
+
+        .machina-sidebar-image-frame img {
+            display: block !important;
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover !important;
+            object-position: center center !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border: 0 !important;
+        }
+
+        .machina-voz-slot {
+            margin: 0.10rem auto 0.08rem auto !important;
+            max-width: min(680px, 96%) !important;
         }
 
 
@@ -999,7 +1035,7 @@ def pick_stage_font():
     if current_size not in corpos:
         current_size = 21
 
-    col_font, col_corpo = st.sidebar.columns([2.1, 0.9])
+    font_pad_left, col_font, col_corpo, font_pad_right = st.sidebar.columns([0.46, 1.48, 0.62, 0.44])
 
     with col_font:
         choice = st.selectbox(
@@ -1530,6 +1566,12 @@ def _resolve_off_machina_book_image(book_name):
         return ""
 
     candidates = [
+        os.path.join("./off-machina", "capa_" + book_name + ".jpg"),
+        os.path.join("./off_machina", "capa_" + book_name + ".jpg"),
+        os.path.join("./off-machina", book_name + ".jpg"),
+        os.path.join("./off_machina", book_name + ".jpg"),
+        os.path.join("./images/off_machina", "capa_" + book_name + ".jpg"),
+        os.path.join("./images/off-machina", "capa_" + book_name + ".jpg"),
         os.path.join("./images/off_machina", book_name + ".jpg"),
         os.path.join("./images/off-machina", book_name + ".jpg"),
         os.path.join("./images/off", book_name + ".jpg"),
@@ -1563,6 +1605,28 @@ def _set_about_author_image_once():
     return chosen
 
 
+def render_sidebar_image_fit(image_path):
+    """Renderiza imagem contextual da sidebar em quadro fixo 240x360, sem faixa branca."""
+    if not image_path or not os.path.exists(image_path):
+        return
+
+    with open(image_path, "rb") as img_file:
+        img_b64 = base64.b64encode(img_file.read()).decode()
+
+    ext = os.path.splitext(image_path)[1].lower().replace(".", "")
+    mime = "jpeg" if ext in {"jpg", "jpeg"} else ext or "jpeg"
+
+    with st.sidebar:
+        st.markdown(
+            f"""
+            <div class="machina-sidebar-image-frame">
+                <img src="data:image/{mime};base64,{img_b64}" />
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+
 def render_sidebar_context_image(chosen_id):
     """Renderiza a imagem contextual adequada na sidebar.
 
@@ -1586,8 +1650,7 @@ def render_sidebar_context_image(chosen_id):
         image_path = _set_about_author_image_once()
 
     if image_path and os.path.exists(image_path):
-        with st.sidebar:
-            st.image(image_path)
+        render_sidebar_image_fit(image_path)
 
 
 ### eof: loaders
@@ -1751,6 +1814,14 @@ def talk(text):
     except Exception as e:
         st.error(f"Erro na voz neural: {e}")
 
+
+def render_voz_slot():
+    """Reserva a linha do player de voz logo abaixo dos nav_buttons."""
+    st.markdown("<div class='machina-voz-slot'>", unsafe_allow_html=True)
+    slot = st.empty()
+    st.markdown("</div>", unsafe_allow_html=True)
+    return slot
+
 def say_number(tema):  # search index title for eureka
     analise = "nonono"
     indexes = load_index()
@@ -1809,6 +1880,8 @@ def page_mini():
     with voz_col:
         if st.button("♫", key="mini_voz_btn", help=help_talk, use_container_width=True):
             st.session_state.talk = not st.session_state.talk
+
+    mini_voz_slot = render_voz_slot()
 
     if st.session_state.auto:
         st.session_state.talk = False
@@ -1875,7 +1948,8 @@ def page_mini():
                     write_ypoema(LOGO_TEXTO, None)
 
                 if st.session_state.talk:
-                    talk(curr_ypoema)
+                    with mini_voz_slot:
+                        talk(curr_ypoema)
 
             else:
                 while st.session_state.auto:
@@ -1961,6 +2035,8 @@ def page_ypoemas():
         if nav_cols[4].button("♫", help=help_tips[6], key="ypoemas_voz_btn", use_container_width=True):
             st.session_state.talk = not st.session_state.talk
         manu = nav_cols[5].button("?", help="help !!!", use_container_width=True)
+
+        ypoemas_voz_slot = render_voz_slot()
 
     temas_list = load_temas(_current_book())
     maxy_ypoemas = len(temas_list) - 1
@@ -2156,7 +2232,8 @@ def page_ypoemas():
                 write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
 
         if st.session_state.talk:
-            talk(curr_ypoema)
+            with ypoemas_voz_slot:
+                talk(curr_ypoema)
 
 
 def page_eureka():
@@ -2185,6 +2262,8 @@ def page_eureka():
 
     with manu:
         manu = manu.button("?", help="help !!!")
+
+    eureka_voz_slot = render_voz_slot()
 
     if manu:
         st.subheader(load_md_file("MANUAL_EUREKA.md"))
@@ -2291,7 +2370,8 @@ def page_eureka():
                     update_readings(seed_tema)
 
                 if st.session_state.talk:
-                    talk(curr_ypoema)
+                    with eureka_voz_slot:
+                        talk(curr_ypoema)
             if manu:
                 lnew = False
                 LOGO_TEXTO = load_info(seed_tema)
@@ -2379,6 +2459,8 @@ def page_off_machina():  # available off_machina_books
         if nav_cols[3].button("♫", help=help_tips[6], key="off_voz_btn", use_container_width=True):
             st.session_state.talk = not st.session_state.talk
         manu = nav_cols[4].button("?", help="help !!!", use_container_width=True)
+
+        off_voz_slot = render_voz_slot()
 
     if last:
         nav_changed = True
@@ -2478,7 +2560,8 @@ def page_off_machina():  # available off_machina_books
                 update_readings(off_book_name)
 
         if st.session_state.talk:
-            talk(off_book_text)
+            with off_voz_slot:
+                talk(off_book_text)
 
 
 def load_about_md(title):
@@ -2558,7 +2641,7 @@ def main():
     gramado = open_gramado()
 
     with gramado:
-        _pag_esq, _pag_centro, _pag_dir = st.columns([0.15, 9.7, 0.15])
+        _pag_esq, _pag_centro, _pag_dir = st.columns([0.02, 9.96, 0.02])
 
         with _pag_centro:
             chosen_id = stx.tab_bar(
