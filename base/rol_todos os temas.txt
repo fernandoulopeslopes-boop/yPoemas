@@ -56,7 +56,6 @@ Impar
 Indolor
 Inhos
 Insano
-Isso
 Joker
 Lato
 Leituras
@@ -111,6 +110,7 @@ Sinas
 Sn6=ball
 Sn8=ball
 SnowBall
+Solero
 Sonoro
 Sopros
 Sos
