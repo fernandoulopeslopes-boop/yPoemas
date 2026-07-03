@@ -2,16 +2,17 @@ import os
 import re
 import time
 import random
+import string
 import base64
 import html
+import unicodedata
 import socket
 import asyncio
 import streamlit as st
 import streamlit.components.v1 as components
 
-APP_BUILD = "2026-06-26_subir_botao_copiar_5px"
-APP_BUILD_NOTES = "Off-Machina final + botão copiar menos é mais com ajuste vertical de 5px."
-from extra_streamlit_components import TabBar as stx
+APP_BUILD = "2026-07-03_ypo_seguro_sidebar_FBF"
+APP_BUILD_NOTES = "Versão pública: imagem contextual na sidebar; palco sem colunas; página pública About preservada; tools local fora do menu."
 
 from lay_2_ypo import gera_poema
 from readings import (
@@ -21,46 +22,44 @@ from readings import (
 )
 
 
-from controle_cia import (
-    configure_cia,
-    draw_sidebar_panel_buttons,
-    render_cia_stage,
-    guia_do_leitor_cia,
-    limpar_cia_palco,
-    _cia_objeto_analise_existe,
-    _cia_fixar_objeto_analise,
-    _cia_restaurar_identidade_objeto,
-    _restore_cia_freeze_before_sync,
-    render_cia_mood_selectbox,
-    _cia_sidebar_filha_active,
-    apply_sidebar_mae_filha_styles,
-    render_sidebar_filha,
-)
-
-
 ABOUTS_LIST = [
-    "comentários", "prefácil", "machina", "off-machina", "outros autores", "livros", "bibliografia",
-    "notes", "imagens", "pontuação", "poly", "tradittore", "pensares", "machina-IA", "samizdàt", "index", "license",
+    "comentários",
+    "prefácil",
+    "machina",
+    "off-machina",
+    "outros autores",
+    "livros",
+    "bibliografia",
+    "notes",
+    "imagens",
+    "pontuação",
+    "poly",
+    "tradittore",
+    "pensares",
+    "machina-IA",
+    "samizdàt",
+    "index",
+    "license",
 ]
 
 ABOUTS_FILES = {
     "comentários": ["ABOUT_comentários.md"],
     "prefácil": ["ABOUT_prefácil.md"],
-    "machina": ["ABOUT_machina I.md", "ABOUT_machina II.md"],
-    "off-machina": ["ABOUT_off-machina.md"],
-    "machina-IA": ["ABOUT_machina-IA.md"],
-    "livros": ["ABOUT_livros.md"],
+    "machina": ["ABOUT_machina.md"],
+    "off-machina": ["ABOUT_off-machina.md", "ABOUT_off_machina.md", "ABOUT_off machina.md"],
     "outros autores": ["ABOUT_outros_autores.md", "ABOUT_outros autores.md"],
-    "imagens": ["ABOUT_imagens.md"],
-    "poly": ["ABOUT_poly.md"],
-    "pensares": ["ABOUT_pensares.md"],
-    "tradittore": ["ABOUT_tradittore.md"],
+    "livros": ["ABOUT_livros.md"],
     "bibliografia": ["ABOUT_bibliografia.md"],
-    "pontuação": ["ABOUT_pontuação.md"],
-    "samizdàt": ["ABOUT_samizdàt.md"],
     "notes": ["ABOUT_notes.md"],
+    "imagens": ["ABOUT_imagens.md"],
+    "pontuação": ["ABOUT_pontuação.md"],
+    "poly": ["ABOUT_poly.md"],
+    "tradittore": ["ABOUT_tradittore.md"],
+    "pensares": ["ABOUT_pensares.md"],
+    "machina-IA": ["ABOUT_machina-IA.md"],
+    "samizdàt": ["ABOUT_samizdàt.md"],
+    "index": ["ABOUT_index.MD", "ABOUT_index.md", "ABOUT_INDEX.md"],
     "license": ["ABOUT_license.md"],
-    "index": ["ABOUT_index.md", "ABOUT_INDEX.md"],
 }
 
 BOOKS_LIST = [
@@ -130,8 +129,8 @@ IDIOMAS_OFICIAIS = [
 # Deve permanecer antes de qualquer saída visual do Streamlit.
 # -----------------------------------------------------------------------------
 st.set_page_config(
-    page_title="a máquina de fazer Poesia - yPoemas",
-    page_icon=":bulb:",
+    page_title="a Machina de fazer Poesia - Ꭹᕈᗢᗴᗰᗩᔕ",
+    page_icon="snowflake",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
@@ -192,7 +191,7 @@ def apply_styles():
             text-align: center;
             text-decoration: underline;
             text-underline-offset: 0.18em;
-            margin: 0 auto 0.35em auto;
+            margin: 0 auto 0 auto;
         }
 
 </style>
@@ -268,7 +267,7 @@ def apply_styles():
         .machina-ypoema-solo .machina-ypoema-text {
             display: block !important;
             width: auto !important;
-            max-width: min(78ch, 86%) !important;
+            max-width: min(96ch, 94%) !important;
             margin-left: auto !important;
             margin-right: auto !important;
             padding-left: 0 !important;
@@ -363,44 +362,49 @@ def apply_styles():
 
         /* Sidebar :: respiro vertical entre controles */
         [data-testid="stSidebar"] div[data-testid="stVerticalBlock"] {
-            gap: 0.50rem !important;
+            gap: 0.28rem !important;
         }
 
         [data-testid="stSidebar"] div[data-testid="stElementContainer"] {
-            margin-bottom: 0.12rem !important;
+            margin-bottom: 0.02rem !important;
         }
 
+        /* Sidebar :: módulo visual unificado — idioma e imagem com mesma largura */
+        [data-testid="stSidebar"] div[data-testid="stSelectbox"] {
+            max-width: 240px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+        }
 
-        iframe[title="extra_streamlit_components.TabBar.tab_bar"] {
+        .machina-sidebar-image-frame {
+            width: 240px !important;
+            height: 330px !important;
+            max-width: 100% !important;
+            margin: calc(0.18rem + 20px) auto 0 auto !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+            border-radius: 8px !important;
+            background: transparent !important;
+            line-height: 0 !important;
+            box-sizing: border-box !important;
+        }
+
+        .machina-sidebar-image-frame img {
             display: block !important;
             width: 100% !important;
-            max-width: 100% !important;
-            margin: -0.62rem 0 0 0 !important;
+            height: 100% !important;
+            object-fit: cover !important;
+            object-position: center center !important;
+            margin: 0 !important;
             padding: 0 !important;
             border: 0 !important;
-            outline: 0 !important;
-            box-shadow: none !important;
-            background: transparent !important;
         }
 
-        div[data-testid="stElementContainer"]:has(iframe[title="extra_streamlit_components.TabBar.tab_bar"]) {
-            width: 100% !important;
-            max-width: 100% !important;
-            display: block !important;
-            margin-top: -0.62rem !important;
-            margin-bottom: 0rem !important;
-            padding-left: 0 !important;
-            padding-right: 0 !important;
-            border: 0 !important;
-            outline: 0 !important;
-            box-shadow: none !important;
-            background: transparent !important;
+        .machina-voz-slot {
+            margin: 0.10rem auto 0.08rem auto !important;
+            max-width: min(680px, 96%) !important;
         }
 
-        iframe[title="extra_streamlit_components.TabBar.tab_bar"] {
-            margin-top: -0.62rem !important;
-            margin-bottom: 0 !important;
-        }
 
         div[data-testid="stElementContainer"] {
             margin-top: 0 !important;
@@ -588,6 +592,68 @@ def apply_styles():
             margin-top: 0.35rem;
             padding-bottom: 0.1rem;
         }
+
+        /* Celular :: leitura antes de painel */
+        @media (max-width: 700px) {
+            .main .block-container,
+            section.main > div.block-container {
+                padding-left: 0.18rem !important;
+                padding-right: 0.18rem !important;
+                max-width: 100vw !important;
+            }
+
+            .machina-gramado {
+                border-radius: 12px !important;
+                padding-left: 0.08rem !important;
+                padding-right: 0.08rem !important;
+                overflow-x: hidden !important;
+            }
+
+            .machina-palco-central {
+                border-radius: 12px !important;
+                padding-left: 0.04rem !important;
+                padding-right: 0.04rem !important;
+                overflow-x: hidden !important;
+            }
+
+            .container {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                gap: 0.35rem !important;
+            }
+
+            .logo-img {
+                float: none !important;
+                display: block !important;
+                max-width: 92vw !important;
+                width: auto !important;
+                height: auto !important;
+                margin: 0.10rem auto 0.35rem auto !important;
+                padding: 0 !important;
+            }
+
+            .logo-text,
+            .machina-ypoema-text {
+                width: 100% !important;
+                max-width: 97vw !important;
+                padding-left: 0.20rem !important;
+                padding-right: 0.20rem !important;
+                margin-left: auto !important;
+                margin-right: auto !important;
+                box-sizing: border-box !important;
+                line-height: 1.34 !important;
+            }
+
+            .machina-ypoema-solo .machina-ypoema-text {
+                max-width: 94vw !important;
+            }
+
+            .machina-palco-titulo {
+                margin-top: 0.08rem !important;
+                margin-bottom: 0 !important;
+            }
+        }
 </style>
         """,
         unsafe_allow_html=True,
@@ -645,12 +711,13 @@ def init_session_state():
         "key_poema_texto": "",
         "key_poema_tema": "",
         "key_analise": "",
-        "copy_qtd": 1,
-        "copy_qtd_widget": 1,
+        "copy_qtd": 2,
+        "copy_qtd_widget": 2,
         "copy_bundle_text": "",
         "copy_bundle_token": 0,
         "copy_bundle_qtd": 0,
         "copy_bundle_source": "",
+        "ypo_theme_widget_token": 0,
     }
 
     for key, value in defaults.items():
@@ -684,6 +751,23 @@ def limpar_copias_palco():
     st.session_state["copy_bundle_qtd"] = 0
     st.session_state["copy_bundle_source"] = ""
     st.session_state["copy_bundle_token"] = int(st.session_state.get("copy_bundle_token", 0)) + 1
+
+
+def _normalizar_qtd_copias(value):
+    """Quantidade em lote: 2..9. Para +1, o botão ✚ já cumpre esse papel."""
+    try:
+        qtd = int(value)
+    except Exception:
+        qtd = 2
+    return max(2, min(9, qtd))
+
+
+def _on_copy_qtd_change():
+    """Lista de quantidade como ação: um clique já escolhe e prepara o resultado."""
+    st.session_state["copy_qtd"] = _normalizar_qtd_copias(
+        st.session_state.get("copy_qtd_widget", st.session_state.get("copy_qtd", 2))
+    )
+    st.session_state["copy_qtd_changed"] = True
 
 
 def open_gramado():
@@ -838,6 +922,7 @@ def _sync_book_theme_state():
     st.session_state.tema = temas_list[take]
     if take != old_take:
         st.session_state["cia_force_new_poema"] = True
+        _bump_palco_theme_widget()
 
 
 def _current_book():
@@ -853,20 +938,21 @@ def _prepare_book_widget(key):
         del st.session_state[key]
 
 
-def _prepare_theme_widget():
-    """Normaliza o widget de temas para espelhar sempre o `take` atual."""
-    temas_list = load_temas(_current_book())
-    current = _coerce_take(st.session_state.get("take", 0), temas_list)
-    raw_value = st.session_state.get("opt_take_palco", current)
-    normalized = _coerce_take(raw_value, temas_list)
+def _bump_palco_theme_widget():
+    """Força recriação segura da lista de temas sem escrever na key do widget."""
+    st.session_state["ypo_theme_widget_token"] = int(
+        st.session_state.get("ypo_theme_widget_token", 0)
+    ) + 1
 
-    # A lista de temas deve seguir o yPoema exibido no palco.
-    # Se navegação por botões alterou `take`, o widget precisa espelhar isso
-    # antes de ser instanciado pelo Streamlit neste ciclo.
-    if normalized != current:
-        st.session_state["opt_take_palco"] = current
-    elif normalized != raw_value:
-        st.session_state["opt_take_palco"] = normalized
+
+def _theme_widget_key():
+    return "opt_take_palco_" + str(int(st.session_state.get("ypo_theme_widget_token", 0)))
+
+
+def _prepare_theme_widget():
+    """Mantém lista de temas sincronizada sem escrever na key do selectbox."""
+    return _theme_widget_key()
+
 
 def _on_palco_book_change():
     current_book = _current_book()
@@ -874,10 +960,9 @@ def _on_palco_book_change():
     if choice != current_book:
         st.session_state.book = choice
         st.session_state.take = 0
-        st.session_state["cia_last_action"] = "book_change"
-        limpar_cia_palco()
         limpar_copias_palco()
         st.session_state["cia_force_new_poema"] = True
+        _bump_palco_theme_widget()
     _sync_book_theme_state()
 
 
@@ -888,8 +973,9 @@ def _on_palco_theme_change():
         st.session_state.tema = ""
         return
 
+    widget_key = st.session_state.get("_ypo_theme_widget_key", _theme_widget_key())
     take = _coerce_take(
-        st.session_state.get("opt_take_palco", st.session_state.get("take", 0)),
+        st.session_state.get(widget_key, st.session_state.get("take", 0)),
         temas_list,
     )
 
@@ -897,8 +983,6 @@ def _on_palco_theme_change():
     st.session_state.take = take
     st.session_state.tema = temas_list[take]
     if take != old_take:
-        st.session_state["cia_last_action"] = "theme_change"
-        limpar_cia_palco()
         limpar_copias_palco()
         st.session_state["cia_force_new_poema"] = True
 
@@ -929,14 +1013,15 @@ def pick_tema_palco():
     if not temas_list:
         return
 
-    _prepare_theme_widget()
+    widget_key = _prepare_theme_widget()
+    st.session_state["_ypo_theme_widget_key"] = widget_key
     options = list(range(len(temas_list)))
     st.selectbox(
         f"↓  {len(temas_list)} " + translate("temas"),
         options,
         index=_coerce_take(st.session_state.get("take", 0), temas_list),
         format_func=lambda z: temas_list[z],
-        key="opt_take_palco",
+        key=widget_key,
         on_change=_on_palco_theme_change,
     )
 
@@ -952,12 +1037,15 @@ def pick_stage_font():
         labels[0],
     )
 
-    corpos = list(range(15, 25))
-    current_size = st.session_state.get("stage_size", 21)
+    corpos = list(range(14, 35, 2))
+    current_size = st.session_state.get("stage_size", 22)
     if current_size not in corpos:
-        current_size = 21
+        current_size = 22
 
-    col_font, col_corpo = st.sidebar.columns([2.1, 0.9])
+    # Mesmo eixo visual da lista de idiomas: duas listas nativas lado a lado.
+    # A soma das duas ocupa a largura útil da sidebar; corpo fica largo o
+    # suficiente para exibir dois dígitos sem esmagar o título.
+    col_font, col_corpo = st.sidebar.columns([2.78, 1.32])
 
     with col_font:
         choice = st.selectbox(
@@ -993,29 +1081,8 @@ def load_help(idiom):
 
 
 def draw_check_buttons():
-    help_tips = load_help(st.session_state.lang)
-    help_draw = help_tips[5]
-    help_talk = help_tips[6]
-
-    col_arte, col_voz = st.sidebar.columns([1, 1])
-
-    with col_arte:
-        if st.button(
-            translate("arte"),
-            key="ctrl_arte",
-            help=help_draw,
-            use_container_width=True,
-        ):
-            st.session_state.draw = not st.session_state.draw
-
-    with col_voz:
-        if st.button(
-            translate("voz"),
-            key="ctrl_voz",
-            help=help_talk,
-            use_container_width=True,
-        ):
-            st.session_state.talk = not st.session_state.talk
+    """Voz saiu da sidebar: agora é ação ♫ nos botões do palco."""
+    return
 
 
 def get_binary_file_downloader_html(bin_file, file_label="File"):
@@ -1039,57 +1106,127 @@ def natural_keys(text):
 ### bof: update themes readings
 
 
+def _project_path(*parts):
+    """Resolve caminho tanto pelo diretório de execução quanto pelo diretório do .py."""
+    here = os.path.dirname(os.path.abspath(__file__))
+    candidates = [
+        os.path.join(os.getcwd(), *parts),
+        os.path.join(here, *parts),
+    ]
+    for candidate in candidates:
+        if os.path.exists(candidate):
+            return candidate
+    return candidates[0]
+
+
+def _md_nome_chave(nome):
+    """Normaliza nomes de md_files para comparação robusta.
+
+    A regra é geral: caixa, acento, espaço, hífen, underscore e pontuação
+    não devem impedir abrir ABOUT_<assunto>.md.
+    """
+    nome = os.path.basename(str(nome or '').strip())
+    nome = os.path.splitext(nome)[0]
+    nome = nome.casefold()
+    nome = unicodedata.normalize('NFD', nome)
+    nome = ''.join(ch for ch in nome if unicodedata.category(ch) != 'Mn')
+    nome = re.sub(r'^about', '', nome)
+    nome = re.sub(r'[^a-z0-9]+', '', nome)
+    return nome
+
+
+def _md_assunto_de_about(nome):
+    """Extrai a chave do assunto, removendo o prefixo ABOUT quando existir."""
+    return _md_nome_chave(nome)
+
+
+def _md_file_casefold_path(file_name):
+    """Localiza arquivo em md_files por equivalência geral de nome.
+
+    Não exige lista de exceções e não obriga renomear arquivos.
+    Ex.: ABOUT_off-machina.md, ABOUT_off_machina.md e ABOUT_OFF MACHINA.MD
+    são tratados como o mesmo assunto.
+    """
+    expected_name = str(file_name or '').strip()
+    if not expected_name:
+        return ''
+
+    md_dir = _project_path('md_files')
+    direct = os.path.join(md_dir, expected_name)
+    if os.path.exists(direct):
+        return direct
+
+    if not os.path.isdir(md_dir):
+        return ''
+
+    expected_base = os.path.basename(expected_name)
+    expected_fold = expected_base.casefold()
+    expected_key = _md_nome_chave(expected_base)
+
+    # Para ABOUT_<assunto>.md, também aceita comparar só o assunto.
+    expected_subject = expected_key
+
+    best = ''
+    for real_name in os.listdir(md_dir):
+        real_path = os.path.join(md_dir, real_name)
+        if not os.path.isfile(real_path):
+            continue
+        if not real_name.casefold().endswith('.md'):
+            continue
+
+        real_fold = real_name.casefold()
+        real_key = _md_nome_chave(real_name)
+
+        if real_fold == expected_fold:
+            return real_path
+        if real_key == expected_key:
+            return real_path
+        if expected_subject and real_key == expected_subject:
+            return real_path
+
+        # Fallback sem exceções: se um nome é abreviação clara do outro.
+        # Ex.: ABOUT_outros.md pode atender ABOUT_outros_autores.md.
+        if expected_key and real_key:
+            if real_key.startswith(expected_key) or expected_key.startswith(real_key):
+                best = best or real_path
+
+    return best
+
+
 def load_md_file(file):  # Open files for about's
+    path = _md_file_casefold_path(file)
     try:
-        with open(os.path.join("./md_files/" + file), encoding="utf-8") as file_to_open:
+        with open(path, encoding='utf-8') as file_to_open:
             file_text = file_to_open.read()
 
-        if not "rol_" in file.lower():  # do not translate theme
+        if not 'rol_' in str(file).lower():  # do not translate theme
             file_text = translate(file_text)
-    except:
-        file_text = translate("ooops... arquivo ( " + file + " ) não pode ser aberto.")
-        st.session_state.lang = "pt"
+    except Exception:
+        file_text = translate('ooops... arquivo ( ' + str(file) + ' ) não pode ser aberto.')
+        st.session_state.lang = 'pt'
 
     return file_text
 
 
 def render_help_ypoemas_mesma_fonte():
-    """Renderiza o Help yPoemas com a fonte/corpo escolhidos pelo leitor.
-
-    Cabeçalhos Markdown (#, ##, ###) viram apenas negrito para evitar
-    poluição visual e respeitar a escala do palco.
-    """
+    """Renderiza o Help yPoemas em texto normal, sem estilo Markdown."""
     raw = load_md_file("MANUAL_YPOEMAS.md")
-    stage_font = st.session_state.get("stage_font", "Trebuchet MS")
-    stage_size = int(st.session_state.get("stage_size", 21))
 
-    html_lines = []
+    linhas = []
     for raw_line in str(raw).splitlines():
-        line = raw_line.strip()
-        if not line:
-            html_lines.append("")
-            continue
+        line = raw_line.rstrip()
+        clean = line.strip()
 
-        heading = re.match(r"^#{1,6}\s+(.+)$", line)
+        heading = re.match(r"^#{1,6}\s+(.+)$", clean)
         if heading:
-            text = html.escape(heading.group(1).strip())
-            html_lines.append(f"<strong>{text}</strong>")
-            continue
+            line = heading.group(1).strip()
+        else:
+            line = re.sub(r"^>\s?", "", line)
+            line = line.replace("**", "")
 
-        text = html.escape(line)
-        text = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", text)
-        html_lines.append(text)
+        linhas.append(line)
 
-    content = "<br>".join(html_lines)
-
-    st.markdown(
-        f"""
-        <div class='container'>
-            <p class='logo-text machina-ypoema-text' style="--machina-ypoema-font:'{stage_font}'; --machina-ypoema-size:{stage_size}px; font-family:'{stage_font}' !important; font-size:{stage_size}px !important; line-height:1.42 !important;">{content}</p>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    st.text("\n".join(linhas))
 
 
 @st.cache_data
@@ -1158,6 +1295,7 @@ def load_index():  # Load indexes numbers for all themes
     # Padrão curatorial atual: ABOUT_index.md
     # Fallback histórico: ABOUT_INDEX.md
     index_candidates = [
+        os.path.join("./md_files/ABOUT_index.MD"),
         os.path.join("./md_files/ABOUT_index.md"),
         os.path.join("./md_files/ABOUT_INDEX.md"),
     ]
@@ -1289,6 +1427,76 @@ def _ypoema_html_to_text(ypoema_html):
     return _trim_blank_edges_preservando_recuo(texto.splitlines())
 
 
+def _off_machina_texto_limpo(texto):
+    """Texto Off-Machina para leitura direta.
+
+    Remove restos de HTML/renderização antiga antes de exibir.
+    Importante: o livro_vivo pode chegar como HTML cru OU HTML escapado
+    (&lt;div&gt;...). Por isso a limpeza desescapa antes de remover tags.
+    """
+    texto = str(texto or "")
+
+    # Se o texto chegou escapado, transforma primeiro em HTML real;
+    # repetir cobre casos duplamente escapados sem afetar texto normal.
+    for _ in range(3):
+        novo = html.unescape(texto)
+        if novo == texto:
+            break
+        texto = novo
+
+    texto = texto.replace("\r\n", "\n").replace("\r", "\n")
+    texto = texto.replace("<br/>", "\n").replace("<br />", "\n").replace("<br>", "\n")
+
+    # Descarta blocos que nunca devem aparecer como texto no palco.
+    texto = re.sub(r"<script\b[^>]*>.*?</script>", "", texto, flags=re.IGNORECASE | re.DOTALL)
+    texto = re.sub(r"<style\b[^>]*>.*?</style>", "", texto, flags=re.IGNORECASE | re.DOTALL)
+    texto = re.sub(r"<img\b[^>]*>", "", texto, flags=re.IGNORECASE | re.DOTALL)
+
+    # Remove qualquer atributo/data URI que tenha sobrado fora de uma tag fechada.
+    texto = re.sub(r"data:image/[^;]+;base64,[A-Za-z0-9+/=\s]+", "", texto, flags=re.IGNORECASE)
+
+    # Remove tags estruturais mantendo o conteúdo textual interno.
+    texto = re.sub(r"</?(?:div|p|span)\b[^>]*>", "", texto, flags=re.IGNORECASE)
+    texto = re.sub(r"<[^>]+>", "", texto)
+
+    # Última desescapada para aspas e entidades textuais legítimas.
+    texto = html.unescape(texto)
+    return _trim_blank_edges_preservando_recuo(texto.splitlines())
+
+
+def write_off_machina_texto(LOGO_TEXTO):
+    """Renderiza Off-Machina normal como texto, sem imagem/base64 no palco."""
+    texto = _off_machina_texto_limpo(LOGO_TEXTO)
+    safe = html.escape(texto).replace("\n", "<br>")
+    st.markdown(f"<p class='logo-text'>{safe}</p>", unsafe_allow_html=True)
+
+
+def write_livro_vivo_texto(LOGO_TEXTO, LOGO_IMAGE=None):
+    """Renderiza livro_vivo sem usar write_ypoema.
+
+    O livro_vivo continua sendo gerado on demand pelo motor da Machina,
+    mas não deve embrulhar a saída em HTML com imagem/base64. A imagem,
+    quando existir, é exibida por st.image; o texto é renderizado limpo.
+    """
+    texto = _off_machina_texto_limpo(LOGO_TEXTO)
+
+    if LOGO_IMAGE:
+        try:
+            col_img, col_txt = st.columns([2.5, 7.5])
+            with col_img:
+                st.image(LOGO_IMAGE, use_container_width=True)
+            with col_txt:
+                safe = html.escape(texto).replace("\n", "<br>")
+                st.markdown(f"<p class='logo-text'>{safe}</p>", unsafe_allow_html=True)
+            return
+        except Exception:
+            # Se a arte falhar, o texto ainda deve aparecer limpo.
+            pass
+
+    safe = html.escape(texto).replace("\n", "<br>")
+    st.markdown(f"<p class='logo-text'>{safe}</p>", unsafe_allow_html=True)
+
+
 def _gerar_ypoema_texto_cru(nome_tema):
     """Gera uma variação sem alterar LYPO/TYPO nem o yPoema do palco."""
     script = gera_poema(nome_tema, "")
@@ -1317,12 +1525,8 @@ def _remover_titulo_inicial_duplicado(texto, nome_tema):
 
 
 def montar_copias_ypoema(curr_ypoema, nome_tema, qtd):
-    """Monta 1..9 cópias/variações para leitura externa, em desenho clean."""
-    try:
-        qtd = int(qtd)
-    except Exception:
-        qtd = 1
-    qtd = max(1, min(9, qtd))
+    """Monta 2..9 cópias/variações para leitura externa, em desenho clean."""
+    qtd = _normalizar_qtd_copias(qtd)
 
     partes = []
     atual = _ypoema_html_to_text(curr_ypoema)
@@ -1439,12 +1643,18 @@ def render_copy_bundle_widget(texto, token, qtd_real=None):
 
     tema_label = str(st.session_state.get("tema", "") or "").strip()
 
+    pacote_label = f'pacote para copiar ({total_blocos}) ("{tema_label}")'
+    st.markdown(
+        f"<div style='text-align:center; margin:0.10rem 0 0.36rem 0;'>{html.escape(pacote_label)}</div>",
+        unsafe_allow_html=True,
+    )
+    st.markdown("<div style='height:24px;'></div>", unsafe_allow_html=True)
     st.text_area(
-        f'pacote para copiar ({total_blocos}) ("{tema_label}")',
+        pacote_label,
         value=texto,
         height=420,
         key=f"copy_bundle_textarea_{token}",
-        label_visibility="visible",
+        label_visibility="collapsed",
     )
 
 @st.cache_data
@@ -1491,10 +1701,121 @@ def load_arts(nome_tema):  # Select image for arts
     return logo
 
 
+def _set_sidebar_context_image_for_theme(nome_tema):
+    """Define a imagem Machina contextual do tema atual para a sidebar.
+
+    A curadoria existente continua valendo: tema == grupo de imagens.
+    O destino visual muda: a imagem acompanha na sidebar, não no palco.
+    """
+    logo = load_arts(nome_tema)
+    st.session_state["sidebar_context_image"] = logo or ""
+    return logo or ""
+
+
+def _resolve_off_machina_book_image(book_name):
+    """Localiza imagem contextual do livro Off-Machina, sem imagem decorativa de página."""
+    book_name = str(book_name or "").strip()
+    if not book_name:
+        return ""
+
+    candidates = [
+        os.path.join("./off-machina", "capa_" + book_name + ".jpg"),
+        os.path.join("./off_machina", "capa_" + book_name + ".jpg"),
+        os.path.join("./off-machina", book_name + ".jpg"),
+        os.path.join("./off_machina", book_name + ".jpg"),
+        os.path.join("./images/off_machina", "capa_" + book_name + ".jpg"),
+        os.path.join("./images/off-machina", "capa_" + book_name + ".jpg"),
+        os.path.join("./images/off_machina", book_name + ".jpg"),
+        os.path.join("./images/off-machina", book_name + ".jpg"),
+        os.path.join("./images/off", book_name + ".jpg"),
+        os.path.join("./images/livros", book_name + ".jpg"),
+        os.path.join("./images/books", book_name + ".jpg"),
+        os.path.join("./images", book_name + ".jpg"),
+    ]
+
+    for candidate in candidates:
+        if os.path.exists(candidate):
+            return candidate
+
+    return ""
+
+
+def _about_author_images():
+    """Lista imagens de autores disponíveis para a página About."""
+    author_dir = "./images/author"
+    author_images = []
+    if os.path.isdir(author_dir):
+        for file in sorted(os.listdir(author_dir)):
+            low = file.lower()
+            if low.endswith((".jpg", ".jpeg", ".png", ".webp")):
+                author_images.append(os.path.join(author_dir, file))
+    return author_images
+
+
+def _set_about_author_image_next():
+    """Homenageia um autor diferente a cada entrada/click na página About."""
+    author_images = _about_author_images()
+    if not author_images:
+        st.session_state["about_author_image"] = ""
+        return ""
+
+    previous = st.session_state.get("about_author_image", "")
+    available = [img for img in author_images if img != previous]
+    chosen = random.choice(available or author_images)
+    st.session_state["about_author_image"] = chosen
+    return chosen
+
+
+def render_sidebar_image_fit(image_path):
+    """Renderiza imagem contextual da sidebar em quadro fixo 240x360, sem faixa branca."""
+    if not image_path or not os.path.exists(image_path):
+        return
+
+    with open(image_path, "rb") as img_file:
+        img_b64 = base64.b64encode(img_file.read()).decode()
+
+    ext = os.path.splitext(image_path)[1].lower().replace(".", "")
+    mime = "jpeg" if ext in {"jpg", "jpeg"} else ext or "jpeg"
+
+    with st.sidebar:
+        st.markdown(
+            f"""
+            <div class="machina-sidebar-image-frame">
+                <img src="data:image/{mime};base64,{img_b64}" />
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+
+def render_sidebar_context_image(chosen_id):
+    """Renderiza a imagem contextual adequada na sidebar.
+
+    - páginas que geram yPoemas: imagem Machina do tema em foco;
+    - Off-Machina: imagem do livro em foco;
+    - About: 1 autor homenageado por sessão.
+    """
+    image_path = ""
+
+    if str(chosen_id) in {"1", "2", "3"}:
+        image_path = st.session_state.get("sidebar_context_image", "")
+    elif str(chosen_id) == "4":
+        try:
+            off_books_list = load_all_offs()
+            off_idx = int(st.session_state.get("off_book", 0))
+            if off_books_list and 0 <= off_idx < len(off_books_list):
+                image_path = _resolve_off_machina_book_image(off_books_list[off_idx])
+        except Exception:
+            image_path = ""
+    elif str(chosen_id) == "5":
+        image_path = ""
+
+    if image_path and os.path.exists(image_path):
+        render_sidebar_image_fit(image_path)
+
+
 ### eof: loaders
 ### bof: functions
-
-
 
 
 def _palco_titulo_centralizado(LOGO_TEXTO):
@@ -1508,7 +1829,11 @@ def _palco_titulo_centralizado(LOGO_TEXTO):
         return texto
 
     titulo = partes[0].strip()
-    corpo = marcador.join(partes[1:]).strip()
+    corpo_partes = partes[1:]
+    while corpo_partes and not corpo_partes[0].strip():
+        corpo_partes.pop(0)
+
+    corpo = marcador.join(corpo_partes).strip()
     if not titulo or not corpo:
         return texto
 
@@ -1535,16 +1860,16 @@ def _corpo_palco_leitor():
         corpo = int(st.session_state.get("stage_size", 21))
     except Exception:
         corpo = 21
-    return max(15, min(24, corpo))
+    return max(14, min(34, corpo))
 
 
 def _corpo_palco_cia():
-    """Corpo protegido pela Machina quando yPoema e CIA dividem o palco."""
+    """Corpo protegido para palcos auxiliares legados."""
     return int(st.session_state.get("cia_palco_size", st.session_state.get("cia_size", 18)))
 
 
 def write_ypoema_cia_palco(LOGO_TEXTO, LOGO_IMAGE=None):
-    """Renderiza o yPoema no palco da CIA: mesma fonte, corpo protegido."""
+    """Renderiza o yPoema em palco auxiliar legado."""
     LOGO_TEXTO = _palco_titulo_centralizado(LOGO_TEXTO)
     stage_font = _fonte_palco_leitor()
     palco_size = _corpo_palco_cia()
@@ -1574,35 +1899,46 @@ def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
     LOGO_TEXTO = _palco_titulo_centralizado(LOGO_TEXTO)
     stage_font = _fonte_palco_leitor()
     stage_size = _corpo_palco_leitor()
-    ypo_style = (
-        f"--machina-ypoema-font:'{stage_font}'; "
-        f"--machina-ypoema-size:{stage_size}px; "
-        f"font-family:'{stage_font}' !important; "
-        f"font-size:{stage_size}px !important;"
-    )
+
+    logo_css = f"""
+        <style>
+        .logo-text {{
+            font-weight: 600 !important;
+            font-size: {stage_size}px !important;
+            font-family: '{stage_font}' !important;
+            color: #000000 !important;
+            line-height: 1.35 !important;
+            padding-top: 0px !important;
+            padding-left: 8px !important;
+            text-align: left !important;
+            display: table !important;
+            max-width: min(96ch, 94%) !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            box-sizing: border-box !important;
+        }}
+        </style>
+    """
 
     if LOGO_IMAGE is None:
         st.markdown(
-            f"""
-            <div class='machina-ypoema-solo'>
-                <p class='logo-text machina-ypoema-text' style="{ypo_style}">{LOGO_TEXTO}</p>
-            </div>
-            """,
+            f"{logo_css}<p class='logo-text'>{LOGO_TEXTO}</p>",
             unsafe_allow_html=True,
         )
     else:
         st.markdown(
             f"""
+            {logo_css}
             <div class='container'>
                 <img class='logo-img' src='data:image/jpg;base64,{base64.b64encode(open(LOGO_IMAGE, 'rb').read()).decode()}'>
-                <p class='logo-text machina-ypoema-text' style="{ypo_style}">{LOGO_TEXTO}</p>
+                <p class='logo-text'>{LOGO_TEXTO}</p>
             </div>
             """,
             unsafe_allow_html=True,
         )
 
 def write_cia_header(LOGO_TEXTO, LOGO_IMAGE=None):
-    """Renderiza o cabeçalho da CIA em duas linhas: descritivo + mood."""
+    """Renderiza cabeçalho auxiliar legado em duas linhas."""
     if LOGO_IMAGE is not None:
         write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
         return
@@ -1652,6 +1988,14 @@ def talk(text):
     except Exception as e:
         st.error(f"Erro na voz neural: {e}")
 
+
+def render_voz_slot():
+    """Reserva a linha do player de voz logo abaixo dos nav_buttons."""
+    st.markdown("<div class='machina-voz-slot'>", unsafe_allow_html=True)
+    slot = st.empty()
+    st.markdown("</div>", unsafe_allow_html=True)
+    return slot
+
 def say_number(tema):  # search index title for eureka
     analise = "nonono"
     indexes = load_index()
@@ -1695,16 +2039,23 @@ def page_mini():
     if st.session_state.mini >= maxy_mini:  # just in case
         st.session_state.mini = 0
 
-    foo1, more, rand, auto, foo2 = st.columns([3.55, 1, 1, 1.9, 3.55])
+    foo1, more, rand, auto, voz_col, foo2 = st.columns([3.1, 1, 1, 1.9, 1, 3.1])
 
     help_tips = load_help(st.session_state.lang)
     help_rand = help_tips[1]
     help_more = help_tips[4]
+    help_talk = help_tips[6]
     rand = rand.button("✻", help=help_rand)
 
     with auto:
         if st.button("auto", key="mini_auto_button", help="modo automático", use_container_width=True):
             st.session_state.auto = not st.session_state.auto
+
+    with voz_col:
+        if st.button("♫", key="mini_voz_btn", help=help_talk, use_container_width=True):
+            st.session_state.talk = not st.session_state.talk
+
+    mini_voz_slot = render_voz_slot()
 
     if st.session_state.auto:
         st.session_state.talk = False
@@ -1747,10 +2098,7 @@ def page_mini():
 
         update_readings(st.session_state.tema)
         LOGO_TEXTO = curr_ypoema
-        LOGO_IMAGE = None
-
-        if st.session_state.draw:
-            LOGO_IMAGE = load_arts(st.session_state.tema)
+        _set_sidebar_context_image_for_theme(st.session_state.tema)
 
         mini_status = (
             "🌿  "
@@ -1771,10 +2119,11 @@ def page_mini():
 
             if st.session_state.auto == False:
                 with mini_place_holder:
-                    write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
+                    write_ypoema(LOGO_TEXTO, None)
 
                 if st.session_state.talk:
-                    talk(curr_ypoema)
+                    with mini_voz_slot:
+                        talk(curr_ypoema)
 
             else:
                 while st.session_state.auto:
@@ -1800,29 +2149,18 @@ def page_mini():
 
                     update_readings(st.session_state.tema)
                     LOGO_TEXTO = curr_ypoema
-                    LOGO_IMAGE = None
-
-                    if st.session_state.draw:
-                        LOGO_IMAGE = load_arts(st.session_state.tema)
+                    _set_sidebar_context_image_for_theme(st.session_state.tema)
 
                     with mini_place_holder:
                         mini_place_holder.empty()
-                        write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
+                        write_ypoema(LOGO_TEXTO, None)
                         secs = wait_time
                         while secs >= 0:
                             time.sleep(1)
                             secs -= 1
 
 
-
-
-
-
-
-
-
 def page_ypoemas():
-    _restore_cia_freeze_before_sync()
     _sync_book_theme_state()
     temas_list = load_temas(_current_book())
     maxy_ypoemas = len(temas_list) - 1
@@ -1856,13 +2194,16 @@ def page_ypoemas():
                 "<div style='height:1.95rem; min-height:1.95rem;'></div>",
                 unsafe_allow_html=True,
             )
-        nav_cols = st.columns([1, 1, 1, 1, 1])
+        nav_cols = st.columns([1, 1, 1, 1, 1, 1])
         more = nav_cols[0].button("✚", help=help_more, use_container_width=True)
         last = nav_cols[1].button("◀", help=help_last, use_container_width=True)
         rand = nav_cols[2].button("✻", help=help_rand, use_container_width=True)
         nest = nav_cols[3].button("▶", help=help_nest, use_container_width=True)
-        manu_help = "guia do leitor da CIA" if st.session_state.get("sidebar_panel") == "CIA" else "help !!!"
-        manu = nav_cols[4].button("?", help=manu_help, use_container_width=True)
+        if nav_cols[4].button("♫", help=help_tips[6], key="ypoemas_voz_btn", use_container_width=True):
+            st.session_state.talk = not st.session_state.talk
+        manu = nav_cols[5].button("?", help="help !!!", use_container_width=True)
+
+        ypoemas_voz_slot = render_voz_slot()
 
     temas_list = load_temas(_current_book())
     maxy_ypoemas = len(temas_list) - 1
@@ -1882,7 +2223,6 @@ def page_ypoemas():
         frozen_book = st.session_state.get("ypo_anchor_book", _current_book())
         frozen_take = int(st.session_state.get("ypo_anchor_take", st.session_state.get("take", 0)))
         frozen_tema = st.session_state.get("ypo_anchor_tema", st.session_state.get("tema", ""))
-        st.session_state["cia_last_action"] = "more_same_theme"
         st.session_state["more_same_book"] = frozen_book
         st.session_state["more_same_take"] = frozen_take
         st.session_state["more_same_tema"] = frozen_tema
@@ -1894,29 +2234,26 @@ def page_ypoemas():
         # O congelamento é feito no estado canônico: book/take/tema.
 
     if last:
-        st.session_state["cia_last_action"] = "nav"
-        limpar_cia_palco()
         limpar_copias_palco()
         st.session_state.take -= 1
         if st.session_state.take < 0:
             st.session_state.take = maxy_ypoemas
         _sync_book_theme_state()
+        _bump_palco_theme_widget()
 
     if rand:
-        st.session_state["cia_last_action"] = "nav"
-        limpar_cia_palco()
         limpar_copias_palco()
         st.session_state.take = random.randrange(0, maxy_ypoemas + 1)
         _sync_book_theme_state()
+        _bump_palco_theme_widget()
 
     if nest:
-        st.session_state["cia_last_action"] = "nav"
-        limpar_cia_palco()
         limpar_copias_palco()
         st.session_state.take += 1
         if st.session_state.take > maxy_ypoemas:
             st.session_state.take = 0
         _sync_book_theme_state()
+        _bump_palco_theme_widget()
 
     with col_temas:
         pick_tema_palco()
@@ -1924,7 +2261,7 @@ def page_ypoemas():
     temas_list = load_temas(_current_book())
     _sync_book_theme_state()
 
-    if more and st.session_state.get("cia_last_action") == "more_same_theme":
+    if more:
         frozen_book = st.session_state.get("more_same_book", _current_book())
         frozen_take = int(st.session_state.get("more_same_take", st.session_state.get("take", 0)))
         frozen_tema = st.session_state.get("more_same_tema", "")
@@ -1939,12 +2276,9 @@ def page_ypoemas():
             st.session_state.tema = temas_list[0] if temas_list else ""
 
     lnew = True
-    cia_mode_page = st.session_state.get("sidebar_panel") == "CIA"
     if manu:
-        if cia_mode_page:
-            st.markdown(guia_do_leitor_cia())
-        else:
-            render_help_ypoemas_mesma_fonte()
+        render_help_ypoemas_mesma_fonte()
+        lnew = False
 
     if lnew:
         what_book = (
@@ -1961,120 +2295,63 @@ def page_ypoemas():
 
         ypoemas_expander = st.expander(what_book, expanded=True)
         with ypoemas_expander:
-            cia_mode = st.session_state.get("sidebar_panel") == "CIA"
-            cia_mood_changed = bool(st.session_state.get("cia_mood_changed", False))
-            cia_force_new_poema = bool(st.session_state.get("cia_force_new_poema", False))
-            cia_last_action = st.session_state.get("cia_last_action", "")
-
-            explicit_poem_change = bool(
-                last
-                or rand
-                or nest
-                or cia_last_action in {"nav", "book_change", "theme_change"}
-            )
-            more_same_theme = bool(more or cia_last_action == "more_same_theme")
-
-            if cia_mode and (cia_mood_changed or cia_last_action == "cia_mood"):
-                _cia_restaurar_identidade_objeto()
-                force_new_poema = False
+            if st.session_state.lang != st.session_state.last_lang:
+                curr_ypoema = load_lypo()  # changes in lang, keep LYPO
             else:
-                force_new_poema = bool(explicit_poem_change or cia_force_new_poema or more_same_theme)
+                curr_ypoema = load_poema(st.session_state.tema, "")
+                curr_ypoema = load_lypo()
 
-            preserve_cia_poema = (
-                cia_mode
-                and _cia_objeto_analise_existe()
-                and not force_new_poema
-            )
+            if st.session_state.lang != "pt":  # translate if idioma <> pt
+                curr_ypoema = translate(curr_ypoema)
+                typo_user = "TYPO_" + IPAddres
+                with open(
+                    os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
+                ) as save_typo:
+                    save_typo.write(curr_ypoema)
+                    save_typo.close()
+                curr_ypoema = load_typo()  # to normalize line breaks in text
 
-            if preserve_cia_poema:
-                # Troca de lente CIA: usa exatamente o mesmo objeto de análise.
-                _cia_restaurar_identidade_objeto()
-                curr_ypoema = st.session_state.get("ypoema_atual_para_analise", "")
-                generated_new_poema = False
-                st.session_state["cia_mood_changed"] = False
-                st.session_state["cia_force_new_poema"] = False
-                st.session_state["cia_freeze_book"] = ""
-                st.session_state["cia_freeze_take"] = -1
-                st.session_state["cia_freeze_tema"] = ""
-                st.session_state["cia_last_action"] = ""
-            else:
-                st.session_state["cia_mood_changed"] = False
-                st.session_state["cia_force_new_poema"] = False
+            update_readings(st.session_state.tema)
 
-                if cia_mode and more_same_theme and _cia_objeto_analise_existe():
-                    _cia_restaurar_identidade_objeto()
+            st.session_state.ypoema_em_analise = curr_ypoema
+            st.session_state.tema_em_analise = st.session_state.tema
+            st.session_state.book_em_analise = _current_book()
+            st.session_state.take_em_analise = st.session_state.take
+            st.session_state.lang_em_analise = st.session_state.lang
 
-                if st.session_state.lang != st.session_state.last_lang:
-                    curr_ypoema = load_lypo()  # changes in lang, keep LYPO
-                else:
-                    curr_ypoema = load_poema(st.session_state.tema, "")
-                    curr_ypoema = load_lypo()
-
-                if st.session_state.lang != "pt":  # translate if idioma <> pt
-                    curr_ypoema = translate(curr_ypoema)
-                    typo_user = "TYPO_" + IPAddres
-                    with open(
-                        os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
-                    ) as save_typo:
-                        save_typo.write(curr_ypoema)
-                        save_typo.close()
-                    curr_ypoema = load_typo()  # to normalize line breaks in text
-
-                if cia_mode:
-                    _cia_fixar_objeto_analise(curr_ypoema)
-                else:
-                    st.session_state.ypoema_em_analise = curr_ypoema
-                    st.session_state.tema_em_analise = st.session_state.tema
-                    st.session_state.book_em_analise = _current_book()
-                    st.session_state.take_em_analise = st.session_state.take
-                    st.session_state.lang_em_analise = st.session_state.lang
-
-                generated_new_poema = True
-                st.session_state["cia_last_action"] = ""
-                st.session_state["more_same_book"] = ""
-                st.session_state["more_same_take"] = -1
-                st.session_state["more_same_tema"] = ""
-                st.session_state["ypo_anchor_book"] = _current_book()
-                st.session_state["ypo_anchor_take"] = int(st.session_state.get("take", 0))
-                st.session_state["ypo_anchor_tema"] = st.session_state.get("tema", "")
-
-            if generated_new_poema:
-                update_readings(st.session_state.tema)
+            st.session_state["more_same_book"] = ""
+            st.session_state["more_same_take"] = -1
+            st.session_state["more_same_tema"] = ""
+            st.session_state["ypo_anchor_book"] = _current_book()
+            st.session_state["ypo_anchor_take"] = int(st.session_state.get("take", 0))
+            st.session_state["ypo_anchor_tema"] = st.session_state.get("tema", "")
 
             LOGO_TEXTO = curr_ypoema
-            LOGO_IMAGE = None
+            _set_sidebar_context_image_for_theme(st.session_state.tema)
 
-            if st.session_state.get("sidebar_panel") != "CIA" and st.session_state.draw:
-                LOGO_IMAGE = load_arts(st.session_state.tema)
+            write_ypoema(LOGO_TEXTO, None)
 
-            if st.session_state.get("sidebar_panel") == "CIA":
-                col_poema, col_cia = st.columns([5, 5])
-                with col_poema:
-                    write_ypoema_cia_palco(LOGO_TEXTO, None)
-                with col_cia:
-                    render_cia_stage(curr_ypoema)
-            else:
-                write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
-
-            # Copiar 1..9 ocorrências do tema atual para leituras externas.
+            # Copiar 2..9 ocorrências do tema atual para leituras externas.
+            # Para apenas +1 variação, o botão ✚ já cumpre esse papel.
             # Mantém o yPoema exibido como #1 e gera variações extras sem alterar o palco.
-            #
-            # Importante: não usar st.number_input dentro de st.form aqui.
-            # Na prática ele estava ficando preso no valor antigo/default (=1) em alguns ciclos,
-            # e o hint nativo do input ainda poluía a tela. O selectbox 1..9 é estável e sem hint.
             copy_bundle_text = st.session_state.get("copy_bundle_text", "")
             if st.session_state.get("copy_bundle_source", "") != _copy_bundle_source_key(curr_ypoema):
                 copy_bundle_text = ""
 
             st.markdown("<br>", unsafe_allow_html=True)
 
+            qtd_copias_atual = _normalizar_qtd_copias(
+                st.session_state.get("copy_qtd_widget", st.session_state.get("copy_qtd", 2))
+            )
+            st.session_state["copy_qtd"] = qtd_copias_atual
+
             # Cópias clean:
-            # [ gerar variações ] [ qtd ] [ copiar yPoemas gerados ]
-            copy_left, copy_generate_col, copy_qtd_col, copy_all_col, copy_right = st.columns([3.25, 3.5, 1.35, 3.4, 3.25])
+            # [ criar (X) variações ] [ qtd ] [ copiar yPoemas gerados ]
+            copy_left, copy_generate_col, copy_qtd_col, copy_all_col, copy_right = st.columns([3.00, 3.35, 2.10, 3.30, 3.00])
 
             with copy_generate_col:
                 copy_submit = st.button(
-                    "criar variações",
+                    f"criar ( {qtd_copias_atual} ) variações",
                     key="copy_variacoes_btn",
                     use_container_width=True,
                 )
@@ -2082,16 +2359,21 @@ def page_ypoemas():
             with copy_qtd_col:
                 qtd_copias = st.selectbox(
                     "quantidade de cópias",
-                    list(range(1, 10)),
-                    index=max(0, min(8, int(st.session_state.get("copy_qtd", 1)) - 1)),
+                    list(range(2, 10)),
+                    index=list(range(2, 10)).index(qtd_copias_atual),
                     key="copy_qtd_widget",
                     label_visibility="collapsed",
+                    on_change=_on_copy_qtd_change,
                 )
 
-            st.session_state["copy_qtd"] = int(qtd_copias)
+            qtd_copias = _normalizar_qtd_copias(qtd_copias)
+            st.session_state["copy_qtd"] = qtd_copias
+
+            copy_qtd_changed = bool(st.session_state.pop("copy_qtd_changed", False))
+            copy_submit = bool(copy_submit or copy_qtd_changed)
 
             if copy_submit:
-                qtd_copias = int(st.session_state.get("copy_qtd", 1))
+                qtd_copias = _normalizar_qtd_copias(st.session_state.get("copy_qtd", 2))
                 st.session_state["copy_bundle_text"] = montar_copias_ypoema(
                     curr_ypoema,
                     st.session_state.get("tema", ""),
@@ -2122,21 +2404,21 @@ def page_ypoemas():
                 if st.session_state.lang != "pt":  # translate if idioma <> pt
                     LOGO_TEXTO = translate(LOGO_TEXTO)
 
-                LOGO_IMAGE = (
-                    "./images/matrix/" + st.session_state.tema.capitalize() + ".jpg"
-                )
-                write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
+                _set_sidebar_context_image_for_theme(st.session_state.tema)
+                write_ypoema(LOGO_TEXTO, None)
 
         if st.session_state.talk:
-            talk(curr_ypoema)
+            with ypoemas_voz_slot:
+                talk(curr_ypoema)
 
 
 def page_eureka():
     help_tips = load_help(st.session_state.lang)
     help_rand = help_tips[1]
     help_more = help_tips[4]
+    help_talk = help_tips[6]
 
-    seed, more, rand, manu, occurrences = st.columns([2.5, 1.5, 1.5, 0.7, 4])
+    seed, more, rand, voz_col, manu, occurrences = st.columns([2.5, 1.3, 1.3, 0.8, 0.7, 3.9])
 
     with seed:
         find_what = st.text_input(
@@ -2150,8 +2432,14 @@ def page_eureka():
     with rand:
         rand = rand.button("✻", help=help_rand)
 
+    with voz_col:
+        if st.button("♫", key="eureka_voz_btn", help=help_talk, use_container_width=True):
+            st.session_state.talk = not st.session_state.talk
+
     with manu:
         manu = manu.button("?", help="help !!!")
+
+    eureka_voz_slot = render_voz_slot()
 
     if manu:
         st.subheader(load_md_file("MANUAL_EUREKA.md"))
@@ -2252,23 +2540,22 @@ def page_eureka():
                 eureka_expander = st.expander("", expanded=True)
                 with eureka_expander:
                     LOGO_TEXTO = curr_ypoema
-                    LOGO_IMAGE = None
-                    if st.session_state.draw:
-                        LOGO_IMAGE = load_arts(seed_tema)
+                    _set_sidebar_context_image_for_theme(seed_tema)
 
-                    write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
+                    write_ypoema(LOGO_TEXTO, None)
                     update_readings(seed_tema)
 
                 if st.session_state.talk:
-                    talk(curr_ypoema)
+                    with eureka_voz_slot:
+                        talk(curr_ypoema)
             if manu:
                 lnew = False
                 LOGO_TEXTO = load_info(seed_tema)
                 if st.session_state.lang != "pt":  # translate if idioma <> pt
                     LOGO_TEXTO = translate(LOGO_TEXTO)
 
-                LOGO_IMAGE = "./images/matrix/" + seed_tema.capitalize() + ".jpg"
-                write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
+                _set_sidebar_context_image_for_theme(seed_tema)
+                write_ypoema(LOGO_TEXTO, None)
 
         else:
             st.warning(
@@ -2316,7 +2603,9 @@ def page_off_machina():  # available off_machina_books
     if opt_off_book != st.session_state.off_book:
         st.session_state.off_book = opt_off_book
         st.session_state.off_take = 0
-        st.session_state["opt_off_take"] = 0
+        st.session_state["off_take_widget_token"] = int(
+            st.session_state.get("off_take_widget_token", 0)
+        ) + 1
 
     off_book_name = off_books_list[st.session_state.off_book]
     this_off_book = load_off_book(off_book_name)
@@ -2341,11 +2630,15 @@ def page_off_machina():  # available off_machina_books
                 "<div style='height:1.95rem; min-height:1.95rem;'></div>",
                 unsafe_allow_html=True,
             )
-        nav_cols = st.columns([1, 1, 1, 1])
+        nav_cols = st.columns([1, 1, 1, 1, 1])
         last = nav_cols[0].button("◀", help=help_last, use_container_width=True)
         rand = nav_cols[1].button("✻", help=help_rand, use_container_width=True)
         nest = nav_cols[2].button("▶", help=help_nest, use_container_width=True)
-        manu = nav_cols[3].button("?", help="help !!!", use_container_width=True)
+        if nav_cols[3].button("♫", help=help_tips[6], key="off_voz_btn", use_container_width=True):
+            st.session_state.talk = not st.session_state.talk
+        manu = nav_cols[4].button("?", help="help !!!", use_container_width=True)
+
+        off_voz_slot = render_voz_slot()
 
     if last:
         nav_changed = True
@@ -2367,19 +2660,24 @@ def page_off_machina():  # available off_machina_books
         st.session_state.off_take = 0
 
     # Mantém a lista_temas sincronizada com os botões ◀ ✻ ▶,
-    # sem atropelar a seleção manual feita diretamente na lista.
+    # sem escrever diretamente na key interna do widget.
     if nav_changed:
-        st.session_state["opt_off_take"] = st.session_state.off_take
+        st.session_state["off_take_widget_token"] = int(
+            st.session_state.get("off_take_widget_token", 0)
+        ) + 1
 
     with col_temas:
         options = list(range(len(off_book_pagys)))
         sobrios = "↓ " + str(len(off_book_pagys)) + " temas"
+        opt_off_take_key = "opt_off_take_" + str(
+            int(st.session_state.get("off_take_widget_token", 0))
+        )
         opt_off_take = st.selectbox(
             sobrios,
             options,
             index=st.session_state.off_take,
             format_func=lambda x: off_book_pagys[x],
-            key="opt_off_take",
+            key=opt_off_take_key,
         )
 
     if opt_off_take != st.session_state.off_take:
@@ -2405,7 +2703,7 @@ def page_off_machina():  # available off_machina_books
         with off_machina_expander:
             off_book_text = ""
             pipe_line = this_off_book[st.session_state.off_take].split("|")
-            if "@ " in pipe_line[1]:
+            if off_book_name == "livro_vivo" and "@ " in pipe_line[1]:
                 if st.session_state.lang != st.session_state.last_lang:
                     off_book_text = load_lypo()  # changes in lang, keep LYPO
                 else:
@@ -2424,51 +2722,103 @@ def page_off_machina():  # available off_machina_books
                     if off_book_name == "livro_vivo":
                         LOGO_CAPA = load_arts("livro_vivo")
                         if LOGO_CAPA:
-                            st.image(LOGO_CAPA, width="stretch")
+                            st.image(LOGO_CAPA, use_container_width=True)
                     else:
                         st.image(
                             "./off_machina/capa_" + off_book_name + ".jpg",
-                            width="stretch",
+                            use_container_width=True,
                         )
                 with isbn:
-                    st.markdown(
-                        off_book_text, unsafe_allow_html=True
-                    )  # finally... write it
+                    if off_book_name == "livro_vivo":
+                        write_off_machina_texto(off_book_text)
+                    else:
+                        st.markdown(
+                            off_book_text, unsafe_allow_html=True
+                        )  # finally... write it
             else:
                 if st.session_state.lang != "pt":
                     off_book_text = translate(off_book_text)
 
                 LOGO_TEXTO = off_book_text
-                LOGO_IMAGE = None
-                if st.session_state.draw:
-                    LOGO_IMAGE = load_arts(off_book_name)
 
-                write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
+                if off_book_name == "livro_vivo":
+                    LOGO_IMAGE = load_arts(off_book_name)
+                    write_livro_vivo_texto(LOGO_TEXTO, LOGO_IMAGE)
+                else:
+                    write_off_machina_texto(LOGO_TEXTO)
                 update_readings(off_book_name)
 
         if st.session_state.talk:
-            talk(off_book_text)
+            with off_voz_slot:
+                talk(off_book_text)
+
+
+def _about_candidates(title):
+    """Gera nomes esperados para ABOUT_<assunto>.md sem lista infinita de exceções."""
+    title = str(title or "").strip()
+    candidates = list(ABOUTS_FILES.get(title, []))
+
+    stems = [
+        title,
+        title.replace(" ", "_"),
+        title.replace(" ", "-"),
+        title.replace("-", "_"),
+        title.replace("_", "-"),
+    ]
+
+    for stem in stems:
+        name = "ABOUT_" + stem + ".md"
+        if name not in candidates:
+            candidates.append(name)
+
+    return candidates
 
 
 def load_about_md(title):
-    """Carrega ABOUTs pelo padrão curatorial explícito.
+    """Carrega ABOUT pelo padrão geral: ABOUT_ + assunto.
 
-    Padrão principal: ABOUT_nome_titulo.md.
-    Sem uppercase automático: nome de arquivo é assunto de curadoria.
+    Procura o nome esperado e depois varre md_files comparando o assunto
+    normalizado. Funciona para caixa, acentos, espaço, hífen e underscore.
     """
-    candidates = ABOUTS_FILES.get(title, ["ABOUT_" + title.replace(" ", "_") + ".md"])
+    title = str(title or "").strip()
+    candidates = _about_candidates(title)
 
-    last_file = candidates[-1] if candidates else title
     for file_name in candidates:
-        full_path = os.path.join("./md_files/" + file_name)
-        if os.path.exists(full_path):
-            return load_md_file(file_name)
+        path = _md_file_casefold_path(file_name)
+        if path:
+            return load_md_file(os.path.basename(path))
 
-    return translate("ooops... arquivo ( " + last_file + " ) não pode ser aberto.")
+    md_dir = "./md_files"
+    wanted_key = _md_nome_chave(title)
+    if os.path.isdir(md_dir):
+        best = ""
+        for real_name in os.listdir(md_dir):
+            real_path = os.path.join(md_dir, real_name)
+            if not os.path.isfile(real_path):
+                continue
+            if not real_name.lower().endswith(".md"):
+                continue
+
+            real_key = _md_nome_chave(real_name)
+            if real_key == wanted_key:
+                return load_md_file(real_name)
+
+            if wanted_key and real_key:
+                if real_key.startswith(wanted_key) or wanted_key.startswith(real_key):
+                    best = best or real_name
+
+        if best:
+            return load_md_file(best)
+
+    expected = "ABOUT_" + title + ".md"
+    return translate("ooops... arquivo ( " + expected + " ) não pode ser aberto.")
 
 
 def page_abouts():
     abouts_list = ABOUTS_LIST
+
+    # About homenageia um autor diferente a cada entrada/click.
+    _set_about_author_image_next()
 
     options = list(range(len(abouts_list)))
     sobrios = "↓  " + translate("sobre")
@@ -2484,13 +2834,1124 @@ def page_abouts():
     about_expander = st.expander("", True)
     with about_expander:
         if choice == "machina":
-            st.subheader(load_md_file("ABOUT_machina I.md"))
+            st.subheader(load_md_file("ABOUT_machina.md"))
             LOGO_TEXTO = load_info(st.session_state.tema)
-            LOGO_IMAGE = "./images/matrix/" + st.session_state.tema + ".jpg"
-            write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
-            st.subheader(load_md_file("ABOUT_machina II.md"))
+            write_ypoema(LOGO_TEXTO, None)
+#            st.subheader(load_md_file("ABOUT_machina II.md"))
         else:
             st.subheader(load_about_md(choice))
+
+
+# -----------------------------------------------------------------------------
+# Tools locais da Machina
+# -----------------------------------------------------------------------------
+# Cópia privada/local. Não vai para GitHub, deploy ou público.
+# Regra: lê temas .YPO/.ypo; não altera conteúdo autoral; não cria poesia.
+
+BUILD_INDEXY_FILE = "ABOUT_index.MD"
+BUILD_AMBIENTE_LEXICO = "--- Ambiente Léxico da Machina"
+BUILD_ESCALA = [
+    "mil", "milhões", "bilhões", "trilhões", "quatrilhões", "quintilhões",
+    "sextilhões", "setilhões", "octilhões", "nonilhões", "decilhões",
+    "undecilhões", "dodecilhões", "tredecilhões", "quatuordecilhões",
+    "quindecilhões", "sedecilhões", "septendecilhões",
+]
+
+def _tools_fmt_int(valor):
+    return f"{int(valor):,}".replace(",", ".")
+
+
+def _tools_potencia_nome(valor):
+    num = f"{int(valor):,}"
+    pontos = num.count(",") - 1
+    if 0 <= pontos < len(BUILD_ESCALA):
+        return BUILD_ESCALA[pontos]
+    return "nonono"
+
+
+def _tools_backup_path(path):
+    """Cria backup local antes de qualquer gravação derivada/cadastral."""
+    if not os.path.exists(path):
+        return ""
+    backup_dir = _project_path("backups", "local_tools")
+    os.makedirs(backup_dir, exist_ok=True)
+    stamp = time.strftime("%Y%m%d_%H%M%S")
+    base = os.path.basename(path)
+    dst = os.path.join(backup_dir, f"{stamp}_{base}")
+    with open(path, "rb") as src, open(dst, "wb") as out:
+        out.write(src.read())
+    return dst
+
+
+def _tools_write_text(path, texto):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    _tools_backup_path(path)
+    with open(path, "w", encoding="utf-8") as file:
+        file.write(texto)
+
+
+def _tools_add_unique_line(path, line, key):
+    """Adiciona linha se a chave ainda não existir. Preserva o arquivo fora disso."""
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    line = str(line).rstrip("\n")
+    key = str(key).casefold().strip()
+    linhas = []
+    if os.path.exists(path):
+        with open(path, encoding="utf-8") as file:
+            linhas = file.read().splitlines()
+
+    for raw in linhas:
+        parte = raw.partition(" : ")[0].strip().casefold()
+        if not parte and raw.startswith("|"):
+            campos = raw.split("|")
+            if len(campos) > 1:
+                parte = campos[1].strip().casefold()
+        if parte == key or raw.strip().casefold() == key:
+            return False
+
+    _tools_backup_path(path)
+    with open(path, "a", encoding="utf-8") as file:
+        if linhas and linhas[-1] != "":
+            file.write("\n")
+        file.write(line + "\n")
+    return True
+
+
+def _tools_resolve_ypo_path(tema):
+    tema = str(tema or "").strip()
+    candidatos = [
+        _project_path("data", tema + ".ypo"),
+        _project_path("data", tema + ".YPO"),
+    ]
+    for path in candidatos:
+        if os.path.exists(path):
+            return path
+    return candidatos[0]
+
+
+def _tools_temas_ativos():
+    temas = []
+    ativos_path = _project_path("base", "ativos.txt")
+    with open(ativos_path, encoding="utf-8") as file:
+        for raw in file:
+            linha = raw.strip("\n")
+            if not linha.strip():
+                continue
+            tema = linha.partition(" : ")[0].strip()
+            if tema:
+                temas.append((tema, _tools_resolve_ypo_path(tema)))
+    return temas
+
+
+def _tools_temas_para_remover():
+    """Lista temas em circulação, usando as mesmas listas vistas pelos yPoemas.
+
+    A remoção precisa enxergar temas que aparecem em rol_*.txt mesmo que
+    alguma lista cadastral esteja desencontrada.
+    """
+    nomes = []
+
+    def add(nome):
+        nome = str(nome or "").strip()
+        if nome and nome not in nomes:
+            nomes.append(nome)
+
+    # 1) Lista canônica usada pelo livro "todos os temas" no palco.
+    try:
+        for nome in load_temas("todos os temas"):
+            add(nome)
+    except Exception:
+        pass
+
+    # 2) Todos os rol_*.txt, para capturar livros específicos.
+    base_dir = _project_path("base")
+    if os.path.isdir(base_dir):
+        for file_name in sorted(os.listdir(base_dir)):
+            if not (file_name.lower().startswith("rol_") and file_name.lower().endswith(".txt")):
+                continue
+            try:
+                with open(os.path.join(base_dir, file_name), encoding="utf-8") as file:
+                    for raw in file:
+                        add(raw.replace(" ", "").strip())
+            except Exception:
+                pass
+
+    # 3) Ativos, caso algum tema esteja cadastrado mas fora dos livros.
+    try:
+        for tema, path in _tools_temas_ativos():
+            add(tema)
+    except Exception:
+        pass
+
+    # 4) Arquivos em ./data, para permitir remover clone recém-criado mesmo
+    #    quando as listas ficaram desencontradas.
+    data_dir = _project_path("data")
+    if os.path.isdir(data_dir):
+        for file_name in sorted(os.listdir(data_dir), key=natural_keys):
+            if file_name.lower().endswith(".ypo"):
+                add(os.path.splitext(file_name)[0])
+
+    return sorted(nomes, key=natural_keys)
+
+
+def _tools_linhas_ypo(path):
+    """Lê linhas estruturais do .YPO em UTF-8 estrito, informando arquivo se falhar."""
+    try:
+        with open(path, encoding="utf-8") as file:
+            for line in file:
+                if line.startswith("|"):
+                    yield line.rstrip("\n").split("|")
+    except UnicodeDecodeError as exc:
+        raise UnicodeDecodeError(
+            exc.encoding,
+            exc.object,
+            exc.start,
+            exc.end,
+            f"{exc.reason} em {path}"
+        ) from exc
+
+
+def build_tools_utf8_temas():
+    """Verifica UTF-8 em base/ativos.txt e em todos os temas ativos, sem alterar arquivos."""
+    start_time = time.time()
+    problemas = []
+    verificados = 0
+
+    ativos_path = _project_path("base", "ativos.txt")
+    try:
+        with open(ativos_path, encoding="utf-8") as file:
+            ativos_linhas = file.read().splitlines()
+    except UnicodeDecodeError as exc:
+        return (
+            "UTF-8 temas: falha em ./base/ativos.txt\n"
+            f"arquivo: {ativos_path}\n"
+            f"posição: {exc.start}\n"
+            f"erro: {exc}"
+        )
+
+    for raw in ativos_linhas:
+        linha = raw.strip()
+        if not linha:
+            continue
+        tema = linha.partition(" : ")[0].strip()
+        if not tema:
+            continue
+        path = _tools_resolve_ypo_path(tema)
+        if not os.path.exists(path):
+            problemas.append(f"não encontrado: {path}")
+            continue
+        try:
+            with open(path, encoding="utf-8") as file:
+                file.read()
+            verificados += 1
+        except UnicodeDecodeError as exc:
+            problemas.append(
+                f"UTF-8 inválido: {path} | posição {exc.start} | {exc}"
+            )
+
+    if problemas:
+        return (
+            f"UTF-8 temas: {len(problemas)} problema(s) encontrado(s).\n"
+            + "\n".join(problemas)
+            + f"\nRuntime: {time.time() - start_time:.2f}s"
+        )
+
+    return f"UTF-8 temas: OK. {verificados} tema(s) ativo(s) verificado(s). Runtime: {time.time() - start_time:.2f}s"
+
+
+def _tools_payload_itimos(campos):
+    if len(campos) <= 8:
+        return []
+    return [item for item in campos[7:-1] if item != ""]
+
+
+def _tools_normaliza_unico(texto):
+    return re.sub(r"\s+", " ", str(texto or "").strip().casefold())
+
+
+def _tools_palavras_de_itimo(itimo):
+    palavras = []
+    for word in str(itimo or "").split():
+        if "-" not in word:
+            for c in string.punctuation:
+                word = word.replace(c, "")
+        word = word.strip().casefold()
+        if len(word) >= 3:
+            palavras.append(word)
+    return palavras
+
+
+def _tools_calcular_variacoes_tema(path):
+    fontes_list = []
+    corrige_qtd = 1
+    qtd_itimos_list = []
+    for campos in _tools_linhas_ypo(path):
+        if len(campos) >= 8:
+            nova_fonte = campos[3]
+            total_itimos = len(_tools_payload_itimos(campos))
+            if nova_fonte not in fontes_list:
+                fontes_list.append(nova_fonte)
+                qtd_itimos_list.append(total_itimos)
+            else:
+                index = fontes_list.index(nova_fonte)
+                saldo_itimos = qtd_itimos_list[index] - corrige_qtd
+                if saldo_itimos == 0:
+                    saldo_itimos = 1
+                fontes_list.append(nova_fonte)
+                qtd_itimos_list.append(saldo_itimos)
+                corrige_qtd += 1
+    qtd_variatio = 1
+    for qtd in qtd_itimos_list:
+        qtd_variatio = +(qtd_variatio * qtd)
+    return abs(qtd_variatio)
+
+
+def build_tools_lexico():
+    """Regera léxico textual a partir dos temas, sem alterar .ypo."""
+    start_time = time.time()
+    linhas_lexico = []
+    vistos_lexico = set()
+    verbetes = []
+    vistos_verbetes = set()
+
+    for tema, path in _tools_temas_ativos():
+        if not os.path.exists(path):
+            continue
+        for campos in _tools_linhas_ypo(path):
+            if len(campos) < 8:
+                continue
+            fonte = campos[3]
+            for itimo in _tools_payload_itimos(campos):
+                for palavra in _tools_palavras_de_itimo(itimo):
+                    chave = palavra + " : " + fonte
+                    if chave not in vistos_lexico:
+                        vistos_lexico.add(chave)
+                        linhas_lexico.append(chave)
+                    if palavra not in vistos_verbetes:
+                        vistos_verbetes.add(palavra)
+                        verbetes.append(palavra)
+
+    base_dir = _project_path("base")
+    texto_lexico = "\n".join(sorted(linhas_lexico)) + "\n"
+    texto_verbetes = "\n".join(sorted(verbetes)) + "\n"
+    # Machina atual usa apenas lexico_pt.txt como léxico de trabalho.
+    _tools_write_text(os.path.join(base_dir, "lexico_pt.txt"), texto_lexico)
+    _tools_write_text(os.path.join(base_dir, "verbetes.txt"), texto_verbetes)
+    return f"Build_Léxico: {len(linhas_lexico)} verbete(s)-fonte; {len(verbetes)} verbete(s) únicos. Runtime: {time.time() - start_time:.2f}s"
+
+
+def build_tools_indexy():
+    start_time = time.time()
+    temas = _tools_temas_ativos()
+    index_list = []
+    error_list = []
+    acm_variatio = 0
+    for tema, path in temas:
+        try:
+            qtd_variatio = _tools_calcular_variacoes_tema(path)
+            acm_variatio += qtd_variatio
+            index_list.append(f"{tema} : {qtd_variatio:,} ({_tools_potencia_nome(qtd_variatio)})")
+        except Exception as exc:
+            error_list.append(f"{tema}: {exc}")
+
+    md_dir = _project_path("md_files")
+    about_index = os.path.join(md_dir, BUILD_INDEXY_FILE)
+    linhas = []
+    linhas.append("variações para cada tema:  ")
+    linhas.append("___  ")
+    for linha in index_list:
+        linhas.append(linha.replace(",", ".") + "  ")
+    linhas.extend([
+        "___",
+        "[escala dos nomes das potências de 10]  ",
+        "  ",
+        "> mil=1.000|10e3|  ",
+        "> milhão=1.000.000|10e6|  ",
+        "> bilhão=1.000.000.000|10e9|  ",
+        "> trilhão=1.000.000.000.000|10e12|  ",
+        "> quatrilhão=1.000.000.000.000.000|10e15|  ",
+        "> quintilhão=1.000.000.000.000.000.000|10e18|  ",
+        "> sextilhão=1.000.000.000.000.000.000.000|10e21|  ",
+        "> setilhão=1.000.000.000.000.000.000.000.000|10e24|  ",
+        "> octilhão=1.000.000.000.000.000.000.000.000.000|10e27|  ",
+        "> nonilhão=1.000.000.000.000.000.000.000.000.000.000|10e30|  ",
+        "> decilhão=1.000.000.000.000.000.000.000.000.000.000.000|10e33|  ",
+        "> undecilhão=1.000.000.000.000.000.000.000.000.000.000.000.000|10e36|  ",
+        "> dodecilhão=1.000.000.000.000.000.000.000.000.000.000.000.000.000|10e39|  ",
+        "> tredecilhão=1.000.000.000.000.000.000.000.000.000.000.000.000.000.000|10e42|  ",
+        "> quatordecilhão=1.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000|10e45|  ",
+        "> quindecilhão=1.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000|10e48|  ",
+        "> sedecilhão=1.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000|10e51|  ",
+        "> septendecilhão=1.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000|10e54|  ",
+        "> googol=dez duotrigintilhões|10e100|  ",
+        "> googolplexo=quanto dá isso?|10e googol|  ",
+        "> googolplexiano=por enquanto, o maior número com nome|10e googolplexo|  ",
+        "  ",
+        "[fonte dos dados](http://www.fisica-interessante.com/matematica-divertida-ordens-classes-multiplos.html)  ",
+        "___",
+        "Copyright © 1983-2022 Nando Lopes - **yPoemas @ máquina de fazer Poesia**  ",
+        "",
+        f"Total de variações: {acm_variatio:,} ({_tools_potencia_nome(acm_variatio)})".replace(",", "."),
+        "",
+    ])
+    _tools_write_text(about_index, "\n".join(linhas))
+    extra = f" Erros: {len(error_list)}." if error_list else ""
+    return f"Build_Indexy: {len(index_list)} tema(s). Saída: {about_index}.{extra} Runtime: {time.time() - start_time:.2f}s"
+
+
+def _tools_matrix_um_tema(tema, path):
+    try:
+        import numpy as np
+        import matplotlib.pyplot as plt
+    except Exception as exc:
+        raise RuntimeError(f"dependência ausente ou indisponível: {exc}")
+
+    tabela = tema.capitalize()  # comportamento histórico do Build_Matrix.
+    matrix_dir = _project_path("images", "matrix")
+    os.makedirs(matrix_dir, exist_ok=True)
+    curlin = "01"
+    linini = 1
+    itimos_acm = 0
+    x_pos = np.array([]); y_pos = np.array([]); z_pos = np.array([]); z_val = np.array([])
+
+    with open(path, encoding="utf-8") as file:
+        for line in file:
+            if line.startswith("|", 0, 1):
+                campos = line.split("|")
+                if len(campos) < 6:
+                    continue
+                newcol = int(campos[2])
+                if campos[1] != curlin:
+                    linini += 1
+                    curlin = campos[1]
+                if newcol == 0:
+                    x_pos = np.append(x_pos, linini); y_pos = np.append(y_pos, 0); z_pos = np.append(z_pos, 0); z_val = np.append(z_val, 0)
+                else:
+                    itimos = int(campos[5])
+                    itimos_acm += itimos
+                    x_pos = np.append(x_pos, linini - 1); y_pos = np.append(y_pos, newcol - 1); z_pos = np.append(z_pos, 0); z_val = np.append(z_val, itimos)
+
+    x_val = np.ones(len(x_pos)); y_val = np.ones(len(y_pos)); z_pos = np.ones(len(z_pos))
+    if len(x_val) > 0:
+        fg = plt.figure(figsize=(7, 7))
+        ax = fg.add_subplot(111, projection="3d")
+        ax.set_xlabel("x ➪ linhas", fontsize=14)
+        ax.set_ylabel("y ➪ versos", fontsize=14)
+        ax.set_zlabel("z ➪ ítimos", fontsize=14)
+        ax.view_init(elev=30, azim=-30)
+        ax.bar3d(x_pos, y_pos, z_pos, x_val, y_val, z_val, color="#00ccaa", alpha=0.85, edgecolor="k")
+        plt.savefig(os.path.join(matrix_dir, tabela + ".jpg"), dpi=50)
+        plt.close(fg)
+    return tabela, linini, itimos_acm
+
+
+def _tools_atualizar_linha_chave(path, chave, nova_linha):
+    linhas = []
+    if os.path.exists(path):
+        with open(path, encoding="utf-8") as file:
+            linhas = file.read().splitlines()
+    chave_norm = str(chave).casefold().strip()
+    nova_linha = str(nova_linha).strip()
+    saida = []
+    alterou = False
+    for linha in linhas:
+        parte = linha.partition(" : ")[0].strip().casefold()
+        if parte == chave_norm:
+            if not alterou:
+                saida.append(nova_linha)
+                alterou = True
+            continue
+        saida.append(linha)
+    if not alterou:
+        saida.append(nova_linha)
+    _tools_write_text(path, "\n".join(saida).rstrip() + "\n")
+
+
+def build_tools_matrix(tema_unico=None):
+    start_time = time.time()
+    temas = _tools_temas_ativos()
+    if tema_unico:
+        temas = [(tema, path) for tema, path in temas if tema == tema_unico]
+    lista_itimos = []
+    lista_versos = []
+    for tema, path in temas:
+        if not os.path.exists(path):
+            continue
+        tabela, versos, itimos = _tools_matrix_um_tema(tema, path)
+        lista_versos.append(f"{tabela} : {versos}")
+        lista_itimos.append(f"{tabela} : {itimos}")
+
+    base_dir = _project_path("base")
+    if tema_unico:
+        for linha in lista_itimos:
+            chave = linha.partition(" : ")[0]
+            _tools_atualizar_linha_chave(os.path.join(base_dir, "itimos.txt"), chave, linha)
+        for linha in lista_versos:
+            chave = linha.partition(" : ")[0]
+            _tools_atualizar_linha_chave(os.path.join(base_dir, "versos.txt"), chave, linha)
+    else:
+        _tools_write_text(os.path.join(base_dir, "itimos.txt"), "\n".join(lista_itimos).rstrip() + "\n")
+        _tools_write_text(os.path.join(base_dir, "versos.txt"), "\n".join(lista_versos).rstrip() + "\n")
+    modo = f"tema {tema_unico}" if tema_unico else "todos os temas"
+    return f"Build_Matrix: {modo}; {len(lista_itimos)} Matrix 3D gerada(s)/atualizada(s). Runtime: {time.time() - start_time:.2f}s"
+
+
+def build_tools_ficha_lexica():
+    start_time = time.time()
+    temas = _tools_temas_ativos()
+    total_itimos = 0
+    itimos_unicos = set()
+    total_verbetes = 0
+    verbetes_unicos = set()
+    for tema, path in temas:
+        if not os.path.exists(path):
+            continue
+        for campos in _tools_linhas_ypo(path):
+            for itimo in _tools_payload_itimos(campos):
+                total_itimos += 1
+                itimos_unicos.add(_tools_normaliza_unico(itimo))
+                palavras = _tools_palavras_de_itimo(itimo)
+                total_verbetes += len(palavras)
+                verbetes_unicos.update(palavras)
+    bloco = (
+        f"{BUILD_AMBIENTE_LEXICO}\n\n"
+        f"Total de Verbetes: {_tools_fmt_int(total_verbetes)}\n"
+        f"Total de Verbetes únicos: {_tools_fmt_int(len(verbetes_unicos))}\n\n"
+        f"Total de Ítimos: {_tools_fmt_int(total_itimos)}\n"
+        f"Total de Ítimos únicos: {_tools_fmt_int(len(itimos_unicos))}\n\n"
+        f"Total de Temas: {_tools_fmt_int(len(temas))}\n"
+    )
+    md_dir = _project_path("md_files")
+    index_path = os.path.join(md_dir, "INDEX.txt")
+    texto = ""
+    if os.path.exists(index_path):
+        with open(index_path, encoding="utf-8") as file:
+            texto = file.read()
+    pos = texto.find(BUILD_AMBIENTE_LEXICO)
+    if pos >= 0:
+        texto = texto[:pos].rstrip() + "\n\n" + bloco
+    else:
+        texto = (texto.rstrip() + "\n\n" + bloco) if texto.strip() else bloco
+    _tools_write_text(index_path, texto)
+    return f"Ficha Léxica atualizada em {index_path}. Runtime: {time.time() - start_time:.2f}s\n\n{bloco}"
+
+
+def _tools_imagem_tema(tema):
+    """Busca o grupo de imagem do tema em ./base/images.txt, sem depender de módulos externos."""
+    tema_norm = str(tema or "").strip().casefold()
+    images_path = _project_path("base", "images.txt")
+    if os.path.exists(images_path):
+        with open(images_path, encoding="utf-8") as file:
+            for raw in file:
+                linha = raw.strip()
+                if not linha:
+                    continue
+                nome, sep, resto = linha.partition(" : ")
+                if nome.strip().casefold() == tema_norm and sep:
+                    return resto.strip() or "Machina"
+    return "Machina"
+
+
+def _tools_info_tema(tema, path):
+    """Calcula a linha técnica de ./base/info.txt para um tema ativo.
+
+    Fonte única dos temas: ./base/ativos.txt.
+    Não importa build_info.py nem tools.py.
+    Não altera .YPO; apenas lê estrutura e escreve documentação derivada.
+    """
+    genero = "Machina"
+    imagem = _tools_imagem_tema(tema)
+    versos = 0
+    qtd_itimos = 0
+    verbetes_tema = set()
+
+    curlin = "star"
+    curlin = ""
+    for campos in _tools_linhas_ypo(path):
+        if len(campos) < 8:
+            continue
+
+        # campos: ['', linha, coluna, id/fonte, tipo, qtd, ..., ítimos..., '']
+        linha_id = campos[1].strip() if len(campos) > 1 else ""
+        if linha_id and linha_id != curlin:
+            versos += 1
+            curlin = linha_id
+
+        payload = _tools_payload_itimos(campos)
+        qtd_itimos += len(payload)
+        for itimo in payload:
+            verbetes_tema.update(_tools_palavras_de_itimo(itimo))
+
+    qtd_wordin = len(verbetes_tema)
+    qtd_lexico = len(verbetes_tema)
+    qtd_variatio = _tools_calcular_variacoes_tema(path)
+    qtd_cienti = f"{qtd_variatio:.2e}"
+
+    return (
+        f"|{tema}|{genero}|{imagem}|{versos}|{qtd_wordin}|"
+        f"{qtd_lexico}|{qtd_itimos}|{qtd_variatio}|{qtd_cienti}|"
+    )
+
+
+def _tools_dados_rodape_ypo(path):
+    """Calcula apenas o rodapé informativo do .YPO, sem alterar corpo poético."""
+    verbetes_no_texto = 0
+    total_itimos = 0
+
+    for campos in _tools_linhas_ypo(path):
+        if len(campos) < 8:
+            continue
+        verbetes_no_texto += 1
+        total_itimos += len(_tools_payload_itimos(campos))
+
+    total_verbetes = verbetes_no_texto + total_itimos
+    qtd_variacoes = _tools_calcular_variacoes_tema(path)
+    return {
+        "verbetes_no_texto": verbetes_no_texto,
+        "total_itimos": total_itimos,
+        "total_verbetes": total_verbetes,
+        "qtd_variacoes": qtd_variacoes,
+    }
+
+
+def _tools_linhas_rodape_ypo(path):
+    dados = _tools_dados_rodape_ypo(path)
+    variacoes = dados["qtd_variacoes"]
+    return [
+        f"Verbetes no Texto = {dados['verbetes_no_texto']}",
+        f"  Total de ítimos = {dados['total_itimos']}",
+        f"Total de verbetes = {dados['total_verbetes']}",
+        f"Qtd. de Variações = {_tools_fmt_int(variacoes)} ({_tools_potencia_nome(variacoes)})",
+    ]
+
+
+def _tools_atualizar_rodape_ypo_um_tema(tema, path):
+    """Atualiza só as 4 linhas informativas do rodapé; preserva Build_By_Lay_2_Ipo."""
+    novas = _tools_linhas_rodape_ypo(path)
+    chaves = {
+        "verbetes no texto",
+        "total de ítimos",
+        "total de itimos",
+        "total de verbetes",
+        "qtd. de variações",
+        "qtd. de variacoes",
+    }
+
+    def _eh_linha_rodape_info(linha):
+        chave = str(linha or "").strip().partition("=")[0].strip().casefold()
+        chave_ascii = unicodedata.normalize("NFKD", chave).encode("ascii", "ignore").decode("ascii")
+        return chave in chaves or chave_ascii in chaves
+
+    with open(path, encoding="utf-8") as file:
+        linhas = file.read().splitlines()
+
+    eof_idx = None
+    for idx, linha in enumerate(linhas):
+        if linha.strip().upper() == "<EOF>":
+            eof_idx = idx
+            break
+
+    build_idx = None
+    for idx, linha in enumerate(linhas):
+        if linha.strip().casefold().startswith("build_by_lay_2_ipo"):
+            build_idx = idx
+            break
+
+    if eof_idx is not None:
+        # <EOF> é o fim real do tema. Tudo que estiver depois dele é
+        # rodapé/documentação e pode ser remontado sem risco de tocar o corpo
+        # poético. Preserva apenas a linha histórica Build_By_Lay_2_Ipo.
+        build_line = linhas[build_idx] if build_idx is not None else None
+        saida = linhas[: eof_idx + 1]
+        while saida and saida[-1].strip() == "":
+            saida.pop()
+        saida.extend(novas)
+        if build_line:
+            saida.append(build_line)
+    elif build_idx is not None:
+        # Fallback para arquivos antigos sem <EOF>: mexe somente no bloco
+        # informativo imediatamente antes da linha histórica Build_By_Lay_2_Ipo.
+        fim_bloco = build_idx
+        while fim_bloco > 0 and linhas[fim_bloco - 1].strip() == "":
+            fim_bloco -= 1
+        ini = fim_bloco
+        while ini > 0 and _eh_linha_rodape_info(linhas[ini - 1]):
+            ini -= 1
+        saida = linhas[:ini] + novas + linhas[build_idx:]
+    else:
+        # Último fallback: sem <EOF> e sem Build_By, remove linhas
+        # informativas conhecidas e acrescenta o bloco no fim.
+        saida = [linha for linha in linhas if not _eh_linha_rodape_info(linha)]
+        while saida and saida[-1].strip() == "":
+            saida.pop()
+        saida.extend(novas)
+
+    novo_texto = "\n".join(saida).rstrip() + "\n"
+    texto_atual = "\n".join(linhas).rstrip() + "\n"
+    if novo_texto != texto_atual:
+        _tools_write_text(path, novo_texto)
+        return f"{tema}: atualizado"
+    return f"{tema}: sem alteração"
+
+def build_tools_atualizar_rodape_ypo(tema_unico=None):
+    """Atualiza rodapé informativo dos .YPO sob demanda, localmente."""
+    start_time = time.time()
+    temas = _tools_temas_ativos()
+    if tema_unico:
+        temas = [(tema, path) for tema, path in temas if tema == tema_unico]
+        if not temas:
+            return f"atualizar_rodape_ypo: tema não encontrado em ./base/ativos.txt: {tema_unico}"
+
+    resultados = []
+    erros = []
+    for tema, path in temas:
+        if not os.path.exists(path):
+            erros.append(f"{tema}: arquivo não encontrado ({path})")
+            continue
+        try:
+            resultados.append(_tools_atualizar_rodape_ypo_um_tema(tema, path))
+        except Exception as exc:
+            erros.append(f"{tema}: {exc}")
+
+    try:
+        st.cache_data.clear()
+    except Exception:
+        pass
+
+    alvo = f"tema {tema_unico}" if tema_unico else "todos os temas ativos"
+    msg = f"atualizar_rodape_ypo: {alvo}; {len(resultados)} tema(s). Runtime: {time.time() - start_time:.2f}s"
+    if resultados:
+        msg += "\n" + "\n".join(resultados)
+    if erros:
+        msg += "\nErros:\n" + "\n".join(erros)
+    return msg
+
+
+def build_tools_info():
+    """Atualiza ./base/info.txt pela Central local, lendo diretamente ./base/ativos.txt."""
+    start_time = time.time()
+    linhas = []
+    erros = []
+
+    for tema, path in _tools_temas_ativos():
+        if not os.path.exists(path):
+            erros.append(f"{tema}: arquivo não encontrado ({path})")
+            continue
+        try:
+            linhas.append(_tools_info_tema(tema, path))
+        except Exception as exc:
+            erros.append(f"{tema}: {exc}")
+
+    info_path = _project_path("base", "info.txt")
+    _tools_write_text(info_path, "\n".join(linhas).rstrip() + "\n")
+
+    msg = f"Build_Info: {len(linhas)} tema(s) em ./base/info.txt. Runtime: {time.time() - start_time:.2f}s"
+    if erros:
+        msg += "\nErros:\n" + "\n".join(erros)
+    return msg
+
+
+def build_tools_update(tema):
+    """Atualiza derivados de tema já existente."""
+    tema = str(tema or "").strip()
+    temas = dict(_tools_temas_ativos())
+    if tema not in temas:
+        return "Build_update: tema não encontrado em ./base/ativos.txt."
+    if not os.path.exists(temas[tema]):
+        return f"Build_update: arquivo do tema não encontrado: {temas[tema]}"
+    resultados = [
+        build_tools_lexico(),
+        build_tools_matrix(tema),
+        build_tools_atualizar_rodape_ypo(tema),
+        build_tools_indexy(),
+        build_tools_ficha_lexica(),
+        build_tools_info(),
+    ]
+    try:
+        st.cache_data.clear()
+    except Exception:
+        pass
+    return "\n\n".join(resultados)
+
+
+def build_tools_novo_tema(tema):
+    """Cadastro técnico de novo tema já criado pelo autor em ./data."""
+    tema = str(tema or "").strip()
+    if not tema:
+        return "Build_Novo_Tema: informe o nome do tema."
+    if any(sep in tema for sep in ("/", "\\", ":", "*", "?", '"', "<", ">", "|")):
+        return "Build_Novo_Tema: nome de tema contém caractere inválido para arquivo."
+    ypo_path = _tools_resolve_ypo_path(tema)
+    if not os.path.exists(ypo_path):
+        return f"Build_Novo_Tema: crie antes o arquivo autoral em ./data/{tema}.YPO ou ./data/{tema}.ypo. Nada foi cadastrado."
+
+    alteracoes = []
+    if _tools_add_unique_line(_project_path("base", "ativos.txt"), f"{tema} : Machina", tema):
+        alteracoes.append("base/ativos.txt")
+    if _tools_add_unique_line(_project_path("base", "images.txt"), f"{tema} : machina", tema):
+        alteracoes.append("base/images.txt")
+    if _tools_add_unique_line(_project_path("temp", "readings.txt"), f"|{tema}|0|", tema):
+        alteracoes.append("temp/readings.txt")
+    if _tools_add_unique_line(_project_path("base", "rol_todos os temas.txt"), tema, tema):
+        alteracoes.append("base/rol_todos os temas.txt")
+
+    resultados = [
+        "Build_Novo_Tema: cadastro técnico verificado.",
+        "Arquivos cadastrais alterados: " + (", ".join(alteracoes) if alteracoes else "nenhum; tema já estava cadastrado"),
+        build_tools_update(tema),
+    ]
+    return "\n\n".join(resultados)
+
+
+def _tools_remove_linhas_por_tema(path, tema):
+    """Remove linhas cadastrais/derivadas relacionadas a um tema. Retorna qtd removida."""
+    tema_norm = str(tema or "").strip().casefold()
+    if not tema_norm or not os.path.exists(path):
+        return 0
+
+    with open(path, encoding="utf-8") as file:
+        linhas = file.read().splitlines()
+
+    saida = []
+    removidas = 0
+    for raw in linhas:
+        raw_strip = raw.strip()
+        chave = raw_strip.partition(" : ")[0].strip().casefold()
+
+        if raw_strip.startswith("|"):
+            campos = raw_strip.split("|")
+            if len(campos) > 1:
+                chave = campos[1].strip().casefold()
+
+        remove = False
+        if chave == tema_norm:
+            remove = True
+        elif raw_strip.casefold() == tema_norm:
+            remove = True
+
+        if remove:
+            removidas += 1
+        else:
+            saida.append(raw)
+
+    if removidas:
+        _tools_write_text(path, "\n".join(saida).rstrip() + ("\n" if saida else ""))
+    return removidas
+
+
+def _tools_remover_arquivo(path):
+    """Remove arquivo se existir. Retorna True/False."""
+    if path and os.path.exists(path) and os.path.isfile(path):
+        os.remove(path)
+        return True
+    return False
+
+
+def build_tools_remove_tema(tema):
+    """Remove tecnicamente um tema do ambiente local e atualiza derivados."""
+    tema = str(tema or "").strip()
+    if not tema:
+        return "remove_tema: escolha um tema."
+
+    ypo_path = _tools_resolve_ypo_path(tema)
+    removidos = []
+
+    # Listas cadastrais e derivadas simples.
+    arquivos_lista = [
+        _project_path("base", "ativos.txt"),
+        _project_path("base", "images.txt"),
+        _project_path("temp", "readings.txt"),
+        _project_path("base", "itimos.txt"),
+        _project_path("base", "versos.txt"),
+    ]
+
+    base_dir = _project_path("base")
+    if os.path.isdir(base_dir):
+        for name in sorted(os.listdir(base_dir)):
+            if name.lower().startswith("rol_") and name.lower().endswith(".txt"):
+                arquivos_lista.append(os.path.join(base_dir, name))
+
+    vistos = set()
+    for path in arquivos_lista:
+        if path in vistos:
+            continue
+        vistos.add(path)
+        qtd = _tools_remove_linhas_por_tema(path, tema)
+        if qtd:
+            removidos.append(f"{os.path.relpath(path, _project_path())}: {qtd} linha(s)")
+
+    # Imagem Matrix derivada do tema, se existir.
+    matrix_dir = _project_path("images", "matrix")
+    matrix_candidates = {
+        os.path.join(matrix_dir, tema + ".jpg"),
+        os.path.join(matrix_dir, tema.capitalize() + ".jpg"),
+        os.path.join(matrix_dir, tema + ".JPG"),
+        os.path.join(matrix_dir, tema.capitalize() + ".JPG"),
+    }
+    for candidate in sorted(matrix_candidates):
+        if _tools_remover_arquivo(candidate):
+            removidos.append(f"{os.path.relpath(candidate, _project_path())}: removido")
+
+    # Arquivo autoral do tema. remove_tema é ação explícita do usuário.
+    ypo_removido = False
+    for candidate in [ypo_path, _project_path("data", tema + ".ypo"), _project_path("data", tema + ".YPO")]:
+        if _tools_remover_arquivo(candidate):
+            removidos.append(f"{os.path.relpath(candidate, _project_path())}: removido")
+            ypo_removido = True
+
+    resultados = [
+        f"remove_tema: {tema}",
+        "Alterações: " + ("\n" + "\n".join(removidos) if removidos else "nenhuma ocorrência encontrada"),
+    ]
+
+    # Recria derivados que dependem do conjunto ativo restante.
+    resultados.extend([
+        build_tools_lexico(),
+        build_tools_indexy(),
+        build_tools_ficha_lexica(),
+        build_tools_info(),
+    ])
+
+    try:
+        st.cache_data.clear()
+    except Exception:
+        pass
+
+    if not ypo_removido:
+        resultados.insert(2, "Arquivo .YPO/.ypo não encontrado em ./data; listas/derivados foram tratados mesmo assim.")
+
+    return "\n\n".join(resultados)
+
+
+def build_tools_off_lex():
+    start_time = time.time()
+    off_dir = _project_path("off_machina")
+    if not os.path.isdir(off_dir):
+        return "Build_Off_Lex: pasta ./off_machina não encontrada."
+    list_lexico = []
+    list_verbet = []
+    for name in sorted(os.listdir(off_dir)):
+        if not name.lower().endswith(".pip"):
+            continue
+        script = os.path.join(off_dir, name)
+        with open(script, encoding="utf-8") as file:
+            for line in file:
+                if not line.startswith("|"):
+                    continue
+                alinhas = line.split("|")
+                if len(alinhas) < 3:
+                    continue
+                fonte = alinhas[1]
+                if "Dados de Catalogação" in fonte or "copyrights" in fonte:
+                    continue
+                for itimo in alinhas[2:len(alinhas)-1]:
+                    for word in itimo.split(" "):
+                        if "-" not in word:
+                            for c in string.punctuation:
+                                word = word.replace(c, "")
+                        word = word.strip().lower()
+                        if len(word) >= 3:
+                            if word not in list_verbet:
+                                list_verbet.append(word)
+                            chave = word + "|" + fonte
+                            if chave not in list_lexico:
+                                list_lexico.append(chave)
+    _tools_write_text(os.path.join(off_dir, "off_lexico.txt"), "".join("|" + line + "|\n" for line in list_lexico))
+    _tools_write_text(os.path.join(off_dir, "off_verbet.txt"), "".join(line + "\n" for line in list_verbet))
+    return f"Build_Off_Lex: {len(list_lexico)} ocorrência(s); {len(list_verbet)} verbete(s). Runtime: {time.time() - start_time:.2f}s"
+
+
+def build_tools_all():
+    resultados = [
+        build_tools_lexico(),
+        build_tools_matrix(),
+        build_tools_indexy(),
+        build_tools_ficha_lexica(),
+        build_tools_info(),
+    ]
+    try:
+        st.cache_data.clear()
+    except Exception:
+        pass
+    return "\n\n".join(resultados)
+
+
+def _tools_run_button(label, func, *args):
+    if st.button(label, use_container_width=True):
+        with st.spinner(label + "..."):
+            try:
+                resultado = func(*args)
+                st.success(label + " concluído.")
+                st.text(resultado)
+            except Exception as exc:
+                st.error(f"{label} falhou: {exc}")
+
+
+def _tools_help_text():
+    return """help_? — Tools locais da Machina
+
+novo_tema
+  Cadastra tecnicamente um tema novo que já existe em ./data como .YPO/.ypo.
+  Atualiza arquivos cadastrais necessários e depois roda update_tema.
+
+remove_tema
+  Remove tecnicamente um tema do ambiente local. A lista de remoção vem dos
+  yPoemas/rol_*.txt, ativos e ./data para capturar listas desencontradas.
+  Remove listas cadastrais, rol_*.txt, arquivo .YPO/.ypo e Matrix derivada,
+  depois atualiza os derivados.
+
+update_tema
+  Atualiza derivados de um tema já existente em ./base/ativos.txt.
+  Roda léxico, matrix do tema, rodapé informativo do .ypo, indexy, ficha_lexico e info.
+
+atualizar_rodape_ypo
+  Atualiza sob demanda as 4 linhas informativas do rodapé dos .ypo.
+  Mantém a linha Build_By_Lay_2_Ipo como está.
+
+build_indexy
+  Atualiza ./md_files/ABOUT_index.MD com as variações combinatórias por tema.
+
+build_lexico
+  Regera ./base/lexico_pt.txt e ./base/verbetes.txt a partir dos temas ativos.
+
+build_off-lex
+  Regera ./off_machina/off_lexico.txt e ./off_machina/off_verbet.txt.
+  Base futura da eureka_off_machina.
+
+build_matrix
+  Gera as imagens Matrix 3D XYZ e atualiza ./base/itimos.txt e ./base/versos.txt.
+  Requer numpy + matplotlib no ambiente local.
+
+build_info
+  Atualiza ./base/info.txt pela própria Central local, lendo diretamente ./base/ativos.txt.
+
+build_all
+  Reconstrução geral dos derivados principais: léxico, matrix, indexy, ficha_lexico e info.
+
+ficha_lexico
+  Atualiza o bloco final “Ambiente Léxico da Machina” em ./md_files/INDEX.txt.
+
+chk_utf-8
+  Verifica ./base/ativos.txt e todos os temas ativos em UTF-8 estrito.
+  Não converte nem altera arquivos.
+"""
+
+
+def page_local_tools():
+    st.subheader("ypo_seguro_tools")
+    st.caption("LOCAL. Lista funcional simples. Lê temas; não altera poesia.")
+
+    tools_items = [
+        "novo_tema",
+        "remove_tema",
+        "update_tema",
+        "atualizar_rodape_ypo",
+        "---",
+        "build_indexy",
+        "build_lexico",
+        "build_off-lex",
+        "build_matrix",
+        "build_info",
+        "build_all",
+        "---",
+        "ficha_lexico",
+        "chk_utf-8",
+        "---",
+        "help_?",
+    ]
+
+    try:
+        temas_local = [tema for tema, path in _tools_temas_ativos()]
+    except Exception:
+        temas_local = []
+
+    try:
+        temas_remocao = _tools_temas_para_remover()
+    except Exception:
+        temas_remocao = temas_local
+
+    escolha = st.selectbox(
+        "tools",
+        tools_items,
+        index=tools_items.index("help_?"),
+        key="tools_lista_funcional",
+    )
+
+    if escolha == "---":
+        st.info("separador")
+        return
+
+    tema_update = None
+    tema_remove = None
+    tema_rodape = None
+    novo_tema = ""
+
+    if escolha == "update_tema":
+        if temas_local:
+            tema_update = st.selectbox(
+                "tema",
+                temas_local,
+                key="tools_lista_update_tema",
+            )
+        else:
+            st.warning("Nenhum tema encontrado em ./base/ativos.txt.")
+            return
+
+    elif escolha == "remove_tema":
+        if temas_remocao:
+            tema_remove = st.selectbox(
+                "tema",
+                temas_remocao,
+                key="tools_lista_remove_tema",
+            )
+        else:
+            st.warning("Nenhum tema encontrado nas listas dos yPoemas ou em ./data.")
+            return
+
+    elif escolha == "atualizar_rodape_ypo":
+        opcoes_rodape = ["todos os temas"] + temas_local
+        tema_rodape = st.selectbox(
+            "tema",
+            opcoes_rodape,
+            key="tools_lista_rodape_ypo",
+        )
+        if tema_rodape == "todos os temas":
+            tema_rodape = None
+
+    elif escolha == "novo_tema":
+        novo_tema = st.text_input(
+            "novo tema já existente em ./data",
+            key="tools_lista_novo_tema",
+        )
+
+    if escolha == "help_?":
+        st.text(_tools_help_text())
+        return
+
+    mapa = {
+        "novo_tema": (build_tools_novo_tema, (novo_tema,)),
+        "remove_tema": (build_tools_remove_tema, (tema_remove,)),
+        "update_tema": (build_tools_update, (tema_update,)),
+        "atualizar_rodape_ypo": (build_tools_atualizar_rodape_ypo, (tema_rodape,)),
+        "build_indexy": (build_tools_indexy, ()),
+        "build_lexico": (build_tools_lexico, ()),
+        "build_off-lex": (build_tools_off_lex, ()),
+        "build_matrix": (build_tools_matrix, ()),
+        "build_info": (build_tools_info, ()),
+        "build_all": (build_tools_all, ()),
+        "ficha_lexico": (build_tools_ficha_lexica, ()),
+        "chk_utf-8": (build_tools_utf8_temas, ()),
+    }
+
+    func, args = mapa[escolha]
+    if st.button(escolha, use_container_width=True):
+        with st.spinner(escolha + "..."):
+            try:
+                resultado = func(*args)
+                st.success(escolha + " concluído.")
+                st.text(resultado)
+            except Exception as exc:
+                st.error(f"{escolha} falhou: {exc}")
 
 
 ### eof: pages
@@ -2504,15 +3965,6 @@ CIA_MOOD_OPTIONS = [
     "Completa",
     "Index",
 ]
-                    # Sem rerun manual: o clique do Streamlit já atualiza a página uma vez.
-                    # Forçar st.rerun() aqui duplicava/triplicava recarregamentos.
-
-
-
-
-
-
-
 def render_sidebar_for_page(chosen_id):
     """Renderiza os controles fixos do leitor."""
     pick_lang()
@@ -2520,64 +3972,70 @@ def render_sidebar_for_page(chosen_id):
     draw_check_buttons()
 
 
-configure_cia(
-    translate_func=translate,
-    load_typo_func=load_typo,
-    write_ypoema_func=write_cia_header,
-    ip_address=IPAddres,
-    current_book_func=_current_book,
-    say_number_func=say_number,
-    render_sidebar_for_page_func=render_sidebar_for_page,
-)
+def _set_machina_page(page_label, page_id):
+    """Fixa a página ativa em estado explícito.
+
+    Evita que cliques internos de uma página, especialmente a navegação
+    da Off-Machina, caiam de volta no foco inicial yPoemas.
+    """
+    st.session_state["machina_page_select"] = page_label
+    st.session_state["machina_page_id"] = str(page_id)
+
+
+def _sync_machina_page_state(page_labels, page_ids):
+    """Mantém label e id coerentes sem resetar indevidamente para yPoemas."""
+    ids_to_labels = {str(page_id): label for label, page_id in page_ids.items()}
+
+    saved_id = str(st.session_state.get("machina_page_id", "")).strip()
+    saved_label = st.session_state.get("machina_page_select", "")
+
+    if saved_id in ids_to_labels:
+        _set_machina_page(ids_to_labels[saved_id], saved_id)
+        return
+
+    if saved_label in page_labels:
+        _set_machina_page(saved_label, page_ids[saved_label])
+        return
+
+    _set_machina_page("yPoemas", page_ids["yPoemas"])
+
 
 def main():
     gramado = open_gramado()
 
     with gramado:
-        _pag_esq, _pag_centro, _pag_dir = st.columns([0.15, 9.7, 0.15])
+        page_labels = ["mini", "yPoemas", "eureka", "off-Machina", "About"]
+        page_ids = {
+            "mini": "1",
+            "yPoemas": "2",
+            "eureka": "3",
+            "off-Machina": "4",
+            "About": "5",
+        }
 
-        with _pag_centro:
-            chosen_id = stx.tab_bar(
-                data=[
-                    stx.TabBarItemData(id=1, title="mini", description=""),
-                    stx.TabBarItemData(id=2, title="yPoemas", description=""),
-                    stx.TabBarItemData(id=3, title="eureka", description=""),
-                    stx.TabBarItemData(id=4, title="off-Machina", description=""),
-                    stx.TabBarItemData(id=5, title="about", description=""),
-                ],
-                default=2,
-            )
+        _sync_machina_page_state(page_labels, page_ids)
 
-        chosen_id = str(chosen_id)
+        page_cols = st.columns(len(page_labels))
+        for page_label, page_col in zip(page_labels, page_cols):
+            with page_col:
+                if st.button(
+                    page_label,
+                    key=f"machina_page_btn_{page_label}",
+                    use_container_width=True,
+                    type="primary" if page_label == st.session_state["machina_page_select"] else "secondary",
+                ):
+                    _set_machina_page(page_label, page_ids[page_label])
+                    try:
+                        st.rerun()
+                    except AttributeError:
+                        st.experimental_rerun()
 
-        st.markdown("<div class='machina-divider-palco'><hr /></div>", unsafe_allow_html=True)
+        chosen_label = st.session_state["machina_page_select"]
+        chosen_id = st.session_state.get("machina_page_id", page_ids.get(chosen_label, "2"))
 
-        magy = PAGE_IMAGES.get(chosen_id, "img_ypoemas.jpg")
-        apply_sidebar_mae_filha_styles(chosen_id)
+        st.divider()
 
-        if _cia_sidebar_filha_active(chosen_id):
-            render_sidebar_filha()
-        else:
-            render_sidebar_for_page(chosen_id)
-
-            if chosen_id == "2":
-                draw_sidebar_panel_buttons(chosen_id)
-
-                if st.session_state.get("sidebar_panel", "Machina") == "CIA":
-                    st.session_state["cia_reading_mode"] = False
-                    render_cia_mood_selectbox()
-                else:
-                    st.session_state["cia_reading_mode"] = False
-                    st.session_state["cia_mood_select"] = st.session_state.get("cia_mood", "Sintática")
-
-            with st.sidebar:
-                cia_sidebar_publica = (
-                    chosen_id == "2"
-                    and st.session_state.get("sidebar_panel", "Machina") == "CIA"
-                )
-                if not cia_sidebar_publica:
-                    st.image("./images/" + magy)
-
+        render_sidebar_for_page(chosen_id)
 
         palco = st.container()
         with palco:
@@ -2585,11 +4043,10 @@ def main():
 
             with palco_container:
                 if chosen_id == "1":
-                    magy = "img_mini.jpg"
                     page_mini()
-                    status = f"🌿  {st.session_state.lang} - {st.session_state.tema} ( {st.session_state.mini + 1} / {len(load_temas("todos os temas"))} )"
+                    status = f"🌿  {st.session_state.lang} - {st.session_state.tema} ( {st.session_state.mini + 1} / {len(load_temas('todos os temas'))} )"
+
                 elif chosen_id == "2":
-                    magy = "img_ypoemas.jpg"
                     page_ypoemas()
                     current_book = _current_book()
                     status = palco_status(
@@ -2598,19 +4055,15 @@ def main():
                         len(load_temas(current_book)),
                     )
                 elif chosen_id == "3":
-                    magy = "img_eureka.jpg"
                     page_eureka()
                     status = palco_status("eureka")
                 elif chosen_id == "4":
-                    magy = "img_off-machina.jpg"
                     page_off_machina()
                     status = palco_status("off-machina")
                 elif chosen_id == "5":
-                    magy = "img_about.jpg"
                     page_abouts()
-                    status = palco_status("about")
+                    status = palco_status("About")
                 else:
-                    magy = "img_ypoemas.jpg"
                     page_ypoemas()
                     current_book = _current_book()
                     status = palco_status(
@@ -2619,10 +4072,7 @@ def main():
                         len(load_temas(current_book)),
                     )
 
-                st.markdown(
-                    f"<div class='machina-rodape-palco'>{status}</div>",
-                    unsafe_allow_html=True,
-                )
+                render_sidebar_context_image(chosen_id)
 
 
 if __name__ == "__main__":
