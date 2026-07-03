@@ -9,8 +9,8 @@ import asyncio
 import streamlit as st
 import streamlit.components.v1 as components
 
-APP_BUILD = "2026-06-28_ajuste_sidebar_player_cabecalho"
-APP_BUILD_NOTES = "Sidebar ajustada; capas Off-Machina; player de voz logo abaixo dos nav_buttons; palco mais largo."
+APP_BUILD = "2026-06-26_subir_botao_copiar_5px"
+APP_BUILD_NOTES = "Off-Machina final + botão copiar menos é mais com ajuste vertical de 5px."
 from extra_streamlit_components import TabBar as stx
 
 from lay_2_ypo import gera_poema
@@ -20,6 +20,22 @@ from readings import (
     update_visy,
 )
 
+
+from controle_cia import (
+    configure_cia,
+    draw_sidebar_panel_buttons,
+    render_cia_stage,
+    guia_do_leitor_cia,
+    limpar_cia_palco,
+    _cia_objeto_analise_existe,
+    _cia_fixar_objeto_analise,
+    _cia_restaurar_identidade_objeto,
+    _restore_cia_freeze_before_sync,
+    render_cia_mood_selectbox,
+    _cia_sidebar_filha_active,
+    apply_sidebar_mae_filha_styles,
+    render_sidebar_filha,
+)
 
 
 ABOUTS_LIST = [
@@ -347,47 +363,11 @@ def apply_styles():
 
         /* Sidebar :: respiro vertical entre controles */
         [data-testid="stSidebar"] div[data-testid="stVerticalBlock"] {
-            gap: 0.28rem !important;
+            gap: 0.50rem !important;
         }
 
         [data-testid="stSidebar"] div[data-testid="stElementContainer"] {
-            margin-bottom: 0.02rem !important;
-        }
-
-        /* Sidebar :: módulo visual unificado — idioma e imagem com mesma largura */
-        [data-testid="stSidebar"] div[data-testid="stSelectbox"] {
-            max-width: 240px !important;
-            margin-left: auto !important;
-            margin-right: auto !important;
-        }
-
-        .machina-sidebar-image-frame {
-            width: 240px !important;
-            height: 360px !important;
-            max-width: 100% !important;
-            margin: 0.18rem auto 0 auto !important;
-            padding: 0 !important;
-            overflow: hidden !important;
-            border-radius: 8px !important;
-            background: transparent !important;
-            line-height: 0 !important;
-            box-sizing: border-box !important;
-        }
-
-        .machina-sidebar-image-frame img {
-            display: block !important;
-            width: 100% !important;
-            height: 100% !important;
-            object-fit: cover !important;
-            object-position: center center !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            border: 0 !important;
-        }
-
-        .machina-voz-slot {
-            margin: 0.10rem auto 0.08rem auto !important;
-            max-width: min(680px, 96%) !important;
+            margin-bottom: 0.12rem !important;
         }
 
 
@@ -607,68 +587,6 @@ def apply_styles():
             text-align: center;
             margin-top: 0.35rem;
             padding-bottom: 0.1rem;
-        }
-
-        /* Celular :: leitura antes de painel */
-        @media (max-width: 700px) {
-            .main .block-container,
-            section.main > div.block-container {
-                padding-left: 0.18rem !important;
-                padding-right: 0.18rem !important;
-                max-width: 100vw !important;
-            }
-
-            .machina-gramado {
-                border-radius: 12px !important;
-                padding-left: 0.08rem !important;
-                padding-right: 0.08rem !important;
-                overflow-x: hidden !important;
-            }
-
-            .machina-palco-central {
-                border-radius: 12px !important;
-                padding-left: 0.04rem !important;
-                padding-right: 0.04rem !important;
-                overflow-x: hidden !important;
-            }
-
-            .container {
-                display: flex !important;
-                flex-direction: column !important;
-                align-items: center !important;
-                gap: 0.35rem !important;
-            }
-
-            .logo-img {
-                float: none !important;
-                display: block !important;
-                max-width: 92vw !important;
-                width: auto !important;
-                height: auto !important;
-                margin: 0.10rem auto 0.35rem auto !important;
-                padding: 0 !important;
-            }
-
-            .logo-text,
-            .machina-ypoema-text {
-                width: 100% !important;
-                max-width: 94vw !important;
-                padding-left: 0.20rem !important;
-                padding-right: 0.20rem !important;
-                margin-left: auto !important;
-                margin-right: auto !important;
-                box-sizing: border-box !important;
-                line-height: 1.34 !important;
-            }
-
-            .machina-ypoema-solo .machina-ypoema-text {
-                max-width: 94vw !important;
-            }
-
-            .machina-palco-titulo {
-                margin-top: 0.08rem !important;
-                margin-bottom: 0.42rem !important;
-            }
         }
 </style>
         """,
@@ -956,6 +874,8 @@ def _on_palco_book_change():
     if choice != current_book:
         st.session_state.book = choice
         st.session_state.take = 0
+        st.session_state["cia_last_action"] = "book_change"
+        limpar_cia_palco()
         limpar_copias_palco()
         st.session_state["cia_force_new_poema"] = True
     _sync_book_theme_state()
@@ -977,6 +897,8 @@ def _on_palco_theme_change():
     st.session_state.take = take
     st.session_state.tema = temas_list[take]
     if take != old_take:
+        st.session_state["cia_last_action"] = "theme_change"
+        limpar_cia_palco()
         limpar_copias_palco()
         st.session_state["cia_force_new_poema"] = True
 
@@ -1035,7 +957,7 @@ def pick_stage_font():
     if current_size not in corpos:
         current_size = 21
 
-    font_pad_left, col_font, col_corpo, font_pad_right = st.sidebar.columns([0.46, 1.48, 0.62, 0.44])
+    col_font, col_corpo = st.sidebar.columns([2.1, 0.9])
 
     with col_font:
         choice = st.selectbox(
@@ -1071,8 +993,29 @@ def load_help(idiom):
 
 
 def draw_check_buttons():
-    """Voz saiu da sidebar: agora é ação ♫ nos botões do palco."""
-    return
+    help_tips = load_help(st.session_state.lang)
+    help_draw = help_tips[5]
+    help_talk = help_tips[6]
+
+    col_arte, col_voz = st.sidebar.columns([1, 1])
+
+    with col_arte:
+        if st.button(
+            translate("arte"),
+            key="ctrl_arte",
+            help=help_draw,
+            use_container_width=True,
+        ):
+            st.session_state.draw = not st.session_state.draw
+
+    with col_voz:
+        if st.button(
+            translate("voz"),
+            key="ctrl_voz",
+            help=help_talk,
+            use_container_width=True,
+        ):
+            st.session_state.talk = not st.session_state.talk
 
 
 def get_binary_file_downloader_html(bin_file, file_label="File"):
@@ -1548,111 +1491,6 @@ def load_arts(nome_tema):  # Select image for arts
     return logo
 
 
-def _set_sidebar_context_image_for_theme(nome_tema):
-    """Define a imagem Machina contextual do tema atual para a sidebar.
-
-    A curadoria existente continua valendo: tema == grupo de imagens.
-    O destino visual muda: a imagem acompanha na sidebar, não no palco.
-    """
-    logo = load_arts(nome_tema)
-    st.session_state["sidebar_context_image"] = logo or ""
-    return logo or ""
-
-
-def _resolve_off_machina_book_image(book_name):
-    """Localiza imagem contextual do livro Off-Machina, sem imagem decorativa de página."""
-    book_name = str(book_name or "").strip()
-    if not book_name:
-        return ""
-
-    candidates = [
-        os.path.join("./off-machina", "capa_" + book_name + ".jpg"),
-        os.path.join("./off_machina", "capa_" + book_name + ".jpg"),
-        os.path.join("./off-machina", book_name + ".jpg"),
-        os.path.join("./off_machina", book_name + ".jpg"),
-        os.path.join("./images/off_machina", "capa_" + book_name + ".jpg"),
-        os.path.join("./images/off-machina", "capa_" + book_name + ".jpg"),
-        os.path.join("./images/off_machina", book_name + ".jpg"),
-        os.path.join("./images/off-machina", book_name + ".jpg"),
-        os.path.join("./images/off", book_name + ".jpg"),
-        os.path.join("./images/livros", book_name + ".jpg"),
-        os.path.join("./images/books", book_name + ".jpg"),
-        os.path.join("./images", book_name + ".jpg"),
-    ]
-
-    for candidate in candidates:
-        if os.path.exists(candidate):
-            return candidate
-
-    return ""
-
-
-def _set_about_author_image_once():
-    """Escolhe 1 autor por sessão para homenagear a página About."""
-    if st.session_state.get("about_author_image", ""):
-        return st.session_state["about_author_image"]
-
-    author_dir = "./images/author"
-    author_images = []
-    if os.path.isdir(author_dir):
-        for file in sorted(os.listdir(author_dir)):
-            low = file.lower()
-            if low.endswith((".jpg", ".jpeg", ".png", ".webp")):
-                author_images.append(os.path.join(author_dir, file))
-
-    chosen = random.choice(author_images) if author_images else ""
-    st.session_state["about_author_image"] = chosen
-    return chosen
-
-
-def render_sidebar_image_fit(image_path):
-    """Renderiza imagem contextual da sidebar em quadro fixo 240x360, sem faixa branca."""
-    if not image_path or not os.path.exists(image_path):
-        return
-
-    with open(image_path, "rb") as img_file:
-        img_b64 = base64.b64encode(img_file.read()).decode()
-
-    ext = os.path.splitext(image_path)[1].lower().replace(".", "")
-    mime = "jpeg" if ext in {"jpg", "jpeg"} else ext or "jpeg"
-
-    with st.sidebar:
-        st.markdown(
-            f"""
-            <div class="machina-sidebar-image-frame">
-                <img src="data:image/{mime};base64,{img_b64}" />
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-
-def render_sidebar_context_image(chosen_id):
-    """Renderiza a imagem contextual adequada na sidebar.
-
-    - páginas que geram yPoemas: imagem Machina do tema em foco;
-    - Off-Machina: imagem do livro em foco;
-    - About: 1 autor homenageado por sessão.
-    """
-    image_path = ""
-
-    if str(chosen_id) in {"1", "2", "3"}:
-        image_path = st.session_state.get("sidebar_context_image", "")
-    elif str(chosen_id) == "4":
-        try:
-            off_books_list = load_all_offs()
-            off_idx = int(st.session_state.get("off_book", 0))
-            if off_books_list and 0 <= off_idx < len(off_books_list):
-                image_path = _resolve_off_machina_book_image(off_books_list[off_idx])
-        except Exception:
-            image_path = ""
-    elif str(chosen_id) == "5":
-        image_path = _set_about_author_image_once()
-
-    if image_path and os.path.exists(image_path):
-        render_sidebar_image_fit(image_path)
-
-
 ### eof: loaders
 ### bof: functions
 
@@ -1701,12 +1539,12 @@ def _corpo_palco_leitor():
 
 
 def _corpo_palco_cia():
-    """Corpo protegido para palcos auxiliares legados."""
+    """Corpo protegido pela Machina quando yPoema e CIA dividem o palco."""
     return int(st.session_state.get("cia_palco_size", st.session_state.get("cia_size", 18)))
 
 
 def write_ypoema_cia_palco(LOGO_TEXTO, LOGO_IMAGE=None):
-    """Renderiza o yPoema em palco auxiliar legado."""
+    """Renderiza o yPoema no palco da CIA: mesma fonte, corpo protegido."""
     LOGO_TEXTO = _palco_titulo_centralizado(LOGO_TEXTO)
     stage_font = _fonte_palco_leitor()
     palco_size = _corpo_palco_cia()
@@ -1764,7 +1602,7 @@ def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
         )
 
 def write_cia_header(LOGO_TEXTO, LOGO_IMAGE=None):
-    """Renderiza cabeçalho auxiliar legado em duas linhas."""
+    """Renderiza o cabeçalho da CIA em duas linhas: descritivo + mood."""
     if LOGO_IMAGE is not None:
         write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
         return
@@ -1814,14 +1652,6 @@ def talk(text):
     except Exception as e:
         st.error(f"Erro na voz neural: {e}")
 
-
-def render_voz_slot():
-    """Reserva a linha do player de voz logo abaixo dos nav_buttons."""
-    st.markdown("<div class='machina-voz-slot'>", unsafe_allow_html=True)
-    slot = st.empty()
-    st.markdown("</div>", unsafe_allow_html=True)
-    return slot
-
 def say_number(tema):  # search index title for eureka
     analise = "nonono"
     indexes = load_index()
@@ -1865,23 +1695,16 @@ def page_mini():
     if st.session_state.mini >= maxy_mini:  # just in case
         st.session_state.mini = 0
 
-    foo1, more, rand, auto, voz_col, foo2 = st.columns([3.1, 1, 1, 1.9, 1, 3.1])
+    foo1, more, rand, auto, foo2 = st.columns([3.55, 1, 1, 1.9, 3.55])
 
     help_tips = load_help(st.session_state.lang)
     help_rand = help_tips[1]
     help_more = help_tips[4]
-    help_talk = help_tips[6]
     rand = rand.button("✻", help=help_rand)
 
     with auto:
         if st.button("auto", key="mini_auto_button", help="modo automático", use_container_width=True):
             st.session_state.auto = not st.session_state.auto
-
-    with voz_col:
-        if st.button("♫", key="mini_voz_btn", help=help_talk, use_container_width=True):
-            st.session_state.talk = not st.session_state.talk
-
-    mini_voz_slot = render_voz_slot()
 
     if st.session_state.auto:
         st.session_state.talk = False
@@ -1924,7 +1747,10 @@ def page_mini():
 
         update_readings(st.session_state.tema)
         LOGO_TEXTO = curr_ypoema
-        _set_sidebar_context_image_for_theme(st.session_state.tema)
+        LOGO_IMAGE = None
+
+        if st.session_state.draw:
+            LOGO_IMAGE = load_arts(st.session_state.tema)
 
         mini_status = (
             "🌿  "
@@ -1945,11 +1771,10 @@ def page_mini():
 
             if st.session_state.auto == False:
                 with mini_place_holder:
-                    write_ypoema(LOGO_TEXTO, None)
+                    write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
 
                 if st.session_state.talk:
-                    with mini_voz_slot:
-                        talk(curr_ypoema)
+                    talk(curr_ypoema)
 
             else:
                 while st.session_state.auto:
@@ -1975,11 +1800,14 @@ def page_mini():
 
                     update_readings(st.session_state.tema)
                     LOGO_TEXTO = curr_ypoema
-                    _set_sidebar_context_image_for_theme(st.session_state.tema)
+                    LOGO_IMAGE = None
+
+                    if st.session_state.draw:
+                        LOGO_IMAGE = load_arts(st.session_state.tema)
 
                     with mini_place_holder:
                         mini_place_holder.empty()
-                        write_ypoema(LOGO_TEXTO, None)
+                        write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
                         secs = wait_time
                         while secs >= 0:
                             time.sleep(1)
@@ -1994,6 +1822,7 @@ def page_mini():
 
 
 def page_ypoemas():
+    _restore_cia_freeze_before_sync()
     _sync_book_theme_state()
     temas_list = load_temas(_current_book())
     maxy_ypoemas = len(temas_list) - 1
@@ -2027,16 +1856,13 @@ def page_ypoemas():
                 "<div style='height:1.95rem; min-height:1.95rem;'></div>",
                 unsafe_allow_html=True,
             )
-        nav_cols = st.columns([1, 1, 1, 1, 1, 1])
+        nav_cols = st.columns([1, 1, 1, 1, 1])
         more = nav_cols[0].button("✚", help=help_more, use_container_width=True)
         last = nav_cols[1].button("◀", help=help_last, use_container_width=True)
         rand = nav_cols[2].button("✻", help=help_rand, use_container_width=True)
         nest = nav_cols[3].button("▶", help=help_nest, use_container_width=True)
-        if nav_cols[4].button("♫", help=help_tips[6], key="ypoemas_voz_btn", use_container_width=True):
-            st.session_state.talk = not st.session_state.talk
-        manu = nav_cols[5].button("?", help="help !!!", use_container_width=True)
-
-        ypoemas_voz_slot = render_voz_slot()
+        manu_help = "guia do leitor da CIA" if st.session_state.get("sidebar_panel") == "CIA" else "help !!!"
+        manu = nav_cols[4].button("?", help=manu_help, use_container_width=True)
 
     temas_list = load_temas(_current_book())
     maxy_ypoemas = len(temas_list) - 1
@@ -2056,6 +1882,7 @@ def page_ypoemas():
         frozen_book = st.session_state.get("ypo_anchor_book", _current_book())
         frozen_take = int(st.session_state.get("ypo_anchor_take", st.session_state.get("take", 0)))
         frozen_tema = st.session_state.get("ypo_anchor_tema", st.session_state.get("tema", ""))
+        st.session_state["cia_last_action"] = "more_same_theme"
         st.session_state["more_same_book"] = frozen_book
         st.session_state["more_same_take"] = frozen_take
         st.session_state["more_same_tema"] = frozen_tema
@@ -2067,6 +1894,8 @@ def page_ypoemas():
         # O congelamento é feito no estado canônico: book/take/tema.
 
     if last:
+        st.session_state["cia_last_action"] = "nav"
+        limpar_cia_palco()
         limpar_copias_palco()
         st.session_state.take -= 1
         if st.session_state.take < 0:
@@ -2074,11 +1903,15 @@ def page_ypoemas():
         _sync_book_theme_state()
 
     if rand:
+        st.session_state["cia_last_action"] = "nav"
+        limpar_cia_palco()
         limpar_copias_palco()
         st.session_state.take = random.randrange(0, maxy_ypoemas + 1)
         _sync_book_theme_state()
 
     if nest:
+        st.session_state["cia_last_action"] = "nav"
+        limpar_cia_palco()
         limpar_copias_palco()
         st.session_state.take += 1
         if st.session_state.take > maxy_ypoemas:
@@ -2091,7 +1924,7 @@ def page_ypoemas():
     temas_list = load_temas(_current_book())
     _sync_book_theme_state()
 
-    if more:
+    if more and st.session_state.get("cia_last_action") == "more_same_theme":
         frozen_book = st.session_state.get("more_same_book", _current_book())
         frozen_take = int(st.session_state.get("more_same_take", st.session_state.get("take", 0)))
         frozen_tema = st.session_state.get("more_same_tema", "")
@@ -2106,8 +1939,12 @@ def page_ypoemas():
             st.session_state.tema = temas_list[0] if temas_list else ""
 
     lnew = True
+    cia_mode_page = st.session_state.get("sidebar_panel") == "CIA"
     if manu:
-        render_help_ypoemas_mesma_fonte()
+        if cia_mode_page:
+            st.markdown(guia_do_leitor_cia())
+        else:
+            render_help_ypoemas_mesma_fonte()
 
     if lnew:
         what_book = (
@@ -2124,41 +1961,100 @@ def page_ypoemas():
 
         ypoemas_expander = st.expander(what_book, expanded=True)
         with ypoemas_expander:
-            if st.session_state.lang != st.session_state.last_lang:
-                curr_ypoema = load_lypo()  # changes in lang, keep LYPO
+            cia_mode = st.session_state.get("sidebar_panel") == "CIA"
+            cia_mood_changed = bool(st.session_state.get("cia_mood_changed", False))
+            cia_force_new_poema = bool(st.session_state.get("cia_force_new_poema", False))
+            cia_last_action = st.session_state.get("cia_last_action", "")
+
+            explicit_poem_change = bool(
+                last
+                or rand
+                or nest
+                or cia_last_action in {"nav", "book_change", "theme_change"}
+            )
+            more_same_theme = bool(more or cia_last_action == "more_same_theme")
+
+            if cia_mode and (cia_mood_changed or cia_last_action == "cia_mood"):
+                _cia_restaurar_identidade_objeto()
+                force_new_poema = False
             else:
-                curr_ypoema = load_poema(st.session_state.tema, "")
-                curr_ypoema = load_lypo()
+                force_new_poema = bool(explicit_poem_change or cia_force_new_poema or more_same_theme)
 
-            if st.session_state.lang != "pt":  # translate if idioma <> pt
-                curr_ypoema = translate(curr_ypoema)
-                typo_user = "TYPO_" + IPAddres
-                with open(
-                    os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
-                ) as save_typo:
-                    save_typo.write(curr_ypoema)
-                    save_typo.close()
-                curr_ypoema = load_typo()  # to normalize line breaks in text
+            preserve_cia_poema = (
+                cia_mode
+                and _cia_objeto_analise_existe()
+                and not force_new_poema
+            )
 
-            update_readings(st.session_state.tema)
+            if preserve_cia_poema:
+                # Troca de lente CIA: usa exatamente o mesmo objeto de análise.
+                _cia_restaurar_identidade_objeto()
+                curr_ypoema = st.session_state.get("ypoema_atual_para_analise", "")
+                generated_new_poema = False
+                st.session_state["cia_mood_changed"] = False
+                st.session_state["cia_force_new_poema"] = False
+                st.session_state["cia_freeze_book"] = ""
+                st.session_state["cia_freeze_take"] = -1
+                st.session_state["cia_freeze_tema"] = ""
+                st.session_state["cia_last_action"] = ""
+            else:
+                st.session_state["cia_mood_changed"] = False
+                st.session_state["cia_force_new_poema"] = False
 
-            st.session_state.ypoema_em_analise = curr_ypoema
-            st.session_state.tema_em_analise = st.session_state.tema
-            st.session_state.book_em_analise = _current_book()
-            st.session_state.take_em_analise = st.session_state.take
-            st.session_state.lang_em_analise = st.session_state.lang
+                if cia_mode and more_same_theme and _cia_objeto_analise_existe():
+                    _cia_restaurar_identidade_objeto()
 
-            st.session_state["more_same_book"] = ""
-            st.session_state["more_same_take"] = -1
-            st.session_state["more_same_tema"] = ""
-            st.session_state["ypo_anchor_book"] = _current_book()
-            st.session_state["ypo_anchor_take"] = int(st.session_state.get("take", 0))
-            st.session_state["ypo_anchor_tema"] = st.session_state.get("tema", "")
+                if st.session_state.lang != st.session_state.last_lang:
+                    curr_ypoema = load_lypo()  # changes in lang, keep LYPO
+                else:
+                    curr_ypoema = load_poema(st.session_state.tema, "")
+                    curr_ypoema = load_lypo()
+
+                if st.session_state.lang != "pt":  # translate if idioma <> pt
+                    curr_ypoema = translate(curr_ypoema)
+                    typo_user = "TYPO_" + IPAddres
+                    with open(
+                        os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
+                    ) as save_typo:
+                        save_typo.write(curr_ypoema)
+                        save_typo.close()
+                    curr_ypoema = load_typo()  # to normalize line breaks in text
+
+                if cia_mode:
+                    _cia_fixar_objeto_analise(curr_ypoema)
+                else:
+                    st.session_state.ypoema_em_analise = curr_ypoema
+                    st.session_state.tema_em_analise = st.session_state.tema
+                    st.session_state.book_em_analise = _current_book()
+                    st.session_state.take_em_analise = st.session_state.take
+                    st.session_state.lang_em_analise = st.session_state.lang
+
+                generated_new_poema = True
+                st.session_state["cia_last_action"] = ""
+                st.session_state["more_same_book"] = ""
+                st.session_state["more_same_take"] = -1
+                st.session_state["more_same_tema"] = ""
+                st.session_state["ypo_anchor_book"] = _current_book()
+                st.session_state["ypo_anchor_take"] = int(st.session_state.get("take", 0))
+                st.session_state["ypo_anchor_tema"] = st.session_state.get("tema", "")
+
+            if generated_new_poema:
+                update_readings(st.session_state.tema)
 
             LOGO_TEXTO = curr_ypoema
-            _set_sidebar_context_image_for_theme(st.session_state.tema)
+            LOGO_IMAGE = None
 
-            write_ypoema(LOGO_TEXTO, None)
+            if st.session_state.get("sidebar_panel") != "CIA" and st.session_state.draw:
+                LOGO_IMAGE = load_arts(st.session_state.tema)
+
+            if st.session_state.get("sidebar_panel") == "CIA":
+                col_poema, col_cia = st.columns([5, 5])
+                with col_poema:
+                    write_ypoema_cia_palco(LOGO_TEXTO, None)
+                with col_cia:
+                    render_cia_stage(curr_ypoema)
+            else:
+                write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
 
             # Copiar 1..9 ocorrências do tema atual para leituras externas.
             # Mantém o yPoema exibido como #1 e gera variações extras sem alterar o palco.
@@ -2232,17 +2128,15 @@ def page_ypoemas():
                 write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
 
         if st.session_state.talk:
-            with ypoemas_voz_slot:
-                talk(curr_ypoema)
+            talk(curr_ypoema)
 
 
 def page_eureka():
     help_tips = load_help(st.session_state.lang)
     help_rand = help_tips[1]
     help_more = help_tips[4]
-    help_talk = help_tips[6]
 
-    seed, more, rand, voz_col, manu, occurrences = st.columns([2.5, 1.3, 1.3, 0.8, 0.7, 3.9])
+    seed, more, rand, manu, occurrences = st.columns([2.5, 1.5, 1.5, 0.7, 4])
 
     with seed:
         find_what = st.text_input(
@@ -2256,14 +2150,8 @@ def page_eureka():
     with rand:
         rand = rand.button("✻", help=help_rand)
 
-    with voz_col:
-        if st.button("♫", key="eureka_voz_btn", help=help_talk, use_container_width=True):
-            st.session_state.talk = not st.session_state.talk
-
     with manu:
         manu = manu.button("?", help="help !!!")
-
-    eureka_voz_slot = render_voz_slot()
 
     if manu:
         st.subheader(load_md_file("MANUAL_EUREKA.md"))
@@ -2364,14 +2252,15 @@ def page_eureka():
                 eureka_expander = st.expander("", expanded=True)
                 with eureka_expander:
                     LOGO_TEXTO = curr_ypoema
-                    _set_sidebar_context_image_for_theme(seed_tema)
+                    LOGO_IMAGE = None
+                    if st.session_state.draw:
+                        LOGO_IMAGE = load_arts(seed_tema)
 
-                    write_ypoema(LOGO_TEXTO, None)
+                    write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
                     update_readings(seed_tema)
 
                 if st.session_state.talk:
-                    with eureka_voz_slot:
-                        talk(curr_ypoema)
+                    talk(curr_ypoema)
             if manu:
                 lnew = False
                 LOGO_TEXTO = load_info(seed_tema)
@@ -2452,15 +2341,11 @@ def page_off_machina():  # available off_machina_books
                 "<div style='height:1.95rem; min-height:1.95rem;'></div>",
                 unsafe_allow_html=True,
             )
-        nav_cols = st.columns([1, 1, 1, 1, 1])
+        nav_cols = st.columns([1, 1, 1, 1])
         last = nav_cols[0].button("◀", help=help_last, use_container_width=True)
         rand = nav_cols[1].button("✻", help=help_rand, use_container_width=True)
         nest = nav_cols[2].button("▶", help=help_nest, use_container_width=True)
-        if nav_cols[3].button("♫", help=help_tips[6], key="off_voz_btn", use_container_width=True):
-            st.session_state.talk = not st.session_state.talk
-        manu = nav_cols[4].button("?", help="help !!!", use_container_width=True)
-
-        off_voz_slot = render_voz_slot()
+        manu = nav_cols[3].button("?", help="help !!!", use_container_width=True)
 
     if last:
         nav_changed = True
@@ -2554,14 +2439,15 @@ def page_off_machina():  # available off_machina_books
                     off_book_text = translate(off_book_text)
 
                 LOGO_TEXTO = off_book_text
-                LOGO_IMAGE = load_arts(off_book_name)
+                LOGO_IMAGE = None
+                if st.session_state.draw:
+                    LOGO_IMAGE = load_arts(off_book_name)
 
                 write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
                 update_readings(off_book_name)
 
         if st.session_state.talk:
-            with off_voz_slot:
-                talk(off_book_text)
+            talk(off_book_text)
 
 
 def load_about_md(title):
@@ -2584,9 +2470,6 @@ def load_about_md(title):
 def page_abouts():
     abouts_list = ABOUTS_LIST
 
-    # 1 autor homenageado por sessão na sidebar da página About.
-    _set_about_author_image_once()
-
     options = list(range(len(abouts_list)))
     sobrios = "↓  " + translate("sobre")
     opt_abouts = st.selectbox(
@@ -2603,7 +2486,8 @@ def page_abouts():
         if choice == "machina":
             st.subheader(load_md_file("ABOUT_machina I.md"))
             LOGO_TEXTO = load_info(st.session_state.tema)
-            write_ypoema(LOGO_TEXTO, None)
+            LOGO_IMAGE = "./images/matrix/" + st.session_state.tema + ".jpg"
+            write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
             st.subheader(load_md_file("ABOUT_machina II.md"))
         else:
             st.subheader(load_about_md(choice))
@@ -2636,12 +2520,21 @@ def render_sidebar_for_page(chosen_id):
     draw_check_buttons()
 
 
+configure_cia(
+    translate_func=translate,
+    load_typo_func=load_typo,
+    write_ypoema_func=write_cia_header,
+    ip_address=IPAddres,
+    current_book_func=_current_book,
+    say_number_func=say_number,
+    render_sidebar_for_page_func=render_sidebar_for_page,
+)
 
 def main():
     gramado = open_gramado()
 
     with gramado:
-        _pag_esq, _pag_centro, _pag_dir = st.columns([0.02, 9.96, 0.02])
+        _pag_esq, _pag_centro, _pag_dir = st.columns([0.15, 9.7, 0.15])
 
         with _pag_centro:
             chosen_id = stx.tab_bar(
@@ -2659,7 +2552,32 @@ def main():
 
         st.markdown("<div class='machina-divider-palco'><hr /></div>", unsafe_allow_html=True)
 
-        render_sidebar_for_page(chosen_id)
+        magy = PAGE_IMAGES.get(chosen_id, "img_ypoemas.jpg")
+        apply_sidebar_mae_filha_styles(chosen_id)
+
+        if _cia_sidebar_filha_active(chosen_id):
+            render_sidebar_filha()
+        else:
+            render_sidebar_for_page(chosen_id)
+
+            if chosen_id == "2":
+                draw_sidebar_panel_buttons(chosen_id)
+
+                if st.session_state.get("sidebar_panel", "Machina") == "CIA":
+                    st.session_state["cia_reading_mode"] = False
+                    render_cia_mood_selectbox()
+                else:
+                    st.session_state["cia_reading_mode"] = False
+                    st.session_state["cia_mood_select"] = st.session_state.get("cia_mood", "Sintática")
+
+            with st.sidebar:
+                cia_sidebar_publica = (
+                    chosen_id == "2"
+                    and st.session_state.get("sidebar_panel", "Machina") == "CIA"
+                )
+                if not cia_sidebar_publica:
+                    st.image("./images/" + magy)
+
 
         palco = st.container()
         with palco:
@@ -2667,9 +2585,11 @@ def main():
 
             with palco_container:
                 if chosen_id == "1":
+                    magy = "img_mini.jpg"
                     page_mini()
                     status = f"🌿  {st.session_state.lang} - {st.session_state.tema} ( {st.session_state.mini + 1} / {len(load_temas("todos os temas"))} )"
                 elif chosen_id == "2":
+                    magy = "img_ypoemas.jpg"
                     page_ypoemas()
                     current_book = _current_book()
                     status = palco_status(
@@ -2678,15 +2598,19 @@ def main():
                         len(load_temas(current_book)),
                     )
                 elif chosen_id == "3":
+                    magy = "img_eureka.jpg"
                     page_eureka()
                     status = palco_status("eureka")
                 elif chosen_id == "4":
+                    magy = "img_off-machina.jpg"
                     page_off_machina()
                     status = palco_status("off-machina")
                 elif chosen_id == "5":
+                    magy = "img_about.jpg"
                     page_abouts()
                     status = palco_status("about")
                 else:
+                    magy = "img_ypoemas.jpg"
                     page_ypoemas()
                     current_book = _current_book()
                     status = palco_status(
@@ -2694,8 +2618,6 @@ def main():
                         st.session_state.get("take", 0) + 1,
                         len(load_temas(current_book)),
                     )
-
-                render_sidebar_context_image(chosen_id)
 
                 st.markdown(
                     f"<div class='machina-rodape-palco'>{status}</div>",
