@@ -24,9 +24,6 @@ onde a leitura convencional multiplica-se à cada mudança no
 As frases são escritas no eixo X, as linhas no eixo Y,  
 e as palavras de cada frase são extraídas do **imaginário  
 eixo Z**.  
-
-Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de  
-Fazer Poesia**  
-
----  
+___
 Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de fazer Poesia**
+___

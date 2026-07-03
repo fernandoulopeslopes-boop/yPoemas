@@ -21,9 +21,8 @@ aleatoriamente
 > Cada texto gerado é um novo **yPoema**  
 
 > Em uma visão espacial, o texto é criado em três  
-dimensões-eixos  
-onde a leitura convencional multiplica-se à cada mudança no  
-**eixo Z**.  
+dimensões-eixos onde a leitura convencional multiplica-se  
+à cada mudança no **eixo Z**.  
 
 > A **máquina** distribui o texto em camadas.  
 As frases são escritas no eixo X, as linhas no eixo Y,  

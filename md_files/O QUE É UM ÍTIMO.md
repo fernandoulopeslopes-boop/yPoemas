@@ -54,8 +54,6 @@ existentes na língua.
 polipensar; mundipensar; diversipensar;  
 pluripensar)  
 
-© 1983‑Hoje Nando Lopes  
-– yPoemas @ a Machina de fazer Poesia  
-
----  
+___
 Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de fazer Poesia**
+___

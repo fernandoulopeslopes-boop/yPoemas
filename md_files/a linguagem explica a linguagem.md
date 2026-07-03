@@ -5,8 +5,6 @@ Eles fazem o leitor entrar nela operacionalmente.
 
 Isso é muito mais forte.  
 
-
-
 Porque o leitor aprende:  
 pelo ritmo;  
 pelas reincidências;  
