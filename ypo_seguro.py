@@ -32,6 +32,7 @@ ABOUTS_LIST = [
     "bibliografia",
     "notes",
     "imagens",
+    "icones",
     "pontuação",
     "poly",
     "tradittore",
@@ -52,6 +53,7 @@ ABOUTS_FILES = {
     "bibliografia": ["ABOUT_bibliografia.md"],
     "notes": ["ABOUT_notes.md"],
     "imagens": ["ABOUT_imagens.md"],
+    "icones": ["ABOUT_icones.md"],    
     "pontuação": ["ABOUT_pontuação.md"],
     "poly": ["ABOUT_poly.md"],
     "tradittore": ["ABOUT_tradittore.md"],
@@ -130,7 +132,7 @@ IDIOMAS_OFICIAIS = [
 # -----------------------------------------------------------------------------
 st.set_page_config(
     page_title="a Machina de fazer Poesia",
-    page_icon="snowflake",
+    page_icon=":cyclone:",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
@@ -788,8 +790,8 @@ def open_palco():
 def palco_status(book=None, pos=None, total=None):
     book = book or st.session_state.get("book", "")
     if pos is None or total is None:
-        return f"🌿  {st.session_state.lang} ( {book} )"
-    return f"🌿  {st.session_state.lang} ( {book} ) ( {pos} / {total} )"
+        return f"🌀  {st.session_state.lang} ( {book} )"
+    return f"🌀  {st.session_state.lang} ( {book} ) ( {pos} / {total} )"
 
 
 ### bof: tools
@@ -2101,7 +2103,7 @@ def page_mini():
         _set_sidebar_context_image_for_theme(st.session_state.tema)
 
         mini_status = (
-            "🌿  "
+            "🌀  "
             + st.session_state.lang
             + " - "
             + st.session_state.tema
@@ -2282,7 +2284,7 @@ def page_ypoemas():
 
     if lnew:
         what_book = (
-            "🌿  "
+            "🌀  "
             + st.session_state.lang
             + " ( "
             + _current_book()
@@ -2690,7 +2692,7 @@ def page_off_machina():  # available off_machina_books
 
     if lnew:
         what_book = (
-            "🌿  "
+            "🌀  "
             + st.session_state.lang
             + " ( "
             + str(st.session_state.off_take + 1)
@@ -4044,7 +4046,7 @@ def main():
             with palco_container:
                 if chosen_id == "1":
                     page_mini()
-                    status = f"🌿  {st.session_state.lang} - {st.session_state.tema} ( {st.session_state.mini + 1} / {len(load_temas('todos os temas'))} )"
+                    status = f"🌀  {st.session_state.lang} - {st.session_state.tema} ( {st.session_state.mini + 1} / {len(load_temas('todos os temas'))} )"
 
                 elif chosen_id == "2":
                     page_ypoemas()
