@@ -129,7 +129,7 @@ IDIOMAS_OFICIAIS = [
 # Deve permanecer antes de qualquer saída visual do Streamlit.
 # -----------------------------------------------------------------------------
 st.set_page_config(
-    page_title="a Machina de fazer Poesia - Ꭹᕈᗢᗴᗰᗩᔕ",
+    page_title="a Machina de fazer Poesia",
     page_icon="snowflake",
     layout="wide",
     initial_sidebar_state="collapsed",
