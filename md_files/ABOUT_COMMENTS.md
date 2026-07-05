@@ -22,7 +22,7 @@ Saudações cordiais,
 Brasil)  
 
 Li com prazer (e espanto, devo confessar)  
-a metralhadora lírica da "máquina de fazer poesia".  
+a metralhadora lírica da "Machina de fazer poesia".  
 E fiquei me perguntando: onde entra (se entra) o eu lírico  
 nessa história fabril-febril do Fernando Lopes?  
 
@@ -163,28 +163,28 @@ sentimentos e emoções.
 
 Querido poeta.  
 Sua genialidade me causou perplexidade.  
-Com certeza uma máquina auxiliar e criativa a serviço da  
+Com certeza uma Machina auxiliar e criativa a serviço da  
 poesia.  
 
 Engana-se quem acha que tirou a personalidade e  
 autenticidade do poeta,  
 uma vez que quem oferece o tema, as palavras e os versos  
-para a máquina é o poeta.  
+para a Machina é o poeta.  
 
 Os sentimentos e a sensibilidade virão sempre do talento do  
 poeta.  
-A máquina, como seu braço direito, lhe dará diversas  
+A Machina, como seu braço direito, lhe dará diversas  
 maneiras de "organizar" sua poesia.  
 
 Então, toda a sensibilidade, criatividade e autenticidade do  
 poeta serão preservados...  
-A máquina apenas arruma para você as suas ideias em forma de  
+A Machina apenas arruma para você as suas ideias em forma de  
 poesia,  
 podendo  brincar com a essência que você que escreveu,  
 apenas mudando a ordem das palavras.  
 
 Seu talento continua sendo a base de tudo.  
-Sem sua escrita, a máquina não tem o que fazer.  
+Sem sua escrita, a Machina não tem o que fazer.  
 Sensacional!!!  
 
 ---  
@@ -204,11 +204,6 @@ Legal!
 - **MarieLou Miranda Camargo-Nash**  
 
 It’s brilliant! Well done you! I love words.  
-
----  
-
-Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de  
-fazer Poesia**  
 
 ---  
 Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de fazer Poesia**
