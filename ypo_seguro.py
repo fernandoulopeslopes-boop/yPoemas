@@ -11,8 +11,8 @@ import asyncio
 import streamlit as st
 import streamlit.components.v1 as components
 
-APP_BUILD = "2026-07-03_ypo_seguro_sidebar_FBF"
-APP_BUILD_NOTES = "Versão pública: imagem contextual na sidebar; palco sem colunas; página pública About preservada; tools local fora do menu."
+APP_BUILD = "2026-07-02_PUBLICA_LIMPA"
+APP_BUILD_NOTES = "Versão pública limpa."
 
 from lay_2_ypo import gera_poema
 from readings import (
@@ -30,9 +30,9 @@ ABOUTS_LIST = [
     "outros autores",
     "livros",
     "bibliografia",
+    "carta de Guimarães Rosa",
     "notes",
     "imagens",
-    "icones",
     "pontuação",
     "poly",
     "tradittore",
@@ -51,9 +51,9 @@ ABOUTS_FILES = {
     "outros autores": ["ABOUT_outros_autores.md", "ABOUT_outros autores.md"],
     "livros": ["ABOUT_livros.md"],
     "bibliografia": ["ABOUT_bibliografia.md"],
+    "carta de Guimarães Rosa": ["A incrível carta de Guimarães Rosa.md"],
     "notes": ["ABOUT_notes.md"],
     "imagens": ["ABOUT_imagens.md"],
-    "icones": ["ABOUT_icones.md"],    
     "pontuação": ["ABOUT_pontuação.md"],
     "poly": ["ABOUT_poly.md"],
     "tradittore": ["ABOUT_tradittore.md"],
@@ -131,8 +131,8 @@ IDIOMAS_OFICIAIS = [
 # Deve permanecer antes de qualquer saída visual do Streamlit.
 # -----------------------------------------------------------------------------
 st.set_page_config(
-    page_title="a Machina de fazer Poesia",
-    page_icon=":cyclone:",
+    page_title="a Machina de fazer Poesia @ yPoemas",
+    page_icon=":bulb:",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
@@ -790,11 +790,11 @@ def open_palco():
 def palco_status(book=None, pos=None, total=None):
     book = book or st.session_state.get("book", "")
     if pos is None or total is None:
-        return f"🌀  {st.session_state.lang} ( {book} )"
-    return f"🌀  {st.session_state.lang} ( {book} ) ( {pos} / {total} )"
+        return f"🌿  {st.session_state.lang} ( {book} )"
+    return f"🌿  {st.session_state.lang} ( {book} ) ( {pos} / {total} )"
 
 
-### bof: tools
+### bof: helpers
 
 def translate(input_text):
     """Traduz textos de apoio e yPoemas quando o idioma atual não é português."""
@@ -1104,7 +1104,7 @@ def natural_keys(text):
     return [atoi(c) for c in re.split(r"(\d+)", text)]
 
 
-### eof: tools
+### eof: helpers
 ### bof: update themes readings
 
 
@@ -1210,8 +1210,25 @@ def load_md_file(file):  # Open files for about's
     return file_text
 
 
+def _help_html_to_text(value):
+    """Converte blocos antigos com <br> em texto nativo do Streamlit."""
+    texto = str(value or "")
+    texto = texto.replace("<br/>", "\n").replace("<br />", "\n").replace("<br>", "\n")
+    texto = re.sub(r"<[^>]+>", "", texto)
+    texto = html.unescape(texto)
+    linhas = [linha.rstrip() for linha in texto.splitlines()]
+    while linhas and not linhas[0].strip():
+        linhas.pop(0)
+    while linhas and not linhas[-1].strip():
+        linhas.pop()
+    return "\n".join(linhas)
+
+
 def render_help_ypoemas_mesma_fonte():
-    """Renderiza o Help yPoemas em texto normal, sem estilo Markdown."""
+    """Help yPoemas: desenho simples original.
+
+    Manual + info.txt + Matrix + write_ypoema().
+    """
     raw = load_md_file("MANUAL_YPOEMAS.md")
 
     linhas = []
@@ -1229,6 +1246,18 @@ def render_help_ypoemas_mesma_fonte():
         linhas.append(line)
 
     st.text("\n".join(linhas))
+
+    if not st.session_state.get("tema", ""):
+        return
+
+    LOGO_TEXTO = load_info(st.session_state.tema)
+    if st.session_state.lang != "pt":  # translate if idioma <> pt
+        LOGO_TEXTO = translate(LOGO_TEXTO)
+
+    LOGO_IMAGE = (
+        "./images/matrix/" + st.session_state.tema.capitalize() + ".jpg"
+    )
+    write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
 
 
 @st.cache_data
@@ -1289,6 +1318,229 @@ def load_info(nome_tema):
                     result += "<br>"
 
         return result
+
+def _find_ypo_file(nome_tema):
+    """Localiza o .ypo do tema em foco sem depender de caixa/acento."""
+    tema = str(nome_tema or "").strip()
+    if not tema:
+        return ""
+
+    data_dir = _project_path("data")
+    direct_candidates = [
+        os.path.join(data_dir, tema + ".ypo"),
+        os.path.join(data_dir, tema + ".YPO"),
+        os.path.join(data_dir, tema.capitalize() + ".ypo"),
+        os.path.join(data_dir, tema.capitalize() + ".YPO"),
+    ]
+    for candidate in direct_candidates:
+        if os.path.exists(candidate):
+            return candidate
+
+    if not os.path.isdir(data_dir):
+        return ""
+
+    tema_key = _md_nome_chave(tema)
+    for real_name in os.listdir(data_dir):
+        if not real_name.lower().endswith(".ypo"):
+            continue
+        real_base = os.path.splitext(real_name)[0]
+        if _md_nome_chave(real_base) == tema_key:
+            return os.path.join(data_dir, real_name)
+
+    return ""
+
+
+def _find_matrix_image(nome_tema):
+    """Localiza o gráfico 3D Matrix do tema em foco sem depender só de capitalize()."""
+    tema = str(nome_tema or "").strip()
+    if not tema:
+        return None
+
+    matrix_dir = _project_path("images", "matrix")
+    extensions = [".jpg", ".jpeg", ".png", ".webp"]
+    names = [tema, tema.capitalize(), tema.upper(), tema.lower()]
+    for name in names:
+        for ext in extensions:
+            candidate = os.path.join(matrix_dir, name + ext)
+            if os.path.exists(candidate):
+                return candidate
+
+    if not os.path.isdir(matrix_dir):
+        return None
+
+    tema_key = _md_nome_chave(tema)
+    for real_name in os.listdir(matrix_dir):
+        low = real_name.lower()
+        if not low.endswith(tuple(extensions)):
+            continue
+        real_base = os.path.splitext(real_name)[0]
+        if _md_nome_chave(real_base) == tema_key:
+            return os.path.join(matrix_dir, real_name)
+
+    return None
+
+
+def load_rodape_ypo(nome_tema):
+    """Lê o rodapé informativo do .ypo: tudo que vem depois de <EOF>.
+
+    O Help apenas exibe. Não altera o .ypo.
+    """
+    path = _find_ypo_file(nome_tema)
+    if not path:
+        return ""
+
+    try:
+        with open(path, "r", encoding="utf-8") as file:
+            linhas = file.read().splitlines()
+    except Exception:
+        return ""
+
+    rodape = []
+    achou_eof = False
+    for line in linhas:
+        if achou_eof:
+            rodape.append(line.rstrip())
+        elif line.strip().upper() == "<EOF>":
+            achou_eof = True
+
+    while rodape and not rodape[0].strip():
+        rodape.pop(0)
+    while rodape and not rodape[-1].strip():
+        rodape.pop()
+
+    if not rodape:
+        return ""
+
+    result = "<br>"
+    for line in rodape:
+        result += html.escape(line) + "<br>"
+    result += "<br>"
+    return result
+
+
+def _plain_info_tema(nome_tema):
+    """Lê de base/info.txt apenas os dados estáveis da ficha.
+
+    Os números técnicos passam a vir do rodapé pós-EOF do .ypo,
+    para evitar duas fontes contraditórias no Help.
+    """
+    info = {
+        "titulo": str(nome_tema or "").strip(),
+        "genero": "",
+        "imagem": "",
+        "versos": "",
+    }
+
+    try:
+        with open(os.path.join("./base/" + "info.txt"), "r", encoding="utf-8") as file:
+            for line in file:
+                if not line.startswith("|"):
+                    continue
+                pipe = line.split("|")
+                if len(pipe) < 10:
+                    continue
+                if pipe[1].upper() == str(nome_tema).upper():
+                    info["titulo"] = pipe[1].strip() or info["titulo"]
+                    info["genero"] = pipe[2].strip()
+                    info["imagem"] = pipe[3].strip()
+                    info["versos"] = pipe[4].strip()
+                    break
+    except Exception:
+        pass
+
+    return info
+
+
+def _parse_rodape_ypo(nome_tema):
+    """Extrai os campos técnicos do rodapé pós-EOF do .ypo."""
+    rodape_html = load_rodape_ypo(nome_tema)
+    fields = {
+        "verbetes_no_texto": "",
+        "total_itimos": "",
+        "total_verbetes": "",
+        "qtd_variacoes": "",
+        "qtd_variacoes_numero": "",
+    }
+    if not rodape_html:
+        return fields
+
+    # O rodapé já vem escapado para HTML; desfazemos só para ler os pares chave=valor.
+    plain = html.unescape(rodape_html.replace("<br>", "\n"))
+    for raw_line in plain.splitlines():
+        line = raw_line.strip()
+        if not line or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        key_norm = key.strip().casefold()
+        value = value.strip()
+
+        if key_norm == "verbetes no texto":
+            fields["verbetes_no_texto"] = value
+        elif key_norm == "total de ítimos" or key_norm == "total de itimos":
+            fields["total_itimos"] = value
+        elif key_norm == "total de verbetes":
+            fields["total_verbetes"] = value
+        elif key_norm == "qtd. de variações" or key_norm == "qtd. de variacoes":
+            fields["qtd_variacoes"] = value
+            fields["qtd_variacoes_numero"] = value.split("(", 1)[0].strip()
+
+    return fields
+
+
+def _notacao_cientifica(valor):
+    """Gera notação científica curta a partir de número formatado em pt-BR."""
+    digits = re.sub(r"\D", "", str(valor or ""))
+    if not digits:
+        return ""
+    try:
+        return f"{int(digits):.2e}"
+    except Exception:
+        return ""
+
+
+def load_help_ficha_tecnica_tema(nome_tema):
+    """Monta uma única ficha técnica coerente para o Help yPoemas.
+
+    Regra: dados técnicos vêm do rodapé limpo pós-EOF.
+    O bloco antigo de info.txt não é exibido inteiro para não duplicar
+    """
+    info = _plain_info_tema(nome_tema)
+    rodape = _parse_rodape_ypo(nome_tema)
+
+    result = ""
+    result += "Título: " + html.escape(info.get("titulo", "")) + "<br>"
+
+    if info.get("genero"):
+        result += "Gênero: " + html.escape(info["genero"]) + "  <br>"
+    if info.get("imagem"):
+        result += "Imagem: " + html.escape(info["imagem"]) + "  <br>"
+    if info.get("versos"):
+        result += "Versos: " + html.escape(info["versos"]) + "  <br>"
+
+    if rodape.get("verbetes_no_texto"):
+        result += "Verbetes no Texto: " + html.escape(rodape["verbetes_no_texto"]) + "  <br>"
+    if rodape.get("total_itimos"):
+        result += "Banco de Ítimos: " + html.escape(rodape["total_itimos"]) + "  <br>"
+    if rodape.get("total_verbetes"):
+        result += "Total de Verbetes: " + html.escape(rodape["total_verbetes"]) + "  <br>"
+    if rodape.get("qtd_variacoes"):
+        result += "Qtd. de Variações: " + html.escape(rodape["qtd_variacoes"]) + "  <br>"
+        cientifica = _notacao_cientifica(rodape.get("qtd_variacoes_numero"))
+        if cientifica:
+            result += "Notação Científica: " + html.escape(cientifica) + "  <br>"
+
+    # Fallback: se ainda não houver rodapé pós-EOF, mostra a ficha histórica.
+    # Assim o Help não fica vazio enquanto o tema ainda não tiver rodapé atualizado.
+    if not any(rodape.values()):
+        historica = load_info(nome_tema)
+        if historica:
+            return historica
+
+    result += "<br>"
+    return result
+
+
+
 
 @st.cache_data
 def load_index():  # Load indexes numbers for all themes
@@ -1427,6 +1679,8 @@ def _ypoema_html_to_text(ypoema_html):
     texto = re.sub(r"<[^>]+>", "", texto)
     texto = html.unescape(texto)
     return _trim_blank_edges_preservando_recuo(texto.splitlines())
+
+
 
 
 def _off_machina_texto_limpo(texto):
@@ -1820,6 +2074,8 @@ def render_sidebar_context_image(chosen_id):
 ### bof: functions
 
 
+
+
 def _palco_titulo_centralizado(LOGO_TEXTO):
     """Centraliza e sublinha o título do texto no palco, mantendo o corpo intacto."""
     texto = str(LOGO_TEXTO or "")
@@ -2103,7 +2359,7 @@ def page_mini():
         _set_sidebar_context_image_for_theme(st.session_state.tema)
 
         mini_status = (
-            "🌀  "
+            "🌿  "
             + st.session_state.lang
             + " - "
             + st.session_state.tema
@@ -2160,6 +2416,13 @@ def page_mini():
                         while secs >= 0:
                             time.sleep(1)
                             secs -= 1
+
+
+
+
+
+
+
 
 
 def page_ypoemas():
@@ -2279,12 +2542,43 @@ def page_ypoemas():
 
     lnew = True
     if manu:
-        render_help_ypoemas_mesma_fonte()
+        what_book = (
+            "🌿  "
+            + st.session_state.lang
+            + " ( "
+            + _current_book()
+            + " ) ( "
+            + str(st.session_state.take + 1)
+            + " / "
+            + str(len(temas_list))
+            + " )"
+        )
+
+        ypoemas_expander = st.expander(what_book, expanded=True)
+        with ypoemas_expander:
+            LOGO_TEXTO = load_md_file("MANUAL_YPOEMAS.md")
+            st.markdown(LOGO_TEXTO)
+
+            LOGO_IMAGE = (
+                "./images/matrix/" + st.session_state.tema.capitalize() + ".jpg"
+            )
+
+            LOGO_INFO = load_info(st.session_state.tema)
+            if st.session_state.lang != "pt":  # translate if idioma <> pt
+                LOGO_INFO = translate(LOGO_INFO)
+
+            st.markdown("<br>", unsafe_allow_html=True)
+            col_matrix, col_info = st.columns([3, 7])
+            with col_matrix:
+                st.image(LOGO_IMAGE, use_container_width=True)
+            with col_info:
+                st.markdown(LOGO_INFO, unsafe_allow_html=True)
+
         lnew = False
 
     if lnew:
         what_book = (
-            "🌀  "
+            "🌿  "
             + st.session_state.lang
             + " ( "
             + _current_book()
@@ -2401,13 +2695,6 @@ def page_ypoemas():
                 st.session_state.get("copy_bundle_qtd", None),
             )
 
-            if manu:
-                LOGO_TEXTO = load_info(st.session_state.tema)
-                if st.session_state.lang != "pt":  # translate if idioma <> pt
-                    LOGO_TEXTO = translate(LOGO_TEXTO)
-
-                _set_sidebar_context_image_for_theme(st.session_state.tema)
-                write_ypoema(LOGO_TEXTO, None)
 
         if st.session_state.talk:
             with ypoemas_voz_slot:
@@ -2556,8 +2843,8 @@ def page_eureka():
                 if st.session_state.lang != "pt":  # translate if idioma <> pt
                     LOGO_TEXTO = translate(LOGO_TEXTO)
 
-                _set_sidebar_context_image_for_theme(seed_tema)
-                write_ypoema(LOGO_TEXTO, None)
+                LOGO_IMAGE = "./images/matrix/" + seed_tema.capitalize() + ".jpg"
+                write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
 
         else:
             st.warning(
@@ -2605,9 +2892,7 @@ def page_off_machina():  # available off_machina_books
     if opt_off_book != st.session_state.off_book:
         st.session_state.off_book = opt_off_book
         st.session_state.off_take = 0
-        st.session_state["off_take_widget_token"] = int(
-            st.session_state.get("off_take_widget_token", 0)
-        ) + 1
+        st.session_state["opt_off_take"] = 0
 
     off_book_name = off_books_list[st.session_state.off_book]
     this_off_book = load_off_book(off_book_name)
@@ -2662,24 +2947,19 @@ def page_off_machina():  # available off_machina_books
         st.session_state.off_take = 0
 
     # Mantém a lista_temas sincronizada com os botões ◀ ✻ ▶,
-    # sem escrever diretamente na key interna do widget.
+    # sem atropelar a seleção manual feita diretamente na lista.
     if nav_changed:
-        st.session_state["off_take_widget_token"] = int(
-            st.session_state.get("off_take_widget_token", 0)
-        ) + 1
+        st.session_state["opt_off_take"] = st.session_state.off_take
 
     with col_temas:
         options = list(range(len(off_book_pagys)))
         sobrios = "↓ " + str(len(off_book_pagys)) + " temas"
-        opt_off_take_key = "opt_off_take_" + str(
-            int(st.session_state.get("off_take_widget_token", 0))
-        )
         opt_off_take = st.selectbox(
             sobrios,
             options,
             index=st.session_state.off_take,
             format_func=lambda x: off_book_pagys[x],
-            key=opt_off_take_key,
+            key="opt_off_take",
         )
 
     if opt_off_take != st.session_state.off_take:
@@ -2692,7 +2972,7 @@ def page_off_machina():  # available off_machina_books
 
     if lnew:
         what_book = (
-            "🌀  "
+            "🌿  "
             + st.session_state.lang
             + " ( "
             + str(st.session_state.off_take + 1)
@@ -2844,1118 +3124,6 @@ def page_abouts():
             st.subheader(load_about_md(choice))
 
 
-# -----------------------------------------------------------------------------
-# Tools locais da Machina
-# -----------------------------------------------------------------------------
-# Cópia privada/local. Não vai para GitHub, deploy ou público.
-# Regra: lê temas .YPO/.ypo; não altera conteúdo autoral; não cria poesia.
-
-BUILD_INDEXY_FILE = "ABOUT_index.MD"
-BUILD_AMBIENTE_LEXICO = "--- Ambiente Léxico da Machina"
-BUILD_ESCALA = [
-    "mil", "milhões", "bilhões", "trilhões", "quatrilhões", "quintilhões",
-    "sextilhões", "setilhões", "octilhões", "nonilhões", "decilhões",
-    "undecilhões", "dodecilhões", "tredecilhões", "quatuordecilhões",
-    "quindecilhões", "sedecilhões", "septendecilhões",
-]
-
-def _tools_fmt_int(valor):
-    return f"{int(valor):,}".replace(",", ".")
-
-
-def _tools_potencia_nome(valor):
-    num = f"{int(valor):,}"
-    pontos = num.count(",") - 1
-    if 0 <= pontos < len(BUILD_ESCALA):
-        return BUILD_ESCALA[pontos]
-    return "nonono"
-
-
-def _tools_backup_path(path):
-    """Cria backup local antes de qualquer gravação derivada/cadastral."""
-    if not os.path.exists(path):
-        return ""
-    backup_dir = _project_path("backups", "local_tools")
-    os.makedirs(backup_dir, exist_ok=True)
-    stamp = time.strftime("%Y%m%d_%H%M%S")
-    base = os.path.basename(path)
-    dst = os.path.join(backup_dir, f"{stamp}_{base}")
-    with open(path, "rb") as src, open(dst, "wb") as out:
-        out.write(src.read())
-    return dst
-
-
-def _tools_write_text(path, texto):
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    _tools_backup_path(path)
-    with open(path, "w", encoding="utf-8") as file:
-        file.write(texto)
-
-
-def _tools_add_unique_line(path, line, key):
-    """Adiciona linha se a chave ainda não existir. Preserva o arquivo fora disso."""
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    line = str(line).rstrip("\n")
-    key = str(key).casefold().strip()
-    linhas = []
-    if os.path.exists(path):
-        with open(path, encoding="utf-8") as file:
-            linhas = file.read().splitlines()
-
-    for raw in linhas:
-        parte = raw.partition(" : ")[0].strip().casefold()
-        if not parte and raw.startswith("|"):
-            campos = raw.split("|")
-            if len(campos) > 1:
-                parte = campos[1].strip().casefold()
-        if parte == key or raw.strip().casefold() == key:
-            return False
-
-    _tools_backup_path(path)
-    with open(path, "a", encoding="utf-8") as file:
-        if linhas and linhas[-1] != "":
-            file.write("\n")
-        file.write(line + "\n")
-    return True
-
-
-def _tools_resolve_ypo_path(tema):
-    tema = str(tema or "").strip()
-    candidatos = [
-        _project_path("data", tema + ".ypo"),
-        _project_path("data", tema + ".YPO"),
-    ]
-    for path in candidatos:
-        if os.path.exists(path):
-            return path
-    return candidatos[0]
-
-
-def _tools_temas_ativos():
-    temas = []
-    ativos_path = _project_path("base", "ativos.txt")
-    with open(ativos_path, encoding="utf-8") as file:
-        for raw in file:
-            linha = raw.strip("\n")
-            if not linha.strip():
-                continue
-            tema = linha.partition(" : ")[0].strip()
-            if tema:
-                temas.append((tema, _tools_resolve_ypo_path(tema)))
-    return temas
-
-
-def _tools_temas_para_remover():
-    """Lista temas em circulação, usando as mesmas listas vistas pelos yPoemas.
-
-    A remoção precisa enxergar temas que aparecem em rol_*.txt mesmo que
-    alguma lista cadastral esteja desencontrada.
-    """
-    nomes = []
-
-    def add(nome):
-        nome = str(nome or "").strip()
-        if nome and nome not in nomes:
-            nomes.append(nome)
-
-    # 1) Lista canônica usada pelo livro "todos os temas" no palco.
-    try:
-        for nome in load_temas("todos os temas"):
-            add(nome)
-    except Exception:
-        pass
-
-    # 2) Todos os rol_*.txt, para capturar livros específicos.
-    base_dir = _project_path("base")
-    if os.path.isdir(base_dir):
-        for file_name in sorted(os.listdir(base_dir)):
-            if not (file_name.lower().startswith("rol_") and file_name.lower().endswith(".txt")):
-                continue
-            try:
-                with open(os.path.join(base_dir, file_name), encoding="utf-8") as file:
-                    for raw in file:
-                        add(raw.replace(" ", "").strip())
-            except Exception:
-                pass
-
-    # 3) Ativos, caso algum tema esteja cadastrado mas fora dos livros.
-    try:
-        for tema, path in _tools_temas_ativos():
-            add(tema)
-    except Exception:
-        pass
-
-    # 4) Arquivos em ./data, para permitir remover clone recém-criado mesmo
-    #    quando as listas ficaram desencontradas.
-    data_dir = _project_path("data")
-    if os.path.isdir(data_dir):
-        for file_name in sorted(os.listdir(data_dir), key=natural_keys):
-            if file_name.lower().endswith(".ypo"):
-                add(os.path.splitext(file_name)[0])
-
-    return sorted(nomes, key=natural_keys)
-
-
-def _tools_linhas_ypo(path):
-    """Lê linhas estruturais do .YPO em UTF-8 estrito, informando arquivo se falhar."""
-    try:
-        with open(path, encoding="utf-8") as file:
-            for line in file:
-                if line.startswith("|"):
-                    yield line.rstrip("\n").split("|")
-    except UnicodeDecodeError as exc:
-        raise UnicodeDecodeError(
-            exc.encoding,
-            exc.object,
-            exc.start,
-            exc.end,
-            f"{exc.reason} em {path}"
-        ) from exc
-
-
-def build_tools_utf8_temas():
-    """Verifica UTF-8 em base/ativos.txt e em todos os temas ativos, sem alterar arquivos."""
-    start_time = time.time()
-    problemas = []
-    verificados = 0
-
-    ativos_path = _project_path("base", "ativos.txt")
-    try:
-        with open(ativos_path, encoding="utf-8") as file:
-            ativos_linhas = file.read().splitlines()
-    except UnicodeDecodeError as exc:
-        return (
-            "UTF-8 temas: falha em ./base/ativos.txt\n"
-            f"arquivo: {ativos_path}\n"
-            f"posição: {exc.start}\n"
-            f"erro: {exc}"
-        )
-
-    for raw in ativos_linhas:
-        linha = raw.strip()
-        if not linha:
-            continue
-        tema = linha.partition(" : ")[0].strip()
-        if not tema:
-            continue
-        path = _tools_resolve_ypo_path(tema)
-        if not os.path.exists(path):
-            problemas.append(f"não encontrado: {path}")
-            continue
-        try:
-            with open(path, encoding="utf-8") as file:
-                file.read()
-            verificados += 1
-        except UnicodeDecodeError as exc:
-            problemas.append(
-                f"UTF-8 inválido: {path} | posição {exc.start} | {exc}"
-            )
-
-    if problemas:
-        return (
-            f"UTF-8 temas: {len(problemas)} problema(s) encontrado(s).\n"
-            + "\n".join(problemas)
-            + f"\nRuntime: {time.time() - start_time:.2f}s"
-        )
-
-    return f"UTF-8 temas: OK. {verificados} tema(s) ativo(s) verificado(s). Runtime: {time.time() - start_time:.2f}s"
-
-
-def _tools_payload_itimos(campos):
-    if len(campos) <= 8:
-        return []
-    return [item for item in campos[7:-1] if item != ""]
-
-
-def _tools_normaliza_unico(texto):
-    return re.sub(r"\s+", " ", str(texto or "").strip().casefold())
-
-
-def _tools_palavras_de_itimo(itimo):
-    palavras = []
-    for word in str(itimo or "").split():
-        if "-" not in word:
-            for c in string.punctuation:
-                word = word.replace(c, "")
-        word = word.strip().casefold()
-        if len(word) >= 3:
-            palavras.append(word)
-    return palavras
-
-
-def _tools_calcular_variacoes_tema(path):
-    fontes_list = []
-    corrige_qtd = 1
-    qtd_itimos_list = []
-    for campos in _tools_linhas_ypo(path):
-        if len(campos) >= 8:
-            nova_fonte = campos[3]
-            total_itimos = len(_tools_payload_itimos(campos))
-            if nova_fonte not in fontes_list:
-                fontes_list.append(nova_fonte)
-                qtd_itimos_list.append(total_itimos)
-            else:
-                index = fontes_list.index(nova_fonte)
-                saldo_itimos = qtd_itimos_list[index] - corrige_qtd
-                if saldo_itimos == 0:
-                    saldo_itimos = 1
-                fontes_list.append(nova_fonte)
-                qtd_itimos_list.append(saldo_itimos)
-                corrige_qtd += 1
-    qtd_variatio = 1
-    for qtd in qtd_itimos_list:
-        qtd_variatio = +(qtd_variatio * qtd)
-    return abs(qtd_variatio)
-
-
-def build_tools_lexico():
-    """Regera léxico textual a partir dos temas, sem alterar .ypo."""
-    start_time = time.time()
-    linhas_lexico = []
-    vistos_lexico = set()
-    verbetes = []
-    vistos_verbetes = set()
-
-    for tema, path in _tools_temas_ativos():
-        if not os.path.exists(path):
-            continue
-        for campos in _tools_linhas_ypo(path):
-            if len(campos) < 8:
-                continue
-            fonte = campos[3]
-            for itimo in _tools_payload_itimos(campos):
-                for palavra in _tools_palavras_de_itimo(itimo):
-                    chave = palavra + " : " + fonte
-                    if chave not in vistos_lexico:
-                        vistos_lexico.add(chave)
-                        linhas_lexico.append(chave)
-                    if palavra not in vistos_verbetes:
-                        vistos_verbetes.add(palavra)
-                        verbetes.append(palavra)
-
-    base_dir = _project_path("base")
-    texto_lexico = "\n".join(sorted(linhas_lexico)) + "\n"
-    texto_verbetes = "\n".join(sorted(verbetes)) + "\n"
-    # Machina atual usa apenas lexico_pt.txt como léxico de trabalho.
-    _tools_write_text(os.path.join(base_dir, "lexico_pt.txt"), texto_lexico)
-    _tools_write_text(os.path.join(base_dir, "verbetes.txt"), texto_verbetes)
-    return f"Build_Léxico: {len(linhas_lexico)} verbete(s)-fonte; {len(verbetes)} verbete(s) únicos. Runtime: {time.time() - start_time:.2f}s"
-
-
-def build_tools_indexy():
-    start_time = time.time()
-    temas = _tools_temas_ativos()
-    index_list = []
-    error_list = []
-    acm_variatio = 0
-    for tema, path in temas:
-        try:
-            qtd_variatio = _tools_calcular_variacoes_tema(path)
-            acm_variatio += qtd_variatio
-            index_list.append(f"{tema} : {qtd_variatio:,} ({_tools_potencia_nome(qtd_variatio)})")
-        except Exception as exc:
-            error_list.append(f"{tema}: {exc}")
-
-    md_dir = _project_path("md_files")
-    about_index = os.path.join(md_dir, BUILD_INDEXY_FILE)
-    linhas = []
-    linhas.append("variações para cada tema:  ")
-    linhas.append("___  ")
-    for linha in index_list:
-        linhas.append(linha.replace(",", ".") + "  ")
-    linhas.extend([
-        "___",
-        "[escala dos nomes das potências de 10]  ",
-        "  ",
-        "> mil=1.000|10e3|  ",
-        "> milhão=1.000.000|10e6|  ",
-        "> bilhão=1.000.000.000|10e9|  ",
-        "> trilhão=1.000.000.000.000|10e12|  ",
-        "> quatrilhão=1.000.000.000.000.000|10e15|  ",
-        "> quintilhão=1.000.000.000.000.000.000|10e18|  ",
-        "> sextilhão=1.000.000.000.000.000.000.000|10e21|  ",
-        "> setilhão=1.000.000.000.000.000.000.000.000|10e24|  ",
-        "> octilhão=1.000.000.000.000.000.000.000.000.000|10e27|  ",
-        "> nonilhão=1.000.000.000.000.000.000.000.000.000.000|10e30|  ",
-        "> decilhão=1.000.000.000.000.000.000.000.000.000.000.000|10e33|  ",
-        "> undecilhão=1.000.000.000.000.000.000.000.000.000.000.000.000|10e36|  ",
-        "> dodecilhão=1.000.000.000.000.000.000.000.000.000.000.000.000.000|10e39|  ",
-        "> tredecilhão=1.000.000.000.000.000.000.000.000.000.000.000.000.000.000|10e42|  ",
-        "> quatordecilhão=1.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000|10e45|  ",
-        "> quindecilhão=1.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000|10e48|  ",
-        "> sedecilhão=1.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000|10e51|  ",
-        "> septendecilhão=1.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000|10e54|  ",
-        "> googol=dez duotrigintilhões|10e100|  ",
-        "> googolplexo=quanto dá isso?|10e googol|  ",
-        "> googolplexiano=por enquanto, o maior número com nome|10e googolplexo|  ",
-        "  ",
-        "[fonte dos dados](http://www.fisica-interessante.com/matematica-divertida-ordens-classes-multiplos.html)  ",
-        "___",
-        "Copyright © 1983-2022 Nando Lopes - **yPoemas @ máquina de fazer Poesia**  ",
-        "",
-        f"Total de variações: {acm_variatio:,} ({_tools_potencia_nome(acm_variatio)})".replace(",", "."),
-        "",
-    ])
-    _tools_write_text(about_index, "\n".join(linhas))
-    extra = f" Erros: {len(error_list)}." if error_list else ""
-    return f"Build_Indexy: {len(index_list)} tema(s). Saída: {about_index}.{extra} Runtime: {time.time() - start_time:.2f}s"
-
-
-def _tools_matrix_um_tema(tema, path):
-    try:
-        import numpy as np
-        import matplotlib.pyplot as plt
-    except Exception as exc:
-        raise RuntimeError(f"dependência ausente ou indisponível: {exc}")
-
-    tabela = tema.capitalize()  # comportamento histórico do Build_Matrix.
-    matrix_dir = _project_path("images", "matrix")
-    os.makedirs(matrix_dir, exist_ok=True)
-    curlin = "01"
-    linini = 1
-    itimos_acm = 0
-    x_pos = np.array([]); y_pos = np.array([]); z_pos = np.array([]); z_val = np.array([])
-
-    with open(path, encoding="utf-8") as file:
-        for line in file:
-            if line.startswith("|", 0, 1):
-                campos = line.split("|")
-                if len(campos) < 6:
-                    continue
-                newcol = int(campos[2])
-                if campos[1] != curlin:
-                    linini += 1
-                    curlin = campos[1]
-                if newcol == 0:
-                    x_pos = np.append(x_pos, linini); y_pos = np.append(y_pos, 0); z_pos = np.append(z_pos, 0); z_val = np.append(z_val, 0)
-                else:
-                    itimos = int(campos[5])
-                    itimos_acm += itimos
-                    x_pos = np.append(x_pos, linini - 1); y_pos = np.append(y_pos, newcol - 1); z_pos = np.append(z_pos, 0); z_val = np.append(z_val, itimos)
-
-    x_val = np.ones(len(x_pos)); y_val = np.ones(len(y_pos)); z_pos = np.ones(len(z_pos))
-    if len(x_val) > 0:
-        fg = plt.figure(figsize=(7, 7))
-        ax = fg.add_subplot(111, projection="3d")
-        ax.set_xlabel("x ➪ linhas", fontsize=14)
-        ax.set_ylabel("y ➪ versos", fontsize=14)
-        ax.set_zlabel("z ➪ ítimos", fontsize=14)
-        ax.view_init(elev=30, azim=-30)
-        ax.bar3d(x_pos, y_pos, z_pos, x_val, y_val, z_val, color="#00ccaa", alpha=0.85, edgecolor="k")
-        plt.savefig(os.path.join(matrix_dir, tabela + ".jpg"), dpi=50)
-        plt.close(fg)
-    return tabela, linini, itimos_acm
-
-
-def _tools_atualizar_linha_chave(path, chave, nova_linha):
-    linhas = []
-    if os.path.exists(path):
-        with open(path, encoding="utf-8") as file:
-            linhas = file.read().splitlines()
-    chave_norm = str(chave).casefold().strip()
-    nova_linha = str(nova_linha).strip()
-    saida = []
-    alterou = False
-    for linha in linhas:
-        parte = linha.partition(" : ")[0].strip().casefold()
-        if parte == chave_norm:
-            if not alterou:
-                saida.append(nova_linha)
-                alterou = True
-            continue
-        saida.append(linha)
-    if not alterou:
-        saida.append(nova_linha)
-    _tools_write_text(path, "\n".join(saida).rstrip() + "\n")
-
-
-def build_tools_matrix(tema_unico=None):
-    start_time = time.time()
-    temas = _tools_temas_ativos()
-    if tema_unico:
-        temas = [(tema, path) for tema, path in temas if tema == tema_unico]
-    lista_itimos = []
-    lista_versos = []
-    for tema, path in temas:
-        if not os.path.exists(path):
-            continue
-        tabela, versos, itimos = _tools_matrix_um_tema(tema, path)
-        lista_versos.append(f"{tabela} : {versos}")
-        lista_itimos.append(f"{tabela} : {itimos}")
-
-    base_dir = _project_path("base")
-    if tema_unico:
-        for linha in lista_itimos:
-            chave = linha.partition(" : ")[0]
-            _tools_atualizar_linha_chave(os.path.join(base_dir, "itimos.txt"), chave, linha)
-        for linha in lista_versos:
-            chave = linha.partition(" : ")[0]
-            _tools_atualizar_linha_chave(os.path.join(base_dir, "versos.txt"), chave, linha)
-    else:
-        _tools_write_text(os.path.join(base_dir, "itimos.txt"), "\n".join(lista_itimos).rstrip() + "\n")
-        _tools_write_text(os.path.join(base_dir, "versos.txt"), "\n".join(lista_versos).rstrip() + "\n")
-    modo = f"tema {tema_unico}" if tema_unico else "todos os temas"
-    return f"Build_Matrix: {modo}; {len(lista_itimos)} Matrix 3D gerada(s)/atualizada(s). Runtime: {time.time() - start_time:.2f}s"
-
-
-def build_tools_ficha_lexica():
-    start_time = time.time()
-    temas = _tools_temas_ativos()
-    total_itimos = 0
-    itimos_unicos = set()
-    total_verbetes = 0
-    verbetes_unicos = set()
-    for tema, path in temas:
-        if not os.path.exists(path):
-            continue
-        for campos in _tools_linhas_ypo(path):
-            for itimo in _tools_payload_itimos(campos):
-                total_itimos += 1
-                itimos_unicos.add(_tools_normaliza_unico(itimo))
-                palavras = _tools_palavras_de_itimo(itimo)
-                total_verbetes += len(palavras)
-                verbetes_unicos.update(palavras)
-    bloco = (
-        f"{BUILD_AMBIENTE_LEXICO}\n\n"
-        f"Total de Verbetes: {_tools_fmt_int(total_verbetes)}\n"
-        f"Total de Verbetes únicos: {_tools_fmt_int(len(verbetes_unicos))}\n\n"
-        f"Total de Ítimos: {_tools_fmt_int(total_itimos)}\n"
-        f"Total de Ítimos únicos: {_tools_fmt_int(len(itimos_unicos))}\n\n"
-        f"Total de Temas: {_tools_fmt_int(len(temas))}\n"
-    )
-    md_dir = _project_path("md_files")
-    index_path = os.path.join(md_dir, "INDEX.txt")
-    texto = ""
-    if os.path.exists(index_path):
-        with open(index_path, encoding="utf-8") as file:
-            texto = file.read()
-    pos = texto.find(BUILD_AMBIENTE_LEXICO)
-    if pos >= 0:
-        texto = texto[:pos].rstrip() + "\n\n" + bloco
-    else:
-        texto = (texto.rstrip() + "\n\n" + bloco) if texto.strip() else bloco
-    _tools_write_text(index_path, texto)
-    return f"Ficha Léxica atualizada em {index_path}. Runtime: {time.time() - start_time:.2f}s\n\n{bloco}"
-
-
-def _tools_imagem_tema(tema):
-    """Busca o grupo de imagem do tema em ./base/images.txt, sem depender de módulos externos."""
-    tema_norm = str(tema or "").strip().casefold()
-    images_path = _project_path("base", "images.txt")
-    if os.path.exists(images_path):
-        with open(images_path, encoding="utf-8") as file:
-            for raw in file:
-                linha = raw.strip()
-                if not linha:
-                    continue
-                nome, sep, resto = linha.partition(" : ")
-                if nome.strip().casefold() == tema_norm and sep:
-                    return resto.strip() or "Machina"
-    return "Machina"
-
-
-def _tools_info_tema(tema, path):
-    """Calcula a linha técnica de ./base/info.txt para um tema ativo.
-
-    Fonte única dos temas: ./base/ativos.txt.
-    Não importa build_info.py nem tools.py.
-    Não altera .YPO; apenas lê estrutura e escreve documentação derivada.
-    """
-    genero = "Machina"
-    imagem = _tools_imagem_tema(tema)
-    versos = 0
-    qtd_itimos = 0
-    verbetes_tema = set()
-
-    curlin = "star"
-    curlin = ""
-    for campos in _tools_linhas_ypo(path):
-        if len(campos) < 8:
-            continue
-
-        # campos: ['', linha, coluna, id/fonte, tipo, qtd, ..., ítimos..., '']
-        linha_id = campos[1].strip() if len(campos) > 1 else ""
-        if linha_id and linha_id != curlin:
-            versos += 1
-            curlin = linha_id
-
-        payload = _tools_payload_itimos(campos)
-        qtd_itimos += len(payload)
-        for itimo in payload:
-            verbetes_tema.update(_tools_palavras_de_itimo(itimo))
-
-    qtd_wordin = len(verbetes_tema)
-    qtd_lexico = len(verbetes_tema)
-    qtd_variatio = _tools_calcular_variacoes_tema(path)
-    qtd_cienti = f"{qtd_variatio:.2e}"
-
-    return (
-        f"|{tema}|{genero}|{imagem}|{versos}|{qtd_wordin}|"
-        f"{qtd_lexico}|{qtd_itimos}|{qtd_variatio}|{qtd_cienti}|"
-    )
-
-
-def _tools_dados_rodape_ypo(path):
-    """Calcula apenas o rodapé informativo do .YPO, sem alterar corpo poético."""
-    verbetes_no_texto = 0
-    total_itimos = 0
-
-    for campos in _tools_linhas_ypo(path):
-        if len(campos) < 8:
-            continue
-        verbetes_no_texto += 1
-        total_itimos += len(_tools_payload_itimos(campos))
-
-    total_verbetes = verbetes_no_texto + total_itimos
-    qtd_variacoes = _tools_calcular_variacoes_tema(path)
-    return {
-        "verbetes_no_texto": verbetes_no_texto,
-        "total_itimos": total_itimos,
-        "total_verbetes": total_verbetes,
-        "qtd_variacoes": qtd_variacoes,
-    }
-
-
-def _tools_linhas_rodape_ypo(path):
-    dados = _tools_dados_rodape_ypo(path)
-    variacoes = dados["qtd_variacoes"]
-    return [
-        f"Verbetes no Texto = {dados['verbetes_no_texto']}",
-        f"  Total de ítimos = {dados['total_itimos']}",
-        f"Total de verbetes = {dados['total_verbetes']}",
-        f"Qtd. de Variações = {_tools_fmt_int(variacoes)} ({_tools_potencia_nome(variacoes)})",
-    ]
-
-
-def _tools_atualizar_rodape_ypo_um_tema(tema, path):
-    """Atualiza só as 4 linhas informativas do rodapé; preserva Build_By_Lay_2_Ipo."""
-    novas = _tools_linhas_rodape_ypo(path)
-    chaves = {
-        "verbetes no texto",
-        "total de ítimos",
-        "total de itimos",
-        "total de verbetes",
-        "qtd. de variações",
-        "qtd. de variacoes",
-    }
-
-    def _eh_linha_rodape_info(linha):
-        chave = str(linha or "").strip().partition("=")[0].strip().casefold()
-        chave_ascii = unicodedata.normalize("NFKD", chave).encode("ascii", "ignore").decode("ascii")
-        return chave in chaves or chave_ascii in chaves
-
-    with open(path, encoding="utf-8") as file:
-        linhas = file.read().splitlines()
-
-    eof_idx = None
-    for idx, linha in enumerate(linhas):
-        if linha.strip().upper() == "<EOF>":
-            eof_idx = idx
-            break
-
-    build_idx = None
-    for idx, linha in enumerate(linhas):
-        if linha.strip().casefold().startswith("build_by_lay_2_ipo"):
-            build_idx = idx
-            break
-
-    if eof_idx is not None:
-        # <EOF> é o fim real do tema. Tudo que estiver depois dele é
-        # rodapé/documentação e pode ser remontado sem risco de tocar o corpo
-        # poético. Preserva apenas a linha histórica Build_By_Lay_2_Ipo.
-        build_line = linhas[build_idx] if build_idx is not None else None
-        saida = linhas[: eof_idx + 1]
-        while saida and saida[-1].strip() == "":
-            saida.pop()
-        saida.extend(novas)
-        if build_line:
-            saida.append(build_line)
-    elif build_idx is not None:
-        # Fallback para arquivos antigos sem <EOF>: mexe somente no bloco
-        # informativo imediatamente antes da linha histórica Build_By_Lay_2_Ipo.
-        fim_bloco = build_idx
-        while fim_bloco > 0 and linhas[fim_bloco - 1].strip() == "":
-            fim_bloco -= 1
-        ini = fim_bloco
-        while ini > 0 and _eh_linha_rodape_info(linhas[ini - 1]):
-            ini -= 1
-        saida = linhas[:ini] + novas + linhas[build_idx:]
-    else:
-        # Último fallback: sem <EOF> e sem Build_By, remove linhas
-        # informativas conhecidas e acrescenta o bloco no fim.
-        saida = [linha for linha in linhas if not _eh_linha_rodape_info(linha)]
-        while saida and saida[-1].strip() == "":
-            saida.pop()
-        saida.extend(novas)
-
-    novo_texto = "\n".join(saida).rstrip() + "\n"
-    texto_atual = "\n".join(linhas).rstrip() + "\n"
-    if novo_texto != texto_atual:
-        _tools_write_text(path, novo_texto)
-        return f"{tema}: atualizado"
-    return f"{tema}: sem alteração"
-
-def build_tools_atualizar_rodape_ypo(tema_unico=None):
-    """Atualiza rodapé informativo dos .YPO sob demanda, localmente."""
-    start_time = time.time()
-    temas = _tools_temas_ativos()
-    if tema_unico:
-        temas = [(tema, path) for tema, path in temas if tema == tema_unico]
-        if not temas:
-            return f"atualizar_rodape_ypo: tema não encontrado em ./base/ativos.txt: {tema_unico}"
-
-    resultados = []
-    erros = []
-    for tema, path in temas:
-        if not os.path.exists(path):
-            erros.append(f"{tema}: arquivo não encontrado ({path})")
-            continue
-        try:
-            resultados.append(_tools_atualizar_rodape_ypo_um_tema(tema, path))
-        except Exception as exc:
-            erros.append(f"{tema}: {exc}")
-
-    try:
-        st.cache_data.clear()
-    except Exception:
-        pass
-
-    alvo = f"tema {tema_unico}" if tema_unico else "todos os temas ativos"
-    msg = f"atualizar_rodape_ypo: {alvo}; {len(resultados)} tema(s). Runtime: {time.time() - start_time:.2f}s"
-    if resultados:
-        msg += "\n" + "\n".join(resultados)
-    if erros:
-        msg += "\nErros:\n" + "\n".join(erros)
-    return msg
-
-
-def build_tools_info():
-    """Atualiza ./base/info.txt pela Central local, lendo diretamente ./base/ativos.txt."""
-    start_time = time.time()
-    linhas = []
-    erros = []
-
-    for tema, path in _tools_temas_ativos():
-        if not os.path.exists(path):
-            erros.append(f"{tema}: arquivo não encontrado ({path})")
-            continue
-        try:
-            linhas.append(_tools_info_tema(tema, path))
-        except Exception as exc:
-            erros.append(f"{tema}: {exc}")
-
-    info_path = _project_path("base", "info.txt")
-    _tools_write_text(info_path, "\n".join(linhas).rstrip() + "\n")
-
-    msg = f"Build_Info: {len(linhas)} tema(s) em ./base/info.txt. Runtime: {time.time() - start_time:.2f}s"
-    if erros:
-        msg += "\nErros:\n" + "\n".join(erros)
-    return msg
-
-
-def build_tools_update(tema):
-    """Atualiza derivados de tema já existente."""
-    tema = str(tema or "").strip()
-    temas = dict(_tools_temas_ativos())
-    if tema not in temas:
-        return "Build_update: tema não encontrado em ./base/ativos.txt."
-    if not os.path.exists(temas[tema]):
-        return f"Build_update: arquivo do tema não encontrado: {temas[tema]}"
-    resultados = [
-        build_tools_lexico(),
-        build_tools_matrix(tema),
-        build_tools_atualizar_rodape_ypo(tema),
-        build_tools_indexy(),
-        build_tools_ficha_lexica(),
-        build_tools_info(),
-    ]
-    try:
-        st.cache_data.clear()
-    except Exception:
-        pass
-    return "\n\n".join(resultados)
-
-
-def build_tools_novo_tema(tema):
-    """Cadastro técnico de novo tema já criado pelo autor em ./data."""
-    tema = str(tema or "").strip()
-    if not tema:
-        return "Build_Novo_Tema: informe o nome do tema."
-    if any(sep in tema for sep in ("/", "\\", ":", "*", "?", '"', "<", ">", "|")):
-        return "Build_Novo_Tema: nome de tema contém caractere inválido para arquivo."
-    ypo_path = _tools_resolve_ypo_path(tema)
-    if not os.path.exists(ypo_path):
-        return f"Build_Novo_Tema: crie antes o arquivo autoral em ./data/{tema}.YPO ou ./data/{tema}.ypo. Nada foi cadastrado."
-
-    alteracoes = []
-    if _tools_add_unique_line(_project_path("base", "ativos.txt"), f"{tema} : Machina", tema):
-        alteracoes.append("base/ativos.txt")
-    if _tools_add_unique_line(_project_path("base", "images.txt"), f"{tema} : machina", tema):
-        alteracoes.append("base/images.txt")
-    if _tools_add_unique_line(_project_path("temp", "readings.txt"), f"|{tema}|0|", tema):
-        alteracoes.append("temp/readings.txt")
-    if _tools_add_unique_line(_project_path("base", "rol_todos os temas.txt"), tema, tema):
-        alteracoes.append("base/rol_todos os temas.txt")
-
-    resultados = [
-        "Build_Novo_Tema: cadastro técnico verificado.",
-        "Arquivos cadastrais alterados: " + (", ".join(alteracoes) if alteracoes else "nenhum; tema já estava cadastrado"),
-        build_tools_update(tema),
-    ]
-    return "\n\n".join(resultados)
-
-
-def _tools_remove_linhas_por_tema(path, tema):
-    """Remove linhas cadastrais/derivadas relacionadas a um tema. Retorna qtd removida."""
-    tema_norm = str(tema or "").strip().casefold()
-    if not tema_norm or not os.path.exists(path):
-        return 0
-
-    with open(path, encoding="utf-8") as file:
-        linhas = file.read().splitlines()
-
-    saida = []
-    removidas = 0
-    for raw in linhas:
-        raw_strip = raw.strip()
-        chave = raw_strip.partition(" : ")[0].strip().casefold()
-
-        if raw_strip.startswith("|"):
-            campos = raw_strip.split("|")
-            if len(campos) > 1:
-                chave = campos[1].strip().casefold()
-
-        remove = False
-        if chave == tema_norm:
-            remove = True
-        elif raw_strip.casefold() == tema_norm:
-            remove = True
-
-        if remove:
-            removidas += 1
-        else:
-            saida.append(raw)
-
-    if removidas:
-        _tools_write_text(path, "\n".join(saida).rstrip() + ("\n" if saida else ""))
-    return removidas
-
-
-def _tools_remover_arquivo(path):
-    """Remove arquivo se existir. Retorna True/False."""
-    if path and os.path.exists(path) and os.path.isfile(path):
-        os.remove(path)
-        return True
-    return False
-
-
-def build_tools_remove_tema(tema):
-    """Remove tecnicamente um tema do ambiente local e atualiza derivados."""
-    tema = str(tema or "").strip()
-    if not tema:
-        return "remove_tema: escolha um tema."
-
-    ypo_path = _tools_resolve_ypo_path(tema)
-    removidos = []
-
-    # Listas cadastrais e derivadas simples.
-    arquivos_lista = [
-        _project_path("base", "ativos.txt"),
-        _project_path("base", "images.txt"),
-        _project_path("temp", "readings.txt"),
-        _project_path("base", "itimos.txt"),
-        _project_path("base", "versos.txt"),
-    ]
-
-    base_dir = _project_path("base")
-    if os.path.isdir(base_dir):
-        for name in sorted(os.listdir(base_dir)):
-            if name.lower().startswith("rol_") and name.lower().endswith(".txt"):
-                arquivos_lista.append(os.path.join(base_dir, name))
-
-    vistos = set()
-    for path in arquivos_lista:
-        if path in vistos:
-            continue
-        vistos.add(path)
-        qtd = _tools_remove_linhas_por_tema(path, tema)
-        if qtd:
-            removidos.append(f"{os.path.relpath(path, _project_path())}: {qtd} linha(s)")
-
-    # Imagem Matrix derivada do tema, se existir.
-    matrix_dir = _project_path("images", "matrix")
-    matrix_candidates = {
-        os.path.join(matrix_dir, tema + ".jpg"),
-        os.path.join(matrix_dir, tema.capitalize() + ".jpg"),
-        os.path.join(matrix_dir, tema + ".JPG"),
-        os.path.join(matrix_dir, tema.capitalize() + ".JPG"),
-    }
-    for candidate in sorted(matrix_candidates):
-        if _tools_remover_arquivo(candidate):
-            removidos.append(f"{os.path.relpath(candidate, _project_path())}: removido")
-
-    # Arquivo autoral do tema. remove_tema é ação explícita do usuário.
-    ypo_removido = False
-    for candidate in [ypo_path, _project_path("data", tema + ".ypo"), _project_path("data", tema + ".YPO")]:
-        if _tools_remover_arquivo(candidate):
-            removidos.append(f"{os.path.relpath(candidate, _project_path())}: removido")
-            ypo_removido = True
-
-    resultados = [
-        f"remove_tema: {tema}",
-        "Alterações: " + ("\n" + "\n".join(removidos) if removidos else "nenhuma ocorrência encontrada"),
-    ]
-
-    # Recria derivados que dependem do conjunto ativo restante.
-    resultados.extend([
-        build_tools_lexico(),
-        build_tools_indexy(),
-        build_tools_ficha_lexica(),
-        build_tools_info(),
-    ])
-
-    try:
-        st.cache_data.clear()
-    except Exception:
-        pass
-
-    if not ypo_removido:
-        resultados.insert(2, "Arquivo .YPO/.ypo não encontrado em ./data; listas/derivados foram tratados mesmo assim.")
-
-    return "\n\n".join(resultados)
-
-
-def build_tools_off_lex():
-    start_time = time.time()
-    off_dir = _project_path("off_machina")
-    if not os.path.isdir(off_dir):
-        return "Build_Off_Lex: pasta ./off_machina não encontrada."
-    list_lexico = []
-    list_verbet = []
-    for name in sorted(os.listdir(off_dir)):
-        if not name.lower().endswith(".pip"):
-            continue
-        script = os.path.join(off_dir, name)
-        with open(script, encoding="utf-8") as file:
-            for line in file:
-                if not line.startswith("|"):
-                    continue
-                alinhas = line.split("|")
-                if len(alinhas) < 3:
-                    continue
-                fonte = alinhas[1]
-                if "Dados de Catalogação" in fonte or "copyrights" in fonte:
-                    continue
-                for itimo in alinhas[2:len(alinhas)-1]:
-                    for word in itimo.split(" "):
-                        if "-" not in word:
-                            for c in string.punctuation:
-                                word = word.replace(c, "")
-                        word = word.strip().lower()
-                        if len(word) >= 3:
-                            if word not in list_verbet:
-                                list_verbet.append(word)
-                            chave = word + "|" + fonte
-                            if chave not in list_lexico:
-                                list_lexico.append(chave)
-    _tools_write_text(os.path.join(off_dir, "off_lexico.txt"), "".join("|" + line + "|\n" for line in list_lexico))
-    _tools_write_text(os.path.join(off_dir, "off_verbet.txt"), "".join(line + "\n" for line in list_verbet))
-    return f"Build_Off_Lex: {len(list_lexico)} ocorrência(s); {len(list_verbet)} verbete(s). Runtime: {time.time() - start_time:.2f}s"
-
-
-def build_tools_all():
-    resultados = [
-        build_tools_lexico(),
-        build_tools_matrix(),
-        build_tools_indexy(),
-        build_tools_ficha_lexica(),
-        build_tools_info(),
-    ]
-    try:
-        st.cache_data.clear()
-    except Exception:
-        pass
-    return "\n\n".join(resultados)
-
-
-def _tools_run_button(label, func, *args):
-    if st.button(label, use_container_width=True):
-        with st.spinner(label + "..."):
-            try:
-                resultado = func(*args)
-                st.success(label + " concluído.")
-                st.text(resultado)
-            except Exception as exc:
-                st.error(f"{label} falhou: {exc}")
-
-
-def _tools_help_text():
-    return """help_? — Tools locais da Machina
-
-novo_tema
-  Cadastra tecnicamente um tema novo que já existe em ./data como .YPO/.ypo.
-  Atualiza arquivos cadastrais necessários e depois roda update_tema.
-
-remove_tema
-  Remove tecnicamente um tema do ambiente local. A lista de remoção vem dos
-  yPoemas/rol_*.txt, ativos e ./data para capturar listas desencontradas.
-  Remove listas cadastrais, rol_*.txt, arquivo .YPO/.ypo e Matrix derivada,
-  depois atualiza os derivados.
-
-update_tema
-  Atualiza derivados de um tema já existente em ./base/ativos.txt.
-  Roda léxico, matrix do tema, rodapé informativo do .ypo, indexy, ficha_lexico e info.
-
-atualizar_rodape_ypo
-  Atualiza sob demanda as 4 linhas informativas do rodapé dos .ypo.
-  Mantém a linha Build_By_Lay_2_Ipo como está.
-
-build_indexy
-  Atualiza ./md_files/ABOUT_index.MD com as variações combinatórias por tema.
-
-build_lexico
-  Regera ./base/lexico_pt.txt e ./base/verbetes.txt a partir dos temas ativos.
-
-build_off-lex
-  Regera ./off_machina/off_lexico.txt e ./off_machina/off_verbet.txt.
-  Base futura da eureka_off_machina.
-
-build_matrix
-  Gera as imagens Matrix 3D XYZ e atualiza ./base/itimos.txt e ./base/versos.txt.
-  Requer numpy + matplotlib no ambiente local.
-
-build_info
-  Atualiza ./base/info.txt pela própria Central local, lendo diretamente ./base/ativos.txt.
-
-build_all
-  Reconstrução geral dos derivados principais: léxico, matrix, indexy, ficha_lexico e info.
-
-ficha_lexico
-  Atualiza o bloco final “Ambiente Léxico da Machina” em ./md_files/INDEX.txt.
-
-chk_utf-8
-  Verifica ./base/ativos.txt e todos os temas ativos em UTF-8 estrito.
-  Não converte nem altera arquivos.
-"""
-
-
-def page_local_tools():
-    st.subheader("ypo_seguro_tools")
-    st.caption("LOCAL. Lista funcional simples. Lê temas; não altera poesia.")
-
-    tools_items = [
-        "novo_tema",
-        "remove_tema",
-        "update_tema",
-        "atualizar_rodape_ypo",
-        "---",
-        "build_indexy",
-        "build_lexico",
-        "build_off-lex",
-        "build_matrix",
-        "build_info",
-        "build_all",
-        "---",
-        "ficha_lexico",
-        "chk_utf-8",
-        "---",
-        "help_?",
-    ]
-
-    try:
-        temas_local = [tema for tema, path in _tools_temas_ativos()]
-    except Exception:
-        temas_local = []
-
-    try:
-        temas_remocao = _tools_temas_para_remover()
-    except Exception:
-        temas_remocao = temas_local
-
-    escolha = st.selectbox(
-        "tools",
-        tools_items,
-        index=tools_items.index("help_?"),
-        key="tools_lista_funcional",
-    )
-
-    if escolha == "---":
-        st.info("separador")
-        return
-
-    tema_update = None
-    tema_remove = None
-    tema_rodape = None
-    novo_tema = ""
-
-    if escolha == "update_tema":
-        if temas_local:
-            tema_update = st.selectbox(
-                "tema",
-                temas_local,
-                key="tools_lista_update_tema",
-            )
-        else:
-            st.warning("Nenhum tema encontrado em ./base/ativos.txt.")
-            return
-
-    elif escolha == "remove_tema":
-        if temas_remocao:
-            tema_remove = st.selectbox(
-                "tema",
-                temas_remocao,
-                key="tools_lista_remove_tema",
-            )
-        else:
-            st.warning("Nenhum tema encontrado nas listas dos yPoemas ou em ./data.")
-            return
-
-    elif escolha == "atualizar_rodape_ypo":
-        opcoes_rodape = ["todos os temas"] + temas_local
-        tema_rodape = st.selectbox(
-            "tema",
-            opcoes_rodape,
-            key="tools_lista_rodape_ypo",
-        )
-        if tema_rodape == "todos os temas":
-            tema_rodape = None
-
-    elif escolha == "novo_tema":
-        novo_tema = st.text_input(
-            "novo tema já existente em ./data",
-            key="tools_lista_novo_tema",
-        )
-
-    if escolha == "help_?":
-        st.text(_tools_help_text())
-        return
-
-    mapa = {
-        "novo_tema": (build_tools_novo_tema, (novo_tema,)),
-        "remove_tema": (build_tools_remove_tema, (tema_remove,)),
-        "update_tema": (build_tools_update, (tema_update,)),
-        "atualizar_rodape_ypo": (build_tools_atualizar_rodape_ypo, (tema_rodape,)),
-        "build_indexy": (build_tools_indexy, ()),
-        "build_lexico": (build_tools_lexico, ()),
-        "build_off-lex": (build_tools_off_lex, ()),
-        "build_matrix": (build_tools_matrix, ()),
-        "build_info": (build_tools_info, ()),
-        "build_all": (build_tools_all, ()),
-        "ficha_lexico": (build_tools_ficha_lexica, ()),
-        "chk_utf-8": (build_tools_utf8_temas, ()),
-    }
-
-    func, args = mapa[escolha]
-    if st.button(escolha, use_container_width=True):
-        with st.spinner(escolha + "..."):
-            try:
-                resultado = func(*args)
-                st.success(escolha + " concluído.")
-                st.text(resultado)
-            except Exception as exc:
-                st.error(f"{escolha} falhou: {exc}")
-
-
 ### eof: pages
 
 
@@ -3972,6 +3140,7 @@ def render_sidebar_for_page(chosen_id):
     pick_lang()
     pick_stage_font()
     draw_check_buttons()
+
 
 
 def _set_machina_page(page_label, page_id):
@@ -4046,7 +3215,7 @@ def main():
             with palco_container:
                 if chosen_id == "1":
                     page_mini()
-                    status = f"🌀  {st.session_state.lang} - {st.session_state.tema} ( {st.session_state.mini + 1} / {len(load_temas('todos os temas'))} )"
+                    status = f"🌿  {st.session_state.lang} - {st.session_state.tema} ( {st.session_state.mini + 1} / {len(load_temas('todos os temas'))} )"
 
                 elif chosen_id == "2":
                     page_ypoemas()
@@ -4075,6 +3244,7 @@ def main():
                     )
 
                 render_sidebar_context_image(chosen_id)
+
 
 
 if __name__ == "__main__":
