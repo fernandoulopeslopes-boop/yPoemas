@@ -1,23 +1,25 @@
 *
-*
 * alhures|algures|
 *
-|01|01|Ores_0101|T|1|1|suores|pudores|rubores|teores|valores|sabores|primores|odores|humores|amores|ardores|fragores|clamores|pormenores|editores|
-|01|02|Ores_0102|T|1|1|semeadores|sonhadores|sondadores|reveladores|multicores|geradores|
+|01|01|Ores_0101|T|15|13|suores|pudores|rubores|teores|valores|sabores|primores|odores|humores|amores|ardores|fragores|clamores|pormenores|editores|
+|01|02|Ores_0102|F|6|5|semeadores|sonhadores|sondadores|reveladores|multicores|geradores|
 |01|03|Ores_0103|F|1|1|,|
-
-|02|01|Ores_0201|T|1|1|procuradores|produtores|professores|redatores|pensadores|promotores|narradores|influenciadores|atores|autores|leitores|corregedores|formadores|diretores|escritores|ensinadores|
-|02|02|Ores_0202|T|1|1|realizadores|iniciadores|inovadores|trabalhadores|observadores|moderadores|prestadores|melhores|inspiradores|superiores|percursores|fecundadores|
+|02|01|Ores_0201|T|16|3|$|procuradores|produtores|professores|redatores|pensadores|promotores|narradores|influenciadores|atores|autores|leitores|corregedores|formadores|diretores|escritores|ensinadores|
+|02|02|Ores_0202|T|12|11|realizadores|iniciadores|inovadores|trabalhadores|observadores|moderadores|prestadores|melhores|inspiradores|superiores|percursores|fecundadores|
 |02|03|Ores_0203|F|1|1|,|
-
-|03|01|Ores_0301|T|1|1|realizadores|iniciadores|inovadores|trabalhadores|observadores|moderadores|prestadores|melhores|inspiradores|superiores|percursores|fecundadores|
-|03|02|Ores_0302|T|1|1|criadores|abalizadores|abonadores|opositores|honradores|exploradores|protetores|defensores|
+|03|00|
+|03|01|Ores_0301|T|12|4|$|realizadores|iniciadores|inovadores|trabalhadores|observadores|moderadores|prestadores|melhores|inspiradores|superiores|percursores|fecundadores|
+|03|02|Ores_0302|T|8|5|criadores|abalizadores|abonadores|opositores|honradores|exploradores|protetores|defensores|
 |03|03|Ores_0303|F|1|1|,|
-
 |04|01|Ores_0401|F|1|1|e|
-|04|02|Ores_0402|T|1|1|senhores|senadores|vereadores|legisladores|pastores|pregadores|credores|
-|04|03|Ores_0403|F|1|1|"|||"|||"|||"|||"|||"|||"|||"
-|04|04|Ores_0404|T|1|1|superiores|traidores|saqueadores|vendedores|zombadores|opressores|trituradores|sensores|impostores|imperadores|gastadores|malfeitores|pecadores|deturpadores|devoradores|castradores|limitadores|amadores|inferiores|faladores|corruptores|exploradores|destrutores|
-|04|05|Ores_0405|F|1|1|"|||"|||"|||"|||"|||"|||"|||"
+|04|02|Ores_0402|F|7|2|senhores|senadores|vereadores|legisladores|pastores|pregadores|credores|
+|04|03|Ores_0403|F|1|1|"|
+|04|04|Ores_0404|T|23|4|superiores|traidores|saqueadores|vendedores|zombadores|opressores|trituradores|sensores|impostores|imperadores|gastadores|malfeitores|pecadores|deturpadores|devoradores|castradores|limitadores|amadores|inferiores|faladores|corruptores|exploradores|destrutores|
+|04|05|Ores_0405|F|1|1|"|
 |04|06|Ores_0406|F|1|1|.|
 <EOF>
+Verbetes no Texto = 15
+  Total de ítimos = 108
+Total de verbetes = 123
+Qtd. de Variações = 307.419.840 (milhões)
+Last_Update_Ypo em 08/07/2026 - 15:26

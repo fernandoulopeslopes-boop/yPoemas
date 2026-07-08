@@ -2,13 +2,17 @@
 * evidências.ypo
 *
 |01|01|Zero_0101|F|1|1|a|
-|01|02|Zero_0102|T|13|4|ciência|presciência|consciência|desconsciência|inconsciência|subconsciência|semiconsciência|omnisciência|onisciência|neurociência|pseudociência|subciência|semiciência|
+|01|02|Zero_0102|T|13|3|ciência|presciência|consciência|desconsciência|inconsciência|subconsciência|semiconsciência|omnisciência|onisciência|neurociência|pseudociência|subciência|semiciência|
 |01|03|Zero_0103|F|1|1|da|
-|01|04|Zero_0104|T|13|6|ciência|presciência|consciência|desconsciência|inconsciência|subconsciência|semiconsciência|omnisciência|onisciência|neurociência|pseudociência|subciência|semiciência|
-|02|01|Zero_0201|F|4|1|pode|não pode|deve|não deve|
-|02|02|Zero_0202|F|4|2|transformar-se em|incorrer em|tornar-se|ser vista como|
-|03|01|Zero_0301|T|15|9|sub-||nova|semi-||outra|"fake"-||meta-|meia-||pseudo-||versão|mais uma|
-|03|02|Zero_0302|T|13|8|ciência|presciência|consciência|desconsciência|inconsciência|subconsciência|semiconsciência|omnisciência|onisciência|neurociência|pseudociência|subciência|semiciência|
-|03|03|Zero_0303|F|4|1|.|?|!|...|
+|01|04|Zero_0104|F|13|5|ciência|presciência|consciência|desconsciência|inconsciência|subconsciência|semiconsciência|omnisciência|onisciência|neurociência|pseudociência|subciência|semiciência|
+|02|01|Zero_0201|F|6|3|pode|não pode|deve|não deve|"seria"|não seria|
+|02|02|Zero_0202|F|4|4|transformar-se em|incorrer em|tornar-se|ser vista como|
+|03|01|Zero_0301|T|15|7|sub-||nova|semi-||outra|"fake"-||meta-|meia-||pseudo-||versão|mais uma|
+|03|02|Zero_0302|T|13|1|ciência|presciência|consciência|desconsciência|inconsciência|subconsciência|semiconsciência|omnisciência|onisciência|neurociência|pseudociência|subciência|semiciência|
+|03|03|Zero_0303|F|6|3|.|?|!|...|?|?|
 <EOF>
-
+Verbetes no Texto = 9
+  Total de ítimos = 67
+Total de verbetes = 76
+Qtd. de Variações = 3.163.680 (milhões)
+Last_Update_Ypo em 08/07/2026 - 15:26

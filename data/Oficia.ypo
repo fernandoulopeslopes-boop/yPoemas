@@ -4,65 +4,58 @@
 *  |Galactopoética: relativo a ou que provoca a produção de leite
 *- |diversos|ardil|oriundas|balizar|iletrado|figurino|
 *-
-|01|01|Oficia_0101|F|17|2|Cara|Ilustríssima|Digníssima|Afabilíssima|Altíssima|Amabilíssima|Beneficentíssima|Credibilíssima|Excelentíssima|Grandessíssima|Magnificentíssima|Nobilíssima|Notabilíssima|Respeitabilíssima|Sapientíssima|Sereníssima|Venerabilíssima|
-|01|02|Oficia_0102|F|6|3|Senhora|Senhora Vice-|Doutora|Senhora Pré-|Senhora Doutora|Senhora Sub|
-|01|03|Oficia_0103|F|42|10|Diretora|Presidente|Reitora|Conselheira|Porteira|Inventora|Manobrista|Gestora|Ascensorista|Auditora|Editora|Coletora|Locutora|Condutora|Consultora|Instrutora|Preletora|Produtora|Corretora|Secretária|Administradora|Inspetora|Interventora|Mediadora|Mentora|Monitora|Preceptora|Promotora|Professora|Tesoureira|Bibliotecária|Guarda Mor||Porta-voz|Superintendente|Mantenedora|Oradora|Embaixadora|Agenciadora|Alfabetizadora|Pregadora|Articuladora|
-|01|04|Oficia_0104|F|11|5|Geral|Adjunta|Honorária|Temporária|Vitalícia|Substituta|em Chefe|Interina|em Exercício|Itinerante|Biônica|
-|02|01|Oficia_0201|T|4|3|da Associação|da Academia|da Agência|da Assembleia|da Agremiação|da Associação|da Assembleia| do Ateneu|da Arcádia|
-|02|02|Oficia_0202|T|4|3|Brasileira|Binacional|Britânica|Bilateral|Bilíngue|Binomial|Babilônica|Berlinense|Biodegradável|Brasilianista|Bolchevique|Bostoniana|Biopoética|Booleana|Biônica|Barroca|Babélica|Bibliótica|Bonfinense|Bonifaciana|Birmanesa|Barbárica|
-|02|03|Oficia_0203|F|6|3|de Normas Poéticas|de Não-Poetas|de Novas Poéticas|de Nanoengenharia Poética|da Nova Palavra|do Neo-Português|
+|01|01|Oficia_0101|F|17|16|Cara|Ilustríssima|Digníssima|Afabilíssima|Altíssima|Amabilíssima|Beneficentíssima|Credibilíssima|Excelentíssima|Grandessíssima|Magnificentíssima|Nobilíssima|Notabilíssima|Respeitabilíssima|Sapientíssima|Sereníssima|Venerabilíssima|
+|01|02|Oficia_0102|F|6|6|Senhora|Senhora Vice-|Doutora|Senhora Pré-|Senhora Doutora|Senhora Sub|
+|01|03|Oficia_0103|F|42|7|Diretora|Presidente|Reitora|Conselheira|Porteira|Inventora|Manobrista|Gestora|Ascensorista|Auditora|Editora|Coletora|Locutora|Condutora|Consultora|Instrutora|Preletora|Produtora|Corretora|Secretária|Administradora|Inspetora|Interventora|Mediadora|Mentora|Monitora|Preceptora|Promotora|Professora|Tesoureira|Bibliotecária|Guarda Mor||Porta-voz|Superintendente|Mantenedora|Oradora|Embaixadora|Agenciadora|Alfabetizadora|Pregadora|Articuladora|
+|01|04|Oficia_0104|F|11|2|Geral|Adjunta|Honorária|Temporária|Vitalícia|Substituta|em Chefe|Interina|em Exercício|Itinerante|Biônica|
+|02|01|Oficia_0201|T|9|9|da Associação|da Academia|da Agência|da Assembleia|da Agremiação|da Assembleia|do Ateneu|da Arcádia|
+|02|02|Oficia_0202|T|22|21|Brasileira|Binacional|Britânica|Bilateral|Bilíngue|Binomial|Babilônica|Berlinense|Biodegradável|Brasilianista|Bolchevique|Bostoniana|Biopoética|Booleana|Biônica|Barroca|Babélica|Bibliótica|Bonfinense|Bonifaciana|Birmanesa|Barbárica|
+|02|03|Oficia_0203|F|6|6|de Normas Poéticas|de Não-Poetas|de Novas Poéticas|de Nanoengenharia Poética|da Nova Palavra|do Neo-Português|
 |02|05|Oficia_0205|F|1|1|, ABNP.|
 |03|00|
-|04|01|Oficia_0401|F|5|4|Venho por meio deste|Venho humildemente|O objetivo deste é|Pretendo, neste,|Quero, como filiado,|
-|04|02|Oficia_0402|F|10|10|solicitar|requerer|exigir|pleitear|reivindicar|clamar|postular|requisitar|suplicar|implorar|
+|04|01|Oficia_0401|F|5|1|Venho por meio deste|Venho humildemente|O objetivo deste é|Pretendo, neste,|Quero, como filiado,|
+|04|02|Oficia_0402|F|10|7|solicitar|requerer|exigir|pleitear|reivindicar|clamar|postular|requisitar|suplicar|implorar|
 |05|01|Oficia_0501|F|1|1|junto a tão|
-|05|02|Oficia_0502|T|71|50|renomada|abalizada|afamada|ilustre|benemérita|apregoada|insigne|celebrada|célebre|conceituada|conhecida|consagrada|considerada|conspícua|consumada|cotada|decantada|distinta|assinalada|egrégia|emérita|eminente|excelente|exímia|extraordinária|bem falada|famigerada|famosa|gloriosa|ínclita|memoranda|memoriosa|memorosa|nobre|nomeada|notável|preclara|prestante|prestigiada|brilhante|honorável|octogenária|importante|eloquente|insuperável|inefável|sapiente|aguda|apurada|arguta|astuta|atinada|avisada|destra|douta|educada|engenhosa|erudita|esclarecida|hábil|ladina|letrada|lúcida|perspicaz|sabida|sábia|sagaz|sensata|solerte|versada|absconsa|
-|05|03|Oficia_0503|F|9|7|Membro|Preceptora|Bastião|Mentora|Baluarte|Gestora|Bacharel|Reitora|Preletora|
-|06|01|Oficia_0601|F|5|3|a inclusão|o aceite|o enxerto|o aditamento|a difusão|
-|06|02|Oficia_0602|F|5|1|de minha obra poética|de meus trabalhos poéticos|de minha criação literária|dos meus escritos|destes parcos versos|
-|07|01|Oficia_0701|F|12|7|nos anais|nos arquivos|no memorial|nas estantes|nos registros|nas gavetas|nos labirintos|nas catacumbas|no futuro|nas entranhas|nos porões|nos compêndios|
-|07|02|Oficia_0702|F|4|3|desta|de tão|de tal|de quão|
-|07|03|Oficia_0703|T|49|26|renomada|abalizada|afamada|ilustre|benemérita|apregoada|insigne|celebrada|célebre|conceituada|conhecida|consagrada|considerada|conspícua|consumada|cotada|decantada|distinta|assinalada|egrégia|emérita|eminente|excelente|exímia|extraordinária|bem falada|famigerada|famosa|gloriosa|ínclita|memoranda|memoriosa|memorosa|nobre|nomeada|notável|preclara|prestante|prestigiada|brilhante|honorável|octogenária|importante|eloquente|insuperável|inefável|sapiente|aguda|apurada|arguta|astuta|atinada|avisada|destra|douta|educada|engenhosa|erudita|esclarecida|hábil|ladina|letrada|lúcida|perspicaz|sabida|sábia|sagaz|sensata|solerte|versada|absconsa|
-|07|04|Oficia_0704|F|6|5|Instituição|Associação|Agência|Academia|Entidade|Agregação|
+|05|02|Oficia_0502|T|71|26|renomada|abalizada|afamada|ilustre|benemérita|apregoada|insigne|celebrada|célebre|conceituada|conhecida|consagrada|considerada|conspícua|consumada|cotada|decantada|distinta|assinalada|egrégia|emérita|eminente|excelente|exímia|extraordinária|bem falada|famigerada|famosa|gloriosa|ínclita|memoranda|memoriosa|memorosa|nobre|nomeada|notável|preclara|prestante|prestigiada|brilhante|honorável|octogenária|importante|eloquente|insuperável|inefável|sapiente|aguda|apurada|arguta|astuta|atinada|avisada|destra|douta|educada|engenhosa|erudita|esclarecida|hábil|ladina|letrada|lúcida|perspicaz|sabida|sábia|sagaz|sensata|solerte|versada|absconsa|
+|05|03|Oficia_0503|F|9|4|Membro|Preceptora|Bastião|Mentora|Baluarte|Gestora|Bacharel|Reitora|Preletora|
+|06|01|Oficia_0601|F|5|5|a inclusão|o aceite|o enxerto|o aditamento|a difusão|
+|06|02|Oficia_0602|F|5|3|de minha obra poética|de meus trabalhos poéticos|de minha criação literária|dos meus escritos|destes parcos versos|
+|07|01|Oficia_0701|F|12|4|nos anais|nos arquivos|no memorial|nas estantes|nos registros|nas gavetas|nos labirintos|nas catacumbas|no futuro|nas entranhas|nos porões|nos compêndios|
+|07|02|Oficia_0702|F|4|4|desta|de tão|de tal|de quão|
+|07|03|Oficia_0703|T|71|40|renomada|abalizada|afamada|ilustre|benemérita|apregoada|insigne|celebrada|célebre|conceituada|conhecida|consagrada|considerada|conspícua|consumada|cotada|decantada|distinta|assinalada|egrégia|emérita|eminente|excelente|exímia|extraordinária|bem falada|famigerada|famosa|gloriosa|ínclita|memoranda|memoriosa|memorosa|nobre|nomeada|notável|preclara|prestante|prestigiada|brilhante|honorável|octogenária|importante|eloquente|insuperável|inefável|sapiente|aguda|apurada|arguta|astuta|atinada|avisada|destra|douta|educada|engenhosa|erudita|esclarecida|hábil|ladina|letrada|lúcida|perspicaz|sabida|sábia|sagaz|sensata|solerte|versada|absconsa|
+|07|04|Oficia_0704|F|6|2|Instituição|Associação|Agência|Academia|Entidade|Agregação|
 |07|05|Oficia_0705|F|1|1|.|
 |08|00|
-|09|01|Oficia_0901|F|4|4|A título de|À guisa de|Apenas como|Servindo de|
-|09|02|Oficia_0902|F|6|5|exemplo|aperitivo|prefácio|prólogo|curiosidade|tira-gosto|
-|10|01|Oficia_1001|F|6|4|segue|envio|anexo|incluo|encaminho|apresento|
-|10|02|Oficia_1002|F|9|2|um pequeno apanhado|um rol de trechos|um tosco extrato|um par de palavras pinçadas|um trivial resumo|um breve mapa|um fugaz sumário|uma ligeira mostra|um par de pinceladas|enredo sucinto|boato legítimo|
-|11|01|Oficia_1101|F|9|9|de textos|de poemas|de trovas|de versos|de sonetos|de quadrinhas|de aforismos|de récitas|de crias oriundas|
-|11|02|Oficia_1102|F|6|5|de minha lavra|de minha pena|de meu punho|de minha lida|do meu labor|ao acaso|
+|09|01|Oficia_0901|F|4|1|A título de|À guisa de|Apenas como|Servindo de|
+|09|02|Oficia_0902|F|6|2|exemplo|aperitivo|prefácio|prólogo|curiosidade|tira-gosto|
+|10|01|Oficia_1001|F|6|1|segue|envio|anexo|incluo|encaminho|apresento|
+|10|02|Oficia_1002|F|11|10|um pequeno apanhado|um rol de trechos|um tosco extrato|um par de palavras pinçadas|um trivial resumo|um breve mapa|um fugaz sumário|uma ligeira mostra|um par de pinceladas|enredo sucinto|boato legítimo|
+|11|01|Oficia_1101|F|9|6|de textos|de poemas|de trovas|de versos|de sonetos|de quadrinhas|de aforismos|de récitas|de crias oriundas|
+|11|02|Oficia_1102|F|6|2|de minha lavra|de minha pena|de meu punho|de minha lida|do meu labor|ao acaso|
 |11|03|Oficia_1103|F|1|1|.|
 |12|00|
-|13|01|Oficia_1301|F|7|3|Esperando|No ensejo de|Ansiando|Intuindo|Aspirando|Cogitando|Almejando|
-|13|02|Oficia_1302|F|4|1|poder contar|ser agraciado|irmanar-me|estar em sintonia|
+|13|01|Oficia_1301|F|7|7|Esperando|No ensejo de|Ansiando|Intuindo|Aspirando|Cogitando|Almejando|
+|13|02|Oficia_1302|F|4|2|poder contar|ser agraciado|irmanar-me|estar em sintonia|
 |14|01|Oficia_1401|F|1|1|com Vossa|
-|14|02|Oficia_1402|F|30|20|magnânima|inequívoca|indubitável|gentil|onipresente|indispensável|indiscutível|inexorável|incontestável|imaculada|reconhecida|internacional|vasta|beneficente|sabida|abrangente|inegável|inquestionável|deplorável|astronômica|iletrada|complacente|displicente|manifesta|eloquente|insuperável|inefável|sapiente|ilibada|galactopoética|
-|14|03|Oficia_1403|F|7|1|bondade|compreensão|aceitação|boa vontade|galhardia|cultura|sabedoria|
+|14|02|Oficia_1402|F|30|17|magnânima|inequívoca|indubitável|gentil|onipresente|indispensável|indiscutível|inexorável|incontestável|imaculada|reconhecida|internacional|vasta|beneficente|sabida|abrangente|inegável|inquestionável|deplorável|astronômica|iletrada|complacente|displicente|manifesta|eloquente|insuperável|inefável|sapiente|ilibada|galactopoética|
+|14|03|Oficia_1403|F|7|5|bondade|compreensão|aceitação|boa vontade|galhardia|cultura|sabedoria|
 |14|04|Oficia_1404|F|1|1|,|
-|15|01|Oficia_1501|F|20|10|respeitosamente|ansiosamente|ociosamente|simplesmente|urgentemente|estupidamente|tão-somente|cordialmente|minuciosamente|mormente|impunemente|entrementes|literalmente|naturalmente|provavelmente|redondamente|religiosamente|quase temente|ultimamente|veementemente|
+|15|01|Oficia_1501|F|20|7|respeitosamente|ansiosamente|ociosamente|simplesmente|urgentemente|estupidamente|tão-somente|cordialmente|minuciosamente|mormente|impunemente|entrementes|literalmente|naturalmente|provavelmente|redondamente|religiosamente|quase temente|ultimamente|veementemente|
 |15|02|Oficia_1502|F|1|1|,|
-|15|03|Oficia_1503|F|6|1|aguardo|horo|teço preces|espero|busco respostas|ofego|
+|15|03|Oficia_1503|F|6|4|aguardo|horo|teço preces|espero|busco respostas|ofego|
 |15|04|Oficia_1504|F|1|1|.|
 |16|00|
-|17|01|Oficia_1701|F|5|5|PS: Se todavia|PS: Se, no entanto,|PS: Porém, se|PS: Se porventura|Entretanto, se|
+|17|01|Oficia_1701|F|5|2|PS: Se todavia|PS: Se, no entanto,|PS: Porém, se|PS: Se porventura|Entretanto, se|
 |17|02|Oficia_1702|F|3|3|parecerem|soarem feito|julgares serem|
-|17|03|Oficia_1703|F|6|5|palavras|estrofes|frases|ideias|quadras|balelas|trovas|crias|
-|17|04|Oficia_1704|F|56|26|a esmo|insensatas|sem nexo|carentes de sentido|impertinentes|órfãs|em desuso|absurdas|insanas|sem atino|impensadas|díspares|inverossímeis|descabidas|inventadas|óbvias|irreais|abusadas|obsoletas|desmedidas|incoerentes|caóticas|ambíguas|exóticas|improváveis|vãs|fictícias|ao léu|desconexas|menores|vagas|dessemelhantes|em disparate|bizarras|esdrúxulas|estapafúrdias|estranhas|incomuns|inusitadas|sem rumo certo|invulgares|mirabolantes|singulares|enfadonhas|sem serventia|aquém da praxe|sibilinas|abstratas|mambembes|clandestinas|baldias|frívolas|aquém dos cânones|irreverentes|acrônicas|à deriva|
+|17|03|Oficia_1703|F|8|2|palavras|estrofes|frases|ideias|quadras|balelas|trovas|crias|
+|17|04|Oficia_1704|F|56|23|a esmo|insensatas|sem nexo|carentes de sentido|impertinentes|órfãs|em desuso|absurdas|insanas|sem atino|impensadas|díspares|inverossímeis|descabidas|inventadas|óbvias|irreais|abusadas|obsoletas|desmedidas|incoerentes|caóticas|ambíguas|exóticas|improváveis|vãs|fictícias|ao léu|desconexas|menores|vagas|dessemelhantes|em disparate|bizarras|esdrúxulas|estapafúrdias|estranhas|incomuns|inusitadas|sem rumo certo|invulgares|mirabolantes|singulares|enfadonhas|sem serventia|aquém da praxe|sibilinas|abstratas|mambembes|clandestinas|baldias|frívolas|aquém dos cânones|irreverentes|acrônicas|à deriva|
 |17|05|Oficia_1705|F|1|1|...|
-|18|01|Oficia_1801|F|18|14|Engavete-se o meu pedido!|Escreva por si mesmo!|Esqueçamos o ocorrido!|Reclame com um tal de Maiakovski!|Desconsidere o que foi lido!|Declino deste ofício!|Que o gato coma-lhe a língua!|Acatarei, se brilhantes, comentários.|Indefiro-me desde o início!|Que me calem para o sempre!|Invente seu próprio texto!|Reze por mim vez em quando!|Me erre em citações!|Condene-me ao olvido!|Que se restaure o silêncio!|Sirva-as no chá da tarde!|Demito-me de antemão!|Finja não tê-las visto!|
+|18|01|Oficia_1801|F|18|11|Engavete-se o meu pedido!|Escreva por si mesmo!|Esqueçamos o ocorrido!|Reclame com um tal de Maiakovski!|Desconsidere o que foi lido!|Declino deste ofício!|Que o gato coma-lhe a língua!|Acatarei, se brilhantes, comentários.|Indefiro-me desde o início!|Que me calem para o sempre!|Invente seu próprio texto!|Reze por mim vez em quando!|Me erre em citações!|Condene-me ao olvido!|Que se restaure o silêncio!|Sirva-as no chá da tarde!|Demito-me de antemão!|Finja não tê-las visto!|
 |19|00|
 |20|01|Oficia_2001|F|1|1|< pCidadeOficio >, < dOficio >.|
 <EOF>
-
-# 
-#      Verbetes usados: 70
-#     Verbetes do tema: 573
-#      Banco de ítimos: 475
-# 
-# Análise combinatória: 57.110.137.135.498.442.550.804.480.000.000 (nonilhões)  
-# 
-# - predicado é tudo que não é sujeito.
-
-Copyright © 1983-Hoje Nando Lopes - **yPoemas @ Machina de Fazer Poesia**# 
-
+Verbetes no Texto = 44
+  Total de ítimos = 525
+Total de verbetes = 569
+Qtd. de Variações = 5.792.307.731.598.100.109.595.770.880.000.000 (decilhões)
+Last_Update_Ypo em 08/07/2026 - 15:26
