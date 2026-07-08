@@ -1,20 +1,20 @@
 *- 
 *- Resumida.ypo
 *- 
-|01|01|Resumida_0101|T|5|1|A entrada do texto|O percurso se abre com|Logo em|O ponto de maior concentração, que aparece em|O trecho|
+|01|01|Resumida_0101|T|5|2|A entrada do texto|O percurso se abre com|Logo em|O ponto de maior concentração, que aparece em|O trecho|
 |01|02|Resumida_0102|F|1|1|“{ABERTURA}”,|
-|01|03|Resumida_0103|F|5|1|define o eixo mínimo da leitura|fixa o primeiro movimento do poema|indica sua direção principal|resume a pressão central sem esgotar o poema|aponta o núcleo mais direto do texto|
+|01|03|Resumida_0103|F|5|4|define o eixo mínimo da leitura|fixa o primeiro movimento do poema|indica sua direção principal|resume a pressão central sem esgotar o poema|aponta o núcleo mais direto do texto|
 |01|04|Resumida_0104|F|1|1|e|
-|01|05|Resumida_0105|T|5|1|define o eixo mínimo da leitura|fixa o primeiro movimento do poema|indica sua direção principal|resume a pressão central sem esgotar o poema|aponta o núcleo mais direto do texto|
-|01|06|Resumida_0106|F|1|1|.|...|
+|01|05|Resumida_0105|T|5|3|define o eixo mínimo da leitura|fixa o primeiro movimento do poema|indica sua direção principal|resume a pressão central sem esgotar o poema|aponta o núcleo mais direto do texto|
+|01|06|Resumida_0106|F|2|1|.|...|
 |02|00|
 |02|01|Resumida_0201|F|1|1|“{DESTAQUE}”|
-|02|02|Resumida_0202|T|6|1|anuncia o percurso sem esgotá-lo:|concentra a pressão:|recolhe a leitura sem transformar a tensão:|recolhe as linhas de força:|organiza o sentido, sem se deixar domesticar:|reúne a tensão mais visível:|
-|02|03|Resumida_0203|F|11|1|deixa o poema ainda reverberando|organiza o eco do que veio antes|dá ao poema seu ponto de recolhimento|não reduz o poema a uma resposta|encontra uma saída que ainda preserva atrito|
+|02|02|Resumida_0202|T|6|3|anuncia o percurso sem esgotá-lo:|concentra a pressão:|recolhe a leitura sem transformar a tensão:|recolhe as linhas de força:|organiza o sentido, sem se deixar domesticar:|reúne a tensão mais visível:|
+|02|03|Resumida_0203|F|5|4|deixa o poema ainda reverberando|organiza o eco do que veio antes|dá ao poema seu ponto de recolhimento|não reduz o poema a uma resposta|encontra uma saída que ainda preserva atrito|
 |02|04|Resumida_0104|F|1|1|e|
-|02|05|Resumida_0205|T|11|4|deixa o poema ainda reverberando.|organiza o eco do que veio antes.|dá ao poema seu ponto de recolhimento.|não reduz o poema a uma resposta.|encontra uma saída que ainda preserva atrito.|recolhe o percurso sem esgotá-lo.|concentra a pressão.|recolhe a leitura sem transformar a tensão.|recolhe as linhas de força.|organiza o sentido, sem se deixar domesticar.|reúne a tensão mais visível.|
+|02|05|Resumida_0205|T|11|9|deixa o poema ainda reverberando.|organiza o eco do que veio antes.|dá ao poema seu ponto de recolhimento.|não reduz o poema a uma resposta.|encontra uma saída que ainda preserva atrito.|recolhe o percurso sem esgotá-lo.|concentra a pressão.|recolhe a leitura sem transformar a tensão.|recolhe as linhas de força.|organiza o sentido, sem se deixar domesticar.|reúne a tensão mais visível.|
 |03|00|
-|03|01|Resumida_0301|T|4|1|No fecho, “{FECHO}”|A última linha “{FECHO}”:|Na chegada a “{FECHO}”|Com verso final — “{FECHO}” —|
+|03|01|Resumida_0301|T|4|3|No fecho, “{FECHO}”|A última linha “{FECHO}”:|Na chegada a “{FECHO}”|Com verso final — “{FECHO}” —|
 |03|02|Resumida_0302|T|3|1|a leitura termina com eco, não com explicação.|o texto continua vibrando...|o poema preserva sua zona de ressonância.|
-|03|03|Resumida_0303|F|3|1|O poema não pede solução: continua em movimento.|O percurso crítico se encerra mas permanece uma tensão produtiva.|O fechamento funciona como mar da leitura...
+|03|03|Resumida_0303|F|2|1|O poema não pede solução: continua em movimento.|O percurso crítico se encerra mas permanece uma tensão produtiva.|
 <eof>

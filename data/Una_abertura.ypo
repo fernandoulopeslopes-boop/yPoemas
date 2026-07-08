@@ -3,55 +3,62 @@
 *- 
 |01|01|Abertura_0101|F|1|1|a Una ( |
 |01|02|Abertura_0102|F|1|1|< nome_una > )|
-|01|03|Abertura_0103|F|2|2|não chega ao|não aparece no|
-|01|04|Abertura_0104|F|1|1|ambiente da Machina|
-|01|05|Abertura_0105|F|2|2|para |com intenção de|
-|01|06|Abertura_0106|T|3|1|explicar o|dar respostas ao|indicar caminhos ao|
-|01|07|Abertura_0107|T|4|2|mundo|obvio|texto|escrito|
-|01|08|Abertura_0108|F|3|2|:|.|...|
-|02|01|Abertura_0201|F|1|1|chega para|
-|02|02|Abertura_0202|T|4|4|perceber|destacar|pontuar|ampliar|
-|02|03|Abertura_0203|F|1|1|o que,|
-|02|04|Abertura_0104|T|5|4|no texto,|no yPoema,|no resultado,|no contexto,|nas entrelinhas,|
-|02|05|Abertura_0205|T|5|4|organiza a|traz sentido à|conduz a|há por traz da|"se esconde" na|
-|02|06|Abertura_0206|F|1|1|leitura.|
-|03|00|
-|03|01|Abertura_0301|T|3|2|Às vezes é|Pode ser|Talvez|
-|03|02|Abertura_0302|F|4|2|uma torção|uma outra visão|um novo sentido|uma "releitura"|
-|03|03|Abertura_0303|F|1|1|da frase.|
+|02|01|Abertura_0201|F|2|2|não chega ao|não aparece no|
+|02|02|Abertura_0202|F|1|1|ambiente da Machina|
+|03|01|Abertura_0301|F|2|2|para|com intenção de|
+|03|02|Abertura_0302|T|3|3|explicar o|dar respostas ao|indicar caminhos ao|
+|03|03|Abertura_0302|T|4|4|mundo|obvio|texto|escrito|
+|03|04|Abertura_0304|F|3|1|:|.|...|
 |04|00|
-|04|00|
-|04|01|Abertura_0301|T|5|5|Às vezes é|Pode ser|Talvez|Quiçá|Ou então|
-|04|02|Abertura_0402|T|7|4|uma pausa|um respiro|um lapso|um silêncio|uma linha em branco|uma vírgula|uma "releitura"|
-|04|03|Abertura_0403|F|2|2|que pesa mais|que é mais forte|
-|04|04|Abertura_0404|F|1|1|que uma palavra.|
-|05|01|Abertura_0501|T|5|4|Às vezes é|Pode ser|Talvez|Quiçá|Ou então|
-|05|02|Abertura_0502|T|4|3|uma imagem|uma "sombra"|uma "ideia" oculta|uma trilha|
-|05|03|Abertura_0503|F|1|1|que parece|
-|05|04|Abertura_0504|T|4|3|lateral,|deslocada,|perdida,|"nas nuvens",|
-|05|05|Abertura_0505|T|2|2|mas sustenta o centro.|mas mantém o centro.|
-|06|01|Abertura_0601|F|2|2|Nada aqui|Nada na Una|
-|06|02|Abertura_0602|F|5|1|acontece|entra|é feito|surge|aparece|
-|06|03|Abertura_0603|T|5|4|por enfeite.|ao acaso.|por acidente.|"de graça".|como ornamento.|
-|07|00|
-|07|01|Abertura_0701|T|5|1|Cada escolha|Cada rodada|Cada sorteio|Cada Análise|Cada geração|
-|07|02|Abertura_0702|T|7|5|empurra|desloca|deposita|transfere|apresenta|recria|reinventa|
-|07|03|Abertura_0703|F|6|6|o sentido|a leitura|o trecho|o contexto|o fluxo|a narrativa|
-|08|04|Abertura_0804|F|1|1|um pouco para|
-|08|05|Abertura_0805|F|8|6|diante|o longe|dentro|o centro|o inusitado|o inesperado|o imprevisto|o distante|
-|08|05|Abertura_0805|F|1|1|,|
-|09|06|Abertura_0906|F|1|1|um pouco para|
-|09|07|Abertura_0907|T|8|7|diante|o longe|dentro|o centro|o inusitado|o inesperado|o imprevisto|o distante|
-|09|08|Abertura_0908|F|1|1|, um pouco para|
-|09|09|Abertura_0909|T|8|3|diante|o longe|dentro|o centro|o inusitado|o inesperado|o imprevisto|o distante|
-|09|10|Abertura_0910|F|1|1|.|
+|04|01|Abertura_0401|F|1|1|Chega para|
+|04|02|Abertura_0402|F|8|6|perceber|destacar|pontuar|ampliar|apontar|insinuar|descobrir|recuperar|
+|04|03|Abertura_0403|F|1|1|o que,|
+|04|04|Abertura_0404|F|6|6|no texto,|no yPoema,|no resultado,|no contexto,|nas entrelinhas,|no cenário,|
+|04|05|Abertura_0405|T|5|1|organiza a|traz sentido à|conduz a|há por traz da|"se esconde" na|
+|04|06|Abertura_0406|F|1|1|leitura.|
+|05|00|
+|05|01|Abertura_0501|T|3|3|Às vezes é|Pode ser|Talvez|
+|05|02|Abertura_0502|F|5|1|uma torção|uma outra visão|um novo sentido|uma "releitura"|uma variação|
+|05|03|Abertura_0503|F|1|1|da frase.|
+|06|00|
+|06|01|Abertura_0601|T|5|2|Às vezes é|Pode ser|Talvez|Quiçá|Ou então|
+|06|02|Abertura_0602|T|7|7|uma pausa|um respiro|um lapso|um silêncio|uma linha em branco|uma vírgula|uma "releitura"|
+|06|03|Abertura_0603|F|5|3|que pesa mais que|que "redescobre"|que é mais forte que|que "reinventa"|que "resignifica {sic}"|
+|06|04|Abertura_0604|F|2|2|uma palavra.|a frase.|
+|07|01|Abertura_0701|T|5|4|Às vezes é|Pode ser|Talvez|Quiçá|Ou então|
+|07|02|Abertura_0702|T|4|2|uma imagem|uma "sombra"|uma "ideia" oculta|uma trilha|
+|07|03|Abertura_0703|F|1|1|que parece|
+|07|04|Abertura_0704|T|6|5|lateral,|deslocada,|perdida,|"nas nuvens",|indistinta,|imaginária|
+|08|05|Abertura_0805|F|1|1|mas|
+|08|06|Abertura_0806|T|3|3|sustenta o|mantém o|dá suporte ao|
+|08|08|Abertura_0808|T|2|2|centro.|yPoema.|
+|09|01|Abertura_0901|F|2|2|Nada aqui|Nada na Una|
+|09|02|Abertura_0902|F|5|4|acontece|entra|é feito|surge|aparece|
+|09|03|Abertura_0903|T|6|6|por enfeite.|ao acaso.|por acidente.|"de graça".|como ornamento.|por suposição|
 |10|00|
-|10|01|Abertura_1001|F|3|3|Ler bem|Uma boa leitura|Um bom princípio|
-|10|02|Abertura_1002|T|6|1|é notar|é reconhecer|é intuir|é abraçar|é pairar sobre|é apreender|
-|10|03|Abertura_1003|T|8|3|esse desenho.|esse quadro.|essa paisagem.|essa abertura|essa visão.|esse "quase mapa".|esse horizonte.|essa arquitetura.|
-|11|01|Abertura_1101|F|2|1|Não para|Sem intenção de|
-|11|02|Abertura_1102|F|3|2|fechar o poema,|terminar o poema|concluir o poema|
-|12|03|Abertura_1203|T|3|1|mas para|e sim|... apenas|
-|12|04|Abertura_1204|F|7|5|penetrar no|desvendar o|mergulhar no|acompanhar o|desvelar o|insinuar o|perceber o|
-|12|05|Abertura_1205|F|3|1|modo como ele se abre.|modo como ele se revela.|roteiro que ele traça.|
+|10|01|Abertura_1001|T|5|5|Cada escolha|Cada rodada|Cada sorteio|Cada Análise|Cada geração|
+|10|02|Abertura_1002|T|7|7|empurra|desloca|deposita|transfere|apresenta|recria|reinventa|
+|10|03|Abertura_1003|F|6|2|o sentido|a leitura|o trecho|o contexto|o fluxo|a narrativa|
+|11|04|Abertura_1104|F|1|1|um pouco para|
+|11|05|Abertura_1105|F|8|2|diante|o longe|dentro|o centro|o inusitado|o inesperado|o imprevisto|o distante|
+|11|05|Abertura_1105|F|1|1|,|
+|12|01|Abertura_1201|F|1|1|um pouco para|
+|12|02|Abertura_1202|T|8|7|diante|o longe|dentro|o centro|o inusitado|o inesperado|o imprevisto|o distante|
+|12|03|Abertura_1203|F|1|1|, um pouco para|
+|12|04|Abertura_1204|T|8|1|diante|o longe|dentro|o centro|o inusitado|o inesperado|o imprevisto|o distante|
+|12|05|Abertura_1205|F|1|1|.|
+|13|00|
+|13|01|Abertura_1301|F|3|2|Ler bem|Uma boa leitura|Um bom princípio|
+|13|02|Abertura_1302|T|6|4|é notar|é reconhecer|é intuir|é abraçar|é pairar sobre|é apreender|
+|13|03|Abertura_1303|T|8|2|esse desenho.|esse quadro.|essa paisagem.|essa abertura|essa visão.|esse "quase mapa".|esse horizonte.|essa arquitetura.|
+|14|01|Abertura_1401|F|2|1|Não para|Sem intenção de|
+|14|02|Abertura_1402|F|3|1|fechar o poema,|terminar o poema|concluir o poema|
+|15|03|Abertura_1503|T|3|3|mas para|e sim|... apenas|
+|15|04|Abertura_1504|F|7|2|penetrar no|desvendar o|mergulhar no|acompanhar o|desvelar o|insinuar o|perceber o|
+|15|05|Abertura_1505|F|3|3|modo como ele se abre.|modo como ele se revela.|roteiro que ele traça.|
 <EOF>
+Verbetes no Texto = 50
+  Total de ítimos = 184
+Total de verbetes = 234
+Qtd. de Variações = 137.620.010.418.831.360.000.000 (sextilhões)
+Last_Update_Ypo em 08/07/2026 - 15:26
