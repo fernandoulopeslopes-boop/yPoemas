@@ -1,5 +1,5 @@
 Ais
-Ana
+ANA
 Amaré
 Anjos
 Aolero
@@ -19,6 +19,7 @@ Bula
 Cadência
 Carroussel
 Cartaz
+CIA
 Circular
 Ciuminho
 Clandestino
@@ -78,9 +79,11 @@ Ocio
 Oco
 Oficia
 Oficio
+OLA
 Ogiva
 Olhares
 Ores
+Paz
 Palyndro
 Papilio
 Paroles
@@ -116,6 +119,7 @@ Sopros
 Sos
 Tempo
 Tempus
+Time
 Tiro
 Tolero
 Una

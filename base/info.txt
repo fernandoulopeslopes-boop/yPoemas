@@ -1,139 +1,156 @@
-|nome_tema|genero|imagem|versos|words_in|lexico|ítimos|analise|notação|
-|   [0]   |  [1] |  [2] |  [3] |   [4]  |  [5] |  [6] |  [7]  |  [8]  |
-
-|Ais|ensaio|machina|5|10|163|147|275.148.900 (milhões)  |2,751 e+08|
-|Amaré|poesia|persona|7|24|246|251|54.191.856.554.035.200 (quatrilhões)  |5,419 e+16|
-|Anjos|poesia|machina|17|73|277|261|9.276.752.574.317.347.209.216.000.000.000 (nonilhões)  |9,277 e+30|
-|Aolero|ensaio|anima|10|29|518|246|7.581.869.568.000 (trilhões)  |7,582 e+12|
-|Arerir|ensaio|machina|5|6|192|196|9.229.440 (milhões)  |9,229 e+06|
-|Astros|ensaio|esoteric|8|28|403|129|637.528.320 (milhões)  |6,375 e+08|
-|Atido|poesia|anima|7|22|298|200|834.290.150.400 (bilhões)  |8,343 e+11|
-|Augusto|poesia|machina|17|64|333|392|731.619.324.106.718.334.890.803.200.000.000.000.000 (undecilhões)  |7,316 e+38|
-|Avevida|poesia|anima|3|12|306|268|2.122.788.864 (bilhões)  |2,123 e+09|
-|Babel|ensaio|machina|1|nonono|nonono|2|1 (nonono)  |1, e+00|
-|Batismo|metalinguagem|machina|4|16|82|51|32.640 (mil)  |3,264 e+04|
-|Beaba|metalinguagem|machina|5|25|144|128|17.923.368.960.000 (trilhões)  |1,792 e+13|
-|Becos|poesia|anima|11|31|338|264|298.456.756.332.134.400 (quatrilhões)  |2,985 e+17|
-|Blablabla|metalinguagem|joco|3|10|501|270|24.360.000 (milhões)  |2,436 e+07|
-|Bolero|poesia|author|11|24|935|418|157.517.650.667.520.000 (quatrilhões)  |1,575 e+17|
-|Brado|joco|joco|6|21|257|168|747.242.496.000 (bilhões)  |7,472 e+11|
-|Bula|joco|joco|3|12|193|142|85.503.600 (milhões)  |8,550 e+07|
-|Cartaz|joco|joco|13|33|353|317|699.764.141.900.462.284.800.000 (sextilhões)  |6,998 e+23|
-|Circular|poesia|anima|3|20|626|339|6.096.384.000 (bilhões)  |6,096 e+09|
-|Ciuminho|poesia|beauty|8|34|1254|548|880.083.097.058.880.000 (quatrilhões)  |8,801 e+17|
-|Clandestino|poesia|anima|11|37|306|120|16.899.176.448 (bilhões)  |1,69 e+10|
-|Clarice|poesia|persona|10|44|169|85|54.432.000.000 (bilhões)  |5,443 e+10|
-|Conto|poesia|anima|13|37|286|154|132.723.360.000.000 (trilhões)  |1,327 e+14|
-|Cordel|metalinguagem|joco|4|18|179|138|1.048.110.000 (bilhões)  |1,048 e+09|
-|Cromossomo|joco|joco|11|35|235|134|2.779.486.617.600 (trilhões)  |2,779 e+12|
-|Cuores|poesia|persona|11|40|296|246|3.779.971.000.565.760.000.000 (sextilhões)  |3,78 e+21|
-|Destinos|poesia|anima|11|39|753|627|6.778.327.515.640.192.512.000 (sextilhões)  |6,778 e+21|
-|Distintos|poesia|anima|10|41|752|627|6.380.511.142.927.406.284.800 (sextilhões)  |6,381 e+21|
-|Dolores|poesia|persona|11|38|597|293|247.676.194.022.400.000 (quatrilhões)  |2,477 e+17|
-|Duralex|joco|machina|3|19|165|145|6.706.022.400 (bilhões)  |6,706 e+09|
-|Elogio|poesia|anima|6|20|225|87|831.600 (mil)  |8,316 e+05|
-|Enfrente|ensaio|persona|5|22|93|62|8.890.560 (milhões)  |8,891 e+06|
-|Epitafiando|poesia|machina|7|27|768|434|50.484.814.969.680 (trilhões)  |5,048 e+13|
-|Escriba|poesia|anima|14|56|396|236|425.301.477.100.093.440.000 (quintilhões)  |4,253 e+20|
-|Essa|metalinguagem|anima|6|30|253|250|35.376.929.280.000 (trilhões)  |3,538 e+13|
-|Essas|ensaio|persona|7|14|328|239|169.558.272.000 (bilhões)  |1,696 e+11|
-|Esses|ensaio|machina|17|30|167|88|4.898.880 (milhões)  |4,899 e+06|
-|Estudo|joco|joco|7|23|295|241|486.150.160.003.200 (trilhões)  |4,862 e+14|
-|Fatos|poesia|machina|21|101|424|330|815.366.153.061.693.665.574.912.000.000 (octilhões)  |8,154 e+29|
-|Feiras|metalinguagem|joco|11|40|418|247|1.024.215.895.987.200.000 (quintilhões)  |1,024 e+18|
-|Festim|poesia|anima|9|35|272|147|476.150.875.200 (bilhões)  |4,762 e+11|
-|Finalmentes|joco|esoteric|6|23|279|196|154.939.599.360.000 (trilhões)  |1,549 e+14|
-|Frases|joco|joco|5|20|320|168|332.299.968 (milhões)  |3,323 e+08|
-|Fugaz|poesia|anima|6|16|726|594|17.416.269.561.600.000 (quatrilhões)  |1,742 e+16|
-|Gula|joco|joco|7|23|359|270|1.063.827.923.558.400 (quatrilhões)  |1,064 e+15|
-|HaiKai|poesia|anima|3|17|964|572|493.936.934.400 (bilhões)  |4,939 e+11|
-|i-Mundo|poesia|machina|8|28|283|232|925.981.061.677.056.000 (quatrilhões)  |9,26 e+17|
-|Impar|ensaio|anima|5|26|69|63|653.184 (mil)  |6,532 e+05|
-|Indolor|poesia|anima|11|37|643|386|468.886.830.572.160.000.000 (quintilhões)  |4,689 e+20|
-|Inhos|poesia|anima|7|22|220|103|314.496.000 (milhões)  |3,145 e+08|
-|Insano|joco|joco|7|22|228|140|1.100.736.000.000 (trilhões)  |1,101 e+12|
-|Joker|joco|joco|4|22|175|144|547.714.379.520 (bilhões)  |5,477 e+11|
-|Lato|poesia|author|11|36|320|283|43.937.882.486.784.000.000 (quintilhões)  |4,394 e+19|
-|Leituras|metalinguagem|author|13|47|210|136|1.024.192.512.000.000 (quatrilhões)  |1,024 e+15|
-|Liberta|poesia|anima|12|54|192|130|5.530.639.564.800 (trilhões)  |5,531 e+12|
-|Loremipsum|ensaio|machina|10|37|83|38|414.720 (mil)  |4,147 e+05|
-|Machbeth|poesia|persona|13|44|403|163|398.340.963.820.800 (trilhões)  |3,983 e+14|
-|Machbrait|poesia|anima|17|63|515|206|106.563.309.679.411.200.000 (quintilhões)  |1,066 e+20|
-|Manifesto|poesia|machina|17|92|667|507|27.941.438.662.973.671.531.004.544.079.311.667.200.000 (dodecilhões)  |2,794 e+40|
-|Manusgrite|metalinguagem|joco|14|47|173|130|963.158.999.040.000 (trilhões)  |9,632 e+14|
-|Manusgrito|metalinguagem|author|14|46|164|128|842.764.124.160.000 (trilhões)  |8,428 e+14|
-|Meteoro|joco|joco|13|50|427|316|65.044.548.902.931.333.120.000 (sextilhões)  |6,504 e+22|
-|Minuto|joco|esoteric|7|24|324|213|2.817.522.540.000 (trilhões)  |2,818 e+12|
-|Mirante|poesia|persona|7|26|265|211|7.892.654.740.185.600 (quatrilhões)  |7,893 e+15|
-|Nonono|ensaio|machina|11|39|1241|572|145.218.793.269.173.944.320.000 (sextilhões)  |1,452 e+23|
-|Nós|poesia|machina|11|53|218|122|903.636.518.400 (bilhões)  |9,036 e+11|
-|Oca|poesia|beauty|5|14|228|160|29.932.156.800 (bilhões)  |2,993 e+10|
-|Ocio|joco|joco|17|75|568|385|29.717.837.074.855.467.417.600.000.000.000 (nonilhões)  |2,972 e+31|
-|Oco|poesia|anima|5|16|227|159|26.606.361.600 (bilhões)  |2,661 e+10|
-|Oficio|joco|author|20|79|573|475|57.110.137.135.498.442.550.804.480.000.000 (nonilhões)  |5,711 e+31|
-|Ogiva|poesia|beauty|6|24|340|232|1.624.147.132.608.000 (quatrilhões)  |1,624 e+15|
-|Olhares|poesia|persona|17|76|556|464|167.249.974.512.681.215.092.510.949.376.000.000 (decilhões)  |1,672 e+35|
-|Palyndro|ensaio|machina|17|21|69|52|967.680 (mil)  |9,677 e+05|
-|Papilio|poesia|persona|17|64|798|299|17.276.809.528.053.504.000 (quintilhões)  |1,728 e+19|
-|Paroles|metalinguagem|machina|7|25|848|418|58.025.870.622.720.000 (quatrilhões)  |5,803 e+16|
-|Passagens|poesia|machina|9|29|169|118|95.777.510.400 (bilhões)  |9,578 e+10|
-|Pedidos|poesia|anima|8|39|190|90|1.374.796.800 (bilhões)  |1,375 e+09|
-|Perfil|joco|beauty|7|42|525|238|26.964.500.536.512.000 (quatrilhões)  |2,696 e+16|
-|Pessoa|poesia|anima|9|38|121|58|4.665.600 (milhões)  |4,666 e+06|
-|Portal|poesia|machina|8|31|562|298|1.754.298.589.680 (trilhões)  |1,754 e+12|
-|Posfácio|poesia|anima|18|84|339|267|23.356.081.768.224.522.240.000.000 (setilhões)  |2,336 e+25|
-|Preciso|poesia|joco|15|62|321|155|2.433.481.408.512.000 (quatrilhões)  |2,433 e+15|
-|Prefácil|poesia|joco|17|49|380|310|8.113.087.959.898.521.600.000.000 (setilhões)  |8,113 e+24|
-|Psiu|poesia|persona|5|23|714|322|3.464.123.520 (bilhões)  |3,464 e+09|
-|Reger|poesia|anima|8|33|149|85|404.352.000 (milhões)  |4,044 e+08|
-|Reinos|joco|joco|13|51|281|256|789.146.976.367.411.200 (quatrilhões)  |7,891 e+17|
-|Remedeio|joco|joco|3|13|571|185|1.967.232 (milhões)  |1,967 e+06|
-|Rever|poesia|anima|4|17|160|77|3.119.040 (milhões)  |3,119 e+06|
-|Rito|joco|joco|5|12|207|169|57.550.500.000 (bilhões)  |5,755 e+10|
-|Salute|joco|machina|6|23|709|267|32.637.136.896 (bilhões)  |3,264 e+10|
-|Saudades|poesia|persona|7|22|281|181|7.420.616.146.944 (trilhões)  |7,421 e+12|
-|Seguro|joco|joco|11|39|128|67|373.248.000 (milhões)  |3,732 e+08|
-|Sentença|joco|anima|10|39|247|165|159.667.040.332.800 (trilhões)  |1,597 e+14|
-|Ser|poesia|anima|9|20|174|82|1.028.160 (milhões)  |1,028 e+06|
-|Silente|poesia|anima|11|49|361|254|313.233.575.510.016.000.000 (quintilhões)  |3,132 e+20|
-|Sinais|poesia|anima|7|12|405|319|329.504.881.305.600 (trilhões)  |3,295 e+14|
-|Sinas|ensaio|beauty|7|12|327|243|218.359.152.000 (bilhões)  |2,184 e+11|
-|Sn6=ball|ensaio|machina|15|14|237|252|258.863.705.100.000 (trilhões)  |2,589 e+14|
-|Sn8=ball|ensaio|machina|18|16|237|251|1.682.614.083.150.000 (quatrilhões)  |1,683 e+15|
-|SnowBall|ensaio|machina|20|22|410|427|20.591.283.290.444.226.360.000.000 (setilhões)  |2,059 e+25|
-|Sonoro|poesia|anima|3|7|104|90|1.192.320 (milhões)  |1,192 e+06|
-|Sopros|poesia|anima|11|37|297|189|94.680.907.776.000.000 (quatrilhões)  |9,468 e+16|
-|Sos|joco|joco|6|23|309|220|6.111.356.719.104 (trilhões)  |6,111 e+12|
-|Tempo|poesia|machina|17|71|2407|1745|112.765.820.236.797.923.580.529.825.269.143.876.665.344.000.000.000 (quindecilhões)  |1,128 e+50|
-|Tiro|metalinguagem|author|11|29|881|384|2.903.854.393.440.000.000 (quintilhões)  |2,904 e+18|
-|Tolero|poesia|anima|17|43|913|420|6.372.790.375.311.360.000 (quintilhões)  |6,373 e+18|
-|Usinas|poesia|anima|10|40|250|225|102.938.787.190.407.168.000 (quintilhões)  |1,029 e+20|
-|Veio|poesia|anima|10|36|546|318|2.907.865.942.960.295.116.800 (sextilhões)  |2,908 e+21|
-|Victor|poesia|anima|9|24|282|112|308.998.800 (milhões)  |3,09 e+08|
-|Zelo|poesia|persona|7|24|726|246|151.240.320 (milhões)  |1,512 e+08|
-|Zodiacaos|zodíaco|joco|16|71|477|375|14.365.992.237.323.928.993.792.000.000.000.000 (decilhões)  |1,437 e+34|
-|Zoia|poesia|persona|17|80|614|484|23.297.836.384.021.203.533.168.640.000.000.000 (decilhões)  |2,33 e+34|
-|Aquarius=f|zodíaco|esoteric|8|30|123|75|107.811.000 (milhões)  |1,078 e+08|
-|Aquarius=m|zodíaco|esoteric|8|29|123|75|107.811.000 (milhões)  |1,078 e+08|
-|Aries=f|zodíaco|esoteric|7|23|103|58|1.848.000 (milhões)  |1,848 e+06|
-|Aries=m|zodíaco|esoteric|7|26|103|58|1.848.000 (milhões)  |1,848 e+06|
-|Cancer=f|zodíaco|esoteric|7|28|140|82|30.965.760 (milhões)  |3,097 e+07|
-|Cancer=m|zodíaco|esoteric|7|27|140|82|30.965.760 (milhões)  |3,097 e+07|
-|Caprico=f|zodíaco|esoteric|9|43|137|86|459.841.536 (milhões)  |4,598 e+08|
-|Caprico=m|zodíaco|esoteric|9|44|137|86|459.841.536 (milhões)  |4,598 e+08|
-|Escorpio=f|zodíaco|esoteric|8|38|113|72|853.493.760 (milhões)  |8,535 e+08|
-|Escorpio=m|zodíaco|esoteric|8|35|113|72|853.493.760 (milhões)  |8,535 e+08|
-|Gemeos=f|zodíaco|esoteric|8|32|133|59|1.782.000 (milhões)  |1,782 e+06|
-|Gemeos=m|zodíaco|esoteric|8|36|133|59|1.782.000 (milhões)  |1,782 e+06|
-|Leao=f|zodíaco|esoteric|6|27|96|58|1.036.800 (milhões)  |1,037 e+06|
-|Leao=m|zodíaco|esoteric|6|27|96|58|1.036.800 (milhões)  |1,037 e+06|
-|Libra=f|zodíaco|esoteric|6|30|118|77|21.228.480 (milhões)  |2,123 e+07|
-|Libra=m|zodíaco|esoteric|6|30|118|77|21.228.480 (milhões)  |2,123 e+07|
-|Peixes=f|zodíaco|esoteric|8|34|117|53|1.209.600 (milhões)  |1,21 e+06|
-|Peixes=m|zodíaco|esoteric|8|35|116|52|1.058.400 (milhões)  |1,058 e+06|
-|Sagitari=f|zodíaco|esoteric|9|41|129|81|2.911.334.400 (bilhões)  |2,911 e+09|
-|Sagitari=m|zodíaco|esoteric|9|41|129|81|2.911.334.400 (bilhões)  |2,911 e+09|
-|Touro=f|zodíaco|esoteric|6|22|120|59|1.254.528 (milhões)  |1,255 e+06|
-|Touro=m|zodíaco|esoteric|6|22|120|59|1.254.528 (milhões)  |1,255 e+06|
-|Virgem=f|zodíaco|esoteric|9|30|131|110|4.255.027.200 (bilhões)  |4,255 e+09|
-|Virgem=m|zodíaco|esoteric|9|27|128|107|3.616.773.120 (bilhões)  |3,617 e+09|
+|Ais|Machina|machina|3|160|160|147|275148900|2.75e+08|
+|Amaré|Machina|persona|5|86|86|251|54191856554035200|5.42e+16|
+|Ana|Machina|author|1|31|31|32|800|8.00e+02|
+|Anjos|Machina|machina|14|242|242|261|9276752574317347209216000000000|9.28e+30|
+|Aolero|Machina|anima|8|349|349|246|7581869568000|7.58e+12|
+|Arerir|Machina|machina|4|154|154|196|9229440|9.23e+06|
+|Astros|Machina|esoteric|6|244|244|129|637528320|6.38e+08|
+|Atido|Machina|anima|5|233|233|200|834290150400|8.34e+11|
+|Augusto|Machina|machina|14|359|359|392|731619324106718334890803200000000000000|7.32e+38|
+|Avevida|Machina|anima|3|282|282|268|2122788864|2.12e+09|
+|Babel|Machina|machina|1|1|1|2|1|1.00e+00|
+|Batismo|Machina|machina|4|82|82|51|32640|3.26e+04|
+|Beaba|Machina|machina|5|109|109|128|17923368960000|1.79e+13|
+|Becos|Machina|anima|8|286|286|264|298456756332134400|2.98e+17|
+|Blablabla|Machina|joco|3|377|377|270|24360000|2.44e+07|
+|Bolero|Machina|author|8|250|250|418|157517650667520000|1.58e+17|
+|Brado|Machina|joco|5|210|210|168|747242496000|7.47e+11|
+|Bula|Machina|joco|3|181|181|142|85503600|8.55e+07|
+|Cadência|Machina|Machina|3|127|127|127|9463860|9.46e+06|
+|Cartaz|Machina|joco|10|267|267|317|699764141900462284800000|7.00e+23|
+|Carroussel|Machina|Machina|5|67|67|68|6742008|6.74e+06|
+|Circular|Machina|anima|6|159|159|153|1337851468800|1.34e+12|
+|Ciuminho|Machina|beauty|6|812|812|548|880083097058880000|8.80e+17|
+|Clandestino|Machina|anima|9|187|187|120|16899176448|1.69e+10|
+|Clarice|Machina|persona|8|109|109|85|54432000000|5.44e+10|
+|Conto|Machina|anima|10|240|240|154|132723360000000|1.33e+14|
+|Cordel|Machina|joco|3|178|178|138|1048110000|1.05e+09|
+|Críticas|Machina|joco|17|313|313|323|406889891481811266463334400000|4.07e+29|
+|Crítico|Machina|anima|10|125|125|90|367332019200|3.67e+11|
+|Cromossomo|Machina|joco|9|190|190|134|2779486617600|2.78e+12|
+|Cuores|Machina|persona|9|160|160|250|3779971000565760000000|3.78e+21|
+|Demo|Machina|Machina|4|113|113|211|6429196800|6.43e+09|
+|Destinos|Machina|anima|8|638|638|627|6778327515640192512000|6.78e+21|
+|Distintos|Machina|anima|8|636|636|627|6380511142927406284800|6.38e+21|
+|Dolores|Machina|persona|9|432|432|293|247676194022400000|2.48e+17|
+|Duralex|Machina|machina|3|149|149|145|6706022400|6.71e+09|
+|Elogio|Machina|anima|5|191|191|87|831600|8.32e+05|
+|Enfrente|Machina|persona|4|83|83|62|8890560|8.89e+06|
+|Epitafiando|Machina|machina|5|368|368|434|50484814969680|5.05e+13|
+|Escriba|Machina|anima|12|253|253|236|425301477100093440000|4.25e+20|
+|Essa|Machina|anima|5|250|250|250|35376929280000|3.54e+13|
+|Essas|Machina|persona|5|247|247|239|169558272000|1.70e+11|
+|Esses|Machina|machina|14|50|50|88|4898880|4.90e+06|
+|Estudo|Machina|joco|6|249|249|241|486150160003200|4.86e+14|
+|Evidências|Machina|Machina|3|34|34|67|3163680|3.16e+06|
+|Fatos|Machina|machina|17|403|403|335|1122238708489596891561984000000|1.12e+30|
+|Feiras|Machina|joco|9|292|292|247|1024215895987200000|1.02e+18|
+|Festim|Machina|anima|7|234|234|147|476150875200|4.76e+11|
+|Finalmentes|Machina|esoteric|6|227|227|196|154939599360000|1.55e+14|
+|Frases|Machina|joco|4|285|285|168|332299968|3.32e+08|
+|Fugaz|Machina|anima|5|427|427|594|17416269561600000|1.74e+16|
+|Gula|Machina|joco|6|245|245|270|1063827923558400|1.06e+15|
+|Haikai|Machina|anima|3|545|545|572|479204121600|4.79e+11|
+|i-Mundo|Machina|machina|6|223|223|223|522821432770560000|5.23e+17|
+|Impar|Machina|anima|4|66|66|63|653184|6.53e+05|
+|Indolor|Machina|anima|9|518|518|386|468886830572160000000|4.69e+20|
+|Inhos|Machina|anima|7|183|183|103|314496000|3.14e+08|
+|Insano|Machina|joco|5|162|162|140|1100736000000|1.10e+12|
+|Joker|Machina|joco|4|134|134|146|547714379520|5.48e+11|
+|Lato|Machina|author|8|269|269|283|43937882486784000000|4.39e+19|
+|Leituras|Machina|author|10|166|166|136|1024192512000000|1.02e+15|
+|Lero|Machina|Machina|5|294|294|340|225444710400|2.25e+11|
+|Liberta|Machina|anima|12|161|161|130|5530639564800|5.53e+12|
+|Loremipsum|Machina|machina|8|94|94|45|1843200|1.84e+06|
+|Machbeth|Machina|persona|10|279|279|163|398340963820800|3.98e+14|
+|Machbrait|Machina|anima|14|329|329|206|106563309679411200000|1.07e+20|
+|Manifesto|Machina|machina|15|531|531|507|27941438662973671531004544079311667200000|2.79e+40|
+|Manusgrite|Machina|joco|11|151|151|130|963158999040000|9.63e+14|
+|Manusgrito|Machina|author|11|150|150|128|842764124160000|8.43e+14|
+|Meteoro|Machina|joco|10|307|307|316|65044548902931333120000|6.50e+22|
+|Minuto|Machina|esoteric|6|268|268|213|2817522540000|2.82e+12|
+|Mirante|Machina|persona|5|149|149|211|7892654740185600|7.89e+15|
+|Nonono|Machina|machina|9|403|403|572|145218793269173944320000|1.45e+23|
+|Nós|Machina|machina|10|120|120|124|903636518400|9.04e+11|
+|Ola|Machina|Machina|1|35|35|35|1248|1.25e+03|
+|Oca|Machina|beauty|4|202|202|161|29932156800|2.99e+10|
+|Ocio|Machina|joco|14|477|477|385|29717837074855467417600000000000|2.97e+31|
+|Oco|Machina|anima|4|201|201|160|26606361600|2.66e+10|
+|Oficia|Machina|Machina|15|508|508|525|5792307731598100109595770880000000|5.79e+33|
+|Oficio|Machina|author|15|521|521|475|57110137135498442550804480000000|5.71e+31|
+|Ogiva|Machina|beauty|5|235|235|232|1624147132608000|1.62e+15|
+|Ola|Machina|Machina|1|35|35|35|1248|1.25e+03|
+|Olhares|Machina|persona|14|175|175|464|167249974512681215092510949376000000|1.67e+35|
+|Ores|Machina|Machina|4|85|85|108|307419840|3.07e+08|
+|Paz|Machina|Machina|3|36|36|53|432432|4.32e+05|
+|Palyndro|Machina|machina|13|57|57|52|967680|9.68e+05|
+|Papilio|Machina|persona|14|550|550|299|17276809528053504000|1.73e+19|
+|Paroles|Machina|machina|6|399|399|418|58025870622720000|5.80e+16|
+|Passagens|Machina|machina|7|156|156|118|95777510400|9.58e+10|
+|Paz|Machina|Machina|3|36|36|53|432432|4.32e+05|
+|Pedidos|Machina|anima|8|153|153|93|13412044800|1.34e+10|
+|Perfil|Machina|beauty|6|322|322|236|20427651921600000|2.04e+16|
+|Pessoa|Machina|anima|7|85|85|58|4665600|4.67e+06|
+|Portal|Machina|machina|6|368|368|298|1754298589680|1.75e+12|
+|Posfácio|Machina|anima|16|273|273|267|23356081768224522240000000|2.34e+25|
+|Preciso|Machina|joco|11|205|205|154|1991030243328000|1.99e+15|
+|Prefácil|Machina|joco|13|318|318|307|4056543979949260800000000|4.06e+24|
+|Psiu|Machina|persona|4|504|504|322|3464123520|3.46e+09|
+|Reger|Machina|anima|7|106|106|85|404352000|4.04e+08|
+|Reinos|Machina|joco|11|207|207|256|789146976367411200|7.89e+17|
+|Remedeio|Machina|joco|3|393|393|185|1967232|1.97e+06|
+|Rever|Machina|anima|4|121|121|80|3119040|3.12e+06|
+|Restos|Machina|anima|5|109|109|116|589906800|5.90e+08|
+|Rito|Machina|joco|4|135|135|169|57550500000|5.76e+10|
+|Salute|Machina|machina|5|520|520|267|32637136896|3.26e+10|
+|Saudades|Machina|persona|6|256|256|181|7420616146944|7.42e+12|
+|Seguro|Machina|joco|9|101|101|67|373248000|3.73e+08|
+|Sentença|Machina|anima|7|236|236|165|159667040332800|1.60e+14|
+|Ser|Machina|anima|5|147|147|85|1028160|1.03e+06|
+|Silente|Machina|anima|9|299|299|254|313233575510016000000|3.13e+20|
+|Sinais|Machina|anima|5|237|237|319|329504881305600|3.30e+14|
+|Sinas|Machina|beauty|5|236|236|285|2526115680000|2.53e+12|
+|Sn6=ball|Machina|machina|13|234|234|252|258863705100000|2.59e+14|
+|Sn8=ball|Machina|machina|16|234|234|251|1682614083150000|1.68e+15|
+|SnowBall|Machina|machina|20|407|407|427|20441528502877359259200000|2.04e+25|
+|Solero|Machina|Machina|8|357|357|252|34215616512000|3.42e+13|
+|Sonoro|Machina|anima|3|104|104|89|1117800|1.12e+06|
+|Sopros|Machina|anima|9|234|234|189|94680907776000000|9.47e+16|
+|Sos|Machina|joco|5|197|197|220|6111356719104|6.11e+12|
+|Tempo|Machina|machina|14|916|916|1745|112765820236797923580529825269143876665344000000000|1.13e+50|
+|Tempus|Machina|machina|6|95|95|101|348713164800|3.49e+11|
+|Tiro|Machina|author|9|477|477|384|2903854393440000000|2.90e+18|
+|Tolero|Machina|anima|14|303|303|420|6372790375311360000|6.37e+18|
+|Una|Machina|Machina|1|29|29|30|640|6.40e+02|
+|Una_abertura|Machina|Machina|15|163|163|184|137620010418831360000000|1.38e+23|
+|Usinas|Machina|anima|7|234|234|225|102938787190407168000|1.03e+20|
+|Veio|Machina|anima|7|355|355|318|2907865942960295116800|2.91e+21|
+|Victor|Machina|anima|8|164|164|112|308998800|3.09e+08|
+|Vozes|Machina|Machina|3|125|125|85|393120|3.93e+05|
+|Zelo|Machina|persona|6|390|390|246|151240320|1.51e+08|
+|Zodiacaos|Machina|joco|16|396|396|375|14365992237323928993792000000000000|1.44e+34|
+|Zoia|Machina|persona|14|197|197|484|23297836384021203533168640000000000|2.33e+34|
+|Aquarius=f|Machina|esoteric|8|110|110|75|107811000|1.08e+08|
+|Aquarius=m|Machina|esoteric|8|111|111|75|107811000|1.08e+08|
+|Aries=f|Machina|esoteric|6|91|91|58|1848000|1.85e+06|
+|Aries=m|Machina|esoteric|6|91|91|58|1848000|1.85e+06|
+|Cancer=f|Machina|esoteric|7|101|101|82|30965760|3.10e+07|
+|Cancer=m|Machina|esoteric|7|101|101|82|30965760|3.10e+07|
+|Caprico=f|Machina|esoteric|7|110|110|86|459841536|4.60e+08|
+|Caprico=m|Machina|esoteric|7|110|110|86|459841536|4.60e+08|
+|Escorpio=f|Machina|esoteric|6|104|104|72|853493760|8.53e+08|
+|Escorpio=m|Machina|esoteric|6|104|104|72|853493760|8.53e+08|
+|Gemeos=f|Machina|esoteric|7|101|101|59|1782000|1.78e+06|
+|Gemeos=m|Machina|esoteric|7|102|102|59|1782000|1.78e+06|
+|Leao=f|Machina|esoteric|6|81|81|58|1036800|1.04e+06|
+|Leao=m|Machina|esoteric|6|80|80|58|1036800|1.04e+06|
+|Libra=f|Machina|esoteric|6|94|94|77|21228480|2.12e+07|
+|Libra=m|Machina|esoteric|6|94|94|77|21228480|2.12e+07|
+|Peixes=f|Machina|esoteric|6|91|91|53|1209600|1.21e+06|
+|Peixes=m|Machina|esoteric|6|89|89|52|1058400|1.06e+06|
+|Sagitari=f|Machina|esoteric|8|111|111|81|2911334400|2.91e+09|
+|Sagitari=m|Machina|esoteric|8|111|111|81|2911334400|2.91e+09|
+|Touro=f|Machina|esoteric|5|103|103|59|1254528|1.25e+06|
+|Touro=m|Machina|esoteric|5|103|103|59|1254528|1.25e+06|
+|Virgem=f|Machina|esoteric|7|89|89|110|4255027200|4.26e+09|
+|Virgem=m|Machina|esoteric|7|87|87|107|3616773120|3.62e+09|
