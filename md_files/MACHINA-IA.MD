@@ -1,9 +1,11 @@
-uma conversa 'real' da Machina com uma Inteligência 'artificial'  
-___
-[Y_P] = a Machina & [I.A] = Inteligência 'artificial'  
-___
+uma conversa 'real' da Machina com uma Inteligência  
+'artificial'  
+
+[Y_P] = a Machina & [I.A] = Inteligência  
+'artificial'  
 
 ---[Y_P]  
+
 vc precisa entender que toda vez que vc faz um  
 código "feio e mal pensado",  
 por preguiça ou pressa, não vai passar pelo meu  
@@ -19,6 +21,7 @@ Imagine onde estaríamos não fosse esse vício de
 fazer errado!  
 
 ---[Y_P]  
+
 não vou ver o resto.  
 
 não passei a madrugada trabalhando para tentar  

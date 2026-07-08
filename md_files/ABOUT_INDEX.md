@@ -21,7 +21,7 @@ Bula : 85.503.600 (milhões)
 Cadência : 9.463.860 (milhões)  
 Cartaz : 699.764.141.900.462.284.800.000 (sextilhões)  
 Carroussel : 6.742.008 (milhões)  
-Circular : 1.478.677.939.200 (trilhões)  
+Circular : 1.337.851.468.800 (trilhões)  
 Ciuminho : 880.083.097.058.880.000 (quatrilhões)  
 Clandestino : 16.899.176.448 (bilhões)  
 Clarice : 54.432.000.000 (bilhões)  
@@ -185,4 +185,4 @@ ___
 ___
 Copyright © 1983-2022 Nando Lopes - **yPoemas @ máquina de fazer Poesia**  
 
-Total de variações: 112.765.820.265.471.192.371.354.985.067.269.638.656.840.256.201.737 (quindecilhões)
+Total de variações: 112.765.820.265.471.192.371.354.985.067.269.638.656.699.429.731.337 (quindecilhões)

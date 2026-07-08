@@ -2,10 +2,10 @@
 
 --- Ambiente Léxico da Machina
 
-Total de Verbetes: 52.066
-Total de Verbetes únicos: 12.361
+Total de Verbetes: 52.084
+Total de Verbetes únicos: 12.365
 
-Total de Ítimos: 32.708
-Total de Ítimos únicos: 16.768
+Total de Ítimos: 32.720
+Total de Ítimos únicos: 16.776
 
-Total de Temas: 156
+Total de Temas: 157

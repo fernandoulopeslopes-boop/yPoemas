@@ -7,6 +7,9 @@ ___
 
 - Critérios gerais para a escolha das imagens:  
  . Axioma zero: a **Machina** é essencialmente feminina.  
+   ( não por limite, mas por natureza de acolhimento:  
+     mãe, sensível, geradora, intuitiva e atenta  
+     ao que nasce entre imagem, palavra e leitura. )  
  . Sempre que possível são imagens "puras", sem mensagens subliminares.  
  . Imagens sem dubiedade nem preconceito.  
  . Imagens sem conteúdo religioso, político ou informações óbvias/redundantes.  
