@@ -31,6 +31,7 @@ ABOUTS_LIST = [
     "livros",
     "bibliografia",
     "carta de Guimarães Rosa",
+    "veredas",
     "notes",
     "imagens",
     "pontuação",
@@ -52,6 +53,7 @@ ABOUTS_FILES = {
     "livros": ["ABOUT_livros.md"],
     "bibliografia": ["ABOUT_bibliografia.md"],
     "carta de Guimarães Rosa": ["A incrível carta de Guimarães Rosa.md"],
+    "veredas": ["ABOUT_veredas.md"],
     "notes": ["ABOUT_notes.md"],
     "imagens": ["ABOUT_imagens.md"],
     "pontuação": ["ABOUT_pontuação.md"],
@@ -132,7 +134,7 @@ IDIOMAS_OFICIAIS = [
 # -----------------------------------------------------------------------------
 st.set_page_config(
     page_title="a Machina de fazer Poesia @ yPoemas",
-    page_icon=":bulb:",
+    page_icon="🌀",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
