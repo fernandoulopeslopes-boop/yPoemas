@@ -1674,6 +1674,44 @@ def _trim_blank_edges_preservando_recuo(linhas):
     return "\n".join(linhas)
 
 
+def _pip_line_to_text(line):
+    """Converte uma linha .Pip em texto de leitura.
+
+    Regra Off-Machina:
+    - cada pipe | vira quebra de linha;
+    - dois pipes || geram uma linha em branco;
+    - pipes de borda so delimitam o registro e nao viram linha vazia extra.
+    """
+    texto = str(line or "").rstrip("\n")
+    if texto.startswith("|"):
+        texto = texto[1:]
+    if texto.endswith("|"):
+        texto = texto[:-1]
+    return _trim_blank_edges_preservando_recuo(texto.split("|"))
+
+
+def _markdown_links_to_html(texto):
+    """Preserva links markdown [texto](url) dentro do HTML seguro do Off-Machina."""
+    texto = str(texto or "")
+    pattern = re.compile(r"\[([^\]]+)\]\(([^)]+)\)")
+    out = []
+    pos = 0
+    for match in pattern.finditer(texto):
+        out.append(html.escape(texto[pos:match.start()]))
+        label = html.escape(match.group(1).strip())
+        url = match.group(2).strip()
+        safe_url = html.escape(url, quote=True)
+        if re.match(r"^(https?://|mailto:)", url, flags=re.IGNORECASE):
+            out.append(
+                f'<a href="{safe_url}" target="_blank" rel="noopener noreferrer">{label}</a>'
+            )
+        else:
+            out.append(html.escape(match.group(0)))
+        pos = match.end()
+    out.append(html.escape(texto[pos:]))
+    return "".join(out)
+
+
 def _ypoema_html_to_text(ypoema_html):
     """Converte o yPoema renderizado em HTML simples para texto copiável."""
     texto = str(ypoema_html or "")
@@ -1722,37 +1760,65 @@ def _off_machina_texto_limpo(texto):
     return _trim_blank_edges_preservando_recuo(texto.splitlines())
 
 
-def write_off_machina_texto(LOGO_TEXTO):
-    """Renderiza Off-Machina normal como texto, sem imagem/base64 no palco."""
+def _off_machina_css():
+    """CSS próprio do Off-Machina: obedece fonte/corpo do leitor."""
+    stage_font = _fonte_palco_leitor()
+    stage_size = _corpo_palco_leitor()
+    return f"""
+        <style>
+        .machina-off-text,
+        .machina-off-text p,
+        .machina-off-text div,
+        .machina-off-text span {{
+            font-family: '{stage_font}' !important;
+            font-size: {stage_size}px !important;
+            line-height: 1.35 !important;
+            color: #000000 !important;
+            text-align: left !important;
+            font-weight: 600 !important;
+        }}
+        .machina-off-text {{
+            display: block !important;
+            width: fit-content !important;
+            max-width: min(96ch, 94%) !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            box-sizing: border-box !important;
+            padding-left: 8px !important;
+            padding-right: 8px !important;
+            text-align: left !important;
+        }}
+        </style>
+    """
+
+
+def _off_machina_html(LOGO_TEXTO):
+    """HTML seguro do Off-Machina preservando quebras e links Markdown."""
     texto = _off_machina_texto_limpo(LOGO_TEXTO)
-    safe = html.escape(texto).replace("\n", "<br>")
-    st.markdown(f"<p class='logo-text'>{safe}</p>", unsafe_allow_html=True)
+    safe = _markdown_links_to_html(texto).replace("\n", "<br>")
+    return f"{_off_machina_css()}<div class='machina-off-text'>{safe}</div>"
+
+
+def write_off_machina_texto(LOGO_TEXTO):
+    """Renderiza Off-Machina com fonte/corpo próprios, sem cair na classe logo-text."""
+    st.markdown(_off_machina_html(LOGO_TEXTO), unsafe_allow_html=True)
 
 
 def write_livro_vivo_texto(LOGO_TEXTO, LOGO_IMAGE=None):
-    """Renderiza livro_vivo sem usar write_ypoema.
-
-    O livro_vivo continua sendo gerado on demand pelo motor da Machina,
-    mas não deve embrulhar a saída em HTML com imagem/base64. A imagem,
-    quando existir, é exibida por st.image; o texto é renderizado limpo.
-    """
-    texto = _off_machina_texto_limpo(LOGO_TEXTO)
-
+    """Renderiza livro_vivo com a mesma fonte/corpo do leitor."""
     if LOGO_IMAGE:
         try:
             col_img, col_txt = st.columns([2.5, 7.5])
             with col_img:
                 st.image(LOGO_IMAGE, use_container_width=True)
             with col_txt:
-                safe = html.escape(texto).replace("\n", "<br>")
-                st.markdown(f"<p class='logo-text'>{safe}</p>", unsafe_allow_html=True)
+                st.markdown(_off_machina_html(LOGO_TEXTO), unsafe_allow_html=True)
             return
         except Exception:
             # Se a arte falhar, o texto ainda deve aparecer limpo.
             pass
 
-    safe = html.escape(texto).replace("\n", "<br>")
-    st.markdown(f"<p class='logo-text'>{safe}</p>", unsafe_allow_html=True)
+    st.markdown(_off_machina_html(LOGO_TEXTO), unsafe_allow_html=True)
 
 
 def _gerar_ypoema_texto_cru(nome_tema):
@@ -2995,8 +3061,7 @@ def page_off_machina():  # available off_machina_books
                     off_book_text = load_poema(nome_tema, "")  # no seed_eureka
                     off_book_text = "<br>" + load_lypo()
             else:
-                for text in pipe_line:
-                    off_book_text += text + "<br>"
+                off_book_text = _pip_line_to_text(this_off_book[st.session_state.off_take])
 
             capo = st.session_state.off_take == 0
 
@@ -3016,9 +3081,7 @@ def page_off_machina():  # available off_machina_books
                     if off_book_name == "livro_vivo":
                         write_off_machina_texto(off_book_text)
                     else:
-                        st.markdown(
-                            off_book_text, unsafe_allow_html=True
-                        )  # finally... write it
+                        write_off_machina_texto(off_book_text)
             else:
                 if st.session_state.lang != "pt":
                     off_book_text = translate(off_book_text)
