@@ -88,7 +88,7 @@ PAGE_IMAGES = {
 }
 
 VOICES_EDGE_TTS = {
-    "pt": "pt-BR-FranciscaNeural",
+    "pt": "pt-BR-AntonioNeural",
     "es": "es-ES-AlvaroNeural",
     "fr": "fr-FR-HenriNeural",
     "it": "it-IT-DiegoNeural",
@@ -285,10 +285,22 @@ def apply_styles():
             }
 
             div[data-testid="stButton"] button p {
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
                 width: 100% !important;
                 margin: 0 !important;
                 text-align: center !important;
                 line-height: 1 !important;
+            }
+
+            div[data-testid="stButton"] button > div,
+            div[data-testid="stButton"] button span {
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                width: 100% !important;
+                text-align: center !important;
             }
 
             div[data-testid="stHorizontalBlock"] {
@@ -2817,7 +2829,7 @@ def _clean_audio_text(text):
 @st.cache_data(show_spinner=False)
 def _audio_bytes_edge_tts(text_clean, lang):
     """Gera audio uma vez por texto/idioma e reaproveita nos reruns."""
-    selected_voice = VOICES_EDGE_TTS.get(lang, "pt-BR-FranciscaNeural")
+    selected_voice = VOICES_EDGE_TTS.get(lang, "pt-BR-AntonioNeural")
 
     async def generate_audio():
         communicate = edge_tts.Communicate(text_clean, selected_voice)
@@ -2907,7 +2919,7 @@ def page_mini():
     help_auto = help_tips[7]
     help_manual = help_tips[8]
 
-    mini_left, mini_nav, mini_right = st.columns([0.15, 9.70, 0.15])
+    mini_left, mini_nav, mini_right = st.columns([2, 6, 2])
     with mini_nav:
         nav_cols = st.columns([1, 1, 1, 1, 1, 1, 1])
         more = nav_cols[0].button(BOTOES_MOBILE["mais_uma_versao"], key="mini_more", help=help_more, width="stretch")
