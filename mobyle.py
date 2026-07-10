@@ -2834,7 +2834,7 @@ def talk(text):
 
 def render_voz_slot(initial_text="Machina."):
     """Reserva a linha do player de voz logo abaixo dos nav_buttons."""
-    voz_left, voz_mid, voz_right = st.columns([3.5, 3, 3.5])
+    voz_left, voz_mid, voz_right = st.columns([1.5, 7, 1.5])
     with voz_mid:
         slot = st.empty()
         with slot:
@@ -3075,10 +3075,10 @@ def page_ypoemas():
         ypoema_voz = nav_cols[4].button(BOTOES_MOBILE["voz"], key="ypoema_voz", help=help_talk, width="stretch")
         manu = nav_cols[5].button(BOTOES_MOBILE["help"], key="ypoema_help", help=help_manual, width="stretch")
 
-        ypoemas_voz_slot = render_voz_slot()
-
     with col_temas:
         pick_tema_palco()
+
+    ypoemas_voz_slot = render_voz_slot()
 
     temas_list = load_temas(_current_book())
     maxy_ypoemas = len(temas_list) - 1
@@ -3576,8 +3576,6 @@ def page_off_machina():  # available off_machina_books
         off_voz = nav_cols[3].button(BOTOES_MOBILE["voz"], help=help_talk, key="off_voz_btn", width="stretch")
         manu = nav_cols[4].button(BOTOES_MOBILE["help"], help=help_manual, width="stretch")
 
-        off_voz_slot = render_voz_slot()
-
     if last:
         nav_changed = True
         st.session_state.off_take -= 1
@@ -3620,6 +3618,8 @@ def page_off_machina():  # available off_machina_books
 
     if opt_off_take != st.session_state.off_take:
         st.session_state.off_take = opt_off_take
+
+    off_voz_slot = render_voz_slot()
 
     lnew = True
     if manu:
