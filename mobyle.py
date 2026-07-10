@@ -273,11 +273,11 @@ def apply_styles():
             }
 
             div[data-testid="stButton"] button {
-                min-height: 2.72rem !important;
+                min-height: 3.05rem !important;
                 width: 100% !important;
-                font-size: 1.02rem !important;
-                margin-top: 0.08rem !important;
-                margin-bottom: 0.08rem !important;
+                font-size: 1.18rem !important;
+                margin-top: 0.10rem !important;
+                margin-bottom: 0.10rem !important;
             }
 
             div[data-testid="stHorizontalBlock"] {
@@ -285,17 +285,15 @@ def apply_styles():
                 flex-direction: row !important;
                 flex-wrap: nowrap !important;
                 align-items: stretch !important;
-                gap: 0.16rem !important;
+                gap: 0.30rem !important;
                 width: 100% !important;
                 max-width: 100% !important;
             }
 
             div[data-testid="stHorizontalBlock"] > div,
             div[data-testid="stHorizontalBlock"] div[data-testid="column"] {
-                width: 0 !important;
                 min-width: 0 !important;
                 max-width: none !important;
-                flex: 1 1 0 !important;
                 padding-left: 0 !important;
                 padding-right: 0 !important;
             }
@@ -322,14 +320,14 @@ def apply_styles():
                 display: flex !important;
                 align-items: center !important;
                 justify-content: center !important;
-                min-height: 2.72rem !important;
+                min-height: 3.05rem !important;
                 padding: 0.18rem 0.10rem !important;
                 border-radius: 0.42rem !important;
                 border: 1px solid rgba(49, 51, 63, 0.20) !important;
                 background: #ffffff !important;
                 color: #31333f !important;
                 text-decoration: none !important;
-                font-size: 1.02rem !important;
+                font-size: 1.08rem !important;
                 line-height: 1 !important;
                 white-space: nowrap !important;
                 box-sizing: border-box !important;
@@ -2896,7 +2894,7 @@ def page_mini():
     help_auto = help_tips[7]
     help_manual = help_tips[8]
 
-    mini_left, mini_nav, mini_right = st.columns([3, 4, 3])
+    mini_left, mini_nav, mini_right = st.columns([0.15, 9.70, 0.15])
     with mini_nav:
         nav_cols = st.columns([1, 1, 1, 1, 1, 1, 1])
         more = nav_cols[0].button(BOTOES_MOBILE["mais_uma_versao"], key="mini_more", help=help_more, width="stretch")
@@ -3052,12 +3050,12 @@ def page_ypoemas():
 
     try:
         col_livros, col_nav, col_temas = st.columns(
-            [3, 4, 3],
+            [2, 6, 2],
             vertical_alignment="bottom",
         )
         machina_nav_needs_spacer = False
     except TypeError:
-        col_livros, col_nav, col_temas = st.columns([3, 4, 3])
+        col_livros, col_nav, col_temas = st.columns([2, 6, 2])
         machina_nav_needs_spacer = True
 
     with col_livros:
@@ -3520,12 +3518,12 @@ def page_off_machina():  # available off_machina_books
     # [ lista_livros ] [ ◀ ✻ ▶ ? ] [ lista_temas ]
     try:
         col_livros, col_nav, col_temas = st.columns(
-            [3, 4, 3],
+            [2.25, 5.5, 2.25],
             vertical_alignment="bottom",
         )
         off_nav_needs_spacer = False
     except TypeError:
-        col_livros, col_nav, col_temas = st.columns([3, 4, 3])
+        col_livros, col_nav, col_temas = st.columns([2.25, 5.5, 2.25])
         off_nav_needs_spacer = True
 
     with col_livros:
@@ -3950,7 +3948,7 @@ def main():
             page_row = st.container()
 
         with page_row:
-            page_display = {"off-mach": "OFF"}
+            page_display = {"ypoema": "yPoemas", "off-mach": "OFF"}
             for page_label in page_labels:
                 display_label = page_display.get(page_label, page_label)
                 st.button(
