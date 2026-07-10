@@ -1202,7 +1202,7 @@ def _on_palco_theme_change():
         st.session_state["cia_force_new_poema"] = True
 
 
-def pick_book_palco():
+def pick_book_palco(label_text=None, label_visibility="visible"):
     """Escolhe o livro yPoemas diretamente no palco."""
     _sync_book_theme_state()
 
@@ -1212,15 +1212,16 @@ def pick_book_palco():
     _prepare_book_widget(key)
 
     st.selectbox(
-        str(len(books_list)) + " ↓",
+        label_text if label_text is not None else str(len(books_list)) + " ↓",
         books_list,
         index=books_list.index(current),
         key=key,
         on_change=_on_palco_book_change,
+        label_visibility=label_visibility,
     )
 
 
-def pick_tema_palco():
+def pick_tema_palco(label_text=None, label_visibility="visible"):
 
     """Escolhe o tema atual do livro diretamente no palco."""
     _sync_book_theme_state()
@@ -1232,12 +1233,13 @@ def pick_tema_palco():
     st.session_state["_ypo_theme_widget_key"] = widget_key
     options = list(range(len(temas_list)))
     st.selectbox(
-        f"{len(temas_list)} ↓",
+        label_text if label_text is not None else f"{len(temas_list)} ↓",
         options,
         index=_coerce_take(st.session_state.get("take", 0), temas_list),
         format_func=lambda z: temas_list[z],
         key=widget_key,
         on_change=_on_palco_theme_change,
+        label_visibility=label_visibility,
     )
 
 
@@ -3049,22 +3051,43 @@ def page_ypoemas():
     help_more = help_tips[4]
 
     try:
-        col_livros, col_nav, col_temas = st.columns(
+        info_livros, info_player, info_temas = st.columns(
             [3, 4, 3],
             vertical_alignment="bottom",
         )
+        col_livros, col_nav, col_temas = st.columns([3, 4, 3], vertical_alignment="bottom")
         machina_nav_needs_spacer = False
     except TypeError:
+        info_livros, info_player, info_temas = st.columns([3, 4, 3])
         col_livros, col_nav, col_temas = st.columns([3, 4, 3])
         machina_nav_needs_spacer = True
 
+    with info_livros:
+        st.markdown(
+            "<div style='text-align:left; font-weight:600; margin-bottom:-0.45rem;'>"
+            + str(len(BOOKS_LIST))
+            + " ↓</div>",
+            unsafe_allow_html=True,
+        )
+
+    with info_player:
+        ypoemas_voz_slot = render_voz_slot()
+
+    with info_temas:
+        st.markdown(
+            "<div style='text-align:right; font-weight:600; margin-bottom:-0.45rem;'>↓ "
+            + str(len(temas_list))
+            + "</div>",
+            unsafe_allow_html=True,
+        )
+
     with col_livros:
-        pick_book_palco()
+        pick_book_palco("", "collapsed")
 
     with col_nav:
         if machina_nav_needs_spacer:
             st.markdown(
-                "<div style='height:1.95rem; min-height:1.95rem;'></div>",
+                "<div style='height:0.12rem; min-height:0.12rem;'></div>",
                 unsafe_allow_html=True,
             )
         nav_cols = st.columns([1, 1, 1, 1, 1, 1])
@@ -3075,10 +3098,8 @@ def page_ypoemas():
         ypoema_voz = nav_cols[4].button(BOTOES_MOBILE["voz"], key="ypoema_voz", help=help_talk, width="stretch")
         manu = nav_cols[5].button(BOTOES_MOBILE["help"], key="ypoema_help", help=help_manual, width="stretch")
 
-        ypoemas_voz_slot = render_voz_slot()
-
     with col_temas:
-        pick_tema_palco()
+        pick_tema_palco("", "collapsed")
 
     temas_list = load_temas(_current_book())
     maxy_ypoemas = len(temas_list) - 1
@@ -3514,27 +3535,52 @@ def page_off_machina():  # available off_machina_books
     if st.session_state.off_take < 0:
         st.session_state.off_take = 0
 
+    off_book_name = off_books_list[st.session_state.off_book]
+    this_off_book = load_off_book(off_book_name)
+    off_book_pagys = load_book_pages(this_off_book)
+
     # Header limpo, herdado do palco yPoemas:
     # [ lista_livros ] [ ◀ ✻ ▶ ? ] [ lista_temas ]
     try:
-        col_livros, col_nav, col_temas = st.columns(
+        info_livros, info_player, info_temas = st.columns(
             [3, 4, 3],
             vertical_alignment="bottom",
         )
+        col_livros, col_nav, col_temas = st.columns([3, 4, 3], vertical_alignment="bottom")
         off_nav_needs_spacer = False
     except TypeError:
+        info_livros, info_player, info_temas = st.columns([3, 4, 3])
         col_livros, col_nav, col_temas = st.columns([3, 4, 3])
         off_nav_needs_spacer = True
 
+    with info_livros:
+        st.markdown(
+            "<div style='text-align:left; font-weight:600; margin-bottom:-0.45rem;'>"
+            + str(len(off_books_list))
+            + " ↓</div>",
+            unsafe_allow_html=True,
+        )
+
+    with info_player:
+        off_voz_slot = render_voz_slot()
+
+    with info_temas:
+        st.markdown(
+            "<div style='text-align:right; font-weight:600; margin-bottom:-0.45rem;'>↓ "
+            + str(len(off_book_pagys))
+            + "</div>",
+            unsafe_allow_html=True,
+        )
+
     with col_livros:
         options = list(range(len(off_books_list)))
-        sobrios = str(len(off_books_list)) + " ↓"
         opt_off_book = st.selectbox(
-            sobrios,
+            "",
             options,
             index=st.session_state.off_book,
             format_func=lambda x: off_books_list[x],
             key="opt_off_book",
+            label_visibility="collapsed",
         )
 
     if opt_off_book != st.session_state.off_book:
@@ -3543,10 +3589,6 @@ def page_off_machina():  # available off_machina_books
         st.session_state["off_take_widget_token"] = int(
             st.session_state.get("off_take_widget_token", 0)
         ) + 1
-
-    off_book_name = off_books_list[st.session_state.off_book]
-    this_off_book = load_off_book(off_book_name)
-    off_book_pagys = load_book_pages(this_off_book)
 
     if not off_book_pagys:
         st.warning(translate("nenhum título encontrado para este livro"))
@@ -3566,7 +3608,7 @@ def page_off_machina():  # available off_machina_books
 
         if off_nav_needs_spacer:
             st.markdown(
-                "<div style='height:1.95rem; min-height:1.95rem;'></div>",
+                "<div style='height:0.12rem; min-height:0.12rem;'></div>",
                 unsafe_allow_html=True,
             )
         nav_cols = st.columns([1, 1, 1, 1, 1])
@@ -3575,8 +3617,6 @@ def page_off_machina():  # available off_machina_books
         nest = nav_cols[2].button(BOTOES_MOBILE["proximo_tema"], help=help_nest, width="stretch")
         off_voz = nav_cols[3].button(BOTOES_MOBILE["voz"], help=help_talk, key="off_voz_btn", width="stretch")
         manu = nav_cols[4].button(BOTOES_MOBILE["help"], help=help_manual, width="stretch")
-
-        off_voz_slot = render_voz_slot()
 
     if last:
         nav_changed = True
@@ -3606,16 +3646,16 @@ def page_off_machina():  # available off_machina_books
 
     with col_temas:
         options = list(range(len(off_book_pagys)))
-        sobrios = str(len(off_book_pagys)) + " ↓"
         opt_off_take_key = "opt_off_take_" + str(
             int(st.session_state.get("off_take_widget_token", 0))
         )
         opt_off_take = st.selectbox(
-            sobrios,
+            "",
             options,
             index=st.session_state.off_take,
             format_func=lambda x: off_book_pagys[x],
             key=opt_off_take_key,
+            label_visibility="collapsed",
         )
 
     if opt_off_take != st.session_state.off_take:
