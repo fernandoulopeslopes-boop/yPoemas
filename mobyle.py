@@ -2834,7 +2834,7 @@ def talk(text):
 
 def render_voz_slot(initial_text="Machina."):
     """Reserva a linha do player de voz logo abaixo dos nav_buttons."""
-    voz_left, voz_mid, voz_right = st.columns([4, 2, 4])
+    voz_left, voz_mid, voz_right = st.columns([3.5, 3, 3.5])
     with voz_mid:
         slot = st.empty()
         with slot:
