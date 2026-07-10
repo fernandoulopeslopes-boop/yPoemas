@@ -615,8 +615,8 @@ def apply_styles():
 
         .machina-voz-slot {
             margin: 0.10rem auto 0.08rem auto !important;
-            width: min(320px, 74vw) !important;
-            max-width: min(320px, 74vw) !important;
+            width: min(180px, 34vw) !important;
+            max-width: min(180px, 34vw) !important;
         }
 
 
@@ -2834,11 +2834,11 @@ def talk(text):
 
 def render_voz_slot(initial_text="Machina."):
     """Reserva a linha do player de voz logo abaixo dos nav_buttons."""
-    st.markdown("<div class='machina-voz-slot'>", unsafe_allow_html=True)
-    slot = st.empty()
-    with slot:
-        talk(initial_text)
-    st.markdown("</div>", unsafe_allow_html=True)
+    voz_left, voz_mid, voz_right = st.columns([4, 2, 4])
+    with voz_mid:
+        slot = st.empty()
+        with slot:
+            talk(initial_text)
     return slot
 
 
@@ -3050,12 +3050,12 @@ def page_ypoemas():
 
     try:
         col_livros, col_nav, col_temas = st.columns(
-            [2, 6, 2],
+            [3, 4, 3],
             vertical_alignment="bottom",
         )
         machina_nav_needs_spacer = False
     except TypeError:
-        col_livros, col_nav, col_temas = st.columns([2, 6, 2])
+        col_livros, col_nav, col_temas = st.columns([3, 4, 3])
         machina_nav_needs_spacer = True
 
     with col_livros:
@@ -3518,12 +3518,12 @@ def page_off_machina():  # available off_machina_books
     # [ lista_livros ] [ ◀ ✻ ▶ ? ] [ lista_temas ]
     try:
         col_livros, col_nav, col_temas = st.columns(
-            [2.25, 5.5, 2.25],
+            [3, 4, 3],
             vertical_alignment="bottom",
         )
         off_nav_needs_spacer = False
     except TypeError:
-        col_livros, col_nav, col_temas = st.columns([2.25, 5.5, 2.25])
+        col_livros, col_nav, col_temas = st.columns([3, 4, 3])
         off_nav_needs_spacer = True
 
     with col_livros:
