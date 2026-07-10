@@ -1,4 +1,4 @@
-﻿import os
+import os
 import re
 import time
 import random
@@ -560,12 +560,14 @@ def apply_styles():
             min-height: 1.94rem !important;
             padding-top: 0.11rem !important;
             padding-bottom: 0.11rem !important;
+            font-size: 0.84rem !important;
         }
 
         [data-testid="stSidebar"] .stButton button p {
             margin: 0 !important;
             padding: 0 !important;
             text-indent: 0 !important;
+            font-size: 0.84rem !important;
         }
 
         [data-testid="stSidebar"] div[data-testid="stVerticalBlock"] {
@@ -615,7 +617,8 @@ def apply_styles():
 
         .machina-voz-slot {
             margin: 0.10rem auto 0.08rem auto !important;
-            max-width: min(680px, 96%) !important;
+            width: min(320px, 74vw) !important;
+            max-width: min(320px, 74vw) !important;
         }
 
 
@@ -891,7 +894,7 @@ def init_session_state():
         "visy": True,
         "nany_visy": 0,
         "draw": False,
-        "talk": False,
+        "talk": True,
         "arts": [],
         "auto": False,
         "rand": False,
@@ -1211,7 +1214,7 @@ def pick_book_palco():
     _prepare_book_widget(key)
 
     st.selectbox(
-        "↓  " + str(len(books_list)) + " livros",
+        str(len(books_list)) + " ↓",
         books_list,
         index=books_list.index(current),
         key=key,
@@ -1231,7 +1234,7 @@ def pick_tema_palco():
     st.session_state["_ypo_theme_widget_key"] = widget_key
     options = list(range(len(temas_list)))
     st.selectbox(
-        f"↓  {len(temas_list)} " + translate("temas"),
+        f"{len(temas_list)} ↓",
         options,
         index=_coerce_take(st.session_state.get("take", 0), temas_list),
         format_func=lambda z: temas_list[z],
@@ -2795,17 +2798,15 @@ def write_cia_header(LOGO_TEXTO, LOGO_IMAGE=None):
     )
 
 
-def talk(text):
-    """Lê o yPoema no idioma atual usando edge-tts, quando disponível."""
-    if edge_tts is None:
-        st.warning("Motor de voz neural indisponível.")
-        return
+def _clean_audio_text(text):
+    """Remove marcas HTML simples antes da geracao de audio."""
+    return str(text or "").replace("<br>", " ").replace("< br>", "").replace("<br >", "").replace("<br/>", " ")
 
-    # Limpeza para a voz não ler tags
-    text_clean = text.replace("<br>", " ").replace("< br>", "").replace("<br >", "").replace("<br/>", " ")
 
-    # Mapeamento de vozes neurais de alta qualidade
-    selected_voice = VOICES_EDGE_TTS.get(st.session_state.lang, "pt-BR-FranciscaNeural")
+@st.cache_data(show_spinner=False)
+def _audio_bytes_edge_tts(text_clean, lang):
+    """Gera audio uma vez por texto/idioma e reaproveita nos reruns."""
+    selected_voice = VOICES_EDGE_TTS.get(lang, "pt-BR-FranciscaNeural")
 
     async def generate_audio():
         communicate = edge_tts.Communicate(text_clean, selected_voice)
@@ -2815,21 +2816,33 @@ def talk(text):
                 audio_bytes += chunk["data"]
         return audio_bytes
 
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    return loop.run_until_complete(generate_audio())
+
+
+def talk(text):
+    """Le o yPoema no idioma atual usando edge-tts, quando disponivel."""
+    if edge_tts is None:
+        st.warning("Motor de voz neural indisponivel.")
+        return
+
     try:
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        audio_output = loop.run_until_complete(generate_audio())
+        audio_output = _audio_bytes_edge_tts(_clean_audio_text(text), st.session_state.lang)
         st.audio(audio_output, format="audio/mp3")
     except Exception as e:
         st.error(f"Erro na voz neural: {e}")
 
 
-def render_voz_slot():
+def render_voz_slot(initial_text="Machina."):
     """Reserva a linha do player de voz logo abaixo dos nav_buttons."""
     st.markdown("<div class='machina-voz-slot'>", unsafe_allow_html=True)
     slot = st.empty()
+    with slot:
+        talk(initial_text)
     st.markdown("</div>", unsafe_allow_html=True)
     return slot
+
 
 def say_number(tema):  # search index title for eureka
     analise = "nonono"
@@ -2883,29 +2896,22 @@ def page_mini():
     help_auto = help_tips[7]
     help_manual = help_tips[8]
 
-    mini_action = mobile_button_row("mini", [
-        {"action": "more", "label": BOTOES_MOBILE["mais_uma_versao"], "help": help_more},
-        {"action": "last", "label": BOTOES_MOBILE["tema_anterior"], "help": help_last},
-        {"action": "rand", "label": BOTOES_MOBILE["tema_ao_acaso"], "help": help_rand},
-        {"action": "nest", "label": BOTOES_MOBILE["proximo_tema"], "help": help_nest},
-        {"action": "voz", "label": BOTOES_MOBILE["voz"], "help": help_talk},
-        {"action": "auto", "label": BOTOES_MOBILE["automatico"], "help": help_auto},
-        {"action": "help", "label": BOTOES_MOBILE["help"], "help": help_manual},
-    ])
-    more = mini_action == "more"
-    last = mini_action == "last"
-    rand = mini_action == "rand"
-    nest = mini_action == "nest"
-    if mini_action == "voz":
-        st.session_state.talk = not st.session_state.talk
-    if mini_action == "auto":
-        st.session_state.auto = not st.session_state.auto
-    manu = mini_action == "help"
+    mini_left, mini_nav, mini_right = st.columns([3, 4, 3])
+    with mini_nav:
+        nav_cols = st.columns([1, 1, 1, 1, 1, 1, 1])
+        more = nav_cols[0].button(BOTOES_MOBILE["mais_uma_versao"], key="mini_more", help=help_more, width="stretch")
+        last = nav_cols[1].button(BOTOES_MOBILE["tema_anterior"], key="mini_last", help=help_last, width="stretch")
+        rand = nav_cols[2].button(BOTOES_MOBILE["tema_ao_acaso"], key="mini_rand", help=help_rand, width="stretch")
+        nest = nav_cols[3].button(BOTOES_MOBILE["proximo_tema"], key="mini_nest", help=help_nest, width="stretch")
+        mini_voz = nav_cols[4].button(BOTOES_MOBILE["voz"], key="mini_voz", help=help_talk, width="stretch")
+        auto = nav_cols[5].button(BOTOES_MOBILE["automatico"], key="mini_auto", help=help_auto, width="stretch")
+        manu = nav_cols[6].button(BOTOES_MOBILE["help"], key="mini_help", help=help_manual, width="stretch")
+        mini_voz_slot = render_voz_slot()
 
-    mini_voz_slot = render_voz_slot()
+    if auto:
+        st.session_state.auto = not st.session_state.auto
 
     if st.session_state.auto:
-        st.session_state.talk = False
         with st.sidebar:
             wait_time = st.slider(translate("tempo de exibição (em segundos): "), 5, 60)
 
@@ -2981,7 +2987,7 @@ def page_mini():
                 with mini_place_holder:
                     write_ypoema(LOGO_TEXTO, None)
 
-                if st.session_state.talk:
+                if mini_voz:
                     with mini_voz_slot:
                         talk(curr_ypoema)
 
@@ -3068,8 +3074,7 @@ def page_ypoemas():
         last = nav_cols[1].button(BOTOES_MOBILE["tema_anterior"], key="ypoema_last", help=help_last, width="stretch")
         rand = nav_cols[2].button(BOTOES_MOBILE["tema_ao_acaso"], key="ypoema_rand", help=help_rand, width="stretch")
         nest = nav_cols[3].button(BOTOES_MOBILE["proximo_tema"], key="ypoema_nest", help=help_nest, width="stretch")
-        if nav_cols[4].button(BOTOES_MOBILE["voz"], key="ypoema_voz", help=help_talk, width="stretch"):
-            st.session_state.talk = not st.session_state.talk
+        ypoema_voz = nav_cols[4].button(BOTOES_MOBILE["voz"], key="ypoema_voz", help=help_talk, width="stretch")
         manu = nav_cols[5].button(BOTOES_MOBILE["help"], key="ypoema_help", help=help_manual, width="stretch")
 
         ypoemas_voz_slot = render_voz_slot()
@@ -3311,7 +3316,7 @@ def page_ypoemas():
             )
 
 
-        if st.session_state.talk:
+        if ypoema_voz:
             with ypoemas_voz_slot:
                 talk(curr_ypoema)
 
@@ -3334,9 +3339,22 @@ def page_eureka():
         eureka_nav_needs_spacer = True
 
     with col_busca:
+        eureka_info_slot = st.empty()
         find_what = st.text_input(
-            label=translate("buscar por..."),
+            label=translate("buscar..."),
             help=translate("digite uma palavra - ou parte dela - que você goste..."),
+        )
+        components.html(
+            """
+            <script>
+            window.addEventListener("keydown", function(event) {
+              if (event.key === "Enter" && document.activeElement) {
+                setTimeout(function(){ document.activeElement.blur(); }, 40);
+              }
+            }, true);
+            </script>
+            """,
+            height=0,
         )
 
     with col_nav:
@@ -3349,8 +3367,7 @@ def page_eureka():
         nav_cols = st.columns([1, 1, 1, 1])
         more = nav_cols[0].button(BOTOES_MOBILE["mais_uma_versao"], help=help_more, width="stretch")
         rand = nav_cols[1].button(BOTOES_MOBILE["tema_ao_acaso"], help=help_rand, width="stretch")
-        if nav_cols[2].button(BOTOES_MOBILE["voz"], key="eureka_voz_btn", help=help_talk, width="stretch"):
-            st.session_state.talk = not st.session_state.talk
+        eureka_voz = nav_cols[2].button(BOTOES_MOBILE["voz"], key="eureka_voz_btn", help=help_talk, width="stretch")
         manu = nav_cols[3].button(BOTOES_MOBILE["help"], help=help_manual, width="stretch")
 
         eureka_voz_slot = render_voz_slot()
@@ -3391,14 +3408,22 @@ def page_eureka():
             )
         elif len(seed_list) >= 1:
             seed_list.sort()
-            if len(seed_list) == 1:
-                info_find = translate('ocorrência de "')
-            else:
-                info_find = translate('ocorrências de "')
-
-            info_find += find_what
-            if len(soma_tema) > 1:
-                info_find += translate('" em ' + str(len(soma_tema)) + " temas")
+            info_find = (
+                "💡 "
+                + str(len(seed_list))
+                + ' "'
+                + find_what
+                + '" em '
+                + str(len(soma_tema))
+                + " temas"
+            )
+            with eureka_info_slot:
+                st.markdown(
+                    "<div style='text-align:left; font-weight:600; margin-bottom:0.12rem;'>"
+                    + html.escape(info_find)
+                    + "</div>",
+                    unsafe_allow_html=True,
+                )
 
             if rand:
                 old_eureka = st.session_state.get("eureka", 0)
@@ -3416,7 +3441,7 @@ def page_eureka():
             with col_ocorrencias:
                 options = list(range(len(seed_list)))
                 opt_ocur = st.selectbox(
-                    "↓  " + str(len(seed_list)) + " " + info_find,
+                    str(len(seed_list)) + " ↓",
                     options,
                     index=st.session_state.eureka,
                     format_func=lambda y: seed_list[y],
@@ -3459,7 +3484,7 @@ def page_eureka():
                     write_ypoema(LOGO_TEXTO, None)
                     update_readings(seed_tema)
 
-                if st.session_state.talk:
+                if eureka_voz:
                     with eureka_voz_slot:
                         talk(curr_ypoema)
             if manu:
@@ -3505,7 +3530,7 @@ def page_off_machina():  # available off_machina_books
 
     with col_livros:
         options = list(range(len(off_books_list)))
-        sobrios = "↓  " + str(len(off_books_list)) + " livros"
+        sobrios = str(len(off_books_list)) + " ↓"
         opt_off_book = st.selectbox(
             sobrios,
             options,
@@ -3550,8 +3575,7 @@ def page_off_machina():  # available off_machina_books
         last = nav_cols[0].button(BOTOES_MOBILE["tema_anterior"], help=help_last, width="stretch")
         rand = nav_cols[1].button(BOTOES_MOBILE["tema_ao_acaso"], help=help_rand, width="stretch")
         nest = nav_cols[2].button(BOTOES_MOBILE["proximo_tema"], help=help_nest, width="stretch")
-        if nav_cols[3].button(BOTOES_MOBILE["voz"], help=help_talk, key="off_voz_btn", width="stretch"):
-            st.session_state.talk = not st.session_state.talk
+        off_voz = nav_cols[3].button(BOTOES_MOBILE["voz"], help=help_talk, key="off_voz_btn", width="stretch")
         manu = nav_cols[4].button(BOTOES_MOBILE["help"], help=help_manual, width="stretch")
 
         off_voz_slot = render_voz_slot()
@@ -3584,7 +3608,7 @@ def page_off_machina():  # available off_machina_books
 
     with col_temas:
         options = list(range(len(off_book_pagys)))
-        sobrios = "↓ " + str(len(off_book_pagys)) + " temas"
+        sobrios = str(len(off_book_pagys)) + " ↓"
         opt_off_take_key = "opt_off_take_" + str(
             int(st.session_state.get("off_take_widget_token", 0))
         )
@@ -3661,7 +3685,7 @@ def page_off_machina():  # available off_machina_books
                     write_off_machina_texto(LOGO_TEXTO)
                 update_readings(off_book_name)
 
-        if st.session_state.talk:
+        if off_voz:
             with off_voz_slot:
                 talk(off_book_text)
 
@@ -3817,42 +3841,37 @@ def render_analysis_sidebar_block():
 
     st.sidebar.markdown("<div style='height:1.85rem;'></div>", unsafe_allow_html=True)
 
-    col_analysis, col_analysis_right = st.sidebar.columns([2.78, 1.32])
+    col_cia, col_machina, col_ola = st.sidebar.columns([2.5, 5, 2.5])
 
-    with col_analysis:
-        col_cia, col_machina = st.columns([1, 1])
-    with col_analysis_right:
-        col_ola = st.container()
+    with col_cia:
+        if st.button(
+            "CIA",
+            key="analysis_voice_cia_btn",
+            width="stretch",
+            type="primary" if current_key == "CIA" else "secondary",
+        ):
+            _set_analysis_voice("CIA")
+            st.rerun()
 
-        with col_cia:
-            if st.button(
-                "CIA",
-                key="analysis_voice_cia_btn",
-                width="stretch",
-                type="primary" if current_key == "CIA" else "secondary",
-            ):
-                _set_analysis_voice("CIA")
-                st.rerun()
+    with col_machina:
+        if st.button(
+            "MACHINA",
+            key="analysis_voice_machina_btn",
+            width="stretch",
+            type="primary" if current_key == "MACHINA" else "secondary",
+        ):
+            _set_analysis_voice("Machina")
+            st.rerun()
 
-        with col_machina:
-            if st.button(
-                "MACHINA",
-                key="analysis_voice_machina_btn",
-                width="stretch",
-                type="primary" if current_key == "MACHINA" else "secondary",
-            ):
-                _set_analysis_voice("Machina")
-                st.rerun()
-
-        with col_ola:
-            if st.button(
-                "OLA",
-                key="analysis_voice_ola_btn",
-                width="stretch",
-                type="primary" if current_key == "OLA" else "secondary",
-            ):
-                _set_analysis_voice("OLA")
-                st.rerun()
+    with col_ola:
+        if st.button(
+            "OLA",
+            key="analysis_voice_ola_btn",
+            width="stretch",
+            type="primary" if current_key == "OLA" else "secondary",
+        ):
+            _set_analysis_voice("OLA")
+            st.rerun()
 
     if options:
         st.sidebar.markdown(
@@ -3931,9 +3950,11 @@ def main():
             page_row = st.container()
 
         with page_row:
+            page_display = {"off-mach": "OFF"}
             for page_label in page_labels:
+                display_label = page_display.get(page_label, page_label)
                 st.button(
-                    page_label,
+                    display_label,
                     key=f"machina_page_btn_{page_label}",
                     help=page_label,
                     type="primary" if page_label == st.session_state["machina_page_select"] else "secondary",
@@ -3944,8 +3965,6 @@ def main():
 
         chosen_label = st.session_state["machina_page_select"]
         chosen_id = st.session_state.get("machina_page_id", page_ids.get(chosen_label, "2"))
-
-        st.divider()
 
         render_sidebar_for_page(chosen_id)
 
@@ -3990,4 +4009,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
