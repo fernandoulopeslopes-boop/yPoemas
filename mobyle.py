@@ -1658,6 +1658,15 @@ def load_temas(book):  # List of themes inside a Book
 
 @st.cache_data
 def load_info(nome_tema):
+    def _format_milhar(valor):
+        digits = re.sub(r"\D", "", str(valor or ""))
+        if not digits:
+            return str(valor or "")
+        try:
+            return f"{int(digits):,}".replace(",", ".")
+        except Exception:
+            return str(valor or "")
+
     with open(os.path.join("./base/" + "info.txt"), "r", encoding="utf-8") as file:
         result = "nonono"
         for line in file:
@@ -1682,7 +1691,7 @@ def load_info(nome_tema):
                     result += "Verbetes no texto: " + qtd_wordin + "  " + "<br>"
                     result += "Verbetes  do Tema: " + qtd_lexico + "  " + "<br>"
                     result += "• Banco de Ítimos: " + qtd_itimos + "  " + "<br>"
-                    result += "Análise : " + qtd_analiz + "  " + "<br>"
+                    result += "Análise : " + _format_milhar(qtd_analiz) + "  " + "<br>"
                     result += "Notação Científica: " + qtd_cienti + "  " + "<br>"
                     result += "<br>"
 
