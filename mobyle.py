@@ -2919,7 +2919,7 @@ def page_mini():
     help_auto = help_tips[7]
     help_manual = help_tips[8]
 
-    mini_left, mini_nav, mini_right = st.columns([2, 6, 2])
+    mini_left, mini_nav, mini_right = st.columns([3, 4, 3])
     with mini_nav:
         nav_cols = st.columns([1, 1, 1, 1, 1, 1, 1])
         more = nav_cols[0].button(BOTOES_MOBILE["mais_uma_versao"], key="mini_more", help=help_more, width="stretch")
@@ -2929,6 +2929,9 @@ def page_mini():
         mini_voz = nav_cols[4].button(BOTOES_MOBILE["voz"], key="mini_voz", help=help_talk, width="stretch")
         auto = nav_cols[5].button(BOTOES_MOBILE["automatico"], key="mini_auto", help=help_auto, width="stretch")
         manu = nav_cols[6].button(BOTOES_MOBILE["help"], key="mini_help", help=help_manual, width="stretch")
+
+    mini_player_left, mini_player, mini_player_right = st.columns([3, 4, 3])
+    with mini_player:
         mini_voz_slot = render_voz_slot()
 
     if auto:
