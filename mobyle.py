@@ -2153,6 +2153,15 @@ def _off_machina_css():
             text-align: left !important;
             font-weight: 600 !important;
         }}
+        .machina-off-text .machina-off-title {{
+            display: block !important;
+            text-align: center !important;
+            font-weight: 700 !important;
+            text-decoration: underline !important;
+            text-underline-offset: 0.18em !important;
+            margin: 0.08rem auto 0.88rem auto !important;
+            line-height: 1.28 !important;
+        }}
         .machina-off-text {{
             display: block !important;
             width: fit-content !important;
@@ -2171,7 +2180,19 @@ def _off_machina_css():
 def _off_machina_html(LOGO_TEXTO):
     """HTML seguro do Off-Machina preservando quebras e links Markdown."""
     texto = _off_machina_texto_limpo(LOGO_TEXTO)
-    safe = _markdown_links_to_html(texto).replace("\n", "<br>")
+    linhas = texto.splitlines()
+    while linhas and not linhas[0].strip():
+        linhas.pop(0)
+    if linhas:
+        titulo = linhas[0].strip()
+        corpo = _trim_blank_edges_preservando_recuo(linhas[1:])
+        safe_title = _markdown_links_to_html(titulo)
+        safe_body = _markdown_links_to_html(corpo).replace("\n", "<br>")
+        safe = "<span class='machina-off-title'>" + safe_title + "</span>"
+        if safe_body:
+            safe += safe_body
+    else:
+        safe = ""
     return f"{_off_machina_css()}<div class='machina-off-text'>{safe}</div>"
 
 
