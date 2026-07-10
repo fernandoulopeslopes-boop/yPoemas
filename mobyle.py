@@ -273,11 +273,22 @@ def apply_styles():
             }
 
             div[data-testid="stButton"] button {
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
                 min-height: 2.78rem !important;
                 width: 100% !important;
                 font-size: 1.06rem !important;
+                text-align: center !important;
                 margin-top: 0.06rem !important;
                 margin-bottom: 0.06rem !important;
+            }
+
+            div[data-testid="stButton"] button p {
+                width: 100% !important;
+                margin: 0 !important;
+                text-align: center !important;
+                line-height: 1 !important;
             }
 
             div[data-testid="stHorizontalBlock"] {
@@ -2836,7 +2847,7 @@ def talk(text):
 
 def render_voz_slot(initial_text="Machina."):
     """Reserva a linha do player de voz logo abaixo dos nav_buttons."""
-    voz_left, voz_mid, voz_right = st.columns([0.45, 9.1, 0.45])
+    voz_left, voz_mid, voz_right = st.columns([0.1, 9.8, 0.1])
     with voz_mid:
         slot = st.empty()
         with slot:
