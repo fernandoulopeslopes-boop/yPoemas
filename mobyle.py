@@ -310,6 +310,7 @@ def apply_styles():
                 height: 2.78rem !important;
                 display: flex !important;
                 align-items: center !important;
+                justify-content: center !important;
             }
 
             .st-key-copy_qtd_widget div[data-baseweb="select"] span,
@@ -317,6 +318,19 @@ def apply_styles():
                 line-height: 1 !important;
                 display: flex !important;
                 align-items: center !important;
+                justify-content: center !important;
+                text-align: center !important;
+            }
+
+            .st-key-copy_variacoes_btn button {
+                border: 1px solid rgba(49, 51, 63, 0.35) !important;
+                border-radius: 0.42rem !important;
+                background: white !important;
+                color: rgb(49, 51, 63) !important;
+                box-shadow: none !important;
+                font-size: 0.98rem !important;
+                padding-left: 0.18rem !important;
+                padding-right: 0.18rem !important;
             }
 
             div[data-testid="stHorizontalBlock"] {
@@ -3397,9 +3411,9 @@ def page_ypoemas():
             copy_submit = False
 
             if pacote_pronto:
-                copy_left, copy_qtd_col, copy_all_col, copy_right = st.columns([4.20, 0.83, 2.15, 4.20])
+                copy_left, copy_qtd_col, copy_all_col, copy_right = st.columns([3.80, 1.00, 2.20, 3.80])
             else:
-                copy_left, copy_variacoes_col, copy_qtd_col, copy_right = st.columns([4.10, 1.65, 0.83, 4.10])
+                copy_left, copy_variacoes_col, copy_qtd_col, copy_right = st.columns([2.95, 2.45, 1.00, 2.95])
                 with copy_variacoes_col:
                     copy_submit = st.button(
                         "variações",
