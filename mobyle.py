@@ -305,6 +305,20 @@ def apply_styles():
                 text-align: center !important;
             }
 
+            .st-key-copy_qtd_widget div[data-baseweb="select"] > div {
+                min-height: 2.78rem !important;
+                height: 2.78rem !important;
+                display: flex !important;
+                align-items: center !important;
+            }
+
+            .st-key-copy_qtd_widget div[data-baseweb="select"] span,
+            .st-key-copy_qtd_widget div[data-baseweb="select"] input {
+                line-height: 1 !important;
+                display: flex !important;
+                align-items: center !important;
+            }
+
             div[data-testid="stHorizontalBlock"] {
                 display: flex !important;
                 flex-direction: row !important;
@@ -958,6 +972,15 @@ def init_session_state():
         "copy_bundle_qtd": 0,
         "copy_bundle_source": "",
         "ypo_theme_widget_token": 0,
+        "ypo_focus_key": "",
+        "ypo_focus_text": "",
+        "mini_focus_key": "",
+        "mini_focus_text": "",
+        "eureka_focus_key": "",
+        "eureka_focus_text": "",
+        "eureka_last_find": "",
+        "off_focus_key": "",
+        "off_focus_text": "",
     }
 
     for key, value in defaults.items():
@@ -985,6 +1008,28 @@ def _copy_bundle_source_key(curr_ypoema=""):
     ])
 
 
+def _ypo_focus_key():
+    """Identidade do texto em foco no palco yPoemas."""
+    return "|".join([
+        str(st.session_state.get("book", "")),
+        str(st.session_state.get("take", "")),
+        str(st.session_state.get("tema", "")),
+        str(st.session_state.get("lang", "")),
+    ])
+
+
+def _remember_focus(prefix, key, text):
+    st.session_state[f"{prefix}_focus_key"] = key
+    st.session_state[f"{prefix}_focus_text"] = text
+
+
+def _has_focus(prefix, key):
+    return (
+        st.session_state.get(f"{prefix}_focus_key", "") == key
+        and bool(st.session_state.get(f"{prefix}_focus_text", ""))
+    )
+
+
 def limpar_copias_palco():
     """Remove pacote de cópias antigo sem alterar a quantidade escolhida."""
     st.session_state["copy_bundle_text"] = ""
@@ -1003,11 +1048,12 @@ def _normalizar_qtd_copias(value):
 
 
 def _on_copy_qtd_change():
-    """Lista de quantidade como ação: um clique já escolhe e prepara o resultado."""
+    """Lista de quantidade: escolhe, mas não dispara a geração."""
     st.session_state["copy_qtd"] = _normalizar_qtd_copias(
         st.session_state.get("copy_qtd_widget", st.session_state.get("copy_qtd", 2))
     )
-    st.session_state["copy_qtd_changed"] = True
+    limpar_copias_palco()
+    st.session_state["copy_qtd_changed"] = False
 
 
 def open_gramado():
@@ -2467,8 +2513,9 @@ def render_copy_bundle_button(texto, token):
                 color:rgb(49,51,63);
                 font-size:14px;
                 line-height:1.2;
+                text-align:center;
                 white-space:nowrap;">
-                copiar...
+                copiar
             </button>
         </div>
         <script>
@@ -2503,9 +2550,9 @@ def render_copy_bundle_button(texto, token):
                 }} catch (e) {{
                     try {{
                         const ok = await fallbackCopy_{token}(txt_{token});
-                        btn_{token}.innerText = ok ? "copiado" : "copiar...";
+                        btn_{token}.innerText = ok ? "copiado" : "copiar";
                     }} catch (e2) {{
-                        btn_{token}.innerText = "copiar...";
+                        btn_{token}.innerText = "copiar";
                     }}
                 }}
             }});
@@ -3004,7 +3051,21 @@ def page_mini():
             st.session_state.mini = random.randrange(0, maxy_mini)
             st.session_state.tema = temas_list[st.session_state.mini]
 
-        if st.session_state.lang != st.session_state.last_lang:
+        mini_focus_key = "|".join([
+            "mini",
+            str(st.session_state.get("mini", "")),
+            str(st.session_state.get("tema", "")),
+            str(st.session_state.get("lang", "")),
+        ])
+        mini_keep_focus = (
+            not st.session_state.auto
+            and not any([more, last, rand, nest])
+            and _has_focus("mini", mini_focus_key)
+        )
+
+        if mini_keep_focus:
+            curr_ypoema = st.session_state.get("mini_focus_text", "")
+        elif st.session_state.lang != st.session_state.last_lang:
             curr_ypoema = load_lypo()  # changes in lang, keep LYPO
         else:
             curr_ypoema = load_poema(st.session_state.tema, "")
@@ -3020,6 +3081,7 @@ def page_mini():
                 save_typo.close()
             curr_ypoema = load_typo()  # to normalize line breaks in text
 
+        _remember_focus("mini", mini_focus_key, curr_ypoema)
         update_readings(st.session_state.tema)
         LOGO_TEXTO = curr_ypoema
         _set_sidebar_context_image_for_theme(st.session_state.tema)
@@ -3258,7 +3320,16 @@ def page_ypoemas():
 
         ypoemas_expander = st.expander(what_book, expanded=True)
         with ypoemas_expander:
-            if st.session_state.lang != st.session_state.last_lang:
+            focus_key = _ypo_focus_key()
+            keep_focus = (
+                not any([more, last, rand, nest])
+                and st.session_state.get("ypo_focus_key", "") == focus_key
+                and bool(st.session_state.get("ypo_focus_text", ""))
+            )
+
+            if keep_focus:
+                curr_ypoema = st.session_state.get("ypo_focus_text", "")
+            elif st.session_state.lang != st.session_state.last_lang:
                 curr_ypoema = load_lypo()  # changes in lang, keep LYPO
             else:
                 curr_ypoema = load_poema(st.session_state.tema, "")
@@ -3274,6 +3345,7 @@ def page_ypoemas():
                     save_typo.close()
                 curr_ypoema = load_typo()  # to normalize line breaks in text
 
+            _remember_focus("ypo", focus_key, curr_ypoema)
             update_readings(st.session_state.tema)
 
             st.session_state.ypoema_em_analise = curr_ypoema
@@ -3320,21 +3392,27 @@ def page_ypoemas():
             st.session_state["copy_qtd"] = qtd_copias_atual
 
             # Cópias clean:
-            # [ criar (X) variações ] [ qtd ] [ copiar yPoemas gerados ]
-            copy_left, copy_generate_col, copy_qtd_col, copy_all_col, copy_right = st.columns([3.00, 3.35, 2.10, 3.30, 3.00])
+            # antes: [ variações ] [ qtd ]; depois: [ qtd ] [ copiar ]
+            pacote_pronto = bool(copy_bundle_text)
+            copy_submit = False
 
-            with copy_generate_col:
-                copy_submit = st.button(
-                    f"criar ( {qtd_copias_atual} ) variações",
-                    key="copy_variacoes_btn",
-                    width="stretch",
-                )
+            if pacote_pronto:
+                copy_left, copy_qtd_col, copy_all_col, copy_right = st.columns([4.20, 0.83, 2.15, 4.20])
+            else:
+                copy_left, copy_variacoes_col, copy_qtd_col, copy_right = st.columns([4.10, 1.65, 0.83, 4.10])
+                with copy_variacoes_col:
+                    copy_submit = st.button(
+                        "variações",
+                        key="copy_variacoes_btn",
+                        width="stretch",
+                    )
 
             with copy_qtd_col:
+                qtd_options = list(range(9, 1, -1))
                 qtd_copias = st.selectbox(
                     "quantidade de cópias",
-                    list(range(2, 10)),
-                    index=list(range(2, 10)).index(qtd_copias_atual),
+                    qtd_options,
+                    index=qtd_options.index(qtd_copias_atual),
                     key="copy_qtd_widget",
                     label_visibility="collapsed",
                     on_change=_on_copy_qtd_change,
@@ -3343,8 +3421,8 @@ def page_ypoemas():
             qtd_copias = _normalizar_qtd_copias(qtd_copias)
             st.session_state["copy_qtd"] = qtd_copias
 
-            copy_qtd_changed = bool(st.session_state.pop("copy_qtd_changed", False))
-            copy_submit = bool(copy_submit or copy_qtd_changed)
+            st.session_state.pop("copy_qtd_changed", None)
+            copy_submit = bool(copy_submit)
 
             if copy_submit:
                 qtd_copias = _normalizar_qtd_copias(st.session_state.get("copy_qtd", 2))
@@ -3358,10 +3436,12 @@ def page_ypoemas():
                 st.session_state["copy_bundle_token"] = int(st.session_state.get("copy_bundle_token", 0)) + 1
                 copy_bundle_text = st.session_state.get("copy_bundle_text", "")
 
-            # O botão "copiar..." só aparece quando há pacote real na área de cópias.
-            # Novo tema ou nova geração recriam o token e o texto volta para "copiar...".
-            with copy_all_col:
-                if copy_bundle_text:
+            # O botão "copiar" só aparece quando há pacote real na área de cópias.
+            # Novo tema ou nova geração recriam o token e o texto volta para "copiar".
+            if copy_bundle_text:
+                if not pacote_pronto:
+                    copy_now_left, copy_all_col, copy_now_right = st.columns([4.25, 2.15, 4.25])
+                with copy_all_col:
                     render_copy_bundle_button(
                         copy_bundle_text,
                         int(st.session_state.get("copy_bundle_token", 0)),
@@ -3453,8 +3533,9 @@ def page_eureka():
                 if not seed_tema in soma_tema:
                     soma_tema.append(seed_tema)
 
-        if (not more) and (not manu):
+        if find_what != st.session_state.get("eureka_last_find", ""):
             st.session_state.eureka = 0
+            st.session_state["eureka_last_find"] = find_what
 
         if len(seed_list) == 0:
             st.warning(
@@ -3516,7 +3597,23 @@ def page_eureka():
 
             st.session_state.tema = seed_tema
 
-            if st.session_state.lang != st.session_state.last_lang:
+            eureka_focus_key = "|".join([
+                "eureka",
+                str(find_what),
+                str(st.session_state.get("eureka", "")),
+                str(this_seed),
+                str(seed_tema),
+                str(st.session_state.get("lang", "")),
+            ])
+            eureka_keep_focus = (
+                not any([more, rand])
+                and not manu
+                and _has_focus("eureka", eureka_focus_key)
+            )
+
+            if eureka_keep_focus:
+                curr_ypoema = st.session_state.get("eureka_focus_text", "")
+            elif st.session_state.lang != st.session_state.last_lang:
                 curr_ypoema = load_lypo()  # changes in lang, keep LYPO
             else:
                 curr_ypoema = load_poema(seed_tema, this_seed)
@@ -3532,6 +3629,7 @@ def page_eureka():
                     save_typo.close()
                 curr_ypoema = load_typo()  # to normalize line breaks in text
 
+            _remember_focus("eureka", eureka_focus_key, curr_ypoema)
             lnew = True
             if lnew:
                 eureka_expander = st.expander("", expanded=True)
@@ -3700,8 +3798,21 @@ def page_off_machina():  # available off_machina_books
         with off_machina_expander:
             off_book_text = ""
             pipe_line = this_off_book[st.session_state.off_take].split("|")
+            off_focus_key = "|".join([
+                "off",
+                str(off_book_name),
+                str(st.session_state.get("off_take", "")),
+                str(st.session_state.get("lang", "")),
+            ])
+            off_keep_focus = (
+                not any([last, rand, nest])
+                and not manu
+                and _has_focus("off", off_focus_key)
+            )
             if off_book_name == "livro_vivo" and "@ " in pipe_line[1]:
-                if st.session_state.lang != st.session_state.last_lang:
+                if off_keep_focus:
+                    off_book_text = st.session_state.get("off_focus_text", "")
+                elif st.session_state.lang != st.session_state.last_lang:
                     off_book_text = load_lypo()  # changes in lang, keep LYPO
                 else:
                     nome_tema = pipe_line[1].replace("@ ", "")
@@ -3741,6 +3852,8 @@ def page_off_machina():  # available off_machina_books
                 else:
                     write_off_machina_texto(LOGO_TEXTO)
                 update_readings(off_book_name)
+
+            _remember_focus("off", off_focus_key, off_book_text)
 
         if off_voz:
             with off_voz_slot:
@@ -3959,6 +4072,9 @@ def _set_machina_page(page_label, page_id):
     Evita que cliques internos de uma página, especialmente a navegação
     da Off-Machina, caiam de volta no foco inicial yPoemas.
     """
+    previous_id = str(st.session_state.get("machina_page_id", "")).strip()
+    if previous_id == "2" and str(page_id) != "2":
+        limpar_copias_palco()
     st.session_state["machina_page_select"] = page_label
     st.session_state["machina_page_id"] = str(page_id)
 
