@@ -328,9 +328,10 @@ def apply_styles():
                 background: white !important;
                 color: rgb(49, 51, 63) !important;
                 box-shadow: none !important;
-                font-size: 0.98rem !important;
+                font-size: 0.92rem !important;
                 padding-left: 0.18rem !important;
                 padding-right: 0.18rem !important;
+                white-space: nowrap !important;
             }
 
             div[data-testid="stHorizontalBlock"] {
@@ -1066,7 +1067,6 @@ def _on_copy_qtd_change():
     st.session_state["copy_qtd"] = _normalizar_qtd_copias(
         st.session_state.get("copy_qtd_widget", st.session_state.get("copy_qtd", 2))
     )
-    limpar_copias_palco()
     st.session_state["copy_qtd_changed"] = False
 
 
@@ -2553,6 +2553,10 @@ def render_copy_bundle_button(texto, token):
 
         if (btn_{token}) {{
             btn_{token}.addEventListener("click", async function() {{
+                if (!txt_{token}) {{
+                    btn_{token}.innerText = "copiar";
+                    return;
+                }}
                 try {{
                     if (navigator.clipboard && window.isSecureContext) {{
                         await navigator.clipboard.writeText(txt_{token});
@@ -3405,21 +3409,15 @@ def page_ypoemas():
             )
             st.session_state["copy_qtd"] = qtd_copias_atual
 
-            # Cópias clean:
-            # antes: [ variações ] [ qtd ]; depois: [ qtd ] [ copiar ]
-            pacote_pronto = bool(copy_bundle_text)
-            copy_submit = False
+            # Cópias clean: linha fixa [ criar variações ] [ qtd ] [ copiar ].
+            copy_left, copy_variacoes_col, copy_qtd_col, copy_all_col, copy_right = st.columns([1.95, 2.75, 1.00, 2.15, 1.95])
 
-            if pacote_pronto:
-                copy_left, copy_qtd_col, copy_all_col, copy_right = st.columns([3.80, 1.00, 2.20, 3.80])
-            else:
-                copy_left, copy_variacoes_col, copy_qtd_col, copy_right = st.columns([2.95, 2.45, 1.00, 2.95])
-                with copy_variacoes_col:
-                    copy_submit = st.button(
-                        "variações",
-                        key="copy_variacoes_btn",
-                        width="stretch",
-                    )
+            with copy_variacoes_col:
+                copy_submit = st.button(
+                    "criar variações",
+                    key="copy_variacoes_btn",
+                    width="stretch",
+                )
 
             with copy_qtd_col:
                 qtd_options = list(range(9, 1, -1))
@@ -3450,16 +3448,11 @@ def page_ypoemas():
                 st.session_state["copy_bundle_token"] = int(st.session_state.get("copy_bundle_token", 0)) + 1
                 copy_bundle_text = st.session_state.get("copy_bundle_text", "")
 
-            # O botão "copiar" só aparece quando há pacote real na área de cópias.
-            # Novo tema ou nova geração recriam o token e o texto volta para "copiar".
-            if copy_bundle_text:
-                if not pacote_pronto:
-                    copy_now_left, copy_all_col, copy_now_right = st.columns([4.25, 2.15, 4.25])
-                with copy_all_col:
-                    render_copy_bundle_button(
-                        copy_bundle_text,
-                        int(st.session_state.get("copy_bundle_token", 0)),
-                    )
+            with copy_all_col:
+                render_copy_bundle_button(
+                    copy_bundle_text,
+                    int(st.session_state.get("copy_bundle_token", 0)),
+                )
 
             render_copy_bundle_widget(
                 copy_bundle_text,
