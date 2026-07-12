@@ -1,5 +1,5 @@
-**a máquina de fazer Poesia - yPoemas**  
-___  
+a Machina de fazer Poesia - yPoemas  
+---  
 **O que é**  
 > Um aplicativo para gerar poemas ou textos aleatoriamente.  
 
@@ -20,10 +20,10 @@ dimensões-eixos
 onde a leitura convencional multiplica-se à cada mudança no  
 **eixo Z**.  
 
-> A **máquina** distribui o texto em camadas.  
+> A **Machina** distribui o texto em camadas.  
 As frases são escritas no eixo X, as linhas no eixo Y,  
 e as palavras de cada frase são extraídas do **imaginário  
 eixo Z**.  
-___
+---
 Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de fazer Poesia**
-___
+---

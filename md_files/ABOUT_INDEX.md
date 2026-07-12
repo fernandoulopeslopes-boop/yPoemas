@@ -2,7 +2,6 @@ variações para cada tema:
 ___  
 Ais : 275.148.900 (milhões)  
 Amaré : 54.191.856.554.035.200 (quatrilhões)  
-Ana : 800 (nonono)  
 Anjos : 9.276.752.574.317.347.209.216.000.000.000 (nonilhões)  
 Aolero : 7.581.869.568.000 (trilhões)  
 Arerir : 9.229.440 (milhões)  
@@ -18,6 +17,7 @@ Blablabla : 24.360.000 (milhões)
 Bolero : 157.517.650.667.520.000 (quatrilhões)  
 Brado : 747.242.496.000 (bilhões)  
 Bula : 85.503.600 (milhões)  
+Cacos : 69.914.365.920.000 (trilhões)  
 Cadência : 9.463.860 (milhões)  
 Cartaz : 699.764.141.900.462.284.800.000 (sextilhões)  
 Carroussel : 6.742.008 (milhões)  
@@ -123,8 +123,6 @@ Tempo : 112.765.820.236.797.923.580.529.825.269.143.876.665.344.000.000.000 (qui
 Tempus : 348.713.164.800 (bilhões)  
 Tiro : 2.903.854.393.440.000.000 (quintilhões)  
 Tolero : 6.372.790.375.311.360.000 (quintilhões)  
-Una : 640 (nonono)  
-Una_abertura : 137.620.010.418.831.360.000.000 (sextilhões)  
 Usinas : 102.938.787.190.407.168.000 (quintilhões)  
 Veio : 2.907.865.942.960.295.116.800 (sextilhões)  
 Victor : 308.998.800 (milhões)  
@@ -156,6 +154,7 @@ Touro=f : 1.254.528 (milhões)
 Touro=m : 1.254.528 (milhões)  
 Virgem=f : 4.255.027.200 (bilhões)  
 Virgem=m : 3.616.773.120 (bilhões)  
+Cacos : 69.914.365.920.000 (trilhões)  
 ___
 [escala dos nomes das potências de 10]  
   
@@ -185,4 +184,4 @@ ___
 ___
 Copyright © 1983-2022 Nando Lopes - **yPoemas @ máquina de fazer Poesia**  
 
-Total de variações: 112.765.820.265.471.192.371.354.985.067.269.638.656.699.429.731.337 (quindecilhões)
+Total de variações: 112.765.820.265.471.192.371.354.984.929.649.628.377.696.801.569.897 (quindecilhões)
