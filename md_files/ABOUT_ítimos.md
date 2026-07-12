@@ -1,5 +1,5 @@
 O que é um “ítimo”  
----  
+___  
 De berço, um ítimo é parte ou todo de qualquer tipo de informação  
 que possa ser representada em bytes.  
   
@@ -53,7 +53,6 @@ ou formadas de outras já existentes, na mesma língua ou não;
   
 atribuição de novos sentidos a palavras já existentes na língua.  
 (multipensar; neopensar; flexipensar; polipensar; mundipensar; diversipensar; pluripensar)  
-  
----  
+___  
 Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de fazer Poesia**  
----  
+___  
