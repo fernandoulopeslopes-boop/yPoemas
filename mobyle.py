@@ -9,7 +9,6 @@ import unicodedata
 import socket
 import asyncio
 import streamlit as st
-import streamlit.components.v1 as components
 
 try:
     from ponte_ola_openai import gerar_analise_ola as _gerar_analise_ola_real
@@ -40,8 +39,10 @@ ABOUTS_LIST = [
     "veredas",
     "notes",
     "imagens",
+    "ítimos",
+    "eixo Z",
     "pontuação",
-    "poly",
+    "poly",    
     "tradittore",
     "pensares",
     "machina-IA",
@@ -63,6 +64,8 @@ ABOUTS_FILES = {
     "veredas": ["ABOUT_veredas.md"],
     "notes": ["ABOUT_notes.md"],
     "imagens": ["ABOUT_imagens.md"],
+    "ítimos": ["ABOUT_ítimos.md"],
+    "eixo Z": ["ABOUT_eixo_Z.md"],    
     "pontuação": ["ABOUT_pontuação.md"],
     "poly": ["ABOUT_poly.md"],
     "tradittore": ["ABOUT_tradittore.md"],
@@ -2513,15 +2516,28 @@ def render_copy_bundle_button(texto, token):
     texto = str(texto or "")
     js_text = json.dumps(texto, ensure_ascii=False)
 
-    components.html(
+    st.iframe(
         f"""
-        <div style="font-family:system-ui, sans-serif; padding:0; margin-top:-5px;">
+        <style>
+        html, body {{
+            margin:0 !important;
+            padding:0 !important;
+            width:100% !important;
+            height:48px !important;
+            overflow:hidden !important;
+        }}
+        * {{
+            box-sizing:border-box;
+        }}
+        </style>
+        <div style="font-family:system-ui, sans-serif; padding:0; margin:0; height:48px; overflow:hidden;">
             <button id="copy_btn_{token}" style="
                 width:100%;
-                min-height:38px;
+                min-height:42px;
+                height:42px;
                 border:1px solid rgba(49,51,63,.22);
                 border-radius:8px;
-                padding:7px 12px;
+                padding:7px 22px;
                 cursor:pointer;
                 background:white;
                 color:rgb(49,51,63);
@@ -3410,7 +3426,7 @@ def page_ypoemas():
             st.session_state["copy_qtd"] = qtd_copias_atual
 
             # Cópias clean: linha fixa [ criar variações ] [ qtd ] [ copiar ].
-            copy_left, copy_variacoes_col, copy_qtd_col, copy_all_col, copy_right = st.columns([1.95, 2.75, 1.00, 2.15, 1.95])
+            copy_left, copy_variacoes_col, copy_qtd_col, copy_gap_col, copy_all_col, copy_right = st.columns([0.95, 2.05, 1.20, 0.35, 2.85, 1.25])
 
             with copy_variacoes_col:
                 copy_submit = st.button(
@@ -3488,18 +3504,6 @@ def page_eureka():
         find_what = st.text_input(
             label=translate("buscar..."),
             help=translate("digite uma palavra - ou parte dela - que você goste..."),
-        )
-        components.html(
-            """
-            <script>
-            window.addEventListener("keydown", function(event) {
-              if (event.key === "Enter" && document.activeElement) {
-                setTimeout(function(){ document.activeElement.blur(); }, 40);
-              }
-            }, true);
-            </script>
-            """,
-            height=0,
         )
 
     with col_nav:
