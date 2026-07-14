@@ -1,6 +1,6 @@
 notas & curiosidades sobre alguns temas  
 ---  
-- Cada **yPoema** foi milimetricamente programado para acontecer **ao acaso**.
+- Cada **yPoema** foi milimetricamente programado para acontecer **ao acaso**.  
   
 - **Prefácil** é uma brincadeira óbvia com Prefácio.  
 - **Ocio** é a primeira pessoa do singular do verbo Ociar.   
