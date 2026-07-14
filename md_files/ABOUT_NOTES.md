@@ -1,20 +1,20 @@
 notas & curiosidades sobre alguns temas  
 ---  
-- Cada **yPoema** foi milimetricamente programado para acontecer **ao acaso**.  
+- Cada **yPoema** foi milimetricamente programado para acontecer **ao acaso**.
   
 - **Prefácil** é uma brincadeira óbvia com Prefácio.  
-- **Ocio** é a primeira pessoa do singular do verbo Ociar.  
+- **Ocio** é a primeira pessoa do singular do verbo Ociar.   
 - **Oficio** é a primeira pessoa do singular do verbo Oficiar.  
 - **Anjos**, por fidelidade à Augusto dos Anjos, são sonetos brancos.  
 - **Olhares** tem contagem silábica = 11 em todos os versos.  
 - **Oca, Oco, Becos, Conto e Cuores** são trechos de um romance-digital não escrito.  
-  
-- Em **Fatos**, surgem os primeiros indícios da origem da sigla **ABNP**.
+    
+- Em **Fatos**, surgem os primeiros indícios da origem da sigla **ABNP**.  
 - Em **Manifesto**, todas as datas **"publicada em"** estão no passado.  
   Foram criadas, nesta época, algumas "Agências" da **ABNP**...  
 - Em **Oficio**, cidades e países são mutantes e as **datas** estão no futuro.  
   Abrem-se várias "Agências" da **ABNP** mundo afora...  
-  
+    
 - Em **faz_de_conto**, na página **off-machina**,  
      **Um quarto** deu origem ao tema **Silente** nos yPoemas.  
      **Egos** deu origem ao tema **Distintos** nos yPoemas.  
