@@ -1,6 +1,5 @@
 Ais : ensaio
 Amaré : poesia
-Ana : author
 Anjos : author
 Aolero : ensaio
 Arerir : ensaio
@@ -19,6 +18,7 @@ Bula : joco
 Cadência : metalinguagem
 Cartaz : joco
 Carroussel : ensaio
+CIA : machina
 Circular : poesia
 Ciuminho : beauty
 Clandestino : author
@@ -72,14 +72,12 @@ Minuto : joco
 Mirante : poesia
 Nonono : ensaio
 Nós : poesia
-Ola : anima
-Oca : poesia
 Ocio : joco
 Oco : poesia
 Oficia : joco
 Oficio : author
 Ogiva : poesia
-Ola : machina
+OLA : anima
 Olhares : poesia
 Ores : author
 Paz : poesia
@@ -121,8 +119,6 @@ Tempo : poesia
 Tempus : ensaio
 Tiro : author
 Tolero : poesia
-Una : author
-Una_abertura : author
 Usinas : poesia
 Veio : poesia
 Victor : author
