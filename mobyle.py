@@ -10,13 +10,50 @@ import socket
 import asyncio
 import streamlit as st
 
+def _ativar_openai_key_do_deploy():
+    """Espelha a chave do Streamlit Secrets no ambiente usado pela ponte OLA.
+
+    Localmente, OPENAI_API_KEY continua sendo lida normalmente do sistema.
+    No deploy, aceita tanto a chave direta quanto grupos usuais de secrets.
+    """
+    if os.environ.get("OPENAI_API_KEY"):
+        return
+
+    try:
+        secrets = st.secrets
+    except Exception:
+        return
+
+    candidatos = []
+    try:
+        candidatos.append(secrets.get("OPENAI_API_KEY"))
+    except Exception:
+        pass
+
+    for grupo, chave in (("openai", "api_key"), ("OPENAI", "API_KEY")):
+        try:
+            bloco = secrets.get(grupo, {})
+            if bloco:
+                candidatos.append(bloco.get(chave))
+        except Exception:
+            pass
+
+    for valor in candidatos:
+        valor = str(valor or "").strip()
+        if valor:
+            os.environ["OPENAI_API_KEY"] = valor
+            return
+
+
+_ativar_openai_key_do_deploy()
+
 try:
     from ponte_ola_openai import gerar_analise_ola as _gerar_analise_ola_real
 except Exception:
     _gerar_analise_ola_real = None
 
-APP_BUILD = "2026-07-02_PUBLICA_LIMPA"
-APP_BUILD_NOTES = "Versão pública limpa."
+APP_BUILD = "2026-07-14_MOBILE_AJUSTES"
+APP_BUILD_NOTES = "Mobile: status em linha, cópias centralizadas e OLA via Streamlit Secrets."
 
 from lay_2_ypo import gera_poema
 from readings import (
@@ -331,9 +368,9 @@ def apply_styles():
                 background: white !important;
                 color: rgb(49, 51, 63) !important;
                 box-shadow: none !important;
-                font-size: 0.92rem !important;
-                padding-left: 0.18rem !important;
-                padding-right: 0.18rem !important;
+                font-size: 0.84rem !important;
+                padding-left: 0.08rem !important;
+                padding-right: 0.08rem !important;
                 white-space: nowrap !important;
             }
 
@@ -1091,8 +1128,8 @@ def open_palco():
 def palco_status(book=None, pos=None, total=None):
     book = book or st.session_state.get("book", "")
     if pos is None or total is None:
-        return f"🌿  {st.session_state.lang} ( {book} )"
-    return f"🌿  {st.session_state.lang} ( {book} ) ( {pos} / {total} )"
+        return f"🌿 {st.session_state.lang} ({book})"
+    return f"🌿 {st.session_state.lang} ({book}) ({pos} / {total})"
 
 
 ### bof: helpers
@@ -2537,7 +2574,7 @@ def render_copy_bundle_button(texto, token):
                 height:42px;
                 border:1px solid rgba(49,51,63,.22);
                 border-radius:8px;
-                padding:7px 22px;
+                padding:7px 4px;
                 cursor:pointer;
                 background:white;
                 color:rgb(49,51,63);
@@ -3305,16 +3342,10 @@ def page_ypoemas():
 
     lnew = True
     if manu:
-        what_book = (
-            "🌿  "
-            + st.session_state.lang
-            + " ( "
-            + _current_book()
-            + " ) ( "
-            + str(st.session_state.take + 1)
-            + " / "
-            + str(len(temas_list))
-            + " )"
+        what_book = palco_status(
+            _current_book(),
+            st.session_state.take + 1,
+            len(temas_list),
         )
 
         ypoemas_expander = st.expander(what_book, expanded=True)
@@ -3340,16 +3371,10 @@ def page_ypoemas():
         lnew = False
 
     if lnew:
-        what_book = (
-            "🌿  "
-            + st.session_state.lang
-            + " ( "
-            + _current_book()
-            + " ) ( "
-            + str(st.session_state.take + 1)
-            + " / "
-            + str(len(temas_list))
-            + " )"
+        what_book = palco_status(
+            _current_book(),
+            st.session_state.take + 1,
+            len(temas_list),
         )
 
         ypoemas_expander = st.expander(what_book, expanded=True)
@@ -3426,7 +3451,7 @@ def page_ypoemas():
             st.session_state["copy_qtd"] = qtd_copias_atual
 
             # Cópias clean: linha fixa [ criar variações ] [ qtd ] [ copiar ].
-            copy_left, copy_variacoes_col, copy_qtd_col, copy_gap_col, copy_all_col, copy_right = st.columns([0.95, 2.05, 1.20, 0.35, 2.85, 1.25])
+            copy_left, copy_variacoes_col, copy_qtd_col, copy_all_col, copy_right = st.columns([0.45, 2.55, 0.90, 2.10, 0.45], gap="small")
 
             with copy_variacoes_col:
                 copy_submit = st.button(
