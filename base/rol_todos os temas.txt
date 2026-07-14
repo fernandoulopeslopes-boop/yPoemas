@@ -1,5 +1,4 @@
 Ais
-ANA
 Amaré
 Anjos
 Aolero
@@ -122,8 +121,6 @@ Tempus
 Time
 Tiro
 Tolero
-Una
-Una_abertura
 Usinas
 Veio
 Victor
