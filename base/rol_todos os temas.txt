@@ -15,6 +15,7 @@ Blablabla
 Bolero
 Brado
 Bula
+Cacos
 Cadência
 Carroussel
 Cartaz
@@ -118,7 +119,6 @@ Sopros
 Sos
 Tempo
 Tempus
-Time
 Tiro
 Tolero
 Usinas
