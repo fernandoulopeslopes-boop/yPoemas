@@ -1,18 +1,7 @@
 ## Lista gráfica de ícones  
-
-Lista auxiliar para pré-visualização visual no  
-Streamlit/Markdown.  
-
-Regra definida:  
-
-- **ABA:** apoio visual para pré-visualizar páginas e  
-curadoria.  
-- **Machina:** uso raríssimo e discreto, no espírito da  
-folha verde.  
-
-
+  
 ## people  
-
+  
 | ícone | nome | código |  
 |---:|---|---|  
 | :+1: | `+1` | `:+1:` |  
