@@ -91,7 +91,7 @@ ABOUTS_LIST = [
 ABOUTS_FILES = {
     "comentários": ["ABOUT_comentários.md"],
     "prefácil": ["ABOUT_prefácil.md"],
-    "machina": ["ABOUT_machine.MD"],
+    "machina": ["ABOUT_machine.md"],
     "off-machina": ["ABOUT_off-machina.md", "ABOUT_off_machina.md", "ABOUT_off machina.md"],
     "outros autores": ["ABOUT_outros_autores.md", "ABOUT_outros autores.md"],
     "livros": ["ABOUT_livros.md"],
