@@ -1,5 +1,5 @@
 A Machina (A) - O que é  
----
+___
 Um aplicativo para gerar poemas ou textos aleatoriamente.  
 
 **Visão geral**  
@@ -29,5 +29,5 @@ e palavras extraídas do imaginário eixo Z.
 > A **Machina** distribui o texto em camadas.  
   As frases são escritas no eixo X, as linhas no eixo Y,  
   e as palavras de cada frase são extraídas do **imaginário eixo Z**.  
----  
+___  
 Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de fazer Poesia**

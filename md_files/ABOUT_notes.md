@@ -1,5 +1,5 @@
 notas & curiosidades sobre alguns temas  
----  
+___  
 - Cada **yPoema** foi milimetricamente programado para acontecer **ao acaso**.  
   
 - **Prefácil** é uma brincadeira óbvia com Prefácio.  
@@ -43,7 +43,7 @@ notas & curiosidades sobre alguns temas
 - O tema **Dolores** é variação de **Indolor**, no gênero feminino.  
 - No tema **Nós** o mote é o **pressuposto da superioridade** de "uns" sobre "outros".  
 > Clique em [... quem será essa pessoa que não existe?](https://thispersondoesnotexist.com/) para conhecer mais gente.  
----  
+___  
 - Você pode **selecionar** uma **palavra** ou **frase** em qualquer parte dos textos e,  
   usando o botão direito do mouse, **buscar** no Google o significado da seleção.  
   Ou, use **Ctrl F** para localizar as ocorrências da palavra na página atual.  
@@ -52,5 +52,5 @@ notas & curiosidades sobre alguns temas
   
 - Na página yPoemas, ao final do texto clique em **criar variações**.  
   Depois de **copiar**, **use o Ctrl V** onde quizer.  
----  
+___  
 Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de fazer Poesia**

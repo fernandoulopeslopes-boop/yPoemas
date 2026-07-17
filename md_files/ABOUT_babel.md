@@ -233,5 +233,5 @@ a linguagem da Machina não é estática —
 ela consegue gerar novas entidades lexicais a partir do  
 próprio subsolo fonético.  
 
----  
+___  
 Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de fazer Poesia**

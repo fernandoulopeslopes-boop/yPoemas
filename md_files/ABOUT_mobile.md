@@ -1,5 +1,5 @@
 sobre a "versão Mobile" da Machina  
----  
+___  
 yPoemas é a "página mãe": todas as possibilidades estão nela.  
   
 a pagina "mini" é minimalista... mas pode rodar em modo "automático".  

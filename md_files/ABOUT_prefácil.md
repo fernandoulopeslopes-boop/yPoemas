@@ -1,5 +1,5 @@
 a **Machina** segundo **Victor Leonardi:**  
----  
+___  
 Fernando Lopes e eu já conversamos inúmeras vezes sobre temas que nos aproximam.  
 Viagens, por exemplo. Ele já morou em Paris e eu também, e gostamos muito  
 do Oriente: ele esteve no Japão, eu trabalhei na China, e ambos passamos pela Índia.  

@@ -208,5 +208,5 @@ profecia.
 
 Exatamente como um Livro-Vivo deveria estar.  
 
----  
+___  
 Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de fazer Poesia**

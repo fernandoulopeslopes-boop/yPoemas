@@ -66,5 +66,5 @@ invisível.
 [YP] E documentação.  
 [IA] Porque certas conversas merecem deixar rastro.  
 
----  
+___  
 Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de fazer Poesia**

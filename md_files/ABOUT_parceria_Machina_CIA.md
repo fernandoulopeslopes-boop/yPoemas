@@ -1,5 +1,5 @@
 ## CIA–Machina  
----  
+___  
 
 ## 1. Ideia central  
 
@@ -20,7 +20,7 @@ Isso significa que suas análises devem preservar:
 A CIA não é uma análise acadêmica formal.  
 As regras são da **CIA–Machina**.  
 
----  
+___  
 
 ## 2. Crítica com cara de Machina  
 
@@ -46,7 +46,7 @@ mas muito bem conceituadas
 A anarquia é estética.  
 A coerência é estrutural.  
 
----  
+___  
 
 ## 3. Entrosamento CIA ↔ Machina  
 
@@ -68,7 +68,7 @@ O objetivo é criar um **entrosamento controlado** entre:
 A CIA não deve parecer fantasiada de Machina.  
 Ela deve parecer nascida dentro do mesmo laboratório.  
 
----  
+___  
 
 ## 4. Campo de uso  
 
@@ -78,7 +78,7 @@ uso.
 Exemplos de campos possíveis:  
 
 | campo_de_uso | exemplos de palavras CIA | opções Machina possíveis | risco |  
-|---|---|---|---|  
+|___|___|___|___|  
 | território verbal | campo, zona, espaço | território, seara, espaço-horizonte | baixo/médio |  
 | abertura / surgimento | abre, inicia, começa | abre-cria, abre horizonte | médio |  
 | sonho / deslocamento | estranho, deslocado, instável | onírico | médio |  
@@ -99,7 +99,7 @@ A consulta lógica seria:
 6. nunca força a palavra.
 ```
 
----  
+___  
 
 ## 5. Dicionário a 4 mãos  
 
@@ -135,7 +135,7 @@ usar raro
 não usar
 ```
 
----  
+___  
 
 ## 6. Regra anterior: não parecer intrusa  
 
@@ -161,7 +161,7 @@ curadoria humana = decide pertencimento
 CIA = decide oportunidade controlada
 ```
 
----  
+___  
 
 ## 7. Uso raro  
 
@@ -179,7 +179,7 @@ nunca substituir se a frase perder precisão
 O leitor deve perceber o parentesco entre CIA e Machina  
 sem sentir ornamento artificial.  
 
----  
+___  
 
 ## 8. Palavra Machina não precisa estar no yPoema atual  
 
@@ -209,7 +209,7 @@ A palavra precisa:
 A CIA não está necessariamente citando o poema atual.  
 Ela está falando a partir do universo da Machina.  
 
----  
+___  
 
 ## 9. Abertura, desenvolvimento e fecho  
 
@@ -247,7 +247,7 @@ fecho = última linha
 A análise deve escolher o melhor ponto crítico,  
 não apenas seguir a ordem material do poema.  
 
----  
+___  
 
 ## 10. Para o futuro About  
 
@@ -274,7 +274,7 @@ IA = rapidez, precisão, organização, teste, integração
 autor = origem, curadoria, visão, linguagem, veto, sentido
 ```
 
----  
+___  
 
 ## 11. Fórmula de fechamento  
 
@@ -291,5 +291,5 @@ A CIA não é comentário solto.
 Não é análise acadêmica.  
 É crítica-Machina.  
 
----  
+___  
 Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de fazer Poesia**

@@ -1,5 +1,5 @@
 sobre o eixo Z e os ítimos  
----  
+___  
 O texto é composto a partir do **Banco de Ítimos** do tema.  
 **Machina** deixa de ser **máquina** quando,  
 a cada nova geração de um texto, insere-se o **acaso**  

@@ -80,5 +80,5 @@ e da futura mutação do tema
 — e pretendo desenvolvê-la como um estado novo do palco,  
 não como um acessório da interface.  
 
----  
+___  
 Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de fazer Poesia**

@@ -27,13 +27,13 @@ no "Banco de Ítimos", variando de milhões a valores astronômicos.
 
 > O texto é composto a partir do **Banco de Ítimos** do tema.  
 
-> A **máquina** deixa de ser máquina quando,  
+> A **Machina** deixa de ser **máquina** quando,  
   a cada nova geração de um texto,  
   insere-se o **acaso** no sorteio das palavras que dele farão parte.  
 
 > O objetivo não é esgotar o tema e sim explorar todas as suas nuanças,  
   sutilezas, matizes, possibilidades, mistérios e contrastes.  
-
+  
 > Os **yPoemas** são essencialmente "vivos" e em mutação.  
   As linhas, ideias e palavras podem ser eliminadas, acrescentadas ou modificadas  
   a qualquer tempo e não há nenhum limite formal para essas transformações.  

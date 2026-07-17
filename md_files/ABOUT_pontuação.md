@@ -1,5 +1,5 @@
 a Pontuação  
----  
+___  
 **VíRGULA (,)**  
 É fundamental para a correta entonação e interpretação da  
 frase escrita.  
@@ -215,7 +215,7 @@ resguardá-las
 de toda forma de negligência, discriminação, exploração,  
 violência, crueldade e opressão.  
 
----  
+___  
 Deu para sentir quão inestimável é o recurso da pontuação?  
 
 Use-a com BOM SENSO (a mais fundamental das regras).  
@@ -223,7 +223,7 @@ Use-a com BOM SENSO (a mais fundamental das regras).
 Ana Margarida Setti Rosa  
 Jornalista, Escritora, Professora de Redação  
 
----  
+___  
 **A HERANÇA QUE DEPENDIA DA PONTUAÇÃO**  
 
 Foi encontrado o seguinte testamento:  
@@ -248,9 +248,9 @@ O PROCURADOR DOS POBRES, por sua vez:
 Deixo meus bens à minha irmã? Não! Ao meu sobrinho? Jamais!  
 Será paga a conta do alfaiate. Nada! Aos pobres.  
 
----  
+___  
 Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de  
 fazer Poesia**  
 
----  
+___  
 Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de fazer Poesia**

@@ -88,5 +88,5 @@ ___
 Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de  
 Fazer Poesia**  
 
----  
+___  
 Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de fazer Poesia**

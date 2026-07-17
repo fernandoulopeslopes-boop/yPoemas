@@ -46,5 +46,5 @@ polifonia de leituras
 — cada modo é uma voz diferente, e todas se encontram no  
 mesmo palco.  
 
----  
+___  
 Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de fazer Poesia**

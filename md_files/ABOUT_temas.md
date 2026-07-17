@@ -158,9 +158,9 @@ Zelo : Pequeno ensaio sobre o ciúme
 Zodiacaos : Estudo com frases de horóscopos de jornal  
 Zoia : Milhares de olhares passíveis & possíveis de serem  
 trocados sonetos com rimas  
----  
+___  
 Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de  
 fazer Poesia**  
 
----  
+___  
 Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de fazer Poesia**

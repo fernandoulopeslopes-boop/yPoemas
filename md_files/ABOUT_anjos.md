@@ -170,5 +170,5 @@ e a mitologia passa a reinterpretar a realidade.
 
 Exatamente como um Livro-Vivo faria.  
 
----  
+___  
 Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de fazer Poesia**
