@@ -10,50 +10,13 @@ import socket
 import asyncio
 import streamlit as st
 
-def _ativar_openai_key_do_deploy():
-    """Espelha a chave do Streamlit Secrets no ambiente usado pela ponte OLA.
-
-    Localmente, OPENAI_API_KEY continua sendo lida normalmente do sistema.
-    No deploy, aceita tanto a chave direta quanto grupos usuais de secrets.
-    """
-    if os.environ.get("OPENAI_API_KEY"):
-        return
-
-    try:
-        secrets = st.secrets
-    except Exception:
-        return
-
-    candidatos = []
-    try:
-        candidatos.append(secrets.get("OPENAI_API_KEY"))
-    except Exception:
-        pass
-
-    for grupo, chave in (("openai", "api_key"), ("OPENAI", "API_KEY")):
-        try:
-            bloco = secrets.get(grupo, {})
-            if bloco:
-                candidatos.append(bloco.get(chave))
-        except Exception:
-            pass
-
-    for valor in candidatos:
-        valor = str(valor or "").strip()
-        if valor:
-            os.environ["OPENAI_API_KEY"] = valor
-            return
-
-
-_ativar_openai_key_do_deploy()
-
 try:
     from ponte_ola_openai import gerar_analise_ola as _gerar_analise_ola_real
 except Exception:
     _gerar_analise_ola_real = None
 
-APP_BUILD = "2026-07-14_MOBILE_AJUSTES"
-APP_BUILD_NOTES = "Mobile: status em linha, cópias centralizadas e OLA via Streamlit Secrets."
+APP_BUILD = "2026-07-02_PUBLICA_LIMPA"
+APP_BUILD_NOTES = "Versão pública limpa."
 
 from lay_2_ypo import gera_poema
 from readings import (
@@ -77,6 +40,7 @@ ABOUTS_LIST = [
     "notes",
     "imagens",
     "ítimos",
+    "o átomo do ítimo",
     "eixo Z",
     "pontuação",
     "poly",    
@@ -102,7 +66,8 @@ ABOUTS_FILES = {
     "notes": ["ABOUT_notes.md"],
     "imagens": ["ABOUT_imagens.md"],
     "ítimos": ["ABOUT_ítimos.md"],
-    "eixo Z": ["ABOUT_eixo_Z.md"],    
+    "o átomo do ítimo": ["ABOUT_o átomo do ítimo.md"],
+    "eixo Z": ["ABOUT_eixo_Z.md"], 
     "pontuação": ["ABOUT_pontuação.md"],
     "poly": ["ABOUT_poly.md"],
     "tradittore": ["ABOUT_tradittore.md"],
@@ -185,8 +150,7 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed",
 )
-
-
+# 🎯
 # -----------------------------------------------------------------------------
 # Versao mobile/portrait.
 # Mantem o motor poetico intacto e troca apenas a ergonomia visual:
@@ -368,9 +332,9 @@ def apply_styles():
                 background: white !important;
                 color: rgb(49, 51, 63) !important;
                 box-shadow: none !important;
-                font-size: 0.84rem !important;
-                padding-left: 0.08rem !important;
-                padding-right: 0.08rem !important;
+                font-size: 0.92rem !important;
+                padding-left: 0.18rem !important;
+                padding-right: 0.18rem !important;
                 white-space: nowrap !important;
             }
 
@@ -2574,7 +2538,7 @@ def render_copy_bundle_button(texto, token):
                 height:42px;
                 border:1px solid rgba(49,51,63,.22);
                 border-radius:8px;
-                padding:7px 4px;
+                padding:7px 22px;
                 cursor:pointer;
                 background:white;
                 color:rgb(49,51,63);
@@ -2815,9 +2779,8 @@ def render_sidebar_context_image(chosen_id):
         except Exception:
             image_path = ""
     elif str(chosen_id) == "5":
-        page_image = PAGE_IMAGES.get("5", "")
-        if page_image:
-            image_path = os.path.join("./images", page_image)
+        # ABOUT: imagem aleatória exclusivamente da pasta ./images/author.
+        image_path = st.session_state.get("about_author_image", "")
 
     if image_path and os.path.exists(image_path):
         render_sidebar_image_fit(image_path)
@@ -3342,10 +3305,16 @@ def page_ypoemas():
 
     lnew = True
     if manu:
-        what_book = palco_status(
-            _current_book(),
-            st.session_state.take + 1,
-            len(temas_list),
+        what_book = (
+            "🌿 "
+            + st.session_state.lang
+            + "( "
+            + _current_book()
+            + ") ("
+            + str(st.session_state.take + 1)
+            + " / "
+            + str(len(temas_list))
+            + ")"
         )
 
         ypoemas_expander = st.expander(what_book, expanded=True)
@@ -3371,10 +3340,16 @@ def page_ypoemas():
         lnew = False
 
     if lnew:
-        what_book = palco_status(
-            _current_book(),
-            st.session_state.take + 1,
-            len(temas_list),
+        what_book = (
+            "🌿 "
+            + st.session_state.lang
+            + "( "
+            + _current_book()
+            + ") ("
+            + str(st.session_state.take + 1)
+            + " / "
+            + str(len(temas_list))
+            + ")"
         )
 
         ypoemas_expander = st.expander(what_book, expanded=True)
@@ -3451,7 +3426,7 @@ def page_ypoemas():
             st.session_state["copy_qtd"] = qtd_copias_atual
 
             # Cópias clean: linha fixa [ criar variações ] [ qtd ] [ copiar ].
-            copy_left, copy_variacoes_col, copy_qtd_col, copy_all_col, copy_right = st.columns([0.45, 2.55, 0.90, 2.10, 0.45], gap="small")
+            copy_left, copy_variacoes_col, copy_qtd_col, copy_gap_col, copy_all_col, copy_right = st.columns([0.95, 2.05, 1.20, 0.35, 2.85, 1.25])
 
             with copy_variacoes_col:
                 copy_submit = st.button(
@@ -3462,10 +3437,12 @@ def page_ypoemas():
 
             with copy_qtd_col:
                 qtd_options = list(range(9, 1, -1))
+                if "copy_qtd_widget" not in st.session_state:
+                    st.session_state["copy_qtd_widget"] = qtd_copias_atual
+
                 qtd_copias = st.selectbox(
                     "quantidade de cópias",
                     qtd_options,
-                    index=qtd_options.index(qtd_copias_atual),
                     key="copy_qtd_widget",
                     label_visibility="collapsed",
                     on_change=_on_copy_qtd_change,
@@ -3958,6 +3935,19 @@ def load_about_md(title):
 
 
 def page_abouts():
+    st.markdown(
+        """
+        <style>
+        /* ABOUT: a lista aberta ocupa a maior altura útil da janela. */
+        div[data-baseweb="popover"] [role="listbox"],
+        div[data-baseweb="popover"] ul[role="listbox"] {
+            max-height: calc(100vh - 7rem) !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
     abouts_list = ABOUTS_LIST
 
     # About homenageia um autor diferente a cada entrada/click.
@@ -3977,7 +3967,7 @@ def page_abouts():
     about_expander = st.expander("", True)
     with about_expander:
         if choice == "machina":
-            st.subheader(load_md_file("ABOUT_machina.md"))
+            st.subheader(load_md_file("ABOUT_machine.md"))
             LOGO_TEXTO = load_info(st.session_state.tema)
             write_ypoema(LOGO_TEXTO, None)
 #            st.subheader(load_md_file("ABOUT_machina II.md"))
