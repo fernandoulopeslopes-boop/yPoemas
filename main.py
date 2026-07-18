@@ -40,6 +40,7 @@ ABOUTS_LIST = [
     "notes",
     "imagens",
     "ítimos",
+    "o átomo do ítimo",
     "eixo Z",
     "pontuação",
     "poly",    
@@ -54,7 +55,7 @@ ABOUTS_LIST = [
 ABOUTS_FILES = {
     "comentários": ["ABOUT_comentários.md"],
     "prefácil": ["ABOUT_prefácil.md"],
-    "machina": ["ABOUT_machina.md"],
+    "machina": ["ABOUT_machine.md"],
     "off-machina": ["ABOUT_off-machina.md", "ABOUT_off_machina.md", "ABOUT_off machina.md"],
     "outros autores": ["ABOUT_outros_autores.md", "ABOUT_outros autores.md"],
     "livros": ["ABOUT_livros.md"],
@@ -65,7 +66,8 @@ ABOUTS_FILES = {
     "notes": ["ABOUT_notes.md"],
     "imagens": ["ABOUT_imagens.md"],
     "ítimos": ["ABOUT_ítimos.md"],
-    "eixo Z": ["ABOUT_eixo_Z.md"],    
+    "o átomo do ítimo": ["ABOUT_o átomo do ítimo.md"],
+    "eixo Z": ["ABOUT_eixo_Z.md"], 
     "pontuação": ["ABOUT_pontuação.md"],
     "poly": ["ABOUT_poly.md"],
     "tradittore": ["ABOUT_tradittore.md"],
@@ -144,12 +146,11 @@ IDIOMAS_OFICIAIS = [
 # -----------------------------------------------------------------------------
 st.set_page_config(
     page_title="a Machina de fazer Poesia @ Mobile",
-    page_icon="♻️",
+    page_icon="🌀",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
-
-
+# 🌀
 # -----------------------------------------------------------------------------
 # Versao mobile/portrait.
 # Mantem o motor poetico intacto e troca apenas a ergonomia visual:
@@ -1091,8 +1092,8 @@ def open_palco():
 def palco_status(book=None, pos=None, total=None):
     book = book or st.session_state.get("book", "")
     if pos is None or total is None:
-        return f"🌿  {st.session_state.lang} ( {book} )"
-    return f"🌿  {st.session_state.lang} ( {book} ) ( {pos} / {total} )"
+        return f"🌿 {st.session_state.lang} ({book})"
+    return f"🌿 {st.session_state.lang} ({book}) ({pos} / {total})"
 
 
 ### bof: helpers
@@ -3306,15 +3307,15 @@ def page_ypoemas():
     lnew = True
     if manu:
         what_book = (
-            "🌿  "
+            "🌿 "
             + st.session_state.lang
-            + " ( "
+            + "( "
             + _current_book()
-            + " ) ( "
+            + ") ("
             + str(st.session_state.take + 1)
             + " / "
             + str(len(temas_list))
-            + " )"
+            + ")"
         )
 
         ypoemas_expander = st.expander(what_book, expanded=True)
@@ -3341,15 +3342,15 @@ def page_ypoemas():
 
     if lnew:
         what_book = (
-            "🌿  "
+            "🌿 "
             + st.session_state.lang
-            + " ( "
+            + "( "
             + _current_book()
-            + " ) ( "
+            + ") ("
             + str(st.session_state.take + 1)
             + " / "
             + str(len(temas_list))
-            + " )"
+            + ")"
         )
 
         ypoemas_expander = st.expander(what_book, expanded=True)
@@ -3952,7 +3953,7 @@ def page_abouts():
     about_expander = st.expander("", True)
     with about_expander:
         if choice == "machina":
-            st.subheader(load_md_file("ABOUT_machina.md"))
+            st.subheader(load_md_file("ABOUT_machine.md"))
             LOGO_TEXTO = load_info(st.session_state.tema)
             write_ypoema(LOGO_TEXTO, None)
 #            st.subheader(load_md_file("ABOUT_machina II.md"))
