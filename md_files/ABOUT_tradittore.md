@@ -30,9 +30,9 @@ Traduzir é também criação, invenção, imersão, subversão, diversão.
   
 A poesia não é uma ciência exata. Traduzir poesia requer um "estado de arte".  
   
-**Para traduzir o texto basta selecionar o idioma.**  
+Para traduzir o texto basta **selecionar o idioma** na coluna à esquerda da tela.  
+  
 A ***primeira*** tradução será sempre do ***último*** poema gerado.  
-
 Isso permite ler o ***mesmo*** texto em qualquer idioma selecionado.  
 ___  
 **Idiomas disponíveis:**  
