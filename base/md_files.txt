@@ -1,0 +1,27 @@
+comentários|ABOUT_comentários.md
+prefácil|ABOUT_prefácil.md
+notes|ABOUT_notes.md
+machina|ABOUT_machine.md
+off-machina|ABOUT_off-machina.md
+outros autores|ABOUT_outros_autores.md", "ABOUT_outros autores.md
+livros|ABOUT_livros.md
+bibliografia|ABOUT_bibliografia.md
+versão Mobile|ABOUT_mobile.md
+imagens|ABOUT_imagens.md
+ítimos|ABOUT_ítimos.md
+o átomo do ítimo|ABOUT_o átomo do ítimo.md
+eixo Z|ABOUT_eixo_Z.md 
+pontuação|ABOUT_pontuação.md
+tradittore|ABOUT_tradittore.md
+veredas|ABOUT_veredas.md
+carta de Guimarães Rosa|A incrível carta de Guimarães Rosa.md
+samizdàt|ABOUT_samizdàt.md
+poly|ABOUT_poly.md
+a ABA da Machina|a ABA da Machina.md
+anjos|ABOUT_Augusto dos Anjos.md
+machina-IA|ABOUT_machina-IA.md
+icones|ABOUT_icones.md
+pensares|ABOUT_pensares.md
+index|ABOUT_index.md
+license|ABOUT_license.md
+<EOF>

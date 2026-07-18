@@ -1,18 +1,4 @@
-"desalmo-a" : Atido_0203
-"espera-se : Manifesto_0801
-"fake"- : Zero_0301
-"fim-de-século" : Prefácil_0304
-"lei-de-gérson" : Estudo_0703
-"lei-de-gérson" : Ocio_0903
-"vide-bula" : Remedeio_0301
-"vide-bula" : Salute_0601
-#-# : Leituras_0501
-#-# : Leituras_0601
--antropófago : Escriba_1202
--entidades : Escriba_0402
--ideias : Escriba_0402
 abacaxi : Preciso_0301
-abadia : Ana_0101
 abaixo : Manifesto_0101
 abalizada : Oficia_0502
 abalizada : Oficia_0703
@@ -67,6 +53,7 @@ abertas : Psiu_0301
 abertas : Zelo_0201
 aberto : Aquarius=f_0103
 aberto : Aquarius=m_0103
+aberto : Cacos_0201
 aberto : Carroussel_0201
 aberto : Carroussel_0403
 aberto : Enfrente_0201
@@ -89,7 +76,7 @@ abertos : MachBeth_0302
 abertos : Sn6=ball_0801
 abertos : Sn8=ball_0801
 abertos : Snowball_0701
-abertura : Abertura_1303
+abertura : Cacos_0401
 abertura : Rever_0201
 abismo : Amaré_0304
 abismo : Ciuminho_0106
@@ -145,11 +132,11 @@ abranger : Arerir_0201
 abranger : Posfácio_0602
 abrangência : Cadência_0102
 abrasa : Sopros_0501
+abrasivo : Cacos_0401
 abraça : MachBrait_0401
 abraça : Papilio_0401
 abraçadas : Saudades_0701
 abraçando : Snowball_0901
-abraçar : Abertura_1302
 abraçar : Elogio_0401
 abraçar : Manifesto_1202
 abraço : Atido_0203
@@ -165,7 +152,6 @@ abraço : i-Mundo_0702
 abraço-as : Manusgrito_0701
 abraços : Meteoro_1204
 abraços : Paz_0303
-abre : Abertura_1505
 abre : Ciuminho_0801
 abre : Enfrente_0201
 abre : Epitafiando_0702
@@ -226,18 +212,18 @@ abstinência : Impar_0304
 abstrair : Arerir_0301
 abstrair : Circular_0503
 abstrata : Ais_0102
-abstrata : Ana_0104
 abstrata : Anjos_0403
+abstrata : CIA_0104
 abstrata : Dolores_0201
 abstrata : Fugaz_0302
 abstrata : Ola_0203
 abstrata : Tempo_1102
-abstrata : Una_0104
 abstratas : Oficia_1704
 abstratas : Oficio_1704
 abstratas : i-Mundo_0402
 abstrato : Augusto_1303
 abstrato : Bula_0202
+abstrato : Cacos_0201
 abstrato : Circular_0102
 abstrato : Ciuminho_0801
 abstrato : Cordel_0403
@@ -254,6 +240,7 @@ abstrato : Tempo_0902
 abstrato : Zelo_0201
 abstratos : Tiro_1002
 abstração : Amaré_0306
+abstração : CIA_0104
 abstração : Clandestino_1102
 abstração : Victor_1001
 abstração : Victor_1102
@@ -326,9 +313,9 @@ abutre : Indolor_0303
 abóbada : Essa_0202
 acaba : Enfrente_0103
 acaba : Sos_0601
+acabam : eus_0501
 acabas : Haikai_0301
 acabas : Tempo_1602
-academia : Ana_0101
 academia : Críticas_0204
 academia : Críticas_0304
 academia : Destinos_0902
@@ -338,12 +325,13 @@ academia : Oficia_0201
 academia : Oficia_0704
 academia : Oficio_0201
 academia : Oficio_0704
-acadêmica : Ana_0104
-acadêmica : Una_0104
+academica : CIA_0104
 acadêmicas : Estudo_0603
 acadêmicas : Ocio_0807
 acadêmico : Circular_0102
 acadêmico : Cordel_0403
+acadêmico : eus_0102
+acadêmico : eus_0302
 acalanta : Essa_0601
 acalantando : Ais_0501
 acalanto : Essa_0103
@@ -356,7 +344,6 @@ acalente : Cuores_0304
 acalma : MachBeth_0501
 acalma : MachBrait_0201
 acalma : Papilio_0201
-acaso : Abertura_0903
 acaso : Aolero_1001
 acaso : Batismo_0402
 acaso : Beaba_0204
@@ -492,8 +479,10 @@ acerta : Ciuminho_0801
 acerta : Psiu_0301
 acerta : Sopros_1001
 acerta : Zelo_0201
+acertam : eus_0501
 acertando : Ais_0501
 acertando : Snowball_0901
+acertando : eus_0501
 acertar : Destinos_0502
 acertar : Distintos_0402
 acerto : Aolero_1001
@@ -520,6 +509,7 @@ acha : Ogiva_0402
 acha : Psiu_0301
 acha : Sopros_0501
 acha : Zelo_0201
+acha : eus_0402
 acha-se : Mirante_0402
 acha-se : Ogiva_0601
 acha-se : Olhares_0402
@@ -578,7 +568,7 @@ acidental : Tempo_0802
 acidental : Tempo_1102
 acidental : Tolero_0102
 acidentalmente : Prefácil_0804
-acidente : Abertura_0903
+acidente : Cacos_0301
 acidente : Epitafiando_0702
 acidente : Portal_0802
 acidência : Meteoro_0402
@@ -598,12 +588,10 @@ acolá : Ais_0101
 acolá : Lato_1102
 acomodar-se : Zodiacaos_1303
 acomodo-me : Seguro_0701
-acompanhar : Abertura_1504
 aconchegar-se : Ogiva_0502
 aconchegar-se : Olhares_0603
 aconchegar-se : Zoia_0603
 aconchegar-se : Zoia_1103
-acontece : Abertura_0902
 acontecendo : Conto_0902
 acontecer : Arerir_0201
 acontecer : Arerir_0502
@@ -641,6 +629,7 @@ acordes : Tempo_0402
 acordeão : Essa_0202
 acordo : Aolero_0501
 acordo : Bolero_0401
+acordo : Cacos_0301
 acordo : Carroussel_0301
 acordo : Lero_0401
 acordo : Lero_0403
@@ -650,8 +639,10 @@ acordo : Solero_0501
 acordo : Tolero_0301
 acordos : Tempo_0402
 acostuma-te : Augusto_1201
+acostumado : eus_0501
 acredita : Brado_0301
 acredita : Reger_0803
+acredita : eus_0402
 acreditam : Tiro_0701
 acreditamos : Nós_0802
 acreditamos : Nós_1002
@@ -697,13 +688,11 @@ acupunturista : Distintos_0205
 acácias : Becos_1002
 acéfala : Ais_0102
 acéfala : Ciuminho_0501
-ad-eternum... : Haikai_0301
-ad-eternum... : Tempo_1602
+ad-eternum : Haikai_0301
+ad-eternum : Tempo_1602
 adaptar-se : Cordel_0202
 adaptar-se : Gemeos=f_0501
 adaptar-se : Gemeos=m_0501
-adaptativa : Ana_0104
-adaptativa : Una_0104
 adaptação : Gemeos=f_0302
 adaptação : Gemeos=m_0302
 adaptação : Peixes=f_0302
@@ -715,6 +704,7 @@ adentra : Papilio_0601
 adentrar : Prefácil_0302
 adentro : Joker_0404
 adepto : Cordel_0403
+adequado : Cacos_0501
 adequar-se : Cordel_0202
 adequação : Cartaz_0301
 adequação : Cartaz_0401
@@ -724,6 +714,7 @@ adereços : Sn8=ball_0901
 adereços : Snowball_0801
 adereços : Veio_0104
 aderir : Arerir_0301
+adesivo : Cacos_0401
 adespozisão : Perfil_0402
 adiada : Ais_0101
 adiantado : Epitafiando_0202
@@ -733,6 +724,7 @@ adiante : Epitafiando_0202
 adiante : Portal_0302
 adiante : Rever_0201
 adiante : Tiro_1102
+adicional : CIA_0104
 adimito : Perfil_0201
 aditamento : Oficia_0601
 aditamento : Oficio_0601
@@ -790,11 +782,13 @@ adora : Touro=f_0202
 adora : Touro=m_0202
 adora : Zelo_0201
 adora : Zelo_0601
+adora : eus_0201
 adoraria : Gula_0101
 adoração : Amaré_0306
 adorna : Manifesto_0601
 adornando : Ais_0501
 adornando : Snowball_0901
+adornos : CIA_0104
 adornos : Festim_0801
 adornos : Veio_0102
 adoro : Atido_0203
@@ -811,6 +805,7 @@ adorável : Zoia_0103
 adrenalina : Remedeio_0204
 adrenalina : Salute_0503
 adubando : Ais_0501
+adubo : Cacos_0401
 adubo : Ser_0701
 adulterando : Ais_0501
 adunam-se : Prefácil_1301
@@ -871,11 +866,11 @@ afazeres : Feiras_0102
 afeição : Amaré_0306
 afere : Veio_0701
 aferida : Ais_0302
-aferição : Ana_0101
 afeta : Ciuminho_0801
 afeta : Psiu_0301
 afeta : Zelo_0201
 afetando : Ais_0501
+afetiva : CIA_0104
 afetiva : Touro=f_0103
 afetivo : Cancer=f_0103
 afetivo : Cancer=m_0103
@@ -885,6 +880,8 @@ afetivo : Olhares_0403
 afetivo : Touro=m_0103
 afetivo : Zoia_0403
 afetivo : Zoia_0903
+afetivo : eus_0102
+afetivo : eus_0302
 afeto : Ciuminho_0801
 afeto : Cuores_0302
 afeto : Psiu_0301
@@ -1019,6 +1016,7 @@ agora : Astros_0801
 agora : Augusto_1605
 agora : Becos_1004
 agora : Brado_0602
+agora : Cacos_0201
 agora : Cartaz_1301
 agora : Demo_0401
 agora : Dolores_0701
@@ -1081,6 +1079,7 @@ agregando : Ais_0501
 agregando : Snowball_0901
 agregar : Manifesto_1202
 agregar-se : Beaba_0502
+agregação : CIA_0104
 agregação : Oficia_0704
 agregação : Oficio_0704
 agrego : Indolor_0901
@@ -1100,16 +1099,17 @@ aguardo : Salute_0301
 aguda : Ais_0301
 aguda : Oficia_0502
 aguda : Oficia_0703
+agudo : Cacos_0401
 agudo : Oficio_0502
 agudos : Elogio_0401
 agudos : Oca_0204
 agudos : Oco_0204
 aguento : Remedeio_0101
 aguento : Salute_0101
+aguento : eus_0501
 agulha : MachBrait_0301
 agulha : Papilio_0201
 agulha : Pedidos_0201
-agência : Ana_0101
 agência : Críticas_0204
 agência : Críticas_0304
 agência : Feiras_0301
@@ -1207,6 +1207,7 @@ ajustes : Cartaz_0401
 ajustes : Cartaz_0501
 al-a-tzar : Críticas_0103
 al-a-tzar : Fatos_0903
+ala : Cacos_0201
 ala : Meteoro_0601
 alada : Ais_0301
 alada : Clandestino_1001
@@ -1410,7 +1411,9 @@ algum : Bula_0202
 algum : Ciuminho_0501
 algum : Cuores_0301
 algum : Cuores_0801
+algum : Epitafiando_0202
 algum : Estudo_0503
+algum : Haikai_0301
 algum : Inhos_0501
 algum : Insano_0702
 algum : MachBeth_0601
@@ -1422,6 +1425,7 @@ algum : Nonono_0701
 algum : Nonono_1101
 algum : Paroles_0301
 algum : Paroles_0701
+algum : Portal_0302
 algum : Preciso_1102
 algum : Prefácil_0804
 algum : Restos_0601
@@ -1430,7 +1434,9 @@ algum : Rito_0501
 algum : Salute_0301
 algum : Salute_0401
 algum : Saudades_0201
+algum : Sonoro_0301
 algum : Tempo_1301
+algum : Tempo_1602
 alguma : Becos_1102
 alguma : Blablabla_0301
 alguma : Cuores_0202
@@ -1451,6 +1457,7 @@ alguma : Tiro_1102
 alguma : Veio_0701
 alguma : Zelo_0501
 alguma : Zodiacaos_0703
+algumas : Ciuminho_0501
 algumas : Escriba_1102
 algumas : Manusgrite_0402
 algumas : Manusgrito_0402
@@ -1533,8 +1540,8 @@ ali : Paroles_0301
 ali : Paroles_0701
 ali : Psiu_0301
 ali : Zelo_0201
+ali : nós_nos_nós_0204
 aliada : Ais_0102
-aliança : Ana_0101
 aliança : Veio_0402
 alianças : Ais_0502
 aliar : Arerir_0101
@@ -1565,6 +1572,7 @@ alimenta : Sopros_0103
 alimenta-se : Ciuminho_0801
 alimenta-se : Psiu_0301
 alimenta-se : Zelo_0201
+alimentados : nós_nos_nós_0204
 alimentando : Ais_0501
 alimentando : Gula_0301
 alimentar : Leao=f_0102
@@ -1572,6 +1580,7 @@ alimentar : Leao=m_0102
 alimentar : Minuto_0502
 alimentarão : Manusgrite_1201
 alimentarão : Manusgrito_1201
+alimento : Cacos_0301
 alimento : Fugaz_0201
 alimento : Haikai_0102
 alimento : Sopros_0702
@@ -1610,6 +1619,7 @@ alma : Distintos_0804
 alma : Elogio_0101
 alma : Elogio_0501
 alma : Enfrente_0202
+alma : Epitafiando_0202
 alma : Epitafiando_0303
 alma : Epitafiando_0503
 alma : Essa_0402
@@ -1634,6 +1644,7 @@ alma : Pedidos_0201
 alma : Pedidos_0603
 alma : Perfil_0303
 alma : Pessoa_0901
+alma : Portal_0302
 alma : Portal_0503
 alma : Portal_0601
 alma : Prefácil_1701
@@ -1718,6 +1729,7 @@ alquimias : Ais_0502
 alquimias : Destinos_0502
 alquimias : Distintos_0402
 alquimias : Usinas_0606
+alta : Cacos_0201
 alta : Meteoro_0601
 alta : Meteoro_0802
 alta : Meteoro_0902
@@ -1735,6 +1747,7 @@ altivez : Papilio_0601
 altivo : Olhares_0403
 altivo : Zoia_0403
 alto : Astros_0801
+alto : Cacos_0201
 alto : Enfrente_0501
 alto : Feiras_1101
 alto : Saudades_0201
@@ -1754,11 +1767,13 @@ alucinato : Bula_0202
 alucinação : Amaré_0306
 aluga : Feiras_0603
 aluga : Feiras_0703
+alugar : Cacos_0101
 alumia : Essa_0401
 alumiam : Silente_0706
 alumiando : Ais_0501
 alumínio : Becos_0701
 alunos : Crítico_0101
+alvo : Cacos_0201
 alvo : Ciuminho_0702
 alvo : Ciuminho_0801
 alvo : Críticas_0503
@@ -1905,6 +1920,7 @@ amargas : i-Mundo_0402
 amargos : Dolores_0101
 amargos : Indolor_0101
 amargura : Inhos_0102
+amarra : Cacos_0201
 amarra-te : Anjos_1101
 amarrando : Ais_0501
 amarrando : Snowball_0901
@@ -1928,7 +1944,7 @@ ambicioso : Touro=m_0103
 ambidestro : Fatos_1603
 ambientalista : Destinos_0205
 ambientalista : Distintos_0205
-ambiente : Abertura_0202
+ambiente : Cacos_0301
 ambiente : Escorpio=f_0801
 ambiente : Escorpio=m_0801
 ambiente : Seguro_0801
@@ -1969,6 +1985,7 @@ ambíguo : Haikai_0301
 ambíguo : Tempo_1602
 ameacem : Remedeio_0301
 ameacem : Salute_0601
+ameaça : Cacos_0201
 ameaçando : Ais_0501
 ameaçando : Snowball_0901
 amei : MachBeth_1301
@@ -2171,6 +2188,7 @@ amorfos : Snowball_0701
 amorosa : Elogio_0202
 amorosas : Zodiacaos_0602
 amorosos : Pedidos_0201
+amostra : Cacos_0301
 amostras-grátis : Bula_0101
 amostras-grátis : Salute_0301
 amparos : Feiras_0102
@@ -2181,10 +2199,8 @@ ampla : Silente_0302
 amplas : Manifesto_1203
 amplia : MachBrait_1601
 amplia : Papilio_1601
-ampliada : Ana_0104
-ampliada : Una_0104
+ampliada : CIA_0104
 ampliando : Ais_0501
-ampliar : Abertura_0402
 ampliar : Arerir_0101
 ampliar : Arerir_0502
 ampliar : Beaba_0502
@@ -2212,16 +2228,17 @@ anais : Oficio_0701
 anais : Remedeio_0301
 anais : Salute_0601
 analista : Cordel_0403
-analogia : Ana_0104
+analista : eus_0102
+analista : eus_0302
+analista : eus_0401
 analogia : Escriba_1301
 analogia : Feiras_0901
 analogia : Manifesto_1706
-analogia : Una_0104
-analítica : Ana_0104
-analítica : Una_0104
+analítica : CIA_0104
 analítico : Reinos_0203
-analógica : Ana_0104
-analógica : Una_0104
+analítico : eus_0102
+analítico : eus_0302
+analógica : CIA_0104
 ananiz : Críticas_0101
 ananiz : Fatos_0902
 anarquia : Manifesto_1706
@@ -2437,6 +2454,7 @@ antenista : Distintos_0205
 antepassadas : Festim_0801
 antepasto : Bula_0202
 antepasto : Salute_0401
+antes : Cacos_0301
 antes : Dolores_1001
 antes : Dolores_1102
 antes : Epitafiando_0202
@@ -2476,6 +2494,8 @@ antigo : Ciuminho_0104
 antigo : Fatos_1302
 antigo : Frases_0502
 antigo : Psiu_0105
+antigo : eus_0102
+antigo : eus_0302
 antigos : Ais_0502
 antigos : Cartaz_0103
 antigos : Loremipsum_0701
@@ -2492,7 +2512,8 @@ antologista : Destinos_0205
 antologista : Distintos_0205
 antológico : Reinos_0201
 antoni : Fatos_1605
-antro : Conto_0801
+antro : Conto_1101
+antropófago : Escriba_1202
 antropólogo : Fatos_0803
 antídoto : Ciuminho_0501
 antônimos : Cartaz_0303
@@ -2524,12 +2545,8 @@ anuência : Cadência_0102
 anuência : Impar_0304
 anzóis : MachBrait_1201
 anzóis : Papilio_1203
-análise : Abertura_1001
-análise : Ana_0101
-anárquica : Ana_0104
 anárquica : Fatos_0103
 anárquica : Ola_0203
-anárquica : Una_0104
 anárquicas : Beaba_0203
 anárquicas : Beaba_0403
 anárquicas : Posfácio_0903
@@ -2611,15 +2628,16 @@ apara : Passagens_0701
 aparas : Veio_0701
 aparato : Bula_0202
 aparato : Salute_0401
-aparece : Abertura_0201
-aparece : Abertura_0902
 aparece : Ciuminho_0403
 aparece : Indolor_0901
 aparece : Silente_1103
 aparecia : Conto_0601
+aparelho : Cacos_0301
 aparente : Brado_0301
 aparente : Indolor_0101
 aparente : Loremipsum_0301
+aparente : eus_0102
+aparente : eus_0302
 aparentemente : Duralex_0202
 aparentemente : Fatos_1005
 aparentes : Ais_0502
@@ -2629,6 +2647,7 @@ aparençias : Perfil_0602
 aparo : Atido_0402
 apartados : Leituras_0802
 apartamento : Ser_0901
+aparência : Cacos_0301
 aparência : Cadência_0302
 apatias : Avevida_0303
 apavora : MachBrait_0401
@@ -2639,7 +2658,6 @@ apego : Salute_0101
 apelante : Sentença_0302
 apelação : Sentença_0504
 apenado : Indolor_0301
-apenas : Abertura_1503
 apenas : Augusto_0601
 apenas : Blablabla_0101
 apenas : Brado_0102
@@ -2736,7 +2754,6 @@ aponta : Olhares_0702
 aponta : Zoia_0702
 aponta : Zoia_1202
 apontam : Zodiacaos_0501
-apontar : Abertura_0402
 apontar : Tiro_0101
 apontem : Preciso_0402
 apontem : Zodiacaos_1001
@@ -2755,7 +2772,6 @@ apraz : Lato_0905
 apraz : Seguro_0501
 apreciados : Sentença_0101
 aprecie : Astros_0801
-apreender : Abertura_1302
 apreender : Tiro_0101
 apregoa : Posfácio_1502
 apregoada : Oficia_0502
@@ -2787,11 +2803,11 @@ aprendo : Atido_0702
 aprendo : Clandestino_1201
 aprendo : Victor_0201
 aprendo : Victor_1201
-apresenta : Abertura_1002
 apresenta : Batismo_0202
 apresentado : Crítico_0401
 apresentados : Manifesto_0101
 apresentar : Arerir_0101
+apresentação : Cacos_0601
 apresentem : Remedeio_0301
 apresentem : Salute_0601
 apresento : Oficia_1001
@@ -2836,12 +2852,12 @@ aquela : Tiro_0601
 aquelas : Feiras_1003
 aquelas : Manusgrite_0402
 aquelas : Manusgrito_0402
+aquelas : nós_nos_nós_0101
 aquele : Aquarius=m_0601
 aquele : Becos_1004
 aquele : Demo_0101
 aquele : Veio_1003
 aqueles : Perfil_0701
-aqui : Abertura_0901
 aqui : Ais_0301
 aqui : Manifesto_0101
 aqui : Peixes=f_0302
@@ -2892,6 +2908,9 @@ arcaicas : Cartaz_0701
 arcaico : Ciuminho_0102
 arcaico : Ciuminho_0501
 arcaico : Psiu_0103
+arcaico : eus_0102
+arcaico : eus_0302
+arco : Cacos_0201
 arco : Fugaz_0201
 arco : Haikai_0102
 arco : Tempo_0102
@@ -2906,7 +2925,6 @@ arco-íris : Meteoro_1204
 arco-íris : Papilio_0701
 arco-íris : Papilio_1301
 arco-íris : Papilio_1501
-arcádia : Ana_0101
 arcádia : Críticas_0204
 arcádia : Críticas_0304
 arcádia : Oficia_0201
@@ -2924,7 +2942,7 @@ ardente : Gula_0103
 ardentes : Meteoro_1204
 arder : Anjos_1704
 arder : Augusto_1704
-ardido : Conto_0801
+ardido : Conto_1101
 ardil : Ciuminho_0106
 ardil : Psiu_0107
 ardis : Cromossomo_0402
@@ -2974,6 +2992,7 @@ arlequins : Usinas_0102
 arma : Atido_0203
 armadilha : Ais_0302
 armadilha : Blablabla_0301
+armadilha : Cacos_0401
 armadilha : Ciuminho_0106
 armadilha : Essa_0206
 armadilha : Frases_0502
@@ -2998,10 +3017,10 @@ arquitetando : Ais_0501
 arquitetar : Arerir_0101
 arquiteto-me : Dolores_0901
 arquiteto-me : Indolor_0901
-arquitetura : Abertura_1303
 arquitetura : Batismo_0402
 arquivista : Destinos_0205
 arquivista : Distintos_0205
+arquivo : Cacos_0401
 arquivos : Oficia_0701
 arquivos : Oficio_0701
 arranco : Atido_0402
@@ -3048,6 +3067,7 @@ arrisca : Papilio_0401
 arriscando : Ais_0501
 arriscar : Aries=f_0602
 arriscar : Aries=m_0602
+arriscar : Cacos_0101
 arriscar : Manifesto_1202
 arriscar : Manifesto_1301
 arriscar-se : Prefácil_0302
@@ -3081,6 +3101,7 @@ arrumei : Conto_0101
 arsenal : Cartaz_0601
 arsênio : Ocio_1402
 arte : Ais_0103
+arte : Cacos_0201
 arte : Festim_1102
 arte : Lato_0202
 arte : Lato_0303
@@ -3106,8 +3127,6 @@ articulador : Críticas_0106
 articulador : Oficio_0103
 articuladora : Oficia_0103
 articulando : Ais_0501
-articulação : Ana_0104
-articulação : Una_0104
 articulista : Destinos_0205
 articulista : Distintos_0205
 artificiais : Ais_0502
@@ -3115,11 +3134,13 @@ artificiais : Saudades_0201
 artificiais : Snowball_1101
 artificiais : Veio_1003
 artificiais : i-Mundo_0502
+artificial : CIA_0104
 artificial : Críticas_1501
 artifícios : Avevida_0303
 artifícios : Dolores_0901
 artifícios : Indolor_0901
 artifícios : Tempo_0903
+artigo : Cacos_0401
 artigo : Manifesto_0502
 artigos : Seguro_0202
 artimanha : Essa_0202
@@ -3190,7 +3211,6 @@ assassinar : Paroles_0301
 assassinar : Paroles_0701
 assassinem : Remedeio_0301
 assassinem : Salute_0601
-assembleia : Ana_0101
 assembleia : Críticas_0204
 assembleia : Críticas_0304
 assembleia : Manifesto_0301
@@ -3252,9 +3272,7 @@ assistência : Cadência_0302
 assobia : Augusto_0201
 assobiar : Sentença_1001
 associar : Arerir_0101
-associativa : Ana_0104
-associativa : Una_0104
-associação : Ana_0101
+associativa : CIA_0104
 associação : Críticas_0204
 associação : Críticas_0304
 associação : Manifesto_0301
@@ -3330,6 +3348,7 @@ astutos : Sn6=ball_0801
 astutos : Sn8=ball_1001
 astutos : Snowball_1501
 astúcia : Brado_0601
+astúcia : Cacos_0401
 astúcia : Cordel_0101
 astúcia : Fatos_1001
 astúcia : Reinos_0302
@@ -3374,17 +3393,19 @@ atalhos : Portal_0802
 atalhos : Sopros_1001
 atalhos : Tiro_1002
 atalhos : Usinas_0606
+atam : nós_nos_nós_0103
 atando : Ais_0501
 ataques : Críticas_0403
 ataques : Críticas_1001
 atar : Blablabla_0201
 atar : Nonono_0102
 atar : Paroles_0102
+atarrachados : nós_nos_nós_0105
 ate : Manusgrite_0701
 ate-se : Insano_0701
 atemporais : Cartaz_0701
 atemporal : Ais_0101
-atemporal : Conto_0801
+atemporal : Conto_1101
 atemporal : Cordel_0104
 atemporal : Ola_0203
 atemático : Reinos_0102
@@ -3467,15 +3488,14 @@ atitudes : Tempo_0103
 atitudes : Tempo_0803
 atitudes : Tempo_1103
 atitudes : Tempo_1202
-ativa : Ana_0104
 ativa : Aries=f_0203
-ativa : Una_0104
 atividade : Manifesto_0603
 atividades : Estudo_0602
 atividades : Ocio_0806
 ativista : Destinos_0205
 ativista : Distintos_0205
 ativo : Aries=m_0203
+ativo : Cacos_0401
 ativo : Cancer=f_0103
 ativo : Cancer=m_0103
 atiça : Avevida_0302
@@ -3488,7 +3508,9 @@ atiçando : Gula_0301
 atiçando : Sonoro_0201
 atlas : Palyndro_0401
 atlântico : Meteoro_0603
+atmosfera : Cacos_0301
 ato : Bula_0305
+ato : Cacos_0201
 ato : Ciuminho_0801
 ato : Epitafiando_0202
 ato : Fugaz_0202
@@ -3514,7 +3536,9 @@ atos : Tiro_1002
 atraca : Ciuminho_0403
 atraca : Destinos_0404
 atraca : Distintos_0304
+atracam : nós_nos_nós_0103
 atracando : Ais_0501
+atraem : nós_nos_nós_0103
 atraente : Aries=f_0201
 atraente : Aries=m_0201
 atraente : Mirante_0401
@@ -3571,6 +3595,7 @@ atrever : Palyndro_0101
 atrevida : Ais_0101
 atrevida : Fugaz_0302
 atrevida : Tempo_1102
+atrevido : Cacos_0401
 atrevido : Cuores_0602
 atrevido : Haikai_0202
 atrevido : Sagitari=f_0303
@@ -3588,11 +3613,15 @@ atropelando : Ais_0501
 atrás : Minuto_0701
 atrás : Papilio_1501
 atrás : Rever_0201
+atual : Cacos_0201
 atual : Loremipsum_0301
+atual : eus_0102
+atual : eus_0302
 atualidade : Fatos_1001
 atuam : Duralex_0302
 atuar : Finalmentes_0502
 atuar : Zodiacaos_1502
+atuação : Cacos_0601
 atá-las : Beaba_0301
 atávica : Ais_0301
 atávica : Anjos_0608
@@ -3657,6 +3686,7 @@ auge : Sn6=ball_1201
 auge : Sn8=ball_1501
 auge : Snowball_1801
 augusto : Fatos_1605
+aula : Cacos_0201
 aulas : Estudo_0602
 aulas : Ocio_0806
 aumenta : Anjos_0602
@@ -3697,14 +3727,13 @@ ausente : Saudades_0302
 ausente : Sopros_0502
 austera : Ais_0301
 austeridade : Prefácil_1403
+ausência : Cacos_0301
 ausência : Cadência_0102
 ausência : Impar_0304
 ausência : Meteoro_0402
 ausência : Papilio_0901
 ausências : MachBeth_0901
 ausências : MachBeth_1001
-autenticação : Ana_0104
-autenticação : Una_0104
 autenticidade : Prefácil_1403
 autentiquei : Feiras_1002
 autista : Ais_0302
@@ -3721,8 +3750,6 @@ autoajudas : Ocio_0806
 autofagia : Feiras_0901
 autofágica : Críticas_1501
 autofágico : Reinos_0201
-automatizada : Ana_0104
-automatizada : Una_0104
 automático : Reinos_0102
 autonomia : Aries=f_0701
 autonomia : Aries=m_0701
@@ -3741,8 +3768,6 @@ autores : Sentença_0302
 autoria : Feiras_1101
 autoridade : Prefácil_1403
 autoridade : i-Mundo_0102
-autorizada : Ana_0104
-autorizada : Una_0104
 autos : Sentença_0202
 autêntico : Aquarius=f_0103
 autêntico : Aquarius=m_0103
@@ -3750,14 +3775,13 @@ autônoma : Ola_0203
 avalia : Feiras_0704
 avaliada : Cordel_0401
 avaliar : Arerir_0101
-avaliativa : Ana_0104
-avaliativa : Una_0104
+avaliação : CIA_0104
+avaliação : Cacos_0601
 avaliações : Zodiacaos_0803
 avalio : Veio_0701
 avança : Ais_0301
 avança : Augusto_0404
-avançada : Ana_0104
-avançada : Una_0104
+avançada : CIA_0104
 avançadas : Aquarius=f_0301
 avançadas : Aquarius=m_0301
 avançar : Arerir_0101
@@ -3870,6 +3894,7 @@ azedume : Psiu_0107
 azeitona : Gula_0702
 aço : Elogio_0501
 açucarar : Elogio_0401
+ação : Cacos_0601
 ação : Escriba_1102
 ação : Leituras_1102
 ação : Virgem=f_0402
@@ -3907,9 +3932,10 @@ baile : Usinas_0103
 bailem : Remedeio_0301
 bailem : Salute_0601
 bailem : Saudades_0601
-bairro : Conto_0801
+bairro : Conto_1101
 bairro : Fatos_0403
 bairro : Meteoro_0104
+baixa : Cacos_0201
 baixa : Meteoro_0802
 baixa : Meteoro_0902
 baixo : Meteoro_0603
@@ -3932,6 +3958,7 @@ balbucia : Feiras_1101
 balbucia-se : Essa_0601
 balconista : Destinos_0205
 balconista : Distintos_0205
+balcão : Cacos_0601
 balcãs : Meteoro_0603
 baldia : Becos_1104
 baldias : Oficia_1704
@@ -3972,6 +3999,7 @@ banalidade : Prefácil_1403
 banalidades : Avevida_0303
 banalidades : Festim_1102
 banana : Gula_0702
+banco : Cacos_0301
 bancos : Ocio_0403
 bancária : Destinos_0202
 bancária : Distintos_0202
@@ -4017,12 +4045,14 @@ baratos : Snowball_0701
 barbárica : Críticas_0203
 barbárica : Críticas_0305
 barbárica : Oficia_0202
+barco : Cacos_0201
 barco : Sagitari=f_0102
 barco : Sagitari=m_0102
 bardo : Manifesto_0802
 barganha : Feiras_0603
 barganha : Feiras_0703
 barganham : Duralex_0302
+barra : Cacos_0201
 barra : Elogio_0101
 barra : Liberta_0501
 barraqueira : Destinos_0202
@@ -4037,6 +4067,7 @@ barroca : Manifesto_0302
 barroca : Oficia_0202
 barsinhos : Perfil_0201
 barulho : Festim_1102
+barulho : eus_0501
 barulhos : Becos_1004
 barulhos : Silente_0502
 barzinho : Aolero_0602
@@ -4073,6 +4104,7 @@ basto : Lato_0202
 bastyan : Críticas_0101
 bastyan : Fatos_0902
 batalha : Brado_0601
+batalha : Cacos_0201
 batalha : Cordel_0101
 batalha : Rever_0301
 batalhas : Aolero_0401
@@ -4096,6 +4128,7 @@ batem : Cromossomo_0602
 batendo : Cuores_0404
 bater : Cuores_0304
 bater : Cuores_1102
+bateria : Cacos_0401
 baterista : Destinos_0205
 baterista : Distintos_0205
 baterá : Cuores_1102
@@ -4173,6 +4206,7 @@ bela : Leao=m_0402
 bela : Solero_1001
 belas : Astros_0501
 belas : Feiras_1003
+beleza : Cacos_0301
 beleza : Feiras_1003
 beleza : MachBrait_1201
 beleza : Papilio_1201
@@ -4196,7 +4230,6 @@ belos : Nonono_0204
 belos : Paroles_0204
 beltrana : Dolores_0301
 beltrano : Indolor_0301
-bem : Abertura_1301
 bem : Astros_0801
 bem : Cancer=f_0103
 bem : Cancer=m_0103
@@ -4228,6 +4261,7 @@ bem : Saudades_0705
 bem : Touro=f_0601
 bem : Touro=m_0601
 bem : Veio_0404
+bem : eus_0501
 bem-estar : Peixes=f_0801
 bem-estar : Peixes=m_0801
 bem-querer : Bula_0204
@@ -4235,7 +4269,7 @@ bem-querer : Salute_0402
 bem-sucedido : Cordel_0403
 bem-te-vi : Silente_1004
 bem-vinda : Posfácio_0803
-bem-vindas, : Saudades_0601
+bem-vindas : Saudades_0601
 bem-vindos : Crítico_0801
 bendita : Augusto_0203
 beneficente : Oficia_1402
@@ -4422,7 +4456,6 @@ blindados : MachBrait_1101
 blindados : Papilio_1203
 blues : Silente_0704
 blá-blá-blá : Vozes_0201
-boa : Abertura_1301
 boa : Bula_0204
 boa : Cancer=f_0502
 boa : Cancer=m_0502
@@ -4460,6 +4493,7 @@ bobeira : Epitafiando_0503
 bobeira : Portal_0503
 boca : Anjos_0402
 boca : Augusto_0402
+boca : Cacos_0301
 boca : Liberta_0101
 bocados : Gula_0202
 bocas : Aolero_0501
@@ -4496,7 +4530,6 @@ bolivariano : Demo_0202
 bolsista : Destinos_0205
 bolsista : Distintos_0205
 bolsistas : Cartaz_1104
-bom : Abertura_1301
 bom : Aquarius=f_0802
 bom : Aquarius=m_0802
 bom : Blablabla_0101
@@ -4616,7 +4649,7 @@ braile : Clarice_0602
 braile : Ogiva_0402
 brancas : Cartaz_0703
 brancas : Feiras_1003
-branco : Abertura_0602
+branco : Cacos_0301
 branco : Demo_0202
 branco : Frases_0502
 branco : Pedidos_0701
@@ -4676,6 +4709,7 @@ breu : Tiro_0701
 breve : Avevida_0103
 breve : Batismo_0402
 breve : Blablabla_0301
+breve : Cacos_0301
 breve : Ciuminho_0104
 breve : Ciuminho_0501
 breve : Elogio_0501
@@ -4712,6 +4746,7 @@ brevidade : Zodiacaos_1602
 brevidades : Snowball_1001
 brevidades : Tempo_0402
 briga : Cordel_0101
+briga : eus_0501
 brigadista : Destinos_0205
 brigadista : Distintos_0205
 brilha : Leao=f_0602
@@ -4759,6 +4794,7 @@ brinca : Zelo_0201
 brinca : Zoia_0402
 brinca : Zoia_0902
 brinca : Zoia_1202
+brincadeira : Cacos_0301
 brincadeira : Festim_1102
 brincam : Duralex_0302
 brincam : Sonoro_0101
@@ -5066,6 +5102,7 @@ cabidos : Snowball_1501
 cabisalto : Feiras_0901
 cabisbaixo : Estudo_0503
 cabisbaixo : Indolor_1003
+cabo : Cacos_0201
 cabra : Estudo_0503
 cabra-cega : Ciuminho_0501
 cabresto : Demo_0202
@@ -5087,6 +5124,7 @@ cachoeira : Sentença_1001
 cachoeira : Ser_0901
 cachorros : Inhos_0501
 cachos : Paz_0101
+caco : Cacos_0201
 cacos : Becos_0501
 cacos : Becos_1002
 cacos : Dolores_0901
@@ -5100,7 +5138,6 @@ cacos : Sn8=ball_0601
 cacos : Snowball_0501
 cactos : MachBrait_1201
 cactos : Papilio_1201
-cada : Abertura_1001
 cada : Astros_0801
 cada : Caprico=f_0902
 cada : Caprico=m_0902
@@ -5127,12 +5164,14 @@ cada : Tempo_0803
 cada : Tempo_1103
 cada : Tempus_0303
 cada : Tempus_0401
+cadarço : nós_nos_nós_0109
 cadeado : Ciuminho_0702
 cadeado : Ciuminho_0801
 cadeado : Liberta_0602
 cadeado : Psiu_0301
 cadeado : Zelo_0201
 cadeado : Zelo_0601
+cadeia : Cacos_0301
 cadeias : Minuto_0202
 cadentes : Saudades_0103
 cadernos : Aolero_0501
@@ -5152,6 +5191,7 @@ caduca : Avevida_0103
 caduca : Brado_0203
 caducando : Cordel_0104
 cadê : Brado_0501
+cadência : Cacos_0301
 cadência : Cadência_0104
 cadência : Haikai_0301
 cadência : Meteoro_0402
@@ -5206,6 +5246,7 @@ cais : Sn6=ball_1201
 cais : Sn8=ball_1501
 cais : Snowball_1801
 caiu : Frases_0502
+caixa : Cacos_0301
 caixa : Feiras_1101
 caixas : Papilio_1203
 cala : Blablabla_0301
@@ -5227,7 +5268,7 @@ cala : Sos_0503
 cala : Tiro_0701
 cala : Zelo_0201
 cala : Zelo_0501
-cala-te... : Tempo_1301
+cala-te : Tempo_1301
 calada : Dolores_0501
 calada : Epitafiando_0303
 calada : Feiras_1101
@@ -5262,6 +5303,7 @@ calam-se : Prefácil_1301
 calar : Anjos_1301
 calar : Augusto_1301
 calar : Blablabla_0301
+calar : Cacos_0101
 calar : Nonono_0301
 calar : Nonono_0701
 calar : Nonono_1101
@@ -5279,6 +5321,7 @@ calculado : Demo_0202
 calcular : Pedidos_0302
 calculista : Destinos_0205
 calculista : Distintos_0205
+caldo : Cacos_0201
 caldo : Posfácio_1402
 calei : Silente_0501
 caleidoscópio : Fugaz_0201
@@ -5302,7 +5345,7 @@ calista : Distintos_0205
 callas : Fatos_1605
 calma : Astros_0401
 calma : Clarice_1101
-calma : Conto_0801
+calma : Conto_1101
 calma : Epitafiando_0303
 calma : Essa_0402
 calma : Indolor_0602
@@ -5350,6 +5393,7 @@ calúnias : Lero_0401
 calúnias : Lero_0403
 calúnias : Solero_0501
 calúnias : Tolero_0301
+cama : Cacos_0201
 cama : Ciuminho_0702
 cama : Ciuminho_0801
 cama : Psiu_0301
@@ -5360,6 +5404,7 @@ camaleoa : Dolores_0303
 camaleão : Frases_0502
 camaleão : Indolor_0303
 camaleões : Prefácil_0703
+camara : CIA_0101
 camareira : Destinos_0202
 camareira : Distintos_0202
 camarote : Ciuminho_0801
@@ -5376,11 +5421,13 @@ camelo : Vozes_0102
 camerista : Destinos_0205
 camerista : Distintos_0205
 caminha : Frases_0303
+caminhar : Cacos_0101
 caminhas : Haikai_0301
 caminhas : Tempo_1602
 caminho : Astros_0801
 caminho : Becos_0502
 caminho : Brado_0602
+caminho : Cacos_0401
 caminho : Caprico=f_0304
 caminho : Caprico=m_0304
 caminho : Circular_0601
@@ -5414,7 +5461,6 @@ caminho : Tempo_0803
 caminho : Tempo_1103
 caminho : Tiro_1102
 caminho : Zelo_0301
-caminhos : Abertura_0302
 caminhos : Astros_0401
 caminhos : Astros_0601
 caminhos : Ciuminho_0901
@@ -5523,6 +5569,8 @@ cantilena : Brado_0202
 canto : Aolero_0501
 canto : Atido_0203
 canto : Bolero_0401
+canto : Cacos_0201
+canto : Cacos_0301
 canto : Conto_0902
 canto : Enfrente_0202
 canto : Epitafiando_0202
@@ -5560,6 +5608,7 @@ cantos : Veio_0604
 cantos : Veio_0804
 canários : Sonoro_0102
 canção : Amaré_0306
+canção : Cacos_0601
 canção : Papilio_0901
 canção : Sonoro_0301
 canção : Zelo_0603
@@ -5578,6 +5627,7 @@ caos : Snowball_0401
 caos : Tiro_1102
 caos : Victor_0201
 caos : Victor_1201
+capa : Cacos_0201
 capacho : Sos_0101
 capacidade : Aquarius=f_0301
 capacidade : Aquarius=m_0301
@@ -5595,6 +5645,7 @@ capela : Silente_0301
 capina : Inhos_0501
 capitais : Destinos_0801
 capitais : Distintos_0701
+capital : Cacos_0201
 capitalista : Demo_0202
 capitalista : Destinos_0205
 capitalista : Distintos_0205
@@ -5664,6 +5715,7 @@ cara : i-Mundo_0702
 cara-a-cara : Prefácil_0601
 cara-a-cara : Tiro_1001
 caractere : Essa_0204
+característica : Cacos_0401
 características : Virgem=f_0102
 características : Virgem=m_0102
 carapaça : Essa_0202
@@ -5853,6 +5905,7 @@ carrossel : Epitafiando_0303
 carrossel : Portal_0401
 carrossel : Prefácil_0303
 carroça : Essa_0204
+carta : CIA_0101
 carta : Fugaz_0201
 carta : Fugaz_0301
 carta : Haikai_0102
@@ -5900,7 +5953,7 @@ carícias : Tempo_0103
 carícias : Tempo_0803
 carícias : Tempo_1103
 casa : Atido_0702
-casa : Conto_0801
+casa : Conto_1101
 casa : Destinos_0902
 casa : Distintos_0802
 casa : MachBrait_0601
@@ -5909,6 +5962,7 @@ casado : Demo_0202
 casais : Meteoro_1301
 casamenteira : Destinos_0202
 casamenteira : Distintos_0202
+casar : Cacos_0101
 casar : Destinos_0702
 casar : Distintos_0602
 casar : Perfil_0701
@@ -5932,6 +5986,7 @@ casos : Snowball_0501
 cassiano : Preciso_1402
 castiga : Frases_0303
 castigo : Blablabla_0101
+castigo : Cacos_0401
 castigo : Ciuminho_0702
 castigo : Ciuminho_0801
 castigo : Dolores_0901
@@ -5964,6 +6019,7 @@ cataclismos : Meteoro_1203
 catacumbas : Oficia_0701
 catacumbas : Oficio_0701
 catador : Cordel_0403
+catalizador : CIA_0101
 catando : Cuores_0404
 cataplasma : Bula_0202
 cataplasma : Salute_0401
@@ -5977,6 +6033,7 @@ catarata : Essa_0202
 catarata : Ser_0701
 catatônico : Fatos_1603
 catedral : Escriba_1102
+categoria : Cacos_0401
 catequista : Destinos_0205
 catequista : Distintos_0205
 caterva : Reinos_0402
@@ -6014,6 +6071,7 @@ cato : Lato_0501
 cato : MachBeth_0801
 cauma : Perfil_0102
 cauma : Perfil_0402
+causa : Cacos_0201
 causa : Cancer=f_0502
 causa : Cancer=m_0502
 causa : Circular_0504
@@ -6031,6 +6089,7 @@ causa : Tempo_1602
 causae : Sentença_0703
 causalidade : Prefácil_1403
 causando : Ciuminho_0501
+causar : Cacos_0101
 causar : Demo_0401
 causar : Inhos_0402
 causas : Finalmentes_0602
@@ -6060,6 +6119,7 @@ caviar : Ocio_1301
 cavo : Veio_0601
 cavoucar : Elogio_0401
 caça : Avevida_0203
+caça : Cacos_0201
 caçam : Tiro_0701
 caço : Atido_0402
 caço : Bolero_0301
@@ -6082,6 +6142,7 @@ caótico : Manusgrite_0103
 caótico : Manusgrito_0103
 caótico : Reinos_0201
 cebola : Gula_0702
+ceder : Cacos_0101
 ceder : Cordel_0202
 cedinho : Saudades_0705
 cedo : Aolero_0501
@@ -6112,6 +6173,7 @@ cego : Tempo_0802
 cego : Zelo_0201
 cegonha : Vozes_0102
 cegos : Becos_0102
+cegos : nós_nos_nós_0204
 ceifa : Ciuminho_0403
 ceifa : Frases_0303
 ceja : Perfil_0401
@@ -6121,6 +6183,7 @@ celebrada : Oficia_0703
 celebrada : Oficio_0703
 celebrado : Oficio_0502
 celebração : Amaré_0306
+celebridade : Cacos_0201
 celebridades : Cromossomo_0202
 celerado : Tempo_0902
 celestes : Elogio_0202
@@ -6157,10 +6220,7 @@ centopeia : Dolores_0303
 centopeia : Essa_0204
 centra : Frases_0303
 centrado : Cordel_0104
-centro : Abertura_0808
-centro : Abertura_1105
-centro : Abertura_1202
-centro : Abertura_1204
+centro : CIA_0101
 centro : Circular_0601
 centro : Demo_0202
 centro : Destinos_0902
@@ -6176,7 +6236,6 @@ centro : Tempo_1602
 centro : Tempus_0304
 centro : Tiro_0303
 centros : Indolor_0205
-cenário : Abertura_0404
 cenário : Becos_0803
 cenário : Fugaz_0201
 cenário : Haikai_0102
@@ -6186,8 +6245,10 @@ cenário : Tempo_0801
 cer : Perfil_0303
 ceramista : Destinos_0205
 ceramista : Distintos_0205
+cerca : Cacos_0301
 cercada : Caprico=f_0302
 cercado : Caprico=m_0302
+cercar : Cacos_0101
 cercas : Nós_0202
 cercas : Nós_0802
 cerco : Haikai_0301
@@ -6330,6 +6391,7 @@ chaga : Anjos_1103
 chaga : Augusto_1103
 chagas : Papilio_1203
 chama : Astros_0601
+chama : Cacos_0201
 chama : Ciuminho_0801
 chama : Clarice_0101
 chama : Enfrente_0301
@@ -6343,6 +6405,7 @@ chama : Sopros_0206
 chama : Tempo_0102
 chama : Tempo_1101
 chama : Zelo_0201
+chamado : Cacos_0201
 chamado : Haikai_0301
 chamado : Tempo_1602
 chamados : Sn6=ball_0802
@@ -6361,12 +6424,14 @@ chance : Mirante_0303
 chance : Ogiva_0302
 chance : Zoia_0803
 chance : Zoia_1303
+chance : eus_0201
 chantagista : Destinos_0205
 chantagista : Distintos_0205
 chapada : Restos_0301
 chapéu : Atido_0702
 charutos : Ocio_1303
 chato : Lato_0802
+chave : CIA_0101
 chave : Clarice_0201
 chave : Liberta_0604
 chave : Papilio_0601
@@ -6377,8 +6442,6 @@ chefe : Críticas_0107
 chefe : Ocio_0403
 chefe : Oficia_0104
 chefe : Oficio_0104
-chega : Abertura_0201
-chega : Abertura_0401
 chega : Aolero_1001
 chega : Blablabla_0101
 chega : Dolores_0701
@@ -6421,6 +6484,7 @@ cheia : Papilio_1301
 cheia : Paroles_0301
 cheia : Paroles_0701
 cheias : Saudades_0601
+cheio : Cacos_0301
 cheio : Ciuminho_0801
 cheio : Leao=f_0602
 cheio : Leao=m_0602
@@ -6568,6 +6632,7 @@ cio : Amaré_0304
 cio : Aolero_0602
 cio : Becos_0202
 cio : Bolero_0503
+cio : Cacos_0401
 cio : Ciuminho_0801
 cio : Gula_0103
 cio : Gula_0703
@@ -6596,9 +6661,11 @@ circo : Usinas_0103
 circos : Ciuminho_0801
 circos : Psiu_0301
 circos : Zelo_0201
+circuito : Cacos_0301
 circula : Ciuminho_0403
 circulam : Duralex_0302
 circulam : Usinas_0401
+circular : Cacos_0101
 circular : Circular_0102
 circulares : Minuto_0203
 circularmente : Anjos_1501
@@ -6619,14 +6686,16 @@ citações : Oficio_1801
 citem : Ciuminho_0501
 cito : Lato_0501
 cito : Solero_0802
+civil : eus_0102
+civil : eus_0302
 civilizado : Silente_0502
 ciência : Cordel_0403
 ciência : Críticas_0402
+ciência : Evidências_0102
+ciência : Evidências_0104
+ciência : Evidências_0302
 ciência : Impar_0304
 ciência : Usinas_0305
-ciência : Zero_0102
-ciência : Zero_0104
-ciência : Zero_0302
 ciência : i-Mundo_0201
 ciúme : Ciuminho_0101
 ciúme : Ciuminho_0701
@@ -6661,6 +6730,7 @@ claras : Tiro_0301
 clareza : Carroussel_0201
 clareza : Carroussel_0403
 clareza : Crítico_0402
+claridade : Cacos_0201
 clarinetista : Destinos_0205
 clarinetista : Distintos_0205
 clarividência : Cadência_0302
@@ -6677,6 +6747,7 @@ classe : Ciuminho_0501
 clemência : Cadência_0302
 cliente : Destinos_1101
 cliente : Distintos_1001
+clima : Cacos_0401
 clima : i-Mundo_0702
 clique : Sos_0601
 clonagens : Posfácio_0902
@@ -6694,6 +6765,7 @@ co-autor : Ser_0701
 coadunam-se : Prefácil_1301
 coaxar : Vozes_0102
 cobaias : Brado_0103
+cobertura : Cacos_0401
 cobertura : Destinos_1101
 cobertura : Distintos_1001
 cobertura : Remedeio_0301
@@ -6703,6 +6775,7 @@ cobiço : Ogiva_0402
 cobiço : Sn6=ball_0901
 cobiço : Sn8=ball_1101
 cobiço : Snowball_1601
+cobrar : eus_0402
 cobri : Joker_0301
 cochicho : Epitafiando_0202
 cochicho : Portal_0302
@@ -6723,6 +6796,7 @@ cogitando : Oficia_1301
 cogitando : Oficio_1301
 cogitando : Snowball_0901
 cogitar : Arerir_0101
+cogitar : nós_nos_nós_0202
 cogito : Sn6=ball_0901
 cogito : Sn8=ball_1101
 cogito : Snowball_1601
@@ -6792,7 +6866,9 @@ coisas : Veio_1003
 coitada : Gula_0103
 coitados : Conto_1203
 coitados : Cromossomo_0202
+cola : Cacos_0301
 colaborar : Arerir_0101
+colar : Cacos_0101
 colar : Festim_0102
 colares : Veio_0102
 colaterais : Blablabla_0301
@@ -6815,6 +6891,7 @@ colecionista : Destinos_0205
 colecionista : Distintos_0205
 coletiva : Escriba_0203
 coletiva : Escriba_0702
+coletivo : Cacos_0401
 coletor : Críticas_0106
 coletor : Oficio_0103
 coletora : Oficia_0103
@@ -6869,7 +6946,6 @@ colocar-se : Cancer=f_0301
 colocar-se : Cancer=m_0301
 colos : MachBeth_1001
 colírio : Ogiva_0402
-com : Abertura_0301
 com : Aolero_0102
 com : Aries=f_0101
 com : Aries=f_0301
@@ -7024,6 +7100,8 @@ com : Zodiacaos_0201
 com : Zodiacaos_0401
 com : Zodiacaos_1001
 com : Zodiacaos_1503
+com : eus_0202
+com : eus_0501
 coma : Papilio_1301
 coma-lhe : Oficia_1801
 coma-lhe : Oficio_1801
@@ -7050,14 +7128,17 @@ comentários : Oficia_1801
 comentários : Oficio_1801
 comentários : Preciso_0301
 comercia : Feiras_0704
+comercial : Cacos_0201
 comessa : Perfil_0702
 comesse : Perfil_0702
 cometeu : Frases_0502
 começa : Astros_0801
 começar : Arerir_0101
+começo : Cacos_0201
 começo : MachBeth_1301
 começou : Oca_0101
 começou : Oco_0101
+comida : Cacos_0401
 comida : Gula_0201
 comida : Perfil_0201
 comida : Touro=f_0203
@@ -7066,8 +7147,6 @@ comigo : Leituras_0502
 comigo : Perfil_0303
 comigo : Seguro_0302
 comigo : Tempo_1301
-como : Abertura_0903
-como : Abertura_1505
 como : Astros_0801
 como : Atido_0203
 como : Batismo_0402
@@ -7081,6 +7160,7 @@ como : Duralex_0101
 como : Elogio_0501
 como : Escorpio=f_0801
 como : Escorpio=m_0801
+como : Evidências_0202
 como : Fatos_0601
 como : Haikai_0301
 como : Manifesto_1101
@@ -7106,7 +7186,6 @@ como : Prefácil_1701
 como : Tempo_1602
 como : Touro=f_0601
 como : Touro=m_0601
-como : Zero_0202
 como : Zoia_1701
 como : i-Mundo_0101
 comodidade : Prefácil_1403
@@ -7138,6 +7217,7 @@ compara : Feiras_0603
 compara : Feiras_0703
 comparado : Vozes_0101
 comparar : Arerir_0101
+comparação : Cacos_0601
 compartilha : Batismo_0202
 compartilha : Sos_0601
 compartilhados : Leituras_1103
@@ -7162,7 +7242,9 @@ competir : Arerir_0301
 competir : Arerir_0502
 competitiva : Escorpio=f_0402
 competitiva : Escorpio=m_0402
+competição : Cacos_0601
 competência : Cadência_0104
+compilador : CIA_0101
 complacente : Finalmentes_0303
 complacente : Oficia_1402
 complacente : Oficio_1402
@@ -7258,8 +7340,8 @@ comuns : Sn8=ball_0701
 comuns : Snowball_0601
 comédia : Impar_0204
 comédia : Papilio_0601
+comê-lo : Anjos_0404
 comê-lo : Augusto_1607
-comê-lo. : Anjos_0404
 comícios : Cromossomo_0604
 concebe : Avevida_0203
 conceber : Blablabla_0201
@@ -7281,6 +7363,8 @@ conceituada : Oficio_0703
 conceituado : Fatos_0802
 conceituado : Oficio_0502
 conceitual : Críticas_0804
+conceitual : eus_0102
+conceitual : eus_0302
 concentre : Astros_0801
 concentre-se : Astros_0401
 concertam-se : Cartaz_0101
@@ -7294,7 +7378,6 @@ concertos : Silente_0704
 conciliar : Arerir_0101
 concludentes : Beaba_0203
 concludentes : Beaba_0403
-concluir : Abertura_1402
 concluir : Arerir_0301
 concluir : Estudo_0102
 concluir : Ocio_0602
@@ -7327,6 +7410,7 @@ concretas : Ciuminho_0501
 concretista : Destinos_0205
 concretista : Distintos_0205
 concreto : Becos_1004
+concreto : Cacos_0201
 concreto : Ciuminho_0801
 concreto : Liberta_0401
 concreto : MachBeth_1101
@@ -7335,6 +7419,8 @@ concreto : Papilio_1201
 concreto : Pedidos_0201
 concreto : Psiu_0301
 concreto : Zelo_0201
+concreto : eus_0102
+concreto : eus_0302
 concursos : Cartaz_1301
 condenado : Sentença_0302
 condene-me : Oficia_1801
@@ -7345,17 +7431,18 @@ condescendência : Cadência_0302
 conditio : Sentença_0703
 condizente : Finalmentes_0303
 condizente : Zodiacaos_1402
+condição : Cacos_0601
 condições : Zodiacaos_0502
 condor : Vozes_0102
 condutor : Críticas_0106
 condutor : Oficio_0103
 condutora : Oficia_0103
-conduz : Abertura_0405
 conduzir : Arerir_0301
 conduzir : Blablabla_0201
 conduzir : Manifesto_0803
 conduzir : Nonono_0902
 conduzir : Paroles_0502
+condução : CIA_0101
 cone : Meteoro_0603
 conectado : Astros_0102
 confeiteira : Destinos_0202
@@ -7465,6 +7552,7 @@ conhecido : Vozes_0301
 conhecidos : Cartaz_1301
 conhecimento : Aquarius=f_0301
 conhecimento : Aquarius=m_0301
+conhecimento : Cacos_0301
 conhecimento : Crítico_0102
 conhecimento : Libra=f_0201
 conhecimento : Libra=m_0201
@@ -7477,6 +7565,7 @@ conivente : Zodiacaos_1402
 conivente : Zoia_0401
 conjuga : Avevida_0302
 conjugar : Veio_1003
+conjunto : Cacos_0401
 conjunção : Amaré_0306
 conjunção : Zodiacaos_0303
 conjunções : Ciuminho_0501
@@ -7511,9 +7600,9 @@ conscientizada : Críticas_2202
 consciência : Anjos_0703
 consciência : Augusto_0804
 consciência : Cadência_0202
-consciência : Zero_0102
-consciência : Zero_0104
-consciência : Zero_0302
+consciência : Evidências_0102
+consciência : Evidências_0104
+consciência : Evidências_0302
 conseguir : Arerir_0301
 conseguir : Escorpio=f_0702
 conseguir : Escorpio=m_0702
@@ -7545,6 +7634,7 @@ consequentemente : Preciso_0601
 consequência : Cadência_0102
 consertam-se : Cartaz_0101
 conservador : Demo_0202
+conservatório : CIA_0101
 considerada : Oficia_0502
 considerada : Oficia_0703
 considerada : Oficio_0703
@@ -7598,7 +7688,9 @@ construir : Caprico=f_0902
 construir : Caprico=m_0902
 construir : Nonono_0902
 construir : Paroles_0502
+construtor : CIA_0101
 construção : Amaré_0306
+construção : Cacos_0601
 construído : Prefácil_0401
 constância : Meteoro_0502
 consulta : Rever_0302
@@ -7623,6 +7715,7 @@ consumo : Ocio_1101
 consumo : Papilio_1101
 consórcios : Preciso_0301
 conta : Avevida_0203
+conta : Cacos_0301
 conta : Caprico=f_0902
 conta : Caprico=m_0902
 conta : Clarice_0402
@@ -7672,6 +7765,8 @@ contemplo : Dolores_0501
 contemplo : Indolor_0501
 contemplo : Sopros_0701
 contemporaneidade : Fatos_1001
+contemporâneo : eus_0102
+contemporâneo : eus_0302
 contenda : Sentença_0802
 contenho : Sopros_0701
 contentar-se : Preciso_0803
@@ -7694,12 +7789,11 @@ contestando : Ciuminho_0501
 contestando : Estudo_0701
 contestando : Ocio_0901
 contestar : Cordel_0202
+contestar : eus_0202
 contestem : Remedeio_0301
 contestem : Salute_0601
 conteudista : Destinos_0205
 conteudista : Distintos_0205
-contexto : Abertura_0404
-contexto : Abertura_1003
 conteúdo : Sentença_0801
 conteúdos : Cordel_0403
 conti : Ocio_1305
@@ -7716,6 +7810,7 @@ continua : Tempo_1602
 continuamente : Pessoa_0601
 continue : Astros_0601
 continuidade : Críticas_0602
+conto : Cacos_0301
 conto : Liberta_0101
 conto : Manifesto_1503
 conto : Oca_0303
@@ -7734,7 +7829,7 @@ contra : Portal_0302
 contra : Remedeio_0301
 contra : Salute_0601
 contra : Sentença_0703
-contra-indicado? : Prefácil_1701
+contra-indicado : Prefácil_1701
 contra-indicação : Remedeio_0301
 contra-indicação : Salute_0601
 contrabandista : Destinos_0205
@@ -7763,6 +7858,7 @@ contrapontos : Leituras_1001
 contrapor-se : Beaba_0502
 contraprovas : Ciuminho_0501
 contrariando : Ciuminho_0501
+contrariar : eus_0202
 contraste : Lato_0903
 contrata : Feiras_0603
 contrata : Feiras_0703
@@ -7779,6 +7875,7 @@ contribuir : Arerir_0502
 controlar : Escorpio=f_0603
 controlar : Escorpio=m_0603
 controle : Astros_0401
+controle : CIA_0101
 contrário : Ciuminho_0501
 contrário : Leituras_0502
 contrário : Remedeio_0301
@@ -7809,6 +7906,7 @@ convencional : Lero_0302
 convencional : Solero_0302
 convencional : Tolero_0102
 convento : Fatos_0403
+convenção : CIA_0101
 convergentes : Beaba_0203
 convergentes : Beaba_0403
 convergentes : Meteoro_1301
@@ -7836,6 +7934,7 @@ conversas : Sagitari=f_0803
 conversas : Sagitari=m_0803
 conversem : Manusgrite_0801
 conversem : Manusgrito_0801
+conversor : CIA_0101
 converter : Blablabla_0201
 converter : Nonono_0502
 converter : Paroles_0502
@@ -7858,6 +7957,7 @@ cooperar : Arerir_0101
 cooperação : Virgem=f_0503
 cooperação : Virgem=m_0503
 coordenar : Arerir_0101
+copa : Cacos_0201
 copa : Silente_0202
 copa : Silente_0204
 copeira : Destinos_0202
@@ -7867,6 +7967,7 @@ copiando : Oco_0501
 copista : Destinos_0205
 copista : Distintos_0205
 copo : Becos_0201
+cor : Cacos_0301
 cor : Elogio_0601
 cor : MachBrait_1701
 cor : Papilio_1701
@@ -7970,6 +8071,7 @@ coriscos : Meteoro_0404
 coriscos : Meteoro_1203
 corja : Reinos_0701
 coro : Reger_0202
+coroa : Cacos_0201
 coros : Silente_0902
 corpo : Dolores_0201
 corpo : Escriba_1203
@@ -7982,10 +8084,12 @@ corre : Haikai_0301
 corre : Tempo_1602
 corredor : Silente_0103
 corregedores : Ores_0201
+correição : CIA_0101
 correição : Cartaz_0301
 correição : Cartaz_0401
 correição : Cartaz_0501
 correm : Prefácil_1301
+corrente : Cacos_0301
 corrente : Ciuminho_0702
 corrente : Ciuminho_0801
 corrente : Liberta_0602
@@ -8066,6 +8170,7 @@ corta : Psiu_0301
 corta : Zelo_0201
 cortantes : Becos_0801
 cortar : Clarice_1002
+corte : Cacos_0301
 cortes : Pedidos_0801
 cortesia : i-Mundo_0803
 cortina : Rever_0201
@@ -8083,7 +8188,9 @@ cosmos : Ocio_0903
 cosmético : Reinos_0201
 cossonhei : Essa_0302
 costa-riquenho : Fatos_0804
+costas : Cacos_0301
 costume : Demo_0202
+costura : Cacos_0401
 costura : Destinos_0404
 costura : Distintos_0304
 costura : Lato_1102
@@ -8170,7 +8277,7 @@ credível : Essa_0603
 creem : Ciuminho_0401
 creem : Cromossomo_0604
 creia : Rito_0501
-creia-se: : Tiro_0901
+creia-se : Tiro_0901
 creio : Aolero_0602
 creio : Bolero_0503
 creio : Lero_0401
@@ -8275,6 +8382,7 @@ criativo : Sagitari=f_0303
 criativo : Sagitari=m_0303
 criativos : Manifesto_1303
 criação : Amaré_0306
+criação : Cacos_0601
 criação : Oficia_0602
 criação : Oficio_0602
 criação : Posfácio_0702
@@ -8360,6 +8468,7 @@ cruzo : Insano_0101
 cruéis : i-Mundo_0502
 crápulas : Reinos_0902
 crème : Ocio_1303
+crédito : Cacos_0301
 crédito : Cartaz_1301
 crê : Blablabla_0301
 crê : Nonono_0301
@@ -8371,9 +8480,12 @@ crê : Posfácio_1502
 críamos : Usinas_1002
 crítica : Aquarius=f_0301
 crítica : Aquarius=m_0301
+crítico : Cacos_0401
 crítico : Cordel_0403
 crítico : Crítico_0802
 crítico : Reinos_0203
+crítico : eus_0102
+crítico : eus_0302
 crível : i-Mundo_0803
 cubanos : Ocio_1303
 cubos : Ocio_1402
@@ -8439,6 +8551,7 @@ cultiva : Passagens_0801
 cultiva : Posfácio_1502
 cultiva : Touro=f_0202
 cultiva : Touro=m_0202
+cultivam : nós_nos_nós_0103
 cultivar : Arerir_0101
 cultivar : Cancer=f_0301
 cultivar : Cancer=m_0301
@@ -8480,6 +8593,8 @@ cultura : Manifesto_1704
 cultura : Oficia_1403
 cultura : Oficio_1403
 cultural : Críticas_1602
+cultural : eus_0102
+cultural : eus_0302
 culturas : Ciuminho_0501
 culturas : Manifesto_1301
 cumplicidade : Leituras_0401
@@ -8504,6 +8619,7 @@ cunho : Atido_0402
 cunho : Atido_0502
 cunho : Estudo_0702
 cunho : Ocio_0902
+cura : Cacos_0401
 cura : Ciuminho_0501
 cura : Ciuminho_0702
 cura : Ciuminho_0801
@@ -8530,6 +8646,7 @@ curioso : Zoia_0103
 curiosos : Fatos_0601
 cursar : Estudo_0102
 cursar : Ocio_0602
+curso : Cacos_0401
 curta : Astros_0801
 curta : Loremipsum_1001
 curta : Rito_0101
@@ -8544,6 +8661,7 @@ curtidas : Cromossomo_0604
 curtidas : Preciso_0301
 curtindo : Gula_0301
 curtir : Blablabla_0201
+curtir : Cacos_0101
 curtir : Nonono_0902
 curtir : Paroles_0502
 curtir : Sos_0601
@@ -8579,9 +8697,11 @@ cuspi : Joker_0301
 cuspido : Clarice_0802
 custo : Liberta_0501
 cádmio : Ocio_1402
+cálculo : Cacos_0201
 cápsula : Augusto_1103
 cáspio : Meteoro_0603
 câmara : Frases_0502
+câmbio : Cacos_0301
 câncer : Destinos_0102
 câncer : Distintos_0102
 cânones : Críticas_0803
@@ -8634,6 +8754,8 @@ círculos : Sn6=ball_0802
 círculos : Sn8=ball_0901
 círculos : Snowball_0801
 círculos : Zelo_0201
+código : CIA_0101
+código : Cacos_0301
 código : Ciuminho_0501
 cólera : Inhos_0102
 cópia : Lato_0805
@@ -8661,13 +8783,9 @@ dados : Posfácio_0303
 dados : Sn6=ball_0601
 dados : Sn8=ball_0601
 dados : Snowball_0501
-dalgum : Epitafiando_0202
-dalgum : Portal_0302
 dali : Fatos_1605
 dali : Frases_0502
 dali : Silente_0601
-dalma : Epitafiando_0202
-dalma : Portal_0302
 danada : Circular_0504
 danação : Anjos_1303
 danação : Augusto_1705
@@ -8683,6 +8801,7 @@ dansar : Perfil_0303
 dante : Fatos_1102
 dantes : Loremipsum_0701
 dança : Becos_1103
+dança : Cacos_0201
 dança : Fugaz_0201
 dança : Fugaz_0301
 dança : Haikai_0102
@@ -8714,7 +8833,6 @@ daquilo : Seguro_0901
 daquilo : Tempo_0103
 daquilo : Tempo_0803
 daquilo : Tempo_1103
-dar : Abertura_0302
 dar : Aolero_0602
 dar : Aquarius=f_0802
 dar : Aquarius=m_0802
@@ -8755,6 +8873,8 @@ dará : Remedeio_0301
 dará : Salute_0601
 das : Aolero_0501
 das : Bolero_0401
+das : Cacos_0301
+das : Cacos_0401
 das : Caprico=f_0902
 das : Caprico=m_0902
 das : Ciuminho_0501
@@ -8916,6 +9036,7 @@ dedos : i-Mundo_0201
 deduz : Feiras_0603
 deduz : Feiras_0703
 deduzia-se : Becos_0103
+defeito : Cacos_0301
 defeitos : Cartaz_0103
 defeitos : Duralex_0103
 defeitos : Frases_0101
@@ -8944,8 +9065,8 @@ definir : Finalmentes_0101
 definir : Nonono_0902
 definir : Paroles_0502
 definir : Zodiacaos_1202
-definir-te? : Haikai_0301
-definir-te? : Tempo_1602
+definir-te : Haikai_0301
+definir-te : Tempo_1602
 definitivo : Circular_0102
 definições : Avevida_0303
 definições : Snowball_1001
@@ -8986,6 +9107,7 @@ deixando : Epitafiando_0303
 deixando : Portal_0401
 deixando : Portal_0601
 deixar : Brado_0602
+deixar : Cacos_0101
 deixar : Caprico=f_0902
 deixar : Caprico=m_0902
 deixar : Destinos_0502
@@ -9002,6 +9124,7 @@ deixei : Feiras_1002
 deixem : Remedeio_0301
 deixem : Salute_0601
 deixo : Atido_0702
+deixo : eus_0501
 dejá-vú : Bula_0101
 dejá-vú : Salute_0301
 dela : Críticas_1603
@@ -9134,9 +9257,7 @@ dentes : Insano_0203
 dentre : Essa_0101
 dentre : Virgem=f_0101
 dentre : Virgem=m_0101
-dentro : Abertura_1105
-dentro : Abertura_1202
-dentro : Abertura_1204
+dentre : nós_nos_nós_0101
 dentro : Astros_0601
 dentro : Clarice_0602
 dentro : Dolores_0701
@@ -9185,7 +9306,6 @@ depois : Tempo_0803
 depois : Tempo_1103
 depois : Tempo_1602
 depois : Tiro_0901
-deposita : Abertura_1002
 depostas : MachBrait_0101
 depostas : Papilio_0101
 deprecia : Feiras_0704
@@ -9300,6 +9420,7 @@ desalinho : Sopros_0702
 desalinho : Zelo_0301
 desalmada : Remedeio_0301
 desalmada : Salute_0601
+desalmo-a : Atido_0203
 desama : Ciuminho_0801
 desama : Psiu_0301
 desama : Zelo_0201
@@ -9418,7 +9539,7 @@ descartáveis : i-Mundo_0402
 descasados : Cartaz_0103
 descasados : Cuores_0402
 descascadores : Preciso_0301
-descaso : Conto_0801
+descaso : Conto_1101
 descaso : Epitafiando_0202
 descaso : Epitafiando_0503
 descaso : Feiras_0901
@@ -9434,7 +9555,6 @@ descoberto : Meteoro_0103
 descobertos : Leituras_1103
 descobre : Passagens_0701
 descobri : Crítico_0102
-descobrir : Abertura_0402
 descobrir : Arerir_0301
 descobrir : Blablabla_0201
 descobrir : Manifesto_1202
@@ -9453,6 +9573,7 @@ desconcerto : Papilio_0701
 desconexas : Oficia_1704
 desconexas : Oficio_1704
 desconexas : Papilio_1201
+desconfia : eus_0402
 desconhece : Ciuminho_0801
 desconhece : Psiu_0301
 desconhece : Silente_1103
@@ -9477,9 +9598,9 @@ desconheçam : Remedeio_0301
 desconheçam : Salute_0601
 desconheço : Remedeio_0301
 desconheço : Salute_0601
-desconsciência : Zero_0102
-desconsciência : Zero_0104
-desconsciência : Zero_0302
+desconsciência : Evidências_0102
+desconsciência : Evidências_0104
+desconsciência : Evidências_0302
 desconsidera : Sos_0601
 desconsiderar : Preciso_0901
 desconsidere : Oficia_1801
@@ -9626,12 +9747,12 @@ desenharão : Manusgrite_1201
 desenharão : Manusgrito_1201
 desenhista : Destinos_0205
 desenhista : Distintos_0205
-desenho : Abertura_1303
 desenho : Atido_0502
+desenho : Cacos_0301
 desenho : Fatos_0502
 desenvolver : Arerir_0201
 deserto : Ciuminho_0501
-deserto : Conto_0801
+deserto : Conto_1101
 deserto : Críticas_1401
 deserto : Críticas_1601
 deserto : Escriba_1301
@@ -9741,8 +9862,7 @@ deslizes : Sn6=ball_0802
 deslizes : Sn8=ball_0901
 deslizes : Snowball_1401
 deslizo : MachBeth_1301
-desloca : Abertura_1002
-deslocada : Abertura_0704
+deslocados : nós_nos_nós_0105
 desloco : MachBeth_0601
 desloco : MachBrait_1501
 desloco : Papilio_1501
@@ -9885,10 +10005,12 @@ desse : Paroles_0301
 desse : Paroles_0701
 desse : Saudades_0201
 desse : Saudades_0302
+desse : nós_nos_nós_0301
 dessemelhantes : Oficia_1704
 dessemelhantes : Oficio_1704
 desses : Críticas_1001
 desses : Estudo_0503
+desses : eus_0501
 desta : Oficia_0702
 desta : Oficio_0702
 destaca : Libra=f_0601
@@ -9896,7 +10018,6 @@ destaca : Libra=m_0601
 destaca : Virgem=f_0901
 destaca : Virgem=m_0901
 destacam : Zodiacaos_0504
-destacar : Abertura_0402
 destacar : Arerir_0101
 deste : Manifesto_0101
 deste : Oficia_0401
@@ -9927,7 +10048,7 @@ destino : Astros_0401
 destino : Astros_0801
 destino : Becos_0801
 destino : Blablabla_0301
-destino : Conto_0801
+destino : Conto_1101
 destino : Destinos_0401
 destino : Distintos_0301
 destino : Dolores_0901
@@ -10011,9 +10132,7 @@ desvario : Amaré_0304
 desvario : Batismo_0303
 desvario : Ciuminho_0106
 desvario : Psiu_0107
-desvelar : Abertura_1504
 desvelar : Manifesto_1002
-desvendar : Abertura_1504
 desvendar : Brado_0602
 desvendar : Crítico_0303
 desvendar : Manifesto_1202
@@ -10104,6 +10223,7 @@ deu : Distintos_1001
 deu : Oca_0101
 deu : Oco_0101
 deu : Perfil_0701
+deu : eus_0201
 deus : Aolero_0501
 deus : Bolero_0401
 deus : Cromossomo_1101
@@ -10171,9 +10291,9 @@ deve : Críticas_1507
 deve : Críticas_1801
 deve : Críticas_2201
 deve : Enfrente_0303
+deve : Evidências_0201
 deve : Touro=f_0601
 deve : Touro=m_0601
-deve : Zero_0201
 deve-se : Meteoro_0501
 dever : Manifesto_0801
 devido : Sentença_0301
@@ -10187,6 +10307,7 @@ devo : Tiro_1002
 devo : Tolero_0301
 devolve : Rever_0103
 devolvemos : Cartaz_1301
+devolvido : Cacos_0401
 devolvo : Dolores_1101
 devolvo-me : Indolor_1101
 devora : Ciuminho_0702
@@ -10267,13 +10388,14 @@ dia : Tempus_0401
 dia : Zelo_0201
 dia : Zelo_0603
 dia : Zodiacaos_0501
+dia : eus_0501
 dia : i-Mundo_0802
 dia-a-dia : Destinos_0401
 dia-a-dia : Distintos_0301
 dia-a-dia : Manifesto_1603
 dia-a-dia : Sentença_1002
 dia-a-dia : Sos_0102
-dia-a-dia, : Tempus_0303
+dia-a-dia : Tempus_0303
 dia-pós-dia : Beaba_0503
 diabo : MachBeth_0501
 dialetos : Cartaz_0502
@@ -10281,9 +10403,6 @@ dialética : Manifesto_1704
 dialético : Reinos_0201
 diamantes : Veio_0104
 diamor : Perfil_0201
-diante : Abertura_1105
-diante : Abertura_1202
-diante : Abertura_1204
 diante : Anjos_0801
 diante : Clandestino_0901
 diante : Haikai_0301
@@ -10362,12 +10481,14 @@ diferentes : Finalmentes_0103
 diferentes : Gula_0303
 diferentes : Manifesto_1003
 diferentes : Zodiacaos_1405
+diferença : Cacos_0301
 diferença : Impar_0504
 diferença : Preciso_0602
 diferenças : Destinos_0502
 diferenças : Distintos_0402
 diferenças : Snowball_1001
 diferida : Dolores_1102
+dificuldade : Cacos_0201
 dificuldade : Zodiacaos_0704
 dificuldades : Caprico=f_0902
 dificuldades : Caprico=m_0902
@@ -10387,6 +10508,7 @@ difíceis : Gemeos=f_0501
 difíceis : Gemeos=m_0501
 difíceis : Peixes=f_0801
 difíceis : Peixes=m_0801
+difícil : Cacos_0201
 difícil : Leituras_0502
 difícil : Sos_0201
 difício : Perfil_0702
@@ -10396,6 +10518,9 @@ digam : Preciso_0402
 digam : Remedeio_0301
 digam : Salute_0601
 digitais : Festim_0403
+digital : Cacos_0201
+digital : eus_0102
+digital : eus_0302
 digna : Leao=f_0302
 digna : Leao=m_0302
 digna : Restos_0601
@@ -10427,6 +10552,7 @@ dilúvios : Sn6=ball_0802
 dilúvios : Sn8=ball_0901
 dilúvios : Snowball_1401
 dimais : Perfil_0201
+dimensão : Cacos_0601
 dimim : Perfil_0303
 diminuam : Remedeio_0301
 diminuam : Salute_0601
@@ -10452,7 +10578,9 @@ diplomática : Libra=m_0503
 diplomática : Sagitari=f_0603
 diplomática : Sagitari=m_0603
 diplomático : Reinos_0102
+direita : Cacos_0301
 direita : Demo_0202
+direito : Cacos_0301
 direito : Demo_0301
 direito : Remedeio_0301
 direito : Salute_0601
@@ -10475,6 +10603,7 @@ diretor : Oficio_0103
 diretora : Oficia_0103
 diretores : Ores_0201
 diretoria : Feiras_1101
+direção : Cacos_0601
 direção : Cartaz_1301
 direção : Liberta_0702
 diria : Feiras_0901
@@ -10493,6 +10622,7 @@ discontraida : Perfil_0402
 discordamos : Leituras_0502
 discordantes : Beaba_0203
 discordantes : Beaba_0403
+discordar : eus_0202
 discordância : Meteoro_0502
 discorre : Frases_0303
 discorre : Manifesto_0601
@@ -10512,6 +10642,7 @@ discreto : Virgem=m_0201
 discrição : Escorpio=f_0204
 discrição : Escorpio=m_0204
 discurso : Beaba_0102
+discurso : Cacos_0401
 discurso : Gemeos=f_0801
 discurso : Gemeos=m_0801
 discurso : Libra=f_0302
@@ -10533,6 +10664,7 @@ discutir : Nonono_0902
 discutir : Paroles_0502
 discutir : Preciso_0303
 discutir : Zodiacaos_1202
+discutir : eus_0202
 discutível : Batismo_0302
 discípulo : Fatos_1602
 discórdia : Ciuminho_0801
@@ -10540,6 +10672,7 @@ discórdia : Psiu_0301
 discórdia : Zelo_0201
 discórdias : Avevida_0303
 discórdias : Snowball_1001
+disfarce : Cacos_0201
 disfarce : Mirante_0303
 disfarce : Ogiva_0302
 disfarce : Zoia_0803
@@ -10553,6 +10686,7 @@ disfarçadamente : Batismo_0201
 disfarçadas : Astros_0501
 disfarçado : Epitafiando_0202
 disfarçado : Portal_0302
+disfarçar : Cacos_0101
 disfarçar : Oca_0201
 disfarçar : Oco_0201
 disforme : Circular_0102
@@ -10599,6 +10733,7 @@ displicentemente : Batismo_0201
 displicência : Cadência_0202
 dispo : Veio_0601
 disponíveis : Loremipsum_0101
+disponível : Cacos_0401
 disponível : Manifesto_1103
 disponível : Olhares_0703
 disponível : Zoia_0703
@@ -10638,10 +10773,8 @@ dissolve-se : Anjos_0901
 dissolve-se : Augusto_0701
 dissolvido : Augusto_1701
 dissolvidos : Anjos_1701
-distante : Abertura_1105
-distante : Abertura_1202
-distante : Abertura_1204
 distante : Becos_1104
+distante : Cacos_0301
 distante : Dolores_0202
 distante : Fatos_1603
 distante : Indolor_0603
@@ -10700,6 +10833,8 @@ distraído : Feiras_0101
 distraído : Indolor_1003
 distraído : Oco_0301
 distraído : Pessoa_0901
+distraído : eus_0102
+distraído : eus_0302
 distraídos : Usinas_0303
 distribuir : Aquarius=f_0802
 distribuir : Aquarius=m_0802
@@ -10712,6 +10847,7 @@ distribuir : Paroles_0502
 distribuí-las : Beaba_0301
 distribuídas : Posfácio_0302
 disturbios : Críticas_0501
+distância : Cacos_0301
 distância : Estudo_0201
 distância : Estudo_0603
 distância : Leituras_1103
@@ -10763,7 +10899,7 @@ divergir : Preciso_0301
 divergência : Cadência_0302
 divergência : Meteoro_0602
 diversas : Posfácio_0303
-diversi-pensar, : Manifesto_1103
+diversi-pensar : Manifesto_1103
 diversidade : Manifesto_1704
 diversidade : Posfácio_1202
 diversidade : Prefácil_1403
@@ -10771,6 +10907,7 @@ diversão : Manifesto_1702
 diversão : Oca_0501
 diversão : Oco_0501
 diversão : Sonoro_0301
+diverte : eus_0402
 diverte-se : Frases_0303
 diverti : Perfil_0201
 divertido : Sagitari=f_0303
@@ -10786,6 +10923,8 @@ divertir-se : Libra=m_0302
 dividem : Cromossomo_0401
 divididas : i-Mundo_0505
 dividido : Pessoa_0102
+dividido : eus_0102
+dividido : eus_0302
 dividimos : Indolor_0501
 dividir : Blablabla_0201
 dividir : Leituras_0302
@@ -10827,8 +10966,10 @@ diviso : Sn8=ball_1101
 diviso : Snowball_1601
 divisor : Papilio_0201
 divisor : Papilio_0901
+divisão : Cacos_0601
 divisão : Cartaz_0301
 divisão : Cartaz_0401
+divisória : Cacos_0301
 divolsada : Perfil_0102
 divorciados : Usinas_0303
 divã : Tempo_1301
@@ -10836,6 +10977,7 @@ diz : Dolores_0701
 diz : Epitafiando_0702
 diz : Indolor_0701
 diz : Portal_0802
+diz : eus_0402
 dizem : Ciuminho_0401
 dizem : Destinos_0501
 dizem : Distintos_0401
@@ -10868,7 +11010,7 @@ diálogos : Paroles_0701
 diálogos : Sn6=ball_0802
 diálogos : Sn8=ball_0901
 diálogos : Snowball_0801
-diário : Conto_0801
+diário : Conto_1101
 dna : Ciuminho_0501
 dna : Remedeio_0301
 dna : Salute_0601
@@ -10892,6 +11034,7 @@ doceira : Destinos_0202
 doceira : Distintos_0202
 docilidade : Libra=f_0201
 docilidade : Libra=m_0201
+documento : Cacos_0301
 documento : Fatos_1303
 doem : Bula_0101
 doem : Dolores_0101
@@ -10923,6 +11066,7 @@ dois : Becos_1004
 dois : Conto_0102
 dois : Joker_0102
 dois : Joker_0202
+dois : eus_0501
 doleira : Destinos_0202
 doleira : Distintos_0202
 dom : Avevida_0201
@@ -10938,6 +11082,7 @@ dom : Salute_0101
 dom : Silente_1103
 dom : Tempo_1602
 dom : Tiro_0701
+dom : nós_nos_nós_0303
 domadora : Destinos_0202
 domadora : Distintos_0202
 domar : Minuto_0502
@@ -11043,12 +11188,14 @@ dormir : Oca_0501
 dormir : Oco_0501
 dormir : Psiu_0301
 dormir : Zelo_0201
+dorso : Cacos_0301
 dos : Aolero_0401
 dos : Aolero_0602
 dos : Aolero_1001
 dos : Batismo_0402
 dos : Bolero_0301
 dos : Bolero_0503
+dos : Cacos_0401
 dos : Ciuminho_0501
 dos : Ciuminho_0901
 dos : Clandestino_0701
@@ -11171,6 +11318,7 @@ doses : Snowball_1701
 dou : Dolores_0901
 dou : Indolor_0901
 dou : Ocio_1401
+dou : eus_0501
 dou-lhes : Manusgrito_0502
 doura : Avevida_0302
 doura : Lato_1102
@@ -11192,14 +11340,11 @@ doutora : Distintos_0202
 doutora : Oficia_0102
 doutorado : Estudo_0103
 doutorado : Ocio_0603
-doutras : Epitafiando_0202
-doutras : Portal_0302
 doutrina : Manifesto_0601
 doutrina : Remedeio_0101
 doutrina : Salute_0101
 doutrinas : Clandestino_0902
 doutrinas : Victor_0802
-doutro : Duralex_0306
 doía : Indolor_0901
 doídos : Oca_0204
 doídos : Oco_0204
@@ -11260,7 +11405,9 @@ durar : Liberta_1201
 durar : Psiu_0301
 durar : Zelo_0201
 durar : Zelo_0603
+duração : Cacos_0601
 dureza : Duralex_0103
+durma : eus_0501
 durmo : Aolero_0401
 durmo : Aolero_0501
 durmo : Aolero_0602
@@ -11308,6 +11455,7 @@ díspar : Tempo_0902
 díspares : Oficia_1704
 díspares : Oficio_1704
 dístico : Circular_0101
+dívida : Cacos_0401
 dívidas : Ocio_0402
 dói : Ciuminho_0801
 dói : Dolores_0101
@@ -11394,6 +11542,7 @@ editor : Críticas_0106
 editor : Oficio_0103
 editora : Oficia_0103
 editores : Ores_0101
+edição : Cacos_0601
 educada : Oficia_0502
 educada : Oficia_0703
 educado : Oficio_0502
@@ -11401,6 +11550,7 @@ educar : Arerir_0101
 educar : Arerir_0502
 educação : Manifesto_1702
 edícula : Silente_0301
+efeito : Cacos_0301
 efeito : Ciuminho_0501
 efeito : Festim_0603
 efeito : Festim_1102
@@ -11505,12 +11655,13 @@ elaborar : Estudo_0601
 elaborar : Manifesto_1502
 elaborar : Ocio_0805
 elas : Tiro_1102
-ele : Abertura_1505
 ele : Circular_0601
 ele : Distintos_0101
 ele : Distintos_0104
 ele : Indolor_0501
+ele : nós_nos_nós_0302
 elefantes : Batismo_0402
+elegante : Cacos_0301
 elegante : Destinos_0502
 elegante : Distintos_0402
 elegante : Escorpio=f_0103
@@ -11557,11 +11708,13 @@ elencadas : Posfácio_0302
 elencados : Sentença_0201
 eles : Nós_0101
 eles : Nós_1103
+eles : eus_0501
 eletricista : Destinos_0205
 eletricista : Distintos_0205
 eleva : Ciuminho_0801
 eleva : Psiu_0301
 eleva : Zelo_0201
+elevado : Cacos_0501
 elevados : Leao=f_0602
 elevados : Leao=m_0602
 elevados : Minuto_0601
@@ -11569,6 +11722,7 @@ elevam : Silente_0706
 elevar : Arerir_0101
 elevar : Arerir_0502
 elevar : Avevida_0101
+elevação : Cacos_0601
 elevação : Meteoro_0802
 elevação : Meteoro_0902
 elevo : Clandestino_0201
@@ -11583,6 +11737,7 @@ elitista : Destinos_0205
 elitista : Distintos_0205
 elixir : Elogio_0501
 elo : Brado_0601
+elo : Cacos_0301
 elo : Fugaz_0201
 elo : Haikai_0102
 elo : Haikai_0201
@@ -11615,6 +11770,7 @@ emano : Victor_1201
 emaranhado : Minuto_0201
 emaranhado : Posfácio_1202
 emaranhado : Sopros_0702
+emaranhados : nós_nos_nós_0105
 embaixador : Críticas_0106
 embaixador : Oficio_0103
 embaixadora : Destinos_0202
@@ -11689,6 +11845,7 @@ emitir : Blablabla_0201
 emitir : Nonono_0902
 emitir : Paroles_0502
 emocionais : Zodiacaos_0602
+emocional : Cacos_0201
 emoldurado : Tempus_0102
 emotiva : Peixes=f_0104
 emotividade : Zodiacaos_1104
@@ -11701,6 +11858,7 @@ emotivo : Peixes=m_0104
 emotivo : Zoia_0403
 emotivo : Zoia_0903
 emoção : Amaré_0306
+emoção : Cacos_0601
 emoção : Psiu_0501
 emoção : Sagitari=f_0803
 emoção : Sagitari=m_0803
@@ -11737,10 +11895,11 @@ empoeirados : Papilio_1201
 empresa : Feiras_0301
 empresta : Feiras_0603
 empresta : Feiras_0703
+emprestado : eus_0102
+emprestado : eus_0302
 emprestar : Elogio_0601
 empunho : Atido_0402
 empunho : Atido_0502
-empurra : Abertura_1002
 empurra : Sopros_0103
 empurre-se : Astros_0801
 empáfia : Brado_0601
@@ -11817,6 +11976,7 @@ encerra : MachBrait_0601
 encerra : Papilio_0601
 encerre : Astros_0601
 enche : Papilio_0301
+enche : eus_0501
 enche-se : Augusto_0701
 enciclopédias : Manifesto_0902
 encinar : Perfil_0702
@@ -11901,6 +12061,7 @@ energia : Aries=f_0701
 energia : Aries=m_0701
 energia : Astros_0801
 energia : Bula_0306
+energia : Cacos_0401
 energia : Caprico=f_0802
 energia : Caprico=m_0802
 energia : Manifesto_1706
@@ -11916,7 +12077,6 @@ enfado : Portal_0302
 enfadonhas : Oficia_1704
 enfadonhas : Oficio_1704
 enfados : Avevida_0303
-enfeite : Abertura_0903
 enfeite : Blablabla_0301
 enfeite : Epitafiando_0202
 enfeite : Nonono_0301
@@ -11951,6 +12111,7 @@ enganados : Cuores_0402
 enganando : Oca_0501
 enganando : Oco_0501
 enganando : Snowball_0901
+engano : Cacos_0301
 engano : Ciuminho_0801
 engano : Dolores_1002
 engano : Epitafiando_0503
@@ -12074,6 +12235,7 @@ enriquecido : Ocio_1402
 ensaia : Avevida_0203
 ensaia : Manifesto_0601
 ensaio : Batismo_0402
+ensaio : Cacos_0201
 ensaio : Circular_0101
 ensaio : MachBeth_0201
 ensaio : MachBeth_0601
@@ -12128,6 +12290,8 @@ ente : Haikai_0201
 ente : Tempo_0102
 ente : Tempo_0801
 entediados : Cuores_0402
+entendam : eus_0501
+entende : eus_0402
 entender : Arerir_0201
 entender : Cordel_0202
 entender : Pedidos_0201
@@ -12147,6 +12311,7 @@ entidade : Fatos_1701
 entidade : Oficia_0704
 entidade : Oficio_0704
 entidades : Clandestino_0902
+entidades : Escriba_0402
 entidades : Victor_0802
 entoa : Avevida_0302
 entoando : Sonoro_0201
@@ -12158,7 +12323,6 @@ entornar : Augusto_1301
 entornar : Tiro_0101
 entornei : Feiras_1002
 entorta-te : Anjos_1101
-entra : Abertura_0902
 entrada : Feiras_1101
 entranhas : Ciuminho_0801
 entranhas : Crítico_0304
@@ -12204,6 +12368,7 @@ entre : Tolero_0401
 entre : Victor_0801
 entre : Virgem=f_0401
 entre : Virgem=m_0401
+entre : nós_nos_nós_0101
 entreaberta : MachBrait_0601
 entreaberta : Papilio_0601
 entreato : Epitafiando_0202
@@ -12223,7 +12388,6 @@ entrelinha : Haikai_0102
 entrelinha : Ser_0501
 entrelinha : Tempo_0102
 entrelinha : Tempo_1101
-entrelinhas : Abertura_0404
 entrelinhas : Atido_0403
 entrelinhas : Duralex_0103
 entrelinhas : Epitafiando_0303
@@ -12262,8 +12426,6 @@ entusiasmo : Leao=f_0103
 entusiasmo : Leao=f_0502
 entusiasmo : Leao=m_0103
 entusiasmo : Leao=m_0502
-então : Abertura_0601
-então : Abertura_0701
 então : Dolores_0501
 então : Loremipsum_0701
 então : MachBeth_0301
@@ -12434,6 +12596,7 @@ errantes : Victor_1102
 erre : Oficia_1801
 erre : Oficio_1801
 erre : Palyndro_0701
+errei : eus_0501
 erro : Aolero_1001
 erro : Carroussel_0301
 erro : Estudo_0703
@@ -12489,9 +12652,11 @@ esboço : Sn8=ball_1101
 esboço : Snowball_1601
 esbórnia : Reinos_0302
 escabeche : Ocio_1301
+escada : Cacos_0201
 escada : Frases_0502
 escada : Silente_0102
 escafandro : Essa_0204
+escala : Cacos_0201
 escaldante : Anjos_1104
 escaldante : Anjos_1204
 escaldante : Augusto_1204
@@ -12526,10 +12691,11 @@ esclarecida : Oficia_0502
 esclarecida : Oficia_0703
 esclarecido : Oficio_0502
 escluir : Perfil_0702
+escolar : eus_0102
+escolar : eus_0302
 escolas : Clandestino_1201
 escolas : Victor_0201
 escolas : Victor_1201
-escolha : Abertura_1001
 escolha : Demo_0301
 escolha : Demo_0401
 escolha : Haikai_0301
@@ -12551,7 +12717,6 @@ escolhidas : Posfácio_0201
 escolhido : Clarice_0802
 escolhido : Crítico_0206
 escolta : Rever_0302
-esconde : Abertura_0405
 esconde : Epitafiando_0702
 esconde : Ogiva_0402
 esconde : Portal_0802
@@ -12600,6 +12765,7 @@ escravo : Sos_0101
 escravo : Tempo_1602
 escravo : Veio_0701
 escravo : Zelo_0201
+escravo : Zoia_1701
 escreva : Oficia_1801
 escreva : Oficio_1801
 escreve : Ciuminho_0702
@@ -12626,7 +12792,6 @@ escrevo : MachBeth_1301
 escriba : Escriba_1201
 escrita : Escriba_0901
 escrita : Lato_1101
-escrito : Abertura_0302
 escrito : Aolero_0602
 escrito : Bolero_0503
 escrito : Epitafiando_0202
@@ -12671,6 +12836,7 @@ escuridão : Augusto_1705
 escuridão : Elogio_0601
 escuridão : Impar_0204
 escuridão : Psiu_0501
+escuro : Cacos_0401
 escuro : Cromossomo_0904
 escuro : Reger_0803
 escuro : Rito_0501
@@ -12827,6 +12993,8 @@ especialista : Cordel_0403
 especialista : Destinos_0205
 especialista : Distintos_0205
 especialistas : i-Mundo_0201
+espectral : eus_0102
+espectral : eus_0302
 espectro : Essa_0204
 espectro : Indolor_0303
 espectros : MachBrait_1101
@@ -12869,6 +13037,7 @@ espelhos : Papilio_1203
 espelhos : Sn6=ball_0802
 espelhos : Sn8=ball_0901
 espelhos : Snowball_0801
+espelhos : nós_nos_nós_0204
 espelunca : Essa_0206
 espera : Becos_1004
 espera : Bula_0101
@@ -12879,6 +13048,7 @@ espera : Minuto_0302
 espera : Ocio_1502
 espera : Papilio_1501
 espera : Salute_0301
+espera-se : Manifesto_0801
 esperada : Tiro_1102
 esperado : Batismo_0302
 esperado : Meteoro_1101
@@ -12963,6 +13133,8 @@ espio : Dolores_0901
 espio : Indolor_0901
 espiritual : Touro=f_0601
 espiritual : Touro=m_0601
+espiritual : eus_0102
+espiritual : eus_0302
 esplêndida : Augusto_0203
 esponta : Anjos_0602
 esponta-te : Augusto_1101
@@ -12982,6 +13154,7 @@ espreita : Zoia_1302
 espreitar : Anjos_1301
 espreitar : Augusto_1301
 espreito : MachBeth_0601
+espécie : Cacos_0301
 espírito : Aquarius=f_0402
 espírito : Aquarius=m_0402
 espírito : Cancer=f_0102
@@ -13026,6 +13199,7 @@ esqueitista : Distintos_0205
 esqueleto : MachBrait_0901
 esqueleto : Papilio_0901
 esquelético : Reinos_0201
+esquerda : Cacos_0301
 esquerda : Demo_0202
 esquerdista : Destinos_0205
 esquerdista : Distintos_0205
@@ -13057,7 +13231,6 @@ esquivo : Olhares_0403
 esquivo : Tempo_0902
 esquivo : Zoia_0403
 esquivo : Zoia_0903
-essa : Abertura_1303
 essa : Críticas_1403
 essa : Dolores_0601
 essa : Dolores_1102
@@ -13073,7 +13246,6 @@ essa : Posfácio_1202
 essa : Rever_0401
 essa : Sopros_0901
 essa : Veio_1003
-esse : Abertura_1303
 esse : Augusto_1302
 esse : Crítico_0801
 esse : Haikai_0301
@@ -13084,6 +13256,7 @@ esse : Preciso_0803
 esse : Prefácil_0601
 esse : Tempo_1602
 essenciais : Ocio_1202
+essencial : Cacos_0201
 essencial : Escriba_1301
 essencial : Posfácio_0803
 essencial : Touro=f_0203
@@ -13101,6 +13274,7 @@ esta : Essa_0301
 estabelece-se : Tiro_1101
 estabelecida : Manifesto_0201
 estado : Blablabla_0301
+estado : Cacos_0501
 estado : Elogio_0101
 estado : Meteoro_0104
 estado : Nonono_0301
@@ -13138,6 +13312,7 @@ estapafúrdias : Oficia_1704
 estapafúrdias : Oficio_1704
 estapafúrdias : i-Mundo_0505
 estar : Astros_0801
+estar : Cacos_0101
 estar : Gemeos=f_0501
 estar : Gemeos=m_0501
 estar : Leao=f_0602
@@ -13244,6 +13419,7 @@ estrabismo : Críticas_1401
 estrabismo : Críticas_1601
 estrada : Anjos_0402
 estrada : Augusto_0402
+estrada : Cacos_0201
 estrada : MachBeth_1301
 estrada : Ser_0501
 estrada : Sos_0601
@@ -13258,12 +13434,14 @@ estrangeiros : Cartaz_1102
 estrangeiros : Cuores_0404
 estrangeiros : Duralex_0306
 estrangeiros : Leituras_0802
+estrangulados : nós_nos_nós_0105
 estranha : Dolores_0301
 estranha : Elogio_0202
 estranha : MachBrait_0301
 estranha : Papilio_0301
 estranha : Papilio_0601
 estranhamento : Elogio_0202
+estranhar : eus_0202
 estranhas : Oficia_1704
 estranhas : Oficio_1704
 estranhas : Saudades_0103
@@ -13274,15 +13452,19 @@ estranho : Pedidos_0505
 estranho : Pessoa_0601
 estranho : Psiu_0105
 estranho : Vozes_0301
+estranho : eus_0102
+estranho : eus_0302
 estranhos : Clarice_1101
 estranhos : Duralex_0304
 estrategista : Destinos_0205
 estrategista : Distintos_0205
 estrategista : Escorpio=f_0402
 estrategista : Escorpio=m_0402
+estratégia : Cacos_0301
 estratégico : Reinos_0201
 estreita : Escriba_1301
 estreito : Meteoro_0603
+estrela : Cacos_0301
 estrela : Dolores_0303
 estrela : Leao=f_0602
 estrela : Leao=m_0602
@@ -13293,7 +13475,7 @@ estrelas : Aolero_0501
 estrelas : Bolero_0401
 estrelas : Clandestino_0201
 estrelas : Clandestino_1201
-estrelas : Conto_0801
+estrelas : Conto_1101
 estrelas : Destinos_0502
 estrelas : Distintos_0402
 estrelas : MachBeth_0101
@@ -13499,6 +13681,8 @@ eventualidade : Prefácil_1403
 eventualmente : Atido_0701
 eventualmente : Ocio_1401
 evidenciam : Zodiacaos_0504
+evidente : Cacos_0301
+evidência : Cacos_0301
 evidência : Cadência_0302
 evidência : Ciuminho_0501
 evidências : Snowball_1001
@@ -13574,6 +13758,7 @@ excêntricas : Snowball_1101
 executa : Augusto_0201
 exempli : Sentença_0703
 exemplificam : Manifesto_0102
+exemplo : Cacos_0301
 exemplo : Circular_0101
 exemplo : Oficia_0902
 exemplo : Oficio_0902
@@ -13660,6 +13845,8 @@ existência : Meteoro_0402
 exorbitância : Meteoro_0502
 exortar : Manifesto_0803
 expande : MachBeth_0601
+expandido : eus_0102
+expandido : eus_0302
 expandir : Arerir_0301
 expandir : Arerir_0502
 expandir : Blablabla_0201
@@ -13669,6 +13856,7 @@ expandir : Minuto_0502
 expandir : Nonono_0902
 expandir : Paroles_0502
 expectativas : Astros_0601
+experiência : Cacos_0301
 experiência : Cadência_0202
 experiências : Astros_0401
 experiências : Sagitari=f_0803
@@ -13679,7 +13867,6 @@ expiando : Clarice_0601
 expira : Frases_0303
 explicada : Cordel_0401
 explicado : Fatos_2103
-explicar : Abertura_0302
 explicar : Duralex_0102
 explicar : Fatos_2102
 explicar : Pedidos_0201
@@ -13702,6 +13889,7 @@ expor : Nonono_0502
 expor : Oca_0201
 expor : Oco_0201
 expor : Paroles_0502
+exposição : Cacos_0601
 expostas : Posfácio_0302
 exposto : Fatos_0601
 expressar : Zodiacaos_0802
@@ -13710,6 +13898,8 @@ exprimindo : Sonoro_0201
 exprimir : Blablabla_0201
 exprimir : Nonono_0902
 exprimir : Paroles_0502
+exterior : eus_0102
+exterior : eus_0302
 exterminada : MachBrait_1201
 exterminada : Papilio_1203
 extingue-se : Frases_0303
@@ -13726,6 +13916,7 @@ extra : Lero_0401
 extra : Lero_0403
 extra : Solero_0501
 extra : Tolero_0301
+extra : eus_0402
 extracurriculares : Estudo_0603
 extracurriculares : Ocio_0807
 extrair : Sagitari=f_0801
@@ -13741,6 +13932,7 @@ extrato : Oficio_1002
 extrato : Posfácio_1302
 extravagância : Meteoro_0502
 extravio : Essa_0206
+extremidade : Cacos_0201
 extremista : Destinos_0205
 extremista : Distintos_0205
 extremos : Minuto_0301
@@ -13863,12 +14055,15 @@ fagulha : Cuores_0703
 fagulhas : Brado_0103
 fais : Perfil_0702
 faisão : Ocio_1305
+faixa : Cacos_0201
 faixa : Estudo_0201
 faixa : MachBrait_1301
 faixa : Meteoro_0601
 faixa : Meteoro_0603
 faixa : Ocio_0701
 faixa : Papilio_1201
+fake : Evidências_0301
+fala : Cacos_0201
 fala : Demo_0301
 fala : Enfrente_0501
 fala : Joker_0203
@@ -13890,8 +14085,11 @@ falam : Essa_0103
 falam : Festim_0404
 falam : Seguro_0302
 falam : Tiro_0701
+falando : eus_0501
 falange : Reinos_0402
 falange : Reinos_0701
+falar : Cacos_0101
+falar : nós_nos_nós_0101
 falas : Blablabla_0202
 falas : Carroussel_0101
 falas : Carroussel_0501
@@ -13918,6 +14116,7 @@ falcidades : Perfil_0602
 fale-me : Tempo_1301
 falecida : Dolores_0305
 falecido : Indolor_0305
+falha : Cacos_0201
 falha : Frases_0502
 falha : Fugaz_0302
 falha : Inhos_0701
@@ -14101,6 +14300,7 @@ fantasia : Nonono_0701
 fantasia : Nonono_1101
 fantasia : Paroles_0301
 fantasia : Paroles_0701
+fantasia : eus_0402
 fantasia : i-Mundo_0803
 fantasiado : Ciuminho_0404
 fantasias : Ciuminho_0702
@@ -14216,6 +14416,7 @@ farta-se : Zoia_1202
 fartas : Manifesto_1203
 farto : Avevida_0103
 farto : Becos_0201
+farto : Cacos_0201
 farto : Cartaz_0601
 farto : Indolor_1001
 farto : Lato_0703
@@ -14232,6 +14433,7 @@ fascinante : Olhares_0301
 fascinante : Olhares_0601
 fascinante : Zoia_0301
 fascínio : Amaré_0304
+fase : Cacos_0201
 faser : Perfil_0201
 faser : Perfil_0302
 faser : Perfil_0303
@@ -14267,6 +14469,7 @@ fatia : Posfácio_1402
 fatias : Gula_0402
 fato : Beaba_0102
 fato : Becos_1002
+fato : Cacos_0201
 fato : Ciuminho_0501
 fato : Epitafiando_0702
 fato : Insano_0701
@@ -14303,6 +14506,7 @@ faturista : Distintos_0205
 fatídica : Fatos_0103
 fatídica : Reinos_0404
 fatídico : Reinos_0203
+favor : Cacos_0301
 favorecidos : Cancer=f_0301
 favorecidos : Cancer=m_0301
 favores : Aolero_0501
@@ -14418,6 +14622,7 @@ faço : Tolero_0301
 faço : Tolero_0401
 faço : Victor_0201
 faço : Victor_1201
+faço : eus_0501
 faço-me : Dolores_0201
 faísca : Frases_0303
 faíscas : Meteoro_0404
@@ -14432,8 +14637,8 @@ febril : Fugaz_0302
 febril : Tempo_0802
 febril : Tempo_1102
 febrilhando : Escriba_1301
+fechado : Cacos_0501
 fechado : Meteoro_0103
-fechar : Abertura_1402
 fecunda : Anjos_0802
 fecunda : Augusto_0904
 fecundadores : Ores_0202
@@ -14462,11 +14667,11 @@ feitio : Haikai_0301
 feitio : Tempo_1602
 feitiço : Ciuminho_0106
 feitiço : Psiu_0107
-feito : Abertura_0902
 feito : Augusto_0703
 feito : Avevida_0201
 feito : Becos_0802
 feito : Blablabla_0301
+feito : Cacos_0301
 feito : Ciuminho_0501
 feito : Ciuminho_0801
 feito : Clarice_1002
@@ -14512,6 +14717,7 @@ feito : Sonoro_0301
 feito : Sopros_0702
 feito : Tiro_0901
 feito : Zelo_0201
+feito : nós_nos_nós_0108
 feitor : Tempo_0201
 feitor : Usinas_0902
 feitos : Cartaz_0103
@@ -14594,6 +14800,7 @@ ferido : Cuores_0102
 ferinas : Cartaz_0803
 fernando : Preciso_1402
 ferocidade : Prefácil_1403
+ferramenta : Cacos_0301
 ferro : Reinos_1302
 ferro : Remedeio_0101
 ferro : Salute_0101
@@ -14670,6 +14877,7 @@ ficcional : Críticas_0804
 fico : Dolores_0901
 fico : Indolor_0901
 fico : Seguro_0701
+fico : eus_0501
 fictícia : Fatos_0503
 fictícia : Fugaz_0302
 fictícia : Reger_0102
@@ -14703,6 +14911,7 @@ fidelidade : Prefácil_1403
 fiel : Ser_0301
 fiel : Usinas_0703
 fielmente : Fatos_2102
+figura : Cacos_0401
 figura : Lato_0805
 figurante : Dolores_0303
 figurante : Indolor_0303
@@ -14827,6 +15036,8 @@ fim : Veio_1001
 fim : Zelo_0201
 fim : Zelo_0601
 fim : Zelo_0603
+fim : eus_0501
+fim-de-século : Prefácil_0304
 fina : Fugaz_0302
 fina : Tempo_1102
 finais : Atido_0503
@@ -14848,6 +15059,7 @@ final : Salute_0601
 final : Zelo_0201
 final : Zelo_0501
 final : Zelo_0603
+final : eus_0501
 finalidades : Minuto_0601
 finalista : Destinos_0205
 finalista : Distintos_0205
@@ -14967,6 +15179,7 @@ fins : Ocio_0204
 fins : Prefácil_0703
 fins : Solero_0801
 fins : Tolero_1101
+fio : Cacos_0401
 fio : Ciuminho_0702
 fio : Ciuminho_0801
 fio : Fugaz_0201
@@ -15066,7 +15279,7 @@ flerta : Zoia_0302
 flerta : Zoia_0802
 flerta : Zoia_1302
 flexa : Tiro_1002
-flexi-pensar, : Manifesto_1103
+flexi-pensar : Manifesto_1103
 flexibilidade : Prefácil_1403
 flor : Ciuminho_0901
 flor : Epitafiando_0303
@@ -15126,7 +15339,7 @@ flutua : Ogiva_0101
 flutuando : Snowball_0901
 flutuante : Circular_0102
 flutuantes : i-Mundo_0502
-fluxo : Abertura_1003
+fluxo : Cacos_0301
 fluência : Impar_0304
 fluência : Meteoro_0402
 fluí : Joker_0301
@@ -15200,9 +15413,10 @@ foi : Passagens_0601
 foi : Prefácil_1701
 foi : Tempo_0302
 foi : Tiro_1102
+foi : eus_0501
+foi-se : Epitafiando_0101
 foi-se : Portal_0101
-foi-se. : Tempus_0104
-foi-se: : Epitafiando_0101
+foi-se : Tempus_0104
 foie-gras : Ocio_1301
 folclore : Manifesto_1503
 folga : Dolores_0901
@@ -15293,6 +15507,7 @@ forjo : Lero_0401
 forjo : Lero_0403
 forjo : Solero_0601
 forjo : Tolero_0401
+forma : Cacos_0301
 forma : Ciuminho_0501
 forma : Fugaz_0201
 forma : Fugaz_0301
@@ -15306,6 +15521,7 @@ forma : Salute_0601
 forma : Tempo_0102
 forma : Tempo_1101
 forma : Tiro_1101
+formado : Cacos_0501
 formado : Estudo_0503
 formadores : Ores_0201
 formadores : Preciso_0303
@@ -15329,7 +15545,6 @@ fornicamos : Cromossomo_0902
 foro : Lato_1101
 foro : Sentença_0202
 forro : Silente_0103
-forte : Abertura_0603
 forte : Usinas_0703
 fortes : Cancer=f_0301
 fortes : Cancer=m_0301
@@ -15402,13 +15617,17 @@ fracasso : Impar_0204
 fracasso : Minuto_0302
 fraciona : Feiras_0603
 fraciona : Feiras_0703
+fraco : Cacos_0201
 fragilidade : Finalmentes_0602
 fragilidade : Zodiacaos_1602
+fragmentado : eus_0102
+fragmentado : eus_0302
 fragmentos : Aolero_0102
 fragmentos : Lero_0102
 fragmentos : Solero_0102
 fragores : Ores_0101
 franca : Zodiacaos_0302
+franco : Cacos_0301
 franco : Paz_0101
 franco-atirador : Batismo_0402
 franqueia : Feiras_0603
@@ -15417,8 +15636,8 @@ franqueza : Zodiacaos_1104
 franquia : Destinos_0902
 franquia : Distintos_0802
 franz : Fatos_1605
-frase : Abertura_0503
-frase : Abertura_0604
+franze : eus_0402
+frase : Cacos_0201
 frase : Rever_0102
 frases : Blablabla_0202
 frases : Carroussel_0101
@@ -15437,6 +15656,8 @@ fraterna : MachBrait_1601
 fraterna : Papilio_1601
 fraterno : Aquarius=f_0103
 fraterno : Aquarius=m_0103
+fraude : Cacos_0201
+fração : Cacos_0601
 fração : Fugaz_0201
 fração : Fugaz_0301
 fração : Haikai_0102
@@ -15451,6 +15672,7 @@ frementes : Gula_0303
 frente : Aquarius=f_0301
 frente : Aquarius=m_0301
 frente : Astros_0801
+frente : Cacos_0301
 frente : Enfrente_0501
 frente : Finalmentes_0602
 frente : Haikai_0301
@@ -15478,6 +15700,7 @@ frequência : Astros_0801
 frequência : Cadência_0104
 frequência : Meteoro_0402
 fresca : Gula_0703
+fresco : Cacos_0301
 frescos : MachBrait_1101
 frescos : Papilio_1301
 frescura : Ciuminho_0501
@@ -15665,6 +15888,7 @@ fundista : Distintos_0205
 fundo : Aolero_0501
 fundo : Astros_0401
 fundo : Bolero_0401
+fundo : Cacos_0401
 fundo : Clandestino_0701
 fundo : Dolores_0901
 fundo : Frases_0502
@@ -15684,6 +15908,7 @@ fundos : Silente_0103
 funil : Bula_0302
 funil : Frases_0502
 funil : Tempo_0303
+função : Cacos_0601
 função : Críticas_0801
 funções : Remedeio_0301
 funções : Salute_0601
@@ -15697,6 +15922,7 @@ furado : Perfil_0701
 furdunço : Epitafiando_0202
 furdunço : Portal_0302
 furei : Silente_0101
+furo : Cacos_0401
 furor : MachBrait_0101
 furor : Papilio_0101
 furtar : Críticas_0601
@@ -15727,6 +15953,7 @@ futuro : Augusto_1203
 futuro : Becos_1104
 futuro : Blablabla_0301
 futuro : Bolero_0503
+futuro : Cacos_0401
 futuro : Circular_0601
 futuro : Ciuminho_0501
 futuro : Clandestino_0601
@@ -15769,6 +15996,8 @@ futuro : Tolero_0401
 futuro : Veio_0404
 futuro : Veio_1003
 futuro : Zodiacaos_1602
+futuro : eus_0102
+futuro : eus_0302
 futuros : Atido_0503
 futuros : Brado_0602
 futuros : Ciuminho_0501
@@ -15807,6 +16036,7 @@ fábula : Tempo_0102
 fábula : Tempo_1101
 fácil : Becos_1002
 fácil : Becos_1004
+fácil : Cacos_0201
 fácil : Caprico=f_0304
 fácil : Caprico=m_0304
 fácil : Frases_0401
@@ -15839,6 +16069,7 @@ fértil : Tempo_0802
 fértil : Tempo_1102
 fétidos : Reinos_0902
 físicas : Zodiacaos_0602
+físico : Cacos_0401
 fórmula : Frases_0502
 fósforo : Ocio_1402
 fóssil : Ciuminho_0104
@@ -15911,6 +16142,7 @@ ganas : Snowball_1701
 gangorra : Essa_0204
 ganha : Passagens_0701
 ganha : Vozes_0301
+ganha : eus_0501
 ganhado : Fatos_0601
 ganhar : Remedeio_0301
 ganhar : Tiro_1101
@@ -15924,6 +16156,7 @@ ganir : Vozes_0102
 ganância : Meteoro_0502
 garante : Loremipsum_1001
 garantem : Ciuminho_0401
+garantia : Cacos_0401
 garantia : Cartaz_1301
 garantia : Críticas_0602
 garantia : Feiras_0901
@@ -15943,6 +16176,8 @@ garganta : MachBrait_0601
 garganta : Papilio_0601
 garganta : Papilio_1101
 garganta : Restos_0301
+garganta : nós_nos_nós_0107
+garganta : nós_nos_nós_0109
 gargantas : Ciuminho_0801
 gargantas : Dolores_0701
 gargantas : Indolor_0701
@@ -15990,8 +16225,8 @@ gastar : Avevida_0101
 gastar : Blablabla_0201
 gastar : Nonono_0102
 gastar : Paroles_0102
-gastar-te? : Haikai_0301
-gastar-te? : Tempo_1602
+gastar-te : Haikai_0301
+gastar-te : Tempo_1602
 gastavam : Conto_1301
 gaste : Insano_0701
 gaste : Manusgrite_0301
@@ -16121,7 +16356,6 @@ geras : Haikai_0203
 geras : Tempo_0103
 geras : Tempo_0803
 geras : Tempo_1103
-geração : Abertura_1001
 gere : Manusgrite_0301
 gerencia : Feiras_0704
 gerente : Destinos_0202
@@ -16217,6 +16451,7 @@ gosta : Gemeos=m_0201
 gosta : Perfil_0303
 gostamos : Essa_0103
 gostao : Perfil_0303
+gostar : Cacos_0101
 gostar : Cuores_0404
 gostar : Haikai_0301
 gostar : Tempo_1602
@@ -16226,6 +16461,7 @@ gosti : Perfil_0303
 gosto : Aolero_0602
 gosto : Avevida_0103
 gosto : Bolero_0503
+gosto : Cacos_0301
 gosto : Essa_0103
 gosto : Insano_0101
 gosto : Joker_0303
@@ -16301,7 +16537,9 @@ gradual : Zodiacaos_0302
 grafiteira : Destinos_0202
 grafiteira : Distintos_0202
 gralhas : Silente_0502
+gramatical : Cacos_0201
 gramatólogo : Fatos_0803
+gramática : Cacos_0201
 grana : Ocio_1401
 grande : Astros_0801
 grande : Cartaz_0601
@@ -16313,6 +16551,7 @@ grande : Zodiacaos_1602
 grandes : Astros_0501
 grandessíssima : Oficia_0101
 grandessíssimo : Oficio_0101
+grandeza : nós_nos_nós_0303
 grandiosa : Astros_0401
 grandiosas : Astros_0501
 grandioso : Peixes=f_0302
@@ -16366,12 +16605,12 @@ graveto : Essa_0204
 gravidade : Festim_1102
 gravitando : Sonoro_0201
 gravo : Sopros_0701
-graça : Abertura_0903
 graça : Atido_0203
 graça : Avevida_0103
 graça : Becos_1004
 graça : Blablabla_0301
 graça : Bula_0204
+graça : Cacos_0201
 graça : Ciuminho_0102
 graça : Epitafiando_0202
 graça : Mirante_0303
@@ -16414,9 +16653,11 @@ grita : Clarice_0203
 grita : Clarice_0205
 grita : Dolores_0701
 grita : Indolor_0701
+gritar : Cacos_0101
 grito : Atido_0203
 grito : Augusto_1304
 grito : Brado_0601
+grito : Cacos_0401
 grito : Clarice_0601
 grito : Conto_0902
 grito : Dolores_0901
@@ -16445,16 +16686,20 @@ grunhidos : Joker_0202
 grunhir : Vozes_0102
 grupo : Aries=f_0301
 grupo : Aries=m_0301
+grupo : Cacos_0401
 grupo : Cordel_0403
 grupo : Gemeos=f_0202
 grupo : Gemeos=m_0202
 gruta : Anjos_1103
 gruta : Augusto_1103
 grutas : Saudades_0201
+gráfica : Cacos_0201
+gráfico : Cacos_0201
 grão : Escriba_1301
 grão : Ser_0901
 grécia : Reinos_0503
 guache : Frases_0502
+guarda : Cacos_0201
 guarda : Críticas_0106
 guarda : Oficia_0103
 guarda : Oficio_0103
@@ -16526,6 +16771,8 @@ gutenberg : Fatos_1102
 gêmea : Leituras_1001
 gêmeos : Destinos_0102
 gêmeos : Distintos_0102
+gêmeos : eus_0501
+gênero : Cacos_0301
 gênese : Batismo_0402
 gênio : Cordel_0403
 gênio : Loremipsum_0601
@@ -16533,6 +16780,7 @@ gênios : Destinos_0803
 gênios : Distintos_0703
 gírias : Cartaz_0604
 gírias : Manifesto_1303
+habilidade : Cacos_0201
 habilidade : Cancer=f_0202
 habilidade : Cancer=m_0202
 habilidade : Escorpio=f_0204
@@ -16586,6 +16834,8 @@ harmônico : Virgem=f_0503
 harmônico : Virgem=m_0503
 harpista : Dolores_0305
 harpista : Indolor_0305
+haste : Cacos_0201
+haste : Cacos_0301
 havendo : Tiro_1001
 haver : Ciuminho_0501
 haver : Cromossomo_1101
@@ -16700,6 +16950,8 @@ histórias : Leituras_0303
 histórias : Manifesto_1004
 histórica : Fatos_0103
 histórico : Fatos_1302
+histórico : eus_0102
+histórico : eus_0302
 hoc : Sentença_0703
 hoje : Destinos_1101
 hoje : Distintos_1001
@@ -16791,6 +17043,7 @@ hora : Usinas_0706
 hora : Victor_0401
 hora : Zelo_0201
 hora : Zodiacaos_1602
+hora : eus_0501
 horar : Estudo_0301
 horar : Ocio_0203
 horar : Ocio_0703
@@ -16837,7 +17090,6 @@ hordas : Becos_0701
 horgulho : Perfil_0201
 horista : Destinos_0205
 horista : Distintos_0205
-horizonte : Abertura_1303
 horizonte : Becos_1004
 horizonte : Blablabla_0301
 horizonte : Enfrente_0202
@@ -16862,6 +17114,7 @@ horizonte : Ser_0701
 horizonte : Ser_0901
 horizonte : Tempo_0102
 horizonte : Tempo_0801
+horizonte : nós_nos_nós_0303
 horizontes : Atido_0503
 horizontes : Dolores_0901
 horizontes : Epitafiando_0303
@@ -16949,6 +17202,7 @@ humildilhado : Essa_0302
 humor : Aquarius=f_0802
 humor : Aquarius=m_0802
 humor : Bula_0306
+humor : Cacos_0301
 humor : Leao=f_0602
 humor : Leao=m_0602
 humor : Salute_0402
@@ -16982,6 +17236,7 @@ ida : Rever_0401
 ida : Tempo_0702
 ida : Tempo_1602
 ida : Tiro_1102
+idade : Cacos_0201
 idade : Epitafiando_0303
 idade : Escriba_0402
 idade : Frases_0302
@@ -17044,7 +17299,6 @@ idealista : Distintos_0205
 idealista : Virgem=f_0201
 idealista : Virgem=m_0201
 idealiza : Posfácio_1502
-ideia : Abertura_0702
 ideia : Circular_0302
 ideia : Escorpio=f_0401
 ideia : Escorpio=m_0401
@@ -17066,6 +17320,7 @@ ideias : Bolero_0503
 ideias : Clandestino_1001
 ideias : Destinos_0803
 ideias : Distintos_0703
+ideias : Escriba_0402
 ideias : Gemeos=f_0501
 ideias : Gemeos=m_0501
 ideias : Insano_0203
@@ -17100,6 +17355,7 @@ ideias : Victor_1001
 ideias : Victor_1102
 ideias : Zodiacaos_1001
 ideias : i-Mundo_0401
+identidade : Cacos_0201
 identidade : Leituras_0401
 identidade : Prefácil_1403
 identificada : Becos_1104
@@ -17107,10 +17363,13 @@ identificação : Leao=f_0402
 identificação : Leao=m_0402
 ideologias : i-Mundo_0401
 ideológico : Demo_0202
+ideológico : eus_0102
+ideológico : eus_0302
 ideológicos : i-Mundo_0201
 idependente : Perfil_0103
 idependente : Perfil_0402
 idifique : Perfil_0303
+idioma : Cacos_0301
 idioma : Cartaz_1301
 idioma : Crítico_0602
 idiomas : Ciuminho_0501
@@ -17241,6 +17500,7 @@ ilumina : Virgem=f_0901
 ilumina : Virgem=m_0901
 iluminadas : Estudo_0603
 iluminadas : Ocio_0807
+iluminado : Cacos_0501
 iluminar : Arerir_0101
 ilumine : Cuores_0304
 ilusionista : Destinos_0205
@@ -17289,7 +17549,6 @@ ilógico : Reinos_0201
 imaculada : Oficia_1402
 imaculada : Oficio_1402
 imaculado : Indolor_1003
-imagem : Abertura_0702
 imagem : Carroussel_0201
 imagem : Carroussel_0403
 imagem : Escriba_0301
@@ -17316,9 +17575,11 @@ imaginados : Loremipsum_0701
 imaginar : Arerir_0101
 imaginar : Leituras_0101
 imaginar : Posfácio_0602
+imaginar : nós_nos_nós_0202
 imaginativa : Peixes=f_0104
 imaginativo : Peixes=m_0104
 imaginato : Bula_0202
+imaginação : CIA_0103
 imaginação : Clandestino_1001
 imaginação : Escriba_0403
 imaginação : Gemeos=f_0302
@@ -17328,11 +17589,11 @@ imaginação : Tiro_0202
 imaginação : Victor_1001
 imaginação : Victor_1102
 imaginação : Zodiacaos_1104
+imaginação : nós_nos_nós_0204
 imagine-se : Becos_0103
 imagino : MachBeth_0201
 imagino : Reger_0101
 imagino : Sopros_0402
-imaginária : Abertura_0704
 imaginária : Leituras_0402
 imaginária : Reger_0102
 imaginárias : Beaba_0303
@@ -17348,7 +17609,11 @@ imaginário : Psiu_0103
 imaginário : Reger_0102
 imaginário : Restos_0601
 imaginário : Sopros_0702
+imaginário : eus_0102
+imaginário : eus_0302
 imaginários : Escriba_0402
+imaginários : nós_nos_nós_0204
+imagética : CIA_0103
 imagético : Reinos_0201
 imanência : Anjos_0703
 imanência : Augusto_0804
@@ -17383,7 +17648,7 @@ iminentes : Zodiacaos_1405
 iminência : Meteoro_0402
 iminência : Meteoro_1201
 imita : Avevida_0302
-imita-se? : Prefácil_1701
+imita-se : Prefácil_1701
 imitando : Blablabla_0301
 imitando : Frases_0501
 imitando : Nonono_0301
@@ -17395,6 +17660,7 @@ imitando : Usinas_0605
 imitar : Fatos_2102
 imitas : Haikai_0301
 imitas : Tempo_1602
+imitação : CIA_0103
 imitação : Escriba_0701
 imitação : Vozes_0301
 imitações : Becos_0501
@@ -17488,6 +17754,7 @@ imperam : Nonono_1101
 imperam : Paroles_0301
 imperam : Paroles_0701
 imperceptivelmente : Augusto_1502
+imperfeito : Cacos_0301
 imperfeito : Circular_0102
 imperfeito : Pedidos_0401
 imperfeitos : Nós_0301
@@ -17614,6 +17881,7 @@ imprescindíveis : Ocio_1202
 imprescindível : Loremipsum_0203
 impressionem : Remedeio_0301
 impressionem : Salute_0601
+impressão : Cacos_0601
 impressões : Posfácio_1803
 impressões : Snowball_1001
 imprevista : Epitafiando_0702
@@ -17621,9 +17889,6 @@ imprevista : Portal_0802
 imprevistas : Lato_0503
 imprevistas : Saudades_0705
 imprevistas : Snowball_1101
-imprevisto : Abertura_1105
-imprevisto : Abertura_1202
-imprevisto : Abertura_1204
 imprevisto : Astros_0801
 imprevisto : Clandestino_0201
 imprevisto : Clandestino_1201
@@ -17763,6 +18028,7 @@ inabalável : Tempo_1102
 inabalável : Tiro_0603
 inacabada : Fugaz_0302
 inacabada : Tempo_1102
+inacabado : Cacos_0501
 inacabado : Haikai_0202
 inacabado : Tempo_0802
 inacabados : Cartaz_0103
@@ -17912,6 +18178,7 @@ incoerência : Manifesto_1602
 incoerência : Meteoro_0402
 incoerências : Avevida_0303
 incoerências : Duralex_0103
+incomodar : eus_0202
 incompetência : Cadência_0302
 incompetência : Sentença_0504
 incompleto : Augusto_1303
@@ -17944,9 +18211,9 @@ inconhecida : Epitafiando_0303
 inconhecida : Portal_0601
 inconscientemente : Anjos_1501
 inconscientemente : Augusto_1502
-inconsciência : Zero_0102
-inconsciência : Zero_0104
-inconsciência : Zero_0302
+inconsciência : Evidências_0102
+inconsciência : Evidências_0104
+inconsciência : Evidências_0302
 inconsequente : Fatos_1603
 inconsequentes : Preciso_0204
 inconsequentes : i-Mundo_0502
@@ -17957,7 +18224,7 @@ incontáveis : Manifesto_1003
 incontáveis : Posfácio_1802
 inconveniente : Finalmentes_0303
 inconveniente : Zodiacaos_1402
-incorrer : Zero_0202
+incorrer : Evidências_0202
 incrementar : Arerir_0101
 incrustado : Tempus_0102
 incrustados : MachBrait_0801
@@ -18029,12 +18296,12 @@ indevidas : i-Mundo_0502
 indicados : Manifesto_0201
 indicam : Tiro_0701
 indicam : Zodiacaos_0501
-indicar : Abertura_0302
 indicar : Manifesto_1303
 indicações : Manifesto_0201
 indicações : Remedeio_0301
 indicações : Salute_0601
 indiciado : Frases_0502
+indiferente : Cacos_0301
 indiferente : Fugaz_0302
 indiferente : Tempo_0802
 indiferente : Tempo_0902
@@ -18060,7 +18327,7 @@ indiscutível : Oficio_1402
 indispensável : Oficia_1402
 indispensável : Oficio_1402
 indispensável : Posfácio_0803
-indistinta : Abertura_0704
+indisponível : Cacos_0401
 indistinta : Oca_0303
 indistintas : Estudo_0603
 indistintas : Ocio_0807
@@ -18148,9 +18415,6 @@ inesperadas : Posfácio_0903
 inesperadas : Posfácio_1002
 inesperadas : Saudades_0701
 inesperadas : Snowball_1101
-inesperado : Abertura_1105
-inesperado : Abertura_1202
-inesperado : Abertura_1204
 inesperado : Ciuminho_0102
 inesperado : Festim_1102
 inesperado : Haikai_0202
@@ -18306,6 +18570,7 @@ informal : Sagitari=f_0303
 informal : Sagitari=m_0303
 informalmente : Conto_1203
 informar : Arerir_0101
+informação : CIA_0103
 informação : Manifesto_1702
 informações : Preciso_0303
 informe : Dolores_0303
@@ -18331,6 +18596,7 @@ inho : Lato_0802
 iniciado : Prefácil_0401
 iniciadores : Ores_0202
 iniciadores : Ores_0301
+inicial : Cacos_0201
 iniciantes : Cartaz_1102
 iniciantes : Manifesto_0901
 iniciativa : Aries=f_0101
@@ -18354,6 +18620,7 @@ iniquidades : Tempo_0803
 iniquidades : Tempo_1103
 iniquidades : Tempo_1202
 initium : Sentença_0703
+injeção : CIA_0103
 injusta : Brado_0203
 injusto : Haikai_0301
 injusto : Lato_0805
@@ -18398,6 +18665,7 @@ inovar : Arerir_0101
 inovar : Arerir_0502
 inovar : Avevida_0101
 inovar : Beaba_0502
+inovação : CIA_0103
 inovação : Finalmentes_0602
 inovação : Manifesto_1702
 inovação : Zodiacaos_1602
@@ -18491,12 +18759,11 @@ insinuante : Ogiva_0304
 insinuante : Olhares_0301
 insinuante : Olhares_0601
 insinuante : Zoia_0301
-insinuar : Abertura_0402
-insinuar : Abertura_1504
 insinuância : Meteoro_0502
 insista : Circular_0402
 insiste : Circular_0601
 insiste : Clarice_1002
+insiste : eus_0201
 insistente : Epitafiando_0701
 insistente : Mirante_0401
 insistente : Ogiva_0404
@@ -18544,6 +18811,7 @@ inspirar : Manifesto_0803
 inspirar : Tiro_0101
 inspirar-se : Beaba_0101
 inspiração : Amaré_0306
+inspiração : CIA_0103
 inspiração : Caprico=f_0802
 inspiração : Caprico=m_0802
 inspire-se : Astros_0601
@@ -18587,6 +18855,7 @@ instinto : Tiro_0303
 instintos : Destinos_0803
 instintos : Distintos_0703
 instintos : i-Mundo_0803
+instituição : Cacos_0601
 instituição : Críticas_0901
 instituição : Oficia_0704
 instituição : Oficio_0704
@@ -18603,6 +18872,7 @@ instrumentos : Reger_0402
 instrutor : Críticas_0106
 instrutor : Oficio_0103
 instrutora : Oficia_0103
+instrução : CIA_0103
 instrução : Manifesto_1702
 instruções : Beaba_0202
 instruções : Cordel_0203
@@ -18658,9 +18928,13 @@ inteiro : Dolores_1102
 inteiro : Indolor_1102
 inteiro : Ogiva_0402
 inteiro : Ser_0301
+inteiro : eus_0102
+inteiro : eus_0302
 intelecto : Gemeos=f_0302
 intelecto : Gemeos=m_0302
 intelectual : Escriba_0702
+intelectual : eus_0102
+intelectual : eus_0302
 inteligente : Aquarius=f_0103
 inteligente : Aquarius=m_0103
 inteligente : Sagitari=f_0303
@@ -18685,6 +18959,7 @@ intencidade : Perfil_0201
 intensa : Aries=f_0201
 intensa : Leao=f_0302
 intensa : Leao=m_0302
+intensidade : Cacos_0201
 intensidade : Prefácil_1403
 intensidade : Sagitari=f_0803
 intensidade : Sagitari=m_0803
@@ -18700,12 +18975,11 @@ intento : Estudo_0101
 intento : Estudo_0501
 intento : Ocio_0601
 intento : Ocio_0801
-intenção : Abertura_0301
-intenção : Abertura_1401
 intenção : Leituras_1001
 intenção : Liberta_0702
 intenção : Tiro_0202
-inter- : Prefácil_1202
+inter : Prefácil_1202
+interação : CIA_0103
 interação : Zodiacaos_0303
 interceder : Finalmentes_0301
 interceder : Zodiacaos_1303
@@ -18722,6 +18996,8 @@ interino : Oficio_0104
 interior : Astros_0601
 interior : Escriba_1102
 interior : Zodiacaos_1104
+interior : eus_0102
+interior : eus_0302
 interligados : Escriba_0402
 interminável : Escriba_0301
 interminável : Papilio_1203
@@ -18743,6 +19019,7 @@ internante : Meteoro_0602
 internauta : Prefácil_0801
 internos : Escriba_0301
 interpretar : Minuto_0502
+interpretação : Cacos_0601
 intervalos : Elogio_0401
 interventor : Críticas_0106
 interventor : Oficio_0103
@@ -18787,7 +19064,6 @@ intrometida : Portal_0801
 introvestida : Perfil_0402
 intuindo : Oficia_1301
 intuindo : Oficio_1301
-intuir : Abertura_1302
 intuir : Blablabla_0201
 intuir : Finalmentes_0502
 intuir : Nonono_0902
@@ -18804,10 +19080,13 @@ intuitivo : Peixes=m_0102
 intuitivo : Sagitari=f_0303
 intuitivo : Sagitari=m_0303
 intuitivo : Virgem=m_0201
+intuitivo : eus_0102
+intuitivo : eus_0302
 intuito : Pedidos_0401
 intuição : Amaré_0306
 intuição : Aquarius=f_0301
 intuição : Aquarius=m_0301
+intuição : CIA_0103
 intuição : Escorpio=f_0102
 intuição : Escorpio=m_0102
 intumescida : Gula_0103
@@ -18817,9 +19096,6 @@ inusitadas : Oficia_1704
 inusitadas : Oficio_1704
 inusitadas : Posfácio_0903
 inusitadas : Posfácio_1002
-inusitado : Abertura_1105
-inusitado : Abertura_1202
-inusitado : Abertura_1204
 inusitado : Aquarius=f_0103
 inusitado : Aquarius=m_0103
 inusitado : Crítico_0301
@@ -18865,6 +19141,7 @@ inventado : Prefácil_0401
 inventado : Tempus_0202
 inventados : Escriba_0301
 inventados : Festim_0403
+inventados : nós_nos_nós_0105
 inventando : Tempus_0302
 inventar : Arerir_0101
 inventar : Arerir_0502
@@ -18874,6 +19151,7 @@ inventar : Beaba_0201
 inventar : Manifesto_1301
 inventar : Pedidos_0302
 inventar : Zodiacaos_0802
+inventar-se : nós_nos_nós_0303
 inventar-te : Fugaz_0602
 inventar-te : Tempo_1702
 inventas : Escorpio=f_0201
@@ -18915,9 +19193,12 @@ inventor : Críticas_0106
 inventor : Oficio_0103
 inventor : Tempo_0201
 inventor : Victor_0101
+inventor : eus_0102
+inventor : eus_0302
 inventora : Oficia_0103
 invenção : Amaré_0306
 invenção : Blablabla_0301
+invenção : CIA_0103
 invenção : Elogio_0501
 invenção : Manifesto_1702
 invenção : Nonono_0301
@@ -18973,6 +19254,8 @@ invisível : Olhares_0703
 invisível : Tempo_0802
 invisível : Tempo_1102
 invisível : Zoia_0703
+invisível : eus_0102
+invisível : eus_0302
 invocada : Posfácio_0803
 involuntária : Fugaz_0302
 involuntária : Tempo_1102
@@ -19045,6 +19328,7 @@ irei : Portal_0301
 irmanar-me : Oficia_1302
 irmanar-me : Oficio_1302
 irmão : Fatos_1602
+irmãos : eus_0501
 ironia : Ciuminho_0106
 ironia : Epitafiando_0202
 ironia : Portal_0302
@@ -19240,11 +19524,14 @@ joga : Olhares_0302
 joga : Zoia_0302
 joga : Zoia_0802
 joga : Zoia_1302
+jogada : Cacos_0201
 jogam : Duralex_0302
 jogam : Tiro_0701
 jogar : Blablabla_0201
+jogar : Cacos_0101
 jogar : Nonono_0102
 jogar : Paroles_0102
+jogo : Cacos_0301
 jogo : Clarice_1002
 jogo : Lato_0501
 jogo : Papilio_0401
@@ -19275,6 +19562,7 @@ jornais : Lero_0401
 jornais : Lero_0403
 jornais : Solero_0401
 jornais : Tolero_0201
+jornal : Cacos_0201
 jornaleira : Destinos_0202
 jornaleira : Distintos_0202
 jornalista : Destinos_0205
@@ -19292,6 +19580,7 @@ jovial : Sagitari=f_0603
 jovial : Sagitari=m_0303
 jovial : Sagitari=m_0603
 joyce : Fatos_1605
+judicial : Cacos_0201
 jugo : Liberta_0501
 jugular : Ciuminho_0801
 jugular : Psiu_0301
@@ -19363,6 +19652,7 @@ jurada : Frases_0502
 juram : Ciuminho_0401
 juram : Tiro_0701
 juramos : Usinas_1002
+jurar : Cacos_0101
 jurem : Remedeio_0301
 jurem : Salute_0601
 juro : Aolero_0501
@@ -19372,6 +19662,7 @@ juro : Lero_0403
 juro : Solero_0501
 juro : Tolero_0301
 juro : Veio_0604
+juros : Cacos_0401
 jurubatiba : Restos_0302
 jurávamos : Usinas_1002
 justa : Dolores_0501
@@ -19394,6 +19685,7 @@ justos : Minuto_0601
 juventude : Bula_0204
 juventude : Salute_0402
 juíza : Dolores_0303
+juízo : Cacos_0401
 juízo : Ciuminho_0702
 juízo : Ciuminho_0801
 juízo : Destinos_0904
@@ -19487,6 +19779,7 @@ ladina : Oficia_0502
 ladina : Oficia_0703
 ladino : Indolor_0305
 ladino : Oficio_0502
+lado : Cacos_0501
 lado : Caprico=f_0902
 lado : Caprico=m_0902
 lado : Gemeos=f_0501
@@ -19585,7 +19878,6 @@ lapidadas : Posfácio_0201
 lapidadas : Snowball_1301
 lapidar : Circular_0102
 lapido : Veio_0601
-lapso : Abertura_0602
 lapso : Feiras_0901
 lapso : Tempo_0402
 lapsos : Duralex_0103
@@ -19643,7 +19935,7 @@ latentes : Finalmentes_0103
 latentes : Manifesto_1203
 latentes : Posfácio_0702
 latentes : Zodiacaos_1405
-lateral : Abertura_0704
+lateral : Cacos_0201
 latido : Frases_0502
 latidos : Silente_1004
 latim : Clarice_0602
@@ -19692,6 +19984,7 @@ lazer : Ocio_0101
 laçadas : Beaba_0302
 laçam-se : Prefácil_1301
 laço : Amaré_0304
+laço : Cacos_0201
 laço : Fugaz_0201
 laço : Haikai_0102
 laço : Haikai_0201
@@ -19705,6 +19998,7 @@ laço : Tempo_0801
 laços : Sn6=ball_0601
 laços : Sn8=ball_0601
 laços : Snowball_0501
+laços : nós_nos_nós_0104
 leal : Aquarius=f_0203
 leal : Aquarius=m_0203
 leal : Escorpio=f_0404
@@ -19736,6 +20030,7 @@ legá-las : Saudades_0401
 legítimo : Oficia_1002
 legível : Essa_0603
 legível : Fatos_1301
+lei : Cacos_0301
 lei : Destinos_0401
 lei : Distintos_0301
 lei : Duralex_0104
@@ -19748,9 +20043,11 @@ lei : Portal_0802
 lei : Sentença_0502
 lei : Ser_0501
 lei : Tiro_1102
+lei-de-gérson : Estudo_0703
+lei-de-gérson : Ocio_0903
 leia : Insano_0702
 leia-se : Posfácio_1901
-leia-se: : Tiro_0901
+leia-se : Tiro_0901
 leiga : Frases_0502
 leiga : Ola_0202
 leigo : Lato_0703
@@ -19785,9 +20082,7 @@ leitor : Prefácil_0801
 leitores : Manifesto_0901
 leitores : Ores_0201
 leitores : Tiro_1002
-leitura : Abertura_0406
-leitura : Abertura_1003
-leitura : Abertura_1301
+leitura : Cacos_0601
 leitura : Crítico_0701
 leitura : Prefácil_1102
 leitura : Rever_0201
@@ -19872,7 +20167,6 @@ leque : Cartaz_0601
 leque : Festim_0102
 leque : Insano_0701
 leque : Saudades_0402
-ler : Abertura_1301
 ler : Ogiva_0402
 ler : Preciso_0303
 lerdo : Lato_0802
@@ -19890,6 +20184,7 @@ letal : Tempo_1102
 letra : Aolero_0501
 letra : Atido_0702
 letra : Bolero_0401
+letra : Cacos_0301
 letra : Frases_0502
 letra : Lero_0401
 letra : Lero_0403
@@ -19931,6 +20226,7 @@ levanto : Bolero_0301
 levanto : Solero_0401
 levanto : Tolero_0201
 levar : Avevida_0101
+levar : Cacos_0101
 levar : Gula_0201
 levar : Sagitari=f_0102
 levar : Sagitari=m_0102
@@ -20086,6 +20382,7 @@ lido : Oficio_1801
 lido : Tiro_1002
 lidos : Cartaz_0103
 ligam-se : Prefácil_1301
+ligar : Cacos_0101
 ligas : Sn6=ball_1001
 ligas : Sn8=ball_1201
 ligas : Snowball_1701
@@ -20124,6 +20421,7 @@ limbo : Veio_0604
 limitado : Cartaz_1301
 limitadores : Ores_0404
 limitar-se : Preciso_0803
+limite : Cacos_0401
 limite : Ciuminho_0106
 limite : Ciuminho_0702
 limite : Ciuminho_0801
@@ -20169,13 +20467,14 @@ limpo : Usinas_0305
 limpos : MachBrait_0601
 limpos : Papilio_0601
 lindo : Atido_0203
+linguagem : Cacos_0201
 linguagem : Escriba_0301
 linguagens : Posfácio_0902
 linguista : Fatos_0803
 linguística : Ola_0202
-linha : Abertura_0602
 linha : Aolero_0501
 linha : Bolero_0401
+linha : Cacos_0401
 linha : Cromossomo_0604
 linha : Frases_0502
 linha : Fugaz_0201
@@ -20189,6 +20488,7 @@ linha : Solero_0501
 linha : Tempo_0102
 linha : Tempo_1101
 linha : Tolero_0301
+linhagem : Cacos_0201
 linhas : Aolero_0602
 linhas : Atido_0503
 linhas : Beaba_0302
@@ -20232,6 +20532,7 @@ literário : Cordel_0403
 literário : Críticas_0804
 literário : Crítico_0802
 litigante : Sentença_0302
+litoral : Cacos_0201
 litoral : Meteoro_0104
 lituânia : Reinos_0503
 litúrgico : Reinos_0203
@@ -20246,6 +20547,7 @@ livre : Aries=m_0602
 livre : Avevida_0103
 livre : Batismo_0402
 livre : Brado_0602
+livre : Cacos_0401
 livre : Ciuminho_0702
 livre : Ciuminho_0801
 livre : Clandestino_1102
@@ -20285,7 +20587,7 @@ livre : Zelo_0201
 livre : Zelo_0603
 livre : Zodiacaos_1402
 livre-se : Astros_0401
-livre-versar, : Manifesto_1103
+livre-versar : Manifesto_1103
 livremente : Gemeos=f_0202
 livremente : Gemeos=m_0202
 livres : Ciuminho_0801
@@ -20302,6 +20604,7 @@ livreto : Posfácio_1703
 livro : Aolero_0401
 livro : Batismo_0402
 livro : Bolero_0301
+livro : Cacos_0401
 livro : Escriba_1102
 livro : Fugaz_0201
 livro : Haikai_0102
@@ -20340,6 +20643,7 @@ lobista : Distintos_0205
 lobo : Vozes_0102
 loca : Feiras_0603
 loca : Feiras_0703
+local : Cacos_0201
 local : Ola_0202
 loco : Sentença_0703
 locutor : Críticas_0106
@@ -20372,9 +20676,6 @@ lojista : Destinos_0205
 lojista : Distintos_0205
 longas : Destinos_1101
 longas : Distintos_1001
-longe : Abertura_1105
-longe : Abertura_1202
-longe : Abertura_1204
 longe : Dolores_0202
 longe : Fatos_0601
 longe : Indolor_0205
@@ -20484,6 +20785,7 @@ lucros : Insano_0203
 ludíbrio : Essa_0206
 lufadas : Meteoro_0404
 lufadas : Meteoro_1203
+lugar : Cacos_0201
 lugar : Cancer=f_0301
 lugar : Cancer=m_0301
 lugar : Circular_0505
@@ -20518,6 +20820,7 @@ lustro : Veio_0601
 luta : Anjos_1103
 luta : Augusto_1103
 luta : Brado_0601
+luta : Cacos_0401
 luta : Cordel_0101
 luta : Finalmentes_0602
 luta : MachBeth_0601
@@ -20526,6 +20829,7 @@ luta : Papilio_1203
 luta : Zodiacaos_1602
 lutamos : Nós_0802
 lutaram : Nós_0202
+luto : Cacos_0401
 luva : Destinos_0502
 luva : Distintos_0402
 luxo : Becos_0701
@@ -20588,6 +20892,7 @@ lágrimas : Papilio_0601
 lágrimas : Papilio_1101
 lágrimas : Passagens_0702
 lástima : Anjos_0902
+lâmina : Cacos_0301
 lâmina : MachBrait_0601
 lâmina : Papilio_0601
 lâminas : Usinas_0603
@@ -20606,6 +20911,7 @@ língua : Anjos_0102
 língua : Aolero_0602
 língua : Augusto_1601
 língua : Bolero_0503
+língua : Cacos_0401
 língua : Ciuminho_0801
 língua : Crítico_0602
 língua : Escriba_1102
@@ -20642,6 +20948,8 @@ lírica : Ola_0202
 líricas : Cartaz_0803
 lírico : Elogio_0501
 lírico : Prefácil_0304
+lírico : eus_0102
+lírico : eus_0302
 líricos : Sn6=ball_0801
 líricos : Sn8=ball_0801
 líricos : Snowball_0701
@@ -20656,6 +20964,7 @@ lógica-rainha : Escriba_0901
 lógica-rainha : Escriba_0903
 lógico : Reinos_0201
 lógicos : Batismo_0402
+lógicos : nós_nos_nós_0107
 lúcida : Frases_0405
 lúcida : Oficia_0502
 lúcida : Oficia_0703
@@ -20679,7 +20988,6 @@ macaco : Distintos_0105
 macaco : Indolor_0301
 macarrão : Ocio_1402
 maceramos : Indolor_0501
-machina : Abertura_0202
 machina : Batismo_0101
 machina : Críticas_1201
 machina : Crítico_0103
@@ -20688,6 +20996,7 @@ machina : Fatos_0504
 machina : Fatos_1904
 machista : Destinos_0205
 machista : Distintos_0205
+machucado : Cacos_0501
 macia : Gula_0703
 macias : Tempo_0203
 macio : Paz_0101
@@ -20771,7 +21080,6 @@ maior : Dolores_0901
 maior : Indolor_0901
 maiores : Astros_0203
 maiores : Astros_0401
-mais : Abertura_0603
 mais : Anjos_1302
 mais : Aolero_1001
 mais : Astros_0203
@@ -20805,6 +21113,7 @@ mais : Epitafiando_0202
 mais : Epitafiando_0702
 mais : Escriba_1102
 mais : Essa_0102
+mais : Evidências_0301
 mais : Feiras_0102
 mais : Feiras_0503
 mais : Feiras_1003
@@ -20897,11 +21206,11 @@ mais : Victor_1201
 mais : Vozes_0301
 mais : Zelo_0201
 mais : Zelo_0603
-mais : Zero_0301
 mais : Zodiacaos_1602
 mais : Zoia_0102
 mais : Zoia_1601
 mais : Zoia_1701
+mais : eus_0501
 maislodias : Essa_0302
 maisnino : Essa_0302
 majestade : Leao=f_0602
@@ -21002,6 +21311,7 @@ maleável : Peixes=m_0701
 maleável : Tempo_0802
 maleável : Tempo_1102
 malfeitores : Ores_0404
+malha : Cacos_0201
 malho : Aolero_0501
 malho : Bolero_0401
 malho : Lero_0401
@@ -21075,10 +21385,12 @@ mandíbula : Augusto_0402
 maneira : Aquarius=f_0202
 maneira : Aquarius=m_0202
 maneira : Astros_0401
+maneira : Cacos_0201
 maneira : Remedeio_0301
 maneira : Sagitari=f_0101
 maneira : Sagitari=m_0101
 maneira : Salute_0601
+manga : Cacos_0301
 manga : Gula_0702
 mangas : Nós_0301
 mangas : Nós_0901
@@ -21153,7 +21465,6 @@ mantra : Atido_0403
 mantra : Liberta_0901
 mantras : Papilio_1203
 mantras : Saudades_0701
-mantém : Abertura_0806
 mantém : Gemeos=f_0801
 mantém : Gemeos=m_0801
 mantém : Inhos_0501
@@ -21164,7 +21475,7 @@ manufaturas : Usinas_0102
 manumisso : Augusto_1701
 manumissos : Anjos_1701
 manutius : Fatos_1102
-mapa : Abertura_1303
+mapa : Cacos_0201
 mapa : Conto_0302
 mapa : Fugaz_0201
 mapa : Haikai_0102
@@ -21184,7 +21495,7 @@ maquinista : Destinos_0205
 maquinista : Distintos_0205
 maquinista : Indolor_0305
 maquino : Atido_0502
-mar : Conto_0801
+mar : Conto_1101
 mar : Escriba_0301
 mar : Meteoro_0603
 mar : Ocio_1301
@@ -21199,6 +21510,7 @@ maratonista : Destinos_0205
 maratonista : Distintos_0205
 maravilhas : Veio_1003
 maravilhosas : Astros_0501
+marca : Cacos_0201
 marca : Insano_0701
 marca : Preciso_0201
 marca : Touro=f_0601
@@ -21207,6 +21519,7 @@ marcadas : Destinos_0502
 marcadas : Distintos_0402
 marcante : Aries=f_0101
 marcante : Aries=m_0101
+marcar : Cacos_0101
 marcas : Destinos_0502
 marcas : Distintos_0402
 marcas : Fugaz_0202
@@ -21217,11 +21530,13 @@ marcas : Libra=m_0401
 marcas : Tempo_0103
 marcas : Tempo_0803
 marcas : Tempo_1103
+marcha : Cacos_0201
 marcha : Dolores_0901
 marcha : Indolor_0901
 marchar : Conto_0201
 marchar : Haikai_0301
 marchar : Tempo_1602
+marco : Cacos_0201
 marco : Fugaz_0201
 marco : Haikai_0102
 marco : Haikai_0201
@@ -21255,10 +21570,11 @@ maria : Fatos_1605
 marinheira : Destinos_0202
 marinheira : Distintos_0202
 marinheiro : Prefácil_0801
+marinheiro : nós_nos_nós_0109
 marionete : Essa_0204
 marionetes : Brado_0103
 marionetes : Ciuminho_0801
-marionetes : Conto_0801
+marionetes : Conto_1101
 marionetes : Psiu_0301
 marionetes : Snowball_1201
 marionetes : Usinas_0102
@@ -21306,8 +21622,6 @@ marés : Haikai_0203
 marés : Tempo_0103
 marés : Tempo_0803
 marés : Tempo_1103
-mas : Abertura_0805
-mas : Abertura_1503
 mas : Aolero_0102
 mas : Augusto_0601
 mas : Demo_0401
@@ -21337,6 +21651,7 @@ mascarar : Circular_0503
 mascate : Indolor_0301
 masoquista : Destinos_0205
 masoquista : Distintos_0205
+massa : Cacos_0201
 massa : Meteoro_0603
 massagem : Destinos_0904
 massagem : Distintos_0804
@@ -21360,6 +21675,7 @@ matche : Perfil_0701
 mate : Insano_0702
 matei : Silente_0501
 materiais : Zodiacaos_0602
+material : Cacos_0201
 materialista : Destinos_0205
 materialista : Distintos_0205
 materializados : Escriba_0402
@@ -21372,12 +21688,14 @@ mathaeus : Fatos_0902
 matina : Usinas_0701
 matinais : Silente_0902
 matizes : Manifesto_1203
+matriz : Cacos_0401
 maturidade : Zodiacaos_1104
 matuta : Avevida_0302
 matutam : Palyndro_1101
 matutino : Essa_0206
 matuto : Indolor_0303
 matéria : Augusto_1103
+matéria : Cacos_0201
 matéria : Escriba_0901
 matéria : Finalmentes_0602
 matéria : Fugaz_0201
@@ -21432,6 +21750,7 @@ medianos : Lero_0302
 medias : Perfil_0201
 medicina : Remedeio_0301
 medicina : Salute_0601
+medida : Cacos_0401
 medida : Ciuminho_0702
 medida : Ciuminho_0801
 medida : Psiu_0301
@@ -21440,6 +21759,7 @@ medida : Touro=f_0501
 medida : Touro=m_0501
 medida : Zelo_0201
 medida : Zelo_0603
+medidas : Cacos_0401
 medidas : Ciuminho_0702
 medidas : Ciuminho_0801
 medidas : Haikai_0301
@@ -21459,6 +21779,7 @@ medir : Blablabla_0201
 medir : Nonono_0902
 medir : Paroles_0502
 mediterrâneo : Meteoro_0603
+medição : Cacos_0601
 mediúnicas : Estudo_0603
 mediúnicos : Escriba_0402
 medo : Astros_0401
@@ -21515,11 +21836,12 @@ medusa : Anjos_0606
 medusa : Críticas_1404
 medusa : Dolores_0303
 medíocres : i-Mundo_0502
+meia : Evidências_0301
 meia : Feiras_1003
-meia- : Zero_0301
 meias : Avevida_0303
 meio : Aolero_0302
 meio : Blablabla_0301
+meio : Cacos_0301
 meio : Ciuminho_0801
 meio : Clandestino_0901
 meio : Conto_1203
@@ -21606,6 +21928,7 @@ melhores : Virgem=f_0101
 melhores : Virgem=m_0101
 melindres : Avevida_0303
 melindres : Duralex_0103
+melodia : Cacos_0401
 melodia : Essa_0604
 melodia : Manusgrite_0902
 melodia : Manusgrite_1102
@@ -21629,6 +21952,8 @@ memorial : Oficio_0701
 memorial : Tempo_0102
 memorial : Tempo_0401
 memorial : Tempo_0801
+memorial : eus_0102
+memorial : eus_0302
 memoriosa : Oficia_0502
 memoriosa : Oficia_0703
 memoriosa : Oficio_0703
@@ -21711,6 +22036,7 @@ mentias : Oca_0101
 mentias : Oco_0101
 mentira : Becos_1104
 mentira : Brado_0202
+mentira : Cacos_0401
 mentira : Ciuminho_0501
 mentira : Ciuminho_0801
 mentira : Conto_0302
@@ -21749,6 +22075,7 @@ mera : Nonono_1101
 mera : Paroles_0301
 mera : Paroles_0701
 mera : Usinas_1003
+mera : nós_nos_nós_0204
 meramente : Manifesto_1701
 meras : Brado_0102
 meras : Bula_0101
@@ -21760,6 +22087,7 @@ meras : Salute_0301
 meras : Veio_1003
 merca : Feiras_0603
 merca : Feiras_0703
+mercado : Cacos_0501
 mercadológico : Reinos_0201
 mercúrio : Zodiacaos_0101
 merece : Enfrente_0303
@@ -21779,7 +22107,6 @@ mereço : Atido_0102
 mereço : Atido_0202
 mergulha : Psiu_0501
 mergulhado : Tempus_0102
-mergulhar : Abertura_1504
 mergulhar : Beaba_0101
 mergulhar : Crítico_0303
 mergulhar : Prefácil_0302
@@ -21914,6 +22241,7 @@ mesmo : Veio_0404
 mesmo : Zelo_0201
 mesmo : Zelo_0601
 mesmo : Zodiacaos_1301
+mesmo : nós_nos_nós_0303
 mesmos : Festim_1102
 mesmos : Sos_0301
 mesmória : Essa_0302
@@ -21949,6 +22277,7 @@ mestre : Zelo_0501
 mestres : Festim_0402
 meta : Estudo_0101
 meta : Estudo_0501
+meta : Evidências_0301
 meta : Fatos_1802
 meta : Fugaz_0202
 meta : Haikai_0103
@@ -21960,8 +22289,8 @@ meta : Salute_0601
 meta : Tempo_0103
 meta : Tempo_0803
 meta : Tempo_1103
-meta- : Zero_0301
 meta-mentira : Bula_0202
+metade : Cacos_0301
 metade : Elogio_0501
 metade : Liberta_1201
 metade : Ser_0301
@@ -22083,6 +22412,10 @@ meu : Tolero_1301
 meu : Veio_0604
 meu : Veio_0804
 meu : Zoia_0201
+meu : eus_0101
+meu : eus_0301
+meu : eus_0401
+meu : nós_nos_nós_0301
 meus : Aolero_0401
 meus : Aolero_0501
 meus : Aolero_0602
@@ -22241,6 +22574,7 @@ mina : Veio_0403
 mina : Zelo_0201
 minera : Veio_0403
 minguei : Silente_0501
+minh : Augusto_0101
 minha : Aolero_0401
 minha : Bolero_0301
 minha : Clandestino_0601
@@ -22275,7 +22609,7 @@ minha : Tolero_0201
 minha : Veio_0401
 minha : Veio_0804
 minha : Zoia_0201
-minhalma : Augusto_0101
+minha : eus_0501
 minhas : Feiras_1003
 minhas : MachBeth_0202
 minhas : Ocio_1201
@@ -22521,6 +22855,7 @@ modelagem : Cartaz_0401
 modelagem : Cartaz_0501
 modelista : Destinos_0205
 modelista : Distintos_0205
+modelo : Cacos_0301
 modelo : Fatos_1303
 moderada : Meteoro_0802
 moderada : Meteoro_0902
@@ -22555,11 +22890,11 @@ modesto : Caprico=m_0202
 modesto : Caprico=m_0502
 modesto : Posfácio_1301
 modificam-se : Cartaz_0101
-modo : Abertura_1505
 modo : Aquarius=f_0102
 modo : Aquarius=m_0102
 modo : Aries=f_0401
 modo : Aries=m_0401
+modo : Cacos_0301
 modo : Cancer=f_0102
 modo : Cancer=m_0102
 modo : Finalmentes_0302
@@ -22603,6 +22938,7 @@ moldar : Fatos_1803
 moldar : Minuto_0502
 moldar : Nonono_0102
 moldar : Paroles_0102
+molde : Cacos_0301
 molde : Fugaz_0201
 molde : Haikai_0102
 molde : Haikai_0201
@@ -22613,6 +22949,7 @@ moldo : Dolores_0201
 moldo : Indolor_0201
 moldo-me : Dolores_1101
 moldo-me : Indolor_1101
+moldura : Cacos_0401
 moldura : Saudades_0601
 molduras : Lato_1103
 mole : Blablabla_0301
@@ -22623,10 +22960,10 @@ mole : Paroles_0301
 mole : Paroles_0701
 mole : Reinos_1302
 moleque : Estudo_0503
-molha : Ogiva_0402
 molhada : Gula_0103
 molhada : Gula_0703
 molhados : Insano_0101
+molho : Cacos_0301
 molusco : Indolor_0303
 molécula : Augusto_0704
 momento : Aolero_0102
@@ -22717,7 +23054,7 @@ mor : Críticas_0106
 mor : Oficia_0103
 mor : Oficio_0103
 mora : Perfil_0201
-morada : Conto_0801
+morada : Conto_1101
 morada : Fugaz_0201
 morada : Fugaz_0301
 morada : Haikai_0102
@@ -22739,8 +23076,8 @@ mordaças : Avevida_0303
 mordaças : Indolor_0901
 mordaças : Preciso_0201
 mordente : Clarice_0804
+mordê-lo : Anjos_0404
 mordê-lo : Augusto_1607
-mordê-lo. : Anjos_0404
 morfemas : Cartaz_0303
 morfologista : Destinos_0205
 morfologista : Distintos_0205
@@ -22888,6 +23225,7 @@ mote : Sn8=ball_1501
 mote : Snowball_1801
 motivar : Arerir_0101
 motivar : Arerir_0502
+motivo : Cacos_0401
 motivo : Ciuminho_0501
 motivo : Epitafiando_0503
 motivo : Leao=f_0601
@@ -23041,6 +23379,7 @@ muita : Tiro_0301
 muitas : Meteoro_0204
 muito : Aries=f_0301
 muito : Aries=m_0301
+muito : Cacos_0401
 muito : Carroussel_0301
 muito : Insano_0101
 muito : Leituras_1301
@@ -23051,8 +23390,9 @@ muito : Remedeio_0301
 muito : Salute_0601
 muitos : Batismo_0402
 mulheres : MachBeth_1003
-multi-pensar, : Manifesto_1103
+multi-pensar : Manifesto_1103
 multicores : Ores_0102
+multidão : Cacos_0601
 multidão : Posfácio_0401
 multidão : Restos_0601
 multidão : Ser_0701
@@ -23074,17 +23414,17 @@ mundanas : i-Mundo_0402
 mundano : Becos_1004
 mundano : Cordel_0104
 mundano : Tempo_0303
-mundi-pensar, : Manifesto_1103
+mundi-pensar : Manifesto_1103
 mundinho : Ciuminho_0901
 mundinho : Cromossomo_0101
 mundinho : Preciso_0803
 mundinho : Psiu_0401
 mundinho : Zelo_0301
-mundo : Abertura_0302
 mundo : Aquarius=f_0802
 mundo : Aquarius=m_0802
 mundo : Batismo_0402
 mundo : Becos_1104
+mundo : Cacos_0401
 mundo : Ciuminho_0801
 mundo : Ciuminho_0901
 mundo : Conto_0902
@@ -23167,7 +23507,7 @@ murro : Reinos_1302
 murro : Rito_0501
 musa : Becos_1103
 musa : Dolores_0303
-musas : Conto_0801
+musas : Conto_1101
 musas : Sn6=ball_1001
 musas : Sn8=ball_1201
 musas : Snowball_1701
@@ -23178,6 +23518,7 @@ musculação : Posfácio_1303
 museu : Fatos_0403
 musica : Perfil_0303
 musicais : Tempo_0702
+musical : Cacos_0201
 musical : Frases_0502
 musicas : Perfil_0303
 musicista : Destinos_0205
@@ -23191,6 +23532,8 @@ mutante : Indolor_1003
 mutante : Meteoro_0802
 mutante : Meteoro_0902
 mutante : Tempo_0303
+mutante : eus_0102
+mutante : eus_0302
 mutantes : Becos_0801
 mutantes : Manifesto_1203
 mutantes : Saudades_0703
@@ -23321,6 +23664,8 @@ mística : Fugaz_0302
 mística : Tempo_1102
 místico : Haikai_0202
 místico : Tempo_0802
+místico : eus_0102
+místico : eus_0302
 mítica : Reinos_0404
 mórbido : Ciuminho_0104
 mórbido : Psiu_0105
@@ -23339,7 +23684,6 @@ mútua : Leao=f_0402
 mútua : Leao=m_0402
 mútuos : i-Mundo_0203
 nacionais : Cartaz_0701
-nada : Abertura_0901
 nada : Aolero_0102
 nada : Becos_1104
 nada : Ciuminho_0404
@@ -23395,6 +23739,7 @@ nada : Tiro_0701
 nada : Tiro_0901
 nada : Veio_0701
 nada : Zelo_0201
+nada : nós_nos_nós_0204
 nadando : Blablabla_0301
 nadando : Nonono_0301
 nadando : Nonono_0701
@@ -23414,13 +23759,6 @@ nadas : Sn6=ball_1001
 nadas : Sn8=ball_1201
 nadas : Snowball_1701
 naftalina : Preciso_0204
-nalgum : Haikai_0301
-nalgum : Prefácil_0804
-nalgum : Saudades_0201
-nalgum : Sonoro_0301
-nalgum : Tempo_1602
-nalgumas : Ciuminho_0501
-nalguns : Ciuminho_0501
 namoradeira : Destinos_0202
 namoradeira : Distintos_0202
 namoro : Silente_0902
@@ -23447,16 +23785,12 @@ narcisista : Distintos_0205
 narra : Avevida_0203
 narrada : Cordel_0401
 narradores : Ores_0201
-narrativa : Abertura_1003
-narrativa : Ana_0103
 narrativa : Astros_0601
-narrativa : Una_0103
+narrativa : Cacos_0401
 narrativas : Críticas_0804
 narrativas : Manifesto_1004
 narrei : Joker_0101
 narro : Lato_0501
-nas : Abertura_0404
-nas : Abertura_0704
 nas : Aolero_0501
 nas : Aolero_0602
 nas : Aolero_0801
@@ -23518,6 +23852,7 @@ nas : Touro=m_0203
 nas : Touro=m_0402
 nas : Veio_0604
 nas : Zodiacaos_0601
+nas : nós_nos_nós_0101
 nasce : Ciuminho_0403
 nasce : Silente_1103
 nasce : Sopros_0502
@@ -23611,8 +23946,6 @@ navegante : Indolor_0303
 navegar : Leituras_0302
 navegar : Preciso_1401
 navegar : Prefácil_0601
-navegação : Ana_0103
-navegação : Una_0103
 navego : Seguro_0701
 navio : Clandestino_0101
 navio : MachBeth_1101
@@ -23724,7 +24057,9 @@ nem : Veio_0201
 nem : Zelo_0201
 nem : Zoia_0803
 nem : Zoia_1303
-nem-pensar, : Manifesto_1103
+nem : eus_0501
+nem : nós_nos_nós_0201
+nem-pensar : Manifesto_1103
 nenhum : Blablabla_0301
 nenhum : Epitafiando_0303
 nenhum : Feiras_0901
@@ -23750,9 +24085,7 @@ neo-pensar : Manifesto_1103
 neo-português : Críticas_0204
 neo-português : Oficia_0203
 neofóbico : Estudo_0503
-neologia : Ana_0103
 neologia : Manifesto_1706
-neologia : Una_0103
 neologismos : Cartaz_0303
 neologismos : Cordel_0403
 neologista : Destinos_0205
@@ -23803,9 +24136,9 @@ netuno : Zodiacaos_0101
 neurapia : Essa_0302
 neurocientista : Destinos_0205
 neurocientista : Distintos_0205
-neurociência : Zero_0102
-neurociência : Zero_0104
-neurociência : Zero_0302
+neurociência : Evidências_0102
+neurociência : Evidências_0104
+neurociência : Evidências_0302
 neurologista : Destinos_0205
 neurologista : Distintos_0205
 neuronial : Anjos_0304
@@ -23816,6 +24149,7 @@ neurônios : Distintos_0804
 neurônios : Dolores_0901
 neurônios : Indolor_0901
 neurônios : Usinas_0301
+neutro : Cacos_0301
 neutro : Preciso_1401
 neutros : Usinas_0403
 nevascas : Meteoro_0404
@@ -23858,7 +24192,7 @@ ninfa : Dolores_0305
 ninfomaníaca : Gula_0703
 ninfos : Papilio_1101
 ninguém : Blablabla_0101
-ninguém : Conto_0801
+ninguém : Conto_1101
 ninguém : Dolores_0303
 ninguém : Epitafiando_0502
 ninguém : Feiras_1101
@@ -23874,6 +24208,7 @@ ninguém : Paroles_0101
 ninguém : Portal_0502
 ninguém : Saudades_0201
 ninguém : Tempo_1602
+ninguém : eus_0501
 ninho : Aolero_0602
 ninho : Atido_0503
 ninho : Bolero_0503
@@ -23975,7 +24310,7 @@ noites : Psiu_0301
 noites : Sos_0201
 noites : Zelo_0201
 nome : Blablabla_0301
-nome : Conto_0801
+nome : Conto_1101
 nome : Crítico_0206
 nome : MachBrait_0701
 nome : Nonono_0301
@@ -23996,7 +24331,6 @@ nomeado : Oficio_0502
 nomes : Sn6=ball_0601
 nomes : Sn8=ball_0601
 nomes : Snowball_0501
-nomeuna : Abertura_0102
 non : Sentença_0703
 nonagenária : Dolores_0301
 norma : Manifesto_0203
@@ -24016,8 +24350,6 @@ normal : Tolero_0102
 normal : Zelo_0201
 normal : Zelo_0603
 normal : Zodiacaos_1602
-normalização : Ana_0103
-normalização : Una_0103
 normas : Cordel_0203
 normas : Críticas_0204
 normas : Críticas_0306
@@ -24168,10 +24500,10 @@ nostalgia : Essa_0604
 nostalgia : Feiras_0901
 nostredame : Fatos_1102
 nostálgico : Reinos_0201
+nota : Cacos_0301
 nota : Manifesto_1704
 notabilíssima : Oficia_0101
 notabilíssimo : Oficio_0101
-notar : Abertura_1302
 notariada : Críticas_2202
 notas : Sn6=ball_1001
 notas : Sn8=ball_1201
@@ -24179,8 +24511,6 @@ notas : Snowball_1701
 notas : Tempo_0702
 noticia : Feiras_0704
 notificada : Críticas_2202
-notificação : Ana_0103
-notificação : Una_0103
 noto : Lato_0501
 noturno : MachBrait_1101
 noturno : Papilio_1201
@@ -24211,13 +24541,11 @@ notícias : Tolero_0401
 notícias : i-Mundo_0203
 notívaga : Frases_0405
 notívago : Cuores_0102
-noutro : Epitafiando_0202
-noutro : Portal_0302
-noutros : Leituras_0802
 nova : Becos_1104
 nova : Cartaz_1301
 nova : Críticas_0204
 nova : Críticas_0306
+nova : Evidências_0301
 nova : Indolor_1102
 nova : Manifesto_0303
 nova : Manusgrite_0502
@@ -24225,7 +24553,6 @@ nova : Manusgrito_0502
 nova : Oficia_0203
 nova : Oficio_0203
 nova : Psiu_0501
-nova : Zero_0301
 novanave : Essa_0302
 novas : Atido_0503
 novas : Críticas_0204
@@ -24273,7 +24600,6 @@ novidades : Tempo_1103
 novidades : Tempo_1202
 noviça : Gula_0103
 noviça : Gula_0703
-novo : Abertura_0502
 novo : Aolero_0501
 novo : Batismo_0302
 novo : Beaba_0503
@@ -24345,6 +24671,7 @@ nuança : Posfácio_0803
 nuanças : Manifesto_1203
 nuanças : Saudades_0701
 nuas : Saudades_0402
+nublado : Cacos_0501
 nublado : Meteoro_0103
 nudes : Perfil_0602
 nudez : MachBeth_1101
@@ -24483,7 +24810,6 @@ nuvem : Papilio_0601
 nuvem : Ser_0901
 nuvem : Victor_0301
 nuvem : i-Mundo_0201
-nuvens : Abertura_0704
 nuvens : Clandestino_1102
 nuvens : Destinos_0502
 nuvens : Distintos_0402
@@ -24494,8 +24820,6 @@ nuvens : Victor_1102
 náufraga : MachBeth_1301
 náufrago : Escriba_1201
 náufrago : Indolor_0301
-não : Abertura_0201
-não : Abertura_1401
 não : Amaré_0701
 não : Anjos_1301
 não : Anjos_1705
@@ -24521,6 +24845,7 @@ não : Bolero_0401
 não : Bolero_0503
 não : Brado_0301
 não : Brado_0602
+não : Cacos_0601
 não : Cadência_0301
 não : Carroussel_0101
 não : Carroussel_0203
@@ -24558,6 +24883,7 @@ não : Escriba_0301
 não : Escriba_0402
 não : Escriba_0803
 não : Escriba_1102
+não : Evidências_0201
 não : Feiras_0502
 não : Feiras_0602
 não : Feiras_0701
@@ -24706,11 +25032,15 @@ não : Zelo_0201
 não : Zelo_0501
 não : Zelo_0601
 não : Zelo_0603
-não : Zero_0201
 não : Zodiacaos_1301
 não : Zoia_0803
 não : Zoia_1303
 não : Zoia_1701
+não : eus_0201
+não : eus_0402
+não : eus_0501
+não : nós_nos_nós_0204
+não : nós_nos_nós_0302
 não-fazer-nada : Clandestino_1001
 não-fazer-nada : Victor_1001
 não-fazer-nada : Victor_1102
@@ -24730,6 +25060,7 @@ névoa : MachBrait_0601
 névoa : Papilio_0601
 níveis : Remedeio_0202
 níveis : Salute_0502
+nível : Cacos_0401
 nódoa : Indolor_0602
 nós : Aolero_0501
 nós : Bolero_0401
@@ -24747,8 +25078,12 @@ nós : Solero_0802
 nós : Tolero_0301
 nós : Tolero_0802
 nós : Tolero_1601
+nós : nós_nos_nós_0101
+nós : nós_nos_nós_0104
+nós : nós_nos_nós_0204
 nômade : Escriba_0203
 nômade : Escriba_1201
+número : Cacos_0401
 números : Duralex_0304
 obedecem : Manifesto_0102
 obedecer : Cordel_0202
@@ -24769,6 +25104,7 @@ objetivas : Beaba_0403
 objetivas : Zodiacaos_0602
 objetividade : Carroussel_0201
 objetividade : Carroussel_0403
+objetivo : Cacos_0401
 objetivo : Caprico=m_0202
 objetivo : Caprico=m_0502
 objetivo : Oficia_0401
@@ -24781,12 +25117,14 @@ objetivos : Caprico=f_0902
 objetivos : Caprico=m_0902
 objetivos : Leao=f_0602
 objetivos : Leao=m_0602
+objeto : Cacos_0301
 objetos : Escriba_0803
 obligatio : Sentença_0703
 oblitério : Críticas_0101
 oblitério : Fatos_0902
 oblíqua : Festim_0902
 obra : Avevida_0302
+obra : Cacos_0301
 obra : Fatos_1101
 obra : Fugaz_0201
 obra : Fugaz_0301
@@ -24866,7 +25204,6 @@ obtuso : Ciuminho_0106
 obtuso : Essa_0206
 obtuso : Psiu_0107
 obviamente : Fatos_1005
-obvio : Abertura_0302
 oca : Brado_0203
 oca : Carroussel_0201
 oca : Carroussel_0403
@@ -24885,6 +25222,8 @@ ocasional : Solero_0302
 ocasional : Tempo_0802
 ocasional : Tempo_1102
 ocasional : Tolero_0102
+ocasional : eus_0102
+ocasional : eus_0302
 ocasionalmente : Prefácil_0804
 ocaso : Epitafiando_0202
 ocaso : Fugaz_0201
@@ -24939,7 +25278,6 @@ octogenária : Oficia_0703
 octogenário : Oficio_0502
 oculista : Destinos_0205
 oculista : Distintos_0205
-oculta : Abertura_0702
 oculta : Rever_0302
 oculta-se : Mirante_0402
 oculta-se : Ogiva_0601
@@ -24997,6 +25335,7 @@ oferendas : Saudades_0703
 ofereça-me : Tempo_1301
 ofereçam : Remedeio_0301
 oferta : Bula_0101
+oferta : Cacos_0201
 oferta : Cartaz_0601
 oferta : Cartaz_1301
 oferta : Salute_0301
@@ -25021,6 +25360,7 @@ ofuscante : Ogiva_0304
 ofuscante : Olhares_0301
 ofuscante : Olhares_0601
 ofuscante : Zoia_0301
+ofício : Cacos_0401
 ofício : Epitafiando_0202
 ofício : Feiras_0901
 ofício : Leituras_0104
@@ -25046,6 +25386,7 @@ olha-te : Anjos_1201
 olha-te : Augusto_1201
 olhar : Aolero_1001
 olhar : Brado_0601
+olhar : Cacos_0101
 olhar : Carroussel_0203
 olhar : Clarice_0201
 olhar : Enfrente_0202
@@ -25072,6 +25413,7 @@ olhares : Rito_0103
 olhares : Veio_0404
 olhares : Zoia_1701
 olhe : Sos_0601
+olho : Cacos_0301
 olho : Ciuminho_0501
 olho : Clarice_0402
 olho : Dolores_0501
@@ -25124,9 +25466,9 @@ omissos : Sn6=ball_0801
 omissos : Sn8=ball_1001
 omissos : Snowball_1501
 omissos : Tempo_1202
-omnisciência : Zero_0102
-omnisciência : Zero_0104
-omnisciência : Zero_0302
+omnisciência : Evidências_0102
+omnisciência : Evidências_0104
+omnisciência : Evidências_0302
 onanista : Destinos_0205
 onanista : Distintos_0205
 onda : Ola_0201
@@ -25181,6 +25523,7 @@ onde : Touro=m_0601
 onde : Usinas_0901
 onde : Virgem=f_0601
 onde : Virgem=m_0601
+onde : eus_0501
 onde : i-Mundo_0701
 onde : i-Mundo_0801
 onesta : Perfil_0103
@@ -25194,9 +25537,9 @@ onipotentes : i-Mundo_0502
 onipotência : Meteoro_0402
 onipresente : Oficia_1402
 onipresente : Oficio_1402
-onisciência : Zero_0102
-onisciência : Zero_0104
-onisciência : Zero_0302
+onisciência : Evidências_0102
+onisciência : Evidências_0104
+onisciência : Evidências_0302
 onomatopeias : Becos_0501
 ontem : Saudades_0601
 ontem : Tempus_0501
@@ -25208,9 +25551,12 @@ opaca : Papilio_1101
 opaca : Papilio_1601
 opaco : Críticas_1602
 opacos : Veio_1003
+opcional : eus_0102
+opcional : eus_0302
 opera : Astros_0801
 operadora : Destinos_0202
 operadora : Distintos_0202
+operação : Cacos_0601
 operária : Augusto_0604
 operária : Augusto_0606
 operária : Destinos_0202
@@ -25221,6 +25567,7 @@ operário : Tempo_0102
 operário : Tempo_0401
 operário : Tempo_0801
 opinefrina : Bula_0202
+opinião : Cacos_0601
 opinião : Escorpio=f_0401
 opinião : Escorpio=m_0401
 opinião : Ola_0201
@@ -25249,6 +25596,7 @@ oportunista : Distintos_0205
 oposicionista : Demo_0202
 opositores : Ores_0302
 oposição : Zodiacaos_0303
+oposto : Cacos_0301
 oposto : Ciuminho_0501
 oposto : Lato_0202
 oposto : Zodiacaos_0402
@@ -25282,6 +25630,7 @@ orar : Epitafiando_0303
 orar : Palyndro_0101
 orar : Portal_0401
 oratórias : i-Mundo_0401
+oração : Cacos_0601
 oração : Sonoro_0301
 orbita : Mirante_0302
 orbita : Olhares_0702
@@ -25317,10 +25666,11 @@ ordens : Finalmentes_0102
 ordens : Passagens_0402
 ordens : Zodiacaos_1203
 ordens : Zodiacaos_1204
+ordinal : Cacos_0201
 ordinária : Gula_0703
 orelha : Rever_0201
 orelhas : Papilio_1203
-organiza : Abertura_0405
+organismo : Cacos_0401
 organizada : Virgem=f_0201
 organizado : Virgem=m_0201
 orgasmo : Epitafiando_0202
@@ -25333,6 +25683,7 @@ orgulho : Brado_0601
 orgulhosamente : Batismo_0201
 orgânica : Augusto_0304
 orientações : Manifesto_0201
+origem : Cacos_0201
 origem : Ciuminho_0801
 origem : Críticas_1001
 origem : Festim_0701
@@ -25363,7 +25714,7 @@ oriundas : Oficio_1101
 orna : Avevida_0302
 orna : Frases_0502
 ornam : Veio_1003
-ornamento : Abertura_0903
+ornamento : Cacos_0301
 ornamento : Cartaz_0301
 ornamento : Cartaz_0401
 ornamento : Cartaz_0501
@@ -25467,7 +25818,6 @@ outentica : Perfil_0201
 outorgado : Sentença_0302
 outorgante : Sentença_0302
 outorgar : Arerir_0101
-outra : Abertura_0502
 outra : Anjos_0203
 outra : Aolero_0602
 outra : Atido_0503
@@ -25481,6 +25831,7 @@ outra : Dolores_0201
 outra : Epitafiando_0202
 outra : Epitafiando_0303
 outra : Escriba_1102
+outra : Evidências_0301
 outra : Festim_0902
 outra : Leituras_1103
 outra : Lero_0401
@@ -25502,7 +25853,7 @@ outra : Silente_1103
 outra : Solero_0601
 outra : Tiro_0301
 outra : Tolero_0401
-outra : Zero_0301
+outras : Epitafiando_0202
 outras : Feiras_1003
 outras : Finalmentes_0602
 outras : Lato_1103
@@ -25510,6 +25861,7 @@ outras : Manusgrite_0502
 outras : Manusgrito_0502
 outras : Passagens_0402
 outras : Perfil_0201
+outras : Portal_0302
 outras : Posfácio_1001
 outras : Rito_0202
 outras : Zodiacaos_1602
@@ -25523,6 +25875,7 @@ outro : Batismo_0402
 outro : Cancer=f_0701
 outro : Cancer=m_0701
 outro : Dolores_0201
+outro : Duralex_0306
 outro : Enfrente_0301
 outro : Enfrente_0501
 outro : Epitafiando_0202
@@ -25572,6 +25925,7 @@ outros : Distintos_1001
 outros : Fugaz_0202
 outros : Haikai_0103
 outros : Haikai_0203
+outros : Leituras_0802
 outros : Prefácil_0903
 outros : Psiu_0301
 outros : Rito_0102
@@ -25698,6 +26052,7 @@ padeço : Dolores_0901
 padeço : Indolor_0901
 padeço : Remedeio_0101
 padeço : Salute_0101
+padrão : Cacos_0601
 padrão : Remedeio_0301
 padrão : Salute_0601
 padrões : Críticas_0703
@@ -25747,12 +26102,10 @@ pairam : Snowball_0601
 pairam : Sonoro_0101
 pairando : Carroussel_0203
 pairando : Usinas_0605
-pairar : Abertura_1302
 pairas : Haikai_0301
 pairas : Tempo_1602
 pairem : Saudades_0601
 pais-dos-burros : Manifesto_0902
-paisagem : Abertura_1303
 paisagem : Becos_1103
 paisagem : Conto_1301
 paisagem : Dolores_0301
@@ -25795,8 +26148,8 @@ paixões : Tempo_1103
 palacete : Essa_0204
 palafita : Bula_0202
 palafita : Salute_0401
-palavra : Abertura_0604
 palavra : Atido_0702
+palavra : Cacos_0201
 palavra : Críticas_0204
 palavra : Críticas_0306
 palavra : Gemeos=f_0302
@@ -25944,6 +26297,7 @@ papagaios : Silente_0902
 papagaios : Sonoro_0102
 papai : Cromossomo_0202
 papeis : Tiro_1002
+papel : Cacos_0301
 papel : Cordel_0403
 papel : Dolores_1102
 papel : Haikai_0301
@@ -25974,13 +26328,6 @@ par : Paroles_0701
 par : Pessoa_0503
 par : Portal_0503
 par : Tempo_0902
-para : Abertura_0301
-para : Abertura_0401
-para : Abertura_1104
-para : Abertura_1201
-para : Abertura_1203
-para : Abertura_1401
-para : Abertura_1503
 para : Aolero_0102
 para : Aquarius=f_0802
 para : Aquarius=m_0802
@@ -25993,6 +26340,7 @@ para : Avevida_0201
 para : Batismo_0402
 para : Beaba_0501
 para : Blablabla_0301
+para : Cacos_0102
 para : Cancer=f_0501
 para : Cancer=m_0501
 para : Caprico=f_0803
@@ -26060,6 +26408,8 @@ para : Touro=f_0401
 para : Touro=m_0401
 para : Zodiacaos_0501
 para : Zodiacaos_0801
+para : nós_nos_nós_0101
+parada : Cacos_0201
 parada : MachBrait_0601
 parada : Papilio_0601
 paradigmas : Festim_0801
@@ -26081,6 +26431,8 @@ paralelo : Haikai_0102
 paralelo : Prefácil_0304
 paralelo : Tempo_0102
 paralelo : Tempo_0801
+paralelo : eus_0102
+paralelo : eus_0302
 paralelos : Meteoro_0802
 paralelos : Meteoro_0902
 paralelos : Pedidos_0302
@@ -26159,7 +26511,6 @@ pardais : Silente_0902
 pardal : Vozes_0102
 pare : Haikai_0301
 pare : Tempo_1602
-parece : Abertura_0703
 parece : Ciuminho_0401
 parece : Destinos_0501
 parece : Distintos_0401
@@ -26177,6 +26528,7 @@ parece : Tempo_0302
 parece : Tempus_0602
 parece : Veio_1003
 parece : Vozes_0301
+parece : nós_nos_nós_0101
 parecer : Leao=f_0602
 parecer : Leao=m_0602
 parecer : Peixes=f_0501
@@ -26201,6 +26553,7 @@ paredes : Psiu_0301
 paredes : Tempo_1602
 paredes : Zelo_0201
 parente : Fatos_1602
+parentesco : Cacos_0301
 pares : Cromossomo_0602
 pares : Destinos_0405
 pares : Distintos_0305
@@ -26226,6 +26579,7 @@ parque : Tolero_0201
 parta : Epitafiando_0502
 parta : Portal_0502
 parte : Astros_0801
+parte : Cacos_0201
 parte : Enfrente_0103
 parte : Epitafiando_0502
 parte : Fatos_1301
@@ -26247,16 +26601,19 @@ participo : Clandestino_0201
 participo : Clandestino_1201
 participo : Victor_0201
 participo : Victor_1201
+partida : Cacos_0401
 partida : Clarice_0601
 partida : Haikai_0301
 partida : Inhos_0402
 partida : Manifesto_1004
 partida : Passagens_0101
 partida : Tempo_1602
+partido : Cacos_0401
 partido : Demo_0202
 partido : Usinas_1003
 partilha : Feiras_0603
 partilha : Feiras_0703
+partilhado : Cacos_0501
 partir : Epitafiando_0201
 partir : Estudo_0703
 partir : Fugaz_0602
@@ -26319,6 +26676,7 @@ passada : Brado_0203
 passadas : Tempo_0203
 passado : Augusto_1304
 passado : Becos_1104
+passado : Cacos_0501
 passado : Cartaz_0103
 passado : Conto_0102
 passado : Cordel_0104
@@ -26359,7 +26717,10 @@ passageiro : Prefácil_0801
 passageiro : Psiu_0301
 passageiro : Tempo_0303
 passageiro : Zelo_0201
+passageiro : eus_0102
+passageiro : eus_0302
 passageiros : Tiro_0701
+passagem : Cacos_0201
 passagem : Conto_0501
 passagem : Epitafiando_0702
 passagem : Frases_0502
@@ -26466,6 +26827,7 @@ passivo : Zoia_0903
 passo : Aolero_0501
 passo : Atido_0702
 passo : Bolero_0401
+passo : Cacos_0201
 passo : Impar_0202
 passo : Insano_0101
 passo : Joker_0103
@@ -26489,11 +26851,13 @@ passos : Sopros_1101
 passos : Tempo_0402
 passos : Tiro_1002
 passos : Zodiacaos_1602
+passos : nós_nos_nós_0104
 passou : Leituras_0602
 passou : Tempus_0104
 passseia : Perfil_0201
 passu : Sentença_0703
 passíveis : Posfácio_0702
+pasta : Cacos_0201
 pastel : Ocio_1402
 pasto : Lato_0202
 pastor : Pessoa_0901
@@ -26505,6 +26869,7 @@ patas : MachBrait_0601
 patas : Papilio_0601
 patas : Papilio_1201
 patativas : Sonoro_0102
+patente : Cacos_0301
 patenteio : Atido_0502
 paternalista : Destinos_0205
 paternalista : Distintos_0205
@@ -26532,7 +26897,6 @@ pau : Loremipsum_1001
 paulatinamente : Prefácil_0804
 paulatinamente : Salute_0601
 paus : Loremipsum_1001
-pausa : Abertura_0602
 pausa : Tempo_1301
 pause : Sos_0601
 pauta-se : Silente_1103
@@ -26634,10 +26998,12 @@ pede : Zoia_1102
 pedem : Tiro_0701
 pedestal : Pedidos_0201
 pedia : Feiras_1101
+pedido : Cacos_0401
 pedido : Oficia_1801
 pedido : Oficio_1801
 pedigree : Becos_1104
 pedinte : Dolores_0303
+pedir : Cacos_0101
 pedir : Duralex_0102
 pedir : Feiras_1101
 pedir : Papilio_1501
@@ -26768,6 +27134,7 @@ pena : Aolero_0102
 pena : Aolero_1001
 pena : Atido_0203
 pena : Blablabla_0101
+pena : Cacos_0301
 pena : Ciuminho_0403
 pena : Dolores_0601
 pena : Duralex_0306
@@ -26802,7 +27169,6 @@ penetrante : Ogiva_0304
 penetrante : Olhares_0301
 penetrante : Olhares_0601
 penetrante : Zoia_0301
-penetrar : Abertura_1504
 penetrar : Crítico_0303
 penetrar : Prefácil_0302
 penetro : Clandestino_0201
@@ -26867,6 +27233,7 @@ pensar : Sos_0601
 pensar : Usinas_0601
 pensar : Vozes_0101
 pensares : Passagens_0702
+pensares : nós_nos_nós_0104
 pense : Minuto_0501
 pense : Rito_0501
 pense : Seguro_1102
@@ -26938,8 +27305,6 @@ percebe : Caprico=m_0504
 percebe : Ciuminho_0801
 percebe : Psiu_0301
 percebe : Zelo_0201
-perceber : Abertura_0402
-perceber : Abertura_1504
 percebi : Crítico_0401
 percebo : MachBeth_0601
 percebo : MachBrait_0901
@@ -26957,6 +27322,7 @@ perco-me : Lato_0501
 percorrer : Blablabla_0201
 percorrer : Nonono_0502
 percorrer : Paroles_0502
+percurso : Cacos_0401
 percursores : Ores_0202
 percursores : Ores_0301
 percussionista : Destinos_0205
@@ -26971,6 +27337,7 @@ perde : Perfil_0702
 perde : Psiu_0401
 perde : Sopros_1101
 perde : Zelo_0301
+perde : eus_0201
 perdem : Tiro_0701
 perdem-se : Usinas_0401
 perdendo : Feiras_0901
@@ -26986,8 +27353,8 @@ perder : Liberta_0801
 perder : Ocio_1502
 perder : Reger_0803
 perder : Saudades_0302
-perder-te? : Haikai_0301
-perder-te? : Tempo_1602
+perder-te : Haikai_0301
+perder-te : Tempo_1602
 perdeu : Cuores_1102
 perdi : Aolero_1001
 perdi : Epitafiando_0101
@@ -26995,7 +27362,6 @@ perdi : Joker_0301
 perdi : Ocio_0401
 perdi : Portal_0101
 perdi : Solero_1001
-perdida : Abertura_0704
 perdida : Augusto_1503
 perdida : Brado_0203
 perdida : Dolores_0701
@@ -27006,7 +27372,7 @@ perdidas : Becos_0801
 perdidas : Meteoro_0204
 perdidas : Tiro_0701
 perdidas : i-Mundo_0203
-perdido : Conto_0801
+perdido : Conto_1101
 perdido : Cordel_0104
 perdido : Cuores_0102
 perdido : Demo_0202
@@ -27076,6 +27442,7 @@ perfeita : Zodiacaos_0302
 perfeito : Aolero_0501
 perfeito : Astros_0801
 perfeito : Bolero_0401
+perfeito : Cacos_0301
 perfeito : Haikai_0202
 perfeito : Insano_0505
 perfeito : Lero_0401
@@ -27086,6 +27453,7 @@ perfeito : Tolero_0301
 perfeito : Veio_0604
 perfeição : Amaré_0306
 perfeição : Sos_0201
+perfil : Cacos_0401
 perfumadas : Saudades_0701
 perfume : Ciuminho_0501
 perfume : Ciuminho_0801
@@ -27119,6 +27487,7 @@ perguntas : Passagens_1001
 pergunto : Atido_0203
 pergunto : Demo_0401
 periferia : Restos_0601
+perigo : Cacos_0401
 perigo : Ciuminho_0801
 perigo : Psiu_0301
 perigo : Zelo_0201
@@ -27182,6 +27551,7 @@ persistir : Minuto_0101
 persistência : Cadência_0202
 persistência : Meteoro_0402
 persona : Dolores_0201
+personagem : Cacos_0201
 personalidade : Aquarius=f_0202
 personalidade : Aquarius=m_0202
 personalidade : Aries=f_0101
@@ -27230,7 +27600,6 @@ perícia : Manifesto_1704
 perícia : Tiro_0202
 período : Astros_0801
 período : Meteoro_1101
-pesa : Abertura_0603
 pesa : Críticas_0601
 pesada : Dolores_0601
 pesadelo : Ciuminho_0104
@@ -27249,6 +27618,7 @@ pesadelos : Tempo_1103
 pesares : Oca_0203
 pesares : Oco_0203
 pesca : Ogiva_0402
+pescador : nós_nos_nós_0109
 pescar : Saudades_0101
 pese : Ciuminho_0501
 pese : Fatos_1401
@@ -27267,6 +27637,7 @@ pessimista : Distintos_0205
 pessoa : Aquarius=f_0601
 pessoa : Aquarius=m_0601
 pessoa : Augusto_1103
+pessoa : Cacos_0201
 pessoa : Carroussel_0101
 pessoa : Carroussel_0501
 pessoa : Libra=f_0502
@@ -27309,6 +27680,7 @@ pessoas : Touro=f_0601
 pessoas : Touro=m_0601
 pessoas : Veio_0404
 pessoas : i-Mundo_0401
+pessoas : nós_nos_nós_0102
 pessouas : Perfil_0303
 petição : Sentença_0202
 petrarca : Preciso_1402
@@ -27320,6 +27692,7 @@ petulante : Usinas_0603
 petulante : Zoia_0301
 petulantes : Duralex_0304
 petulância : Meteoro_0502
+peça : Cacos_0201
 peça-lhe : Pedidos_0601
 peço : Aolero_0602
 peço : Atido_0702
@@ -27361,6 +27734,7 @@ piegas : Sn6=ball_0701
 piegas : Sn8=ball_0701
 piegas : Snowball_0601
 pilares : Críticas_0803
+pilha : Cacos_0401
 pilha : Reinos_0501
 pilotando : Clandestino_0601
 pilotando : Victor_0301
@@ -27390,6 +27764,7 @@ pinto : Salute_0101
 pinto : Veio_0601
 pinto : Vozes_0102
 pintor : Tempo_0201
+pintura : Cacos_0401
 pintura : Lato_0805
 pintura : Ogiva_0402
 pinça : Destinos_0404
@@ -27458,6 +27833,7 @@ piscar : Seguro_0403
 piscar : Tempo_1602
 piscina : Silente_0202
 piscina : Silente_0204
+piso : Cacos_0401
 piso : Silente_0103
 piso : Veio_0804
 pisoteando : Oca_0501
@@ -27514,6 +27890,7 @@ planetas : MachBrait_0401
 planetas : MachBrait_0601
 planetas : Papilio_0401
 planetas : Papilio_0601
+plano : Cacos_0301
 plano : Fugaz_0201
 plano : Haikai_0102
 plano : Haikai_0201
@@ -27537,6 +27914,7 @@ planos : Solero_0501
 planos : Tolero_0301
 planos : Usinas_0402
 planos : Veio_0602
+planta : Cacos_0201
 planta : Enfrente_0201
 planta : Frases_0502
 planta : Loremipsum_0602
@@ -27573,6 +27951,7 @@ plantão : Lero_0403
 plantão : Solero_0401
 plantão : Tolero_0201
 plasticidade : Prefácil_1403
+plastificados : nós_nos_nós_0105
 plataforma : Destinos_0902
 plataforma : Distintos_0802
 plateia : Ciuminho_0702
@@ -27591,12 +27970,14 @@ pleitear : Oficio_0402
 plena : Zodiacaos_0302
 plenas : Saudades_0705
 pleno : Lato_0202
+pleno : nós_nos_nós_0303
 plico : Veio_0601
+plural : Cacos_0201
 plural : Clarice_1101
 pluralidade : Prefácil_1403
 pluralista : Destinos_0205
 pluralista : Distintos_0205
-pluri-pensar, : Manifesto_1103
+pluri-pensar : Manifesto_1103
 plutão : Zodiacaos_0101
 plácida : Frases_0401
 plácido : Tempo_0902
@@ -27626,15 +28007,13 @@ pobres : Cromossomo_0202
 pobres : Insano_0203
 pobres : Reinos_1302
 poché : Ocio_1303
-pode : Abertura_0501
-pode : Abertura_0601
-pode : Abertura_0701
 pode : Astros_0801
 pode : Avevida_0201
 pode : Circular_0601
 pode : Críticas_1507
 pode : Críticas_1801
 pode : Duralex_0101
+pode : Evidências_0201
 pode : Impar_0503
 pode : Inhos_0601
 pode : Liberta_1201
@@ -27647,9 +28026,9 @@ pode : Perfil_0702
 pode : Prefácil_1701
 pode : Silente_1103
 pode : Usinas_0705
-pode : Zero_0201
 pode : Zoia_0602
 pode : Zoia_1102
+pode : nós_nos_nós_0303
 podem : Posfácio_0702
 podemos : Críticas_0601
 podemos : Fugaz_0601
@@ -27684,6 +28063,7 @@ poder : Salute_0601
 poder : Virgem=f_0402
 poder : Virgem=m_0402
 poder : Zodiacaos_1501
+poder : nós_nos_nós_0303
 poderemos : Tempo_1701
 poderes : Astros_0103
 poderes : Astros_0202
@@ -27704,7 +28084,6 @@ poeira : Sopros_0204
 poeira : Sopros_0206
 poeiras : Becos_0501
 poeiras : Festim_0102
-poema : Abertura_1402
 poema : Beaba_0102
 poema : Escriba_1102
 poema : Frases_0502
@@ -27778,7 +28157,7 @@ pois : Zoia_0101
 polar : Meteoro_0603
 polenta : Ocio_1402
 poli : Joker_0301
-poli-pensar, : Manifesto_1103
+poli-pensar : Manifesto_1103
 policarbonato : Bula_0202
 policarbonato : Salute_0401
 policia : Feiras_0704
@@ -27802,6 +28181,10 @@ polvo : Ocio_1301
 polêmicas : Beaba_0202
 polícia : Silente_1004
 política : Brado_0202
+política : Cacos_0401
+políticas : Cacos_0401
+político : eus_0102
+político : eus_0302
 políticos : Aolero_0602
 políticos : Bolero_0503
 políticos : Cartaz_1104
@@ -27839,6 +28222,7 @@ ponteiros : Tempo_0903
 pontes : Pedidos_0201
 pontes : Sopros_1101
 pontilhar : Elogio_0601
+ponto : Cacos_0301
 ponto : Remedeio_0301
 ponto : Salute_0601
 ponto : Ser_0701
@@ -27857,14 +28241,11 @@ pontual : Tempo_0802
 pontual : Tempo_0902
 pontual : Tempo_1102
 pontuam : Zodiacaos_0504
-pontuar : Abertura_0402
 pontuação : Cartaz_0301
 pontuação : Cartaz_0401
 popa : Destinos_1101
 popa : Distintos_1001
 populares : Cromossomo_0202
-por : Abertura_0405
-por : Abertura_0903
 por : Anjos_0104
 por : Aolero_0102
 por : Aolero_0501
@@ -28133,6 +28514,7 @@ português : Manifesto_0303
 português : Oficio_0203
 porventura : Oficia_1701
 porventura : Oficio_1701
+porvir : Cacos_0401
 porvir : Conto_0302
 porvir : Estudo_0703
 porvir : Minuto_0203
@@ -28159,8 +28541,10 @@ posa : Olhares_0302
 posa : Zoia_0302
 posa : Zoia_0802
 posa : Zoia_1302
+pose : Cacos_0301
 pose : Ogiva_0402
 positivas : Astros_0801
+posição : Cacos_0601
 posologia : Remedeio_0301
 posologia : Salute_0601
 possa : Ciuminho_0501
@@ -28226,11 +28610,14 @@ possível : Tempo_0303
 possível : Tiro_1102
 possível : Zelo_0201
 possível : Zoia_0703
+possível : eus_0102
+possível : eus_0302
 possível : i-Mundo_0702
 possível : i-Mundo_0803
 post : Sentença_0703
 posta : Cordel_0401
 postagens : i-Mundo_0401
+postal : Cacos_0201
 postam : Cromossomo_0604
 postas : Ocio_1402
 posteriores : Cartaz_1301
@@ -28240,6 +28627,7 @@ postigo : Silente_0202
 postigo : Silente_0204
 postiça : Críticas_1501
 postiças : Papilio_1203
+posto : Cacos_0301
 posto : Lato_0501
 posto : Papilio_0601
 postular : Oficia_0402
@@ -28267,12 +28655,11 @@ poucas : Feiras_1003
 poucas : Meteoro_0202
 poucas : Meteoro_0204
 poucas : Papilio_0901
-pouco : Abertura_1104
-pouco : Abertura_1201
-pouco : Abertura_1203
 pouco : Atido_0203
 pouco : Bolero_0301
 pouco : Brado_0602
+pouco : Cacos_0201
+pouco : Cacos_0301
 pouco : Crítico_0702
 pouco : Enfrente_0103
 pouco : Epitafiando_0202
@@ -28313,6 +28700,7 @@ pousa : Zoia_1302
 pousam : Sonoro_0101
 pousando : Clarice_0402
 pousem : Saudades_0601
+pouso : Cacos_0301
 pouso : Paz_0202
 povo : Brado_0602
 povoado : Fatos_0403
@@ -28331,6 +28719,7 @@ poço : Zelo_0601
 poção : i-Mundo_0802
 poções : Bula_0101
 poções : Salute_0301
+poética : Cacos_0301
 poética : Críticas_0204
 poética : Críticas_0306
 poética : Fatos_1901
@@ -28350,6 +28739,8 @@ poético : Críticas_0804
 poético : Críticas_1401
 poético : Críticas_1601
 poético : Manifesto_0603
+poético : eus_0102
+poético : eus_0302
 poéticos : Oficia_0602
 poéticos : Oficio_0602
 pra : Aolero_0501
@@ -28475,6 +28866,7 @@ praça : Joker_0103
 pre-concebidas : Preciso_0204
 precatório : Sentença_0202
 precavido : Indolor_1003
+prece : Cacos_0301
 prece : Dolores_0901
 prece : Indolor_0901
 prece : Tiro_1002
@@ -28574,6 +28966,7 @@ preferi : Joker_0402
 preferidas : Feiras_1003
 preferir : Finalmentes_0202
 preferir : Zodiacaos_1302
+preferência : Cacos_0301
 preferência : Cadência_0202
 prefiro : Insano_0201
 prefiro : Solero_0802
@@ -28631,18 +29024,20 @@ preocupa-se : Peixes=f_0201
 preocupa-se : Peixes=m_0201
 preocupem : Remedeio_0301
 preocupem : Salute_0601
+preparação : Cacos_0601
 prepare : Astros_0801
 preponderância : Meteoro_0502
 prepotentes : Duralex_0304
 prepotência : Cadência_0104
 presa : MachBeth_0202
 presa : Sos_0101
-presciência : Zero_0102
-presciência : Zero_0104
-presciência : Zero_0302
+presciência : Evidências_0102
+presciência : Evidências_0104
+presciência : Evidências_0302
 presente : Astros_0401
 presente : Astros_0601
 presente : Astros_0801
+presente : Cacos_0301
 presente : Festim_0701
 presente : Fugaz_0202
 presente : Haikai_0103
@@ -28791,12 +29186,12 @@ primitivo : Ciuminho_0106
 primitivo : Psiu_0107
 primo : Fatos_1602
 primores : Ores_0101
+principal : Cacos_0201
 principal : Loremipsum_0802
 principiam-se : Festim_1102
 principiante : Cordel_0104
 principias : Haikai_0301
 principias : Tempo_1602
-princípio : Abertura_1301
 princípio : Circular_0101
 princípio : Circular_0601
 princípio : Estudo_0702
@@ -28823,7 +29218,7 @@ prisão : Psiu_0501
 prisão : Tempo_1602
 prisões : Escriba_0903
 privados : Joker_0203
-privar-se, : Liberta_1101
+privar-se : Liberta_1101
 privilegiado : Gemeos=f_0302
 privilegiado : Gemeos=m_0302
 privilegiar : Ciuminho_0501
@@ -28848,6 +29243,7 @@ procedência : Cadência_0102
 procedência : Estudo_0702
 procedência : Ocio_0902
 processo : Astros_0601
+processo : Cacos_0201
 processo : Críticas_0804
 processo : Sentença_0202
 procissão : Posfácio_0401
@@ -28877,6 +29273,8 @@ produzir : Arerir_0301
 produzir : Manifesto_1502
 produção : Fatos_1901
 profano : Fatos_1603
+profano : eus_0102
+profano : eus_0302
 profecia : Manifesto_1706
 profecias : Cartaz_0303
 profecias : i-Mundo_0203
@@ -28906,6 +29304,7 @@ profissional : Aolero_0302
 profissional : Lero_0302
 profissional : Solero_0302
 profissional : Tolero_0102
+profissão : Cacos_0601
 profissão : Frases_0502
 profissão : Sonoro_0301
 profunda : Peixes=f_0102
@@ -28917,6 +29316,7 @@ profundamente : Libra=f_0102
 profundamente : Libra=m_0102
 profundissimamente : Anjos_1501
 profundissimamente : Augusto_1502
+profundo : Cacos_0401
 profundo : Circular_0102
 profundo : Estudo_0703
 profundo : Minuto_0701
@@ -28926,6 +29326,8 @@ profundo : Peixes=m_0102
 profundo : Peixes=m_0801
 profundo : Touro=m_0203
 profundo : Touro=m_0402
+profundo : eus_0102
+profundo : eus_0302
 profusão : Posfácio_1202
 profusão : Sonoro_0301
 profética : Elogio_0101
@@ -28960,6 +29362,7 @@ projeta : Lato_1102
 projetado : Elogio_0501
 projetista : Destinos_0205
 projetista : Distintos_0205
+projeto : Cacos_0401
 projeto : Fatos_0502
 projeto : Pedidos_0701
 projeto : Rito_0501
@@ -28997,6 +29400,7 @@ promover : Blablabla_0201
 promover : Manifesto_0803
 promover : Nonono_0502
 promover : Paroles_0502
+promoção : Cacos_0601
 pronta : Aries=f_0101
 pronta : Cancer=f_0402
 pronta : Sagitari=f_0701
@@ -29020,6 +29424,7 @@ propil : Bula_0302
 propor : Blablabla_0201
 propor : Nonono_0502
 propor : Paroles_0502
+proporção : Cacos_0601
 proposto : Prefácil_0401
 propriedade : Prefácil_1403
 proprietário : Críticas_0106
@@ -29051,9 +29456,11 @@ protetor : Virgem=m_0201
 protetora : Touro=f_0103
 protetora : Virgem=f_0201
 protetores : Ores_0302
+proteção : Cacos_0601
 proteína : Remedeio_0204
 proteína : Salute_0503
 protocolo : Conto_0701
+prova : Cacos_0201
 prova : Passagens_0701
 provam : Ciuminho_0401
 provarão : Manusgrite_1401
@@ -29075,7 +29482,10 @@ prover : Blablabla_0201
 prover : Nonono_0502
 prover : Paroles_0502
 proveta : Essa_0204
+providência : Cacos_0301
 providência : Cadência_0202
+provisório : eus_0102
+provisório : eus_0302
 provoca : Frases_0502
 provocado : Prefácil_0802
 provocando : Gula_0301
@@ -29099,6 +29509,7 @@ provocar : Nonono_0701
 provocar : Nonono_1101
 provocar : Paroles_0301
 provocar : Paroles_0701
+provocar : eus_0202
 provocação : Manifesto_1702
 provocações : Críticas_0501
 provoquem : Remedeio_0301
@@ -29129,9 +29540,9 @@ prático : Touro=m_0101
 prático : Virgem=m_0201
 práticos : Caprico=f_0902
 práticos : Caprico=m_0902
-pré- : Críticas_0105
-pré- : Oficia_0102
-pré- : Oficio_0102
+pré : Críticas_0105
+pré : Oficia_0102
+pré : Oficio_0102
 pré-gravadas : Estudo_0603
 pré-gravadas : Ocio_0807
 prévio : Blablabla_0301
@@ -29142,6 +29553,7 @@ prévio : Paroles_0301
 prévio : Paroles_0701
 prêmio : Aquarius=f_0802
 prêmio : Aquarius=m_0802
+prêmio : Cacos_0301
 prólogo : Circular_0101
 prólogo : Oficia_0902
 prólogo : Oficio_0902
@@ -29171,6 +29583,7 @@ próprias : Psiu_0301
 próprias : Zelo_0201
 próprio : Aries=f_0701
 próprio : Aries=m_0701
+próprio : Cacos_0301
 próprio : Cancer=f_0502
 próprio : Cancer=m_0502
 próprio : Caprico=f_0902
@@ -29202,6 +29615,7 @@ próprio : Tempo_0803
 próprio : Tempo_1103
 próprio : Tempo_1602
 próprio : Zelo_0201
+próprio : nós_nos_nós_0303
 próprios : Finalmentes_0602
 próprios : Zodiacaos_1602
 prótese : MachBeth_0801
@@ -29220,18 +29634,21 @@ próximo : Tiro_1102
 próximo : Veio_0701
 próximo : Zodiacaos_1602
 prússia : Reinos_0503
-pseudo- : Zero_0301
+pseudo : Evidências_0301
 pseudo-cientista : Destinos_0205
 pseudo-cientista : Distintos_0205
-pseudociência : Zero_0102
-pseudociência : Zero_0104
-pseudociência : Zero_0302
+pseudociência : Evidências_0102
+pseudociência : Evidências_0104
+pseudociência : Evidências_0302
 pseudologia : Feiras_0302
 psicanalista : Destinos_0205
 psicanalista : Distintos_0205
 psicanálise : Cartaz_0501
 psicodélica : Fatos_0103
 psicogenética : Augusto_0304
+psicológico : eus_0102
+psicológico : eus_0302
+psicólogo : eus_0401
 psilocibina : Remedeio_0204
 psilocibina : Salute_0503
 psíquicas : Zodiacaos_0602
@@ -29387,6 +29804,7 @@ põe-se : Ogiva_0402
 põe-te : Augusto_1201
 põem-se : Prefácil_1301
 público : Batismo_0402
+público : Cacos_0401
 público : Críticas_0401
 público : Manifesto_0901
 públicos : Saudades_0201
@@ -29410,7 +29828,7 @@ quadrinhas : Oficia_1101
 quadrinhas : Oficio_1101
 quadrinista : Destinos_0205
 quadrinista : Distintos_0205
-quadro : Abertura_1303
+quadro : Cacos_0201
 quadro : Ciuminho_0702
 quadro : Ciuminho_0801
 quadro : Frases_0502
@@ -29435,6 +29853,7 @@ qual : Oca_0303
 qual : Oco_0303
 qualidade : Aries=f_0601
 qualidade : Aries=m_0601
+qualidade : Cacos_0201
 qualidades : Virgem=f_0102
 qualidades : Virgem=m_0102
 qualque : Perfil_0303
@@ -29531,6 +29950,8 @@ quando : Zoia_1302
 quando : i-Mundo_0701
 quando : i-Mundo_0801
 quantas : Pessoa_0802
+quantia : Cacos_0401
+quantidade : Cacos_0201
 quanto : Finalmentes_0602
 quanto : Frases_0501
 quanto : MachBrait_0201
@@ -29541,9 +29962,9 @@ quantos : Loremipsum_1001
 quartanista : Destinos_0205
 quartanista : Distintos_0205
 quartier : Meteoro_0603
+quarto : Cacos_0201
 quarto : Silente_0202
 quarto : Silente_0204
-quase : Abertura_1303
 quase : Anjos_0904
 quase : Aolero_0302
 quase : Aolero_1001
@@ -29620,10 +30041,6 @@ quase : Zelo_0201
 quase-paz : Remedeio_0301
 quase-paz : Salute_0601
 quasi : Perfil_0201
-que : Abertura_0403
-que : Abertura_0603
-que : Abertura_0703
-que : Abertura_1505
 que : Amaré_0101
 que : Anjos_0104
 que : Anjos_0401
@@ -29974,8 +30391,14 @@ que : Zoia_0702
 que : Zoia_1202
 que : Zoia_1601
 que : Zoia_1701
+que : eus_0402
+que : eus_0501
 que : i-Mundo_0701
 que : i-Mundo_0801
+que : nós_nos_nós_0101
+que : nós_nos_nós_0102
+que : nós_nos_nós_0203
+que : nós_nos_nós_0302
 quebrada : Inhos_0402
 quebradas : Snowball_1301
 quebradiças : Papilio_1201
@@ -30069,6 +30492,7 @@ quer : Touro=m_0601
 quer : Zelo_0301
 quer : Zodiacaos_1301
 quer : Zoia_0302
+quer : eus_0402
 quer-se : Olhares_0702
 quer-se : Zoia_0702
 quer-se : Zoia_1202
@@ -30178,7 +30602,6 @@ querências : Haikai_0203
 querências : Tempo_0103
 querências : Tempo_0803
 querências : Tempo_1103
-quescravo : Zoia_1701
 questao : Perfil_0702
 questiona-se : Prefácil_0102
 questionando : Estudo_0701
@@ -30245,8 +30668,6 @@ quixote : Ciuminho_0901
 quixote : Indolor_0303
 quixote : Psiu_0401
 quixote : Zelo_0301
-quiçá : Abertura_0601
-quiçá : Abertura_0701
 quiçá : Becos_1102
 quiçá : Bula_0101
 quiçá : Ciuminho_0501
@@ -30275,6 +30696,7 @@ quê : Amaré_0701
 quê : Nós_0501
 quê : Nós_1101
 quê : Tempus_0601
+quê : eus_0501
 rabada : Gula_0702
 rabiscam : MachBeth_0601
 rabiscam : Papilio_1101
@@ -30290,6 +30712,8 @@ raciocinar : Escriba_0402
 raciocínio : Epitafiando_0202
 raciocínio : Manifesto_1103
 raciocínio : Portal_0302
+racional : eus_0102
+racional : eus_0302
 racionalista : Destinos_0205
 racionalista : Distintos_0205
 raciossano : Essa_0302
@@ -30307,6 +30731,7 @@ rainha : Epitafiando_0701
 rainha : Portal_0801
 rainha : Tempo_0702
 rainhas : Cromossomo_0303
+raio : Cacos_0301
 raio : Frases_0502
 raio : Pedidos_0302
 raios : Becos_0501
@@ -30321,6 +30746,7 @@ raiva : Circular_0302
 raiva : Epitafiando_0202
 raiva : Palyndro_0101
 raiva : Portal_0302
+raiz : Cacos_0401
 raiz : Minuto_0701
 rajada : Elogio_0101
 rajadas : Meteoro_0404
@@ -30439,6 +30865,7 @@ rasgue : Sos_0601
 rasguei : Joker_0101
 rasguei : Ocio_0403
 rasguei : Silente_0101
+raso : Cacos_0201
 raspas : Bula_0101
 raspas : Salute_0301
 rasto : Fugaz_0201
@@ -30470,6 +30897,7 @@ ratos : Tiro_1002
 ravel : Solero_0802
 ravel : Tolero_0802
 ravel : Tolero_1601
+razão : Cacos_0601
 razão : Elogio_0101
 razão : Festim_0701
 razão : Finalmentes_0602
@@ -30486,6 +30914,7 @@ razão : Tiro_1102
 razão : Zodiacaos_1602
 razões : Finalmentes_0602
 razões : Zodiacaos_1602
+raça : Cacos_0201
 raízes : Clandestino_0701
 raízes : Estudo_0702
 raízes : Festim_0701
@@ -30496,14 +30925,19 @@ raízes : Victor_0401
 reabitar : Manifesto_1202
 reacender : Elogio_0401
 reaja : Sos_0601
+real : Cacos_0201
 real : Críticas_0804
 real : Dolores_0901
 real : Finalmentes_0602
 real : Indolor_0901
 real : Tiro_1002
 real : Zodiacaos_1602
+real : eus_0102
+real : eus_0302
+real : nós_nos_nós_0204
 realejo : Prefácil_0303
 realejo : Reger_0102
+realeza : Cacos_0301
 realidade : Astros_0801
 realidade : Carroussel_0203
 realidade : Liberta_0301
@@ -30603,7 +31037,7 @@ recado : Saudades_0302
 recado : Sos_0501
 recados : Conto_1301
 recados : Joker_0102
-recanto : Conto_0801
+recanto : Conto_1101
 recanto : Silente_0303
 recatada : Gula_0703
 receando : Anjos_0701
@@ -30628,6 +31062,7 @@ receitas : Salute_0101
 receitem : Bula_0101
 receitem : Salute_0301
 recente : Batismo_0302
+recente : Cacos_0301
 recente : Feiras_0101
 recente : Tempo_0303
 recentes : Ciuminho_0501
@@ -30637,6 +31072,7 @@ receptiva : Peixes=f_0104
 receptivo : Peixes=m_0104
 recheadas : Beaba_0401
 recheados : Nós_0102
+recheio : Cacos_0301
 recheio : Ciuminho_0702
 recheio : Ciuminho_0801
 recheio : Gula_0402
@@ -30657,6 +31093,7 @@ reclame : Oficia_1801
 reclame : Oficio_1801
 reclame : Portal_0802
 reclamo : Sentença_0801
+reclamo : eus_0501
 recolhemos : Nós_0901
 recolheram : Nós_0301
 recolho : Paz_0202
@@ -30672,7 +31109,6 @@ recomposta : Dolores_1002
 recomposto : Indolor_1003
 reconhece : Lato_1102
 reconhece : Reger_0803
-reconhecer : Abertura_1302
 reconhecer : Arerir_0201
 reconhecer : Astros_0601
 reconhecida : Libra=f_0503
@@ -30710,14 +31146,12 @@ recorrência : Ocio_0902
 recreação : Manifesto_1702
 recreio : Estudo_0301
 recreio : Ocio_0703
-recria : Abertura_1002
 recriadas : Posfácio_0903
 recriadas : Posfácio_1002
 recriar : Beaba_0502
 recriar : Prefácil_0902
 recriação : Manifesto_1702
 recuo : Atido_0203
-recuperar : Abertura_0402
 recuperar : Manifesto_1002
 recursiva : Circular_0303
 recursivas : Manifesto_0805
@@ -30729,6 +31163,7 @@ recusa : Lato_0902
 recusados : Escriba_0803
 redatores : Ores_0201
 redação : Manifesto_1702
+rede : Cacos_0301
 rede : Destinos_0902
 rede : Distintos_0802
 rede : Liberta_0501
@@ -30741,7 +31176,6 @@ redenção : Amaré_0306
 redes : Cromossomo_0604
 redes : Crítico_0101
 redes : Seguro_0101
-redescobre : Abertura_0603
 redesenhado : Fatos_1503
 redigir : Blablabla_0201
 redigir : Manifesto_1502
@@ -30769,6 +31203,8 @@ redundantes : Beaba_0403
 redundantes : Preciso_0204
 redundância : Meteoro_0502
 redundâncias : Cartaz_0502
+reduzido : eus_0102
+reduzido : eus_0302
 reduzidos : Cartaz_1002
 reentrância : Meteoro_0502
 reescrito : Fatos_1503
@@ -30855,6 +31291,7 @@ reger : Paroles_0502
 reggaes : Silente_0704
 regime : Remedeio_0101
 regime : Salute_0101
+registro : Cacos_0401
 registro : Fatos_1303
 registros : Oficia_0701
 registros : Oficio_0701
@@ -30923,8 +31360,6 @@ reincidente : Circular_0206
 reincidente : Circular_0303
 reinem : Saudades_0201
 reino : Escriba_1301
-reinventa : Abertura_0603
-reinventa : Abertura_1002
 reinventa : Ciuminho_0801
 reinventa : Lato_1102
 reinventa : Psiu_0301
@@ -30963,13 +31398,14 @@ relatada : Cordel_0401
 relativa : Meteoro_0901
 relativista : Destinos_0205
 relativista : Distintos_0205
+relativo : Cacos_0401
 relativo : Tempo_0303
+relato : Cacos_0201
 relato : Manifesto_1704
 relatos : Escriba_0903
 relaxa : Sos_0601
+relação : Cacos_0601
 relações : Zodiacaos_0601
-releitura : Abertura_0502
-releitura : Abertura_0602
 reler : Palyndro_0801
 reles : Brado_0102
 reles : Ciuminho_0501
@@ -31075,6 +31511,7 @@ rendeira : Destinos_0202
 rendeira : Distintos_0202
 rendida : Dolores_1002
 rendido : Indolor_1003
+rendimento : Cacos_0301
 rendição : Amaré_0306
 renega : Inhos_0501
 reneguem : Ciuminho_0501
@@ -31211,10 +31648,12 @@ requisitar : Oficio_0402
 resenha : Manifesto_1503
 resenha : Manifesto_1704
 reservada : Caprico=f_0502
+reservado : Cacos_0501
 reservado : Caprico=m_0502
 reservista : Destinos_0205
 reservista : Distintos_0205
-resignifica : Abertura_0603
+residual : eus_0102
+residual : eus_0302
 resiliente : Dolores_1002
 resiliente : Indolor_1003
 resiliência : Impar_0502
@@ -31232,6 +31671,8 @@ resolver : Elogio_0401
 resolver : Indolor_0501
 resolveram : Distintos_0601
 resolvi : Joker_0402
+resolvido : eus_0102
+resolvido : eus_0302
 resouvida : Perfil_0402
 respeitabilíssima : Oficia_0101
 respeitabilíssimo : Oficio_0101
@@ -31262,7 +31703,6 @@ respingos : Oco_0501
 respira : Astros_0401
 respirarem : Manusgrite_1102
 respirarem : Manusgrito_1102
-respiro : Abertura_0602
 respiro : Atido_0203
 respiro : Ser_0501
 responde : Loremipsum_0801
@@ -31270,7 +31710,6 @@ responsaveu : Perfil_0102
 responsável : Virgem=f_0201
 responsável : Virgem=m_0201
 respossavel : Perfil_0402
-respostas : Abertura_0302
 respostas : Astros_0801
 respostas : Brado_0301
 respostas : Conto_1301
@@ -31299,6 +31738,7 @@ resta : Fugaz_0601
 resta : MachBeth_1101
 resta : Sentença_0301
 resta : Tempo_1701
+restante : Cacos_0301
 restaurada : Dolores_1002
 restaurado : Indolor_1003
 restaurar : Manifesto_1202
@@ -31315,7 +31755,7 @@ restos : MachBeth_0801
 restos : Restos_0202
 restrito : Lato_0805
 resulta : Rever_0103
-resultado : Abertura_0404
+resultado : Cacos_0201
 resultados : Caprico=f_0902
 resultados : Caprico=m_0902
 resultados : Remedeio_0301
@@ -31418,7 +31858,6 @@ reunir : Aries=f_0401
 reunir : Aries=m_0401
 reunir : Sagitari=f_0702
 reunir : Sagitari=m_0702
-revela : Abertura_1505
 revelada : Cordel_0401
 revelado : Críticas_1402
 reveladores : Ores_0102
@@ -31587,6 +32026,7 @@ rimos : Cromossomo_0904
 rinchar : Vozes_0102
 rindo : Destinos_1101
 rindo : Distintos_1001
+rindo : eus_0501
 rio : Aolero_0501
 rio : Tolero_0301
 rir : Manifesto_1303
@@ -31594,6 +32034,7 @@ rir : Palyndro_1701
 rir : Sentença_1001
 risco : Aolero_0501
 risco : Bolero_0401
+risco : Cacos_0401
 risco : Ciuminho_0106
 risco : Dolores_0901
 risco : Epitafiando_0202
@@ -31631,6 +32072,7 @@ risquei : Joker_0101
 riste : Papilio_1203
 ritmista : Destinos_0205
 ritmista : Distintos_0205
+ritmo : Cacos_0401
 ritmo : Manifesto_1603
 ritmo : Tempo_0702
 rito : Joker_0404
@@ -31647,13 +32089,14 @@ ritual : Manifesto_1603
 ritual : Manusgrite_0102
 ritual : Manusgrito_0102
 ritual : Sos_0201
+ritual : eus_0102
+ritual : eus_0302
 ritualista : Destinos_0205
 ritualista : Distintos_0205
 robô : Prefácil_1701
 rochedo : Liberta_0602
 rocks : Silente_0704
 roda : Ocio_1101
-rodada : Abertura_1001
 rodapé : Manifesto_1704
 rodapé : Silente_0202
 rodapé : Silente_0204
@@ -31719,6 +32162,7 @@ rosa : Fatos_1605
 rosa : Papilio_1501
 rosas : Becos_1004
 rosnar : Vozes_0102
+rosto : Cacos_0301
 rosto : Joker_0302
 rosto : Liberta_0901
 rosto : Usinas_0901
@@ -31743,7 +32187,6 @@ rota : Zelo_0301
 rotear : Manifesto_0803
 roteirista : Destinos_0205
 roteirista : Distintos_0205
-roteiro : Abertura_1505
 roteiro : Manusgrite_0102
 roteiro : Manusgrito_0102
 rotina : Ciuminho_0702
@@ -31781,9 +32224,10 @@ rouca : Papilio_1501
 rouquidão : MachBrait_0601
 rouquidão : Papilio_1101
 roçando : Gula_0301
+roê-lo : Anjos_0404
 roê-lo : Augusto_1607
-roê-lo. : Anjos_0404
 roída : Clarice_0205
+rsrs : eus_0501
 rua : Becos_1002
 rua : Becos_1004
 rua : Clandestino_0701
@@ -31984,6 +32428,8 @@ sabe : Zelo_0201
 sabe : Zelo_0301
 sabe : Zoia_0602
 sabe : Zoia_1102
+sabe : eus_0201
+sabe : nós_nos_nós_0302
 sabe-se : Circular_0601
 sabe-se : Mirante_0402
 sabe-se : Ogiva_0601
@@ -32050,9 +32496,10 @@ saber : Solero_1001
 saber : Tempo_1602
 saber : Tempus_0304
 saber : i-Mundo_0803
+saber : nós_nos_nós_0202
+saber-te : Haikai_0301
 saber-te : Saudades_0302
-saber-te? : Haikai_0301
-saber-te? : Tempo_1602
+saber-te : Tempo_1602
 saberei : Blablabla_0101
 saberei : Nonono_0501
 saberei : Paroles_0501
@@ -32103,6 +32550,7 @@ sabidos : Duralex_0301
 sabiás : Sonoro_0102
 sabonete : Essa_0204
 sabor : Brado_0601
+sabor : Cacos_0301
 sabor : Liberta_0901
 sabor : Rever_0201
 sabor : Tiro_1102
@@ -32147,6 +32595,7 @@ sacio : Sinas_0301
 sacio-me : Indolor_0901
 saco : Loremipsum_1001
 saco : Sos_0101
+saco : eus_0501
 sacoleira : Destinos_0202
 sacoleira : Distintos_0202
 sacra : Essas_0301
@@ -32194,6 +32643,8 @@ sagitário : Distintos_0102
 sagrada : Augusto_1603
 sagrado : Escriba_1102
 sagrado : Fatos_0601
+sagrado : eus_0102
+sagrado : eus_0302
 sagro : Essas_0101
 sagro : Insano_0101
 sagro : Sinais_0301
@@ -32259,6 +32710,7 @@ sal : Papilio_0101
 sal : Papilio_0701
 sala : Silente_0301
 salada : Gula_0702
+saldo : Cacos_0301
 saldo : Essas_0101
 saldo : Sinais_0301
 saldo : Sinas_0301
@@ -32447,6 +32899,7 @@ saturo : Sinais_0401
 saturo : Sinas_0301
 saturo : Sinas_0401
 satânica : Fatos_0103
+satélite : Cacos_0301
 satélite : Sinais_0102
 satélite : Sinas_0102
 saudade : Augusto_1601
@@ -32487,6 +32940,7 @@ saudável : Leao=f_0302
 saudável : Leao=m_0302
 saudável : Remedeio_0101
 saudável : Salute_0101
+saudável : eus_0402
 saxofonista : Destinos_0205
 saxofonista : Distintos_0205
 sazonais : Cartaz_1002
@@ -32496,6 +32950,7 @@ sazonal : Sinas_0102
 sazonal : Tolero_0102
 saía : Feiras_0901
 saída : Becos_1104
+saída : Cacos_0401
 saída : Conto_0302
 saída : Conto_1203
 saída : Cuores_0404
@@ -32550,6 +33005,7 @@ sebo : Lero_0403
 sebo : Solero_0501
 sebo : Tolero_0301
 sebos : Cordel_0403
+seco : Cacos_0301
 seco : Meteoro_0103
 secos : Becos_1002
 secreta : Essas_0301
@@ -32570,6 +33026,8 @@ secreto : Sinais_0102
 secreto : Solero_0501
 secreto : Tolero_0301
 secreto : Veio_0604
+secreto : eus_0102
+secreto : eus_0302
 secretos : Clandestino_1102
 secretos : Gula_0402
 secretos : Victor_1001
@@ -32589,6 +33047,7 @@ seda : Sinais_0701
 seda : Sinas_0701
 sedas : Essas_0201
 sede : Atido_0203
+sede : Cacos_0301
 sede : Carroussel_0301
 sede : Essas_0503
 sede : Essas_0701
@@ -32898,6 +33357,7 @@ selam : Palyndro_1301
 selecionadas : Posfácio_0302
 selfie : Frases_0502
 selfies : Cromossomo_0602
+selo : Cacos_0301
 selo : Essas_0101
 selo : Esses_0301
 selo : Sinais_0301
@@ -32906,7 +33366,6 @@ selo : Sinas_0401
 selvagem : Gula_0703
 selvagem : Sinais_0102
 selvagem : Sinas_0102
-sem : Abertura_1401
 sem : Anjos_1705
 sem : Aolero_0102
 sem : Aolero_1001
@@ -32922,6 +33381,8 @@ sem : Becos_1004
 sem : Becos_1104
 sem : Blablabla_0301
 sem : Brado_0301
+sem : Cacos_0102
+sem : Cacos_0301
 sem : Cancer=f_0701
 sem : Cancer=m_0701
 sem : Caprico=f_0901
@@ -32941,8 +33402,8 @@ sem : Clarice_0602
 sem : Clarice_1002
 sem : Conto_0302
 sem : Conto_0701
-sem : Conto_0801
 sem : Conto_0902
+sem : Conto_1101
 sem : Conto_1203
 sem : Cordel_0403
 sem : Cuores_0404
@@ -33122,6 +33583,8 @@ sem : Zoia_1303
 sem : Zoia_1701
 sem : i-Mundo_0203
 sem : i-Mundo_0505
+sem : nós_nos_nós_0101
+sem : nós_nos_nós_0201
 sem-terra-nem-tetos : Cromossomo_0202
 sem-teto : Dolores_0301
 sem-teto : Indolor_0303
@@ -33160,23 +33623,23 @@ sementes : Saudades_0701
 sementes : Sinais_0302
 sementes : Sinas_0402
 sementes : Victor_0101
-semi- : Essas_0501
-semi- : Insano_0501
-semi- : Sinais_0101
-semi- : Sinas_0101
-semi- : Zero_0301
+semi : Essas_0501
+semi : Evidências_0301
+semi : Insano_0501
+semi : Sinais_0101
+semi : Sinas_0101
 semi-pronta : Oca_0303
 semi-pronto : Oco_0303
 semiaberta : Ciuminho_0702
 semiaberta : Ciuminho_0801
 semiaberta : Psiu_0301
 semiaberta : Zelo_0201
-semiciência : Zero_0102
-semiciência : Zero_0104
-semiciência : Zero_0302
-semiconsciência : Zero_0102
-semiconsciência : Zero_0104
-semiconsciência : Zero_0302
+semiciência : Evidências_0102
+semiciência : Evidências_0104
+semiciência : Evidências_0302
+semiconsciência : Evidências_0102
+semiconsciência : Evidências_0104
+semiconsciência : Evidências_0302
 semiletrado : Cordel_0403
 seminarista : Destinos_0205
 seminarista : Distintos_0205
@@ -33319,6 +33782,7 @@ sensatas : Posfácio_0903
 sensatas : Posfácio_1004
 sensato : Oficio_0502
 sensato : Sinais_0102
+sensação : Cacos_0601
 sensação : MachBrait_0601
 sensação : Papilio_0601
 sensação : Papilio_1101
@@ -33352,6 +33816,8 @@ sensível : Touro=f_0103
 sensível : Touro=m_0103
 sensível : Virgem=f_0902
 sensível : Virgem=m_0902
+sensível : eus_0102
+sensível : eus_0302
 senta-te : Anjos_1201
 senta-te : Augusto_1201
 sentado : Loremipsum_1001
@@ -33377,9 +33843,7 @@ sentenças : Sinas_0402
 sentes : Escorpio=f_0601
 sentes : Escorpio=m_0601
 senti : Joker_0301
-sentido : Abertura_0405
-sentido : Abertura_0502
-sentido : Abertura_1003
+sentido : Cacos_0401
 sentido : Estudo_0702
 sentido : Festim_0801
 sentido : Finalmentes_0602
@@ -33460,19 +33924,18 @@ sequelas : Essas_0201
 sequelas : Essas_0701
 sequelas : Sinais_0701
 sequelas : Sinas_0701
+sequer : nós_nos_nós_0201
 sequestro : Essas_0101
 sequestro : Sinais_0401
 sequestro : Sinas_0301
 sequestro : Sinas_0401
+sequência : Cacos_0301
 sequência : Cadência_0104
 sequência : Essas_0701
 sequência : Sinais_0701
 sequência : Sinas_0701
 sequências : Posfácio_0303
 sequências : Snowball_1201
-ser : Abertura_0501
-ser : Abertura_0601
-ser : Abertura_0701
 ser : Aolero_0602
 ser : Aquarius=f_0104
 ser : Aquarius=f_0802
@@ -33486,6 +33949,7 @@ ser : Blablabla_0101
 ser : Blablabla_0301
 ser : Bolero_0503
 ser : Brado_0602
+ser : Cacos_0301
 ser : Cancer=f_0502
 ser : Cancer=m_0502
 ser : Caprico=f_0201
@@ -33512,6 +33976,7 @@ ser : Essas_0501
 ser : Essas_0701
 ser : Esses_0401
 ser : Estudo_0703
+ser : Evidências_0202
 ser : Festim_0603
 ser : Festim_1102
 ser : Finalmentes_0602
@@ -33608,9 +34073,9 @@ ser : Victor_0201
 ser : Victor_1201
 ser : Virgem=f_0801
 ser : Virgem=m_0801
-ser : Zero_0202
 ser : Zodiacaos_1602
 ser : Zoia_0302
+ser : nós_nos_nós_0303
 sera : Perfil_0702
 serafim : Becos_1004
 serei : Essas_0501
@@ -33667,13 +34132,13 @@ seres : Veio_1003
 seres : Vozes_0202
 seria : Beaba_0503
 seria : Blablabla_0101
+seria : Evidências_0201
 seria : Fatos_1802
 seria : Nonono_0101
 seria : Nonono_0501
 seria : Paroles_0101
 seria : Paroles_0501
 seria : Tempo_0302
-seria : Zero_0201
 seriam : Nós_0501
 seriam : Tempo_1201
 seriedade : Caprico=f_0902
@@ -33887,7 +34352,6 @@ sibilinas : Snowball_1301
 sibilo : Essas_0101
 sibilo : Sinais_0501
 sibilo : Sinas_0301
-sic : Abertura_0603
 sic : Manifesto_1707
 siceridade : Perfil_0702
 sicrana : Dolores_0301
@@ -33931,6 +34395,7 @@ siglas : Essas_0201
 sigmund : Fatos_1605
 significa : Finalmentes_0201
 significa : Zodiacaos_1301
+significado : Cacos_0201
 significo : Essas_0501
 significo : Esses_0401
 significo : Sinais_0101
@@ -33968,6 +34433,8 @@ silencia : Epitafiando_0702
 silencia : Feiras_0704
 silencia : Portal_0802
 silenciam : Tiro_0701
+silencioso : eus_0102
+silencioso : eus_0302
 silente : Dolores_0202
 silente : Essas_0503
 silente : Indolor_0603
@@ -33981,7 +34448,6 @@ silvar : Vozes_0102
 silvo : Essas_0101
 silvo : Sinais_0501
 silvo : Sinas_0301
-silêncio : Abertura_0602
 silêncio : Becos_1004
 silêncio : Blablabla_0301
 silêncio : Ciuminho_0501
@@ -34029,7 +34495,6 @@ silêncios : Minuto_0601
 silêncios : Passagens_0702
 silêncios : Solero_1001
 silício : Ocio_1402
-sim : Abertura_1503
 sim : Destinos_1101
 sim : Epitafiando_0202
 sim : Essas_0501
@@ -34067,6 +34532,8 @@ simbólicas : Ocio_0807
 simbólico : Clandestino_0701
 simbólico : Sinais_0102
 simbólico : Victor_0401
+simbólico : eus_0102
+simbólico : eus_0302
 simetria : Essa_0604
 similar : Essas_0503
 similar : Essas_0701
@@ -34088,6 +34555,7 @@ simpatias : Destinos_0805
 simpatias : Distintos_0705
 simpatias : MachBeth_0104
 simples : Brado_0102
+simples : Cacos_0401
 simples : Cartaz_0803
 simples : Essas_0502
 simples : Estudo_0503
@@ -34183,6 +34651,7 @@ sinais : Sinais_0302
 sinais : Sinas_0302
 sinais : Zelo_0201
 sinais : Zodiacaos_0702
+sinal : Cacos_0201
 sinas : Essas_0201
 sinas : Fugaz_0202
 sinas : Fugaz_0402
@@ -34337,6 +34806,7 @@ sirvam : Saudades_0601
 sirvo : Essas_0101
 sirvo : Sinais_0501
 sirvo : Sinas_0301
+sistema : Cacos_0301
 sistemática : Críticas_0602
 sistemática : Manifesto_0201
 sistemática : Reinos_0404
@@ -34345,6 +34815,7 @@ sistemáticos : Críticas_0502
 sisudez : Escriba_1102
 sitiu : Perfil_0201
 situacionista : Demo_0202
+situação : Cacos_0601
 situações : Escorpio=f_0603
 situações : Escorpio=m_0603
 situações : Gemeos=f_0501
@@ -34427,7 +34898,6 @@ sobras : Essas_0201
 sobras : Salute_0301
 sobras : Sinais_0302
 sobras : Sinas_0302
-sobre : Abertura_1302
 sobre : Aquarius=f_0402
 sobre : Aquarius=m_0402
 sobre : Batismo_0402
@@ -34471,6 +34941,7 @@ sobrevida : Remedeio_0301
 sobrevida : Salute_0601
 sobrevive : Inhos_0601
 sobrevive : Sopros_0501
+sobrevivente : nós_nos_nós_0109
 sobreviventes : Nós_0102
 sobrevivo : Essas_0501
 sobrevivo : Ocio_1201
@@ -34488,6 +34959,8 @@ sobro : Sinais_0101
 sobro : Sinas_0101
 sobrou : Fatos_1301
 sociais : Seguro_0101
+social : eus_0102
+social : eus_0302
 social-laicos : Palyndro_1701
 sociedade : Cordel_0403
 sociedade : Escriba_1102
@@ -34558,6 +35031,7 @@ sol : Usinas_0603
 sol : Zelo_0201
 sol : Zodiacaos_0101
 sol-a-sol : Sopros_1101
+sola : Cacos_0301
 solapo : Essas_0101
 solapo : Sinais_0301
 solapo : Sinas_0301
@@ -34565,6 +35039,7 @@ solavanco : Amaré_0302
 solavancos : MachBeth_1301
 solavancos : MachBrait_0901
 solavancos : Papilio_0901
+soldado : Cacos_0201
 soldado : Sinais_0102
 soleira : Frases_0502
 solene : Esses_0301
@@ -34632,8 +35107,8 @@ solitários : Cuores_0404
 solitários : Destinos_0405
 solitários : Distintos_0305
 solo : Augusto_1203
-solo : Conto_0801
 solo : Conto_0902
+solo : Conto_1101
 solo : Fugaz_0201
 solo : Haikai_0102
 solo : Haikai_0201
@@ -34678,6 +35153,7 @@ soluço : Pedidos_0302
 soluço : Portal_0302
 solução : Amaré_0306
 solução : Brado_0301
+solução : Cacos_0601
 soluções : Finalmentes_0602
 soluções : Zodiacaos_1602
 solvo : Essas_0101
@@ -34691,6 +35167,7 @@ solícito : Aquarius=m_0103
 solícito : Sinais_0102
 solúvel : Sinais_0102
 solúvel : Sinas_0102
+som : Cacos_0401
 som : Elogio_0601
 som : Papilio_0301
 som : Reger_0202
@@ -34706,9 +35183,9 @@ somar : Destinos_0702
 somar : Distintos_0602
 somar-te : Fugaz_0602
 somar-te : Tempo_1702
-sombra : Abertura_0702
 sombra : Anjos_1103
 sombra : Augusto_1103
+sombra : Cacos_0301
 sombra : Ciuminho_0801
 sombra : Clandestino_0601
 sombra : Dolores_0601
@@ -34733,6 +35210,8 @@ sombras : Sinas_0701
 sombria : Epitafiando_0701
 sombria : Portal_0801
 sombrias : Minuto_0203
+sombrio : eus_0102
+sombrio : eus_0302
 some : Ogiva_0402
 somemos : Palyndro_0501
 somente : Cartaz_1101
@@ -34783,7 +35262,7 @@ sonha : Olhares_0602
 sonha : Paroles_0501
 sonha : Zoia_0602
 sonha : Zoia_1102
-sonha-se... : Feiras_0102
+sonha-se : Feiras_0102
 sonhadelo : Essa_0302
 sonhado : Manusgrite_0801
 sonhado : Manusgrito_0801
@@ -34838,6 +35317,7 @@ sonho : Blablabla_0101
 sonho : Bolero_0301
 sonho : Brado_0601
 sonho : Bula_0101
+sonho : Cacos_0401
 sonho : Carroussel_0301
 sonho : Clarice_0203
 sonho : Duralex_0101
@@ -35030,7 +35510,6 @@ sorte : Tiro_1002
 sorte : Tolero_0301
 sorte : Veio_0402
 sorteadas : Posfácio_0302
-sorteio : Abertura_1001
 sorteio : Essas_0101
 sorteio : Esses_0101
 sorteio : Sinais_0401
@@ -35174,6 +35653,7 @@ sozinho : Zelo_0301
 sozinhos : Ciuminho_0901
 sozinhos : Psiu_0401
 sozinhos : Zelo_0301
+sozinhos : eus_0501
 soçobro : Esses_0301
 spa : Destinos_0902
 spa : Distintos_0802
@@ -35266,17 +35746,17 @@ suavizo : Essas_0101
 suavizo : Sinais_0501
 suavizo : Sinas_0301
 sub : Críticas_0105
+sub : Evidências_0301
 sub : Oficia_0102
 sub : Oficio_0102
-sub- : Zero_0301
 subalterna : Sinas_0102
 subalterno : Sinais_0102
-subciência : Zero_0102
-subciência : Zero_0104
-subciência : Zero_0302
-subconsciência : Zero_0102
-subconsciência : Zero_0104
-subconsciência : Zero_0302
+subciência : Evidências_0102
+subciência : Evidências_0104
+subciência : Evidências_0302
+subconsciência : Evidências_0102
+subconsciência : Evidências_0104
+subconsciência : Evidências_0302
 subcutânea : Sinas_0102
 subcutâneo : Sinais_0102
 subestimem : Remedeio_0301
@@ -35302,9 +35782,9 @@ submergível : Escriba_1202
 submeter : Blablabla_0201
 submeter : Nonono_0502
 submeter : Paroles_0502
-submeto-me, : Essas_0501
-submeto-me, : Sinais_0101
-submeto-me, : Sinas_0101
+submeto-me : Essas_0501
+submeto-me : Sinais_0101
+submeto-me : Sinas_0101
 submissa : Essas_0301
 submissa : Sinas_0102
 submisso : Pessoa_0402
@@ -35478,13 +35958,18 @@ superação : Escriba_1102
 superegos : Essas_0201
 superegos : Sinais_0302
 superegos : Sinas_0302
+superficial : Cacos_0201
 superficial : Finalmentes_0303
 superficial : Zodiacaos_1402
+superficialteatral : Cacos_0201
+superfície : Cacos_0401
 superintendente : Críticas_0106
 superintendente : Oficia_0103
 superintendente : Oficio_0103
 superior : Astros_0401
 superior : Minuto_0601
+superior : eus_0102
+superior : eus_0302
 superiora : Destinos_0202
 superiora : Distintos_0202
 superiores : Nós_0502
@@ -35514,7 +35999,6 @@ suportar : Finalmentes_0101
 suportar : Oca_0201
 suportar : Oco_0201
 suportar : Zodiacaos_1202
-suporte : Abertura_0806
 suporte : Fugaz_0201
 suporte : Haikai_0102
 suporte : Tempo_0102
@@ -35522,7 +36006,6 @@ suporte : Tempo_0401
 suporte : Tempo_0801
 suporto : Remedeio_0301
 suporto : Salute_0601
-suposição : Abertura_0903
 suposta : Fatos_1701
 suposta : Reinos_0502
 supostamente : Duralex_0202
@@ -35582,7 +36065,6 @@ surfo : Essas_0101
 surfo : Sinais_0501
 surfo : Sinas_0301
 surfo : Sinas_0401
-surge : Abertura_0902
 surge : Ciuminho_0403
 surge : Dolores_0701
 surge : Frases_0303
@@ -35730,7 +36212,6 @@ sussurros : Papilio_1201
 sussurros : Sinais_0302
 sussurros : Sinas_0502
 susta : Psiu_0501
-sustenta : Abertura_0806
 sustenta : Brado_0301
 sustenta : Loremipsum_0401
 sustenta : MachBeth_0601
@@ -35833,6 +36314,7 @@ sátira : Manifesto_1704
 sátiras : Essas_0201
 sátiras : Sinais_0302
 sátiras : Sinas_0302
+são : Cacos_0601
 são : Demo_0401
 são : Essa_0103
 são : Essas_0701
@@ -35869,6 +36351,7 @@ são : Tempo_1201
 são : Tempo_1602
 são : Tiro_0701
 são : Usinas_0703
+são : nós_nos_nós_0203
 sãos : Esses_0101
 sãos : Tiro_1002
 século : Fatos_0601
@@ -35918,6 +36401,8 @@ sóbrias : Paroles_0202
 sóbrio : Insano_0508
 sóbrio : Sinais_0102
 sóbrio : Sos_0505
+sóbrio : eus_0102
+sóbrio : eus_0302
 sóbrios : Nonono_0602
 sóbrios : Paroles_0602
 sódio : Papilio_0701
@@ -36033,9 +36518,6 @@ talhar : Manifesto_1202
 talhar : Nonono_0102
 talhar : Paroles_0102
 talhar : Saudades_0101
-talvez : Abertura_0501
-talvez : Abertura_0601
-talvez : Abertura_0701
 talvez : Augusto_1605
 talvez : Bula_0101
 talvez : Cadência_0301
@@ -36210,6 +36692,7 @@ taverna : Victor_0401
 taverneiro : Clandestino_1201
 taverneiro : Victor_0201
 taverneiro : Victor_1201
+taxa : Cacos_0201
 taxas : Remedeio_0202
 taxas : Salute_0502
 taxidermista : Destinos_0205
@@ -36221,6 +36704,8 @@ taça : i-Mundo_0802
 taças : Becos_0201
 taças : Ocio_1305
 tchetchênia : Reinos_0503
+teatral : Cacos_0201
+teatro : Cacos_0201
 teatro : Ciuminho_0702
 teatro : Ciuminho_0801
 teatro : Festim_0603
@@ -36336,6 +36821,7 @@ tem : Zelo_0201
 tem : Zelo_0601
 tem : Zelo_0603
 tem : Zoia_0102
+tem : eus_0501
 tema : Beaba_0102
 temas : Leituras_0502
 tememos : Cromossomo_0902
@@ -36394,6 +36880,7 @@ tempo : Atido_0701
 tempo : Blablabla_0301
 tempo : Bolero_0401
 tempo : Brado_0301
+tempo : Cacos_0301
 tempo : Caprico=f_0902
 tempo : Caprico=m_0902
 tempo : Cartaz_1301
@@ -36469,6 +36956,7 @@ tempo : Veio_0604
 tempo : Victor_0201
 tempo : Victor_0401
 tempo : Victor_1201
+temporal : Cacos_0201
 temporal : Prefácil_0303
 temporiu : Essa_0302
 temporária : Leituras_0402
@@ -36584,6 +37072,7 @@ tentar : Ocio_0602
 tentar : Portal_0503
 tentar : Prefácil_1701
 tentar : Zodiacaos_1302
+tentativa : Cacos_0401
 tente : Circular_0402
 tente : Estudo_0503
 tente : Olhares_1602
@@ -36659,6 +37148,7 @@ ter : Zelo_0501
 ter : Zelo_0601
 ter : Zoia_0803
 ter : Zoia_1303
+terapeuta : eus_0401
 terapia : Manifesto_1706
 terapias : Ciuminho_0501
 terceiro : Ciuminho_0801
@@ -36671,9 +37161,11 @@ tergiversa : Manifesto_0601
 teria : Fatos_1802
 teria : Usinas_0901
 termina : Enfrente_0103
-terminar : Abertura_1402
+terminal : eus_0102
+terminal : eus_0302
 terminar : Estudo_0102
 terminar : Ocio_0602
+termo : Cacos_0301
 termos : Manifesto_0604
 terna : Fugaz_0302
 terna : Tempo_1102
@@ -36742,6 +37234,8 @@ tesoureira : Distintos_0202
 tesoureira : Oficia_0103
 tesoureiro : Críticas_0106
 tesoureiro : Oficio_0103
+testa : eus_0402
+teste : Cacos_0301
 teste : Reinos_0101
 testemunhas : Becos_1002
 testemunho : Aolero_0102
@@ -36765,8 +37259,7 @@ teu : Tempo_1602
 teu : Zoia_1701
 teus : Papilio_1101
 teus : Saudades_0601
-texto : Abertura_0302
-texto : Abertura_0404
+texto : Cacos_0301
 texto : Críticas_0804
 texto : Oficia_1801
 texto : Oficio_1801
@@ -36779,6 +37272,7 @@ textos : Oficia_1101
 textos : Oficio_1101
 textos : Paroles_0205
 textos : Paroles_0601
+textual : Cacos_0201
 teço : Dolores_0901
 teço : Indolor_0901
 teço : Oficia_1503
@@ -36794,9 +37288,9 @@ thomas : Fatos_1605
 tiaras : Veio_0102
 tiatro : Perfil_0201
 tibetano : Fatos_0404
-tic-tacs! : Haikai_0301
-tic-tacs! : Tempo_1602
-tic-tacs, : Tempus_0303
+tic-tacs : Haikai_0301
+tic-tacs : Tempo_1602
+tic-tacs : Tempus_0303
 tico-ticos : Sonoro_0102
 tido : Fatos_0601
 tigre : Destinos_0105
@@ -36834,6 +37328,7 @@ tinta : Zelo_0201
 tinta : Zelo_0501
 tintura : Lato_0903
 tio : Fatos_1602
+tipo : Cacos_0401
 tipo : Epitafiando_0202
 tipo : Portal_0302
 tipoia : Ciuminho_0801
@@ -36997,6 +37492,7 @@ todos : Tempo_0702
 todos : Tiro_1002
 todos : Virgem=f_0601
 todos : Virgem=m_0601
+todos : eus_0501
 togados : Cromossomo_0303
 tola : Anjos_0103
 tola : Augusto_1603
@@ -37108,9 +37604,9 @@ tornam : Silente_0706
 tornam : Tiro_0701
 tornar : Destinos_0502
 tornar : Distintos_0402
+tornar-se : Evidências_0202
 tornar-se : Touro=f_0402
 tornar-se : Touro=m_0402
-tornar-se : Zero_0202
 tornarem : Astros_0801
 torne : Astros_0801
 torne : Sos_0601
@@ -37119,6 +37615,7 @@ tornem : Remedeio_0301
 tornem : Salute_0601
 torno : Remedeio_0101
 torno : Salute_0101
+torno : nós_nos_nós_0303
 tornozelo : Essa_0202
 torpe : Brado_0203
 torpedos : Aolero_0501
@@ -37173,7 +37670,6 @@ tortura : Zelo_0201
 torturas : Escriba_0903
 torço : Bula_0101
 torço : Salute_0301
-torção : Abertura_0502
 tosca : Dolores_0901
 tosca : Frases_0403
 tosca : Indolor_0901
@@ -37192,7 +37688,7 @@ total : Remedeio_0301
 total : Salute_0601
 totalmente : Fatos_1502
 totalmente : Meteoro_0102
-totens : Conto_0801
+totens : Conto_1101
 toureira : Dolores_0303
 toureiro : Indolor_0303
 touro : Destinos_0102
@@ -37234,6 +37730,7 @@ traduzir : Nonono_0902
 traduzir : Paroles_0502
 tradução : Amaré_0306
 tradução : Blablabla_0301
+tradução : Cacos_0601
 tradução : Ciuminho_0501
 tradução : Nonono_0301
 tradução : Nonono_0701
@@ -37310,6 +37807,7 @@ tranquilo : Lero_0403
 tranquilo : Solero_0601
 tranquilo : Tolero_0401
 tranquilo : Touro=m_0103
+transatlântico : nós_nos_nós_0109
 transborda : Lato_0905
 transcenda : Astros_0401
 transcendentes : Finalmentes_0103
@@ -37326,13 +37824,12 @@ transe : Papilio_0701
 transeunte : Prefácil_0801
 transeuntes : Becos_1002
 transeuntes : Cuores_0404
-transfere : Abertura_1002
 transferir : Blablabla_0201
 transferir : Nonono_0902
 transferir : Paroles_0502
 transferência : Cadência_0302
 transformar : Minuto_0502
-transformar-se : Zero_0202
+transformar-se : Evidências_0202
 transformações : Zodiacaos_0803
 transformista : Destinos_0205
 transformista : Distintos_0205
@@ -37381,6 +37878,7 @@ trapos : Nós_0802
 traquinas : Gula_0303
 trará : Cuores_0701
 traste : Lato_0805
+trato : Cacos_0401
 trato : Crítico_0601
 trato : Lato_0501
 trato : Posfácio_1302
@@ -37409,7 +37907,6 @@ travessuras : Nonono_0701
 travessuras : Nonono_1101
 travessuras : Paroles_0301
 travessuras : Paroles_0701
-traz : Abertura_0405
 traz : Anjos_1502
 traz : Batismo_0202
 traz : Brado_0301
@@ -37429,7 +37926,6 @@ traz : Zelo_0201
 trazem : Tiro_0701
 trazem : Zodiacaos_0501
 trazer : Beaba_0502
-traça : Abertura_1505
 traça : Epitafiando_0702
 traça : Inhos_0501
 traça : Portal_0802
@@ -37440,6 +37936,7 @@ traçar : Pedidos_0302
 traças : Fatos_0601
 traço : Aolero_0501
 traço : Bolero_0401
+traço : Cacos_0301
 traço : Fugaz_0201
 traço : Haikai_0102
 traço : Haikai_0201
@@ -37456,7 +37953,7 @@ traço : Tolero_0301
 traços : Becos_0501
 traços : Fatos_1101
 traídos : Usinas_0305
-trecho : Abertura_1003
+trecho : Cacos_0301
 trecho : Fatos_1301
 trechos : Carroussel_0101
 trechos : Carroussel_0501
@@ -37481,7 +37978,6 @@ tribunal : Frases_0502
 tribunal : Sentença_0202
 tributarista : Destinos_0205
 tributarista : Distintos_0205
-trilha : Abertura_0702
 trilha : Avevida_0302
 trilha : Fugaz_0201
 trilha : Fugaz_0301
@@ -37512,6 +38008,7 @@ trinados : Sn6=ball_0802
 trinados : Sn8=ball_0901
 trinados : Snowball_1401
 trinados : Sonoro_0202
+trinca : Cacos_0401
 trisca : Ciuminho_0403
 triste : Anjos_0302
 triste : Augusto_0302
@@ -37536,12 +38033,14 @@ trivial : Oficia_1002
 trivial : Oficio_1002
 trivial : Sos_0201
 troca : Avevida_0302
+troca : Cacos_0301
 troca : Feiras_0603
 troca : Feiras_0703
 troca-se : Augusto_0701
 trocadilhos : Dolores_1002
 trocamos : Nós_0802
 trocar : Arerir_0101
+trocar : Cacos_0101
 trocar : Circular_0503
 trocar : Destinos_0702
 trocar : Distintos_0602
@@ -37549,6 +38048,7 @@ trocaram : Nós_0202
 trocavam-se : Conto_1301
 troco : Aolero_0501
 troco : Bolero_0401
+troco : Cacos_0301
 troco : Dolores_0201
 troco : Lero_0401
 troco : Lero_0403
@@ -37585,6 +38085,7 @@ trovões : Meteoro_0404
 trovões : Meteoro_1203
 truculência : Cadência_0202
 trufas : Ocio_1301
+truque : Cacos_0401
 truque : Manusgrite_0102
 truque : Manusgrito_0102
 truques : Duralex_0103
@@ -37758,6 +38259,7 @@ tão : Zodiacaos_1501
 tão : Zoia_0703
 tão-somente : Oficia_1501
 tão-somente : Oficio_1501
+técnica : Cacos_0301
 tédio : Aolero_0501
 tédio : Avevida_0303
 tédio : Becos_0202
@@ -37799,6 +38301,7 @@ tédios : Haikai_0203
 tédios : Tempo_0103
 tédios : Tempo_0803
 tédios : Tempo_1103
+término : Cacos_0301
 tê-las : Oficia_1801
 tê-las : Oficio_1801
 têm : Pedidos_0401
@@ -37820,6 +38323,7 @@ tímidos : Cartaz_1104
 tímpanos : Papilio_1203
 tísica : Anjos_0604
 tísica : Augusto_0304
+título : Cacos_0401
 título : Crítico_0206
 título : Estudo_0103
 título : Ocio_0603
@@ -37857,19 +38361,14 @@ ultimamente : Oficia_1501
 ultimamente : Oficio_1501
 ultimato : Ciuminho_0801
 ultimato : Psiu_0301
-ultimato : Una_0101
 ultimato : Zelo_0201
 ultraje : Lato_0802
 ultrapassado : Beaba_0503
+ultrapassado : Cacos_0301
 ultrapassado : Cordel_0104
 ultrapassem : Remedeio_0301
 ultrapassem : Salute_0601
 ulular : Vozes_0102
-uma : Abertura_0502
-uma : Abertura_0602
-uma : Abertura_0604
-uma : Abertura_0702
-uma : Abertura_1301
 uma : Aolero_0501
 uma : Aquarius=f_0201
 uma : Aquarius=m_0201
@@ -37895,7 +38394,7 @@ uma : Cartaz_1301
 uma : Circular_0601
 uma : Ciuminho_0801
 uma : Clandestino_0701
-uma : Conto_0801
+uma : Conto_1101
 uma : Cordel_0403
 uma : Crítico_0103
 uma : Crítico_0301
@@ -37910,6 +38409,7 @@ uma : Dolores_0901
 uma : Enfrente_0301
 uma : Escriba_0201
 uma : Estudo_0103
+uma : Evidências_0301
 uma : Fatos_1701
 uma : Feiras_1003
 uma : Festim_0701
@@ -37973,9 +38473,10 @@ uma : Tiro_1102
 uma : Tolero_0301
 uma : Victor_0401
 uma : Zelo_0201
-uma : Zero_0301
 uma : i-Mundo_0702
 uma : i-Mundo_0802
+uma : nós_nos_nós_0204
+uma : nós_nos_nós_0303
 umas : Brado_0602
 umas : Conto_0102
 umas : Feiras_1003
@@ -37984,12 +38485,9 @@ umas : Tempo_1602
 umbigo : Haikai_0301
 umbigo : Tempo_1602
 umbrais : Silente_0102
-umbral : Una_0101
 umidade : Meteoro_0901
 umorada : Perfil_0102
 umorada : Perfil_0402
-una : Abertura_0101
-una : Abertura_0901
 una : Manusgrite_0701
 unanimidade : Preciso_1401
 und : Críticas_0102
@@ -38025,12 +38523,11 @@ unhas : Papilio_1201
 unhas : Papilio_1203
 unho : Atido_0402
 unho : Atido_0502
-uni-verso! : Crítico_0801
+uni-verso : Crítico_0801
+unidade : Cacos_0201
 unidas : Manusgrite_1102
 unidas : Manusgrito_1102
 unido : Brado_0602
-unificador : Una_0101
-uniforme : Una_0101
 unir : Arerir_0301
 unir : Destinos_0702
 unir : Distintos_0602
@@ -38038,7 +38535,6 @@ universal : Augusto_1603
 universal : Ciuminho_0102
 universal : Elogio_0202
 universal : Psiu_0103
-universidade : Una_0101
 universitários : Ciuminho_0501
 universo : Astros_0801
 universo : Becos_1104
@@ -38052,7 +38548,6 @@ universo : Papilio_0901
 universo : Prefácil_0303
 universo : Saudades_0201
 universo : Ser_0901
-universo : Una_0101
 universo : Veio_0701
 universos : Remedeio_0301
 universos : Salute_0601
@@ -38074,7 +38569,6 @@ uns : Oca_0202
 uns : Ocio_1402
 uns : Oco_0202
 uns : Tempo_1602
-uníssono : Una_0101
 urano : Zodiacaos_0101
 urbanista : Destinos_0205
 urbanista : Distintos_0205
@@ -38145,7 +38639,6 @@ uso : Tolero_0301
 usufruir : Prefácil_0302
 usufruo : Atido_0203
 usurpa : Reinos_0501
-utilitário : Una_0101
 utopia : Becos_0502
 utopia : Brado_0601
 utopia : Ciuminho_0501
@@ -38210,6 +38703,7 @@ vadias : Becos_0801
 vadias : Tempo_0203
 vadio : Estudo_0503
 vaga : Brado_0203
+vaga : Cacos_0201
 vaga : Ciuminho_0403
 vaga : Dolores_0601
 vaga : Essa_0601
@@ -38422,10 +38916,11 @@ varem : Gula_0401
 varia : Ciuminho_0403
 variando : Meteoro_0802
 variando : Tempus_0302
+variante : Cacos_0301
 variantes : Posfácio_0303
 variantes : Snowball_1301
 varias : Perfil_0201
-variação : Abertura_0502
+variação : nós_nos_nós_0204
 variações : Manifesto_1004
 variações : Posfácio_0701
 variedade : Cartaz_0601
@@ -38489,6 +38984,7 @@ vazias : Papilio_1101
 vazias : Sos_0201
 vazias : Victor_0802
 vazias : i-Mundo_0505
+vazio : Cacos_0401
 vazio : Ciuminho_0702
 vazio : Ciuminho_0801
 vazio : Conto_1301
@@ -38620,6 +39116,7 @@ velhos : Oco_0204
 velhos : Paroles_0204
 velhos : Rito_0102
 velhos : Zodiacaos_1602
+velocidade : Cacos_0201
 velocidade : Prefácil_1403
 velocista : Destinos_0205
 velocista : Distintos_0205
@@ -38797,6 +39294,7 @@ veramais : Essa_0302
 veranista : Destinos_0205
 veranista : Distintos_0205
 veras : i-Mundo_0102
+verbal : Cacos_0201
 verbete : Essa_0204
 verbetes : Manifesto_1205
 verbi : Sentença_0703
@@ -38831,6 +39329,7 @@ verbos : Veio_0604
 verbos : Veio_1003
 verbosidades : Cartaz_0502
 verdade : Becos_1104
+verdade : Cacos_0201
 verdade : Ciuminho_0702
 verdade : Ciuminho_0801
 verdade : Conto_1203
@@ -38932,6 +39431,7 @@ versificatório : Manifesto_0603
 verso : Aolero_0501
 verso : Augusto_1304
 verso : Bolero_0401
+verso : Cacos_0301
 verso : Clarice_0501
 verso : Epitafiando_0303
 verso : Estudo_0503
@@ -38978,7 +39478,8 @@ versátil : Gemeos=m_0101
 versátil : Gemeos=m_0103
 versátil : Virgem=f_0503
 versátil : Virgem=m_0503
-versão : Zero_0301
+versão : Cacos_0601
+versão : Evidências_0301
 versículo : Manifesto_0502
 verte : Avevida_0203
 verte : Ciuminho_0403
@@ -39058,9 +39559,6 @@ vez : Portal_0302
 vez : Sentença_1002
 vez : Solero_0801
 vez : Tolero_1101
-vezes : Abertura_0501
-vezes : Abertura_0601
-vezes : Abertura_0701
 vezes : Bula_0101
 vezes : Cartaz_1301
 vezes : Cromossomo_0902
@@ -39081,6 +39579,7 @@ via-látea : Augusto_1103
 viagar : Perfil_0201
 viage : Perfil_0303
 viagem : Astros_0801
+viagem : Cacos_0201
 viagem : Cordel_0101
 viagem : Epitafiando_0202
 viagem : Escriba_0202
@@ -39120,11 +39619,11 @@ vibrar : Avevida_0101
 vibração : Amaré_0306
 vibrações : Astros_0801
 vibre : Astros_0801
-vice- : Críticas_0105
-vice- : Oficia_0102
-vice- : Oficio_0102
+vice : Críticas_0105
+vice : Oficia_0102
+vice : Oficio_0102
 vice-e-versa : Estudo_0503
-vice-versa. : Ocio_1305
+vice-versa : Ocio_1305
 viceja : Ciuminho_0901
 viceja : Psiu_0401
 viceja : Zelo_0301
@@ -39244,6 +39743,7 @@ vida : Virgem=m_0801
 vida : Zelo_0201
 vida : Zodiacaos_1602
 vida : Zoia_0201
+vida : nós_nos_nós_0204
 vidas : Blablabla_0301
 vidas : Clandestino_0902
 vidas : Finalmentes_0602
@@ -39257,11 +39757,14 @@ vidas : Prefácil_1701
 vidas : Tempo_0702
 vidas : Victor_0802
 vidas : Zodiacaos_1602
+vide-bula : Remedeio_0301
+vide-bula : Salute_0601
 vidente : Indolor_0303
 vidente : Mirante_0401
 vidente : Ogiva_0404
 vidente : Olhares_0401
 vidente : Zoia_0401
+videntes : nós_nos_nós_0204
 videoconferências : Estudo_0602
 videoconferências : Ocio_0806
 vidinha : Brado_0202
@@ -39436,6 +39939,7 @@ vira : Psiu_0301
 vira : Psiu_0401
 vira : Zelo_0201
 vira : Zelo_0301
+virada : Cacos_0201
 virada : Oca_0501
 virado : Oco_0501
 virar : Brado_0602
@@ -39490,6 +39994,8 @@ virtual : Manifesto_0203
 virtual : Sos_0601
 virtual : Tempo_0802
 virtual : Tempo_1102
+virtual : eus_0102
+virtual : eus_0302
 virtude : Aries=f_0601
 virtude : Aries=m_0601
 virtudes : Finalmentes_0602
@@ -39525,7 +40031,7 @@ visitadora : Destinos_0202
 visitadora : Distintos_0202
 visitam : Tiro_0701
 visitas : Manifesto_0804
-visitá-la, : Liberta_0301
+visitá-la : Liberta_0301
 vislumbram : Usinas_0401
 vislumbre : Essa_0206
 vislumbre : i-Mundo_0802
@@ -39533,8 +40039,10 @@ vislumbro : Atido_0101
 vislumbro : Reger_0101
 vislumbro : Sopros_0201
 vislumbro : Sopros_0402
+vista : Cacos_0401
 vista : Crítico_0201
 vista : Dolores_0901
+vista : Evidências_0202
 vista : Indolor_0901
 vista : Leituras_0303
 vista : Rito_0101
@@ -39543,7 +40051,6 @@ vista : Sentença_0101
 vista : Ser_0701
 vista : Tempo_0702
 vista : Tiro_0701
-vista : Zero_0202
 vistam : Insano_0202
 vistas : Becos_0701
 visto : Aolero_0501
@@ -39579,13 +40086,13 @@ vistos : Ciuminho_0501
 vistos : Destinos_1101
 vistos : Distintos_1001
 visualize : Astros_0401
-visão : Abertura_0502
-visão : Abertura_1303
 visão : Augusto_0704
 visão : Liberta_0702
 visão : Papilio_0601
 visível : Essa_0603
 visível : Tiro_1102
+visível : eus_0102
+visível : eus_0302
 visões : Beaba_0202
 visões : MachBrait_0601
 visões : Papilio_0601
@@ -39794,6 +40301,7 @@ vodca : Ocio_1303
 vogam : Duralex_0302
 volata : Anjos_0203
 volata : Augusto_0204
+volta : Cacos_0301
 volta : Circular_0601
 volta : Haikai_0301
 volta : MachBeth_1301
@@ -39803,6 +40311,7 @@ volta : Sos_0601
 volta : Tempo_1602
 volta : Tempus_0104
 volta : Tiro_1102
+volta : nós_nos_nós_0303
 voltamos : Nós_1002
 voltar : Circular_0601
 voltar : Dolores_0901
@@ -39811,6 +40320,7 @@ voltar : Indolor_0901
 voltar : Tempo_1702
 voltaram : Nós_0402
 voltas : Conto_0201
+voltas : nós_nos_nós_0303
 voltemos : Haikai_0301
 voltemos : Tempo_1602
 volto : Atido_0702
@@ -39832,6 +40342,7 @@ vontade : Aolero_0401
 vontade : Augusto_1103
 vontade : Bolero_0301
 vontade : Brado_0601
+vontade : Cacos_0201
 vontade : Cancer=f_0402
 vontade : Cancer=m_0402
 vontade : Circular_0302
@@ -39857,6 +40368,7 @@ vontade : Sopros_0802
 vontade : Tiro_0202
 vontade : Tiro_0301
 vontade : Tolero_0201
+vontade : nós_nos_nós_0303
 vontades : Astros_0401
 vontades : Destinos_0801
 vontades : Distintos_0701
@@ -40022,9 +40534,10 @@ vícios : Minuto_0301
 vícios : Nós_0402
 vícios : Nós_1002
 vícios : Tiro_0303
+vínculo : Cacos_0401
 vínculos : Cancer=f_0301
 vínculos : Cancer=m_0301
-vírgula : Abertura_0602
+vínculos : nós_nos_nós_0104
 vírgulas : Cartaz_0502
 vírus : Ciuminho_0501
 vírus : Insano_0702
@@ -40055,8 +40568,6 @@ xxxvii : Manifesto_0503
 xícara : MachBrait_1101
 xícara : Papilio_1101
 youtubers : Cromossomo_0303
-ypoema : Abertura_0404
-ypoema : Abertura_0808
 ypoemas : Aolero_0501
 ypoemas : Bolero_0401
 ypoemas : Críticas_1201
@@ -40102,7 +40613,6 @@ zumbir : Vozes_0102
 zurrar : Vozes_0102
 àquela : Indolor_1102
 àquele : Indolor_1102
-ádito : Ana_0101
 água : Ciuminho_0901
 água : MachBeth_1101
 água : MachBrait_1101
@@ -40119,7 +40629,7 @@ zurrar : Vozes_0102
 ária : Ais_0302
 árias : Silente_0702
 árias : Silente_0704
-árida : Conto_0801
+árida : Conto_1101
 áries : Destinos_0102
 áries : Distintos_0102
 ártico : Meteoro_0603
@@ -40144,6 +40654,7 @@ zurrar : Vozes_0102
 ávido : Saudades_0402
 ávidos : Cuores_0404
 ávidos : Tiro_1002
+ângulo : Cacos_0301
 ânimo : Caprico=f_0802
 ânimo : Caprico=m_0802
 ânsia : Anjos_1103
@@ -40159,6 +40670,7 @@ zurrar : Vozes_0102
 ébrios : Nonono_0602
 ébrios : Paroles_0602
 épicas : Cartaz_0801
+época : Cacos_0301
 época : Tempo_1201
 épocas : Tempo_1201
 éter : Anjos_0606
@@ -40242,6 +40754,8 @@ zurrar : Vozes_0102
 íntimo : Lato_1101
 íntimo : Sentença_0202
 íntimo : Veio_1001
+íntimo : eus_0102
+íntimo : eus_0302
 íntimos : Aolero_0102
 íntimos : Lero_0102
 íntimos : Nonono_0602
@@ -40331,6 +40845,7 @@ zurrar : Vozes_0102
 única : Posfácio_0803
 única : Tempo_1102
 única : Tempo_1602
+único : Cacos_0401
 único : Haikai_0202
 único : Manifesto_0501
 único : Posfácio_1704
