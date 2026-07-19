@@ -9,8 +9,8 @@ ao sentido original da frase.
 **Os textos aqui traduzidos usam o Google Translate**  
 Os textos originais foram escritos em "português".  
   
-Existem 195 países no mundo hoje. Este total compreende 193 países integrantes  
-da Organização das Nações Unidas e dois países observadores:  
+Existem 195 países no mundo hoje. Este total compreende 193 países  
+integrantes da Organização das Nações Unidas e dois países observadores:  
 Vaticano-Santa Sé e o Estado da Palestina.  
   
 Existem cerca de 7099 línguas faladas no mundo.  
@@ -20,7 +20,7 @@ Com a modernização, um terço dessas línguas enfrenta o risco de extinção.
   
 Embora o Google Translate continue adicionando mais idiomas ao seu banco de dados,  
 no momento ele inclui apenas 103 idiomas.  
-Isso equivale a apenas 1,5 por cento de todas as línguas existentes.  
+Isso equivale a 1,5 por cento de todas as línguas existentes.  
   
 As traduções do Google evoluem a cada dia mas nem sempre são fiéis.  
   
@@ -30,7 +30,7 @@ Traduzir é também criação, invenção, imersão, subversão, diversão.
   
 A poesia não é uma ciência exata. Traduzir poesia requer um "estado de arte".  
   
-Para traduzir o texto basta **selecionar o idioma** na coluna à esquerda da tela.  
+Para traduzir o texto basta ***selecionar o idioma*** na coluna **>>** à esquerda da tela.  
   
 A ***primeira*** tradução será sempre do ***último*** poema gerado.  
 Isso permite ler o ***mesmo*** texto em qualquer idioma selecionado.  

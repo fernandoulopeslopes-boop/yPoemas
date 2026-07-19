@@ -50,7 +50,7 @@ Cubiço, como creme capitoso, consulados Calcutá, Cobija!… Calma, calma; cons
 Contestando, comunico cá conseguimos comboiar cobre captado (colheita consular comum),  
 creditando-o cofres consignatário competente, calculo consegui-lo-ás, contanto caves corajosamente.   
   
-Conforme contas, consideras cós curtos como cômoda conjuntura, configuradora cinematográficoa contornos carnes cubicáveis.  
+Conforme contas, consideras cós curtos como cômoda conjuntura, configuradora cinematográficos contornos carnes cubicáveis.  
 Curioso! Caso curtificação continue, conseguiremos conhecer coxas, calças?…Cáspite  
 Continuarei contando. Com comoção consentânea com cogitações contemporâneas, costumo compor canções.  
   
