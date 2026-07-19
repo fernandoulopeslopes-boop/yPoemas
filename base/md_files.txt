@@ -12,13 +12,14 @@ imagens|ABOUT_imagens.md
 o átomo do ítimo|ABOUT_o átomo do ítimo.md
 eixo Z|ABOUT_eixo_Z.md 
 pontuação|ABOUT_pontuação.md
+poly|ABOUT_poly.md
 tradittore|ABOUT_tradittore.md
 veredas|ABOUT_veredas.md
 carta de Guimarães Rosa|A incrível carta de Guimarães Rosa.md
 samizdàt|ABOUT_samizdàt.md
-poly|ABOUT_poly.md
 a ABA da Machina|a ABA da Machina.md
 anjos|ABOUT_Augusto dos Anjos.md
+o Autor e uma IA - conversas|ABOUT_Autor_da_Machina_e_uma_IA.md
 machina-IA|ABOUT_machina-IA.md
 icones|ABOUT_icones.md
 pensares|ABOUT_pensares.md

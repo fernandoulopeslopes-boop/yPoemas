@@ -1,15 +1,4 @@
-"desalmo-a"
-"espera-se
-"fake"-
-"fim-de-século"
-"lei-de-gérson"
-"vide-bula"
-#-#
--antropófago
--entidades
--ideias
 abacaxi
-abadia
 abaixo
 abalizada
 abalizado
@@ -58,6 +47,7 @@ abrangente
 abranger
 abrangência
 abrasa
+abrasivo
 abraça
 abraçadas
 abraçando
@@ -110,9 +100,10 @@ abusos
 abutre
 abóbada
 acaba
+acabam
 acabas
 academia
-acadêmica
+academica
 acadêmicas
 acadêmico
 acalanta
@@ -150,6 +141,7 @@ acentuada
 acentuam
 acentuando
 acerta
+acertam
 acertando
 acertar
 acerto
@@ -188,9 +180,7 @@ acolhimento
 acolá
 acomodar-se
 acomodo-me
-acompanhar
 aconchegar-se
-acontece
 acontecendo
 acontecer
 aconteceres
@@ -209,6 +199,7 @@ acordeão
 acordo
 acordos
 acostuma-te
+acostumado
 acredita
 acreditam
 acreditamos
@@ -227,9 +218,8 @@ acumulados
 acupunturista
 acácias
 acéfala
-ad-eternum...
+ad-eternum
 adaptar-se
-adaptativa
 adaptação
 ademais
 adendos
@@ -237,14 +227,17 @@ adentra
 adentrar
 adentro
 adepto
+adequado
 adequar-se
 adequação
 adereços
 aderir
+adesivo
 adespozisão
 adiada
 adiantado
 adiante
+adicional
 adimito
 aditamento
 adivinha
@@ -317,7 +310,6 @@ afazeres
 afeição
 afere
 aferida
-aferição
 afeta
 afetando
 afetiva
@@ -529,6 +521,7 @@ alienígenas
 alighieri
 alimenta
 alimenta-se
+alimentados
 alimentando
 alimentar
 alimentarão
@@ -579,6 +572,7 @@ alucinando
 alucinato
 alucinação
 aluga
+alugar
 alumia
 alumiam
 alumiando
@@ -617,6 +611,7 @@ amargando
 amargas
 amargos
 amargura
+amarra
 amarra-te
 amarrando
 amarras
@@ -643,6 +638,7 @@ ambígua
 ambíguas
 ambíguo
 ameacem
+ameaça
 ameaçando
 amei
 amem
@@ -676,6 +672,7 @@ amorfos
 amorosa
 amorosas
 amorosos
+amostra
 amostras-grátis
 amparos
 ampla
@@ -808,6 +805,7 @@ antologista
 antológico
 antoni
 antro
+antropófago
 antropólogo
 antídoto
 antônimos
@@ -824,7 +822,6 @@ anuncias
 anunciavam
 anuência
 anzóis
-análise
 anárquica
 anárquicas
 anárquico
@@ -852,6 +849,7 @@ aparas
 aparato
 aparece
 aparecia
+aparelho
 aparente
 aparentemente
 aparentes
@@ -931,6 +929,7 @@ apresenta
 apresentado
 apresentados
 apresentar
+apresentação
 apresentem
 apresento
 apresse
@@ -1015,6 +1014,7 @@ arquitetar
 arquiteto-me
 arquitetura
 arquivista
+arquivo
 arquivos
 arranco
 arranha
@@ -1070,7 +1070,6 @@ artesão
 articulador
 articuladora
 articulando
-articulação
 articulista
 artificiais
 artificial
@@ -1172,9 +1171,11 @@ atacadista
 atacama
 atalho
 atalhos
+atam
 atando
 ataques
 atar
+atarrachados
 ate
 ate-se
 atemporais
@@ -1227,6 +1228,7 @@ atiçam
 atiçando
 atlas
 atlântico
+atmosfera
 ato
 ato-as
 atoa
@@ -1235,7 +1237,9 @@ atordoam
 atores
 atos
 atraca
+atracam
 atracando
+atraem
 atraente
 atraindo
 atrair
@@ -1266,6 +1270,7 @@ atual
 atualidade
 atuam
 atuar
+atuação
 atá-las
 atávica
 atávicas
@@ -1283,6 +1288,7 @@ audácia
 audácias
 auge
 augusto
+aula
 aulas
 aumenta
 aumento
@@ -1297,7 +1303,6 @@ austera
 austeridade
 ausência
 ausências
-autenticação
 autenticidade
 autentiquei
 autista
@@ -1308,21 +1313,19 @@ autoajudas
 autofagia
 autofágica
 autofágico
-automatizada
 automático
 autonomia
 autor
 autores
 autoria
 autoridade
-autorizada
 autos
 autêntico
 autônoma
 avalia
 avaliada
 avaliar
-avaliativa
+avaliação
 avaliações
 avalio
 avança
@@ -1399,6 +1402,7 @@ balas
 balbucia
 balbucia-se
 balconista
+balcão
 balcãs
 baldia
 baldias
@@ -1415,6 +1419,7 @@ banal
 banalidade
 banalidades
 banana
+banco
 bancos
 bancária
 bandeiras
@@ -1466,6 +1471,7 @@ bateia
 batem
 batendo
 bater
+bateria
 baterista
 baterá
 batido
@@ -1515,7 +1521,7 @@ bem-querer
 bem-sucedido
 bem-te-vi
 bem-vinda
-bem-vindas,
+bem-vindas
 bem-vindos
 bendita
 beneficente
@@ -1790,6 +1796,7 @@ cabides
 cabidos
 cabisalto
 cabisbaixo
+cabo
 cabra
 cabra-cega
 cabresto
@@ -1801,10 +1808,13 @@ cachaça
 cachoeira
 cachorros
 cachos
+caco
 cacos
 cactos
 cada
+cadarço
 cadeado
+cadeia
 cadeias
 cadentes
 cadernos
@@ -1832,7 +1842,7 @@ caiu
 caixa
 caixas
 cala
-cala-te...
+cala-te
 calada
 caladas
 calado
@@ -1875,6 +1885,7 @@ camafeus
 camaleoa
 camaleão
 camaleões
+camara
 camareira
 camarote
 camarão
@@ -1885,6 +1896,7 @@ camela
 camelo
 camerista
 caminha
+caminhar
 caminhas
 caminho
 caminhos
@@ -1930,6 +1942,7 @@ cantos
 canários
 canção
 caos
+capa
 capacho
 capacidade
 capacitar
@@ -1939,6 +1952,7 @@ capazes
 capela
 capina
 capitais
+capital
 capitalista
 capivara
 capoeirista
@@ -1957,6 +1971,7 @@ caquéticos
 cara
 cara-a-cara
 caractere
+característica
 características
 carapaça
 carapuça
@@ -2065,6 +2080,7 @@ cata
 cataclismos
 catacumbas
 catador
+catalizador
 catando
 cataplasma
 catapulta
@@ -2072,6 +2088,7 @@ catar
 catarata
 catatônico
 catedral
+categoria
 catequista
 caterva
 cateto
@@ -2130,6 +2147,7 @@ cela
 celebrada
 celebrado
 celebração
+celebridade
 celebridades
 celerado
 celestes
@@ -2154,8 +2172,10 @@ centros
 cenário
 cer
 ceramista
+cerca
 cercada
 cercado
+cercar
 cercas
 cerco
 cerealista
@@ -2276,6 +2296,7 @@ cipriota
 cipó
 circo
 circos
+circuito
 circula
 circulam
 circular
@@ -2289,6 +2310,7 @@ cita
 citações
 citem
 cito
+civil
 civilizado
 ciência
 ciúme
@@ -2304,6 +2326,7 @@ claraboia
 claramente
 claras
 clareza
+claridade
 clarinetista
 clarividência
 claro
@@ -2325,6 +2348,7 @@ cobaias
 cobertura
 cobiçada
 cobiço
+cobrar
 cobri
 cochicho
 cochilo
@@ -2346,6 +2370,7 @@ coisa
 coisas
 coitada
 coitados
+cola
 colaborar
 colar
 colares
@@ -2357,6 +2382,7 @@ colecionar
 colecionaram
 colecionista
 coletiva
+coletivo
 coletor
 coletora
 colhe
@@ -2394,6 +2420,7 @@ comentada
 comentarista
 comentários
 comercia
+comercial
 comessa
 comesse
 cometeu
@@ -2417,6 +2444,7 @@ compania
 compara
 comparado
 comparar
+comparação
 compartilha
 compartilhados
 compartilham
@@ -2428,7 +2456,9 @@ compasso
 compete
 competir
 competitiva
+competição
 competência
+compilador
 complacente
 complacência
 completa
@@ -2468,7 +2498,6 @@ comunista
 comuns
 comédia
 comê-lo
-comê-lo.
 comícios
 concebe
 conceber
@@ -2512,12 +2541,13 @@ condenem
 condescendência
 conditio
 condizente
+condição
 condições
 condor
 condutor
 condutora
-conduz
 conduzir
+condução
 cone
 conectado
 confeiteira
@@ -2569,6 +2599,7 @@ conheçer
 conivente
 conjuga
 conjugar
+conjunto
 conjunção
 conjunções
 conluio
@@ -2591,6 +2622,7 @@ consequentemente
 consequência
 consertam-se
 conservador
+conservatório
 considerada
 consideradas
 considerado
@@ -2618,6 +2650,7 @@ constem
 construi
 construindo
 construir
+construtor
 construção
 construído
 constância
@@ -2651,6 +2684,7 @@ contemplar
 contemplação
 contemplo
 contemporaneidade
+contemporâneo
 contenda
 contenho
 contentar-se
@@ -2666,7 +2700,6 @@ contestando
 contestar
 contestem
 conteudista
-contexto
 conteúdo
 conteúdos
 conti
@@ -2684,7 +2717,7 @@ contornos
 contorta-te
 contos
 contra
-contra-indicado?
+contra-indicado
 contra-indicação
 contrabandista
 contradigam
@@ -2698,6 +2731,7 @@ contrapontos
 contrapor-se
 contraprovas
 contrariando
+contrariar
 contraste
 contrata
 contratempos
@@ -2721,6 +2755,7 @@ convectiva
 convencer
 convencional
 convento
+convenção
 convergentes
 convergir
 convergência
@@ -2728,6 +2763,7 @@ conversa
 conversando
 conversas
 conversem
+conversor
 converter
 converçar
 convicção
@@ -2770,6 +2806,7 @@ coretos
 coriscos
 corja
 coro
+coroa
 coros
 corpo
 corpos
@@ -2809,6 +2846,7 @@ corrói
 corta
 cortantes
 cortar
+corte
 cortes
 cortesia
 cortina
@@ -2820,6 +2858,7 @@ cosmos
 cosmético
 cossonhei
 costa-riquenho
+costas
 costume
 costura
 costurando
@@ -2869,7 +2908,7 @@ credos
 credível
 creem
 creia
-creia-se:
+creia-se
 creio
 creio-me
 creme
@@ -2974,6 +3013,7 @@ cult
 culta
 cultas
 cultiva
+cultivam
 cultivar
 cultivo
 culto
@@ -3007,6 +3047,7 @@ curiosidade
 curioso
 curiosos
 cursar
+curso
 curta
 curtas
 curtem
@@ -3024,9 +3065,11 @@ cuspi
 cuspido
 custo
 cádmio
+cálculo
 cápsula
 cáspio
 câmara
+câmbio
 câncer
 cânones
 cântaros
@@ -3054,9 +3097,7 @@ dada
 dadas
 dado
 dados
-dalgum
 dali
-dalma
 danada
 danação
 danca
@@ -3137,6 +3178,7 @@ dedo
 dedos
 deduz
 deduzia-se
+defeito
 defeitos
 defensores
 deferidos
@@ -3150,7 +3192,7 @@ definhem
 definhes
 definindo-se
 definir
-definir-te?
+definir-te
 definitivo
 definições
 deformação
@@ -3226,7 +3268,6 @@ depender
 dependência
 deplorável
 depois
-deposita
 depostas
 deprecia
 depressão
@@ -3265,6 +3306,7 @@ desalentos
 desalinhados
 desalinho
 desalmada
+desalmo-a
 desama
 desamadas
 desamado
@@ -3331,6 +3373,7 @@ desconcertados
 desconcertam
 desconcerto
 desconexas
+desconfia
 desconhece
 desconhecedor
 desconhecida
@@ -3442,8 +3485,7 @@ desliza
 deslize
 deslizes
 deslizo
-desloca
-deslocada
+deslocados
 desloco
 deslumbrante
 desmaio
@@ -3589,6 +3631,7 @@ devido
 devo
 devolve
 devolvemos
+devolvido
 devolvo
 devolvo-me
 devora
@@ -3601,7 +3644,6 @@ devoção
 dez
 dia
 dia-a-dia
-dia-a-dia,
 dia-pós-dia
 diabo
 dialetos
@@ -3637,6 +3679,7 @@ difício
 diga
 digam
 digitais
+digital
 digna
 dignam
 dignas
@@ -3652,6 +3695,7 @@ diletante
 dilúvio
 dilúvios
 dimais
+dimensão
 dimim
 diminuam
 diminuem
@@ -3688,6 +3732,7 @@ disciplinas
 discontraida
 discordamos
 discordantes
+discordar
 discordância
 discorre
 discorrer
@@ -3793,9 +3838,10 @@ divergentes
 divergir
 divergência
 diversas
-diversi-pensar,
+diversi-pensar
 diversidade
 diversão
+diverte
 diverte-se
 diverti
 divertido
@@ -3820,6 +3866,7 @@ divisas
 diviso
 divisor
 divisão
+divisória
 divolsada
 divorciados
 divã
@@ -3883,6 +3930,7 @@ dormido
 dormil
 dormimos
 dormir
+dorso
 dos
 dose
 doses
@@ -3898,10 +3946,8 @@ douto
 doutor
 doutora
 doutorado
-doutras
 doutrina
 doutrinas
-doutro
 doía
 doídos
 dpublic
@@ -3930,7 +3976,9 @@ duradouro
 duram
 durante
 durar
+duração
 dureza
+durma
 durmo
 duvida
 duvida-se
@@ -3951,6 +3999,7 @@ dêem
 díspar
 díspares
 dístico
+dívida
 dívidas
 dói
 dós
@@ -3986,6 +4035,7 @@ edital
 editor
 editora
 editores
+edição
 educada
 educado
 educar
@@ -4033,6 +4083,7 @@ elencados
 eles
 eletricista
 eleva
+elevado
 elevados
 elevam
 elevar
@@ -4049,6 +4100,7 @@ eloquência
 elos
 emano
 emaranhado
+emaranhados
 embaixador
 embaixadora
 embaixo
@@ -4088,6 +4140,7 @@ emergência
 eminente
 emitir
 emocionais
+emocional
 emoldurado
 emotiva
 emotividade
@@ -4104,6 +4157,7 @@ empina-se
 empoeirados
 empresa
 empresta
+emprestado
 emprestar
 empunho
 empurra
@@ -4253,6 +4307,8 @@ entalha
 entanto
 ente
 entediados
+entendam
+entende
 entender
 entender-te
 entendidos
@@ -4270,7 +4326,6 @@ entorna
 entornar
 entornei
 entorta-te
-entra
 entrada
 entranhas
 entrar
@@ -4360,6 +4415,7 @@ errado
 errante
 errantes
 erre
+errei
 erro
 erroneamente
 erros
@@ -4377,6 +4433,7 @@ esbórnia
 escabeche
 escada
 escafandro
+escala
 escaldante
 escancara
 escancarado
@@ -4395,6 +4452,7 @@ esclarecer
 esclarecida
 esclarecido
 escluir
+escolar
 escolas
 escolha
 escolhas
@@ -4498,6 +4556,7 @@ especiais
 especial
 especialista
 especialistas
+espectral
 espectro
 espectros
 especula
@@ -4512,6 +4571,7 @@ espelho
 espelhos
 espelunca
 espera
+espera-se
 esperada
 esperado
 esperam
@@ -4547,6 +4607,7 @@ esporádicas
 espreita
 espreitar
 espreito
+espécie
 espírito
 espíritos
 espúria
@@ -4641,12 +4702,15 @@ estradeira
 estrangeira
 estrangeiras
 estrangeiros
+estrangulados
 estranha
 estranhamento
+estranhar
 estranhas
 estranho
 estranhos
 estrategista
+estratégia
 estratégico
 estreita
 estreito
@@ -4727,6 +4791,7 @@ eventuais
 eventualidade
 eventualmente
 evidenciam
+evidente
 evidência
 evidências
 evita-me
@@ -4797,6 +4862,7 @@ existência
 exorbitância
 exortar
 expande
+expandido
 expandir
 expectativas
 experiência
@@ -4818,12 +4884,14 @@ explorar
 exploro
 expondo
 expor
+exposição
 expostas
 exposto
 expressar
 expresso
 exprimindo
 exprimir
+exterior
 exterminada
 extingue-se
 extinguido
@@ -4840,6 +4908,7 @@ extras
 extrato
 extravagância
 extravio
+extremidade
 extremista
 extremos
 extrovertida
@@ -4884,6 +4953,7 @@ fagulhas
 fais
 faisão
 faixa
+fake
 fala
 fala-fala
 falada
@@ -4892,7 +4962,9 @@ falado
 falador
 faladores
 falam
+falando
 falange
+falar
 falas
 falcatruar
 falcatruas
@@ -4987,6 +5059,7 @@ fará
 farão
 fascinante
 fascínio
+fase
 faser
 fases
 fasso
@@ -5004,6 +5077,7 @@ fatos-falsos
 faturista
 fatídica
 fatídico
+favor
 favorecidos
 favores
 faxineira
@@ -5029,7 +5103,6 @@ febres
 febril
 febrilhando
 fechado
-fechar
 fecunda
 fecundadores
 fecundando
@@ -5071,6 +5144,7 @@ ferido
 ferinas
 fernando
 ferocidade
+ferramenta
 ferro
 ferrolho
 ferrolhos
@@ -5133,6 +5207,7 @@ filto
 filtro
 filão
 fim
+fim-de-século
 fina
 finais
 final
@@ -5210,7 +5285,7 @@ flautista
 flecha
 flerta
 flexa
-flexi-pensar,
+flexi-pensar
 flexibilidade
 flor
 florais
@@ -5251,8 +5326,6 @@ fogueiras
 foguetes
 foi
 foi-se
-foi-se.
-foi-se:
 foie-gras
 folclore
 folga
@@ -5316,7 +5389,9 @@ foçe
 fracas
 fracasso
 fraciona
+fraco
 fragilidade
+fragmentado
 fragmentos
 fragores
 franca
@@ -5326,10 +5401,12 @@ franqueia
 franqueza
 franquia
 franz
+franze
 frase
 frases
 fraterna
 fraterno
+fraude
 fração
 frecha
 freios
@@ -5345,6 +5422,7 @@ frequentes
 frequento
 frequência
 fresca
+fresco
 frescos
 frescura
 frescuras
@@ -5414,6 +5492,7 @@ furacões
 furado
 furdunço
 furei
+furo
 furor
 furtar
 furtar-me
@@ -5438,6 +5517,7 @@ férias
 fértil
 fétidos
 físicas
+físico
 fórmula
 fósforo
 fóssil
@@ -5506,7 +5586,7 @@ gasta
 gastadores
 gastam
 gastar
-gastar-te?
+gastar-te
 gastavam
 gaste
 gastei
@@ -5560,7 +5640,6 @@ geral
 geramos
 gerar
 geras
-geração
 gere
 gerencia
 gerente
@@ -5628,12 +5707,15 @@ graduados
 gradual
 grafiteira
 gralhas
+gramatical
 gramatólogo
+gramática
 grana
 grande
 grandes
 grandessíssima
 grandessíssimo
+grandeza
 grandiosa
 grandiosas
 grandioso
@@ -5664,6 +5746,7 @@ grilo
 grilos
 grinfar
 grita
+gritar
 grito
 gritos
 grosseiro
@@ -5681,6 +5764,8 @@ grunhir
 grupo
 gruta
 grutas
+gráfica
+gráfico
 grão
 grécia
 guache
@@ -5713,6 +5798,7 @@ gurus
 gutenberg
 gêmea
 gêmeos
+gênero
 gênese
 gênio
 gênios
@@ -5738,6 +5824,7 @@ harmonizar
 harmônica
 harmônico
 harpista
+haste
 havendo
 haver
 haveria
@@ -5928,6 +6015,7 @@ iludido
 iludidos
 ilumina
 iluminadas
+iluminado
 iluminar
 ilumine
 ilusionista
@@ -5961,6 +6049,7 @@ imaginária
 imaginárias
 imaginário
 imaginários
+imagética
 imagético
 imanência
 imaturidade
@@ -5977,7 +6066,7 @@ imerecido
 iminentes
 iminência
 imita
-imita-se?
+imita-se
 imitando
 imitar
 imitas
@@ -6052,6 +6141,7 @@ imprecisão
 imprescindíveis
 imprescindível
 impressionem
+impressão
 impressões
 imprevista
 imprevistas
@@ -6150,6 +6240,7 @@ incoerente
 incoerentes
 incoerência
 incoerências
+incomodar
 incompetência
 incompleto
 incompreensível
@@ -6226,6 +6317,7 @@ indignação
 indiquem
 indiscutível
 indispensável
+indisponível
 indistinta
 indistintas
 indistinto
@@ -6334,12 +6426,14 @@ inhas
 inho
 iniciado
 iniciadores
+inicial
 iniciantes
 iniciativa
 inicie
 iniciático
 iniquidades
 initium
+injeção
 injusta
 injusto
 inocente
@@ -6382,7 +6476,6 @@ insignificância
 insinua-se
 insinuando
 insinuante
-insinuar
 insinuância
 insista
 insiste
@@ -6463,7 +6556,7 @@ intenso
 intentando
 intento
 intenção
-inter-
+inter
 interação
 interceder
 intercorrência
@@ -6484,6 +6577,7 @@ internante
 internauta
 internos
 interpretar
+interpretação
 intervalos
 interventor
 interventora
@@ -6535,6 +6629,7 @@ inventado
 inventados
 inventando
 inventar
+inventar-se
 inventar-te
 inventas
 invente
@@ -6584,6 +6679,7 @@ iras
 irei
 irmanar-me
 irmão
+irmãos
 ironia
 ironias
 irradia
@@ -6656,6 +6752,7 @@ jocandi
 jocosa
 jocosidade
 joga
+jogada
 jogam
 jogar
 jogo
@@ -6667,6 +6764,7 @@ joia
 jornada
 jornadas
 jornais
+jornal
 jornaleira
 jornalista
 jorrar
@@ -6675,6 +6773,7 @@ josé
 jovens
 jovial
 joyce
+judicial
 jugo
 jugular
 juiz
@@ -6707,8 +6806,10 @@ jura
 jurada
 juram
 juramos
+jurar
 jurem
 juro
+juros
 jurubatiba
 jurávamos
 justa
@@ -6844,9 +6945,9 @@ legá-las
 legítimo
 legível
 lei
+lei-de-gérson
 leia
 leia-se
-leia-se:
 leiga
 leigo
 leigos
@@ -6944,6 +7045,7 @@ liderar
 lido
 lidos
 ligam-se
+ligar
 ligas
 ligação
 ligeira
@@ -6968,6 +7070,7 @@ linguagens
 linguista
 linguística
 linha
+linhagem
 linhas
 lipoaspiração
 liquefeita
@@ -6993,7 +7096,7 @@ living
 livrar
 livre
 livre-se
-livre-versar,
+livre-versar
 livremente
 livres
 livreto
@@ -7055,6 +7158,7 @@ lustro
 luta
 lutamos
 lutaram
+luto
 luva
 luxo
 luxos
@@ -7101,6 +7205,7 @@ macarrão
 maceramos
 machina
 machista
+machucado
 macia
 macias
 macio
@@ -7154,6 +7259,7 @@ males
 maleáveis
 maleável
 malfeitores
+malha
 malho
 maligno
 mallarmé
@@ -7238,6 +7344,7 @@ maravilhosas
 marca
 marcadas
 marcante
+marcar
 marcas
 marcha
 marchar
@@ -7293,6 +7400,7 @@ matche
 mate
 matei
 materiais
+material
 materialista
 materializados
 materna
@@ -7301,6 +7409,7 @@ mathaeus
 matina
 matinais
 matizes
+matriz
 maturidade
 matuta
 matutam
@@ -7337,6 +7446,7 @@ medieval
 medio
 medir
 mediterrâneo
+medição
 mediúnicas
 mediúnicos
 medo
@@ -7347,7 +7457,6 @@ medram
 medusa
 medíocres
 meia
-meia-
 meias
 meio
 meios
@@ -7403,6 +7512,7 @@ mera
 meramente
 meras
 merca
+mercado
 mercadológico
 mercúrio
 merece
@@ -7438,7 +7548,6 @@ mestrado
 mestre
 mestres
 meta
-meta-
 meta-mentira
 metade
 metafosfato
@@ -7508,8 +7617,8 @@ mimético
 mina
 minera
 minguei
+minh
 minha
-minhalma
 minhas
 mini
 minimalista
@@ -7616,9 +7725,9 @@ moldura
 molduras
 mole
 moleque
-molha
 molhada
 molhados
+molho
 molusco
 molécula
 momento
@@ -7656,7 +7765,6 @@ mordam
 mordaças
 mordente
 mordê-lo
-mordê-lo.
 morfemas
 morfologista
 moribundo
@@ -7726,7 +7834,7 @@ muitas
 muito
 muitos
 mulheres
-multi-pensar,
+multi-pensar
 multicores
 multidão
 multifacetado
@@ -7737,7 +7845,7 @@ mumunhas
 mundana
 mundanas
 mundano
-mundi-pensar,
+mundi-pensar
 mundinho
 mundo
 mundos
@@ -7821,9 +7929,6 @@ nada
 nadando
 nadas
 naftalina
-nalgum
-nalgumas
-nalguns
 namoradeira
 namoro
 nando
@@ -7870,7 +7975,6 @@ navega
 navegando
 navegante
 navegar
-navegação
 navego
 navio
 neblinas
@@ -7904,7 +8008,7 @@ nelas
 nele
 nelson
 nem
-nem-pensar,
+nem-pensar
 nenhum
 nenhuma
 neo
@@ -7976,13 +8080,11 @@ nome
 nomeada
 nomeado
 nomes
-nomeuna
 non
 nonagenária
 norma
 normais
 normal
-normalização
 normas
 norte
 norteia
@@ -7998,12 +8100,10 @@ nostálgico
 nota
 notabilíssima
 notabilíssimo
-notar
 notariada
 notas
 noticia
 notificada
-notificação
 noto
 noturno
 noturnos
@@ -8012,8 +8112,6 @@ notícia
 notícias
 notívaga
 notívago
-noutro
-noutros
 nova
 novanave
 novas
@@ -8062,9 +8160,11 @@ não-poetas
 não-tempo
 névoa
 níveis
+nível
 nódoa
 nós
 nômade
+número
 números
 obedecem
 obedecer
@@ -8077,6 +8177,7 @@ objetivas
 objetividade
 objetivo
 objetivos
+objeto
 objetos
 obligatio
 oblitério
@@ -8115,7 +8216,6 @@ obtusa
 obtusas
 obtuso
 obviamente
-obvio
 oca
 ocarina
 ocasionais
@@ -8210,8 +8310,10 @@ onírico
 opaca
 opaco
 opacos
+opcional
 opera
 operadora
+operação
 operária
 operário
 opinefrina
@@ -8252,10 +8354,11 @@ ordem
 ordena
 ordenadas
 ordens
+ordinal
 ordinária
 orelha
 orelhas
-organiza
+organismo
 organizada
 organizado
 orgasmo
@@ -8374,7 +8477,6 @@ pai
 paira
 pairam
 pairando
-pairar
 pairas
 pairem
 pais-dos-burros
@@ -8467,6 +8569,7 @@ pareceu
 parede
 paredes
 parente
+parentesco
 pares
 pareça
 pari
@@ -8484,6 +8587,7 @@ participo
 partida
 partido
 partilha
+partilhado
 partir
 partituras
 partiu
@@ -8538,6 +8642,7 @@ passou
 passseia
 passu
 passíveis
+pasta
 pastel
 pasto
 pastor
@@ -8546,6 +8651,7 @@ pasárgada
 patagônia
 patas
 patativas
+patente
 patenteio
 paternalista
 patina
@@ -8662,7 +8768,6 @@ perca-se
 percalços
 percam-se
 percebe
-perceber
 percebi
 percebo
 perceptivelmente
@@ -8671,6 +8776,7 @@ perco
 perco-a
 perco-me
 percorrer
+percurso
 percursores
 percussionista
 perda
@@ -8679,7 +8785,7 @@ perdem
 perdem-se
 perdendo
 perder
-perder-te?
+perder-te
 perdeu
 perdi
 perdida
@@ -8700,6 +8806,7 @@ perfeccionista
 perfeita
 perfeito
 perfeição
+perfil
 perfumadas
 perfume
 perfumista
@@ -8746,6 +8853,7 @@ persistentes
 persistir
 persistência
 persona
+personagem
 personalidade
 perspicaz
 perspicácia
@@ -8768,6 +8876,7 @@ pesadelo
 pesadelos
 pesares
 pesca
+pescador
 pescar
 pese
 pesem
@@ -8787,6 +8896,7 @@ petrarca
 petulante
 petulantes
 petulância
+peça
 peça-lhe
 peço
 peçoas
@@ -8884,6 +8994,7 @@ planto
 plantonista
 plantão
 plasticidade
+plastificados
 plataforma
 plateia
 platônico
@@ -8897,7 +9008,7 @@ plico
 plural
 pluralidade
 pluralista
-pluri-pensar,
+pluri-pensar
 plutão
 plácida
 plácido
@@ -8933,7 +9044,7 @@ pois
 polar
 polenta
 poli
-poli-pensar,
+poli-pensar
 policarbonato
 policia
 polidas
@@ -8949,6 +9060,8 @@ polvo
 polêmicas
 polícia
 política
+políticas
+político
 políticos
 pomba
 pomba-rola
@@ -8971,7 +9084,6 @@ ponto
 pontos
 pontual
 pontuam
-pontuar
 pontuação
 popa
 populares
@@ -9005,6 +9117,7 @@ porões
 posa
 pose
 positivas
+posição
 posologia
 possa
 possam
@@ -9018,6 +9131,7 @@ possível
 post
 posta
 postagens
+postal
 postam
 postas
 posteriores
@@ -9140,6 +9254,7 @@ prenhes
 prensista
 preocupa-se
 preocupem
+preparação
 prepare
 preponderância
 prepotentes
@@ -9214,7 +9329,7 @@ princípios
 prisão
 prisões
 privados
-privar-se,
+privar-se
 privilegiado
 privilegiar
 pro
@@ -9293,6 +9408,7 @@ promotor
 promotora
 promotores
 promover
+promoção
 pronta
 pronto
 propaga-se
@@ -9301,6 +9417,7 @@ propagandista
 propagar
 propil
 propor
+proporção
 proposto
 propriedade
 proprietário
@@ -9315,6 +9432,7 @@ protesto
 protetor
 protetora
 protetores
+proteção
 proteína
 protocolo
 prova
@@ -9329,6 +9447,7 @@ proveniente
 prover
 proveta
 providência
+provisório
 provoca
 provocado
 provocando
@@ -9348,7 +9467,7 @@ prumo
 prática
 prático
 práticos
-pré-
+pré
 pré-gravadas
 prévio
 prêmio
@@ -9361,7 +9480,7 @@ prótese
 próxima
 próximo
 prússia
-pseudo-
+pseudo
 pseudo-cientista
 pseudociência
 pseudologia
@@ -9369,6 +9488,8 @@ psicanalista
 psicanálise
 psicodélica
 psicogenética
+psicológico
+psicólogo
 psilocibina
 psíquicas
 publicada
@@ -9461,6 +9582,8 @@ qualque
 qualquer
 quando
 quantas
+quantia
+quantidade
 quanto
 quantos
 quartanista
@@ -9509,7 +9632,6 @@ querubim
 querubins
 querência
 querências
-quescravo
 questao
 questiona-se
 questionando
@@ -9546,6 +9668,7 @@ rabisquei
 rabo
 raciocinar
 raciocínio
+racional
 racionalista
 raciossano
 radialista
@@ -9596,6 +9719,7 @@ rasgo
 rasgos
 rasgue
 rasguei
+raso
 raspas
 rasto
 rastreamento
@@ -9610,12 +9734,14 @@ ratos
 ravel
 razão
 razões
+raça
 raízes
 reabitar
 reacender
 reaja
 real
 realejo
+realeza
 realidade
 realidades
 realista
@@ -9704,7 +9830,6 @@ recorrentes
 recorrência
 recreação
 recreio
-recria
 recriadas
 recriar
 recriação
@@ -9724,7 +9849,6 @@ redefinam
 redemoinhos
 redenção
 redes
-redescobre
 redesenhado
 redigir
 redistribuo
@@ -9738,6 +9862,7 @@ redunda
 redundantes
 redundância
 redundâncias
+reduzido
 reduzidos
 reentrância
 reescrito
@@ -9823,8 +9948,8 @@ relativo
 relato
 relatos
 relaxa
+relação
 relações
-releitura
 reler
 reles
 releva
@@ -9874,6 +9999,7 @@ rende
 rendeira
 rendida
 rendido
+rendimento
 rendição
 renega
 reneguem
@@ -9940,7 +10066,7 @@ resenha
 reservada
 reservado
 reservista
-resignifica
+residual
 resiliente
 resiliência
 resistam
@@ -9952,6 +10078,7 @@ resolvemos
 resolver
 resolveram
 resolvi
+resolvido
 resouvida
 respeitabilíssima
 respeitabilíssimo
@@ -9983,6 +10110,7 @@ ressonância
 ressurgir
 ressuscita
 resta
+restante
 restaurada
 restaurado
 restaurar
@@ -10037,7 +10165,6 @@ retrógradas
 retórica
 retóricas
 reunir
-revela
 revelada
 revelado
 reveladores
@@ -10121,7 +10248,6 @@ robô
 rochedo
 rocks
 roda
-rodada
 rodapé
 rodapés
 rodeada
@@ -10177,8 +10303,8 @@ rouca
 rouquidão
 roçando
 roê-lo
-roê-lo.
 roída
+rsrs
 rua
 ruas
 rubis
@@ -10237,7 +10363,6 @@ sabendo
 sabendo-as
 saber
 saber-te
-saber-te?
 saberei
 saberemos
 saberes
@@ -10486,7 +10611,7 @@ semelhante
 semelhança
 semente
 sementes
-semi-
+semi
 semi-pronta
 semi-pronto
 semiaberta
@@ -10544,6 +10669,7 @@ senão
 sepulcral
 sepulta
 sequelas
+sequer
 sequestro
 sequência
 sequências
@@ -10622,6 +10748,7 @@ siglada
 siglas
 sigmund
 significa
+significado
 significo
 significância
 signo
@@ -10629,6 +10756,7 @@ signos
 sigo
 silencia
 silenciam
+silencioso
 silente
 silhueta
 silvar
@@ -10668,6 +10796,7 @@ simulo
 sina
 sinagoga
 sinais
+sinal
 sinas
 sincera
 sinceras
@@ -10723,12 +10852,14 @@ sirva-as
 sirva-se
 sirvam
 sirvo
+sistema
 sistemática
 sistemáticas
 sistemáticos
 sisudez
 sitiu
 situacionista
+situação
 situações
 situo
 situá-las
@@ -10757,6 +10888,7 @@ sobrepor-se
 sobretudo
 sobrevida
 sobrevive
+sobrevivente
 sobreviventes
 sobrevivo
 sobrevoando
@@ -10766,6 +10898,7 @@ sobrinho
 sobro
 sobrou
 sociais
+social
 social-laicos
 sociedade
 sociedades
@@ -10794,6 +10927,7 @@ software
 sofísticas
 sol
 sol-a-sol
+sola
 solapo
 solavanco
 solavancos
@@ -10843,6 +10977,7 @@ sombra
 sombras
 sombria
 sombrias
+sombrio
 some
 somemos
 somente
@@ -10858,7 +10993,7 @@ sonegue
 soneto
 sonetos
 sonha
-sonha-se...
+sonha-se
 sonhadelo
 sonhado
 sonhador
@@ -10943,7 +11078,6 @@ suaves
 suavidade
 suavizo
 sub
-sub-
 subalterna
 subalterno
 subciência
@@ -10962,7 +11096,7 @@ sublime
 sublimes
 submergível
 submeter
-submeto-me,
+submeto-me
 submissa
 submisso
 submundo
@@ -11043,6 +11177,8 @@ superar-te
 superação
 superegos
 superficial
+superficialteatral
+superfície
 superintendente
 superior
 superiora
@@ -11058,7 +11194,6 @@ suporta
 suportar
 suporte
 suporto
-suposição
 suposta
 supostamente
 suprema
@@ -11236,12 +11371,14 @@ taumaturgia
 tautologia
 taverna
 taverneiro
+taxa
 taxas
 taxidermista
 taxista
 taça
 taças
 tchetchênia
+teatral
 teatro
 tece
 tecer
@@ -11313,6 +11450,7 @@ tentadoras
 tentamos
 tentando
 tentar
+tentativa
 tente
 tenteando
 tentem
@@ -11327,6 +11465,7 @@ teoria
 teorias
 teorizar
 ter
+terapeuta
 terapia
 terapias
 terceiro
@@ -11335,7 +11474,9 @@ tereçar
 tergiversa
 teria
 termina
+terminal
 terminar
+termo
 termos
 terna
 terno
@@ -11357,6 +11498,7 @@ teses
 tesoura
 tesoureira
 tesoureiro
+testa
 teste
 testemunhas
 testemunho
@@ -11366,6 +11508,7 @@ teu
 teus
 texto
 textos
+textual
 teço
 teóricas
 teórico
@@ -11375,8 +11518,7 @@ thomas
 tiaras
 tiatro
 tibetano
-tic-tacs!
-tic-tacs,
+tic-tacs
 tico-ticos
 tido
 tigre
@@ -11487,7 +11629,6 @@ tortuosa
 tortura
 torturas
 torço
-torção
 tosca
 tosco
 toscos
@@ -11543,6 +11684,7 @@ tranquilamente
 tranquilas
 tranquilidade
 tranquilo
+transatlântico
 transborda
 transcenda
 transcendentes
@@ -11552,7 +11694,6 @@ transcrever
 transe
 transeunte
 transeuntes
-transfere
 transferir
 transferência
 transformar
@@ -11626,6 +11767,7 @@ trilhas
 trilho
 trilhos
 trinados
+trinca
 trisca
 triste
 tristeza
@@ -11696,8 +11838,10 @@ tutor
 tálamo
 tão
 tão-somente
+técnica
 tédio
 tédios
+término
 tê-las
 têm
 tênue
@@ -11730,7 +11874,6 @@ uma
 umas
 umbigo
 umbrais
-umbral
 umidade
 umorada
 una
@@ -11743,21 +11886,18 @@ unguento
 unha
 unhas
 unho
-uni-verso!
+uni-verso
+unidade
 unidas
 unido
-unificador
-uniforme
 unir
 universal
-universidade
 universitários
 universo
 universos
 união
 uno-as
 uns
-uníssono
 urano
 urbanista
 urbano
@@ -11790,7 +11930,6 @@ uso
 usufruir
 usufruo
 usurpa
-utilitário
 utopia
 utopias
 utopista
@@ -11865,6 +12004,7 @@ varejista
 varem
 varia
 variando
+variante
 variantes
 varias
 variação
@@ -11961,6 +12101,7 @@ veracidade
 veramais
 veranista
 veras
+verbal
 verbete
 verbetes
 verbi
@@ -12047,16 +12188,18 @@ vibrar
 vibração
 vibrações
 vibre
-vice-
+vice
 vice-e-versa
-vice-versa.
+vice-versa
 viceja
 vicia
 viciado
 vico
 vida
 vidas
+vide-bula
 vidente
+videntes
 videoconferências
 vidinha
 vidro
@@ -12138,7 +12281,7 @@ visita
 visitadora
 visitam
 visitas
-visitá-la,
+visitá-la
 vislumbram
 vislumbre
 vislumbro
@@ -12243,8 +12386,8 @@ vênus
 víbora
 vício
 vícios
+vínculo
 vínculos
-vírgula
 vírgulas
 vírus
 víscera
@@ -12264,7 +12407,6 @@ xotes
 xxxvii
 xícara
 youtubers
-ypoema
 ypoemas
 zanga
 zanzando
@@ -12285,7 +12427,6 @@ zumbir
 zurrar
 àquela
 àquele
-ádito
 água
 águia
 álibis
@@ -12307,6 +12448,7 @@ zurrar
 ávidas
 ávido
 ávidos
+ângulo
 ânimo
 ânsia
 ânsias
