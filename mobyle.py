@@ -146,11 +146,11 @@ IDIOMAS_OFICIAIS = [
 # -----------------------------------------------------------------------------
 st.set_page_config(
     page_title="a Machina de fazer Poesia @ Mobile",
-    page_icon="🌀",
+    page_icon="😎",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
-# 🎯
+# 🌀😎
 # -----------------------------------------------------------------------------
 # Versao mobile/portrait.
 # Mantem o motor poetico intacto e troca apenas a ergonomia visual:
