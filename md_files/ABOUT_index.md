@@ -61,6 +61,7 @@ Indolor : 468.886.830.572.160.000.000 (quintilhões)
 Inhos : 314.496.000 (milhões)  
 Insano : 1.100.736.000.000 (trilhões)  
 Joker : 547.714.379.520 (bilhões)  
+Lady-Murphy : 91.476 (mil)  
 Lato : 43.937.882.486.784.000.000 (quintilhões)  
 Leituras : 1.024.192.512.000.000 (quatrilhões)  
 Lero : 225.444.710.400 (bilhões)  
@@ -156,6 +157,8 @@ Touro=m : 1.254.528 (milhões)
 Virgem=f : 4.255.027.200 (bilhões)  
 Virgem=m : 3.616.773.120 (bilhões)  
 ___
+Total de variações: 112.765.820.265.471.192.371.354.984.929.649.628.307.783.016.038.963 (quindecilhões)  
+___
 [escala dos nomes das potências de 10]  
   
 > mil=1.000|10e3|  
@@ -182,6 +185,4 @@ ___
   
 [fonte dos dados](http://www.fisica-interessante.com/matematica-divertida-ordens-classes-multiplos.html)  
 ___
-Copyright © 1983-2022 Nando Lopes - **yPoemas @ máquina de fazer Poesia**  
-
-Total de variações: 112.765.820.265.471.192.371.354.984.929.649.628.307.783.015.947.487 (quindecilhões)
+Copyright © 1983-Hoje Nando Lopes - **yPoemas @ Machina de fazer Poesia**  
