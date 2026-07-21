@@ -2143,7 +2143,7 @@ def render_copy_bundle_widget(texto, token, qtd_real=None):
 @st.cache_data
 def load_images():
     images_list = []
-    with open(os.path.join("./base/s.txt"), encoding="utf-8") as lista:
+    with open(os.path.join("./base/images.txt"), encoding="utf-8") as lista:
         for line in lista:
             images_list.append(line)
 
