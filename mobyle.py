@@ -1,4 +1,5 @@
 import os
+import os
 import re
 import time
 import random
@@ -93,8 +94,8 @@ IDIOMAS_OFICIAIS = [
 # Deve permanecer antes de qualquer saída visual do Streamlit.
 # -----------------------------------------------------------------------------
 st.set_page_config(
-    page_title="a Machina de fazer Poesia - Tools",
-    page_icon="🌀",
+    page_title="a Machina de fazer Poesia - Mobile",
+    page_icon="📴",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
