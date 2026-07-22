@@ -125,7 +125,7 @@ IDIOMAS_OFICIAIS = [
 # -----------------------------------------------------------------------------
 st.set_page_config(
     page_title="a Machina de fazer Poesia - Mobile",
-    page_icon="📴",
+    page_icon=":leaves:",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
