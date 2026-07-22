@@ -1,6 +1,6 @@
 sobre os Outros Autores  
 ___  
-☆ = livro/poemas do Autor de onde foram escolhidas as palavras.  
+☆ = livro do Autor de onde foram garimpadas e escolhidas as palavras.  
 ✔ = **temas** criados pela **máquina** com elas.  
 ___  
 - Augusto dos Anjos [saber mais...](https://pt.wikipedia.org/wiki/Augusto_dos_Anjos)  
