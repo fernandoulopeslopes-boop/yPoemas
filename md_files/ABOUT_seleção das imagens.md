@@ -1,7 +1,13 @@
 seleção das imagens que acompanham os temas  
 ___  
-  
 - **anima** - a 'machina' humana, a arte.  
+  critério: imagens que remetem à "alma", "sopro" ou "vida"  
+  
+- **author** - autores que me foram importantes  
+  critérios: charges ou fotos  
+  
+- **beauty** - do inglês: beleza.  
+  critério:  pessoal e intransferível... cada um com o seu.  
   
 - **esotéricas** - divino, oculto, secreto, misterioso, místico, mágico,  
   sobrenatural... ou conselho/auto-ajuda.  
@@ -11,22 +17,21 @@ ___
 - **joco** - crítico, cítrico, absurdo, irônico, satírico, provocador,  
   critérios: circo, manipulação, gestos definidos, rir-de-si-mesmo,  
   
-- **persona/anima** - sentimento, emoção. (temas na primeira pessoa)  
+- **persona** - sentimento, emoção. (temas na primeira pessoa)  
   critérios: apenas mulheres, caricatura/desenho, expressando alguma postura/atitude.  
   
 - **machina** - intelecto, reflexão, pensamento, opinião. (temas na terceira pessoa)  
   critérios: robô, inteligência artificial, inesperado/imaginário  
   
-- **author** - autores que me foram importantes  
-  critérios: charges ou fotos  
+- **matrix** - mapa em 3 dimensões de cada tema  
+  critério: informações exatas dos "eixos" de cada yPoema
 ___  
-  
 - a saudade é feminina. o mar, em francês, é feminino.  
 - em todos os temas há duas imagens-curinga: tempus_fugit e joker.  
-- a única fórmula quimica nas imagens é do LSD.  
 - algumas imagens foram escolhidas simplesmente pela beleza da arte.  
 - imaginar o leitor é um belissimo exercício!  
 ___  
+- **autores das imagens**  
   
 Fred Calleri; Linda Vachon; Louis Jover; Jamie Lee Reardin;  
 Andre Martins de Barros (BRA) (1942) - Homens-Livros  

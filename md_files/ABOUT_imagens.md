@@ -29,7 +29,7 @@ ___
  dentro de **bancos temáticos**.  
   
  Cada "Banco Temático" tem a sua própria "identidade":  
- - **anima, author, beauty, esoteric, joco, machina, matrix ou persona**  
+ - **anima, author, beauty, esoteric, joco, machina, matrix e persona**  
  e cada yPoema tem "ligação" com apenas um "banco temático".  
    
  As conexões tema-imagem ficam por conta dos neurônios do leitor, a cada lida.  
