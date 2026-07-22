@@ -312,6 +312,8 @@ abutre : Frases_0502
 abutre : Indolor_0303
 abóbada : Essa_0202
 acaba : Enfrente_0103
+acaba : Lady-Murphy_0301
+acaba : Lady-Murphy_0503
 acaba : Sos_0601
 acabam : eus_0501
 acabas : Haikai_0301
@@ -476,6 +478,8 @@ acentuada : Aquarius=m_0301
 acentuam : Zodiacaos_0504
 acentuando : Ais_0501
 acerta : Ciuminho_0801
+acerta : Lady-Murphy_0301
+acerta : Lady-Murphy_0503
 acerta : Psiu_0301
 acerta : Sopros_1001
 acerta : Zelo_0201
@@ -505,6 +509,7 @@ acha : Dolores_0701
 acha : Frases_0303
 acha : Indolor_0701
 acha : Inhos_0501
+acha : Lady-Murphy_0202
 acha : Ogiva_0402
 acha : Psiu_0301
 acha : Sopros_0501
@@ -607,6 +612,8 @@ acontecidos : Zelo_0201
 acontecimentos : Elogio_0501
 aconteça : Rito_0501
 acorda : Augusto_0904
+acorda : Lady-Murphy_0301
+acorda : Lady-Murphy_0503
 acorda : Sos_0601
 acordado : Aolero_0401
 acordado : Bolero_0301
@@ -624,6 +631,7 @@ acordas : Haikai_0301
 acordas : Tempo_1602
 acorde : Rito_0501
 acordes : Essa_0204
+acordes : Lady-Murphy_0202
 acordes : Reger_0402
 acordes : Tempo_0402
 acordeão : Essa_0202
@@ -682,6 +690,7 @@ acrônicas : Oficia_1704
 acrônicas : Oficio_1704
 acuada : Ais_0101
 acuados : Usinas_0303
+acumulada : Lady-Murphy_0202
 acumulados : Ais_0502
 acupunturista : Destinos_0205
 acupunturista : Distintos_0205
@@ -915,6 +924,7 @@ afinidades : Victor_1102
 afins : Oca_0204
 afins : Oco_0204
 afio : Atido_0402
+afirma : Lady-Murphy_0202
 afirma-se : Frases_0303
 afirmam : Ciuminho_0401
 afirmando : Ais_0501
@@ -1627,6 +1637,8 @@ alma : Feiras_0102
 alma : Festim_0701
 alma : Haikai_0301
 alma : Inhos_0402
+alma : Lady-Murphy_0301
+alma : Lady-Murphy_0503
 alma : Leituras_0901
 alma : Liberta_1201
 alma : MachBeth_0501
@@ -2630,6 +2642,9 @@ aparato : Bula_0202
 aparato : Salute_0401
 aparece : Ciuminho_0403
 aparece : Indolor_0901
+aparece : Lady-Murphy_0202
+aparece : Lady-Murphy_0301
+aparece : Lady-Murphy_0503
 aparece : Silente_1103
 aparecia : Conto_0601
 aparelho : Cacos_0301
@@ -4151,6 +4166,8 @@ be-a-ba : Vozes_0201
 beata : Dolores_0301
 beato : Indolor_0301
 bebe : Avevida_0203
+bebe : Lady-Murphy_0301
+bebe : Lady-Murphy_0503
 bebi : Joker_0301
 bebo : Carroussel_0301
 bebo : Solero_0802
@@ -4264,6 +4281,7 @@ bem : Veio_0404
 bem : eus_0501
 bem-estar : Peixes=f_0801
 bem-estar : Peixes=m_0801
+bem-humorada : Lady-Murphy_0201
 bem-querer : Bula_0204
 bem-querer : Salute_0402
 bem-sucedido : Cordel_0403
@@ -5255,6 +5273,8 @@ cala : Ciuminho_0702
 cala : Ciuminho_0801
 cala : Clarice_1002
 cala : Inhos_0501
+cala : Lady-Murphy_0301
+cala : Lady-Murphy_0503
 cala : Loremipsum_0802
 cala : Nonono_0301
 cala : Nonono_0701
@@ -5318,6 +5338,7 @@ calcificados : Cuores_0402
 calcula : Feiras_0603
 calcula : Feiras_0703
 calculado : Demo_0202
+calculados : Lady-Murphy_0202
 calcular : Pedidos_0302
 calculista : Destinos_0205
 calculista : Distintos_0205
@@ -5467,6 +5488,7 @@ caminhos : Ciuminho_0901
 caminhos : Destinos_0405
 caminhos : Distintos_0305
 caminhos : Finalmentes_0602
+caminhos : Lady-Murphy_0602
 caminhos : Manifesto_1004
 caminhos : Preciso_0402
 caminhos : Psiu_0401
@@ -5690,6 +5712,7 @@ cara : Festim_0701
 cara : Frases_0501
 cara : Inhos_0301
 cara : Joker_0103
+cara : Lady-Murphy_0202
 cara : Lato_0102
 cara : Lato_0303
 cara : Lero_0102
@@ -6291,6 +6314,8 @@ certa : Feiras_0101
 certa : Feiras_0901
 certa : Frases_0501
 certa : Fugaz_0302
+certa : Lady-Murphy_0301
+certa : Lady-Murphy_0503
 certa : Portal_0802
 certa : Psiu_0301
 certa : Reger_0803
@@ -6326,6 +6351,7 @@ certezas : Festim_0801
 certezas : Fugaz_0202
 certezas : Haikai_0103
 certezas : Haikai_0203
+certezas : Lady-Murphy_0202
 certezas : Manifesto_1301
 certezas : Tempo_0103
 certezas : Tempo_0803
@@ -6873,6 +6899,7 @@ colar : Festim_0102
 colares : Veio_0102
 colaterais : Blablabla_0301
 colaterais : Ciuminho_0501
+colaterais : Lady-Murphy_0202
 colaterais : Nonono_0301
 colaterais : Nonono_0701
 colaterais : Nonono_1101
@@ -7117,6 +7144,8 @@ combinações : Posfácio_0701
 combinem : Remedeio_0301
 combinem : Salute_0601
 combiná-las : Beaba_0301
+come : Lady-Murphy_0301
+come : Lady-Murphy_0503
 comediantes : Escriba_1102
 comedidas : Prefácil_0703
 comem : Cromossomo_0604
@@ -7478,6 +7507,7 @@ confiante : Olhares_0601
 confiante : Zoia_0301
 confiança : Caprico=f_0902
 confiança : Caprico=m_0902
+confiança : Lady-Murphy_0202
 confiança : Touro=f_0101
 confiança : Touro=m_0101
 confiar : Arerir_0101
@@ -7621,6 +7651,7 @@ conselhos : Cancer=f_0502
 conselhos : Cancer=m_0502
 conselhos : Caprico=f_0702
 conselhos : Caprico=m_0702
+conselhos : Lady-Murphy_0202
 conselhos : Ocio_0703
 conselhos : Peixes=f_0801
 conselhos : Peixes=m_0801
@@ -9068,6 +9099,7 @@ definir : Zodiacaos_1202
 definir-te : Haikai_0301
 definir-te : Tempo_1602
 definitivo : Circular_0102
+definitivo : Lady-Murphy_0202
 definições : Avevida_0303
 definições : Snowball_1001
 deformação : Escriba_0701
@@ -9840,6 +9872,7 @@ desiludida : Gula_0703
 desiludidos : Cartaz_1104
 desimportante : Preciso_0602
 desintegrado : Augusto_1701
+desinventa : Lady-Murphy_0602
 desistem : Tiro_0701
 desisti : Remedeio_0101
 desisti : Salute_0101
@@ -9891,6 +9924,7 @@ desmemória : Escriba_0901
 desminta : Ciuminho_0501
 desmonte-se : Festim_1102
 desmorono : Atido_0402
+desnecessários : Lady-Murphy_0202
 desnorteia : Ciuminho_0801
 desnorteia : Psiu_0301
 desnorteia : Zelo_0201
@@ -10184,6 +10218,7 @@ detalhes : Duralex_0103
 detalhes : Fugaz_0202
 detalhes : Haikai_0103
 detalhes : Haikai_0203
+detalhes : Lady-Murphy_0202
 detalhes : Tempo_0103
 detalhes : Tempo_0803
 detalhes : Tempo_1103
@@ -10654,6 +10689,7 @@ discursos : Nonono_0205
 discursos : Paroles_0205
 discursos : Paroles_0601
 discursos : Preciso_0303
+discute : Lady-Murphy_0202
 discutida : Cordel_0401
 discutir : Beaba_0502
 discutir : Blablabla_0201
@@ -10717,6 +10753,7 @@ dispensar : Oco_0201
 dispensem : Remedeio_0301
 dispensem : Salute_0601
 dispenso : Veio_0701
+dispensáveis : Lady-Murphy_0202
 dispersando : Sonoro_0201
 dispersar : Oca_0201
 dispersar : Oco_0201
@@ -11170,6 +11207,8 @@ dores : Tempo_0702
 dorme : Carroussel_0203
 dorme : Ciuminho_0702
 dorme : Ciuminho_0801
+dorme : Lady-Murphy_0301
+dorme : Lady-Murphy_0503
 dorme : Psiu_0301
 dorme : Zelo_0201
 dorme : Zelo_0601
@@ -11230,6 +11269,7 @@ dos : Haikai_0203
 dos : Haikai_0301
 dos : Inhos_0402
 dos : Insano_0101
+dos : Lady-Murphy_0202
 dos : Leao=f_0602
 dos : Leao=m_0602
 dos : Lero_0302
@@ -11309,6 +11349,7 @@ dos : Vozes_0102
 dos : Vozes_0202
 dos : Zelo_0301
 dos : Zodiacaos_1602
+dosado : Lady-Murphy_0202
 dose : Becos_0201
 doses : Bula_0101
 doses : Salute_0301
@@ -11561,6 +11602,7 @@ efeitos : Brado_0301
 efeitos : Ciuminho_0501
 efeitos : Duralex_0103
 efeitos : Indolor_0701
+efeitos : Lady-Murphy_0202
 efeitos : Nonono_0301
 efeitos : Nonono_0701
 efeitos : Nonono_1101
@@ -11659,6 +11701,7 @@ ele : Circular_0601
 ele : Distintos_0101
 ele : Distintos_0104
 ele : Indolor_0501
+ele : Lady-Murphy_0202
 ele : nós_nos_nós_0302
 elefantes : Batismo_0402
 elegante : Cacos_0301
@@ -12207,6 +12250,7 @@ enologista : Distintos_0205
 enorme : Cartaz_0601
 enorme : Gemeos=f_0401
 enorme : Gemeos=m_0401
+enquadra : Lady-Murphy_0602
 enquadra : Mirante_0302
 enquadra : Ogiva_0301
 enquadra : Olhares_0302
@@ -12323,6 +12367,7 @@ entornar : Augusto_1301
 entornar : Tiro_0101
 entornei : Feiras_1002
 entorta-te : Anjos_1101
+entra : Lady-Murphy_0202
 entrada : Feiras_1101
 entranhas : Ciuminho_0801
 entranhas : Crítico_0304
@@ -12571,6 +12616,8 @@ erma : Brado_0203
 ermo : Dolores_0202
 ermo : Indolor_0205
 erra : Ciuminho_0403
+erra : Lady-Murphy_0301
+erra : Lady-Murphy_0503
 erra : Palyndro_1701
 erra : Perfil_0702
 erradas : Tempo_0203
@@ -13044,6 +13091,7 @@ espera : Bula_0101
 espera : Destinos_1101
 espera : Distintos_1001
 espera : Feiras_1101
+espera : Lady-Murphy_0602
 espera : Minuto_0302
 espera : Ocio_1502
 espera : Papilio_1501
@@ -13420,6 +13468,7 @@ estrabismo : Críticas_1601
 estrada : Anjos_0402
 estrada : Augusto_0402
 estrada : Cacos_0201
+estrada : Lady-Murphy_0602
 estrada : MachBeth_1301
 estrada : Ser_0501
 estrada : Sos_0601
@@ -13538,6 +13587,9 @@ está : Caprico=m_0301
 está : Crítico_0801
 está : Cuores_1102
 está : Fatos_2103
+está : Lady-Murphy_0202
+está : Lady-Murphy_0301
+está : Lady-Murphy_0503
 está : Leituras_0502
 está : Leituras_1102
 está : MachBeth_0801
@@ -13739,6 +13791,7 @@ excelentíssimo : Oficio_0101
 excelência : Críticas_0803
 excesso : Elogio_0202
 excesso : Epitafiando_0303
+excesso : Lady-Murphy_0202
 excesso : Portal_0401
 exceção : Ser_0101
 exclusivos : Cartaz_1002
@@ -13858,6 +13911,7 @@ expandir : Paroles_0502
 expectativas : Astros_0601
 experiência : Cacos_0301
 experiência : Cadência_0202
+experiência : Lady-Murphy_0202
 experiências : Astros_0401
 experiências : Sagitari=f_0803
 experiências : Sagitari=m_0803
@@ -14067,6 +14121,8 @@ fala : Cacos_0201
 fala : Demo_0301
 fala : Enfrente_0501
 fala : Joker_0203
+fala : Lady-Murphy_0301
+fala : Lady-Murphy_0503
 fala : Rever_0102
 fala : Ser_0101
 fala : Ser_0501
@@ -14161,6 +14217,7 @@ falsa : Frases_0401
 falsa : Portal_0802
 falsas : Becos_1004
 falsas : Festim_0102
+falsas : Lady-Murphy_0202
 falsas : Prefácil_0703
 falsas : i-Mundo_0203
 falseando : Oca_0501
@@ -15460,6 +15517,8 @@ fome : Carroussel_0301
 fome : Cromossomo_0902
 fome : Cromossomo_0904
 fome : Gula_0402
+fome : Lady-Murphy_0301
+fome : Lady-Murphy_0503
 fome : MachBrait_0401
 fome : MachBrait_0601
 fome : Papilio_0401
@@ -16766,6 +16825,7 @@ gumes : Ciuminho_0801
 gumes : Psiu_0301
 gumes : Zelo_0201
 guru : Cordel_0403
+guru : Lady-Murphy_0201
 gurus : Conto_1202
 gutenberg : Fatos_1102
 gêmea : Leituras_1001
@@ -17892,11 +17952,13 @@ imprevistas : Snowball_1101
 imprevisto : Astros_0801
 imprevisto : Clandestino_0201
 imprevisto : Clandestino_1201
+imprevisto : Lady-Murphy_0202
 imprevisto : Loremipsum_0601
 imprevisto : Victor_0201
 imprevisto : Victor_1201
 imprevistos : Escriba_0901
 imprevistos : Escriba_0903
+imprevistos : Lady-Murphy_0202
 imprevistos : Tempo_0702
 imprevisíveis : Manusgrite_1301
 imprevisíveis : Manusgrito_1301
@@ -18418,6 +18480,7 @@ inesperadas : Snowball_1101
 inesperado : Ciuminho_0102
 inesperado : Festim_1102
 inesperado : Haikai_0202
+inesperado : Lady-Murphy_0202
 inesperado : Leituras_0901
 inesperado : Preciso_0902
 inesperado : Psiu_0103
@@ -19101,6 +19164,7 @@ inusitado : Aquarius=m_0103
 inusitado : Crítico_0301
 inusitado : Fatos_1302
 inusitado : Festim_0102
+inusitado : Lady-Murphy_0202
 inusitado : Manifesto_1103
 inusitado : Preciso_0902
 inusitado : Prefácil_0903
@@ -19128,6 +19192,7 @@ invejável : Zoia_0103
 invencionices : Posfácio_1303
 invencível : Sos_0301
 inventa : Essa_0401
+inventa : Lady-Murphy_0602
 inventa : Silente_1103
 inventa : Usinas_0705
 inventada : Reinos_0502
@@ -19295,6 +19360,7 @@ inócua : Circular_0303
 inócuo : Circular_0206
 inócuo : Ciuminho_0501
 inóspitos : Usinas_0403
+inúteis : Lady-Murphy_0202
 inúteis : Minuto_0203
 inúteis : Preciso_0303
 inúteis : Sn6=ball_0801
@@ -19331,6 +19397,7 @@ irmão : Fatos_1602
 irmãos : eus_0501
 ironia : Ciuminho_0106
 ironia : Epitafiando_0202
+ironia : Lady-Murphy_0202
 ironia : Portal_0302
 ironia : Psiu_0107
 ironias : Avevida_0303
@@ -19806,6 +19873,8 @@ ladra : Inhos_0501
 ladras : Insano_0203
 ladro : Insano_0101
 ladrões : Inhos_0501
+lady : Lady-Murphy_0101
+lady : Lady-Murphy_0601
 lagarta : Dolores_0301
 lagartos : MachBrait_1201
 lagartos : Papilio_1201
@@ -20238,6 +20307,8 @@ leve : Carroussel_0301
 leve : Ciuminho_0501
 leve : Essa_0601
 leve : Feiras_0102
+leve : Lady-Murphy_0301
+leve : Lady-Murphy_0503
 leve : Passagens_0302
 leve : Perfil_0201
 leve : Remedeio_0101
@@ -21012,6 +21083,7 @@ madrigalista : Distintos_0205
 madrugada : Augusto_0402
 madrugada : Becos_1103
 madrugada : Clarice_0501
+madrugada : Lady-Murphy_0202
 madrugada : Meteoro_1101
 madrugada : Ocio_1302
 madrugada : Ocio_1304
@@ -21025,6 +21097,7 @@ maduras : Caprico=f_0506
 maduras : Caprico=m_0506
 maestria : Essa_0604
 maestria : Feiras_0901
+maestrina : Lady-Murphy_0201
 magia : Aolero_1001
 magia : Astros_0601
 magia : Astros_0801
@@ -21469,6 +21542,7 @@ mantém : Gemeos=f_0801
 mantém : Gemeos=m_0801
 mantém : Inhos_0501
 manuais : Preciso_0201
+manual : Lady-Murphy_0202
 manual : Manusgrite_0102
 manual : Manusgrito_0102
 manufaturas : Usinas_0102
@@ -21629,6 +21703,7 @@ mas : Dolores_1002
 mas : Epitafiando_0502
 mas : Finalmentes_0501
 mas : Haikai_0301
+mas : Lady-Murphy_0202
 mas : Lato_0801
 mas : Lero_0102
 mas : Loremipsum_0801
@@ -21789,6 +21864,8 @@ medo : Cromossomo_0902
 medo : Dolores_0501
 medo : Epitafiando_0101
 medo : Indolor_0501
+medo : Lady-Murphy_0301
+medo : Lady-Murphy_0503
 medo : Liberta_0501
 medo : Liberta_1002
 medo : MachBrait_1301
@@ -21898,6 +21975,7 @@ melancolias : Usinas_0103
 melancólicos : Escriba_0903
 melhor : Blablabla_0101
 melhor : Gula_0402
+melhor : Lady-Murphy_0202
 melhor : Leao=f_0602
 melhor : Leao=m_0602
 melhor : Minuto_0501
@@ -23382,6 +23460,8 @@ muito : Aries=m_0301
 muito : Cacos_0401
 muito : Carroussel_0301
 muito : Insano_0101
+muito : Lady-Murphy_0301
+muito : Lady-Murphy_0503
 muito : Leituras_1301
 muito : Meteoro_0204
 muito : Perfil_0201
@@ -23441,6 +23521,7 @@ mundo : Gemeos=f_0501
 mundo : Gemeos=m_0501
 mundo : Indolor_0701
 mundo : Inhos_0701
+mundo : Lady-Murphy_0202
 mundo : Leituras_0802
 mundo : Libra=f_0102
 mundo : Libra=m_0102
@@ -23502,6 +23583,8 @@ muro : Sn6=ball_0401
 muro : Sn8=ball_0401
 muro : Snowball_0401
 muros : Reger_0803
+murphy : Lady-Murphy_0101
+murphy : Lady-Murphy_0601
 murro : Loremipsum_1001
 murro : Reinos_1302
 murro : Rito_0501
@@ -23703,6 +23786,7 @@ nada : Gemeos=m_0501
 nada : Haikai_0301
 nada : Indolor_0701
 nada : Joker_0404
+nada : Lady-Murphy_0202
 nada : Leituras_0901
 nada : Lero_0102
 nada : MachBeth_0501
@@ -24905,6 +24989,10 @@ não : Inhos_0701
 não : Insano_0201
 não : Insano_0701
 não : Insano_0702
+não : Lady-Murphy_0202
+não : Lady-Murphy_0301
+não : Lady-Murphy_0503
+não : Lady-Murphy_0602
 não : Lato_0101
 não : Leituras_0802
 não : Leituras_0901
@@ -25991,6 +26079,7 @@ overloquista : Distintos_0205
 ovi : Perfil_0303
 ovo : Aolero_0501
 ovo : Bolero_0401
+ovo : Lady-Murphy_0202
 ovo : Lero_0401
 ovo : Lero_0403
 ovo : Ocio_1402
@@ -26518,6 +26607,8 @@ parece : Dolores_0901
 parece : Fatos_0601
 parece : Festim_1102
 parece : Indolor_0901
+parece : Lady-Murphy_0301
+parece : Lady-Murphy_0503
 parece : Peixes=f_0302
 parece : Peixes=m_0302
 parece : Preciso_0602
@@ -27102,6 +27193,7 @@ pelo : Escorpio=f_0801
 pelo : Escorpio=m_0801
 pelo : Escriba_0403
 pelo : Festim_0603
+pelo : Lady-Murphy_0202
 pelo : Lato_0903
 pelo : Nós_0102
 pelo : Papilio_0901
@@ -27120,6 +27212,7 @@ pelos : Aquarius=f_0402
 pelos : Aquarius=m_0402
 pelos : Ciuminho_0404
 pelos : Feiras_0901
+pelos : Lady-Murphy_0202
 pelos : Leituras_1001
 pelos : Oca_0303
 pelos : Oco_0303
@@ -27332,6 +27425,7 @@ perda : MachBrait_0601
 perda : Papilio_0601
 perde : Ciuminho_0901
 perde : Cuores_1102
+perde : Lady-Murphy_0202
 perde : Passagens_1001
 perde : Perfil_0702
 perde : Psiu_0401
@@ -27709,6 +27803,7 @@ peçoas : Perfil_0303
 peçonha : Atido_0403
 peçonha : Essa_0204
 piaba : Gula_0702
+piada : Lady-Murphy_0602
 piadas : Ciuminho_0501
 piadista : Destinos_0205
 piadista : Distintos_0205
@@ -28756,6 +28851,7 @@ pra : Dolores_0901
 pra : Duralex_0101
 pra : Haikai_0301
 pra : Joker_0303
+pra : Lady-Murphy_0202
 pra : Lero_0401
 pra : Lero_0403
 pra : Minuto_0701
@@ -28912,6 +29008,7 @@ precipícios : Zelo_0201
 precisa : Astros_0801
 precisa : Epitafiando_0702
 precisa : Fugaz_0302
+precisa : Lady-Murphy_0202
 precisa : Portal_0802
 precisa : Sopros_1101
 precisa : Tempo_1102
@@ -29070,6 +29167,7 @@ pressa : Dolores_0601
 pressa : Estudo_0201
 pressa : Estudo_0503
 pressa : Indolor_0602
+pressa : Lady-Murphy_0202
 pressa : Liberta_1002
 pressa : MachBrait_0601
 pressa : Mirante_0303
@@ -29186,6 +29284,7 @@ primitivo : Ciuminho_0106
 primitivo : Psiu_0107
 primo : Fatos_1602
 primores : Ores_0101
+princesa : Lady-Murphy_0201
 principal : Cacos_0201
 principal : Loremipsum_0802
 principiam-se : Festim_1102
@@ -29250,6 +29349,7 @@ procissão : Posfácio_0401
 procissão : Sonoro_0301
 proctologista : Destinos_0205
 proctologista : Distintos_0205
+procura : Lady-Murphy_0202
 procura : MachBrait_0601
 procura : Papilio_0601
 procura : Perfil_0301
@@ -29524,6 +29624,7 @@ provérbios : Oca_0203
 provérbios : Oco_0203
 prudente : Cancer=f_0103
 prudente : Cancer=m_0103
+prudente : Lady-Murphy_0602
 prudência : Cadência_0104
 prumo : Conto_1203
 prumo : Inhos_0501
@@ -29903,6 +30004,9 @@ quando : Festim_0401
 quando : Haikai_0301
 quando : Indolor_0101
 quando : Inhos_0301
+quando : Lady-Murphy_0202
+quando : Lady-Murphy_0301
+quando : Lady-Murphy_0503
 quando : Lero_0501
 quando : Liberta_1201
 quando : Manusgrite_1101
@@ -30176,6 +30280,9 @@ que : Inhos_0402
 que : Inhos_0701
 que : Insano_0101
 que : Insano_0201
+que : Lady-Murphy_0202
+que : Lady-Murphy_0301
+que : Lady-Murphy_0503
 que : Lato_0101
 que : Lato_0901
 que : Leao=f_0602
@@ -30728,6 +30835,7 @@ radicalmente : Fatos_1502
 raia : Ciuminho_0403
 raiar : Palyndro_0801
 rainha : Epitafiando_0701
+rainha : Lady-Murphy_0201
 rainha : Portal_0801
 rainha : Tempo_0702
 rainhas : Cromossomo_0303
@@ -30940,6 +31048,8 @@ realejo : Reger_0102
 realeza : Cacos_0301
 realidade : Astros_0801
 realidade : Carroussel_0203
+realidade : Lady-Murphy_0301
+realidade : Lady-Murphy_0503
 realidade : Liberta_0301
 realidade : Manifesto_1603
 realidade : Zodiacaos_1104
@@ -31671,6 +31781,8 @@ resolver : Elogio_0401
 resolver : Indolor_0501
 resolveram : Distintos_0601
 resolvi : Joker_0402
+resolvido : Lady-Murphy_0301
+resolvido : Lady-Murphy_0503
 resolvido : eus_0102
 resolvido : eus_0302
 resouvida : Perfil_0402
@@ -31968,6 +32080,8 @@ revolver : Paroles_0502
 revolvo : Dolores_1101
 revolvo : Indolor_1101
 reza : Avevida_0203
+reza : Lady-Murphy_0301
+reza : Lady-Murphy_0503
 rezam : Ciuminho_0501
 rezamos : Cromossomo_0902
 rezas : Sn6=ball_1001
@@ -32403,6 +32517,8 @@ sabe : Essas_0701
 sabe : Gemeos=f_0701
 sabe : Gemeos=m_0701
 sabe : Inhos_0701
+sabe : Lady-Murphy_0202
+sabe : Lady-Murphy_0602
 sabe : Mirante_0101
 sabe : Mirante_0302
 sabe : Nonono_0301
@@ -33052,6 +33168,8 @@ sede : Carroussel_0301
 sede : Essas_0503
 sede : Essas_0701
 sede : Esses_0401
+sede : Lady-Murphy_0301
+sede : Lady-Murphy_0503
 sede : MachBrait_0801
 sede : Papilio_0601
 sede : Papilio_0801
@@ -33462,6 +33580,7 @@ sem : Inhos_0402
 sem : Inhos_0701
 sem : Joker_0203
 sem : Joker_0404
+sem : Lady-Murphy_0202
 sem : Leituras_0802
 sem : Leituras_1001
 sem : Lero_0102
@@ -33762,6 +33881,7 @@ senhor : Tempo_0201
 senhora : Destinos_0202
 senhora : Distintos_0202
 senhora : Essas_0301
+senhora : Lady-Murphy_0201
 senhora : Oficia_0102
 senhora : Sinas_0102
 senhores : Ores_0402
@@ -33822,6 +33942,8 @@ senta-te : Anjos_1201
 senta-te : Augusto_1201
 sentado : Loremipsum_1001
 sente : Ciuminho_0801
+sente : Lady-Murphy_0301
+sente : Lady-Murphy_0503
 sente : Psiu_0301
 sente : Zelo_0201
 sente-se : Caprico=f_0504
@@ -33993,6 +34115,7 @@ ser : Indolor_0901
 ser : Indolor_1102
 ser : Inhos_0501
 ser : Joker_0403
+ser : Lady-Murphy_0202
 ser : Lato_0101
 ser : Leao=f_0602
 ser : Leao=m_0602
@@ -34165,6 +34288,7 @@ sertão : Inhos_0701
 sertão : Sonoro_0301
 serva : Essas_0301
 serva : Sinas_0102
+serve : Lady-Murphy_0202
 serve-se : Mirante_0402
 serve-se : Ogiva_0601
 serve-se : Olhares_0402
@@ -35254,6 +35378,8 @@ sonetos : Sinais_0302
 sonetos : Sinas_0502
 sonha : Avevida_0203
 sonha : Blablabla_0101
+sonha : Lady-Murphy_0301
+sonha : Lady-Murphy_0503
 sonha : Leituras_0502
 sonha : Mirante_0302
 sonha : Nonono_0501
@@ -35330,6 +35456,8 @@ sonho : Estudo_0101
 sonho : Estudo_0501
 sonho : Feiras_0101
 sonho : Gula_0101
+sonho : Lady-Murphy_0301
+sonho : Lady-Murphy_0503
 sonho : Lato_0101
 sonho : Lero_0401
 sonho : Lero_0403
@@ -35405,6 +35533,8 @@ sono : Bolero_0401
 sono : Carroussel_0301
 sono : Ciuminho_0501
 sono : Clarice_0203
+sono : Lady-Murphy_0301
+sono : Lady-Murphy_0503
 sono : Lero_0401
 sono : Lero_0403
 sono : Ogiva_0402
@@ -35640,6 +35770,7 @@ sovo : Sinas_0301
 sozinha : Dolores_0501
 sozinha : Essas_0301
 sozinha : Frases_0502
+sozinha : Lady-Murphy_0602
 sozinha : Sinas_0102
 sozinho : Aolero_0602
 sozinho : Atido_0702
@@ -36780,6 +36911,8 @@ teje : Perfil_0701
 telejornais : Seguro_0101
 telepáticas : Saudades_0701
 telepáticas : Snowball_1101
+telha : Lady-Murphy_0301
+telha : Lady-Murphy_0503
 telhado : Silente_0103
 telhados : Ciuminho_0801
 telhados : Papilio_1203
@@ -36802,6 +36935,9 @@ tem : Fatos_1101
 tem : Frases_0502
 tem : Gemeos=f_0301
 tem : Gemeos=m_0301
+tem : Lady-Murphy_0301
+tem : Lady-Murphy_0503
+tem : Lady-Murphy_0602
 tem : Loremipsum_0401
 tem : Loremipsum_1001
 tem : Meteoro_0501
@@ -37452,6 +37588,7 @@ todo : Fugaz_0601
 todo : Haikai_0103
 todo : Haikai_0203
 todo : Insano_0501
+todo : Lady-Murphy_0202
 todo : Meteoro_0104
 todo : Ocio_0204
 todo : Prefácil_0804
@@ -38143,6 +38280,8 @@ tudo : Haikai_0103
 tudo : Haikai_0203
 tudo : Haikai_0301
 tudo : Insano_0101
+tudo : Lady-Murphy_0301
+tudo : Lady-Murphy_0503
 tudo : Lato_0801
 tudo : MachBeth_0601
 tudo : MachBeth_1101
@@ -38420,6 +38559,7 @@ uma : Haikai_0301
 uma : Indolor_0901
 uma : Inhos_0701
 uma : Insano_0702
+uma : Lady-Murphy_0602
 uma : Leao=f_0402
 uma : Leao=m_0402
 uma : Lero_0401
@@ -39078,6 +39218,7 @@ velas : Papilio_0901
 velha : Ciuminho_0801
 velha : Dolores_1102
 velha : Indolor_1102
+velha : Lady-Murphy_0201
 velha : Psiu_0301
 velha : Rever_0401
 velha : Zelo_0201
@@ -39137,6 +39278,7 @@ vem : Silente_1103
 vem : Solero_0801
 vem : Tolero_1101
 vem : Zelo_0201
+vence : Lady-Murphy_0202
 vencedor : Zelo_0701
 vencer : Aries=f_0602
 vencer : Aries=m_0602
@@ -39150,6 +39292,7 @@ vencer : Paroles_0301
 vencer : Paroles_0701
 vencer : Zodiacaos_1202
 vencerá : Tiro_1101
+venceu : Lady-Murphy_0202
 vencidas : Tiro_0701
 vencido : Augusto_1701
 vencido : Demo_0202
@@ -40556,6 +40699,8 @@ xero-copista : Distintos_0205
 xerocopista : Destinos_0205
 xiii : Manifesto_0503
 xiitas : Preciso_0303
+xinga : Lady-Murphy_0301
+xinga : Lady-Murphy_0503
 xingo : Aolero_0602
 xingo : Bolero_0503
 xingo : Lero_0401

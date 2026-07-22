@@ -1,3 +1,4 @@
+Astros
 Aquarius=f
 Aquarius=m
 Aries=f
@@ -22,3 +23,4 @@ Touro=f
 Touro=m
 Virgem=f
 Virgem=m
+Zodiacaos

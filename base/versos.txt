@@ -1,6 +1,5 @@
 Ais : 3
 Amaré : 5
-Ana : 1
 Anjos : 14
 Aolero : 8
 Arerir : 4
@@ -16,7 +15,10 @@ Blablabla : 3
 Bolero : 8
 Brado : 5
 Bula : 3
+Cia : 1
+Cacos : 6
 Cadência : 3
+Carroussel : 5
 Cartaz : 10
 Circular : 6
 Ciuminho : 6
@@ -24,9 +26,9 @@ Clandestino : 9
 Clarice : 8
 Conto : 10
 Cordel : 3
+Cromossomo : 9
 Críticas : 17
 Crítico : 10
-Cromossomo : 9
 Cuores : 9
 Demo : 4
 Destinos : 8
@@ -41,6 +43,7 @@ Essa : 5
 Essas : 5
 Esses : 14
 Estudo : 6
+Eus : 5
 Evidências : 3
 Fatos : 17
 Feiras : 9
@@ -50,7 +53,7 @@ Frases : 4
 Fugaz : 5
 Gula : 6
 Haikai : 3
-i-Mundo : 6
+I-mundo : 6
 Impar : 4
 Indolor : 9
 Inhos : 7
@@ -71,6 +74,7 @@ Minuto : 6
 Mirante : 5
 Nonono : 9
 Nós : 10
+Nós_nos_nós : 3
 Ola : 2
 Oca : 4
 Ocio : 14
@@ -78,7 +82,6 @@ Oco : 4
 Oficia : 15
 Oficio : 15
 Ogiva : 5
-Ola : 2
 Olhares : 14
 Ores : 4
 Palyndro : 13
@@ -97,8 +100,8 @@ Psiu : 4
 Reger : 7
 Reinos : 11
 Remedeio : 3
-Rever : 4
 Restos : 5
+Rever : 4
 Rito : 4
 Salute : 5
 Saudades : 6
@@ -110,7 +113,7 @@ Sinais : 5
 Sinas : 5
 Sn6=ball : 13
 Sn8=ball : 16
-SnowBall : 20
+Snowball : 20
 Solero : 8
 Sonoro : 3
 Sopros : 9
@@ -119,8 +122,6 @@ Tempo : 14
 Tempus : 6
 Tiro : 9
 Tolero : 14
-Una : 1
-Una_abertura : 14
 Usinas : 7
 Veio : 7
 Victor : 8
@@ -152,3 +153,4 @@ Touro=f : 5
 Touro=m : 5
 Virgem=f : 7
 Virgem=m : 7
+Lady-murphy : 5

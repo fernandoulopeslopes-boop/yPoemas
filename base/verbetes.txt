@@ -214,6 +214,7 @@ acrílicos
 acrônicas
 acuada
 acuados
+acumulada
 acumulados
 acupunturista
 acácias
@@ -328,6 +329,7 @@ afinidade
 afinidades
 afins
 afio
+afirma
 afirma-se
 afirmam
 afirmando
@@ -1517,6 +1519,7 @@ beltrana
 beltrano
 bem
 bem-estar
+bem-humorada
 bem-querer
 bem-sucedido
 bem-te-vi
@@ -1856,6 +1859,7 @@ calcei
 calcificados
 calcula
 calculado
+calculados
 calcular
 calculista
 caldo
@@ -2412,6 +2416,7 @@ combinação
 combinações
 combinem
 combiná-las
+come
 comediantes
 comedidas
 comem
@@ -3473,6 +3478,7 @@ desiludida
 desiludidos
 desimportante
 desintegrado
+desinventa
 desistem
 desisti
 desistir
@@ -3499,6 +3505,7 @@ desmemória
 desminta
 desmonte-se
 desmorono
+desnecessários
 desnorteia
 desnorteio
 desnude
@@ -3742,6 +3749,7 @@ discreto
 discrição
 discurso
 discursos
+discute
 discutida
 discutir
 discutível
@@ -3768,6 +3776,7 @@ disparo
 dispensar
 dispensem
 dispenso
+dispensáveis
 dispersando
 dispersar
 disperso
@@ -3932,6 +3941,7 @@ dormimos
 dormir
 dorso
 dos
+dosado
 dose
 doses
 dou
@@ -4326,6 +4336,7 @@ entorna
 entornar
 entornei
 entorta-te
+entra
 entrada
 entranhas
 entrar
@@ -6848,6 +6859,7 @@ ladra
 ladras
 ladro
 ladrões
+lady
 lagarta
 lagartos
 lagoa
@@ -7218,6 +7230,7 @@ madrugada
 madrugadas
 maduras
 maestria
+maestrina
 magia
 magias
 magistrado
@@ -7857,6 +7870,7 @@ mureta
 murmúrios
 muro
 muros
+murphy
 murro
 musa
 musas
@@ -8902,6 +8916,7 @@ peço
 peçoas
 peçonha
 piaba
+piada
 piadas
 piadista
 piados
@@ -9320,6 +9335,7 @@ primitivas
 primitivo
 primo
 primores
+princesa
 principal
 principiam-se
 principiante
@@ -10703,6 +10719,7 @@ serro
 serta
 sertão
 serva
+serve
 serve-se
 serve-te
 serventia
@@ -11404,6 +11421,7 @@ teimosos
 teje
 telejornais
 telepáticas
+telha
 telhado
 telhados
 telúrio
@@ -12056,9 +12074,11 @@ velhos
 velocidade
 velocista
 vem
+vence
 vencedor
 vencer
 vencerá
+venceu
 vencidas
 vencido
 vencidos
@@ -12401,6 +12421,7 @@ xero-copista
 xerocopista
 xiii
 xiitas
+xinga
 xingo
 xix
 xotes

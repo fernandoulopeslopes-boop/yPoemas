@@ -1,6 +1,5 @@
 Ais : 147
 Amaré : 251
-Ana : 32
 Anjos : 261
 Aolero : 246
 Arerir : 196
@@ -16,17 +15,20 @@ Blablabla : 270
 Bolero : 418
 Brado : 168
 Bula : 142
+Cia : 41
+Cacos : 511
 Cadência : 127
+Carroussel : 64
 Cartaz : 317
-Circular : 141
+Circular : 153
 Ciuminho : 548
 Clandestino : 120
 Clarice : 85
 Conto : 154
 Cordel : 138
-Críticas : 156
-Crítico : 30
 Cromossomo : 134
+Críticas : 331
+Crítico : 90
 Cuores : 246
 Demo : 211
 Destinos : 627
@@ -41,6 +43,7 @@ Essa : 250
 Essas : 239
 Esses : 88
 Estudo : 241
+Eus : 185
 Evidências : 72
 Fatos : 335
 Feiras : 247
@@ -50,7 +53,7 @@ Frases : 168
 Fugaz : 594
 Gula : 270
 Haikai : 572
-i-Mundo : 224
+I-mundo : 224
 Impar : 63
 Indolor : 386
 Inhos : 103
@@ -71,6 +74,7 @@ Minuto : 213
 Mirante : 211
 Nonono : 572
 Nós : 122
+Nós_nos_nós : 55
 Ola : 35
 Oca : 160
 Ocio : 385
@@ -78,7 +82,6 @@ Oco : 159
 Oficia : 527
 Oficio : 475
 Ogiva : 232
-Ola : 35
 Olhares : 464
 Ores : 106
 Palyndro : 52
@@ -97,8 +100,8 @@ Psiu : 322
 Reger : 85
 Reinos : 256
 Remedeio : 185
-Rever : 77
 Restos : 91
+Rever : 77
 Rito : 169
 Salute : 267
 Saudades : 181
@@ -110,7 +113,7 @@ Sinais : 319
 Sinas : 285
 Sn6=ball : 252
 Sn8=ball : 251
-SnowBall : 427
+Snowball : 427
 Solero : 252
 Sonoro : 90
 Sopros : 189
@@ -119,12 +122,10 @@ Tempo : 1745
 Tempus : 99
 Tiro : 384
 Tolero : 420
-Una : 30
-Una_abertura : 170
 Usinas : 225
 Veio : 318
 Victor : 112
-Vozes : 90
+Vozes : 85
 Zelo : 246
 Zodiacaos : 375
 Zoia : 484
@@ -152,3 +153,4 @@ Touro=f : 59
 Touro=m : 59
 Virgem=f : 110
 Virgem=m : 107
+Lady-murphy : 55
