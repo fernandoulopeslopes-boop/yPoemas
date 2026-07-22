@@ -22,6 +22,37 @@ from readings import (
     update_visy,
 )
 
+def _ativar_openai_key_do_deploy():
+    """Espelha a chave do Streamlit Secrets no ambiente usado pela ponte OLA."""
+    if os.environ.get("OPENAI_API_KEY"):
+        return
+    try:
+        secrets = st.secrets
+    except Exception:
+        return
+
+    candidatos = []
+    try:
+        candidatos.append(secrets.get("OPENAI_API_KEY"))
+    except Exception:
+        pass
+    for grupo, chave in (("openai", "api_key"), ("OPENAI", "API_KEY")):
+        try:
+            bloco = secrets.get(grupo, {})
+            if bloco:
+                candidatos.append(bloco.get(chave))
+        except Exception:
+            pass
+
+    for valor in candidatos:
+        valor = str(valor or "").strip()
+        if valor:
+            os.environ["OPENAI_API_KEY"] = valor
+            return
+
+
+_ativar_openai_key_do_deploy()
+
 try:
     from ponte_ola_openai import gerar_analise_ola as _gerar_analise_ola_real
 except Exception:
@@ -695,6 +726,21 @@ def init_session_state():
 
 apply_styles()
 init_session_state()
+
+def _ypo_focus_key():
+    """Identidade do yPoema em foco no palco."""
+    return "|".join([
+        str(st.session_state.get("book", "")),
+        str(st.session_state.get("take", "")),
+        str(st.session_state.get("tema", "")),
+        str(st.session_state.get("lang", "")),
+    ])
+
+
+def _remember_ypo_focus(key, text):
+    st.session_state["ypo_focus_key"] = key
+    st.session_state["ypo_focus_text"] = text
+
 
 
 def _copy_bundle_source_key(curr_ypoema=""):
@@ -1375,7 +1421,7 @@ def render_matrix_ficha_tecnica_ypoemas(tema):
 
     with col_matrix:
         if matrix_image:
-            st.image(matrix_image, use_container_width=True)
+            st.image(matrix_image, width="stretch")
         else:
             st.markdown(
                 "<div style='text-align:center; opacity:0.72; padding:1.2rem 0;'>Matrix não encontrada.</div>",
@@ -1921,7 +1967,7 @@ def write_livro_vivo_texto(LOGO_TEXTO, LOGO_IMAGE=None):
         try:
             col_img, col_txt = st.columns([2.5, 7.5])
             with col_img:
-                st.image(LOGO_IMAGE, use_container_width=True)
+                st.image(LOGO_IMAGE, width="stretch")
             with col_txt:
                 st.markdown(_off_machina_html(LOGO_TEXTO), unsafe_allow_html=True)
             return
@@ -2142,47 +2188,49 @@ def render_copy_bundle_widget(texto, token, qtd_real=None):
 
 @st.cache_data
 def load_images():
+    """Lê o catálogo curatorial tema → grupo em base/images.txt."""
     images_list = []
-    with open(os.path.join("./base/images.txt"), encoding="utf-8") as lista:
+    images_path = _project_path("base", "images.txt")
+    if not os.path.exists(images_path):
+        return images_list
+    with open(images_path, encoding="utf-8") as lista:
         for line in lista:
-            images_list.append(line)
-
+            if line.strip():
+                images_list.append(line.rstrip("\n"))
     return images_list
 
 
-def load_arts(nome_tema):  # Select image for arts
-    path = "./images/machina/"
-    path_list = load_images()
-    for line in path_list:
-        if line.startswith(nome_tema):
-            this_line = line.strip("\n")
-            part_line = this_line.partition(" : ")
-            if nome_tema == part_line[0]:
-                path = "./images/" + part_line[2] + "/"
-                break
+def load_arts(nome_tema):
+    """Seleciona imagem do grupo curatorial do tema, com fallback Machina."""
+    tema_norm = str(nome_tema or "").strip().casefold()
+    grupo = "machina"
 
-    arts_list = []
-    for file in os.listdir(path):
-        if file.endswith(".jpg"):
-            arts_list.append(file)
+    for line in load_images():
+        nome, sep, destino = line.partition(" : ")
+        if sep and nome.strip().casefold() == tema_norm:
+            grupo = destino.strip() or "machina"
+            break
 
+    path = _project_path("images", grupo)
+    if not os.path.isdir(path):
+        path = _project_path("images", "machina")
+    if not os.path.isdir(path):
+        return None
+
+    arts_list = [
+        file for file in sorted(os.listdir(path), key=natural_keys)
+        if file.lower().endswith((".jpg", ".jpeg", ".png", ".webp"))
+        and os.path.isfile(os.path.join(path, file))
+    ]
     if not arts_list:
         return None
 
-    available_arts = [image for image in arts_list if image not in st.session_state.arts]
-    if not available_arts:
-        available_arts = arts_list
-
+    historico = st.session_state.get("arts", [])
+    available_arts = [image for image in arts_list if image not in historico] or arts_list
     image = random.choice(available_arts)
-    st.session_state.arts.append(image)
-
-    if len(st.session_state.arts) > 36:  # remove first
-        del st.session_state.arts[0]
-
-    logo = path + image
-
-    return logo
-
+    historico.append(image)
+    st.session_state["arts"] = historico[-36:]
+    return os.path.join(path, image)
 
 def _set_sidebar_context_image_for_theme(nome_tema):
     """Define a imagem Machina contextual do tema atual para a sidebar.
@@ -2221,6 +2269,36 @@ def _resolve_off_machina_book_image(book_name):
             return candidate
 
     return ""
+
+
+def _images_from_group(group_name):
+    """Lista imagens do grupo indicado, usando caminhos do projeto."""
+    group_dir = _project_path("images", str(group_name or "").strip())
+    images = []
+    if os.path.isdir(group_dir):
+        for file in sorted(os.listdir(group_dir), key=natural_keys):
+            if file.lower().endswith((".jpg", ".jpeg", ".png", ".webp")):
+                images.append(os.path.join(group_dir, file))
+    return images
+
+
+def _set_group_sidebar_image_next(group_name, state_key):
+    """Escolhe imagem do grupo sem repetir imediatamente na sidebar."""
+    images = _images_from_group(group_name)
+    if not images:
+        st.session_state[state_key] = ""
+        return ""
+
+    previous = st.session_state.get(state_key, "")
+    available = [img for img in images if img != previous]
+    chosen = random.choice(available or images)
+    st.session_state[state_key] = chosen
+    return chosen
+
+
+def _set_off_anima_image_next():
+    """Página OFF usa a curadoria visual fixa do grupo images/anima."""
+    return _set_group_sidebar_image_next("anima", "off_anima_image")
 
 
 def _about_author_images():
@@ -2278,7 +2356,10 @@ def render_sidebar_context_image(chosen_id):
     - Off-Machina: imagem do livro em foco;
     - About/tools: imagem própria da página.
     """
-    if str(st.session_state.get("analysis_voice", "Machina")).upper() in {"CIA", "OLA"}:
+    if (
+        str(chosen_id) != "4"
+        and str(st.session_state.get("analysis_voice", "Machina")).upper() in {"CIA", "OLA"}
+    ):
         return
 
     if not bool(st.session_state.get("draw", True)):
@@ -2289,13 +2370,7 @@ def render_sidebar_context_image(chosen_id):
     if str(chosen_id) in {"1", "2", "3"}:
         image_path = st.session_state.get("sidebar_context_image", "")
     elif str(chosen_id) == "4":
-        try:
-            off_books_list = load_all_offs()
-            off_idx = int(st.session_state.get("off_book", 0))
-            if off_books_list and 0 <= off_idx < len(off_books_list):
-                image_path = _resolve_off_machina_book_image(off_books_list[off_idx])
-        except Exception:
-            image_path = ""
+        image_path = st.session_state.get("off_anima_image", "")
     elif str(chosen_id) == "6":
         # ABOUT/TOOLS: imagem aleatória exclusivamente da pasta ./images/author.
         image_path = st.session_state.get("about_author_image", "")
@@ -2539,22 +2614,22 @@ def page_mini():
     help_talk = help_tips[6]
 
     with more_col:
-        more = st.button("✚", key="mini_more_btn", help=help_more, use_container_width=True)
+        more = st.button("✚", key="mini_more_btn", help=help_more, width="stretch")
 
     with rand_col:
-        rand = st.button("✻", key="mini_rand_btn", help=help_rand, use_container_width=True)
+        rand = st.button("✻", key="mini_rand_btn", help=help_rand, width="stretch")
 
     with auto_col:
-        if st.button("🔀", key="mini_auto_button", help="modo automático", use_container_width=True):
+        if st.button("🔀", key="mini_auto_button", help="modo automático", width="stretch"):
             st.session_state.auto = not st.session_state.auto
 
     with voz_col:
-        if st.button("📣", key="mini_voz_btn", help=help_talk, use_container_width=True):
+        if st.button("📣", key="mini_voz_btn", help=help_talk, width="stretch"):
             st.session_state.talk = not st.session_state.talk
 
     # Pedido: o botão ? deve existir como botão real logo após o 📣.
     with help_col:
-        manu = st.button("?", key="mini_help_btn", help="Modo de Usar & Manual do Usuário", use_container_width=True)
+        manu = st.button("?", key="mini_help_btn", help="Modo de Usar & Manual do Usuário", width="stretch")
 
     mini_voz_slot = render_voz_slot()
 
@@ -2898,13 +2973,13 @@ def page_ypoemas():
                 unsafe_allow_html=True,
             )
         nav_cols = st.columns([1, 1, 1, 1, 1, 1])
-        more = nav_cols[0].button("✚", help=help_more, use_container_width=True)
-        last = nav_cols[1].button("◀", help=help_last, use_container_width=True)
-        rand = nav_cols[2].button("✻", help=help_rand, use_container_width=True)
-        nest = nav_cols[3].button("▶", help=help_nest, use_container_width=True)
-        if nav_cols[4].button("📣", help=help_tips[6], key="ypoemas_voz_btn", use_container_width=True):
+        more = nav_cols[0].button("✚", help=help_more, width="stretch")
+        last = nav_cols[1].button("◀", help=help_last, width="stretch")
+        rand = nav_cols[2].button("✻", help=help_rand, width="stretch")
+        nest = nav_cols[3].button("▶", help=help_nest, width="stretch")
+        if nav_cols[4].button("📣", help=help_tips[6], key="ypoemas_voz_btn", width="stretch"):
             st.session_state.talk = not st.session_state.talk
-        manu = nav_cols[5].button("?", help="help !!!", use_container_width=True)
+        manu = nav_cols[5].button("?", help="help !!!", width="stretch")
 
         ypoemas_voz_slot = render_voz_slot()
 
@@ -2998,7 +3073,16 @@ def page_ypoemas():
 
         ypoemas_expander = st.expander(what_book, expanded=True)
         with ypoemas_expander:
-            if st.session_state.lang != st.session_state.last_lang:
+            focus_key = _ypo_focus_key()
+            keep_focus = (
+                not any([more, last, rand, nest])
+                and st.session_state.get("ypo_focus_key", "") == focus_key
+                and bool(st.session_state.get("ypo_focus_text", ""))
+            )
+
+            if keep_focus:
+                curr_ypoema = st.session_state.get("ypo_focus_text", "")
+            elif st.session_state.lang != st.session_state.last_lang:
                 curr_ypoema = load_lypo()  # changes in lang, keep LYPO
             else:
                 curr_ypoema = load_poema(st.session_state.tema, "")
@@ -3014,6 +3098,7 @@ def page_ypoemas():
                     save_typo.close()
                 curr_ypoema = load_typo()  # to normalize line breaks in text
 
+            _remember_ypo_focus(focus_key, curr_ypoema)
             update_readings(st.session_state.tema)
 
             st.session_state.ypoema_em_analise = curr_ypoema
@@ -3069,7 +3154,7 @@ def page_ypoemas():
                     "criar",
                     key="copy_variacoes_btn",
                     help="variações",
-                    use_container_width=True,
+                    width="stretch",
                 )
 
             with copy_qtd_col:
@@ -3179,14 +3264,14 @@ def page_eureka():
             )
 
         nav_cols = st.columns([1, 1, 1, 1])
-        more = nav_cols[0].button("✚", help=help_more, use_container_width=True)
-        rand = nav_cols[1].button("✻", help=help_rand, use_container_width=True)
+        more = nav_cols[0].button("✚", help=help_more, width="stretch")
+        rand = nav_cols[1].button("✻", help=help_rand, width="stretch")
 
-        if nav_cols[2].button("📣", key="eureka_voz_btn", help=help_talk, use_container_width=True):
+        if nav_cols[2].button("📣", key="eureka_voz_btn", help=help_talk, width="stretch"):
             _hide_eureka_help()
             st.session_state.talk = not st.session_state.talk
 
-        manu = nav_cols[3].button("?", help="help !!!", use_container_width=True)
+        manu = nav_cols[3].button("?", help="help !!!", width="stretch")
 
         eureka_voz_slot = render_voz_slot()
 
@@ -3374,6 +3459,7 @@ def page_off_machina():  # available off_machina_books
         ) + 1
 
     off_book_name = off_books_list[st.session_state.off_book]
+    _set_off_anima_image_next()
     this_off_book = load_off_book(off_book_name)
     off_book_pagys = load_book_pages(this_off_book)
 
@@ -3397,12 +3483,12 @@ def page_off_machina():  # available off_machina_books
                 unsafe_allow_html=True,
             )
         nav_cols = st.columns([1, 1, 1, 1, 1])
-        last = nav_cols[0].button("◀", help=help_last, use_container_width=True)
-        rand = nav_cols[1].button("✻", help=help_rand, use_container_width=True)
-        nest = nav_cols[2].button("▶", help=help_nest, use_container_width=True)
-        if nav_cols[3].button("📣", help=help_tips[6], key="off_voz_btn", use_container_width=True):
+        last = nav_cols[0].button("◀", help=help_last, width="stretch")
+        rand = nav_cols[1].button("✻", help=help_rand, width="stretch")
+        nest = nav_cols[2].button("▶", help=help_nest, width="stretch")
+        if nav_cols[3].button("📣", help=help_tips[6], key="off_voz_btn", width="stretch"):
             st.session_state.talk = not st.session_state.talk
-        manu = nav_cols[4].button("?", help="help !!!", use_container_width=True)
+        manu = nav_cols[4].button("?", help="help !!!", width="stretch")
 
         off_voz_slot = render_voz_slot()
 
@@ -3487,11 +3573,11 @@ def page_off_machina():  # available off_machina_books
                     if off_book_name == "livro_vivo":
                         LOGO_CAPA = load_arts("livro_vivo")
                         if LOGO_CAPA:
-                            st.image(LOGO_CAPA, use_container_width=True)
+                            st.image(LOGO_CAPA, width="stretch")
                     else:
                         st.image(
                             "./off_machina/capa_" + off_book_name + ".jpg",
-                            use_container_width=True,
+                            width="stretch",
                         )
                 with isbn:
                     if off_book_name == "livro_vivo":
@@ -3654,6 +3740,19 @@ BUILD_ESCALA = [
     "quindecilhões", "sedecilhões", "septendecilhões",
 ]
 
+CIA_ANALYSIS_OPTIONS = [
+    "Sintática",
+    "Semântica",
+]
+
+OLA_ANALYSIS_OPTIONS = [
+    "Sintética",
+    "Sintática",
+    "Aparição",
+    "Completa",
+]
+
+
 def _analysis_options_for_voice(voice):
     """Retorna a lista de análises da voz escolhida."""
     if str(voice or "").upper() == "OLA":
@@ -3714,7 +3813,7 @@ def render_analysis_sidebar_block():
             if st.button(
                 "CIA",
                 key="analysis_voice_cia_btn",
-                use_container_width=True,
+                width="stretch",
                 type="primary" if current_key == "CIA" else "secondary",
             ):
                 _set_analysis_voice("CIA")
@@ -3727,7 +3826,7 @@ def render_analysis_sidebar_block():
             if st.button(
                 "MACHINA",
                 key="analysis_voice_machina_btn",
-                use_container_width=True,
+                width="stretch",
                 type="primary" if current_key == "MACHINA" else "secondary",
             ):
                 _set_analysis_voice("Machina")
@@ -3740,7 +3839,7 @@ def render_analysis_sidebar_block():
             if st.button(
                 "OLA",
                 key="analysis_voice_ola_btn",
-                use_container_width=True,
+                width="stretch",
                 type="primary" if current_key == "OLA" else "secondary",
             ):
                 _set_analysis_voice("OLA")
@@ -3824,7 +3923,7 @@ def main():
                 if st.button(
                     page_label,
                     key=f"machina_page_btn_{page_label}",
-                    use_container_width=True,
+                    width="stretch",
                     type="primary" if page_label == st.session_state["machina_page_select"] else "secondary",
                 ):
                     _set_machina_page(page_label, page_ids[page_label])
