@@ -1,32 +1,28 @@
-﻿#
-# nós_nos_nós
-#
-
 |01|01|nós_nos_nós_0101|F|5|1|Cá entre nós... às|Há dentre nós|Para aquelas|Sem falar nas|Parece que há|
 |01|02|nós_nos_nós_0102|F|1|1|pessoas que|
-|01|03|nós_nos_nós_0103|F|4|1|atam|atracam|cultivam|atraem|
-|01|04|nós_nos_nós_0104|F|5|1|laços|vínculos|passos|nós|pensares|
-|01|05|nós_nos_nós_0105|T|6|1|emaranhados|atarrachados|estrangulados|deslocados|plastificados|inventados|
-|01|06|nós_nos_nós_0106|F|1|1|,|
-|01|07|nós_nos_nós_0107|F|2|1|na garganta,|lógicos,|
+|01|03|nós_nos_nós_0103|F|4|4|atam|atracam|cultivam|atraem|
+|02|04|nós_nos_nós_0204|F|5|1|laços|vínculos|passos|nós|pensares|
+|02|05|nós_nos_nós_0205|T|6|2|emaranhados|atarrachados|estrangulados|deslocados|plastificados|inventados|
+|02|06|nós_nos_nós_0206|F|1|1|,|
+|02|07|nós_nos_nós_0207|F|2|2|na garganta,|lógicos,|
 |01|08|nós_nos_nós_0108|F|1|1|feito nó|
-|01|09|nós_nos_nós_0109|F|6|1|de cadarço|de pescador|de marinheiro|de sobrevivente|de transatlântico|na garganta|
-|01|10|nós_nos_nós_0110|F|4|1|.|...|,|@|
-|02|01|nós_nos_nós_0201|F|2|1|sem sequer|sem nem|
-|02|02|nós_nos_nós_0202|F|3|1|saber|imaginar|cogitar|
+|01|09|nós_nos_nós_0109|F|9|9|de cadarço|de pescador|de marinheiro|de sobrevivente|de transatlântico|na garganta|de ancoragem|de caminhoneiro|de anzol|
+|02|01|nós_nos_nós_0201|F|2|2|sem sequer|sem nem|
+|02|02|nós_nos_nós_0202|F|3|3|saber|imaginar|cogitar|
 |02|03|nós_nos_nós_0203|F|1|1|que são|
 |02|04|nós_nos_nós_0204|T|7|1|vida não real|videntes cegos|ali alimentados|mera imaginação|nós imaginários|uma variação do nada|só espelhos|
 |02|05|nós_nos_nós_0205|F|1|1|:|
-|03|00|
-|03|01|nós_nos_nós_0301|F|1|1|Meu dó desse nó|
-|03|02|nós_nos_nós_0302|F|1|1|é que ele não sabe que|
-|03|03|nós_nos_nós_0303|F|4|1|é horizonte pleno de uma volta só.|pode inventar-se a si mesmo à vontade.|dá voltas em torno do próprio só.|a grandeza de poder ser um só é dom.|
+|09|00|
+|09|01|nós_nos_nós_0901|F|1|1|meu dó desse nó|
+|09|02|nós_nos_nós_0902|F|1|1|é que ele não sabe|
+|10|01|nós_nos_nós_1001|F|1|1|que|
+|10|02|nós_nos_nós_1002|F|5|1|é horizonte pleno de uma volta só.|pode inventar-se a si mesmo à vontade.|dá voltas em torno do próprio só.|a grandeza de poder ser um só é dom.|o destino tanto ata quanto desata esses nós.|
+#- 
+#- nós_nos_nós.ypo
+#- 
 <EOF>
-#------------------------------------|
-# muito interessante para o tema:    |
-# as pessoas criadas pela IA         |
-#                                    |
-# têm um rosto absurdamente humano.  |
-# é um belo feixe visual para o tema |
-#------------------------------------|
+Verbetes no Texto = 18
+  Total de ítimos = 55
+Total de verbetes = 87
+Qtd. de Variações = 4.838.400 (milhões)
 
