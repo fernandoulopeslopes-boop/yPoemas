@@ -241,5 +241,5 @@ Em uma frase:
 sim, já há massa crítica suficiente para começar a Chave sem  
 improviso cego.  
 
----  
+___  
 Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de fazer Poesia**

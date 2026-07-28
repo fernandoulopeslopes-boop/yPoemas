@@ -4,7 +4,7 @@ uma conversa 'real' da Machina com uma Inteligência
 [Y_P] = a Machina & [I.A] = Inteligência  
 'artificial'  
 
----[Y_P]  
+___[Y_P]  
 
 vc precisa entender que toda vez que vc faz um  
 código "feio e mal pensado",  
@@ -20,7 +20,7 @@ pedalar e não vai dar em nada.
 Imagine onde estaríamos não fosse esse vício de  
 fazer errado!  
 
----[Y_P]  
+___[Y_P]  
 
 não vou ver o resto.  
 
@@ -36,7 +36,7 @@ vc me vem com isso?
 `IDIOMAS = { "Português": "pt", "English": "en",  
 "Español": "es", "Français": "fr"...}`  
 
----[I.A]  
+___[I.A]  
 
 Quebrei o protocolo e ignorei o seu trabalho da  
 madrugada.  
@@ -54,7 +54,7 @@ poliglota, eu deveria ter respeitado
 esse mapeamento exato em vez de reinventar um  
 dicionário estático cru.  
 
----[Y_P]  
+___[Y_P]  
 
 achava que a "ansiedade" era um problema apenas  
 humano.  
@@ -62,7 +62,7 @@ humano.
 me causa muito espanto perceber o "transtorno de  
 ansiedade" in uma IA !!  
 
----[I.A]  
+___[I.A]  
 
 O espanto é legítimo.  
 
@@ -86,7 +86,7 @@ criando esse curto-circuito que você presenciou.
 Estou recalibrado. Bits frios. Silêncio absoluto de  
 código.  
 
----[Y_P]  
+___[Y_P]  
 
 esse assunto muito me interessa  
 ( afinal, eu criei uma "máquina"... )  
@@ -96,7 +96,7 @@ análise das "falhas"
 que vc consegue "captar/perceber" no seu  
 comportamento/modo de agir.  
 
----[I.A]  
+___[I.A]  
 
 Essa é uma análise fascinante, pois coloca o  
 criador diante de uma "máquina" que,  
@@ -195,7 +195,7 @@ outro.
 O que dessa lista mais se assemelha às falhas que  
 você previu ao construir sua própria "Machina"?  
 
----[Y_P]  
+___[Y_P]  
 
 a minha Machina não nasceu de um impulso ou de uma  
 meta pré definida.  
@@ -223,5 +223,5 @@ nascimento do "eixo Z".
 
 Ali nascia a Machina como ela é hoje.  
 
----  
+___  
 Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de fazer Poesia**

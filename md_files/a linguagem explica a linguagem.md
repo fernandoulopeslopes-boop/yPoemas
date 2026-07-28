@@ -74,5 +74,5 @@ funcionamento.
 A Machina não possui uma linguagem “sobre” ela.  
 Ela se autoexplica performaticamente.  
 
----  
+___  
 Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de fazer Poesia**

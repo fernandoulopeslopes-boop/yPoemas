@@ -9,7 +9,7 @@ O **Eixo Z**
 no mundo ocidental, escrevemos e lemos  
 da direita para a esquerda (X) e de cima para baixo (Y).  
 
-O "Eixo Z" imaginário é um terceiro "eixo de ítimos"  
+O "Eixo Z" imaginário é um terceiro "eixo de leitura"  
 e na montagem dos yPoemas ele oferece outra lista de "ítimos"  
 que poderão fazer parte da linha de leitura que está sendo criada.  
   

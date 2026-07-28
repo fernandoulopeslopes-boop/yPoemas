@@ -85,6 +85,5 @@ numérica dos yPoemas
 > é o que permite a celebração da palavra em sua forma mais  
 exata e surpreendente.  
 >  
-
----  
+___  
 Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de fazer Poesia**

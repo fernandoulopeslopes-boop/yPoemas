@@ -1,5 +1,5 @@
-sobre as traduções
-
+sobre as traduções  
+___
 Embora seja a lista oficial do Google Translator,  
 alguns idiomas podem não ser traduzidos pelo mesmo.  
   
@@ -20,3 +20,5 @@ Esses caracteres são usados como padrão para a quebra-de-linha nos textos.
   
 Ainda não encontrei solução para essas possíveis falhas.  
 Dicas e sugestões para esse assunto serão bem-vindas!  
+___  
+Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de fazer Poesia**

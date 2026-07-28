@@ -31,6 +31,5 @@ Daqui para frente o trabalho deixa de ser:
 “tentar entender o que a Machina é”  
 e passa a ser:  
 “lapidar a expressão final daquilo que ela já revelou ser”.  
-
----  
+___  
 Copyright © 1983-Hoje Nando Lopes - **yPoemas @ a Machina de fazer Poesia**
