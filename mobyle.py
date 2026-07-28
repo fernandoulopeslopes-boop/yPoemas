@@ -8,12 +8,13 @@ import html
 import unicodedata
 import socket
 import asyncio
-import tools as tools_mod
+from io import BytesIO
+from PIL import Image, ImageDraw, ImageFont, ImageOps
 import streamlit as st
 import streamlit.components.v1 as components
 
-APP_BUILD = "2026-07-01_atualizar_rodape_ypo_EOF"
-APP_BUILD_NOTES = "CIA local: atualiza rodapé informativo dos .ypo sob demanda; update_tema/novo_tema atualizam o tema afetado."
+APP_BUILD = "2026-07-28_MOBILE_FBF_CAE"
+APP_BUILD_NOTES = "Mobile público derivado do corpo validado do Tools; página Tools removida; OLA e Retrato preservados."
 
 from lay_2_ypo import gera_poema
 from readings import (
@@ -22,47 +23,18 @@ from readings import (
     update_visy,
 )
 
-def _ativar_openai_key_do_deploy():
-    """Espelha a chave do Streamlit Secrets no ambiente usado pela ponte OLA."""
-    if os.environ.get("OPENAI_API_KEY"):
-        return
-    try:
-        secrets = st.secrets
-    except Exception:
-        return
-
-    candidatos = []
-    try:
-        candidatos.append(secrets.get("OPENAI_API_KEY"))
-    except Exception:
-        pass
-    for grupo, chave in (("openai", "api_key"), ("OPENAI", "API_KEY")):
-        try:
-            bloco = secrets.get(grupo, {})
-            if bloco:
-                candidatos.append(bloco.get(chave))
-        except Exception:
-            pass
-
-    for valor in candidatos:
-        valor = str(valor or "").strip()
-        if valor:
-            os.environ["OPENAI_API_KEY"] = valor
-            return
-
-
-_ativar_openai_key_do_deploy()
-
 try:
     from ponte_ola_openai import gerar_analise_ola as _gerar_analise_ola_real
 except Exception:
     _gerar_analise_ola_real = None
+
 
 BOOKS_LIST = [
     "todos os temas", "livro vivo", "poemas", "jocosos", "ensaios", "variações",
     "metalinguagem", "sociais", "outros autores", "signos_fem", "signos_mas",
     "todos os signos",
 ]
+
 
 OFF_BOOKS_LIST = [
     "a_torre_de_papel", "quase_que_eu_Poesia", "faz_de_conto", "um_romance", "parafernália",
@@ -75,7 +47,7 @@ PAGE_IMAGES = {
 }
 
 VOICES_EDGE_TTS = {
-    "pt": "pt-BR-FranciscaNeural",
+    "pt": "pt-BR-AntonioNeural",
     "es": "es-ES-AlvaroNeural",
     "fr": "fr-FR-HenriNeural",
     "it": "it-IT-DiegoNeural",
@@ -124,8 +96,8 @@ IDIOMAS_OFICIAIS = [
 # Deve permanecer antes de qualquer saída visual do Streamlit.
 # -----------------------------------------------------------------------------
 st.set_page_config(
-    page_title="a Machina de fazer Poesia - Mobile",
-    page_icon=":leaves:",
+    page_title="a Machina de fazer Poesia",
+    page_icon=":cyclone:",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
@@ -184,6 +156,7 @@ def apply_styles():
         .machina-palco-titulo {
             display: block;
             text-align: center;
+            font-weight: 700;
             text-decoration: underline;
             text-underline-offset: 0.18em;
             margin: 0 auto 0 auto;
@@ -681,25 +654,12 @@ def init_session_state():
         "stage_font": "Trebuchet",
         "stage_size": 21,
         "sidebar_panel": "Machina",
-        "cia_name": "",
-        "cia_mood": "Sintática",
-        "cia_reading_mode": False,
-        "cia_mood_select": "Sintática",
-        "cia_line0_offset_px": -385,
-        "cia_font": "Trebuchet MS",
-        "cia_size": 18,
-        "cia_palco_size": 18,
         "tema_last_analise": "",
         "ypoema_em_analise": "",
         "tema_em_analise": "",
         "book_em_analise": "",
         "take_em_analise": -1,
         "lang_em_analise": "",
-        "cia_mood_changed": False,
-        "cia_force_new_poema": False,
-        "cia_freeze_book": "",
-        "cia_freeze_take": -1,
-        "cia_freeze_tema": "",
 
         # chave de ouro
         "key_open": False,
@@ -714,7 +674,7 @@ def init_session_state():
         "copy_bundle_source": "",
         "ypo_theme_widget_token": 0,
 
-        # análise :: Machina / CIA / OLA
+        # análise :: Machina / OLA
         "analysis_voice": "Machina",
         "analysis_kind": "Sintática",
     }
@@ -726,21 +686,6 @@ def init_session_state():
 
 apply_styles()
 init_session_state()
-
-def _ypo_focus_key():
-    """Identidade do yPoema em foco no palco."""
-    return "|".join([
-        str(st.session_state.get("book", "")),
-        str(st.session_state.get("take", "")),
-        str(st.session_state.get("tema", "")),
-        str(st.session_state.get("lang", "")),
-    ])
-
-
-def _remember_ypo_focus(key, text):
-    st.session_state["ypo_focus_key"] = key
-    st.session_state["ypo_focus_text"] = text
-
 
 
 def _copy_bundle_source_key(curr_ypoema=""):
@@ -802,8 +747,8 @@ def open_palco():
 def palco_status(book=None, pos=None, total=None):
     book = book or st.session_state.get("book", "")
     if pos is None or total is None:
-        return f"🌀  {st.session_state.lang} ( {book} )"
-    return f"🌀  {st.session_state.lang} ( {book} ) ( {pos} / {total} )"
+        return f"🍃  {st.session_state.lang} ( {book} )"
+    return f"🍃  {st.session_state.lang} ( {book} ) ( {pos} / {total} )"
 
 
 ### bof: tools
@@ -935,7 +880,6 @@ def _sync_book_theme_state():
     st.session_state.take = take
     st.session_state.tema = temas_list[take]
     if take != old_take:
-        st.session_state["cia_force_new_poema"] = True
         _bump_palco_theme_widget()
 
 
@@ -975,7 +919,6 @@ def _on_palco_book_change():
         st.session_state.book = choice
         st.session_state.take = 0
         limpar_copias_palco()
-        st.session_state["cia_force_new_poema"] = True
         _bump_palco_theme_widget()
     _sync_book_theme_state()
 
@@ -998,7 +941,6 @@ def _on_palco_theme_change():
     st.session_state.tema = temas_list[take]
     if take != old_take:
         limpar_copias_palco()
-        st.session_state["cia_force_new_poema"] = True
 
 
 def pick_book_palco():
@@ -1154,63 +1096,103 @@ def _md_assunto_de_about(nome):
     return _md_nome_chave(nome)
 
 
-def _md_file_casefold_path(file_name):
-    """Localiza arquivo em md_files por equivalência geral de nome.
+def _md_nome_variantes(nome):
+    """Gera variantes seguras do nome para comparação de arquivos MD.
 
-    Não exige lista de exceções e não obriga renomear arquivos.
-    Ex.: ABOUT_off-machina.md, ABOUT_off_machina.md e ABOUT_OFF MACHINA.MD
-    são tratados como o mesmo assunto.
+    Inclui reparo de mojibake UTF-8/Latin-1, sem alterar o catálogo nem o arquivo.
     """
-    expected_name = str(file_name or '').strip()
+    original = str(nome or "").strip()
+    variantes = [original]
+
+    # Alguns nomes podem ter sido gravados/exibidos como UTF-8 interpretado em Latin-1.
+    try:
+        reparado = original.encode("latin-1").decode("utf-8")
+        if reparado and reparado not in variantes:
+            variantes.append(reparado)
+    except (UnicodeEncodeError, UnicodeDecodeError):
+        pass
+
+    return variantes
+
+
+def _md_file_casefold_path(file_name):
+    """Localiza um arquivo de md_files sem inferir outro conteúdo.
+
+    Ordem:
+    1. caminho literal;
+    2. equivalência Unicode/caixa;
+    3. equivalência do nome completo sem diacríticos;
+    4. reparo restrito de mojibake no nome completo.
+    """
+    expected_name = str(file_name or "").strip()
     if not expected_name:
-        return ''
+        return ""
 
-    md_dir = _project_path('md_files')
-    direct = os.path.join(md_dir, expected_name)
-    if os.path.exists(direct):
-        return direct
-
+    md_dir = _project_path("md_files")
     if not os.path.isdir(md_dir):
-        return ''
+        return ""
 
-    expected_base = os.path.basename(expected_name)
-    expected_fold = expected_base.casefold()
-    expected_key = _md_nome_chave(expected_base)
+    expected_candidates = []
+    for variante in _md_nome_variantes(expected_name):
+        base = os.path.basename(variante.strip())
+        if not base:
+            continue
+        expected_candidates.append(base)
+        if not os.path.splitext(base)[1]:
+            expected_candidates.append(base + ".md")
 
-    # Para ABOUT_<assunto>.md, também aceita comparar só o assunto.
-    expected_subject = expected_key
+    # Caminho literal primeiro.
+    for candidate in expected_candidates:
+        direct = os.path.join(md_dir, candidate)
+        if os.path.isfile(direct):
+            return direct
 
-    best = ''
+    expected_folds = {
+        unicodedata.normalize("NFC", item).casefold()
+        for item in expected_candidates
+    }
+    expected_keys = {
+        _md_nome_chave(item)
+        for item in expected_candidates
+        if _md_nome_chave(item)
+    }
+
+    key_matches = []
     for real_name in os.listdir(md_dir):
         real_path = os.path.join(md_dir, real_name)
         if not os.path.isfile(real_path):
             continue
-        if not real_name.casefold().endswith('.md'):
+        if not real_name.casefold().endswith(".md"):
             continue
 
-        real_fold = real_name.casefold()
-        real_key = _md_nome_chave(real_name)
-
-        if real_fold == expected_fold:
-            return real_path
-        if real_key == expected_key:
-            return real_path
-        if expected_subject and real_key == expected_subject:
+        real_variants = _md_nome_variantes(real_name)
+        real_folds = {
+            unicodedata.normalize("NFC", item).casefold()
+            for item in real_variants
+        }
+        if expected_folds & real_folds:
             return real_path
 
-        # Fallback sem exceções: se um nome é abreviação clara do outro.
-        # Ex.: ABOUT_outros.md pode atender ABOUT_outros_autores.md.
-        if expected_key and real_key:
-            if real_key.startswith(expected_key) or expected_key.startswith(real_key):
-                best = best or real_path
+        real_keys = {
+            _md_nome_chave(item)
+            for item in real_variants
+            if _md_nome_chave(item)
+        }
+        if expected_keys & real_keys:
+            key_matches.append(real_path)
 
-    return best
+    # Só retorna por chave sem diacríticos quando há uma única correspondência.
+    unique_matches = list(dict.fromkeys(key_matches))
+    if len(unique_matches) == 1:
+        return unique_matches[0]
+
+    return ""
 
 
 def load_md_file(file):  # Open files for about's
     path = _md_file_casefold_path(file)
     try:
-        with open(path, encoding='utf-8') as file_to_open:
+        with open(path, encoding='utf-8-sig') as file_to_open:
             file_text = file_to_open.read()
 
         if not 'rol_' in str(file).lower():  # do not translate theme
@@ -1301,7 +1283,7 @@ ___
 - ◀ = Move para o tema anterior
 - ✻ = Escolhe um tema aleatoriamente
 - ▶ = Move para o próximo tema
-📣 ouvir a leitura do texto
+♫ ouvir a leitura do texto
 - ? = Modo de Usar & Manual do Usuário
 ___
 Selecione um tema na lista de Temas
@@ -1383,17 +1365,141 @@ def _limpar_info_html_para_linhas(info_text):
     linhas = [linha.strip() for linha in texto.splitlines() if linha.strip()]
     return [_formatar_linha_info_ptbr(linha) for linha in linhas]
 
+
+def _fmt_numero_leitor(valor):
+    """Pontua inteiros para leitura humana sem alterar o valor interno."""
+    try:
+        return f"{int(valor):,}".replace(",", ".")
+    except (TypeError, ValueError):
+        return str(valor or "").strip()
+
+
+def _palavras_visiveis(texto):
+    """Extrai verbetes do yPoema materializado, ignorando marcação HTML."""
+    texto = html.unescape(re.sub(r"<[^>]+>", " ", str(texto or "")))
+    return re.findall(r"[^\W_]+(?:-[^\W_]+)*", texto, flags=re.UNICODE)
+
+
+def _help_find_ypo_file(nome_tema):
+    tema = str(nome_tema or "").strip()
+    data_dir = _project_path("data")
+    for ext in (".ypo", ".YPO"):
+        candidato = os.path.join(data_dir, tema + ext)
+        if os.path.exists(candidato):
+            return candidato
+    if os.path.isdir(data_dir):
+        alvo = _md_nome_chave(tema)
+        for nome in os.listdir(data_dir):
+            if nome.lower().endswith(".ypo") and _md_nome_chave(os.path.splitext(nome)[0]) == alvo:
+                return os.path.join(data_dir, nome)
+    return ""
+
+
+def _help_info_estavel(nome_tema):
+    info = {"titulo": str(nome_tema or "").strip(), "genero": "", "imagem": "", "versos": ""}
+    path = _project_path("base", "info.txt")
+    try:
+        with open(path, encoding="utf-8-sig") as arquivo:
+            for linha in arquivo:
+                if not linha.startswith("|"):
+                    continue
+                campos = linha.split("|")
+                if len(campos) >= 5 and _md_nome_chave(campos[1]) == _md_nome_chave(nome_tema):
+                    info.update({"titulo": campos[1].strip() or info["titulo"], "genero": campos[2].strip(), "imagem": campos[3].strip(), "versos": campos[4].strip()})
+                    break
+    except Exception:
+        pass
+    return info
+
+
+def _dados_vivos_do_tema(nome_tema):
+    """Recalcula a realidade do tema e do yPoema no instante do Help."""
+    dados = {"verbetes_no_texto": 0, "total_itimos": 0, "total_verbetes": 0}
+    poema = st.session_state.get("ypoema_em_analise", "")
+    dados["verbetes_no_texto"] = len(_palavras_visiveis(poema))
+
+    path = _help_find_ypo_file(nome_tema)
+    if not path or not os.path.exists(path):
+        return dados
+
+    try:
+        with open(path, encoding="utf-8") as arquivo:
+            for linha in arquivo:
+                if not linha.startswith("|"):
+                    continue
+                campos = linha.rstrip("\n").split("|")
+                if len(campos) < 8:
+                    continue
+                try:
+                    dados["total_itimos"] += max(0, int(str(campos[5]).strip()))
+                except Exception:
+                    pass
+                payload = [item for item in campos[7:-1] if item != ""]
+                for itimo in payload:
+                    dados["total_verbetes"] += len(_palavras_visiveis(itimo))
+    except Exception:
+        pass
+    return dados
+
+
+def _qtd_variacoes_index(nome_tema):
+    """Lê do ./base/index.txt o único resultado técnico persistido."""
+    path = _project_path("base", "index.txt")
+    if not os.path.exists(path):
+        return ""
+    alvo = _md_nome_chave(str(nome_tema or ""))
+    try:
+        with open(path, encoding="utf-8-sig") as arquivo:
+            for raw in arquivo:
+                linha = raw.strip()
+                if not linha:
+                    continue
+                partes = [p.strip() for p in re.split(r"\s*[:|;]\s*", linha) if p.strip()]
+                if not partes or _md_nome_chave(partes[0]) != alvo:
+                    continue
+                for parte in partes[1:]:
+                    digitos = re.sub(r"\D", "", parte)
+                    if digitos:
+                        return _fmt_numero_leitor(digitos)
+    except Exception:
+        pass
+    return ""
+
+
+def update_help_info(nome_tema):
+    """Ficha técnica viva: três cálculos JIT e variações vindas do índice."""
+    info = _help_info_estavel(nome_tema)
+    vivos = _dados_vivos_do_tema(nome_tema)
+    variacoes = _qtd_variacoes_index(nome_tema)
+    linhas = [f"Título: {info.get('titulo') or nome_tema}"]
+    if info.get("genero"):
+        linhas.append(f"Gênero: {info['genero']}")
+    if info.get("imagem"):
+        linhas.append(f"Imagem: {info['imagem']}")
+    if info.get("versos"):
+        linhas.append(f"Versos: {_fmt_numero_leitor(info['versos'])}")
+    linhas.extend([
+        f"Verbetes no Texto: {_fmt_numero_leitor(vivos['verbetes_no_texto'])}",
+        f"Total de ítimos: {_fmt_numero_leitor(vivos['total_itimos'])}",
+        f"Total de verbetes: {_fmt_numero_leitor(vivos['total_verbetes'])}",
+    ])
+    if variacoes:
+        linhas.append(f"Qtd. de Variações: {variacoes}")
+    linhas.append("made in Machina")
+    return linhas
+
+
 def render_matrix_ficha_tecnica_ypoemas(tema):
     """Mostra Matrix à esquerda e Ficha Técnica à direita, sem vazar HTML/base64."""
     tema = str(tema or "").strip()
     if not tema:
         return
 
-    info_text = load_info(tema)
+    linhas_info = update_help_info(tema)
     if st.session_state.lang != "pt":
-        info_text = translate(info_text)
+        linhas_info = [translate(linha) for linha in linhas_info]
 
-    linhas_info = _limpar_info_html_para_linhas(info_text)
+                                                          
     matrix_image = _matrix_image_for_theme(tema)
 
     if linhas_info:
@@ -1421,7 +1527,7 @@ def render_matrix_ficha_tecnica_ypoemas(tema):
 
     with col_matrix:
         if matrix_image:
-            st.image(matrix_image, width="stretch")
+            st.image(matrix_image, use_container_width=True)
         else:
             st.markdown(
                 "<div style='text-align:center; opacity:0.72; padding:1.2rem 0;'>Matrix não encontrada.</div>",
@@ -1467,7 +1573,7 @@ def render_help_ypoemas_com_ficha():
 
 def _manual_talk_intro():
     """Linha padrão dos Helps: legenda da voz dentro da lista de botões."""
-    return translate("📣 ouvir a leitura do texto")
+    return translate("♫ ouvir a leitura do texto")
 
 
 def _manual_inserir_talk_entre_botoes(raw_text):
@@ -1475,7 +1581,7 @@ def _manual_inserir_talk_entre_botoes(raw_text):
 
     Regra visual pedida:
     - ▶ = Move para o próximo tema
-    - 📣 ouvir a leitura do texto
+    - ♫ ouvir a leitura do texto
     - ?  = Modo de Usar & Manual do Usuário
     """
     linhas = []
@@ -1539,7 +1645,7 @@ def _manual_mini_texto():
     """Manual Mini limpo: mantém a sequência visual dos botões.
 
     Ordem desejada no Help da página Mini:
-    mini: modo de usar / ___ / ✚ / ✻ / 🔀 / 📣 / ?
+    mini: modo de usar / ___ / ✚ / ✻ / 🔀 / ♫ / ?
     """
     manual = load_md_file("MANUAL_MINI.md")
     linhas = []
@@ -1587,7 +1693,7 @@ def _manual_mini_texto():
     linhas = linhas_sem_help
 
     # Regra específica da Mini: bloco dos botões deve ficar:
-    # ✚ / ✻ / 🔀 / 📣 / ?
+    # ✚ / ✻ / 🔀 / ♫ / ?
     inserted = False
     for idx, line in enumerate(linhas):
         fold = line.casefold()
@@ -1627,7 +1733,7 @@ Digite pelo menos 3 letras para buscar uma palavra que você goste...
 ___
 - ✚ = Gera novo texto para o tema
 - ✻ = Escolhe uma palavra aleatoriamente
-- 📣 ouvir a leitura do texto
+- ♫ ouvir a leitura do texto
 - ? = Modo de Usar & Manual do Usuário
 ___
 A lista mostra palavras/verbetes encontrados no léxico da Machina.
@@ -1967,7 +2073,7 @@ def write_livro_vivo_texto(LOGO_TEXTO, LOGO_IMAGE=None):
         try:
             col_img, col_txt = st.columns([2.5, 7.5])
             with col_img:
-                st.image(LOGO_IMAGE, width="stretch")
+                st.image(LOGO_IMAGE, use_container_width=True)
             with col_txt:
                 st.markdown(_off_machina_html(LOGO_TEXTO), unsafe_allow_html=True)
             return
@@ -2044,114 +2150,74 @@ def _copy_bundle_total_blocos(texto, qtd_real=None):
 
 
 def render_copy_bundle_button(texto, token):
-    """Cópia executada no clique real do navegador, dentro de st.iframe."""
+    """Botão HTML/JS: copia de verdade e troca o próprio texto para 'copiado'."""
     import json
 
     texto = str(texto or "")
     js_text = json.dumps(texto, ensure_ascii=False)
-    disabled = "disabled" if not texto else ""
-    opacity = "0.55" if not texto else "1"
-    cursor = "default" if not texto else "pointer"
 
-    iframe_html = f"""
-    <!doctype html>
-    <html>
-    <head>
-        <meta charset="utf-8">
-        <style>
-            html, body {{
-                width: 100%;
-                height: 40px;
-                margin: 0;
-                padding: 0;
-                overflow: hidden;
-                background: transparent;
-                font-family: "Source Sans 3", "Source Sans Pro",
-                             -apple-system, BlinkMacSystemFont, "Segoe UI",
-                             sans-serif;
-            }}
-            #copy_btn_{token} {{
-                display: block;
-                width: 100%;
-                height: 38px;
-                min-height: 38px;
-                margin: 0;
-                padding: 7px 12px;
-                box-sizing: border-box;
-                border: 1px solid rgba(49, 51, 63, 0.22);
-                border-radius: 8px;
-                background: white;
-                color: rgb(49, 51, 63);
-                font: inherit;
-                font-size: 1rem;
-                font-weight: 400;
-                line-height: 1.2;
-                white-space: nowrap;
-                cursor: {cursor};
-                opacity: {opacity};
-            }}
-            #copy_btn_{token}:not(:disabled):hover {{
-                background: rgb(240, 242, 246);
-                border-color: rgb(255, 75, 75);
-                color: rgb(255, 75, 75);
-            }}
-            #copy_btn_{token}:focus-visible {{
-                outline: 2px solid rgba(255, 75, 75, 0.35);
-                outline-offset: -2px;
-            }}
-        </style>
-    </head>
-    <body>
-        <button id="copy_btn_{token}" title="variações" {disabled}>copiar</button>
+    components.html(
+        f"""
+        <div style="font-family:system-ui, sans-serif; padding:0; margin-top:-5px;">
+            <button id="copy_btn_{token}" style="
+                width:100%;
+                min-height:38px;
+                border:1px solid rgba(49,51,63,.22);
+                border-radius:8px;
+                padding:7px 12px;
+                cursor:pointer;
+                background:white;
+                color:rgb(49,51,63);
+                font-size:14px;
+                line-height:1.2;
+                white-space:nowrap;" title="variações">
+                copiar
+            </button>
+        </div>
         <script>
-            const text_{token} = {js_text};
-            const button_{token} = document.getElementById("copy_btn_{token}");
+        const txt_{token} = {js_text};
+        const btn_{token} = document.getElementById("copy_btn_{token}");
 
-            async function fallbackCopy_{token}(value) {{
-                const area = document.createElement("textarea");
-                area.value = value;
-                area.setAttribute("readonly", "");
-                area.style.position = "fixed";
-                area.style.left = "-9999px";
-                area.style.top = "0";
-                document.body.appendChild(area);
-                area.focus();
-                area.select();
-                area.setSelectionRange(0, area.value.length);
-                const ok = document.execCommand("copy");
-                document.body.removeChild(area);
-                if (!ok) throw new Error("execCommand(copy) falhou");
-            }}
+        async function fallbackCopy_{token}(text) {{
+            const ta = document.createElement("textarea");
+            ta.value = text;
+            ta.setAttribute("readonly", "");
+            ta.style.position = "fixed";
+            ta.style.left = "-9999px";
+            ta.style.top = "0";
+            document.body.appendChild(ta);
+            ta.focus();
+            ta.select();
+            const ok = document.execCommand("copy");
+            document.body.removeChild(ta);
+            return ok;
+        }}
 
-            button_{token}.addEventListener("click", async () => {{
-                if (!text_{token}) return;
+        if (btn_{token}) {{
+            btn_{token}.addEventListener("click", async function() {{
                 try {{
                     if (navigator.clipboard && window.isSecureContext) {{
-                        await navigator.clipboard.writeText(text_{token});
+                        await navigator.clipboard.writeText(txt_{token});
                     }} else {{
-                        await fallbackCopy_{token}(text_{token});
+                        const ok = await fallbackCopy_{token}(txt_{token});
+                        if (!ok) throw new Error("fallback copy failed");
                     }}
-                    button_{token}.textContent = "copiado";
-                }} catch (firstError) {{
+                    btn_{token}.innerText = "copiado";
+                }} catch (e) {{
                     try {{
-                        await fallbackCopy_{token}(text_{token});
-                        button_{token}.textContent = "copiado";
-                    }} catch (secondError) {{
-                        button_{token}.textContent = "não copiou";
+                        const ok = await fallbackCopy_{token}(txt_{token});
+                        btn_{token}.innerText = ok ? "copiado" : "copiar";
+                    }} catch (e2) {{
+                        btn_{token}.innerText = "copiar";
                     }}
                 }}
             }});
+        }}
         </script>
-    </body>
-    </html>
-    """
-
-    st.iframe(
-        iframe_html,
-        width="stretch",
-        height=40,
-        tab_index=0,
+        """,
+        height=48,
     )
+
 
 def render_copy_bundle_widget(texto, token, qtd_real=None):
     """Mostra o pacote completo para conferência e fallback de cópia."""
@@ -2165,16 +2231,7 @@ def render_copy_bundle_widget(texto, token, qtd_real=None):
 
     pacote_label = f'pacote para copiar ({total_blocos}) ("{tema_label}")'
     st.markdown(
-        f"""
-        <div style="
-            text-align:center;
-            margin:0.10rem 0 0.36rem 0;
-            font-family:'Source Sans Pro', sans-serif;
-            font-size:1rem;
-            font-weight:400;
-            line-height:1.2;
-        ">{html.escape(pacote_label)}</div>
-        """,
+        f"<div style='text-align:center; margin:0.10rem 0 0.36rem 0;'>{html.escape(pacote_label)}</div>",
         unsafe_allow_html=True,
     )
     st.markdown("<div style='height:24px;'></div>", unsafe_allow_html=True)
@@ -2186,51 +2243,197 @@ def render_copy_bundle_widget(texto, token, qtd_real=None):
         label_visibility="collapsed",
     )
 
+
+RETRATO_ORIGEM_URL = "ypoemas.streamlit.app"
+RETRATO_SELO_SIZE = 40
+RETRATO_SELO_RESPIRO = 30
+
+# yP original incorporado ao executável para que a assinatura viaje com o PNG
+# sem depender de arquivo externo. A geometria dos pixels é preservada.
+_RETRATO_YP_ICO_B64 = "AAABAAEAQEAAAAEAIAAoQgAAFgAAACgAAABAAAAAgAAAAAEAIAAAAAAAAEAAAIy4AACMuAAAAAAAAAAAAAD///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7//v////7///////7////+/////v////7////9/v////7//////v/+//3//v7///7+/f/+/v3//P7+//7+/v/7/v3//f79//3+/v///v////////7////+/////////////////v///P////7//v///////v////7////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+/////P////7////+//7////+//3//v/9//7///79//79/P/++/z//vv9//77/f/////////////////////////////////9/////Pz8//79/P/9/Pv///39//7//v/8//////7///z////8//7///////3////+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////v////z////+//////7///z+/f/9/Pz//vz9//////////////////7////8////8+7v//Do6P/x6en/8erp//Hq6f/w5ub/9/n4///////////////////////8/////Pz8//79+//8//z/+v/////+///9//7//v/+//7////+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7//v/+/f7//fz+//36/P/////////////////3+ff/6NjU/9mqpP/Ndm//03lx/79IRP+1PTn/tUA6/7k+Of+5QTf/tjwz/8lbVP/VeHP/0oF9/9y8t//w5eP//f7//////////////v3///v6+//+/f3//f/+/////v/+/////f/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9/f3/+vv7////////////9vPw/9+3tf/Jgn7/xFJL/8A2Lv+2MSr/vUU//7pDP//RdW7/1YJ7/9OAeP/TgHj/0396/9SEf//FY13/uEA7/7lCOv+2Lib/wD42/8ViWv/Ok43/5s3L//z//v/////////+//77+//7/////f/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+/Pz////////////v6ub/3ayn/8NRTP+9LCf/uzw1/8FnYP/Vl5P/58fG//Xu7v/z7u///f//////////////////////////////+fz7//Pv7f/x5uP/5bi2/8mFgP+/WVL/vTIr/7oxLP/LbGj/3bCs//f69v///////v7///z9/P/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9/////f/////9/v/9+/z///////v8/P/UmJX/vUU7/7YwJ/+/VlL/2aSj/+7g3f/8//////////////////////////7+/v/+/Pz//vz9//78/f/+/f3//vz8/////////////////////////////fr8/+XNzf/RjYj/vEE7/7guJ//EW1T/3bq0//3//////////fz6//7+/f/9//7///////7////9/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////f////z+/P/9/////////+bJxv/DY1n/vyso/8VmYv/ixMD/9/X1///////+/////f39///7/P/+/Pz///7+///+/v////////////////////////////////////7///7+//7+/v/+/Pz//v38//////////////////Dp5P/XqKL/wEpH/70uJv/Ne3T/7+Dh///////8/P3//P39/////v/9/v///f7////////////////////////////////////////////////////////////////////////////////////////////////////////////////+//78+v//////+/z8/9CXkv+6NzD/vEI7/9aemv/7///////////////4+/v//Pz8///9/v/6/////f///////v///////////////////////////////////////////////////////f////7//////v7/+/z8//77/f////////////Ty8P/OioT/vTQs/7lBN//gvrf///////v////+/fz//v/+///+//////////////////////////////////////////////////////////////////////////////////////////////////////////////38+///////9/L0/8dnZP+8KSL/ynp1//Dq5////////P38//z7/P/8/v7//f/////+///7////+v/////+///+//7///////////////////////////////////////////////////////3////+/////v/+//7//f/9//7///z+//76/P/+/////////+fMy//AWVL/uTUq/9OWkv/+//////////v8+//9//////////////////////////////////////////////////////////////////////////////////////////////////////////77/P//////6tXU/8FbV/+5Myr/1J+X//3//////////////////////f7//Pv8//z////+/////v/////+/////v///f///////////////////////////////////////////////////////////v///P////z////+//7//f/9//3//v/9//7/+/77///8/P//////9/b4/8p0cP+4KyX/xnFt//n49v///////f38///////////////////////////////////////////////////////////////////////////////////////+/////v////38+///////69vX/75FPv++Qzr/3L24///////8/f3/3dzd/8rLy//X2Nj////////////+/v7//v7+///////+/////f////7///////////////////////////////////////////////////////////////7//////v////7///7+///+/////f/+//3+/////v//+/v6///////6+vr/0pGL/74wJ//Cc2z/+/38///////9/f3///////7////+//////////////////////////////////////////////////////////////////7//v7///38/P//////7uLe/8FMRf+/Pzn/59DM///////+/P3/+fn5/ygoJ/8AAAD/Dw8P/z8/P/+tra3////////////9/f3////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+/f3//v/////////QmpL/vS0k/8x6eP/9/////v7+//z8/f/8/v7//f7///3////+//////////////////////////////////////////////////////////v9/P/+////9+/x/8BTUf+7OzX/5MfC///////5+fr///////v7+/8eHh7/AAAA/wMDA/8AAAD/AAAA/3d3d///////+/v7/////////////////////////////////////////////v7+//z8/P/8/Pz//Pz8//v7+//8/Pz///////////////////////////////////////////////////////z9/v/7/fz//////9GNjv+8KyX/y4uE///////5+/z//f/6///+/v/9/v///v/////////////////////////////////////////////////////+///8/vz//v///9CHhP+6MCj/37u2///////8+/v//v7+///////5+/v/Hh4e/wAAAP8BAQH/BQUF/wYGBv8AAAD/oqKi///////7+/v//////////////////////////////////v7+//////////////////////////////////7+/v///////////////////////////////////////////////////v///f39//78/v/+////zn94/7o0Kf/iwb7///////z8+v/+/v/////////////////////////////////////////////////////////////++vz//////9y7tf+4LiX/zIJ5///////+/f7//f////3+/v/9////+vr6/yYmJv8AAAD/DQ0N/wQEBP8CAgL/AAAA/w4ODv/Hx8f///////z8/P/+/v7//////////////////v7+///////u7u7/vr6+/7a2tv+2trb/srKy/8TExP///////v7+//////////////////////////////////////////////////7////3/fn///////Hp6f++UUn/u0I6/+3d3f///////Pz9//3////////////////////////////////////////////////////+/v7///////bx7v+7TUb/xmFc//r+/P///////f79///+///9/////v////z+/f/m5ub/5eXl/9LS0v88PDz/AAAA/wcHB/8AAAD/Wlpa///////8/Pz//v7+//////////////////39/f//////z8/P/wAAAP8AAAD/AAAA/wAAAP8nJyf///////7+/v////////////////////////////7+/v////////////3////+//7//v/+//r7+v//////6NXT/7k5MP/Icmz////////+/v/+/v////////////////////////////////////////3////+//7///v9///////SjIX/vC8o/9+9vv///////fv6///////+////////////////////////////////////3t7e/wsLC/8AAAD/AgIC/wwMDP/CwsL///////z8/P/+/v7//v7+///////9/f3//////9LS0v8AAAD/BAQE/wYGBv8AAAD/Kioq///////+/v7////////////////////////////+/v7////////////9///////+///+///9////+/z7///////UlJL/uTEo/9q0sv///////fv7/////////////////////////////f////7////+/////Pz8///////lzc3/ujYu/8t7c///////+v38//7+/v////////////////////////////7+/v/+/v7/+Pj4//////+IiIj/AAAA/wgICP8AAAD/h4eH///////6+vr//v7+//7+/v///////f39///////R0dH/AAAA/wEBAf8CAgL/AAAA/ygoKP///////v7+///////////////////////////////////////////////////////////////////+/v//////8+zq/75HQP/DWFL/9/r2///////+/v7///////////////////////v////9//////7///78+//8////0Hdz/74xLP/l0c3///////v7+v///v7///////////////////////////////////////z8/P//////x8fH/wAAAP8FBQX/AAAA/zY2Nv///////f39//////////////////39/f//////0NDQ/wAAAP8BAQH/AgIC/wAAAP8tLS3///////7+/v/+/v7//////////////////////////////////////////////////////////////////vz7///////brqv/ty8n/+C0sv///////fz8//////////////////////////7//v/+//79/f//////79jV/783Mf/Pgnz//v/////9/f////7////////////////////////////////////////////9/f3//////9DQ0P8BAQH/AAAA/wMDA/8AAAD/uLi4///////8/Pz////////////9/f3//////9DQ0P8AAAD/AQEB/wMDA/8AAAD/MDAw///////+/v7///////////////////////////////////////////////////////z8/P/+/v7///////z+/v/+////+Pb3/8JUSf/IYF7//P///////v///////////////////////v///////v/9+/z//////9alnP+6Miv/59DM///////9/Pz//P///////v///////////////////////////////////////f39///////Z2dn/BwcH/wAAAP8EBAT/AAAA/1ZWVv//////+/v7/////////////f39///////R0dH/AAAA/wEBAf8CAgL/AAAA/ycnJ//////////////////////////////////////////////////////////////////+/v7////////////6//7//Pr7///////TjYf/ujky/+3Z1v///////v39//////////////////3///////7//v7////////IaGD/vU9J//j29f////7//P78//z///////7///////////////////////////////////////z8/P//////x8fH/wAAAP8BAQH/AgIC/wAAAP8UFBT/7e3t///////+/v7///////39/f//////0dHR/wAAAP8BAQH/AgIC/wAAAP8pKSn///////v7+//8/Pz//f39//v7+//8/Pz//v7+/////////////////////////////////////////////v////38/P//////6trX/7w2LP/PkI3///////78/P///////////////////v///P79///////v49//vjsz/9Sbmf///////vz7//z//v/+///////////////////////////////////////////////8/Pz//////5WVlf8AAAD/AgIC/wAAAP8CAgL/AAAA/8jIyP///////Pz8///////9/f3//////9HR0f8AAAD/AQEB/wICAv8AAAD/Jycn///////////////////////////////////////6+vr//Pz8//7+/v///////////////////////////////////v7///////z+/v/CYVn/x1pT//z+/f////////79//3////+/////v////v9/P//////16qn/7YyKv/qx8f///////37+//+///////////////////////////////////////////////+/v7///////r6+v8nJyf/AAAA/wICAv8AAAD/BAQE/wAAAP9oaGj///////v7+////////f39///////R0dH/AAAA/wEBAf8BAQH/AAAA/xQUFP/Y2Nj/lpaW/0dHR/+Dg4P/l5eX/6qqqv/z8/P////////////7+/v//////////////////////////////v///v/+//v8/P//////yYeA/7w/Nv/v5eP///////39+//+//////7///3////8/Pz//////9aEgv+9QDr/8+3r///////+/f3///////7////+/////////////////////f39//7+/v///////Pz8//////+mpqb/AAAA/wMDA/8AAAD/AAAA/wICAv8AAAD/Gxsb//f39////////v7+//39/f//////0dHR/wAAAP8BAQH/AQEB/wAAAP8LCwv/NTU1/wAAAP8AAAD/AAAA/wAAAP8AAAD/Hh4e/2dnZ//c3Nz///////v7+////////////////////////v////7////+/P3//////+i8uP+4MCr/38G////////6/Pr///7///7////9/v7//v////r/+//EYVv/ymhj//v////+///////////////+/////f////////////////////////////////////v7+///////YGBg/wAAAP8EBAT/AAAA/wAAAP8AAAD/AgIC/wAAAP+urq7///////z8/P/9/f3//////9HR0f8AAAD/AQEB/wAAAP8BAQH/AAAA/wAAAP8EBAT/AwMD/wEBAf8DAwP/AwMD/wAAAP8AAAD/GRkZ/9vb2///////+/v7///////////////////////+/////f7+///////z7ur/vEM7/9aMh////////fz7//7////+//7//v79///////5+fb/uUlB/897dv///////vz8//7////+/////v////7///////////////////////////////39/f//////5OTk/x8fH/8AAAD/AgIC/wEBAf8CAgL/AAAA/wMDA/8AAAD/R0dH///////8/Pz//f39///////R0dH/AAAA/wEBAf8AAAD/AAAA/wAAAP8CAgL/AAAA/wAAAP8CAgL/AQEB/wAAAP8BAQH/BwcH/wAAAP8UFBT/tLS0///////7+/v//////////////////f////3+/v//////8/Hy/7pEPP/Zhn////////37+//+/////v/+//79/f//////79/c/7w+Nv/WnZj///////79/P/+/////f////7////////////////////////////////////7+/v//////5OTk/8AAAD/BQUF/wEBAf8AAAD/AAAA/wEBAf8BAQH/AAAA/xsbG//x8fH///////z8/P//////0dHR/wAAAP8BAQH/AAAA/wAAAP8AAAD/AAAA/wEBAf8CAgL/AAAA/wAAAP8DAwP/AQEB/wAAAP8FBQX/AAAA/x8fH//w8PD///////39/f////////////3////9//7//v39///////Pc2r/vlZO//f6+//+/////v7+/////v/+/Pz//////+bDwf+4Lyb/48XB///////+/Pz//////////////////////////////////////////////////Pz8//////89PT3/AAAA/wQEBP8AAAD/QUFB/zU1Nf8AAAD/AwMD/wQEBP8AAAD/lZWV///////5+fn//////9HR0f8AAAD/AQEB/wAAAP8AAAD/AAAA/wICAv8BAQH/AAAA/x0dHf8ODg7/AAAA/wAAAP8BAQH/AAAA/wICAv8AAAD/X19f//z8/P///////v7+///////9/////v/+//78/f//////0394/7tJQv/39vf///////7+/v///////fz8///////rxsX/tzIo/96/u////////vz8/////////////////////////////////////////////Pz8///////BwcH/AAAA/wEBAf8AAAD/AAAA/6ysrP+np6f/AAAA/wUFBf8CAgL/AAAA/yYmJv/t7e3////////////Q0ND/AAAA/wEBAf8AAAD/AAAA/wEBAf8CAgL/AAAA/5OTk//+/v7/6enp/3d3d/8HBwf/AQEB/wAAAP8BAQH/AAAA/wAAAP+ysrL///////z8/P///////f///////v/+/f3//////9J8df+8TET/+Pf4///////+/v7///////38/P//////7MXE/7gxKP/dwbz///////78/P////////////////////////////////////////////z8/P//////R0dH/wAAAP8FBQX/AAAA/wsLC//IyMj//////zg4OP8AAAD/BAQE/wAAAP8FBQX/0tLS////////////0NDQ/wAAAP8BAQH/AAAA/wAAAP8CAgL/AAAA/5GRkf//////////////////////tLS0/xgYGP8AAAD/AQEB/wMDA/8AAAD/X19f///////8/Pz///////3///////7//vz8///////SfHX/vEtE//j29////////v7+///////+/Pz//////+nHxf+5MSj/38C7///////+/fz//////////////////////////////////v7+//v7+///////1dXV/wEBAf8BAQH/AwMD/wAAAP8mJib/7e3t//////+dnZ3/AAAA/wUFBf8DAwP/AAAA/4+Pj////////////9HR0f8AAAD/AQEB/wAAAP8DAwP/AAAA/1hYWP///////Pz8//7+/v/9/f3/+vr6//////+Ghob/AgIC/wICAv8EBAT/AAAA/yQkJP/w8PD///////39/f/9///////+//78/P//////03t1/71MRf/49/j///////7+/v///////fv8///////jxsP/tjAm/+XAvf///////vz8///////////////////////////////////////6+vr//////2VlZf8AAAD/BQUF/wQEBP8AAAD/eXl5///////+/v7/9PT0/yAgIP8AAAD/BQUF/wAAAP8oKCj/9fX1///////Q0ND/AAAA/wEBAf8AAAD/BQUF/wAAAP95eXn///////r6+v////////////z8/P//////7u7u/ycnJ/8AAAD/BAQE/wICAv8BAQH/ycnJ///////8/Pz//f///////v/++/v//////9d9eP+7R0D/9/X2///////+/v7///////z9/v//////9ezr/71GPf/SiYb////////9/P////7//P////3////////////////////8/Pz//////8LCwv8AAAD/AgIC/wEBAf8CAgL/AAAA/8XFxf//////+Pj4//////+pqan/AAAA/wQEBP8EBAT/AAAA/56env//////zc3N/wAAAP8BAQH/AAAA/wQEBP8AAAD/hISE///////7+/v/////////////////+vr6//////+AgID/AAAA/wQEBP8CAgL/AAAA/8DAwP///////Pz8///////8/v7///////X19v+/Ukz/y2li//r////+//7///7+///////9/v7///////f3+P+2SUD/1X12///////7/fz//v////7////+/////////////////////v7+//////8zMzP/AAAA/wcHB/8FBQX/AAAA/x8fH//z8/P///////7+/v/9/f3//////ysrK/8AAAD/BgYG/wAAAP9KSkr//////87Ozv8AAAD/AQEB/wAAAP8EBAT/AAAA/4uLi///////+/v7//////////////////v7+///////k5OT/wAAAP8FBQX/AAAA/wYGBv/R0dH///////39/P/+////+v7+///////18vH/t0Q6/9WHgP//////+/v5///+/////v////7////+/v/9////znFp/75aUv/6/Pz//v////z+/////v///v///////////////v7+///////39/f/Dw8P/wAAAP8AAAD/AAAA/wAAAP9WVlb///////z8/P//////+/v7//////+dnZ3/AAAA/wcHB/8FBQX/AAAA/6enp//h4eH/AAAA/wEBAf8AAAD/AwMD/wAAAP+QkJD///////v7+//////////////////7+/v//////6CgoP8AAAD/BAQE/wMDA/8AAAD/ubm5///////8/Pv//f////39/f//////8eXh/7k/N//YmZX///////78+v///v///f/////////9/Pz//////9aKhv+6PDT/7+Ph///////9/P3/+/////3////+////////////////////+vr6/3p6ev8+Pj7/TExM/05OTv9CQkL/y8vL///////9/f3///////39/f//////7u7u/x0dHf8AAAD/AAAA/wAAAP9wcHD/zs7O/wAAAP8BAQH/AAAA/wQEBP8AAAD/d3d3///////7+/v/////////////////+/v7//////+bm5v/AAAA/wQEBP8DAwP/AAAA/7q6uv///////Pv8//3////9/P3//////92rpv+3MCr/5MzJ///////8/Pr///7///3////9//7//fz8///////fvLv/uS8p/+TAu////////vn6///+/////v///v////////////////////7+/v/////////////////////////////////+/v7//////////////////f39///////BwcH/kJCQ/5OTk/+SkpL/0dHR/87Ozv8DAwP/AQEB/wAAAP8EBAT/AAAA/3h4eP//////+vr6//////////////////v7+///////kZGR/wAAAP8FBQX/AwMD/wAAAP+5ubn///////v7+//9/////vz9///////HfHX/xUM+//Xu7f/8////+/78///+///+//7//P/+///9/v//////9e7t/8JEP//RgoH//P////z9/P/+/v////////////////////////7+/v/+/v7//Pz8//v7+//7+/v//Pz8//v7+//8/Pz////////////////////////////9/f3////////////////////////////T09P/CwsL/wAAAP8BAQH/AwMD/wAAAP9GRkb///////39/f/////////////////7+/v//////5SUlP8AAAD/BQUF/wICAv8AAAD/u7u7///////8/Pz///79///////3+ff/w1FN/8hpYv/9/////v79//7+/f///v///P/+///+///9/////v39///////JeXL/ukI7//Pv7//+/////v78///+///+//7///////////////////////////////////////////////////////////////////////////////////////z8/P/7+/v/+/v7//n5+f//////z8/P/woKCv8CAgL/AAAA/wICAv8AAAD/ICAg//39/f//////////////////////+/v7//////+ZmZn/AAAA/wUFBf8CAgL/AAAA/7+/v///////+/z7//38+///////48TA/7wyK//hu7b///////78/P////////////7////+/v///f/+//77/P//////3rWv/74uKP/drq3///////z7+////v///v/+///////////////////////////////////////////////////////////////////////////////////////////////////////9/f3//////9HR0f8BAQH/AQEB/wAAAP8AAAD/AgIC/wAAAP+/v7////////n5+f/+/v7///////j4+P//////goKC/wAAAP8EBAT/AwMD/wAAAP+6u7v///////j7+v/8+fz//////858dP/APzr/9Ono///////+/v7//////////////////f////3////9/f7///////Hn5P/CRUD/x1xU//n5+f/+/////f/+/////v///////////////////////////////////////////////////////////////////////////////////////////////////////f39///////Q0ND/AAAA/wICAv8AAAD/AAAA/wQEBP8AAAD/QEBA////////////////////////////3d3d/w0NDf8AAAD/AgIC/wAAAP8NDQ3/5OTk///////9+/v//////+zm4P++RTv/zHVz//7////+/v7///////////////////////3////9/v///v7///77/P//////0JSQ/7cwJv/huLj///////v7+v/9/v7///////////////////////////////////////////////////////////////////////////////////////////////////////39/f//////0dHR/wICAv8BAQH/AQEB/wEBAf8BAQH/AQEB/wAAAP8sLCz/uLi4//j4+P/5+fn/1dXV/x0dHf8AAAD/AwMD/wMDA/8AAAD/OTk5///////+/v7//fv8///////Le3b/vjEr/+fNy////////f39///////////////////////////////////////+/v7//v////b28/++T0j/xVxX//n69////////v39///////////////////////////////////////////////////////////////////////////////////////////////////////9/f3//////9PT0/8LCwv/AQEB/wEBAf8CAgL/AQEB/wAAAP8CAgL/AAAA/w4ODv8zMzP/JSUl/wUFBf8AAAD/AwMD/wAAAP8EBAT/AAAA/1xcXP//////+/n5///////q29b/wjg0/815dP/9/////P39//7///////////////////////////////3////7/////v/+//78/P//////2qun/7otI//RnZr///////38/P/+///////////////+/////////////////////////////////////////////////////////////////////////////////////f39///////R0dH/AQEB/wEBAf8BAQH/AwMD/wQEBP8AAAD/AAAA/wQEBP8AAAD/AAAA/wAAAP8AAAD/AwMD/wAAAP8AAAD/BQYG/wAAAP9ra2v///////r6+v//////y3Vu/7o6M//t4N7///////78/P/////////////////////////////////+/////v///////////////f7+//3////Ea2X/vDw1/+zc2f//////+/z8/////////v///v7///////////////////////////////////////////////////////////////////////////////////39/f//////0NDQ/wAAAP8BAQH/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AQEB/wICAv8CAgL/AQEB/wAAAP8AAAD/AgEB/wAAAP8AAAD/0s/Q///////+////3bGt/7kvJf/QlIv///////37/f/+//3///////////////////////////////////////////////////////z8/P//////6djV/7s8Nv/DX1n/+v37///////+/fz//P////7+///+/v/////////////////////////////////////////////////////////////////////////////9/f3//////9LS0v8HBwf/AQEB/wEBAf8AAAD/AQEB/wQEBP8CAgL/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AgIC/wQDA/8AAAD/goOA///////+////5s/N/7o4Mv/CXFn/9fTy///////7/v3//P/////////////////////////////////////////////////////////9/////Pv7///////Zran/uS0k/9OSi////////P3+//z9/v/9/////f///////////////////////////////////////////////////////////////////////////////f39///////Pz8//AAAA/wQEBP8AAAD/AwMD/wAAAP8AAAD/AAAA/wUFBf8CAgL/AgIC/wICAv8DAwP/BQUF/wAAAP8AAAD/cnBx///////8////9PPu/8VcVv+7Qzn/7+Ti///////7/fn//f/+///+/////////////////////////////////////////////////////////v7///3+/f/+/////f///8d6df+8LSX/1ZqU/////////f///f35//7+/f////////////////////////////////////////////////////////////////////////////39/f//////zc3N/wAAAP8AAAD/BQUF/wAAAP8oKCj/j4+P/ysrK/8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8UFBT/hoeH//z8/P//////9vbz/8lmX//AMCn/2bOr///////8+/v////+//3+///+//7////+///////////////////////////////////////////////////+/////v//+/39///////8/fv/ym9t/7svKv/Yop3//////////v/9+/v////////////////////////////////////////////////////////////////////////////9/f3//////9nZ2f9OTk7/JCQk/zo6Ov8qKir/gICA///////p6Oj/YmJi/x4eHv8qKir/HBwc/z4+Pv+ampr/5eXl////////////+fv4/8Ruav+7Lij/2aii///////9+/v//P77//3+///+/////v/+///////////////////////////////////////////////////////9//7//f7////+///9/fz///////j49//CaWP/wCwh/8x5dv/7//////////38+////v7//f/+//////////////////////////////////7////////////////////////////////////+/v7///////7+/v/6+vr//v7+///+///5+vv////////////7+/v//f3+//r4+f///////////////v//////697b/8BhW//ALSb/05+Y///////9+/7//v79//7//f/////////+//////////////////////////////////////////////////////////////////////////////////79/f//////+ff1/9CLhP+8Lif/yGtm/+/g3/////////7+//v8/P/+/////v7///3////8//7//f/+///////+//////////////////////////////////////////7+/v////////////////////7//v/+//39/v/7+/v///////7//v/+//7/9/r6//v9/v//////4L66/8JIQf+6Ozb/37e0///////8/v3//P78/////////////////////////////////////////////////////////////////////////////////////////////////////////////fz9////////////zpmP/743LP/BQz//27Sy//3//////////fz9//z9/P///vz//f/+//7//v///v////7///7//////////////////////////////////////////v7+//7+/v///v///f/9//3//v/+/////v7///3+/v/9+/v//P39///////07+3/1JqY/7w2MP++TEP/4sXD///////9/Pz//f36///+/f////////////////////////////////////////////////////////////////////////////////////////////////////////////7////6/f3//v79///////lyMf/w1VL/7ouJf/HbGj/7uLg/////////////f////v7/P/+/P7//P7///z//v////7////////////////////////////////////////////////////////9///9/P///Pz8//j8+v////////////7////fvbv/wE1F/7ksI//Kd3L/8+vq///////8+/n////9//3////9/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////f/+//7//v/7+/z///////Pw7v/Rlo7/vjYv/8A+Nf/IeXL/5czL//n8/P////////////r//v/9+/r//vv7//78/P///v7///7+///+/v///v7///7+///+/v/+/f3//vz8//79/f/+/Pz//////////////////fz5/9qwrf/IY1v/vDMq/7pOSP/duLf//v/////////++/v////9//z+///+/v/////+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////3//////v///P/+//z7+v///////////+TKx//RgHr/vD03/8EwKv/CX1j/3rKs//Hm4v/7/v7///////////////////////////////////////////////////////////////////////b39v/u2NX/1ZmU/8JXUP+5Lyf/vUlA/9OKhf/v6Of///////78/f/8/fz///////z+///8//////7///7//v////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7//////////v79//78/f///////////+zc1//Ri4b/wlBL/7kwKv+4PTf/xWJc/9WSjv/ixcH/4MPB//Xv7f/7+fn/+fb3//n39//49vb//Pv5/+ve3P/fwr//4bm2/9OAe//AU03/uDYx/70zMP/FX1r/1aef//Xw7v////////////38+//+//7////+//////////////////7////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9/////f39//38/P////////////f08//iwcL/04J//8JYUf+3ODD/ti8n/7UvJv/ESED/xk5I/8RMRv/GTUX/xU1F/8hPR/+/Pjb/tCwk/7kzKf+4QDb/ymdg/9SWkP/o2dT//f/9/////////////v39//7+/v////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7///3////8/////vz9//77+v/////////////////4+/j/7drZ/9+urf/isK7/yHV0/79oY//AbGb/w2pl/8RsZv/AZWH/04yJ/+WysP/it7b/8ejo//r///////////////z////7+/z///7+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7///////////7///3+///8//////79//38/P/8/P3///////////////////////////////////////7//////////v/////////////////////////9//7//fz8//77/f/9/f///f7//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////v////7//////////v7///7////9//////7////9/v/7/f3/+/z7//77+//+/v3///79///9/v/+/f7///7+//7+/v/9/f3//vz7//78+v/8/v3///7+//7//v/8//7//f/+//7//v////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7//////////////v////7//////v///v///////v/+//7/+//////+///+/v//+/////3+///+/v///f/+//7//////v////////3////6/////v////7+/////////f////7+/v/+/v7/////////////////////////////////////////////////////////////////////////////////////////////////////////////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+
+
+def _retrato_logo_yp(size):
+    """Retorna o yP original no tamanho de teste, sem suavizar seus pixels."""
+    try:
+        raw = base64.b64decode(_RETRATO_YP_ICO_B64)
+        with Image.open(BytesIO(raw)) as source:
+            logo = ImageOps.exif_transpose(source).convert("RGBA")
+        return logo.resize((int(size), int(size)), Image.Resampling.NEAREST)
+    except Exception:
+        return None
+
+
+def _aplicar_selo_origem(canvas, size, respiro=RETRATO_SELO_RESPIRO):
+    """Assina o Retrato com yP + endereço de origem no canto inferior direito."""
+    logo = _retrato_logo_yp(size)
+    if logo is None:
+        return canvas
+
+    draw = ImageDraw.Draw(canvas)
+    url_font = _retrato_font(max(16, int(round(size * 0.72))))
+    url = RETRATO_ORIGEM_URL
+    bbox = draw.textbbox((0, 0), url, font=url_font)
+    text_w = bbox[2] - bbox[0]
+    text_h = bbox[3] - bbox[1]
+    gap = max(8, int(round(size * 0.35)))
+
+    group_w = size + gap + text_w
+    x = canvas.width - int(respiro) - group_w
+    y = canvas.height - int(respiro) - size
+
+    canvas.paste(logo, (x, y), logo)
+    text_y = y + max(0, (size - text_h) // 2) - bbox[1]
+    draw.text((x + size + gap, text_y), url, font=url_font, fill=(45, 45, 45))
+    return canvas
+
+
+def _retrato_font(size, bold=False):
+    """Carrega uma fonte Unicode disponível para o PNG do Retrato."""
+    candidates = []
+    if bold:
+        candidates.extend([
+            _project_path("fonts", "DejaVuSans-Bold.ttf"),
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+            "C:/Windows/Fonts/arialbd.ttf",
+        ])
+    else:
+        candidates.extend([
+            _project_path("fonts", "DejaVuSans.ttf"),
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+            "C:/Windows/Fonts/arial.ttf",
+        ])
+
+    for candidate in candidates:
+        try:
+            if candidate and os.path.exists(candidate):
+                return ImageFont.truetype(candidate, size=size)
+        except Exception:
+            pass
+    return ImageFont.load_default()
+
+
+def _retrato_wrap(draw, texto, font, largura):
+    """Quebra o yPoema sem alterar suas linhas autorais."""
+    linhas_finais = []
+    for linha in str(texto or "").splitlines():
+        if not linha:
+            linhas_finais.append("")
+            continue
+
+        palavras = linha.split(" ")
+        atual = ""
+        for palavra in palavras:
+            tentativa = palavra if not atual else atual + " " + palavra
+            bbox = draw.textbbox((0, 0), tentativa, font=font)
+            if bbox[2] - bbox[0] <= largura or not atual:
+                atual = tentativa
+            else:
+                linhas_finais.append(atual)
+                atual = palavra
+        linhas_finais.append(atual)
+    return linhas_finais
+
+
+def criar_retrato_png(ypoema_html, image_path, tema, selo_size=24):
+    """Monta um PNG com imagem, yPoema e Denominação de Origem."""
+    if not image_path or not os.path.exists(image_path):
+        return None
+
+    texto = _ypoema_html_to_text(ypoema_html)
+    if not texto:
+        return None
+
+    canvas_w, canvas_h = 1600, 1000
+    margin = 64
+    gap = 58
+    image_w = 650
+    text_x = margin + image_w + gap
+    text_w = canvas_w - text_x - margin
+
+    canvas = Image.new("RGB", (canvas_w, canvas_h), "white")
+
+    with Image.open(image_path) as source:
+        art = ImageOps.exif_transpose(source).convert("RGB")
+        art = ImageOps.fit(
+            art,
+            (image_w, canvas_h - (2 * margin)),
+            method=Image.Resampling.LANCZOS,
+            centering=(0.5, 0.5),
+        )
+    canvas.paste(art, (margin, margin))
+
+    draw = ImageDraw.Draw(canvas)
+    title_font = _retrato_font(42, bold=True)
+    body_font = _retrato_font(31)
+
+    titulo = str(tema or "").strip()
+    y = margin
+    if titulo:
+        draw.text((text_x, y), titulo, font=title_font, fill="black")
+        y += 70
+
+    line_gap = 14
+    linhas = _retrato_wrap(draw, texto, body_font, text_w)
+    bbox = draw.textbbox((0, 0), "Ag", font=body_font)
+    line_h = (bbox[3] - bbox[1]) + line_gap
+
+    for linha in linhas:
+        if y + line_h > canvas_h - margin:
+            break
+        draw.text((text_x, y), linha, font=body_font, fill="black")
+        y += line_h
+
+    _aplicar_selo_origem(canvas, selo_size, RETRATO_SELO_RESPIRO)
+
+    output = BytesIO()
+    canvas.save(output, format="PNG", optimize=True)
+    return output.getvalue()
+
+
 @st.cache_data
 def load_images():
-    """Lê o catálogo curatorial tema → grupo em base/images.txt."""
     images_list = []
-    images_path = _project_path("base", "images.txt")
-    if not os.path.exists(images_path):
-        return images_list
-    with open(images_path, encoding="utf-8") as lista:
+    with open(os.path.join("./base/images.txt"), encoding="utf-8") as lista:
         for line in lista:
-            if line.strip():
-                images_list.append(line.rstrip("\n"))
+            images_list.append(line)
+
     return images_list
 
 
-def load_arts(nome_tema):
-    """Seleciona imagem do grupo curatorial do tema, com fallback Machina."""
-    tema_norm = str(nome_tema or "").strip().casefold()
-    grupo = "machina"
+def load_arts(nome_tema):  # Select image for arts
+    path = "./images/machina/"
+    path_list = load_images()
+    for line in path_list:
+        if line.startswith(nome_tema):
+            this_line = line.strip("\n")
+            part_line = this_line.partition(" : ")
+            if nome_tema == part_line[0]:
+                path = "./images/" + part_line[2] + "/"
+                break
 
-    for line in load_images():
-        nome, sep, destino = line.partition(" : ")
-        if sep and nome.strip().casefold() == tema_norm:
-            grupo = destino.strip() or "machina"
-            break
+    arts_list = []
+    for file in os.listdir(path):
+        if file.endswith(".jpg"):
+            arts_list.append(file)
 
-    path = _project_path("images", grupo)
-    if not os.path.isdir(path):
-        path = _project_path("images", "machina")
-    if not os.path.isdir(path):
-        return None
-
-    arts_list = [
-        file for file in sorted(os.listdir(path), key=natural_keys)
-        if file.lower().endswith((".jpg", ".jpeg", ".png", ".webp"))
-        and os.path.isfile(os.path.join(path, file))
-    ]
     if not arts_list:
         return None
 
-    historico = st.session_state.get("arts", [])
-    available_arts = [image for image in arts_list if image not in historico] or arts_list
+    available_arts = [image for image in arts_list if image not in st.session_state.arts]
+    if not available_arts:
+        available_arts = arts_list
+
     image = random.choice(available_arts)
-    historico.append(image)
-    st.session_state["arts"] = historico[-36:]
-    return os.path.join(path, image)
+    st.session_state.arts.append(image)
+
+    if len(st.session_state.arts) > 36:  # remove first
+        del st.session_state.arts[0]
+
+    logo = path + image
+
+    return logo
+
 
 def _set_sidebar_context_image_for_theme(nome_tema):
     """Define a imagem Machina contextual do tema atual para a sidebar.
@@ -2272,18 +2475,18 @@ def _resolve_off_machina_book_image(book_name):
 
 
 def _images_from_group(group_name):
-    """Lista imagens do grupo indicado, usando caminhos do projeto."""
-    group_dir = _project_path("images", str(group_name or "").strip())
+    """Lista imagens do grupo indicado, sem inferir ou alterar curadoria."""
+    group_dir = os.path.join("./images", str(group_name or "").strip())
     images = []
     if os.path.isdir(group_dir):
-        for file in sorted(os.listdir(group_dir), key=natural_keys):
+        for file in sorted(os.listdir(group_dir)):
             if file.lower().endswith((".jpg", ".jpeg", ".png", ".webp")):
                 images.append(os.path.join(group_dir, file))
     return images
 
 
 def _set_group_sidebar_image_next(group_name, state_key):
-    """Escolhe imagem do grupo sem repetir imediatamente na sidebar."""
+    """Escolhe a próxima imagem de um grupo para a sidebar."""
     images = _images_from_group(group_name)
     if not images:
         st.session_state[state_key] = ""
@@ -2296,35 +2499,12 @@ def _set_group_sidebar_image_next(group_name, state_key):
     return chosen
 
 
-def _set_off_anima_image_next():
-    """Página OFF usa a curadoria visual fixa do grupo images/anima."""
-    return _set_group_sidebar_image_next("anima", "off_anima_image")
-
-
-def _about_author_images():
-    """Lista imagens de autores disponíveis para a página About."""
-    author_dir = "./images/author"
-    author_images = []
-    if os.path.isdir(author_dir):
-        for file in sorted(os.listdir(author_dir)):
-            low = file.lower()
-            if low.endswith((".jpg", ".jpeg", ".png", ".webp")):
-                author_images.append(os.path.join(author_dir, file))
-    return author_images
-
-
 def _set_about_author_image_next():
-    """Homenageia um autor diferente a cada entrada/click na página About."""
-    author_images = _about_author_images()
-    if not author_images:
-        st.session_state["about_author_image"] = ""
-        return ""
+    return _set_group_sidebar_image_next("author", "about_author_image")
 
-    previous = st.session_state.get("about_author_image", "")
-    available = [img for img in author_images if img != previous]
-    chosen = random.choice(available or author_images)
-    st.session_state["about_author_image"] = chosen
-    return chosen
+
+def _set_off_anima_image_next():
+    return _set_group_sidebar_image_next("anima", "off_anima_image")
 
 
 def render_sidebar_image_fit(image_path):
@@ -2358,7 +2538,7 @@ def render_sidebar_context_image(chosen_id):
     """
     if (
         str(chosen_id) != "4"
-        and str(st.session_state.get("analysis_voice", "Machina")).upper() in {"CIA", "OLA"}
+        and str(st.session_state.get("analysis_voice", "Machina")).upper() == "OLA"
     ):
         return
 
@@ -2371,8 +2551,7 @@ def render_sidebar_context_image(chosen_id):
         image_path = st.session_state.get("sidebar_context_image", "")
     elif str(chosen_id) == "4":
         image_path = st.session_state.get("off_anima_image", "")
-    elif str(chosen_id) == "6":
-        # ABOUT/TOOLS: imagem aleatória exclusivamente da pasta ./images/author.
+    elif str(chosen_id) == "5":
         image_path = st.session_state.get("about_author_image", "")
 
     if image_path and os.path.exists(image_path):
@@ -2428,40 +2607,11 @@ def _corpo_palco_leitor():
     return max(14, min(34, corpo))
 
 
-def _corpo_palco_cia():
-    """Corpo protegido para palcos auxiliares legados."""
-    return int(st.session_state.get("cia_palco_size", st.session_state.get("cia_size", 18)))
-
-
-def write_ypoema_cia_palco(LOGO_TEXTO, LOGO_IMAGE=None):
-    """Renderiza o yPoema em palco auxiliar legado."""
-    LOGO_TEXTO = _palco_titulo_centralizado(LOGO_TEXTO)
-    stage_font = _fonte_palco_leitor()
-    palco_size = _corpo_palco_cia()
-
-    if LOGO_IMAGE is None:
-        st.markdown(
-            f"""
-            <div class='container'>
-                <p class='logo-text' style="font-family:{stage_font}; font-size:{palco_size}px;">{LOGO_TEXTO}</p>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-    else:
-        st.markdown(
-            f"""
-            <div class='container'>
-                <img class='logo-img' src='data:image/jpg;base64,{base64.b64encode(open(LOGO_IMAGE, 'rb').read()).decode()}'>
-                <p class='logo-text' style="font-family:{stage_font}; font-size:{palco_size}px;">{LOGO_TEXTO}</p>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
 
 
 def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
     LOGO_TEXTO = _palco_titulo_centralizado(LOGO_TEXTO)
+
     stage_font = _fonte_palco_leitor()
     stage_size = _corpo_palco_leitor()
 
@@ -2502,28 +2652,6 @@ def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
             unsafe_allow_html=True,
         )
 
-def write_cia_header(LOGO_TEXTO, LOGO_IMAGE=None):
-    """Renderiza cabeçalho auxiliar legado em duas linhas."""
-    if LOGO_IMAGE is not None:
-        write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
-        return
-
-    mood = st.session_state.get("cia_mood", "")
-    mood_label = f"({mood})" if mood else ""
-    stage_font = st.session_state.get("cia_font", "Trebuchet MS")
-    stage_size = int(st.session_state.get("cia_size", 18))
-    mood_size = max(13, int(stage_size * 0.82))
-
-    st.markdown(
-        f"""
-        <div class='cia-header-container' style="text-align:center; width:100%; margin:0 auto 1.15em auto;">
-            <p class='cia-header-text' style="font-family:{stage_font}; font-size:{stage_size}px; margin:0 0 0.12em 0; text-align:center; text-decoration:underline; text-underline-offset:0.18em;">{LOGO_TEXTO}</p>
-            <p class='cia-header-mood' style="font-family:{stage_font}; font-size:{mood_size}px; margin:0; opacity:0.92; text-align:center; text-decoration:underline; text-underline-offset:0.18em;">{mood_label}</p>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
 
 def talk(text):
     """Lê o yPoema no idioma atual usando edge-tts, quando disponível."""
@@ -2535,7 +2663,7 @@ def talk(text):
     text_clean = text.replace("<br>", " ").replace("< br>", "").replace("<br >", "").replace("<br/>", " ")
 
     # Mapeamento de vozes neurais de alta qualidade
-    selected_voice = VOICES_EDGE_TTS.get(st.session_state.lang, "pt-BR-FranciscaNeural")
+    selected_voice = VOICES_EDGE_TTS.get(st.session_state.lang, "pt-BR-AntonioNeural")
 
     async def generate_audio():
         communicate = edge_tts.Communicate(text_clean, selected_voice)
@@ -2605,7 +2733,7 @@ def page_mini():
         st.session_state.mini = 0
 
     # Mini :: botões padrão em ordem visual
-    # ✚ = nova variação | ✻ = tema ao acaso | 🔀 = automático | 📣 = voz | ? = help
+    # ✚ = nova variação | ✻ = tema ao acaso | 🔀 = automático | ♫ = voz | ? = help
     foo1, more_col, rand_col, auto_col, voz_col, help_col, foo2 = st.columns([2.35, 1.0, 1.0, 1.35, 1.0, 1.0, 2.35])
 
     help_tips = load_help(st.session_state.lang)
@@ -2614,22 +2742,22 @@ def page_mini():
     help_talk = help_tips[6]
 
     with more_col:
-        more = st.button("✚", key="mini_more_btn", help=help_more, width="stretch")
+        more = st.button("✚", key="mini_more_btn", help=help_more, use_container_width=True)
 
     with rand_col:
-        rand = st.button("✻", key="mini_rand_btn", help=help_rand, width="stretch")
+        rand = st.button("✻", key="mini_rand_btn", help=help_rand, use_container_width=True)
 
     with auto_col:
-        if st.button("🔀", key="mini_auto_button", help="modo automático", width="stretch"):
+        if st.button("🔀", key="mini_auto_button", help="modo automático", use_container_width=True):
             st.session_state.auto = not st.session_state.auto
 
     with voz_col:
-        if st.button("📣", key="mini_voz_btn", help=help_talk, width="stretch"):
+        if st.button("♫", key="mini_voz_btn", help=help_talk, use_container_width=True):
             st.session_state.talk = not st.session_state.talk
 
-    # Pedido: o botão ? deve existir como botão real logo após o 📣.
+    # Pedido: o botão ? deve existir como botão real logo após o ♫.
     with help_col:
-        manu = st.button("?", key="mini_help_btn", help="Modo de Usar & Manual do Usuário", width="stretch")
+        manu = st.button("?", key="mini_help_btn", help="Modo de Usar & Manual do Usuário", use_container_width=True)
 
     mini_voz_slot = render_voz_slot()
 
@@ -2679,7 +2807,7 @@ def page_mini():
         _set_sidebar_context_image_for_theme(st.session_state.tema)
 
         mini_status = (
-            "🌀  "
+            "🍃  "
             + st.session_state.lang
             + " - "
             + st.session_state.tema
@@ -2822,64 +2950,17 @@ def gerar_analise_ola(tipo, tema, ypoema_texto):
     return limpar_analise(_gerar_analise_ola_real(tipo, tema, ypoema_texto))
 
 
-def gerar_analise_cia(tipo, tema, ypoema_texto):
-    """Rotina pura da CIA.
-
-    Recebe tipo, tema e yPoema limpo.
-    Devolve análise curta em texto simples.
-    Não renderiza.
-    Não altera o yPoema.
-    Não usa HTML.
-    Não chama Streamlit.
-    Não mexe em session_state.
-    """
-    tipo = str(tipo or "Sintática").strip()
-    tema = str(tema or "").strip()
-    titulo, versos = _analise_titulo_e_versos(tema, ypoema_texto)
-    primeiro = _analise_primeiro_verso(versos)
-    ultimo = _analise_ultimo_verso(versos)
-    total = len(versos)
-
-    if tipo == "Semântica":
-        texto = (
-            f"A CIA lê “{titulo}” pelo campo de sentidos que a variação acende. "
-            f"O texto parte de “{primeiro}” e deixa que as imagens se aproximem sem obrigar uma única interpretação.\n\n"
-            "A força semântica está na abertura: cada verso desloca o anterior e prepara outra possibilidade de leitura. "
-            f"O fecho “{ultimo}” não encerra o sentido; apenas entrega ao leitor a última inflexão do percurso."
-        )
-    else:
-        texto = (
-            f"A CIA lê “{titulo}” pela construção da linguagem. A variação tem {total} linhas de leitura, e sua força aparece nos cortes, "
-            "nas pausas e na ordem em que as imagens se encadeiam.\n\n"
-            f"O primeiro apoio sintático vem de “{primeiro}”. A partir dele, o yPoema organiza uma respiração própria: não explica demais, "
-            "não fecha cedo, e deixa a frase trabalhar como passagem para o leitor."
-        )
-
-    return limpar_analise(texto)
-
 
 def gerar_analise_atual(ypoema_html, tema):
-    """Seleciona CIA ou OLA conforme a sidebar e devolve texto de análise.
-
-    Esta função é orquestração de tela: lê session_state e converte HTML em texto.
-    As rotinas gerar_analise_ola / gerar_analise_cia permanecem puras.
-    """
-    voice = str(st.session_state.get("analysis_voice", "CIA")).upper()
+    """Envia o yPoema atual para a ponte OLA, sem simulação local."""
     kind = st.session_state.get("analysis_kind", "Sintática")
     ypoema_texto = _analise_texto_cru_do_ypoema(ypoema_html)
-
-    if voice == "OLA":
-        return gerar_analise_ola(kind, tema, ypoema_texto)
-
-    return gerar_analise_cia(kind, tema, ypoema_texto)
+    return gerar_analise_ola(kind, tema, ypoema_texto)
 
 
 def _analysis_voice_title(voice):
-    """Nome expandido da voz de análise no cabeçalho do palco."""
-    voice = str(voice or "CIA").upper()
-    if voice == "OLA":
-        return "Onda Leitora Analítica"
-    return "Centro Imaginativo Aplicado"
+    """Nome expandido da OLA no cabeçalho do palco."""
+    return "Onda Leitora Analítica"
 
 
 def _analysis_kind_label(kind):
@@ -2892,7 +2973,7 @@ def render_analise_palco(texto):
     stage_font = _fonte_palco_leitor()
     stage_size = max(14, min(30, int(st.session_state.get("stage_size", 21)) - 1))
 
-    voice = str(st.session_state.get("analysis_voice", "CIA")).upper()
+    voice = str(st.session_state.get("analysis_voice", "OLA")).upper()
     kind = st.session_state.get("analysis_kind", "")
     titulo = _analysis_voice_title(voice)
     subtitulo = _analysis_kind_label(kind)
@@ -2973,13 +3054,13 @@ def page_ypoemas():
                 unsafe_allow_html=True,
             )
         nav_cols = st.columns([1, 1, 1, 1, 1, 1])
-        more = nav_cols[0].button("✚", help=help_more, width="stretch")
-        last = nav_cols[1].button("◀", help=help_last, width="stretch")
-        rand = nav_cols[2].button("✻", help=help_rand, width="stretch")
-        nest = nav_cols[3].button("▶", help=help_nest, width="stretch")
-        if nav_cols[4].button("📣", help=help_tips[6], key="ypoemas_voz_btn", width="stretch"):
+        more = nav_cols[0].button("✚", help=help_more, use_container_width=True)
+        last = nav_cols[1].button("◀", help=help_last, use_container_width=True)
+        rand = nav_cols[2].button("✻", help=help_rand, use_container_width=True)
+        nest = nav_cols[3].button("▶", help=help_nest, use_container_width=True)
+        if nav_cols[4].button("♫", help=help_tips[6], key="ypoemas_voz_btn", use_container_width=True):
             st.session_state.talk = not st.session_state.talk
-        manu = nav_cols[5].button("?", help="help !!!", width="stretch")
+        manu = nav_cols[5].button("?", help="help !!!", use_container_width=True)
 
         ypoemas_voz_slot = render_voz_slot()
 
@@ -3060,7 +3141,7 @@ def page_ypoemas():
 
     if lnew:
         what_book = (
-            "🌀  "
+            "🍃  "
             + st.session_state.lang
             + " ( "
             + _current_book()
@@ -3073,16 +3154,7 @@ def page_ypoemas():
 
         ypoemas_expander = st.expander(what_book, expanded=True)
         with ypoemas_expander:
-            focus_key = _ypo_focus_key()
-            keep_focus = (
-                not any([more, last, rand, nest])
-                and st.session_state.get("ypo_focus_key", "") == focus_key
-                and bool(st.session_state.get("ypo_focus_text", ""))
-            )
-
-            if keep_focus:
-                curr_ypoema = st.session_state.get("ypo_focus_text", "")
-            elif st.session_state.lang != st.session_state.last_lang:
+            if st.session_state.lang != st.session_state.last_lang:
                 curr_ypoema = load_lypo()  # changes in lang, keep LYPO
             else:
                 curr_ypoema = load_poema(st.session_state.tema, "")
@@ -3098,7 +3170,6 @@ def page_ypoemas():
                     save_typo.close()
                 curr_ypoema = load_typo()  # to normalize line breaks in text
 
-            _remember_ypo_focus(focus_key, curr_ypoema)
             update_readings(st.session_state.tema)
 
             st.session_state.ypoema_em_analise = curr_ypoema
@@ -3119,7 +3190,7 @@ def page_ypoemas():
 
             analysis_voice_atual = str(st.session_state.get("analysis_voice", "Machina")).upper()
 
-            if analysis_voice_atual in {"CIA", "OLA"}:
+            if analysis_voice_atual == "OLA":
                 analise_texto = gerar_analise_atual(LOGO_TEXTO, st.session_state.tema)
 
                 col_poema, col_analise = st.columns([1.05, 0.95], gap="large")
@@ -3137,38 +3208,58 @@ def page_ypoemas():
             if st.session_state.get("copy_bundle_source", "") != _copy_bundle_source_key(curr_ypoema):
                 copy_bundle_text = ""
 
+            st.markdown("<br>", unsafe_allow_html=True)
+
             qtd_copias_atual = _normalizar_qtd_copias(
                 st.session_state.get("copy_qtd_widget", st.session_state.get("copy_qtd", 2))
             )
             st.session_state["copy_qtd"] = qtd_copias_atual
 
-            # Variações: três elementos iguais e centralizados sob o yPoema.
-            # [ criar ] [ lista ] [ copiar ]
-            copy_left, copy_generate_col, copy_qtd_col, copy_all_col, copy_right = st.columns(
-                [3.00, 2.10, 2.10, 2.10, 3.00],
-                gap="small",
-            )
+            # Cópias clean:
+            # [ criar (X) ] [ qtd ] [ Retrato ] [ copiar ]
+            copy_left, copy_generate_col, copy_qtd_col, retrato_col, copy_all_col, copy_right = st.columns([2.45, 3.15, 1.85, 2.55, 3.15, 2.45])
 
             with copy_generate_col:
                 copy_submit = st.button(
-                    "criar",
-                    key="copy_variacoes_btn",
+                    f"criar ( {qtd_copias_atual} )",
                     help="variações",
-                    width="stretch",
+                    key="copy_variacoes_btn",
+                    use_container_width=True,
                 )
 
             with copy_qtd_col:
-                qtd_options = list(range(2, 10))
-                if "copy_qtd_widget" not in st.session_state:
-                    st.session_state["copy_qtd_widget"] = qtd_copias_atual
-
                 qtd_copias = st.selectbox(
                     "quantidade de cópias",
-                    qtd_options,
+                    list(range(2, 10)),
+                    index=list(range(2, 10)).index(qtd_copias_atual),
                     key="copy_qtd_widget",
                     label_visibility="collapsed",
                     on_change=_on_copy_qtd_change,
                 )
+
+            with retrato_col:
+                retrato_png = criar_retrato_png(
+                    curr_ypoema,
+                    st.session_state.get("sidebar_context_image", ""),
+                    st.session_state.get("tema", ""),
+                    selo_size=RETRATO_SELO_SIZE,
+                )
+                if retrato_png:
+                    nome_retrato = re.sub(
+                        r"[^A-Za-z0-9_-]+",
+                        "_",
+                        str(st.session_state.get("tema", "retrato") or "retrato"),
+                    ).strip("_") or "retrato"
+                    st.download_button(
+                        "Retrato",
+                        data=retrato_png,
+                        file_name=f"{nome_retrato}.png",
+                        mime="image/png",
+                        key="retrato_download_btn",
+                        help="Retrato — selo 40px",
+                        use_container_width=True,
+                        on_click="ignore",
+                    )
 
             qtd_copias = _normalizar_qtd_copias(qtd_copias)
             st.session_state["copy_qtd"] = qtd_copias
@@ -3188,11 +3279,14 @@ def page_ypoemas():
                 st.session_state["copy_bundle_token"] = int(st.session_state.get("copy_bundle_token", 0)) + 1
                 copy_bundle_text = st.session_state.get("copy_bundle_text", "")
 
+            # O botão "copiar..." só aparece quando há pacote real na área de cópias.
+            # Novo tema ou nova geração recriam o token e o texto volta para "copiar...".
             with copy_all_col:
-                render_copy_bundle_button(
-                    copy_bundle_text,
-                    int(st.session_state.get("copy_bundle_token", 0)),
-                )
+                if copy_bundle_text:
+                    render_copy_bundle_button(
+                        copy_bundle_text,
+                        int(st.session_state.get("copy_bundle_token", 0)),
+                    )
 
             render_copy_bundle_widget(
                 copy_bundle_text,
@@ -3264,14 +3358,14 @@ def page_eureka():
             )
 
         nav_cols = st.columns([1, 1, 1, 1])
-        more = nav_cols[0].button("✚", help=help_more, width="stretch")
-        rand = nav_cols[1].button("✻", help=help_rand, width="stretch")
+        more = nav_cols[0].button("✚", help=help_more, use_container_width=True)
+        rand = nav_cols[1].button("✻", help=help_rand, use_container_width=True)
 
-        if nav_cols[2].button("📣", key="eureka_voz_btn", help=help_talk, width="stretch"):
+        if nav_cols[2].button("♫", key="eureka_voz_btn", help=help_talk, use_container_width=True):
             _hide_eureka_help()
             st.session_state.talk = not st.session_state.talk
 
-        manu = nav_cols[3].button("?", help="help !!!", width="stretch")
+        manu = nav_cols[3].button("?", help="help !!!", use_container_width=True)
 
         eureka_voz_slot = render_voz_slot()
 
@@ -3341,14 +3435,16 @@ def page_eureka():
 
             with occurrences:
                 options = list(range(len(seed_list)))
-                opt_ocur = st.selectbox(
-                    "↓  " + str(len(seed_list)) + " " + info_find,
-                    options,
-                    index=st.session_state.eureka,
-                    format_func=lambda y: seed_list[y],
-                    key="opt_ocur",
-                    on_change=_on_eureka_occurrence_change,
-                )
+                opt_ocur_kwargs = {
+                    "label": "↓  " + str(len(seed_list)) + " " + info_find,
+                    "options": options,
+                    "format_func": lambda y: seed_list[y],
+                    "key": "opt_ocur",
+                    "on_change": _on_eureka_occurrence_change,
+                }
+                if "opt_ocur" not in st.session_state:
+                    opt_ocur_kwargs["index"] = st.session_state.eureka
+                opt_ocur = st.selectbox(**opt_ocur_kwargs)
 
             previous_opt = st.session_state.get("_eureka_last_opt_ocur")
             if previous_opt is not None and previous_opt != opt_ocur:
@@ -3483,12 +3579,12 @@ def page_off_machina():  # available off_machina_books
                 unsafe_allow_html=True,
             )
         nav_cols = st.columns([1, 1, 1, 1, 1])
-        last = nav_cols[0].button("◀", help=help_last, width="stretch")
-        rand = nav_cols[1].button("✻", help=help_rand, width="stretch")
-        nest = nav_cols[2].button("▶", help=help_nest, width="stretch")
-        if nav_cols[3].button("📣", help=help_tips[6], key="off_voz_btn", width="stretch"):
+        last = nav_cols[0].button("◀", help=help_last, use_container_width=True)
+        rand = nav_cols[1].button("✻", help=help_rand, use_container_width=True)
+        nest = nav_cols[2].button("▶", help=help_nest, use_container_width=True)
+        if nav_cols[3].button("♫", help=help_tips[6], key="off_voz_btn", use_container_width=True):
             st.session_state.talk = not st.session_state.talk
-        manu = nav_cols[4].button("?", help="help !!!", width="stretch")
+        manu = nav_cols[4].button("?", help="help !!!", use_container_width=True)
 
         off_voz_slot = render_voz_slot()
 
@@ -3542,7 +3638,7 @@ def page_off_machina():  # available off_machina_books
 
     if lnew:
         what_book = (
-            "🌀  "
+            "🍃  "
             + st.session_state.lang
             + " ( "
             + str(st.session_state.off_take + 1)
@@ -3567,184 +3663,251 @@ def page_off_machina():  # available off_machina_books
 
             capo = st.session_state.off_take == 0
 
-            if capo:
-                capa, isbn = st.columns([2.5, 7.5])
-                with capa:
-                    if off_book_name == "livro_vivo":
-                        LOGO_CAPA = load_arts("livro_vivo")
-                        if LOGO_CAPA:
-                            st.image(LOGO_CAPA, width="stretch")
-                    else:
-                        st.image(
-                            "./off_machina/capa_" + off_book_name + ".jpg",
-                            width="stretch",
-                        )
-                with isbn:
-                    if off_book_name == "livro_vivo":
-                        write_off_machina_texto(off_book_text)
-                    else:
-                        write_off_machina_texto(off_book_text)  # aplica fonte/corpo do leitor
+            if st.session_state.lang != "pt" and not capo:
+                off_book_text = translate(off_book_text)
+
+            LOGO_TEXTO = off_book_text
+            off_title = off_book_pagys[st.session_state.off_take]
+
+            st.session_state.ypoema_em_analise = LOGO_TEXTO
+            st.session_state.tema_em_analise = off_title
+            st.session_state.book_em_analise = off_book_name
+            st.session_state.take_em_analise = st.session_state.off_take
+            st.session_state.lang_em_analise = st.session_state.lang
+
+            def render_off_texto():
+                write_off_machina_texto(LOGO_TEXTO)
+
+            analysis_voice_atual = str(st.session_state.get("analysis_voice", "Machina")).upper()
+            if analysis_voice_atual == "OLA":
+                analise_texto = gerar_analise_atual(LOGO_TEXTO, off_title)
+                col_texto, col_analise = st.columns([1.05, 0.95], gap="large")
+                with col_texto:
+                    render_off_texto()
+                with col_analise:
+                    render_analise_palco(analise_texto)
             else:
-                if st.session_state.lang != "pt":
-                    off_book_text = translate(off_book_text)
+                render_off_texto()
 
-                LOGO_TEXTO = off_book_text
-
-                if off_book_name == "livro_vivo":
-                    LOGO_IMAGE = load_arts(off_book_name)
-                    write_livro_vivo_texto(LOGO_TEXTO, LOGO_IMAGE)
-                else:
-                    write_off_machina_texto(LOGO_TEXTO)
-                update_readings(off_book_name)
+            update_readings(off_book_name)
 
         if st.session_state.talk:
             with off_voz_slot:
                 talk(off_book_text)
 
 
-def load_about_entries():
-    """Lê o roteiro editorial público em base/md_files.txt.
+def _about_candidates(title):
+    """Gera nomes esperados para ABOUT_<assunto>.md sem tabela interna."""
+    title = str(title or "").strip()
+    candidates = []
+    stems = [
+        title,
+        title.replace(" ", "_"),
+        title.replace(" ", "-"),
+        title.replace("-", "_"),
+        title.replace("_", "-"),
+    ]
+    for stem in stems:
+        name = "ABOUT_" + stem + ".md"
+        if name not in candidates:
+            candidates.append(name)
+    return candidates
 
-    Formato preferido:
-        rótulo|nome_do_arquivo.md
 
-    Regras:
-    - a ordem do arquivo é a ordem exibida na página ABOUT;
-    - linhas vazias e comentários iniciados por # são ignorados;
-    - a leitura pública termina em <EOF> (sem diferença de caixa);
-    - tudo depois de <EOF> permanece apenas como inventário;
-    - uma linha contendo somente o nome do arquivo também é aceita.
+def load_about_md(title):
+    """Carrega ABOUT pelo padrão geral: ABOUT_ + assunto.
+
+    Procura o nome esperado e depois varre md_files comparando o assunto
+    normalizado. Funciona para caixa, acentos, espaço, hífen e underscore.
     """
-    path = _project_path("base", "md_files.txt")
-    entries = []
+    title = str(title or "").strip()
+    candidates = _about_candidates(title)
 
-    try:
-        with open(path, "r", encoding="utf-8") as lista:
-            for raw_line in lista:
-                line = raw_line.strip()
-                if not line or line.startswith("#"):
+    for file_name in candidates:
+        path = _md_file_casefold_path(file_name)
+        if path:
+            return load_md_file(os.path.basename(path))
+
+    md_dir = "./md_files"
+    wanted_key = _md_nome_chave(title)
+    if os.path.isdir(md_dir):
+        best = ""
+        for real_name in os.listdir(md_dir):
+            real_path = os.path.join(md_dir, real_name)
+            if not os.path.isfile(real_path):
+                continue
+            if not real_name.lower().endswith(".md"):
+                continue
+
+            real_key = _md_nome_chave(real_name)
+            if real_key == wanted_key:
+                return load_md_file(real_name)
+
+            if wanted_key and real_key:
+                if real_key.startswith(wanted_key) or wanted_key.startswith(real_key):
+                    best = best or real_name
+
+        if best:
+            return load_md_file(best)
+
+    expected = "ABOUT_" + title + ".md"
+    return translate("ooops... arquivo ( " + expected + " ) não pode ser aberto.")
+
+
+def load_md_files_catalog():
+    """Carrega o catálogo externo da página ABOUT.
+
+    Formato obrigatório de cada linha:
+        texto_na_pagina_About|nome_exato_do_arquivo_em_md_files
+
+    O primeiro campo é apenas o rótulo exibido. O segundo é usado literalmente
+    para abrir o arquivo; não há filtro ABOUT_, dedução, tradução ou renomeação.
+    """
+    candidates = [
+        _project_path("md_files.txt"),
+        _project_path("base", "md_files.txt"),
+    ]
+    catalog = []
+    for path in candidates:
+        if not os.path.isfile(path):
+            continue
+        with open(path, encoding="utf-8") as file:
+            for raw in file:
+                line = raw.rstrip("\r\n")
+                if not line.strip() or line.lstrip().startswith("#"):
                     continue
-                if line.upper() == "<EOF>":
+                if line.strip().upper() == "<EOF>":
                     break
+                label, sep, file_name = line.partition("|")
+                label = label.strip()
+                file_name = file_name.strip()
+                if not sep or not label or not file_name:
+                    continue
 
-                if "|" in line:
-                    label, file_name = line.split("|", 1)
-                    label = label.strip()
-                    file_name = file_name.strip()
-                else:
-                    file_name = line
-                    stem = os.path.splitext(os.path.basename(file_name))[0]
-                    stem = re.sub(r"(?i)^ABOUT[_ -]*", "", stem)
-                    label = stem.replace("_", " ").replace("-", " ").strip()
-
-                if label and file_name:
-                    entries.append((label, file_name))
-    except Exception:
-        return []
-
-    return entries
+                # O segundo campo pode conter alternativas separadas por vírgula.
+                # O catálogo continua sendo a autoridade; o leitor tentará cada
+                # nome na ordem informada, sem concatená-los.
+                file_name = file_name.strip()
+                if not file_name:
+                    continue
+                catalog.append((label, file_name))
+        return catalog
+    return catalog
 
 
-def _about_negritar_primeira_linha(texto):
-    """Padroniza o título do ABOUT somente na exibição.
+def _md_catalog_name_candidates(file_spec):
+    """Expande uma entrada do catálogo em nomes de arquivo tentáveis.
 
-    Remove marcação antiga de cabeçalho Markdown (como ``##``) e eventual
-    negrito já gravado, aplicando depois o negrito correto, sem espaços dentro
-    dos delimitadores. Nenhum arquivo .md é alterado.
+    Regras aceitas pelo catálogo real:
+    - alternativas separadas por vírgula;
+    - nome literal com extensão;
+    - nome literal sem extensão, tentando também o mesmo nome + .md.
     """
-    texto = str(texto or "").replace("\r\n", "\n").replace("\r", "\n")
-    linhas = texto.split("\n")
+    candidates = []
+    for raw_name in str(file_spec or "").split(","):
+        name = raw_name.strip().strip(chr(34)).strip(chr(39))
+        if not name:
+            continue
+        if name not in candidates:
+            candidates.append(name)
+        if not os.path.splitext(name)[1]:
+            with_md = name + ".md"
+            if with_md not in candidates:
+                candidates.append(with_md)
+    return candidates
 
-    for idx, linha in enumerate(linhas):
-        titulo = linha.strip()
-        if not titulo:
+
+def _md_catalog_exact_path(file_name):
+    """Localiza o nome do catálogo, tolerando somente Unicode e caixa."""
+    requested = os.path.basename(str(file_name or "").strip())
+    if not requested:
+        return ""
+
+    md_dir = _project_path("md_files")
+    direct = os.path.join(md_dir, requested)
+    if os.path.isfile(direct):
+        return direct
+    if not os.path.isdir(md_dir):
+        return ""
+
+    def canon(name):
+        value = unicodedata.normalize("NFC", str(name or "")).casefold()
+        return unicodedata.normalize("NFD", value)
+
+    wanted = canon(requested)
+    for real_name in os.listdir(md_dir):
+        real_path = os.path.join(md_dir, real_name)
+        if os.path.isfile(real_path) and canon(real_name) == wanted:
+            return real_path
+
+    # Último fallback restrito ao nome completo: ignora apenas diacríticos,
+    # espaços Unicode invisíveis nas bordas e caixa. Não usa aproximação,
+    # prefixo, abreviação ou comparação parcial.
+    def canon_sem_diacriticos(name):
+        value = unicodedata.normalize("NFKD", str(name or "")).casefold().strip()
+        value = "".join(ch for ch in value if unicodedata.category(ch) != "Mn")
+        value = value.replace("\u200b", "").replace("\ufeff", "")
+        return value
+
+    wanted_plain = canon_sem_diacriticos(requested)
+    matches = []
+    for real_name in os.listdir(md_dir):
+        real_path = os.path.join(md_dir, real_name)
+        if os.path.isfile(real_path) and canon_sem_diacriticos(real_name) == wanted_plain:
+            matches.append(real_path)
+
+    # Só abre quando há correspondência única; em caso de ambiguidade, falha.
+    if len(matches) == 1:
+        return matches[0]
+    return ""
+
+
+def _load_md_catalog_file(file_spec):
+    """Abre a primeira alternativa existente indicada por md_files.txt."""
+    attempted = []
+    for file_name in _md_catalog_name_candidates(file_spec):
+        attempted.append(file_name)
+        path = _md_catalog_exact_path(file_name)
+        if not path:
+            continue
+        try:
+            with open(path, encoding="utf-8-sig") as file:
+                return translate(file.read())
+        except (OSError, UnicodeError):
             continue
 
-        # Aceita títulos antigos como "## Sobre..." ou "** ## Sobre... **".
-        if titulo.startswith("**") and titulo.endswith("**") and len(titulo) >= 4:
-            titulo = titulo[2:-2].strip()
-        titulo = re.sub(r"^#{1,6}\s*", "", titulo).strip()
-
-        linhas[idx] = f"**{titulo}**"
-        break
-
-    return "\n".join(linhas)
-
-
-def load_about_md(file_name):
-    """Carrega o documento indicado e negrita o título apenas na exibição."""
-    file_name = str(file_name or "").strip()
-    if not file_name:
-        return translate("ooops... documento ABOUT não definido.")
-
-    path = _md_file_casefold_path(file_name)
-    if path:
-        texto = load_md_file(os.path.basename(path))
-        return _about_negritar_primeira_linha(texto)
-
-    return translate("ooops... arquivo ( " + file_name + " ) não pode ser aberto.")
-
-
-def page_abouts():
-    st.markdown(
-        """
-        <style>
-        /* ABOUT: a lista aberta ocupa a maior altura útil da janela. */
-        div[data-baseweb="popover"] [role="listbox"],
-        div[data-baseweb="popover"] ul[role="listbox"] {
-            max-height: calc(100vh - 7rem) !important;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
+    return translate(
+        "ooops... arquivo ( " + str(file_spec) + " ) não pode ser aberto."
     )
 
-    about_entries = load_about_entries()
-
-    if not about_entries:
-        st.warning(translate("base/md_files.txt não contém documentos ABOUT válidos."))
+def page_abouts():
+    catalog = load_md_files_catalog()
+    if not catalog:
+        st.warning(translate("md_files.txt vazio ou não encontrado"))
         return
 
-    # About homenageia um autor diferente a cada entrada/click.
     _set_about_author_image_next()
 
-    options = list(range(len(about_entries)))
+    options = list(range(len(catalog)))
     sobrios = "↓  " + translate("sobre")
     opt_abouts = st.selectbox(
         sobrios,
         options,
-        format_func=lambda x: about_entries[x][0],
+        format_func=lambda x: catalog[x][0],
         key="opt_abouts",
     )
 
-    choice_label, choice_file = about_entries[opt_abouts]
-
+    _label, file_name = catalog[opt_abouts]
     about_expander = st.expander("", True)
     with about_expander:
-        # O documento manda: nenhum título, ficha, tema ou yPoema automático.
-        st.markdown(load_about_md(choice_file))
+        st.subheader(_load_md_catalog_file(file_name))
 
 
-# -----------------------------------------------------------------------------
-# Tools locais da Machina
-# -----------------------------------------------------------------------------
-# Cópia privada/local. Não vai para GitHub, deploy ou público.
-# Regra: lê temas .YPO/.ypo; não altera conteúdo autoral; não cria poesia.
+### eof: pages
 
-BUILD_INDEXY_FILE = "ABOUT_index.MD"
-BUILD_AMBIENTE_LEXICO = "--- Ambiente Léxico da Machina"
-BUILD_ESCALA = [
-    "mil", "milhões", "bilhões", "trilhões", "quatrilhões", "quintilhões",
-    "sextilhões", "setilhões", "octilhões", "nonilhões", "decilhões",
-    "undecilhões", "dodecilhões", "tredecilhões", "quatuordecilhões",
-    "quindecilhões", "sedecilhões", "septendecilhões",
-]
 
-CIA_ANALYSIS_OPTIONS = [
-    "Sintática",
-    "Semântica",
-]
 
+SIDEBAR_FILHOTE_WIDTH_PX = 64
 OLA_ANALYSIS_OPTIONS = [
     "Sintética",
     "Sintática",
@@ -3754,108 +3917,65 @@ OLA_ANALYSIS_OPTIONS = [
 
 
 def _analysis_options_for_voice(voice):
-    """Retorna a lista de análises da voz escolhida."""
-    if str(voice or "").upper() == "OLA":
-        return OLA_ANALYSIS_OPTIONS
-    return CIA_ANALYSIS_OPTIONS
+    """Retorna as análises disponíveis para a OLA."""
+    return OLA_ANALYSIS_OPTIONS if str(voice or "").upper() == "OLA" else []
 
 
 def _set_analysis_voice(voice):
-    """Seleciona Machina/CIA/OLA e ajusta a lista única."""
-    voice_raw = str(voice or "Machina").strip()
-    voice_key = voice_raw.upper()
-
-    if voice_key == "MACHINA":
-        st.session_state["analysis_voice"] = "Machina"
-        return
-
-    if voice_key not in {"CIA", "OLA"}:
-        voice_key = "CIA"
-
-    st.session_state["analysis_voice"] = voice_key
-    options = _analysis_options_for_voice(voice_key)
-
-    if options:
-        st.session_state["analysis_kind"] = options[0]
+    """Seleciona Machina ou OLA e ajusta a lista única."""
+    voice_key = str(voice or "Machina").strip().upper()
+    if voice_key == "OLA":
+        st.session_state["analysis_voice"] = "OLA"
+        st.session_state["analysis_kind"] = OLA_ANALYSIS_OPTIONS[0]
     else:
+        st.session_state["analysis_voice"] = "Machina"
         st.session_state["analysis_kind"] = ""
 
 
 def render_analysis_sidebar_block():
-    """Bloco centralizado: CIA / Machina / OLA, com lista só nas análises."""
-    current_voice = str(st.session_state.get("analysis_voice", "Machina"))
-    current_key = current_voice.upper()
-    if current_key not in {"MACHINA", "CIA", "OLA"}:
-        current_voice = "Machina"
+    """Bloco centralizado: Machina / OLA, somente com a OLA."""
+    current_key = str(st.session_state.get("analysis_voice", "Machina")).upper()
+    if current_key not in {"MACHINA", "OLA"}:
         current_key = "MACHINA"
-        st.session_state["analysis_voice"] = current_voice
+        st.session_state["analysis_voice"] = "Machina"
 
-    options = [] if current_key == "MACHINA" else _analysis_options_for_voice(current_key)
+    options = _analysis_options_for_voice(current_key)
     current_kind = st.session_state.get("analysis_kind", options[0] if options else "")
     if options and current_kind not in options:
         current_kind = options[0]
         st.session_state["analysis_kind"] = current_kind
 
-    # Respiro: desce o bloco de análise para aproveitar a área livre da sidebar.
     st.sidebar.markdown("<div style='height:1.85rem;'></div>", unsafe_allow_html=True)
+    col_machina, col_ola = st.sidebar.columns(2)
 
-    # Bloco de análise: mesmo eixo visual de fontes & letras + corpo.
-    # CIA começa no eixo esquerdo da lista de fontes.
-    # Os três botões têm larguras iguais.
-    col_analysis, col_analysis_right = st.sidebar.columns([2.78, 1.32])
+    with col_machina:
+        if st.button(
+            "MACHINA",
+            key="analysis_voice_machina_btn",
+            use_container_width=True,
+            type="primary" if current_key == "MACHINA" else "secondary",
+        ):
+            _set_analysis_voice("Machina")
+            try:
+                st.rerun()
+            except AttributeError:
+                st.experimental_rerun()
 
-    with col_analysis:
-        col_cia, col_machina = st.columns([1, 1])
-    with col_analysis_right:
-        col_ola = st.container()
-
-        with col_cia:
-            if st.button(
-                "CIA",
-                key="analysis_voice_cia_btn",
-                width="stretch",
-                type="primary" if current_key == "CIA" else "secondary",
-            ):
-                _set_analysis_voice("CIA")
-                try:
-                    st.rerun()
-                except AttributeError:
-                    st.experimental_rerun()
-
-        with col_machina:
-            if st.button(
-                "MACHINA",
-                key="analysis_voice_machina_btn",
-                width="stretch",
-                type="primary" if current_key == "MACHINA" else "secondary",
-            ):
-                _set_analysis_voice("Machina")
-                try:
-                    st.rerun()
-                except AttributeError:
-                    st.experimental_rerun()
-
-        with col_ola:
-            if st.button(
-                "OLA",
-                key="analysis_voice_ola_btn",
-                width="stretch",
-                type="primary" if current_key == "OLA" else "secondary",
-            ):
-                _set_analysis_voice("OLA")
-                try:
-                    st.rerun()
-                except AttributeError:
-                    st.experimental_rerun()
+    with col_ola:
+        if st.button(
+            "OLA",
+            key="analysis_voice_ola_btn",
+            use_container_width=True,
+            type="primary" if current_key == "OLA" else "secondary",
+        ):
+            _set_analysis_voice("OLA")
+            try:
+                st.rerun()
+            except AttributeError:
+                st.experimental_rerun()
 
     if options:
-        # Respiro maior entre botões e lista de análises.
-        st.sidebar.markdown(
-            "<div style='height:1.42rem;'></div>",
-            unsafe_allow_html=True,
-        )
-        # A lista de análises usa a mesma regra visual da lista_idiomas:
-        # selectbox nativo da sidebar com max-width 320px no CSS global.
+        st.sidebar.markdown("<div style='height:1.42rem;'></div>", unsafe_allow_html=True)
         choice = st.sidebar.selectbox(
             "tipo",
             options,
@@ -3864,7 +3984,6 @@ def render_analysis_sidebar_block():
             label_visibility="collapsed",
         )
         st.session_state["analysis_kind"] = choice
-
 
 
 def render_sidebar_for_page(chosen_id):
@@ -3906,13 +4025,13 @@ def main():
     gramado = open_gramado()
 
     with gramado:
-        page_labels = ["mini", "yPoemas", "eureka", "off-Machina", "About"]
+        page_labels = ["mini", "yPoemas", "eureka", "off-Machina", "ABOUT"]
         page_ids = {
             "mini": "1",
             "yPoemas": "2",
             "eureka": "3",
             "off-Machina": "4",
-            "About": "5",
+            "ABOUT": "5",
         }
 
         _sync_machina_page_state(page_labels, page_ids)
@@ -3923,7 +4042,7 @@ def main():
                 if st.button(
                     page_label,
                     key=f"machina_page_btn_{page_label}",
-                    width="stretch",
+                    use_container_width=True,
                     type="primary" if page_label == st.session_state["machina_page_select"] else "secondary",
                 ):
                     _set_machina_page(page_label, page_ids[page_label])
@@ -3946,7 +4065,7 @@ def main():
             with palco_container:
                 if chosen_id == "1":
                     page_mini()
-                    status = f"🌀  {st.session_state.lang} - {st.session_state.tema} ( {st.session_state.mini + 1} / {len(load_temas('todos os temas'))} )"
+                    status = f"🍃  {st.session_state.lang} - {st.session_state.tema} ( {st.session_state.mini + 1} / {len(load_temas('todos os temas'))} )"
 
                 elif chosen_id == "2":
                     page_ypoemas()
@@ -3964,7 +4083,7 @@ def main():
                     status = palco_status("off-machina")
                 elif chosen_id == "5":
                     page_abouts()
-                    status = palco_status("about")
+                    status = palco_status("ABOUT")
                 else:
                     page_ypoemas()
                     current_book = _current_book()
