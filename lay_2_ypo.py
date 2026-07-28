@@ -50,7 +50,7 @@ def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo y
         else:
             tema = abre(nome_tema)
             for line in tema:
-                if line.startswith("*", 0, 1):  # observações e cabeçalho
+                if line.startswith("*-", 0, 2):  # observações e cabeçalho
                     lista_header.append(line)
                 elif line.startswith("|", 0, 1):  # ideias & itimos
                     lista_linhas.append(line)
@@ -147,7 +147,7 @@ def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo y
                 temp_random = se_randomico
                 if (
                     not itimo_escolhido.upper()  # Elimina duplicidaders óbvias...
-                    in "_E_A_AS_O_OS_NO_NOS_NA_NAS_ME_DE_SE_QUE_NÃO_SO_SEM_NEM_EM_UM_UMA_POR_MEU_VE_TE_TÃO_DA_SER_TER_PRA_PARA_QUANDO_..._._,_:_!_?"
+                    in "_E_A_AS_O_OS_OU_NO_NOS_NA_NAS_ME_DE_SE_QUE_NÃO_SO_SEM_NEM_EM_UM_UMA_POR_MEU_VE_TE_TÃO_DA_SER_TER_PRA_PARA_QUANDO_..._._,_:_!_?"
                 ):
                     if (
                         itimo_escolhido.upper() not in lista_unicos
@@ -155,7 +155,7 @@ def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo y
                         lista_unicos.append(itimo_escolhido.upper())
                         break
                     else:
-                        tentativas += 1
+                        tentativas += 1                   
                         if (
                             tentativas > total_itimos
                         ):  # tentativas > que total de ítimos: pega o próximo sequencial
@@ -169,6 +169,7 @@ def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo y
 
                         if (
                             itimo_escolhido.upper() in lista_duplos
+                            # and nome_tema != "Cacos"
                         ):  # para não repetir verbetes/ítimos usados em mais de uma ideia/linha
                             if len(itimo_escolhido) > 3:
                                 continue
@@ -241,15 +242,21 @@ def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo y
         with open(tmp_path, "w", encoding="utf-8", newline="") as file:
             for linha in lista_header:
                 file.write(linha)
-        
+
             for linha in lista_change:
                 file.write(linha)
-        
+
             for linha in lista_finais:
+                if linha.lower().startswith("build_by lay_2_ypo"):
+                    continue
                 file.write(linha)
-        
-            # file.write("###")
-        
+
+            file.write(
+                "build_by lay_2_ypo em "
+                + datetime.datetime.now().strftime("%d/%m/%Y - %H:%M")
+                + "\n"
+            )
+
         os.replace(tmp_path, path)
 
     return novo_poema
