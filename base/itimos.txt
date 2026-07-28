@@ -154,3 +154,8 @@ Touro=m : 59
 Virgem=f : 110
 Virgem=m : 107
 Lady-murphy : 55
+Bi-palavras : 8
+Niver : 114
+Travessia : 16
+Imaginação : 79
+Jealousy : 178

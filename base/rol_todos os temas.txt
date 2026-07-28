@@ -11,6 +11,7 @@ Babel
 Batismo
 Beaba
 Becos
+bi-palavras
 Blablabla
 Bolero
 Brado
@@ -19,17 +20,17 @@ Cacos
 Cadência
 Carroussel
 Cartaz
-CIA
 Circular
 Ciuminho
 Clandestino
 Clarice
 Conto
 Cordel
+Cromossomo
 Críticas
 Crítico
-Cromossomo
 Cuores
+Demo
 Destinos
 Distintos
 Dolores
@@ -52,8 +53,9 @@ Frases
 Fugaz
 Gula
 Haikai
-i-Mundo
+Imaginação
 Impar
+i-Mundo
 Indolor
 Inhos
 Insano
@@ -72,6 +74,8 @@ Manusgrito
 Meteoro
 Minuto
 Mirante
+Niver
+Niver-B
 Nonono
 Nós
 Nós_nos_nós
@@ -80,15 +84,14 @@ Ocio
 Oco
 Oficia
 Oficio
-OLA
 Ogiva
 Olhares
 Ores
-Paz
 Palyndro
 Papilio
 Paroles
 Passagens
+Paz
 Pedidos
 Perfil
 Pessoa
@@ -122,6 +125,7 @@ Tempo
 Tempus
 Tiro
 Tolero
+Travessia      
 Usinas
 Veio
 Victor
@@ -153,3 +157,4 @@ Touro=f
 Touro=m
 Virgem=f
 Virgem=m
+Jealousy
