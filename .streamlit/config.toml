@@ -1,15 +1,18 @@
 [theme]
-primaryColor="#2214c7"
-backgroundColor="#ffffff"
-secondaryBackgroundColor="#e8eef9"
-textColor="#000000"
-font="Monospace"
+primaryColor = "#2214c7"
+backgroundColor = "#ffffff"
+secondaryBackgroundColor = "#e8eef9"
+textColor = "#000000"
+font = "monospace"
 
 [server]
 fileWatcherType = "none"
+headless = true
 
 [browser]
 gatherUsageStats = false
 
 [client]
 showSidebarNavigation = false
+toolbarMode = "viewer"
+showErrorDetails = "none"
