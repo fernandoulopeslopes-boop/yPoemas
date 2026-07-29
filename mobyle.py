@@ -13,8 +13,8 @@ from PIL import Image, ImageDraw, ImageFont, ImageOps
 import streamlit as st
 import streamlit.components.v1 as components
 
-APP_BUILD = "2026-07-28_MOBILE_FBF_CAE"
-APP_BUILD_NOTES = "Mobile público derivado do corpo validado do Tools; página Tools removida; OLA e Retrato preservados."
+APP_BUILD = "2026-07-29_RETRATO_OLA_TESTE_VISUAL_V3_MARCADORES_REMOVIDOS"
+APP_BUILD_NOTES = "Teste visual do Retrato com OLA; remove marcadores |$|/|$$|/|$$$| e também $/$$/$$$ residuais no início da linha."
 
 from lay_2_ypo import gera_poema
 from readings import (
@@ -47,7 +47,7 @@ PAGE_IMAGES = {
 }
 
 VOICES_EDGE_TTS = {
-    "pt": "pt-BR-AntonioNeural",
+    "pt": "pt-BR-FranciscaNeural",
     "es": "es-ES-AlvaroNeural",
     "fr": "fr-FR-HenriNeural",
     "it": "it-IT-DiegoNeural",
@@ -2245,7 +2245,7 @@ def render_copy_bundle_widget(texto, token, qtd_real=None):
 
 
 RETRATO_ORIGEM_URL = "ypoemas.streamlit.app"
-RETRATO_SELO_SIZE = 40
+RETRATO_SELO_SIZE = 64
 RETRATO_SELO_RESPIRO = 30
 
 # yP original incorporado ao executável para que a assinatura viaje com o PNG
@@ -2288,30 +2288,67 @@ def _aplicar_selo_origem(canvas, size, respiro=RETRATO_SELO_RESPIRO):
     return canvas
 
 
-def _retrato_font(size, bold=False):
-    """Carrega uma fonte Unicode disponível para o PNG do Retrato."""
+def _retrato_font(size, bold=False, family=None):
+    """Carrega no PNG a fonte escolhida em Fontes & Letras."""
+    family = str(family or "Trebuchet MS").strip()
+
+    # Arquivos mais prováveis no Windows e no Linux/Streamlit Cloud.
+    nomes = {
+        "Trebuchet MS": ("trebucbd.ttf", "trebuc.ttf"),
+        "Inter": ("Inter-Bold.ttf", "Inter-Regular.ttf"),
+        "Spectral": ("Spectral-Bold.ttf", "Spectral-Regular.ttf"),
+        "EB Garamond": ("EBGaramond-Bold.ttf", "EBGaramond-Regular.ttf"),
+        "Libre Baskerville": ("LibreBaskerville-Bold.ttf", "LibreBaskerville-Regular.ttf"),
+        "Cormorant Garamond": ("CormorantGaramond-Bold.ttf", "CormorantGaramond-Regular.ttf"),
+        "Palatino Linotype": ("palab.ttf", "pala.ttf"),
+        "Georgia": ("georgiab.ttf", "georgia.ttf"),
+        "Atkinson Hyperlegible": ("AtkinsonHyperlegible-Bold.ttf", "AtkinsonHyperlegible-Regular.ttf"),
+        "OpenDyslexic": ("OpenDyslexic-Bold.otf", "OpenDyslexic-Regular.otf"),
+        "JetBrains Mono": ("JetBrainsMono-Bold.ttf", "JetBrainsMono-Regular.ttf"),
+        "Courier New": ("courbd.ttf", "cour.ttf"),
+        "IBM Plex Sans": ("IBMPlexSans-Bold.ttf", "IBMPlexSans-Regular.ttf"),
+    }
+
+    bold_name, regular_name = nomes.get(family, ("", ""))
+    filename = bold_name if bold else regular_name
     candidates = []
-    if bold:
+
+    if filename:
         candidates.extend([
-            _project_path("fonts", "DejaVuSans-Bold.ttf"),
-            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
-            "C:/Windows/Fonts/arialbd.ttf",
+            _project_path("fonts", filename),
+            os.path.join("C:/Windows/Fonts", filename),
+            filename,
         ])
-    else:
-        candidates.extend([
-            _project_path("fonts", "DejaVuSans.ttf"),
-            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
-            "C:/Windows/Fonts/arial.ttf",
-        ])
+
+    # Alguns pacotes Linux usam diretórios e nomes ligeiramente diferentes.
+    linux_aliases = {
+        "Inter": ["/usr/share/fonts/truetype/inter/Inter-Bold.ttf" if bold else "/usr/share/fonts/truetype/inter/Inter-Regular.ttf"],
+        "EB Garamond": ["/usr/share/fonts/truetype/ebgaramond/EBGaramond-Bold.ttf" if bold else "/usr/share/fonts/truetype/ebgaramond/EBGaramond-Regular.ttf"],
+        "JetBrains Mono": ["/usr/share/fonts/truetype/jetbrains-mono/JetBrainsMono-Bold.ttf" if bold else "/usr/share/fonts/truetype/jetbrains-mono/JetBrainsMono-Regular.ttf"],
+    }
+    candidates.extend(linux_aliases.get(family, []))
+
+    # Fallback Unicode seguro, apenas quando a fonte escolhida não existe
+    # como arquivo acessível ao Pillow naquele computador.
+    candidates.extend([
+        _project_path("fonts", "DejaVuSans-Bold.ttf" if bold else "DejaVuSans.ttf"),
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" if bold else "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+        "/usr/share/fonts/truetype/liberation2/LiberationSans-Bold.ttf" if bold else "/usr/share/fonts/truetype/liberation2/LiberationSans-Regular.ttf",
+        "C:/Windows/Fonts/arialbd.ttf" if bold else "C:/Windows/Fonts/arial.ttf",
+        "DejaVuSans-Bold.ttf" if bold else "DejaVuSans.ttf",
+    ])
 
     for candidate in candidates:
         try:
-            if candidate and os.path.exists(candidate):
-                return ImageFont.truetype(candidate, size=size)
+            if not candidate:
+                continue
+            if os.path.isabs(candidate) and not os.path.exists(candidate):
+                continue
+            return ImageFont.truetype(candidate, size=int(size))
         except Exception:
             pass
-    return ImageFont.load_default()
 
+    raise RuntimeError("Fonte Unicode não encontrada para gerar o Retrato.")
 
 def _retrato_wrap(draw, texto, font, largura):
     """Quebra o yPoema sem alterar suas linhas autorais."""
@@ -2335,56 +2372,217 @@ def _retrato_wrap(draw, texto, font, largura):
     return linhas_finais
 
 
-def criar_retrato_png(ypoema_html, image_path, tema, selo_size=24):
-    """Monta um PNG com imagem, yPoema e Denominação de Origem."""
+def _retrato_imagem_machina_aleatoria(chave_fixa=""):
+    """Escolhe uma imagem de /images/machina e a mantém estável para o palco atual."""
+    pasta = os.path.join(".", "images", "machina")
+    if not os.path.isdir(pasta):
+        return ""
+
+    extensoes = {".png", ".jpg", ".jpeg", ".webp", ".bmp"}
+    imagens = [
+        os.path.join(pasta, nome)
+        for nome in os.listdir(pasta)
+        if os.path.splitext(nome)[1].lower() in extensoes
+    ]
+    if not imagens:
+        return ""
+
+    imagens.sort()
+    chave = str(chave_fixa or "")
+    if st.session_state.get("retrato_machina_chave") != chave:
+        st.session_state["retrato_machina_chave"] = chave
+        st.session_state["retrato_machina_imagem"] = random.choice(imagens)
+
+    imagem = st.session_state.get("retrato_machina_imagem", "")
+    if imagem not in imagens:
+        imagem = random.choice(imagens)
+        st.session_state["retrato_machina_imagem"] = imagem
+    return imagem
+
+
+def criar_retrato_png(
+    ypoema_html,
+    image_path,
+    tema,
+    selo_size=24,
+    analise_texto="",
+    analise_titulo="",
+    machina_image_path="",
+):
+    """Monta o Retrato; com OLA visível, testa duas faixas no mesmo palco."""
     if not image_path or not os.path.exists(image_path):
         return None
 
-    texto = _ypoema_html_to_text(ypoema_html)
+    texto = unicodedata.normalize("NFC", _ypoema_html_to_text(ypoema_html))
+    # Alguns temas usam |$|, |$$|, |$$$|... no início da linha para criar recuo.
+    # Dependendo da passagem pelo HTML, as barras podem desaparecer e restar apenas $$$.
+    # No Retrato, nenhum marcador deve aparecer: convertemos ambos os formatos em recuo real.
+    def _recuo_retrato(match):
+        dolares = match.group("dolares") or match.group("dolares_soltos") or ""
+        return "\u00A0" * len(dolares)
+
+    texto = re.sub(
+        r"(?m)^(?P<prefixo>[ \t]*)"
+        r"(?:[|｜¦]\s*(?P<dolares>\$+)\s*[|｜¦]|(?P<dolares_soltos>\$+))"
+        r"[ \t]*",
+        lambda match: match.group("prefixo") + _recuo_retrato(match),
+        texto,
+    )
     if not texto:
         return None
 
-    canvas_w, canvas_h = 1600, 1000
+    analise = unicodedata.normalize("NFC", str(analise_texto or "").strip())
+    titulo_ola = unicodedata.normalize("NFC", str(analise_titulo or "").strip())
+    tem_ola = bool(analise and titulo_ola and machina_image_path and os.path.exists(machina_image_path))
+
     margin = 64
     gap = 58
-    image_w = 650
-    text_x = margin + image_w + gap
-    text_w = canvas_w - text_x - margin
+    faixa_gap = 42
+    separador_gap = 34
 
-    canvas = Image.new("RGB", (canvas_w, canvas_h), "white")
+    # Teste visual isolado: fontes fixas, sem depender de Corpo da Fonte ou Cópias.
+    fonte_retrato = "OpenDyslexic"
+    corpo_png = 30
+    body_font = _retrato_font(corpo_png, family=fonte_retrato)
+    ola_font = _retrato_font(24, family=fonte_retrato)
+    ola_title_font = _retrato_font(26, bold=True, family=fonte_retrato)
+
+    medida = Image.new("RGB", (1, 1), "white")
+    draw_medida = ImageDraw.Draw(medida)
+    text_w_max = 900
 
     with Image.open(image_path) as source:
         art = ImageOps.exif_transpose(source).convert("RGB")
-        art = ImageOps.fit(
-            art,
-            (image_w, canvas_h - (2 * margin)),
-            method=Image.Resampling.LANCZOS,
-            centering=(0.5, 0.5),
-        )
-    canvas.paste(art, (margin, margin))
+        original_w, original_h = art.size
+        image_w_max = 360
+        escala = min(1.0, image_w_max / max(1, original_w))
+        image_w = max(1, int(round(original_w * escala)))
+        image_h = max(1, int(round(original_h * escala)))
+        if (image_w, image_h) != art.size:
+            art = art.resize((image_w, image_h), Image.Resampling.LANCZOS)
 
-    draw = ImageDraw.Draw(canvas)
-    title_font = _retrato_font(42, bold=True)
-    body_font = _retrato_font(31)
+    linhas = _retrato_wrap(draw_medida, texto, body_font, text_w_max)
+    bbox_linha = draw_medida.textbbox((0, 0), "Ag", font=body_font)
+    line_gap = max(8, int(round(corpo_png * 0.28)))
+    line_h = max(1, bbox_linha[3] - bbox_linha[1]) + line_gap
+    altura_texto = max(line_h, len(linhas) * line_h)
 
-    titulo = str(tema or "").strip()
-    y = margin
-    if titulo:
-        draw.text((text_x, y), titulo, font=title_font, fill="black")
-        y += 70
-
-    line_gap = 14
-    linhas = _retrato_wrap(draw, texto, body_font, text_w)
-    bbox = draw.textbbox((0, 0), "Ag", font=body_font)
-    line_h = (bbox[3] - bbox[1]) + line_gap
-
+    larguras_linhas = []
     for linha in linhas:
-        if y + line_h > canvas_h - margin:
-            break
-        draw.text((text_x, y), linha, font=body_font, fill="black")
-        y += line_h
+        if linha:
+            bbox = draw_medida.textbbox((0, 0), linha, font=body_font)
+            larguras_linhas.append(max(1, bbox[2] - bbox[0]))
+    largura_texto_real = max(larguras_linhas or [1])
 
-    _aplicar_selo_origem(canvas, selo_size, RETRATO_SELO_RESPIRO)
+    machina_art = None
+    machina_w = machina_h = 0
+    linhas_ola = []
+    ola_line_h = 0
+    ola_title_h = 0
+    largura_ola_real = 1
+
+    if tem_ola:
+        with Image.open(machina_image_path) as source:
+            machina_art = ImageOps.exif_transpose(source).convert("RGB")
+            # Coleção Machina: 240 x 360 px; preserva a dimensão original.
+            machina_w, machina_h = machina_art.size
+
+        ola_text_w_max = 820
+        linhas_ola = _retrato_wrap(draw_medida, analise, ola_font, ola_text_w_max)
+        bbox_ola = draw_medida.textbbox((0, 0), "Ag", font=ola_font)
+        ola_line_gap = 7
+        ola_line_h = max(1, bbox_ola[3] - bbox_ola[1]) + ola_line_gap
+
+        bbox_titulo = draw_medida.textbbox((0, 0), titulo_ola, font=ola_title_font)
+        ola_title_h = max(1, bbox_titulo[3] - bbox_titulo[1])
+        larguras_ola = [max(1, bbox_titulo[2] - bbox_titulo[0])]
+        for linha in linhas_ola:
+            if linha:
+                bbox = draw_medida.textbbox((0, 0), linha, font=ola_font)
+                larguras_ola.append(max(1, bbox[2] - bbox[0]))
+        largura_ola_real = max(larguras_ola or [1])
+
+    selo_real = max(1, int(round(int(selo_size) * 0.60)))
+    footer_font = _retrato_font(max(16, int(round(selo_real * 0.72))))
+    footer_bbox = draw_medida.textbbox((0, 0), RETRATO_ORIGEM_URL, font=footer_font)
+    footer_text_w = footer_bbox[2] - footer_bbox[0]
+    footer_gap_x = max(8, int(round(selo_real * 0.35)))
+    footer_group_w = selo_real + footer_gap_x + footer_text_w
+    footer_h = selo_real
+    footer_gap_y = 34
+
+    top_content_w = image_w + gap + largura_texto_real
+    top_h = max(image_h, altura_texto)
+
+    bottom_content_w = 0
+    bottom_h = 0
+    if tem_ola:
+        ola_text_h = ola_title_h + 18 + max(ola_line_h, len(linhas_ola) * ola_line_h)
+        bottom_content_w = largura_ola_real + gap + machina_w
+        bottom_h = max(ola_text_h, machina_h)
+
+    largura_conteudo = margin + max(top_content_w, bottom_content_w) + margin
+    largura_rodape = margin + footer_group_w + margin
+    canvas_w = max(700, largura_conteudo, largura_rodape)
+
+    if tem_ola:
+        canvas_h = (
+            margin + top_h
+            + separador_gap + 2 + separador_gap
+            + bottom_h
+            + footer_gap_y + footer_h + margin
+        )
+    else:
+        canvas_h = max(520, margin + top_h + footer_gap_y + footer_h + margin)
+
+    canvas = Image.new("RGB", (canvas_w, canvas_h), "white")
+    draw = ImageDraw.Draw(canvas)
+
+    # Sem OLA, conserva exatamente a centralização já aprovada.
+    if not tem_ola:
+        image_y = max(margin, (canvas_h - image_h) // 2)
+        canvas.paste(art, (margin, image_y))
+        text_x = margin + image_w + gap
+        y = margin
+        for linha in linhas:
+            draw.text((text_x, y), linha, font=body_font, fill="black")
+            y += line_h
+    else:
+        # Faixa superior: imagem + yPoema.
+        top_y = margin
+        image_y = top_y + max(0, (top_h - image_h) // 2)
+        text_y = top_y + max(0, (top_h - altura_texto) // 2)
+        canvas.paste(art, (margin, image_y))
+        text_x = margin + image_w + gap
+        y = text_y
+        for linha in linhas:
+            draw.text((text_x, y), linha, font=body_font, fill="black")
+            y += line_h
+
+        # Linha divisória entre o acontecimento e a leitura.
+        separator_y = top_y + top_h + separador_gap
+        draw.line(
+            (margin, separator_y, canvas_w - margin, separator_y),
+            fill=(72, 72, 72),
+            width=2,
+        )
+
+        # Faixa inferior: análise + imagem_machina.
+        bottom_y = separator_y + separador_gap
+        ola_text_h = ola_title_h + 18 + max(ola_line_h, len(linhas_ola) * ola_line_h)
+        ola_y = bottom_y + max(0, (bottom_h - ola_text_h) // 2)
+        machina_y = bottom_y + max(0, (bottom_h - machina_h) // 2)
+
+        draw.text((margin, ola_y), titulo_ola, font=ola_title_font, fill="black")
+        y = ola_y + ola_title_h + 18
+        for linha in linhas_ola:
+            draw.text((margin, y), linha, font=ola_font, fill="black")
+            y += ola_line_h
+
+        machina_x = canvas_w - margin - machina_w
+        canvas.paste(machina_art, (machina_x, machina_y))
+
+    _aplicar_selo_origem(canvas, selo_real, RETRATO_SELO_RESPIRO)
 
     output = BytesIO()
     canvas.save(output, format="PNG", optimize=True)
@@ -2663,7 +2861,7 @@ def talk(text):
     text_clean = text.replace("<br>", " ").replace("< br>", "").replace("<br >", "").replace("<br/>", " ")
 
     # Mapeamento de vozes neurais de alta qualidade
-    selected_voice = VOICES_EDGE_TTS.get(st.session_state.lang, "pt-BR-AntonioNeural")
+    selected_voice = VOICES_EDGE_TTS.get(st.session_state.lang, "pt-BR-FranciscaNeural")
 
     async def generate_audio():
         communicate = edge_tts.Communicate(text_clean, selected_voice)
@@ -3238,11 +3436,34 @@ def page_ypoemas():
                 )
 
             with retrato_col:
+                retrato_analise = ""
+                retrato_titulo_ola = ""
+                retrato_imagem_machina = ""
+                if analysis_voice_atual == "OLA":
+                    retrato_analise = analise_texto
+                    retrato_titulo_ola = (
+                        f"{_analysis_voice_title('OLA')} "
+                        f"( {_analysis_kind_label(st.session_state.get('analysis_kind', ''))} )"
+                    )
+                    chave_retrato_machina = "\n".join(
+                        [
+                            str(st.session_state.get("tema", "")),
+                            _ypoema_html_to_text(curr_ypoema),
+                            str(retrato_analise),
+                        ]
+                    )
+                    retrato_imagem_machina = _retrato_imagem_machina_aleatoria(
+                        chave_retrato_machina
+                    )
+
                 retrato_png = criar_retrato_png(
                     curr_ypoema,
                     st.session_state.get("sidebar_context_image", ""),
                     st.session_state.get("tema", ""),
                     selo_size=RETRATO_SELO_SIZE,
+                    analise_texto=retrato_analise,
+                    analise_titulo=retrato_titulo_ola,
+                    machina_image_path=retrato_imagem_machina,
                 )
                 if retrato_png:
                     nome_retrato = re.sub(
@@ -3256,7 +3477,7 @@ def page_ypoemas():
                         file_name=f"{nome_retrato}.png",
                         mime="image/png",
                         key="retrato_download_btn",
-                        help="Retrato — selo 40px",
+                        help="Retrato — texto ampliado e selo 64px",
                         use_container_width=True,
                         on_click="ignore",
                     )
