@@ -2264,14 +2264,14 @@ def _retrato_logo_yp(size):
         return None
 
 
-def _aplicar_selo_origem(canvas, size, respiro=RETRATO_SELO_RESPIRO):
+def _aplicar_selo_origem(canvas, size, respiro=RETRATO_SELO_RESPIRO, family="OpenDyslexic"):
     """Assina o Retrato com yP + endereço de origem no canto inferior direito."""
     logo = _retrato_logo_yp(size)
     if logo is None:
         return canvas
 
     draw = ImageDraw.Draw(canvas)
-    url_font = _retrato_font(max(16, int(round(size * 0.72))))
+    url_font = _retrato_font(max(16, int(round(size * 0.72))), family=family)
     url = RETRATO_ORIGEM_URL
     bbox = draw.textbbox((0, 0), url, font=url_font)
     text_w = bbox[2] - bbox[0]
@@ -2503,7 +2503,7 @@ def criar_retrato_png(
         largura_ola_real = max(larguras_ola or [1])
 
     selo_real = max(1, int(round(int(selo_size) * 0.60)))
-    footer_font = _retrato_font(max(16, int(round(selo_real * 0.72))))
+    footer_font = _retrato_font(max(16, int(round(selo_real * 0.72))), family=fonte_retrato)
     footer_bbox = draw_medida.textbbox((0, 0), RETRATO_ORIGEM_URL, font=footer_font)
     footer_text_w = footer_bbox[2] - footer_bbox[0]
     footer_gap_x = max(8, int(round(selo_real * 0.35)))
@@ -2582,7 +2582,7 @@ def criar_retrato_png(
         machina_x = canvas_w - margin - machina_w
         canvas.paste(machina_art, (machina_x, machina_y))
 
-    _aplicar_selo_origem(canvas, selo_real, RETRATO_SELO_RESPIRO)
+    _aplicar_selo_origem(canvas, selo_real, RETRATO_SELO_RESPIRO, family=fonte_retrato)
 
     output = BytesIO()
     canvas.save(output, format="PNG", optimize=True)
