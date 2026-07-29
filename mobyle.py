@@ -13,8 +13,8 @@ from PIL import Image, ImageDraw, ImageFont, ImageOps
 import streamlit as st
 import streamlit.components.v1 as components
 
-APP_BUILD = "2026-07-29_RETRATO_OLA_TESTE_VISUAL_V3_MARCADORES_REMOVIDOS"
-APP_BUILD_NOTES = "Teste visual do Retrato com OLA; remove marcadores |$|/|$$|/|$$$| e também $/$$/$$$ residuais no início da linha."
+APP_BUILD = "2026-07-29_CENTRALIZA_CONTROLES"
+APP_BUILD_NOTES = "Mantém o recuo visual 2x e centraliza o conjunto criar-lista-Retrato considerando a coluna condicional de copiar."
 
 from lay_2_ypo import gera_poema
 from readings import (
@@ -2351,24 +2351,34 @@ def _retrato_font(size, bold=False, family=None):
     raise RuntimeError("Fonte Unicode não encontrada para gerar o Retrato.")
 
 def _retrato_wrap(draw, texto, font, largura):
-    """Quebra o yPoema sem alterar suas linhas autorais."""
+    """Quebra o texto preservando o recuo autoral com espaços ASCII."""
     linhas_finais = []
     for linha in str(texto or "").splitlines():
+        linha = linha.replace("\t", "    ")
         if not linha:
             linhas_finais.append("")
             continue
 
-        palavras = linha.split(" ")
-        atual = ""
+        recuo = linha[: len(linha) - len(linha.lstrip(" "))]
+        conteudo = linha[len(recuo):]
+
+        if not conteudo:
+            linhas_finais.append(recuo)
+            continue
+
+        palavras = conteudo.split(" ")
+        atual = recuo
         for palavra in palavras:
-            tentativa = palavra if not atual else atual + " " + palavra
+            if palavra == "":
+                continue
+            tentativa = atual + palavra if atual.endswith(" ") else atual + " " + palavra
             bbox = draw.textbbox((0, 0), tentativa, font=font)
-            if bbox[2] - bbox[0] <= largura or not atual:
+            if bbox[2] - bbox[0] <= largura or atual == recuo:
                 atual = tentativa
             else:
-                linhas_finais.append(atual)
-                atual = palavra
-        linhas_finais.append(atual)
+                linhas_finais.append(atual.rstrip())
+                atual = recuo + palavra
+        linhas_finais.append(atual.rstrip())
     return linhas_finais
 
 
@@ -2414,20 +2424,44 @@ def criar_retrato_png(
         return None
 
     texto = unicodedata.normalize("NFC", _ypoema_html_to_text(ypoema_html))
-    # Alguns temas usam |$|, |$$|, |$$$|... no início da linha para criar recuo.
-    # Dependendo da passagem pelo HTML, as barras podem desaparecer e restar apenas $$$.
-    # No Retrato, nenhum marcador deve aparecer: convertemos ambos os formatos em recuo real.
-    def _recuo_retrato(match):
-        dolares = match.group("dolares") or match.group("dolares_soltos") or ""
-        return "\u00A0" * len(dolares)
 
-    texto = re.sub(
-        r"(?m)^(?P<prefixo>[ \t]*)"
-        r"(?:[|｜¦]\s*(?P<dolares>\$+)\s*[|｜¦]|(?P<dolares_soltos>\$+))"
-        r"[ \t]*",
-        lambda match: match.group("prefixo") + _recuo_retrato(match),
-        texto,
-    )
+    # Recuo do yPoema no Retrato:
+    # cada marcador vale exatamente 1 espaço comum.
+    # Alguns passam pelo HTML como espaços Unicode largos (&emsp;, NBSP etc.);
+    # o Pillow/OpenDyslexic os desenha como quadrados. Normalizamos tudo antes.
+    def _limpar_recuo_retrato(linha):
+        linha = str(linha or "")
+
+        # Formas ainda literais: |$|, |$$|... ou $/$$... no início.
+        match = re.match(
+            r"^(?P<prefixo>[ \t]*)"
+            r"(?:[|｜¦]\s*(?P<d1>\$+)\s*[|｜¦]|(?P<d2>\$+))"
+            r"[ \t]*",
+            linha,
+        )
+        if match:
+            qtd = len(match.group("d1") or match.group("d2") or "")
+            linha = match.group("prefixo") + (" " * (qtd * 2)) + linha[match.end():]
+
+        # Formas já convertidas pelo HTML:
+        # NBSP, EN/EM SPACE, THIN SPACE, IDEOGRAPHIC SPACE etc.
+        prefixo = []
+        pos = 0
+        while pos < len(linha):
+            ch = linha[pos]
+            if ch in (" ", "\t"):
+                prefixo.append("    " if ch == "\t" else " ")
+                pos += 1
+                continue
+            if ch == "\u00A0" or "\u2000" <= ch <= "\u200A" or ch in ("\u202F", "\u205F", "\u3000"):
+                prefixo.append("  ")
+                pos += 1
+                continue
+            break
+
+        return "".join(prefixo) + linha[pos:]
+
+    texto = "\n".join(_limpar_recuo_retrato(linha) for linha in texto.splitlines())
     if not texto:
         return None
 
@@ -3252,13 +3286,13 @@ def page_ypoemas():
                 unsafe_allow_html=True,
             )
         nav_cols = st.columns([1, 1, 1, 1, 1, 1])
-        more = nav_cols[0].button("✚", help=help_more, use_container_width=True)
-        last = nav_cols[1].button("◀", help=help_last, use_container_width=True)
-        rand = nav_cols[2].button("✻", help=help_rand, use_container_width=True)
-        nest = nav_cols[3].button("▶", help=help_nest, use_container_width=True)
-        if nav_cols[4].button("♫", help=help_tips[6], key="ypoemas_voz_btn", use_container_width=True):
+        more = nav_cols[0].button("✚", use_container_width=True)
+        last = nav_cols[1].button("◀", use_container_width=True)
+        rand = nav_cols[2].button("✻", use_container_width=True)
+        nest = nav_cols[3].button("▶", use_container_width=True)
+        if nav_cols[4].button("♫", key="ypoemas_voz_btn", use_container_width=True):
             st.session_state.talk = not st.session_state.talk
-        manu = nav_cols[5].button("?", help="help !!!", use_container_width=True)
+        manu = nav_cols[5].button("?", use_container_width=True)
 
         ypoemas_voz_slot = render_voz_slot()
 
@@ -3415,12 +3449,11 @@ def page_ypoemas():
 
             # Cópias clean:
             # [ criar (X) ] [ qtd ] [ Retrato ] [ copiar ]
-            copy_left, copy_generate_col, copy_qtd_col, retrato_col, copy_all_col, copy_right = st.columns([2.45, 3.15, 1.85, 2.55, 3.15, 2.45])
+            copy_left, copy_generate_col, copy_qtd_col, retrato_col, copy_all_col, copy_right = st.columns([4.70, 2.65, 1.45, 2.35, 2.65, 2.10])
 
             with copy_generate_col:
                 copy_submit = st.button(
                     f"criar ( {qtd_copias_atual} )",
-                    help="variações",
                     key="copy_variacoes_btn",
                     use_container_width=True,
                 )
@@ -3477,7 +3510,6 @@ def page_ypoemas():
                         file_name=f"{nome_retrato}.png",
                         mime="image/png",
                         key="retrato_download_btn",
-                        help="Retrato — texto ampliado e selo 64px",
                         use_container_width=True,
                         on_click="ignore",
                     )
