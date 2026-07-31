@@ -13,8 +13,8 @@ from PIL import Image, ImageDraw, ImageFont, ImageOps
 import streamlit as st
 import streamlit.components.v1 as components
 
-APP_BUILD = "2026-07-31_MOBILE_RETRATO_ATUAL_DIAGRAMACAO_01"
-APP_BUILD_NOTES = "Mobile derivado do ypo_tools.py vigente; Retrato atualizado; página Tools removida; diagramação responsiva inicial."
+APP_BUILD = "2026-07-31_MOBILE_PUBLICO"
+APP_BUILD_NOTES = "Mobile público: yPoemas, Retrato e navegação preservados; camada analítica retirada."
 
 from lay_2_ypo import gera_poema
 from readings import (
@@ -23,10 +23,10 @@ from readings import (
     update_visy,
 )
 
-try:
-    from ponte_ola_openai import gerar_analise_ola as _gerar_analise_ola_real
-except Exception:
-    _gerar_analise_ola_real = None
+    
+                                                                             
+                 
+                                  
 
 
 BOOKS_LIST = [
@@ -690,18 +690,18 @@ def init_session_state():
         "stage_font": "Trebuchet",
         "stage_size": 21,
         "sidebar_panel": "Machina",
-        "tema_last_analise": "",
-        "ypoema_em_analise": "",
-        "tema_em_analise": "",
-        "book_em_analise": "",
-        "take_em_analise": -1,
-        "lang_em_analise": "",
+                                
+                                
+                              
+                              
+                              
+                              
 
         # chave de ouro
         "key_open": False,
         "key_poema_texto": "",
         "key_poema_tema": "",
-        "key_analise": "",
+                          
         "copy_qtd": 2,
         "copy_qtd_widget": 2,
         "copy_bundle_text": "",
@@ -710,9 +710,9 @@ def init_session_state():
         "copy_bundle_source": "",
         "ypo_theme_widget_token": 0,
 
-        # análise :: Machina / OLA
-        "analysis_voice": "Machina",
-        "analysis_kind": "Sintática",
+                                   
+                                    
+                                      
     }
 
     for key, value in defaults.items():
@@ -1489,7 +1489,7 @@ def _help_info_estavel(nome_tema):
 def _dados_vivos_do_tema(nome_tema):
     """Recalcula a realidade do tema e do yPoema no instante do Help."""
     dados = {"verbetes_no_texto": 0, "total_itimos": 0, "total_verbetes": 0}
-    poema = st.session_state.get("ypoema_em_analise", "")
+    poema = st.session_state.get("ypo_palco_snapshot_text", "")
     dados["verbetes_no_texto"] = len(_palavras_visiveis(poema))
 
     path = _help_find_ypo_file(nome_tema)
@@ -2338,19 +2338,19 @@ def _gerar_retrato_do_snapshot(prefixo):
     """Gera o Retrato no callback, antes do rerun alterar o palco."""
     if prefixo == "ypo":
         texto = st.session_state.get("ypo_palco_snapshot_text", "")
-        analise = st.session_state.get("ypo_palco_snapshot_analysis", "")
+                                                                         
         titulo = st.session_state.get("ypo_palco_snapshot_title", st.session_state.get("tema", ""))
         imagem = st.session_state.get("ypo_palco_snapshot_image", "")
         contexto = st.session_state.get("ypo_palco_snapshot_context")
-        voice = str(st.session_state.get("analysis_voice", "Machina")).upper()
-        titulo_ola = (
-            f"{_analysis_voice_title('OLA')} ( {_analysis_kind_label(st.session_state.get('analysis_kind', ''))} )"
-            if voice == "OLA" else ""
-        )
-        machina = _retrato_imagem_machina_aleatoria("\n".join([str(titulo), _ypoema_html_to_text(texto), str(analise)])) if voice == "OLA" else ""
-        png = criar_retrato_png(texto, imagem, titulo, selo_size=RETRATO_SELO_SIZE,
-                                 analise_texto=analise if voice == "OLA" else "",
-                                 analise_titulo=titulo_ola, machina_image_path=machina)
+                                                                              
+                      
+                                                                                                                   
+                                     
+         
+                                                                                                                                                  
+        png = criar_retrato_png(texto, imagem, titulo, selo_size=RETRATO_SELO_SIZE)
+                                                                                 
+                                                                                       
         if png:
             st.session_state["retrato_preview_png"] = png
             st.session_state["retrato_preview_nome"] = re.sub(r"[^A-Za-z0-9_-]+", "_", str(titulo or "retrato")).strip("_") or "retrato"
@@ -2359,25 +2359,26 @@ def _gerar_retrato_do_snapshot(prefixo):
             st.session_state["ypo_retrato_preservar_palco"] = True
     elif prefixo == "off":
         texto = st.session_state.get("off_palco_snapshot_text", "")
-        analise = st.session_state.get("off_palco_snapshot_analysis", "")
+                                                                         
         titulo = st.session_state.get("off_palco_snapshot_title", "")
         imagem = st.session_state.get("off_palco_snapshot_image", "")
         contexto = st.session_state.get("off_palco_snapshot_context")
-        voice = str(st.session_state.get("analysis_voice", "Machina")).upper()
-        titulo_ola = (
-            f"{_analysis_voice_title('OLA')} ( {_analysis_kind_label(st.session_state.get('analysis_kind', ''))} )"
-            if voice == "OLA" else ""
-        )
-        machina = _retrato_imagem_machina_aleatoria("\n".join([str(titulo), _ypoema_html_to_text(texto), str(analise)])) if voice == "OLA" else ""
-        png = criar_retrato_png(texto, imagem, titulo, selo_size=RETRATO_SELO_SIZE,
-                                 analise_texto=analise if voice == "OLA" else "",
-                                 analise_titulo=titulo_ola, machina_image_path=machina)
+                                                                              
+                      
+                                                                                                                   
+                                     
+         
+                                                                                                                                                  
+        png = criar_retrato_png(texto, imagem, titulo, selo_size=RETRATO_SELO_SIZE)
+                                                                                 
+                                                                                       
         if png:
             st.session_state["off_retrato_preview_png"] = png
             st.session_state["off_retrato_preview_nome"] = re.sub(r"[^A-Za-z0-9_-]+", "_", str(titulo or "retrato")).strip("_") or "retrato"
             st.session_state["off_retrato_preview_context"] = contexto
             st.session_state["off_retrato_focus_pending"] = True
             st.session_state["off_retrato_preservar_palco"] = True
+
 
 
 def _retrato_logo_yp(size):
@@ -2537,47 +2538,51 @@ def _retrato_imagem_machina_aleatoria(chave_fixa=""):
     return imagem
 
 
-def criar_retrato_png(
-    ypoema_html,
-    image_path,
-    tema,
-    selo_size=24,
-    analise_texto="",
-    analise_titulo="",
-    machina_image_path="",
-):
-    """Monta o Retrato; com OLA visível, testa duas faixas no mesmo palco."""
+def criar_retrato_png(ypoema_html, image_path, tema, selo_size=24):
+                
+               
+         
+                 
+                     
+                      
+                          
+  
+    """Monta o Retrato com a imagem e o texto exibidos no palco."""
     if not image_path or not os.path.exists(image_path):
         return None
 
     texto = unicodedata.normalize("NFC", _ypoema_html_to_text(ypoema_html))
 
-    # Recuo do yPoema no Retrato:
-    # cada marcador vale exatamente 1 espaço comum.
-    # Alguns passam pelo HTML como espaços Unicode largos (&emsp;, NBSP etc.);
-    # o Pillow/OpenDyslexic os desenha como quadrados. Normalizamos tudo antes.
+                                 
+                                                    
+                                                                               
+                                                                               
     def _limpar_recuo_retrato(linha):
-        linha = str(linha or "")
+                                
 
-        # Formas ainda literais: |$|, |$$|... ou $/$$... no início.
-        match = re.match(
-            r"^(?P<prefixo>[ \t]*)"
-            r"(?:[|｜¦]\s*(?P<d1>\$+)\s*[|｜¦]|(?P<d2>\$+))"
-            r"[ \t]*",
-            linha,
-        )
-        if match:
-            qtd = len(match.group("d1") or match.group("d2") or "")
-            linha = match.group("prefixo") + (" " * (qtd * 2)) + linha[match.end():]
+                                                                    
+                         
+                                   
+                                                                
+                      
+                  
+         
+                 
+                                                                   
+                                                                                    
 
-        # Formas já convertidas pelo HTML:
-        # NBSP, EN/EM SPACE, THIN SPACE, IDEOGRAPHIC SPACE etc.
+                                           
+                                                               
         prefixo = []
         pos = 0
         while pos < len(linha):
             ch = linha[pos]
-            if ch in (" ", "\t"):
-                prefixo.append("    " if ch == "\t" else " ")
+            if ch == " ":
+                prefixo.append(" ")
+                pos += 1
+                continue
+            if ch == "\t":
+                prefixo.append("    ")
                 pos += 1
                 continue
             if ch == "\u00A0" or "\u2000" <= ch <= "\u200A" or ch in ("\u202F", "\u205F", "\u3000"):
@@ -2592,21 +2597,21 @@ def criar_retrato_png(
     if not texto:
         return None
 
-    analise = unicodedata.normalize("NFC", str(analise_texto or "").strip())
-    titulo_ola = unicodedata.normalize("NFC", str(analise_titulo or "").strip())
-    tem_ola = bool(analise and titulo_ola and machina_image_path and os.path.exists(machina_image_path))
+                                                                            
+                                                                                
+                                                                                                        
 
     margin = 64
     gap = 58
-    faixa_gap = 42
-    separador_gap = 34
+                  
+                      
 
-    # Teste visual isolado: fontes fixas, sem depender de Corpo da Fonte ou Cópias.
+                                                                                    
     fonte_retrato = "OpenDyslexic"
     corpo_png = 30
     body_font = _retrato_font(corpo_png, family=fonte_retrato)
-    ola_font = _retrato_font(24, family=fonte_retrato)
-    ola_title_font = _retrato_font(26, bold=True, family=fonte_retrato)
+                                                      
+                                                                       
 
     medida = Image.new("RGB", (1, 1), "white")
     draw_medida = ImageDraw.Draw(medida)
@@ -2635,33 +2640,33 @@ def criar_retrato_png(
             larguras_linhas.append(max(1, bbox[2] - bbox[0]))
     largura_texto_real = max(larguras_linhas or [1])
 
-    machina_art = None
-    machina_w = machina_h = 0
-    linhas_ola = []
-    ola_line_h = 0
-    ola_title_h = 0
-    largura_ola_real = 1
+                      
+                             
+                   
+                  
+                   
+                        
 
-    if tem_ola:
-        with Image.open(machina_image_path) as source:
-            machina_art = ImageOps.exif_transpose(source).convert("RGB")
-            # Coleção Machina: 240 x 360 px; preserva a dimensão original.
-            machina_w, machina_h = machina_art.size
+               
+                                                      
+                                                                        
+                                                                             
+                                                   
 
-        ola_text_w_max = 820
-        linhas_ola = _retrato_wrap(draw_medida, analise, ola_font, ola_text_w_max)
-        bbox_ola = draw_medida.textbbox((0, 0), "Ag", font=ola_font)
-        ola_line_gap = 7
-        ola_line_h = max(1, bbox_ola[3] - bbox_ola[1]) + ola_line_gap
+                            
+                                                                                  
+                                                                    
+                        
+                                                                     
 
-        bbox_titulo = draw_medida.textbbox((0, 0), titulo_ola, font=ola_title_font)
-        ola_title_h = max(1, bbox_titulo[3] - bbox_titulo[1])
-        larguras_ola = [max(1, bbox_titulo[2] - bbox_titulo[0])]
-        for linha in linhas_ola:
-            if linha:
-                bbox = draw_medida.textbbox((0, 0), linha, font=ola_font)
-                larguras_ola.append(max(1, bbox[2] - bbox[0]))
-        largura_ola_real = max(larguras_ola or [1])
+                                                                                   
+                                                             
+                                                                
+                                
+                     
+                                                                         
+                                                              
+                                                   
 
     selo_real = max(1, int(round(int(selo_size) * 0.60)))
     footer_font = _retrato_font(max(16, int(round(selo_real * 0.72))), family=fonte_retrato)
@@ -2673,81 +2678,90 @@ def criar_retrato_png(
     footer_gap_y = 34
 
     top_content_w = image_w + gap + largura_texto_real
-    top_h = max(image_h, altura_texto)
+                                      
 
-    bottom_content_w = 0
-    bottom_h = 0
-    if tem_ola:
-        ola_text_h = ola_title_h + 18 + max(ola_line_h, len(linhas_ola) * ola_line_h)
-        bottom_content_w = largura_ola_real + gap + machina_w
-        bottom_h = max(ola_text_h, machina_h)
+                        
+                
+               
+                                                                                     
+                                                             
+                                             
 
-    largura_conteudo = margin + max(top_content_w, bottom_content_w) + margin
+    largura_conteudo = margin + top_content_w + margin
     largura_rodape = margin + footer_group_w + margin
     canvas_w = max(700, largura_conteudo, largura_rodape)
+    canvas_h = max(520, margin + max(image_h, altura_texto) + footer_gap_y + footer_h + margin)
 
-    if tem_ola:
-        canvas_h = (
-            margin + top_h
-            + separador_gap + 2 + separador_gap
-            + bottom_h
-            + footer_gap_y + footer_h + margin
-        )
-    else:
-        canvas_h = max(520, margin + top_h + footer_gap_y + footer_h + margin)
+               
+                    
+                          
+                                               
+                      
+                                              
+         
+         
+                                                                              
 
     canvas = Image.new("RGB", (canvas_w, canvas_h), "white")
     draw = ImageDraw.Draw(canvas)
+    image_y = max(margin, (canvas_h - image_h) // 2)
+    canvas.paste(art, (margin, image_y))
+    text_x = margin + image_w + gap
+    y = margin
+    for linha in linhas:
+        draw.text((text_x, y), linha, font=body_font, fill="black")
+        y += line_h
 
-    # Sem OLA, conserva exatamente a centralização já aprovada.
-    if not tem_ola:
-        image_y = max(margin, (canvas_h - image_h) // 2)
-        canvas.paste(art, (margin, image_y))
-        text_x = margin + image_w + gap
-        y = margin
-        for linha in linhas:
-            draw.text((text_x, y), linha, font=body_font, fill="black")
-            y += line_h
-    else:
-        # Faixa superior: imagem + yPoema.
-        top_y = margin
-        image_y = top_y + max(0, (top_h - image_h) // 2)
-        text_y = top_y + max(0, (top_h - altura_texto) // 2)
-        canvas.paste(art, (margin, image_y))
-        text_x = margin + image_w + gap
-        y = text_y
-        for linha in linhas:
-            draw.text((text_x, y), linha, font=body_font, fill="black")
-            y += line_h
+                                                                  
+                   
+                                                        
+                                            
+                                       
+                  
+                            
+                                                                       
+                       
+         
+                                          
+                      
+                                                        
+                                                            
+                                            
+                                       
+                  
+                            
+                                                                       
+                       
 
-        # Linha divisória entre o acontecimento e a leitura.
-        separator_y = top_y + top_h + separador_gap
-        draw.line(
-            (margin, separator_y, canvas_w - margin, separator_y),
-            fill=(72, 72, 72),
-            width=2,
-        )
+                                                             
+                                                   
+                  
+                                                                  
+                              
+                    
+         
 
-        # Faixa inferior: análise + imagem_machina.
-        bottom_y = separator_y + separador_gap
-        ola_text_h = ola_title_h + 18 + max(ola_line_h, len(linhas_ola) * ola_line_h)
-        ola_y = bottom_y + max(0, (bottom_h - ola_text_h) // 2)
-        machina_y = bottom_y + max(0, (bottom_h - machina_h) // 2)
+                                                    
+                                              
+                                                                                     
+                                                               
+                                                                  
 
-        draw.text((margin, ola_y), titulo_ola, font=ola_title_font, fill="black")
-        y = ola_y + ola_title_h + 18
-        for linha in linhas_ola:
-            draw.text((margin, y), linha, font=ola_font, fill="black")
-            y += ola_line_h
+                                                                                 
+                                    
+                                
+                                                                      
+                           
 
-        machina_x = canvas_w - margin - machina_w
-        canvas.paste(machina_art, (machina_x, machina_y))
+                                                 
+                                                         
 
     _aplicar_selo_origem(canvas, selo_real, RETRATO_SELO_RESPIRO, family=fonte_retrato)
 
     output = BytesIO()
     canvas.save(output, format="PNG", optimize=True)
     return output.getvalue()
+
 
 
 @st.cache_data
@@ -2895,11 +2909,11 @@ def render_sidebar_context_image(chosen_id):
     - Off-Machina: imagem do livro em foco;
     - About: imagem própria da página.
     """
-    if (
-        str(chosen_id) != "4"
-        and str(st.session_state.get("analysis_voice", "Machina")).upper() == "OLA"
-    ):
-        return
+        
+                             
+                                                                                   
+      
+              
 
     if not bool(st.session_state.get("draw", True)):
         return
@@ -3227,155 +3241,165 @@ def page_mini():
 
 
 
-MAX_ANALISE_CHARS = 900
-
-
-def limpar_analise(texto, max_chars=MAX_ANALISE_CHARS):
-    """Limpa a análise devolvida por rotina pura.
-
-    Contrato:
-    - texto simples;
-    - sem HTML;
-    - sem markdown pesado;
-    - curto.
-    """
-    texto = str(texto or "")
-    texto = texto.replace("<", "").replace(">", "")
-    texto = re.sub(r"(?m)^\s*#{1,6}\s*", "", texto)
-    texto = texto.replace("**", "").replace("__", "")
-    texto = texto.replace("```", "")
-    texto = re.sub(r"\n{3,}", "\n\n", texto)
-    texto = texto.strip()
-
-    if len(texto) > int(max_chars):
-        corte = texto[: int(max_chars)].rstrip()
-        ultimo_ponto = max(corte.rfind("."), corte.rfind("!"), corte.rfind("?"))
-        if ultimo_ponto >= int(max_chars * 0.62):
-            corte = corte[: ultimo_ponto + 1]
-        texto = corte.rstrip() + "..."
-
-    return texto
-
-
-def _analise_texto_cru_do_ypoema(ypoema_html):
-    """Converte o yPoema atual para texto simples usado pelas análises."""
-    return _ypoema_html_to_text(ypoema_html)
-
-
-def _analise_linhas_validas(texto):
-    """Linhas significativas do yPoema, preservando leitura simples."""
-    linhas = []
-    for line in str(texto or "").splitlines():
-        clean = line.strip()
-        if clean:
-            linhas.append(clean)
-    return linhas
-
-
-def _analise_titulo_e_versos(tema, ypoema_texto):
-    """Separa título provável e versos sem alterar o yPoema original."""
-    linhas = _analise_linhas_validas(ypoema_texto)
-    tema_limpo = str(tema or "").strip()
-
-    if linhas and linhas[0].casefold() == tema_limpo.casefold():
-        return tema_limpo, linhas[1:]
-
-    return tema_limpo, linhas
-
-
-def _analise_primeiro_verso(versos):
-    if versos:
-        return versos[0]
-    return ""
-
-
-def _analise_ultimo_verso(versos):
-    if versos:
-        return versos[-1]
-    return ""
-
-
-def gerar_analise_ola(tipo, tema, ypoema_texto):
-    """Ponte para a OLA real.
-
-    A rotina real vive em ponte_ola_openai.py e segue o contrato:
-    recebe tipo, tema e yPoema limpo; devolve texto simples.
-    Sem Streamlit, sem renderização, sem alterar o yPoema.
-
-    Se a ponte não estiver instalada/importável, não simula resposta.
-    """
-    if _gerar_analise_ola_real is None:
-        return "OLA ainda não conectada. Arquivo ponte_ola_openai.py não encontrado ou não importável."
-
-    return limpar_analise(_gerar_analise_ola_real(tipo, tema, ypoema_texto))
 
 
 
-def gerar_analise_atual(ypoema_html, tema):
-    """Envia o yPoema atual para a ponte OLA, sem simulação local."""
-    kind = st.session_state.get("analysis_kind", "Sintática")
-    ypoema_texto = _analise_texto_cru_do_ypoema(ypoema_html)
-    return gerar_analise_ola(kind, tema, ypoema_texto)
 
 
-def _analysis_voice_title(voice):
-    """Nome expandido da OLA no cabeçalho do palco."""
-    return "Onda Leitora Analítica"
 
 
-def _analysis_kind_label(kind):
-    """Tipo da análise em caixa baixa para o subtítulo."""
-    return str(kind or "").strip().casefold()
 
 
-def render_analise_palco(texto):
-    """Renderiza análise no palco direito, com cabeçalho padrão."""
-    stage_font = _fonte_palco_leitor()
-    stage_size = max(14, min(30, int(st.session_state.get("stage_size", 21)) - 1))
 
-    voice = str(st.session_state.get("analysis_voice", "OLA")).upper()
-    kind = st.session_state.get("analysis_kind", "")
-    titulo = _analysis_voice_title(voice)
-    subtitulo = _analysis_kind_label(kind)
+            
 
-    safe_text = html.escape(str(texto or "")).replace("\n", "<br>")
-    safe_title = html.escape(titulo)
-    safe_subtitle = html.escape(subtitulo)
 
-    st.markdown(
-        f"""
-        <div class="machina-analise-palco" style="
-            display:block;
-            width:fit-content;
-            max-width:min(72ch, 96%);
-            margin:0 auto;
-            padding:0.20rem 0.45rem 0.35rem 0.45rem;
-            box-sizing:border-box;
-            text-align:left;
-            font-family:'{stage_font}', system-ui, sans-serif;
-            font-size:{stage_size}px;
-            line-height:1.42;
-            color:#000000;
-            font-weight:500;
-        ">
-            <div style="
-                text-align:center;
-                font-weight:650;
-                margin:0 0 0.10rem 0;
-                line-height:1.22;
-            ">{safe_title}</div>
-            <div style="
-                text-align:center;
-                font-weight:500;
-                opacity:0.88;
-                margin:0 0 0.75rem 0;
-                line-height:1.22;
-            ">( {safe_subtitle} )</div>
-            <div>{safe_text}</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+                                                   
+                                                   
+
+                                    
+                                            
+                         
+
+                                   
+                                                
+                                                                                
+                                                 
+                                             
+                                      
+
+                
+
+
+                                              
+                                                                           
+                                            
+
+
+                                   
+
+
+
+
+
+
+
+
+
+
+
+               
+                                              
+                            
+                 
+                                
+                 
+
+
+                                                 
+                                                                          
+                                                  
+                                        
+
+                                                                
+                                     
+
+                             
+
+
+                                    
+              
+                        
+             
+
+
+                                  
+              
+                         
+             
+
+
+                                                
+                             
+
+                                                                 
+                                                            
+                                                            
+
+                                                                        
+       
+                                       
+                                                                                                           
+
+                                                                            
+
+
+
+                                           
+                                                                       
+                                                              
+                                                            
+                                                      
+
+
+                                 
+                                                       
+                                    
+
+
+                               
+                                                            
+                                             
+
+
+                                
+                                                                      
+                                      
+                                                                                  
+
+                                                                      
+                                                    
+                                         
+                                          
+
+                                                                   
+                                    
+                                          
+
+                
+            
+                                                  
+                          
+                              
+                                     
+                          
+                                                    
+                                  
+                            
+                                                              
+                                     
+                             
+                          
+                            
+          
+                        
+                                  
+                                
+                                     
+                                 
+                                
+                        
+                                  
+                                
+                             
+                                     
+                                 
+                                       
+                                  
+              
+            
+                               
+     
 
 
 
@@ -3565,11 +3589,11 @@ def page_ypoemas():
 
             update_readings(st.session_state.tema)
 
-            st.session_state.ypoema_em_analise = curr_ypoema
-            st.session_state.tema_em_analise = st.session_state.tema
-            st.session_state.book_em_analise = _current_book()
-            st.session_state.take_em_analise = st.session_state.take
-            st.session_state.lang_em_analise = st.session_state.lang
+                                                            
+                                                                    
+                                                              
+                                                                    
+                                                                    
 
             st.session_state["more_same_book"] = ""
             st.session_state["more_same_take"] = -1
@@ -3586,31 +3610,31 @@ def page_ypoemas():
             else:
                 _set_sidebar_context_image_for_theme(st.session_state.tema)
 
-            analysis_voice_atual = str(st.session_state.get("analysis_voice", "Machina")).upper()
+            write_ypoema(LOGO_TEXTO, None)
 
-            if analysis_voice_atual == "OLA":
-                if (
-                    preservar_palco_retrato
-                    and tuple(st.session_state.get("ypo_palco_snapshot_context") or ())
-                    == snapshot_contexto_atual
-                    and st.session_state.get("ypo_palco_snapshot_analysis") is not None
-                ):
-                    analise_texto = st.session_state.get("ypo_palco_snapshot_analysis", "")
-                else:
-                    analise_texto = gerar_analise_atual(LOGO_TEXTO, st.session_state.tema)
+                                             
+                    
+                                           
+                                                                                       
+                                              
+                                                                                       
+                  
+                                                                                           
+                     
+                                                                                          
 
-                col_poema, col_analise = st.columns([1.05, 0.95], gap="large")
-                with col_poema:
-                    write_ypoema(LOGO_TEXTO, None)
-                with col_analise:
-                    render_analise_palco(analise_texto)
-            else:
-                write_ypoema(LOGO_TEXTO, None)
+                                                                              
+                               
+                                                  
+                                 
+                                                       
+                 
+                                              
 
             st.session_state["ypo_palco_snapshot_text"] = curr_ypoema
-            st.session_state["ypo_palco_snapshot_analysis"] = (
-                analise_texto if analysis_voice_atual == "OLA" else ""
-            )
+                                                               
+                                                                      
+             
             st.session_state["ypo_palco_snapshot_context"] = snapshot_contexto_atual
             st.session_state["ypo_palco_snapshot_title"] = st.session_state.get("tema", "")
             st.session_state["ypo_palco_snapshot_image"] = st.session_state.get("sidebar_context_image", "")
@@ -4124,38 +4148,38 @@ def page_off_machina():  # available off_machina_books
             LOGO_TEXTO = off_book_text
             off_title = off_book_pagys[st.session_state.off_take]
 
-            st.session_state.ypoema_em_analise = LOGO_TEXTO
-            st.session_state.tema_em_analise = off_title
-            st.session_state.book_em_analise = off_book_name
-            st.session_state.take_em_analise = st.session_state.off_take
-            st.session_state.lang_em_analise = st.session_state.lang
+                                                           
+                                                        
+                                                            
+                                                                        
+                                                                    
 
             def render_off_texto():
                 write_off_machina_texto(LOGO_TEXTO)
 
-            analysis_voice_atual = str(st.session_state.get("analysis_voice", "Machina")).upper()
-            if analysis_voice_atual == "OLA":
-                if (
-                    preservar_palco_retrato_off
-                    and tuple(st.session_state.get("off_palco_snapshot_context") or ())
-                    == off_snapshot_contexto_atual
-                    and st.session_state.get("off_palco_snapshot_analysis") is not None
-                ):
-                    analise_texto = st.session_state.get("off_palco_snapshot_analysis", "")
-                else:
-                    analise_texto = gerar_analise_atual(LOGO_TEXTO, off_title)
-                col_texto, col_analise = st.columns([1.05, 0.95], gap="large")
-                with col_texto:
-                    render_off_texto()
-                with col_analise:
-                    render_analise_palco(analise_texto)
-            else:
-                render_off_texto()
+                                                                                                 
+                                             
+                    
+                                               
+                                                                                       
+                                                  
+                                                                                       
+                  
+                                                                                           
+                     
+                                                                              
+                                                                              
+                               
+            render_off_texto()
+                                 
+                                                       
+                 
+                                  
 
             st.session_state["off_palco_snapshot_text"] = LOGO_TEXTO
-            st.session_state["off_palco_snapshot_analysis"] = (
-                analise_texto if analysis_voice_atual == "OLA" else ""
-            )
+                                                               
+                                                                      
+             
             st.session_state["off_palco_snapshot_context"] = off_snapshot_contexto_atual
             st.session_state["off_palco_snapshot_title"] = off_title
             st.session_state["off_palco_snapshot_image"] = st.session_state.get("off_anima_image", "")
@@ -4405,89 +4429,89 @@ def page_abouts():
 
 
 SIDEBAR_FILHOTE_WIDTH_PX = 64
-OLA_ANALYSIS_OPTIONS = [
-    "Sintática",
-    "Sintética",
-    "Aparição",
-    "Completa",
-]
+                        
+                 
+                 
+                 
+               
+ 
 
 
-def _analysis_options_for_voice(voice):
-    """Retorna as análises disponíveis para a OLA."""
-    return OLA_ANALYSIS_OPTIONS if str(voice or "").upper() == "OLA" else []
+                                       
+                                                       
+                                                                            
 
 
-def _set_analysis_voice(voice):
-    """Seleciona Machina ou OLA e ajusta a lista única."""
-    voice_key = str(voice or "Machina").strip().upper()
-    if voice_key == "OLA":
-        st.session_state["analysis_voice"] = "OLA"
-        st.session_state["analysis_kind"] = OLA_ANALYSIS_OPTIONS[0]
-    else:
-        st.session_state["analysis_voice"] = "Machina"
-        st.session_state["analysis_kind"] = ""
+                               
+                                                           
+                                                       
+                          
+                                                  
+                                                                   
+         
+                                                      
+                                              
 
 
-def render_analysis_sidebar_block():
-    """Bloco centralizado: Machina / OLA, somente com a OLA."""
-    current_key = str(st.session_state.get("analysis_voice", "Machina")).upper()
-    if current_key not in {"MACHINA", "OLA"}:
-        current_key = "MACHINA"
-        st.session_state["analysis_voice"] = "Machina"
+                                    
+                                                               
+                                                                                
+                                             
+                               
+                                                      
 
-    options = _analysis_options_for_voice(current_key)
-    current_kind = st.session_state.get("analysis_kind", options[0] if options else "")
-    if options and current_kind not in options:
-        current_kind = options[0]
-        st.session_state["analysis_kind"] = current_kind
+                                                      
+                                                                                       
+                                               
+                                 
+                                                        
 
-    st.sidebar.markdown("<div style='height:1.85rem;'></div>", unsafe_allow_html=True)
-    col_machina, col_ola = st.sidebar.columns(2)
+                                                                                      
+                                                
 
-    with col_machina:
-        if st.button(
-            "MACHINA",
-            key="analysis_voice_machina_btn",
-            width="stretch",
-            type="primary" if current_key == "MACHINA" else "secondary",
-        ):
-            _set_analysis_voice("Machina")
-            try:
-                st.rerun()
-            except AttributeError:
-                st.experimental_rerun()
+                     
+                     
+                      
+                                             
+                            
+                                                                        
+          
+                                          
+                
+                          
+                                  
+                                       
 
-    with col_ola:
-        if st.button(
-            "OLA",
-            key="analysis_voice_ola_btn",
-            width="stretch",
-            type="primary" if current_key == "OLA" else "secondary",
-        ):
-            _set_analysis_voice("OLA")
-            try:
-                st.rerun()
-            except AttributeError:
-                st.experimental_rerun()
+                 
+                     
+                  
+                                         
+                            
+                                                                    
+          
+                                      
+                
+                          
+                                  
+                                       
 
-    if options:
-        st.sidebar.markdown("<div style='height:1.42rem;'></div>", unsafe_allow_html=True)
-        choice = st.sidebar.selectbox(
-            "tipo",
-            options,
-            index=options.index(current_kind) if current_kind in options else 0,
-            key="analysis_kind_select",
-            label_visibility="collapsed",
-        )
-        st.session_state["analysis_kind"] = choice
+               
+                                                                                          
+                                      
+                   
+                    
+                                                                                
+                                       
+                                         
+         
+                                                  
 
 
 def render_sidebar_for_page(chosen_id):
     """Renderiza os controles fixos do leitor, sem botão arte fóssil."""
     pick_lang()
     pick_stage_font()
-    render_analysis_sidebar_block()
+                                   
 
 
 def _set_machina_page(page_label, page_id):
