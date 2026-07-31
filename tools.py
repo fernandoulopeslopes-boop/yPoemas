@@ -12,6 +12,9 @@ import string
 import unicodedata
 import base64
 import html
+import io
+import json
+import csv
 import streamlit as st
 import builders
 
@@ -93,6 +96,61 @@ def _utils_write_text(path, texto):
     _utils_backup_path(path)
     with open(path, "w", encoding="utf-8") as file:
         file.write(texto)
+
+def _utils_insert_rol_tema_alfabetico(path, tema, zodiac_count=24):
+    """Insere um tema no índice alfabético, preservando o subíndice final do Zodíaco."""
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    tema = str(tema or "").strip()
+    if not tema:
+        return False
+
+    def chave_alfabetica(nome):
+        nome = unicodedata.normalize("NFKD", str(nome).strip().casefold())
+        return "".join(ch for ch in nome if not unicodedata.combining(ch))
+
+    if os.path.exists(path):
+        with open(path, "r", encoding="utf-8", newline="") as file:
+            linhas = file.readlines()
+    else:
+        linhas = []
+
+    tema_key = tema.casefold()
+    linhas_com_tema = [i for i, raw in enumerate(linhas) if raw.strip()]
+    for i in linhas_com_tema:
+        if linhas[i].strip().casefold() == tema_key:
+            return False
+
+    if len(linhas_com_tema) >= zodiac_count:
+        inicio_zodiaco = linhas_com_tema[-zodiac_count]
+    else:
+        inicio_zodiaco = len(linhas)
+
+    posicao = inicio_zodiaco
+    nova_chave = chave_alfabetica(tema)
+    for i in linhas_com_tema:
+        if i >= inicio_zodiaco:
+            break
+        if chave_alfabetica(linhas[i]) > nova_chave:
+            posicao = i
+            break
+
+    quebra = "\n"
+    for raw in linhas:
+        if raw.endswith("\r\n"):
+            quebra = "\r\n"
+            break
+        if raw.endswith("\n"):
+            quebra = "\n"
+            break
+
+    if posicao > 0 and linhas and not linhas[posicao - 1].endswith(("\n", "\r")):
+        linhas[posicao - 1] += quebra
+
+    linhas.insert(posicao, tema + quebra)
+    _utils_backup_path(path)
+    with open(path, "w", encoding="utf-8", newline="") as file:
+        file.writelines(linhas)
+    return True
 
 def _utils_add_unique_line(path, line, key):
     """Adiciona linha se a chave ainda não existir. Preserva o arquivo fora disso."""
@@ -613,7 +671,9 @@ def build_novo_tema(tema):
         alteracoes.append("base/ativos.txt")
     if _utils_add_unique_line(_project_path("temp", "readings.txt"), f"|{tema}|0|", tema):
         alteracoes.append("temp/readings.txt")
-    if _utils_add_unique_line(_project_path("base", "rol_todos os temas.txt"), tema, tema):
+    if _utils_insert_rol_tema_alfabetico(
+        _project_path("base", "rol_todos os temas.txt"), tema
+    ):
         alteracoes.append("base/rol_todos os temas.txt")
 
     resultados = [
@@ -876,10 +936,14 @@ def _build_rimas_group_by_suffix(words, min_size=2, max_size=6):
                 continue
 
             suffix = word[-size:]
-            if _build_rimas_strip_accents(suffix) in BUILD_RIMAS_WEAK_SUFFIXES:
+            suffix_key = _build_rimas_strip_accents(suffix)
+            weak_keys = {_build_rimas_strip_accents(item) for item in BUILD_RIMAS_WEAK_SUFFIXES}
+            if suffix_key in weak_keys:
                 continue
 
-            grupos_do_tamanho.setdefault(suffix, []).append(word)
+            # A chave ignora acentos apenas para aproximar grafias equivalentes;
+            # as palavras originais permanecem intactas na saída.
+            grupos_do_tamanho.setdefault(suffix_key, []).append(word)
 
         grupos_validos = [
             (suffix, _build_rimas_sorted_words(values))
@@ -910,7 +974,8 @@ def _build_rimas_split_groups(groups):
     )
 
     for suffix, words in ordered:
-        if str(suffix).casefold() in BUILD_RIMAS_RICH_SUFFIXES:
+        rich_keys = {_build_rimas_strip_accents(item) for item in BUILD_RIMAS_RICH_SUFFIXES}
+        if _build_rimas_strip_accents(suffix) in rich_keys:
             rich[suffix] = words
         else:
             support[suffix] = words
@@ -1181,6 +1246,266 @@ def render_build_rimas_tool():
             data=resultado + "\n",
             file_name=download_name,
             mime="text/plain",
+            use_container_width=True,
+        )
+
+
+
+_ATELIER_POS_LABELS = {
+    "VERB": "Verbos",
+    "AUX": "Verbos auxiliares",
+    "NOUN": "Substantivos",
+    "PROPN": "Nomes próprios",
+    "ADJ": "Adjetivos",
+    "ADV": "Advérbios",
+    "PRON": "Pronomes",
+    "ADP": "Preposições",
+    "DET": "Determinantes e artigos",
+    "CCONJ": "Conjunções coordenativas",
+    "SCONJ": "Conjunções subordinativas",
+    "NUM": "Números",
+    "INTJ": "Interjeições",
+    "PART": "Partículas",
+    "X": "Outros",
+}
+
+
+def _atelier_load_nlp():
+    """Carrega spaCy somente quando o Atelier é usado.
+
+    Assim, a página Tools continua abrindo mesmo em ambientes nos quais
+    spaCy ou o modelo português ainda não estejam instalados.
+    """
+    try:
+        import spacy
+    except Exception as exc:
+        raise RuntimeError(
+            "spaCy não está instalado. Execute: pip install spacy"
+        ) from exc
+
+    try:
+        return spacy.load("pt_core_news_sm")
+    except Exception as exc:
+        raise RuntimeError(
+            "modelo pt_core_news_sm não encontrado. Execute: "
+            "python -m spacy download pt_core_news_sm"
+        ) from exc
+
+
+def _atelier_classificar_palavras(texto, usar_lema=True, mode="lower", min_len=1):
+    """Classifica verbetes do texto por classe gramatical, sem repetições."""
+    nlp = _atelier_load_nlp()
+    doc = nlp(str(texto or ""))
+    grupos = {}
+
+    for token in doc:
+        if not token.is_alpha:
+            continue
+
+        palavra = token.lemma_ if usar_lema and token.lemma_ else token.text
+        palavra = _build_rimas_normalize_word(palavra, mode)
+        palavra = str(palavra or "").strip()
+        if len(palavra) < max(1, int(min_len)):
+            continue
+
+        classe = _ATELIER_POS_LABELS.get(token.pos_, f"Outros ({token.pos_ or 'X'})")
+        grupos.setdefault(classe, set()).add(palavra)
+
+    return {
+        classe: _build_rimas_sorted_words(palavras)
+        for classe, palavras in sorted(grupos.items(), key=lambda item: item[0].casefold())
+    }
+
+
+def _atelier_render_classificacao(classificacao):
+    partes = ["CLASSIFICAÇÃO GRAMATICAL", "___"]
+    if not classificacao:
+        partes.append("(nenhum verbete classificado)")
+    else:
+        for classe, palavras in classificacao.items():
+            partes.extend([
+                f"{classe} ({len(palavras)})",
+                _build_rimas_render_list(palavras),
+                "",
+            ])
+    return "\n".join(partes).rstrip()
+
+
+def build_atelier_texto(
+    text,
+    usar_lema=True,
+    mode="lower",
+    min_len=2,
+    min_suffix=2,
+    max_suffix=6,
+):
+    """Análise lexical integrada: gramática + mapa de rimas da Machina.
+
+    Não altera arquivos, listas, temas ou poesia. O resultado é material de
+    atelier para conferência e curadoria do autor.
+    """
+    texto = str(text or "")
+    if not texto.strip():
+        raise ValueError("o texto do Atelier está vazio.")
+
+    classificacao = _atelier_classificar_palavras(
+        texto,
+        usar_lema=bool(usar_lema),
+        mode=mode,
+        min_len=min_len,
+    )
+    mapa_rimas = build_rimas_texto(
+        texto,
+        mode=mode,
+        min_len=min_len,
+        min_suffix=min_suffix,
+        max_suffix=max_suffix,
+    )
+
+    texto_final = "\n\n".join([
+        "Build_Atelier",
+        "___",
+        _atelier_render_classificacao(classificacao),
+        "___",
+        mapa_rimas,
+    ])
+    return {
+        "classificacao_gramatical": classificacao,
+        "texto": texto_final,
+    }
+
+
+def _atelier_json(resultado):
+    return json.dumps(
+        {
+            "build": "Build_Atelier",
+            "classificacao_gramatical": resultado["classificacao_gramatical"],
+            "relatorio_texto": resultado["texto"],
+        },
+        ensure_ascii=False,
+        indent=2,
+    ) + "\n"
+
+
+def _atelier_csv(resultado):
+    buffer = io.StringIO()
+    writer = csv.writer(buffer, delimiter=";")
+    writer.writerow(["Classe gramatical", "Palavra"])
+    for classe, palavras in resultado["classificacao_gramatical"].items():
+        for palavra in palavras:
+            writer.writerow([classe, palavra])
+    return buffer.getvalue()
+
+
+def render_build_atelier_tool():
+    """Interface local do Build_Atelier."""
+    st.markdown("### Build_Atelier")
+    st.caption(
+        "Classifica verbetes por classe gramatical e monta o mapa de rimas. "
+        "Não altera arquivos da Machina."
+    )
+
+    pasted_text = st.text_area(
+        "colar texto / área de descarte",
+        value=st.session_state.get("build_atelier_pasted_text", ""),
+        height=220,
+        key="build_atelier_pasted_text",
+        placeholder="Ctrl+V aqui basta para carregar o texto...",
+    )
+    uploaded = st.file_uploader(
+        "arquivo textual",
+        type=["txt", "md", "markdown", "doc"],
+        key="build_atelier_upload",
+    )
+
+    col_lema, col_case, col_min = st.columns([1.1, 1.0, 1.0])
+    with col_lema:
+        usar_lema = st.checkbox("usar lema", value=True, key="build_atelier_lema")
+    with col_case:
+        case_mode = st.selectbox(
+            "caixa", ["lower", "upper", "preserve"], index=0,
+            key="build_atelier_case",
+        )
+    with col_min:
+        min_len = st.selectbox(
+            "mín. letras", list(range(1, 8)), index=1,
+            key="build_atelier_min_len",
+        )
+
+    col_suf_min, col_suf_max = st.columns(2)
+    with col_suf_min:
+        min_suffix = st.selectbox(
+            "sufixo mínimo", list(range(1, 8)), index=1,
+            key="build_atelier_min_suffix",
+        )
+    with col_suf_max:
+        max_suffix = st.selectbox(
+            "sufixo máximo", list(range(3, 9)), index=3,
+            key="build_atelier_max_suffix",
+        )
+
+    texto_colado = str(pasted_text or "")
+    if texto_colado.strip():
+        texto_fonte = texto_colado
+        source_stem = "texto_colado"
+    elif uploaded is not None:
+        texto_fonte = _build_rimas_decode_uploaded(uploaded)
+        source_stem = os.path.splitext(os.path.basename(uploaded.name))[0] or "atelier"
+    else:
+        st.info("Cole um texto ou escolha um arquivo textual.")
+        return
+
+    if st.button("Build_Atelier", use_container_width=True):
+        try:
+            resultado = build_atelier_texto(
+                texto_fonte,
+                usar_lema=usar_lema,
+                mode=case_mode,
+                min_len=min_len,
+                min_suffix=min_suffix,
+                max_suffix=max_suffix,
+            )
+            st.session_state["build_atelier_result"] = resultado
+            st.session_state["build_atelier_stem"] = source_stem
+            st.success("Build_Atelier concluído.")
+        except Exception as exc:
+            st.error(f"Build_Atelier falhou: {exc}")
+
+    resultado = st.session_state.get("build_atelier_result")
+    if not resultado:
+        return
+
+    stem = st.session_state.get("build_atelier_stem", source_stem)
+    st.text_area(
+        "relatório do Atelier",
+        value=resultado["texto"],
+        height=520,
+        key="build_atelier_textarea",
+    )
+
+    col_txt, col_json, col_csv = st.columns(3)
+    with col_txt:
+        st.download_button(
+            "baixar TXT",
+            data=resultado["texto"] + "\n",
+            file_name=f"atelier_{stem}.txt",
+            mime="text/plain",
+            use_container_width=True,
+        )
+    with col_json:
+        st.download_button(
+            "baixar JSON",
+            data=_atelier_json(resultado),
+            file_name=f"atelier_{stem}.json",
+            mime="application/json",
+            use_container_width=True,
+        )
+    with col_csv:
+        st.download_button(
+            "baixar CSV",
+            data=_atelier_csv(resultado),
+            file_name=f"atelier_{stem}.csv",
+            mime="text/csv",
             use_container_width=True,
         )
 
@@ -1658,6 +1983,10 @@ build_rimas
   Off Sina: lê um .txt/.md/.doc em texto UTF-8, extrai palavras únicas e gera mapa de rimas
   para curadoria. Não altera .ypo, base, md_files nem poesia.
 
+build_atelier
+  Classifica os verbetes por classe gramatical com spaCy e usa o mapa de rimas
+  da Machina. Gera saídas TXT, JSON e CSV sem alterar arquivos do ambiente.
+
 build_matrix
   Gera as imagens Matrix 3D XYZ e atualiza ./base/itimos.txt e ./base/versos.txt.
   Requer numpy + matplotlib no ambiente local.
@@ -1703,6 +2032,7 @@ def page_local_utils():
         "build_lexico",
         "build_off-lex",
         "build_rimas",
+        "build_atelier",
         "build_unicos",
         "build_matrix",
         "build_info",
@@ -1783,6 +2113,10 @@ def page_local_utils():
 
     if escolha == "build_rimas":
         render_build_rimas_tool()
+        return
+
+    if escolha == "build_atelier":
+        render_build_atelier_tool()
         return
 
     if escolha == "build_unicos":
