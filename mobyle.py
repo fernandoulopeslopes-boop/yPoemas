@@ -13,8 +13,8 @@ from PIL import Image, ImageDraw, ImageFont, ImageOps
 import streamlit as st
 import streamlit.components.v1 as components
 
-APP_BUILD = "2026-07-31_MOBILE_DIAGRAMACAO_01"
-APP_BUILD_NOTES = "Mobile derivado do ypo_tools.py; página Tools removida; primeira diagramação responsiva dos botões."
+APP_BUILD = "2026-07-31_MOBILE_RETRATO_ATUAL_DIAGRAMACAO_01"
+APP_BUILD_NOTES = "Mobile derivado do ypo_tools.py vigente; Retrato atualizado; página Tools removida; diagramação responsiva inicial."
 
 from lay_2_ypo import gera_poema
 from readings import (
@@ -746,6 +746,44 @@ def limpar_copias_palco():
     st.session_state["copy_bundle_qtd"] = 0
     st.session_state["copy_bundle_source"] = ""
     st.session_state["copy_bundle_token"] = int(st.session_state.get("copy_bundle_token", 0)) + 1
+
+
+def limpar_retrato_ypoemas():
+    """Retira da tela o Retrato antigo ao navegar em yPoemas."""
+    st.session_state.pop("retrato_preview_png", None)
+    st.session_state.pop("retrato_preview_nome", None)
+    st.session_state.pop("retrato_focus_pending", None)
+    st.session_state.pop("retrato_preview_context", None)
+    st.session_state.pop("ypo_retrato_lock_active", None)
+    st.session_state.pop("ypo_retrato_preservar_palco", None)
+
+
+def limpar_retrato_off():
+    """Retira da tela o Retrato antigo ao navegar em off."""
+    st.session_state.pop("off_retrato_preview_png", None)
+    st.session_state.pop("off_retrato_preview_nome", None)
+    st.session_state.pop("off_retrato_focus_pending", None)
+    st.session_state.pop("off_retrato_preview_context", None)
+    st.session_state.pop("off_retrato_lock_active", None)
+    st.session_state.pop("off_retrato_preservar_palco", None)
+
+
+def focar_retrato_no_palco(anchor_id):
+    """Move o foco visual para o Retrato recém-gerado."""
+    anchor_id = re.sub(r"[^A-Za-z0-9_-]+", "_", str(anchor_id or "retrato_gerado"))
+    components.html(
+        f"""
+        <script>
+        setTimeout(function() {{
+            const alvo = window.parent.document.getElementById({anchor_id!r});
+            if (alvo) {{
+                alvo.scrollIntoView({{behavior: 'smooth', block: 'start'}});
+            }}
+        }}, 80);
+        </script>
+        """,
+        height=0,
+    )
 
 
 def _normalizar_qtd_copias(value):
@@ -1563,7 +1601,7 @@ def render_matrix_ficha_tecnica_ypoemas(tema):
 
     with col_matrix:
         if matrix_image:
-            st.image(matrix_image, use_container_width=True)
+            st.image(matrix_image, width="stretch")
         else:
             st.markdown(
                 "<div style='text-align:center; opacity:0.72; padding:1.2rem 0;'>Matrix não encontrada.</div>",
@@ -2109,7 +2147,7 @@ def write_livro_vivo_texto(LOGO_TEXTO, LOGO_IMAGE=None):
         try:
             col_img, col_txt = st.columns([2.5, 7.5])
             with col_img:
-                st.image(LOGO_IMAGE, use_container_width=True)
+                st.image(LOGO_IMAGE, width="stretch")
             with col_txt:
                 st.markdown(_off_machina_html(LOGO_TEXTO), unsafe_allow_html=True)
             return
@@ -2289,6 +2327,59 @@ RETRATO_SELO_RESPIRO = 30
 _RETRATO_YP_ICO_B64 = "AAABAAEAQEAAAAEAIAAoQgAAFgAAACgAAABAAAAAgAAAAAEAIAAAAAAAAEAAAIy4AACMuAAAAAAAAAAAAAD///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7//v////7///////7////+/////v////7////9/v////7//////v/+//3//v7///7+/f/+/v3//P7+//7+/v/7/v3//f79//3+/v///v////////7////+/////////////////v///P////7//v///////v////7////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+/////P////7////+//7////+//3//v/9//7///79//79/P/++/z//vv9//77/f/////////////////////////////////9/////Pz8//79/P/9/Pv///39//7//v/8//////7///z////8//7///////3////+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////v////z////+//////7///z+/f/9/Pz//vz9//////////////////7////8////8+7v//Do6P/x6en/8erp//Hq6f/w5ub/9/n4///////////////////////8/////Pz8//79+//8//z/+v/////+///9//7//v/+//7////+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7//v/+/f7//fz+//36/P/////////////////3+ff/6NjU/9mqpP/Ndm//03lx/79IRP+1PTn/tUA6/7k+Of+5QTf/tjwz/8lbVP/VeHP/0oF9/9y8t//w5eP//f7//////////////v3///v6+//+/f3//f/+/////v/+/////f/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9/f3/+vv7////////////9vPw/9+3tf/Jgn7/xFJL/8A2Lv+2MSr/vUU//7pDP//RdW7/1YJ7/9OAeP/TgHj/0396/9SEf//FY13/uEA7/7lCOv+2Lib/wD42/8ViWv/Ok43/5s3L//z//v/////////+//77+//7/////f/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+/Pz////////////v6ub/3ayn/8NRTP+9LCf/uzw1/8FnYP/Vl5P/58fG//Xu7v/z7u///f//////////////////////////////+fz7//Pv7f/x5uP/5bi2/8mFgP+/WVL/vTIr/7oxLP/LbGj/3bCs//f69v///////v7///z9/P/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9/////f/////9/v/9+/z///////v8/P/UmJX/vUU7/7YwJ/+/VlL/2aSj/+7g3f/8//////////////////////////7+/v/+/Pz//vz9//78/f/+/f3//vz8/////////////////////////////fr8/+XNzf/RjYj/vEE7/7guJ//EW1T/3bq0//3//////////fz6//7+/f/9//7///////7////9/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////f////z+/P/9/////////+bJxv/DY1n/vyso/8VmYv/ixMD/9/X1///////+/////f39///7/P/+/Pz///7+///+/v////////////////////////////////////7///7+//7+/v/+/Pz//v38//////////////////Dp5P/XqKL/wEpH/70uJv/Ne3T/7+Dh///////8/P3//P39/////v/9/v///f7////////////////////////////////////////////////////////////////////////////////////////////////////////////////+//78+v//////+/z8/9CXkv+6NzD/vEI7/9aemv/7///////////////4+/v//Pz8///9/v/6/////f///////v///////////////////////////////////////////////////////f////7//////v7/+/z8//77/f////////////Ty8P/OioT/vTQs/7lBN//gvrf///////v////+/fz//v/+///+//////////////////////////////////////////////////////////////////////////////////////////////////////////////38+///////9/L0/8dnZP+8KSL/ynp1//Dq5////////P38//z7/P/8/v7//f/////+///7////+v/////+///+//7///////////////////////////////////////////////////////3////+/////v/+//7//f/9//7///z+//76/P/+/////////+fMy//AWVL/uTUq/9OWkv/+//////////v8+//9//////////////////////////////////////////////////////////////////////////////////////////////////////////77/P//////6tXU/8FbV/+5Myr/1J+X//3//////////////////////f7//Pv8//z////+/////v/////+/////v///f///////////////////////////////////////////////////////////v///P////z////+//7//f/9//3//v/9//7/+/77///8/P//////9/b4/8p0cP+4KyX/xnFt//n49v///////f38///////////////////////////////////////////////////////////////////////////////////////+/////v////38+///////69vX/75FPv++Qzr/3L24///////8/f3/3dzd/8rLy//X2Nj////////////+/v7//v7+///////+/////f////7///////////////////////////////////////////////////////////////7//////v////7///7+///+/////f/+//3+/////v//+/v6///////6+vr/0pGL/74wJ//Cc2z/+/38///////9/f3///////7////+//////////////////////////////////////////////////////////////////7//v7///38/P//////7uLe/8FMRf+/Pzn/59DM///////+/P3/+fn5/ygoJ/8AAAD/Dw8P/z8/P/+tra3////////////9/f3////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+/f3//v/////////QmpL/vS0k/8x6eP/9/////v7+//z8/f/8/v7//f7///3////+//////////////////////////////////////////////////////////v9/P/+////9+/x/8BTUf+7OzX/5MfC///////5+fr///////v7+/8eHh7/AAAA/wMDA/8AAAD/AAAA/3d3d///////+/v7/////////////////////////////////////////////v7+//z8/P/8/Pz//Pz8//v7+//8/Pz///////////////////////////////////////////////////////z9/v/7/fz//////9GNjv+8KyX/y4uE///////5+/z//f/6///+/v/9/v///v/////////////////////////////////////////////////////+///8/vz//v///9CHhP+6MCj/37u2///////8+/v//v7+///////5+/v/Hh4e/wAAAP8BAQH/BQUF/wYGBv8AAAD/oqKi///////7+/v//////////////////////////////////v7+//////////////////////////////////7+/v///////////////////////////////////////////////////v///f39//78/v/+////zn94/7o0Kf/iwb7///////z8+v/+/v/////////////////////////////////////////////////////////////++vz//////9y7tf+4LiX/zIJ5///////+/f7//f////3+/v/9////+vr6/yYmJv8AAAD/DQ0N/wQEBP8CAgL/AAAA/w4ODv/Hx8f///////z8/P/+/v7//////////////////v7+///////u7u7/vr6+/7a2tv+2trb/srKy/8TExP///////v7+//////////////////////////////////////////////////7////3/fn///////Hp6f++UUn/u0I6/+3d3f///////Pz9//3////////////////////////////////////////////////////+/v7///////bx7v+7TUb/xmFc//r+/P///////f79///+///9/////v////z+/f/m5ub/5eXl/9LS0v88PDz/AAAA/wcHB/8AAAD/Wlpa///////8/Pz//v7+//////////////////39/f//////z8/P/wAAAP8AAAD/AAAA/wAAAP8nJyf///////7+/v////////////////////////////7+/v////////////3////+//7//v/+//r7+v//////6NXT/7k5MP/Icmz////////+/v/+/v////////////////////////////////////////3////+//7///v9///////SjIX/vC8o/9+9vv///////fv6///////+////////////////////////////////////3t7e/wsLC/8AAAD/AgIC/wwMDP/CwsL///////z8/P/+/v7//v7+///////9/f3//////9LS0v8AAAD/BAQE/wYGBv8AAAD/Kioq///////+/v7////////////////////////////+/v7////////////9///////+///+///9////+/z7///////UlJL/uTEo/9q0sv///////fv7/////////////////////////////f////7////+/////Pz8///////lzc3/ujYu/8t7c///////+v38//7+/v////////////////////////////7+/v/+/v7/+Pj4//////+IiIj/AAAA/wgICP8AAAD/h4eH///////6+vr//v7+//7+/v///////f39///////R0dH/AAAA/wEBAf8CAgL/AAAA/ygoKP///////v7+///////////////////////////////////////////////////////////////////+/v//////8+zq/75HQP/DWFL/9/r2///////+/v7///////////////////////v////9//////7///78+//8////0Hdz/74xLP/l0c3///////v7+v///v7///////////////////////////////////////z8/P//////x8fH/wAAAP8FBQX/AAAA/zY2Nv///////f39//////////////////39/f//////0NDQ/wAAAP8BAQH/AgIC/wAAAP8tLS3///////7+/v/+/v7//////////////////////////////////////////////////////////////////vz7///////brqv/ty8n/+C0sv///////fz8//////////////////////////7//v/+//79/f//////79jV/783Mf/Pgnz//v/////9/f////7////////////////////////////////////////////9/f3//////9DQ0P8BAQH/AAAA/wMDA/8AAAD/uLi4///////8/Pz////////////9/f3//////9DQ0P8AAAD/AQEB/wMDA/8AAAD/MDAw///////+/v7///////////////////////////////////////////////////////z8/P/+/v7///////z+/v/+////+Pb3/8JUSf/IYF7//P///////v///////////////////////v///////v/9+/z//////9alnP+6Miv/59DM///////9/Pz//P///////v///////////////////////////////////////f39///////Z2dn/BwcH/wAAAP8EBAT/AAAA/1ZWVv//////+/v7/////////////f39///////R0dH/AAAA/wEBAf8CAgL/AAAA/ycnJ//////////////////////////////////////////////////////////////////+/v7////////////6//7//Pr7///////TjYf/ujky/+3Z1v///////v39//////////////////3///////7//v7////////IaGD/vU9J//j29f////7//P78//z///////7///////////////////////////////////////z8/P//////x8fH/wAAAP8BAQH/AgIC/wAAAP8UFBT/7e3t///////+/v7///////39/f//////0dHR/wAAAP8BAQH/AgIC/wAAAP8pKSn///////v7+//8/Pz//f39//v7+//8/Pz//v7+/////////////////////////////////////////////v////38/P//////6trX/7w2LP/PkI3///////78/P///////////////////v///P79///////v49//vjsz/9Sbmf///////vz7//z//v/+///////////////////////////////////////////////8/Pz//////5WVlf8AAAD/AgIC/wAAAP8CAgL/AAAA/8jIyP///////Pz8///////9/f3//////9HR0f8AAAD/AQEB/wICAv8AAAD/Jycn///////////////////////////////////////6+vr//Pz8//7+/v///////////////////////////////////v7///////z+/v/CYVn/x1pT//z+/f////////79//3////+/////v////v9/P//////16qn/7YyKv/qx8f///////37+//+///////////////////////////////////////////////+/v7///////r6+v8nJyf/AAAA/wICAv8AAAD/BAQE/wAAAP9oaGj///////v7+////////f39///////R0dH/AAAA/wEBAf8BAQH/AAAA/xQUFP/Y2Nj/lpaW/0dHR/+Dg4P/l5eX/6qqqv/z8/P////////////7+/v//////////////////////////////v///v/+//v8/P//////yYeA/7w/Nv/v5eP///////39+//+//////7///3////8/Pz//////9aEgv+9QDr/8+3r///////+/f3///////7////+/////////////////////f39//7+/v///////Pz8//////+mpqb/AAAA/wMDA/8AAAD/AAAA/wICAv8AAAD/Gxsb//f39////////v7+//39/f//////0dHR/wAAAP8BAQH/AQEB/wAAAP8LCwv/NTU1/wAAAP8AAAD/AAAA/wAAAP8AAAD/Hh4e/2dnZ//c3Nz///////v7+////////////////////////v////7////+/P3//////+i8uP+4MCr/38G////////6/Pr///7///7////9/v7//v////r/+//EYVv/ymhj//v////+///////////////+/////f////////////////////////////////////v7+///////YGBg/wAAAP8EBAT/AAAA/wAAAP8AAAD/AgIC/wAAAP+urq7///////z8/P/9/f3//////9HR0f8AAAD/AQEB/wAAAP8BAQH/AAAA/wAAAP8EBAT/AwMD/wEBAf8DAwP/AwMD/wAAAP8AAAD/GRkZ/9vb2///////+/v7///////////////////////+/////f7+///////z7ur/vEM7/9aMh////////fz7//7////+//7//v79///////5+fb/uUlB/897dv///////vz8//7////+/////v////7///////////////////////////////39/f//////5OTk/x8fH/8AAAD/AgIC/wEBAf8CAgL/AAAA/wMDA/8AAAD/R0dH///////8/Pz//f39///////R0dH/AAAA/wEBAf8AAAD/AAAA/wAAAP8CAgL/AAAA/wAAAP8CAgL/AQEB/wAAAP8BAQH/BwcH/wAAAP8UFBT/tLS0///////7+/v//////////////////f////3+/v//////8/Hy/7pEPP/Zhn////////37+//+/////v/+//79/f//////79/c/7w+Nv/WnZj///////79/P/+/////f////7////////////////////////////////////7+/v//////5OTk/8AAAD/BQUF/wEBAf8AAAD/AAAA/wEBAf8BAQH/AAAA/xsbG//x8fH///////z8/P//////0dHR/wAAAP8BAQH/AAAA/wAAAP8AAAD/AAAA/wEBAf8CAgL/AAAA/wAAAP8DAwP/AQEB/wAAAP8FBQX/AAAA/x8fH//w8PD///////39/f////////////3////9//7//v39///////Pc2r/vlZO//f6+//+/////v7+/////v/+/Pz//////+bDwf+4Lyb/48XB///////+/Pz//////////////////////////////////////////////////Pz8//////89PT3/AAAA/wQEBP8AAAD/QUFB/zU1Nf8AAAD/AwMD/wQEBP8AAAD/lZWV///////5+fn//////9HR0f8AAAD/AQEB/wAAAP8AAAD/AAAA/wICAv8BAQH/AAAA/x0dHf8ODg7/AAAA/wAAAP8BAQH/AAAA/wICAv8AAAD/X19f//z8/P///////v7+///////9/////v/+//78/f//////0394/7tJQv/39vf///////7+/v///////fz8///////rxsX/tzIo/96/u////////vz8/////////////////////////////////////////////Pz8///////BwcH/AAAA/wEBAf8AAAD/AAAA/6ysrP+np6f/AAAA/wUFBf8CAgL/AAAA/yYmJv/t7e3////////////Q0ND/AAAA/wEBAf8AAAD/AAAA/wEBAf8CAgL/AAAA/5OTk//+/v7/6enp/3d3d/8HBwf/AQEB/wAAAP8BAQH/AAAA/wAAAP+ysrL///////z8/P///////f///////v/+/f3//////9J8df+8TET/+Pf4///////+/v7///////38/P//////7MXE/7gxKP/dwbz///////78/P////////////////////////////////////////////z8/P//////R0dH/wAAAP8FBQX/AAAA/wsLC//IyMj//////zg4OP8AAAD/BAQE/wAAAP8FBQX/0tLS////////////0NDQ/wAAAP8BAQH/AAAA/wAAAP8CAgL/AAAA/5GRkf//////////////////////tLS0/xgYGP8AAAD/AQEB/wMDA/8AAAD/X19f///////8/Pz///////3///////7//vz8///////SfHX/vEtE//j29////////v7+///////+/Pz//////+nHxf+5MSj/38C7///////+/fz//////////////////////////////////v7+//v7+///////1dXV/wEBAf8BAQH/AwMD/wAAAP8mJib/7e3t//////+dnZ3/AAAA/wUFBf8DAwP/AAAA/4+Pj////////////9HR0f8AAAD/AQEB/wAAAP8DAwP/AAAA/1hYWP///////Pz8//7+/v/9/f3/+vr6//////+Ghob/AgIC/wICAv8EBAT/AAAA/yQkJP/w8PD///////39/f/9///////+//78/P//////03t1/71MRf/49/j///////7+/v///////fv8///////jxsP/tjAm/+XAvf///////vz8///////////////////////////////////////6+vr//////2VlZf8AAAD/BQUF/wQEBP8AAAD/eXl5///////+/v7/9PT0/yAgIP8AAAD/BQUF/wAAAP8oKCj/9fX1///////Q0ND/AAAA/wEBAf8AAAD/BQUF/wAAAP95eXn///////r6+v////////////z8/P//////7u7u/ycnJ/8AAAD/BAQE/wICAv8BAQH/ycnJ///////8/Pz//f///////v/++/v//////9d9eP+7R0D/9/X2///////+/v7///////z9/v//////9ezr/71GPf/SiYb////////9/P////7//P////3////////////////////8/Pz//////8LCwv8AAAD/AgIC/wEBAf8CAgL/AAAA/8XFxf//////+Pj4//////+pqan/AAAA/wQEBP8EBAT/AAAA/56env//////zc3N/wAAAP8BAQH/AAAA/wQEBP8AAAD/hISE///////7+/v/////////////////+vr6//////+AgID/AAAA/wQEBP8CAgL/AAAA/8DAwP///////Pz8///////8/v7///////X19v+/Ukz/y2li//r////+//7///7+///////9/v7///////f3+P+2SUD/1X12///////7/fz//v////7////+/////////////////////v7+//////8zMzP/AAAA/wcHB/8FBQX/AAAA/x8fH//z8/P///////7+/v/9/f3//////ysrK/8AAAD/BgYG/wAAAP9KSkr//////87Ozv8AAAD/AQEB/wAAAP8EBAT/AAAA/4uLi///////+/v7//////////////////v7+///////k5OT/wAAAP8FBQX/AAAA/wYGBv/R0dH///////39/P/+////+v7+///////18vH/t0Q6/9WHgP//////+/v5///+/////v////7////+/v/9////znFp/75aUv/6/Pz//v////z+/////v///v///////////////v7+///////39/f/Dw8P/wAAAP8AAAD/AAAA/wAAAP9WVlb///////z8/P//////+/v7//////+dnZ3/AAAA/wcHB/8FBQX/AAAA/6enp//h4eH/AAAA/wEBAf8AAAD/AwMD/wAAAP+QkJD///////v7+//////////////////7+/v//////6CgoP8AAAD/BAQE/wMDA/8AAAD/ubm5///////8/Pv//f////39/f//////8eXh/7k/N//YmZX///////78+v///v///f/////////9/Pz//////9aKhv+6PDT/7+Ph///////9/P3/+/////3////+////////////////////+vr6/3p6ev8+Pj7/TExM/05OTv9CQkL/y8vL///////9/f3///////39/f//////7u7u/x0dHf8AAAD/AAAA/wAAAP9wcHD/zs7O/wAAAP8BAQH/AAAA/wQEBP8AAAD/d3d3///////7+/v/////////////////+/v7//////+bm5v/AAAA/wQEBP8DAwP/AAAA/7q6uv///////Pv8//3////9/P3//////92rpv+3MCr/5MzJ///////8/Pr///7///3////9//7//fz8///////fvLv/uS8p/+TAu////////vn6///+/////v///v////////////////////7+/v/////////////////////////////////+/v7//////////////////f39///////BwcH/kJCQ/5OTk/+SkpL/0dHR/87Ozv8DAwP/AQEB/wAAAP8EBAT/AAAA/3h4eP//////+vr6//////////////////v7+///////kZGR/wAAAP8FBQX/AwMD/wAAAP+5ubn///////v7+//9/////vz9///////HfHX/xUM+//Xu7f/8////+/78///+///+//7//P/+///9/v//////9e7t/8JEP//RgoH//P////z9/P/+/v////////////////////////7+/v/+/v7//Pz8//v7+//7+/v//Pz8//v7+//8/Pz////////////////////////////9/f3////////////////////////////T09P/CwsL/wAAAP8BAQH/AwMD/wAAAP9GRkb///////39/f/////////////////7+/v//////5SUlP8AAAD/BQUF/wICAv8AAAD/u7u7///////8/Pz///79///////3+ff/w1FN/8hpYv/9/////v79//7+/f///v///P/+///+///9/////v39///////JeXL/ukI7//Pv7//+/////v78///+///+//7///////////////////////////////////////////////////////////////////////////////////////z8/P/7+/v/+/v7//n5+f//////z8/P/woKCv8CAgL/AAAA/wICAv8AAAD/ICAg//39/f//////////////////////+/v7//////+ZmZn/AAAA/wUFBf8CAgL/AAAA/7+/v///////+/z7//38+///////48TA/7wyK//hu7b///////78/P////////////7////+/v///f/+//77/P//////3rWv/74uKP/drq3///////z7+////v///v/+///////////////////////////////////////////////////////////////////////////////////////////////////////9/f3//////9HR0f8BAQH/AQEB/wAAAP8AAAD/AgIC/wAAAP+/v7////////n5+f/+/v7///////j4+P//////goKC/wAAAP8EBAT/AwMD/wAAAP+6u7v///////j7+v/8+fz//////858dP/APzr/9Ono///////+/v7//////////////////f////3////9/f7///////Hn5P/CRUD/x1xU//n5+f/+/////f/+/////v///////////////////////////////////////////////////////////////////////////////////////////////////////f39///////Q0ND/AAAA/wICAv8AAAD/AAAA/wQEBP8AAAD/QEBA////////////////////////////3d3d/w0NDf8AAAD/AgIC/wAAAP8NDQ3/5OTk///////9+/v//////+zm4P++RTv/zHVz//7////+/v7///////////////////////3////9/v///v7///77/P//////0JSQ/7cwJv/huLj///////v7+v/9/v7///////////////////////////////////////////////////////////////////////////////////////////////////////39/f//////0dHR/wICAv8BAQH/AQEB/wEBAf8BAQH/AQEB/wAAAP8sLCz/uLi4//j4+P/5+fn/1dXV/x0dHf8AAAD/AwMD/wMDA/8AAAD/OTk5///////+/v7//fv8///////Le3b/vjEr/+fNy////////f39///////////////////////////////////////+/v7//v////b28/++T0j/xVxX//n69////////v39///////////////////////////////////////////////////////////////////////////////////////////////////////9/f3//////9PT0/8LCwv/AQEB/wEBAf8CAgL/AQEB/wAAAP8CAgL/AAAA/w4ODv8zMzP/JSUl/wUFBf8AAAD/AwMD/wAAAP8EBAT/AAAA/1xcXP//////+/n5///////q29b/wjg0/815dP/9/////P39//7///////////////////////////////3////7/////v/+//78/P//////2qun/7otI//RnZr///////38/P/+///////////////+/////////////////////////////////////////////////////////////////////////////////////f39///////R0dH/AQEB/wEBAf8BAQH/AwMD/wQEBP8AAAD/AAAA/wQEBP8AAAD/AAAA/wAAAP8AAAD/AwMD/wAAAP8AAAD/BQYG/wAAAP9ra2v///////r6+v//////y3Vu/7o6M//t4N7///////78/P/////////////////////////////////+/////v///////////////f7+//3////Ea2X/vDw1/+zc2f//////+/z8/////////v///v7///////////////////////////////////////////////////////////////////////////////////39/f//////0NDQ/wAAAP8BAQH/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AQEB/wICAv8CAgL/AQEB/wAAAP8AAAD/AgEB/wAAAP8AAAD/0s/Q///////+////3bGt/7kvJf/QlIv///////37/f/+//3///////////////////////////////////////////////////////z8/P//////6djV/7s8Nv/DX1n/+v37///////+/fz//P////7+///+/v/////////////////////////////////////////////////////////////////////////////9/f3//////9LS0v8HBwf/AQEB/wEBAf8AAAD/AQEB/wQEBP8CAgL/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AgIC/wQDA/8AAAD/goOA///////+////5s/N/7o4Mv/CXFn/9fTy///////7/v3//P/////////////////////////////////////////////////////////9/////Pv7///////Zran/uS0k/9OSi////////P3+//z9/v/9/////f///////////////////////////////////////////////////////////////////////////////f39///////Pz8//AAAA/wQEBP8AAAD/AwMD/wAAAP8AAAD/AAAA/wUFBf8CAgL/AgIC/wICAv8DAwP/BQUF/wAAAP8AAAD/cnBx///////8////9PPu/8VcVv+7Qzn/7+Ti///////7/fn//f/+///+/////////////////////////////////////////////////////////v7///3+/f/+/////f///8d6df+8LSX/1ZqU/////////f///f35//7+/f////////////////////////////////////////////////////////////////////////////39/f//////zc3N/wAAAP8AAAD/BQUF/wAAAP8oKCj/j4+P/ysrK/8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8UFBT/hoeH//z8/P//////9vbz/8lmX//AMCn/2bOr///////8+/v////+//3+///+//7////+///////////////////////////////////////////////////+/////v//+/39///////8/fv/ym9t/7svKv/Yop3//////////v/9+/v////////////////////////////////////////////////////////////////////////////9/f3//////9nZ2f9OTk7/JCQk/zo6Ov8qKir/gICA///////p6Oj/YmJi/x4eHv8qKir/HBwc/z4+Pv+ampr/5eXl////////////+fv4/8Ruav+7Lij/2aii///////9+/v//P77//3+///+/////v/+///////////////////////////////////////////////////////9//7//f7////+///9/fz///////j49//CaWP/wCwh/8x5dv/7//////////38+////v7//f/+//////////////////////////////////7////////////////////////////////////+/v7///////7+/v/6+vr//v7+///+///5+vv////////////7+/v//f3+//r4+f///////////////v//////697b/8BhW//ALSb/05+Y///////9+/7//v79//7//f/////////+//////////////////////////////////////////////////////////////////////////////////79/f//////+ff1/9CLhP+8Lif/yGtm/+/g3/////////7+//v8/P/+/////v7///3////8//7//f/+///////+//////////////////////////////////////////7+/v////////////////////7//v/+//39/v/7+/v///////7//v/+//7/9/r6//v9/v//////4L66/8JIQf+6Ozb/37e0///////8/v3//P78/////////////////////////////////////////////////////////////////////////////////////////////////////////////fz9////////////zpmP/743LP/BQz//27Sy//3//////////fz9//z9/P///vz//f/+//7//v///v////7///7//////////////////////////////////////////v7+//7+/v///v///f/9//3//v/+/////v7///3+/v/9+/v//P39///////07+3/1JqY/7w2MP++TEP/4sXD///////9/Pz//f36///+/f////////////////////////////////////////////////////////////////////////////////////////////////////////////7////6/f3//v79///////lyMf/w1VL/7ouJf/HbGj/7uLg/////////////f////v7/P/+/P7//P7///z//v////7////////////////////////////////////////////////////////9///9/P///Pz8//j8+v////////////7////fvbv/wE1F/7ksI//Kd3L/8+vq///////8+/n////9//3////9/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////f/+//7//v/7+/z///////Pw7v/Rlo7/vjYv/8A+Nf/IeXL/5czL//n8/P////////////r//v/9+/r//vv7//78/P///v7///7+///+/v///v7///7+///+/v/+/f3//vz8//79/f/+/Pz//////////////////fz5/9qwrf/IY1v/vDMq/7pOSP/duLf//v/////////++/v////9//z+///+/v/////+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////3//////v///P/+//z7+v///////////+TKx//RgHr/vD03/8EwKv/CX1j/3rKs//Hm4v/7/v7///////////////////////////////////////////////////////////////////////b39v/u2NX/1ZmU/8JXUP+5Lyf/vUlA/9OKhf/v6Of///////78/f/8/fz///////z+///8//////7///7//v////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7//////////v79//78/f///////////+zc1//Ri4b/wlBL/7kwKv+4PTf/xWJc/9WSjv/ixcH/4MPB//Xv7f/7+fn/+fb3//n39//49vb//Pv5/+ve3P/fwr//4bm2/9OAe//AU03/uDYx/70zMP/FX1r/1aef//Xw7v////////////38+//+//7////+//////////////////7////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9/////f39//38/P////////////f08//iwcL/04J//8JYUf+3ODD/ti8n/7UvJv/ESED/xk5I/8RMRv/GTUX/xU1F/8hPR/+/Pjb/tCwk/7kzKf+4QDb/ymdg/9SWkP/o2dT//f/9/////////////v39//7+/v////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7///3////8/////vz9//77+v/////////////////4+/j/7drZ/9+urf/isK7/yHV0/79oY//AbGb/w2pl/8RsZv/AZWH/04yJ/+WysP/it7b/8ejo//r///////////////z////7+/z///7+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7///////////7///3+///8//////79//38/P/8/P3///////////////////////////////////////7//////////v/////////////////////////9//7//fz8//77/f/9/f///f7//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////v////7//////////v7///7////9//////7////9/v/7/f3/+/z7//77+//+/v3///79///9/v/+/f7///7+//7+/v/9/f3//vz7//78+v/8/v3///7+//7//v/8//7//f/+//7//v////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7//////////////v////7//////v///v///////v/+//7/+//////+///+/v//+/////3+///+/v///f/+//7//////v////////3////6/////v////7+/////////f////7+/v/+/v7/////////////////////////////////////////////////////////////////////////////////////////////////////////////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
 
 
+def _preservar_palco_para_retrato(prefixo):
+    """Marca o rerun do Retrato para reutilizar exatamente o palco já exibido."""
+    st.session_state[f"{prefixo}_retrato_preservar_palco"] = True
+
+
+
+
+def _gerar_retrato_do_snapshot(prefixo):
+    """Gera o Retrato no callback, antes do rerun alterar o palco."""
+    if prefixo == "ypo":
+        texto = st.session_state.get("ypo_palco_snapshot_text", "")
+        analise = st.session_state.get("ypo_palco_snapshot_analysis", "")
+        titulo = st.session_state.get("ypo_palco_snapshot_title", st.session_state.get("tema", ""))
+        imagem = st.session_state.get("ypo_palco_snapshot_image", "")
+        contexto = st.session_state.get("ypo_palco_snapshot_context")
+        voice = str(st.session_state.get("analysis_voice", "Machina")).upper()
+        titulo_ola = (
+            f"{_analysis_voice_title('OLA')} ( {_analysis_kind_label(st.session_state.get('analysis_kind', ''))} )"
+            if voice == "OLA" else ""
+        )
+        machina = _retrato_imagem_machina_aleatoria("\n".join([str(titulo), _ypoema_html_to_text(texto), str(analise)])) if voice == "OLA" else ""
+        png = criar_retrato_png(texto, imagem, titulo, selo_size=RETRATO_SELO_SIZE,
+                                 analise_texto=analise if voice == "OLA" else "",
+                                 analise_titulo=titulo_ola, machina_image_path=machina)
+        if png:
+            st.session_state["retrato_preview_png"] = png
+            st.session_state["retrato_preview_nome"] = re.sub(r"[^A-Za-z0-9_-]+", "_", str(titulo or "retrato")).strip("_") or "retrato"
+            st.session_state["retrato_preview_context"] = contexto
+            st.session_state["retrato_focus_pending"] = True
+            st.session_state["ypo_retrato_preservar_palco"] = True
+    elif prefixo == "off":
+        texto = st.session_state.get("off_palco_snapshot_text", "")
+        analise = st.session_state.get("off_palco_snapshot_analysis", "")
+        titulo = st.session_state.get("off_palco_snapshot_title", "")
+        imagem = st.session_state.get("off_palco_snapshot_image", "")
+        contexto = st.session_state.get("off_palco_snapshot_context")
+        voice = str(st.session_state.get("analysis_voice", "Machina")).upper()
+        titulo_ola = (
+            f"{_analysis_voice_title('OLA')} ( {_analysis_kind_label(st.session_state.get('analysis_kind', ''))} )"
+            if voice == "OLA" else ""
+        )
+        machina = _retrato_imagem_machina_aleatoria("\n".join([str(titulo), _ypoema_html_to_text(texto), str(analise)])) if voice == "OLA" else ""
+        png = criar_retrato_png(texto, imagem, titulo, selo_size=RETRATO_SELO_SIZE,
+                                 analise_texto=analise if voice == "OLA" else "",
+                                 analise_titulo=titulo_ola, machina_image_path=machina)
+        if png:
+            st.session_state["off_retrato_preview_png"] = png
+            st.session_state["off_retrato_preview_nome"] = re.sub(r"[^A-Za-z0-9_-]+", "_", str(titulo or "retrato")).strip("_") or "retrato"
+            st.session_state["off_retrato_preview_context"] = contexto
+            st.session_state["off_retrato_focus_pending"] = True
+            st.session_state["off_retrato_preservar_palco"] = True
+
+
 def _retrato_logo_yp(size):
     """Retorna o yP original no tamanho de teste, sem suavizar seus pixels."""
     try:
@@ -2300,14 +2391,14 @@ def _retrato_logo_yp(size):
         return None
 
 
-def _aplicar_selo_origem(canvas, size, respiro=RETRATO_SELO_RESPIRO):
+def _aplicar_selo_origem(canvas, size, respiro=RETRATO_SELO_RESPIRO, family=None):
     """Assina o Retrato com yP + endereço de origem no canto inferior direito."""
     logo = _retrato_logo_yp(size)
     if logo is None:
         return canvas
 
     draw = ImageDraw.Draw(canvas)
-    url_font = _retrato_font(max(16, int(round(size * 0.72))))
+    url_font = _retrato_font(max(16, int(round(size * 0.72))), family=family)
     url = RETRATO_ORIGEM_URL
     bbox = draw.textbbox((0, 0), url, font=url_font)
     text_w = bbox[2] - bbox[0]
@@ -2324,103 +2415,335 @@ def _aplicar_selo_origem(canvas, size, respiro=RETRATO_SELO_RESPIRO):
     return canvas
 
 
-def _retrato_font(size, bold=False):
-    """Carrega uma fonte Unicode disponível para o PNG do Retrato."""
+def _retrato_font(size, bold=False, family=None):
+    """Carrega no PNG a fonte escolhida em Fontes & Letras."""
+    family = str(family or "Trebuchet MS").strip()
+
+    # Arquivos mais prováveis no Windows e no Linux/Streamlit Cloud.
+    nomes = {
+        "Trebuchet MS": ("trebucbd.ttf", "trebuc.ttf"),
+        "Inter": ("Inter-Bold.ttf", "Inter-Regular.ttf"),
+        "Spectral": ("Spectral-Bold.ttf", "Spectral-Regular.ttf"),
+        "EB Garamond": ("EBGaramond-Bold.ttf", "EBGaramond-Regular.ttf"),
+        "Libre Baskerville": ("LibreBaskerville-Bold.ttf", "LibreBaskerville-Regular.ttf"),
+        "Cormorant Garamond": ("CormorantGaramond-Bold.ttf", "CormorantGaramond-Regular.ttf"),
+        "Palatino Linotype": ("palab.ttf", "pala.ttf"),
+        "Georgia": ("georgiab.ttf", "georgia.ttf"),
+        "Atkinson Hyperlegible": ("AtkinsonHyperlegible-Bold.ttf", "AtkinsonHyperlegible-Regular.ttf"),
+        "OpenDyslexic": ("OpenDyslexic-Bold.otf", "OpenDyslexic-Regular.otf"),
+        "JetBrains Mono": ("JetBrainsMono-Bold.ttf", "JetBrainsMono-Regular.ttf"),
+        "Courier New": ("courbd.ttf", "cour.ttf"),
+        "IBM Plex Sans": ("IBMPlexSans-Bold.ttf", "IBMPlexSans-Regular.ttf"),
+    }
+
+    bold_name, regular_name = nomes.get(family, ("", ""))
+    filename = bold_name if bold else regular_name
     candidates = []
-    if bold:
+
+    if filename:
         candidates.extend([
-            _project_path("fonts", "DejaVuSans-Bold.ttf"),
-            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
-            "C:/Windows/Fonts/arialbd.ttf",
+            _project_path("fonts", filename),
+            os.path.join("C:/Windows/Fonts", filename),
+            filename,
         ])
-    else:
-        candidates.extend([
-            _project_path("fonts", "DejaVuSans.ttf"),
-            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
-            "C:/Windows/Fonts/arial.ttf",
-        ])
+
+    # Alguns pacotes Linux usam diretórios e nomes ligeiramente diferentes.
+    linux_aliases = {
+        "Inter": ["/usr/share/fonts/truetype/inter/Inter-Bold.ttf" if bold else "/usr/share/fonts/truetype/inter/Inter-Regular.ttf"],
+        "EB Garamond": ["/usr/share/fonts/truetype/ebgaramond/EBGaramond-Bold.ttf" if bold else "/usr/share/fonts/truetype/ebgaramond/EBGaramond-Regular.ttf"],
+        "JetBrains Mono": ["/usr/share/fonts/truetype/jetbrains-mono/JetBrainsMono-Bold.ttf" if bold else "/usr/share/fonts/truetype/jetbrains-mono/JetBrainsMono-Regular.ttf"],
+    }
+    candidates.extend(linux_aliases.get(family, []))
+
+    # Fallback Unicode seguro, apenas quando a fonte escolhida não existe
+    # como arquivo acessível ao Pillow naquele computador.
+    candidates.extend([
+        _project_path("fonts", "DejaVuSans-Bold.ttf" if bold else "DejaVuSans.ttf"),
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" if bold else "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+        "/usr/share/fonts/truetype/liberation2/LiberationSans-Bold.ttf" if bold else "/usr/share/fonts/truetype/liberation2/LiberationSans-Regular.ttf",
+        "C:/Windows/Fonts/arialbd.ttf" if bold else "C:/Windows/Fonts/arial.ttf",
+        "DejaVuSans-Bold.ttf" if bold else "DejaVuSans.ttf",
+    ])
 
     for candidate in candidates:
         try:
-            if candidate and os.path.exists(candidate):
-                return ImageFont.truetype(candidate, size=size)
+            if not candidate:
+                continue
+            if os.path.isabs(candidate) and not os.path.exists(candidate):
+                continue
+            return ImageFont.truetype(candidate, size=int(size))
         except Exception:
             pass
-    return ImageFont.load_default()
 
+    raise RuntimeError("Fonte Unicode não encontrada para gerar o Retrato.")
 
 def _retrato_wrap(draw, texto, font, largura):
-    """Quebra o yPoema sem alterar suas linhas autorais."""
+    """Quebra o texto preservando o recuo autoral com espaços ASCII."""
     linhas_finais = []
     for linha in str(texto or "").splitlines():
+        linha = linha.replace("\t", "    ")
         if not linha:
             linhas_finais.append("")
             continue
 
-        palavras = linha.split(" ")
-        atual = ""
+        recuo = linha[: len(linha) - len(linha.lstrip(" "))]
+        conteudo = linha[len(recuo):]
+
+        if not conteudo:
+            linhas_finais.append(recuo)
+            continue
+
+        palavras = conteudo.split(" ")
+        atual = recuo
         for palavra in palavras:
-            tentativa = palavra if not atual else atual + " " + palavra
+            if palavra == "":
+                continue
+            tentativa = atual + palavra if atual.endswith(" ") else atual + " " + palavra
             bbox = draw.textbbox((0, 0), tentativa, font=font)
-            if bbox[2] - bbox[0] <= largura or not atual:
+            if bbox[2] - bbox[0] <= largura or atual == recuo:
                 atual = tentativa
             else:
-                linhas_finais.append(atual)
-                atual = palavra
-        linhas_finais.append(atual)
+                linhas_finais.append(atual.rstrip())
+                atual = recuo + palavra
+        linhas_finais.append(atual.rstrip())
     return linhas_finais
 
 
-def criar_retrato_png(ypoema_html, image_path, tema, selo_size=24):
-    """Monta um PNG com imagem, yPoema e Denominação de Origem."""
+def _retrato_imagem_machina_aleatoria(chave_fixa=""):
+    """Escolhe uma imagem de /images/machina e a mantém estável para o palco atual."""
+    pasta = os.path.join(".", "images", "machina")
+    if not os.path.isdir(pasta):
+        return ""
+
+    extensoes = {".png", ".jpg", ".jpeg", ".webp", ".bmp"}
+    imagens = [
+        os.path.join(pasta, nome)
+        for nome in os.listdir(pasta)
+        if os.path.splitext(nome)[1].lower() in extensoes
+    ]
+    if not imagens:
+        return ""
+
+    imagens.sort()
+    chave = str(chave_fixa or "")
+    if st.session_state.get("retrato_machina_chave") != chave:
+        st.session_state["retrato_machina_chave"] = chave
+        st.session_state["retrato_machina_imagem"] = random.choice(imagens)
+
+    imagem = st.session_state.get("retrato_machina_imagem", "")
+    if imagem not in imagens:
+        imagem = random.choice(imagens)
+        st.session_state["retrato_machina_imagem"] = imagem
+    return imagem
+
+
+def criar_retrato_png(
+    ypoema_html,
+    image_path,
+    tema,
+    selo_size=24,
+    analise_texto="",
+    analise_titulo="",
+    machina_image_path="",
+):
+    """Monta o Retrato; com OLA visível, testa duas faixas no mesmo palco."""
     if not image_path or not os.path.exists(image_path):
         return None
 
-    texto = _ypoema_html_to_text(ypoema_html)
+    texto = unicodedata.normalize("NFC", _ypoema_html_to_text(ypoema_html))
+
+    # Recuo do yPoema no Retrato:
+    # cada marcador vale exatamente 1 espaço comum.
+    # Alguns passam pelo HTML como espaços Unicode largos (&emsp;, NBSP etc.);
+    # o Pillow/OpenDyslexic os desenha como quadrados. Normalizamos tudo antes.
+    def _limpar_recuo_retrato(linha):
+        linha = str(linha or "")
+
+        # Formas ainda literais: |$|, |$$|... ou $/$$... no início.
+        match = re.match(
+            r"^(?P<prefixo>[ \t]*)"
+            r"(?:[|｜¦]\s*(?P<d1>\$+)\s*[|｜¦]|(?P<d2>\$+))"
+            r"[ \t]*",
+            linha,
+        )
+        if match:
+            qtd = len(match.group("d1") or match.group("d2") or "")
+            linha = match.group("prefixo") + (" " * (qtd * 2)) + linha[match.end():]
+
+        # Formas já convertidas pelo HTML:
+        # NBSP, EN/EM SPACE, THIN SPACE, IDEOGRAPHIC SPACE etc.
+        prefixo = []
+        pos = 0
+        while pos < len(linha):
+            ch = linha[pos]
+            if ch in (" ", "\t"):
+                prefixo.append("    " if ch == "\t" else " ")
+                pos += 1
+                continue
+            if ch == "\u00A0" or "\u2000" <= ch <= "\u200A" or ch in ("\u202F", "\u205F", "\u3000"):
+                prefixo.append("  ")
+                pos += 1
+                continue
+            break
+
+        return "".join(prefixo) + linha[pos:]
+
+    texto = "\n".join(_limpar_recuo_retrato(linha) for linha in texto.splitlines())
     if not texto:
         return None
 
-    canvas_w, canvas_h = 1600, 1000
+    analise = unicodedata.normalize("NFC", str(analise_texto or "").strip())
+    titulo_ola = unicodedata.normalize("NFC", str(analise_titulo or "").strip())
+    tem_ola = bool(analise and titulo_ola and machina_image_path and os.path.exists(machina_image_path))
+
     margin = 64
     gap = 58
-    image_w = 650
-    text_x = margin + image_w + gap
-    text_w = canvas_w - text_x - margin
+    faixa_gap = 42
+    separador_gap = 34
 
-    canvas = Image.new("RGB", (canvas_w, canvas_h), "white")
+    # Teste visual isolado: fontes fixas, sem depender de Corpo da Fonte ou Cópias.
+    fonte_retrato = "OpenDyslexic"
+    corpo_png = 30
+    body_font = _retrato_font(corpo_png, family=fonte_retrato)
+    ola_font = _retrato_font(24, family=fonte_retrato)
+    ola_title_font = _retrato_font(26, bold=True, family=fonte_retrato)
+
+    medida = Image.new("RGB", (1, 1), "white")
+    draw_medida = ImageDraw.Draw(medida)
+    text_w_max = 900
 
     with Image.open(image_path) as source:
         art = ImageOps.exif_transpose(source).convert("RGB")
-        art = ImageOps.fit(
-            art,
-            (image_w, canvas_h - (2 * margin)),
-            method=Image.Resampling.LANCZOS,
-            centering=(0.5, 0.5),
-        )
-    canvas.paste(art, (margin, margin))
+        original_w, original_h = art.size
+        image_w_max = 360
+        escala = min(1.0, image_w_max / max(1, original_w))
+        image_w = max(1, int(round(original_w * escala)))
+        image_h = max(1, int(round(original_h * escala)))
+        if (image_w, image_h) != art.size:
+            art = art.resize((image_w, image_h), Image.Resampling.LANCZOS)
 
-    draw = ImageDraw.Draw(canvas)
-    title_font = _retrato_font(42, bold=True)
-    body_font = _retrato_font(31)
+    linhas = _retrato_wrap(draw_medida, texto, body_font, text_w_max)
+    bbox_linha = draw_medida.textbbox((0, 0), "Ag", font=body_font)
+    line_gap = max(8, int(round(corpo_png * 0.28)))
+    line_h = max(1, bbox_linha[3] - bbox_linha[1]) + line_gap
+    altura_texto = max(line_h, len(linhas) * line_h)
 
-    titulo = str(tema or "").strip()
-    y = margin
-    if titulo:
-        draw.text((text_x, y), titulo, font=title_font, fill="black")
-        y += 70
-
-    line_gap = 14
-    linhas = _retrato_wrap(draw, texto, body_font, text_w)
-    bbox = draw.textbbox((0, 0), "Ag", font=body_font)
-    line_h = (bbox[3] - bbox[1]) + line_gap
-
+    larguras_linhas = []
     for linha in linhas:
-        if y + line_h > canvas_h - margin:
-            break
-        draw.text((text_x, y), linha, font=body_font, fill="black")
-        y += line_h
+        if linha:
+            bbox = draw_medida.textbbox((0, 0), linha, font=body_font)
+            larguras_linhas.append(max(1, bbox[2] - bbox[0]))
+    largura_texto_real = max(larguras_linhas or [1])
 
-    _aplicar_selo_origem(canvas, selo_size, RETRATO_SELO_RESPIRO)
+    machina_art = None
+    machina_w = machina_h = 0
+    linhas_ola = []
+    ola_line_h = 0
+    ola_title_h = 0
+    largura_ola_real = 1
+
+    if tem_ola:
+        with Image.open(machina_image_path) as source:
+            machina_art = ImageOps.exif_transpose(source).convert("RGB")
+            # Coleção Machina: 240 x 360 px; preserva a dimensão original.
+            machina_w, machina_h = machina_art.size
+
+        ola_text_w_max = 820
+        linhas_ola = _retrato_wrap(draw_medida, analise, ola_font, ola_text_w_max)
+        bbox_ola = draw_medida.textbbox((0, 0), "Ag", font=ola_font)
+        ola_line_gap = 7
+        ola_line_h = max(1, bbox_ola[3] - bbox_ola[1]) + ola_line_gap
+
+        bbox_titulo = draw_medida.textbbox((0, 0), titulo_ola, font=ola_title_font)
+        ola_title_h = max(1, bbox_titulo[3] - bbox_titulo[1])
+        larguras_ola = [max(1, bbox_titulo[2] - bbox_titulo[0])]
+        for linha in linhas_ola:
+            if linha:
+                bbox = draw_medida.textbbox((0, 0), linha, font=ola_font)
+                larguras_ola.append(max(1, bbox[2] - bbox[0]))
+        largura_ola_real = max(larguras_ola or [1])
+
+    selo_real = max(1, int(round(int(selo_size) * 0.60)))
+    footer_font = _retrato_font(max(16, int(round(selo_real * 0.72))), family=fonte_retrato)
+    footer_bbox = draw_medida.textbbox((0, 0), RETRATO_ORIGEM_URL, font=footer_font)
+    footer_text_w = footer_bbox[2] - footer_bbox[0]
+    footer_gap_x = max(8, int(round(selo_real * 0.35)))
+    footer_group_w = selo_real + footer_gap_x + footer_text_w
+    footer_h = selo_real
+    footer_gap_y = 34
+
+    top_content_w = image_w + gap + largura_texto_real
+    top_h = max(image_h, altura_texto)
+
+    bottom_content_w = 0
+    bottom_h = 0
+    if tem_ola:
+        ola_text_h = ola_title_h + 18 + max(ola_line_h, len(linhas_ola) * ola_line_h)
+        bottom_content_w = largura_ola_real + gap + machina_w
+        bottom_h = max(ola_text_h, machina_h)
+
+    largura_conteudo = margin + max(top_content_w, bottom_content_w) + margin
+    largura_rodape = margin + footer_group_w + margin
+    canvas_w = max(700, largura_conteudo, largura_rodape)
+
+    if tem_ola:
+        canvas_h = (
+            margin + top_h
+            + separador_gap + 2 + separador_gap
+            + bottom_h
+            + footer_gap_y + footer_h + margin
+        )
+    else:
+        canvas_h = max(520, margin + top_h + footer_gap_y + footer_h + margin)
+
+    canvas = Image.new("RGB", (canvas_w, canvas_h), "white")
+    draw = ImageDraw.Draw(canvas)
+
+    # Sem OLA, conserva exatamente a centralização já aprovada.
+    if not tem_ola:
+        image_y = max(margin, (canvas_h - image_h) // 2)
+        canvas.paste(art, (margin, image_y))
+        text_x = margin + image_w + gap
+        y = margin
+        for linha in linhas:
+            draw.text((text_x, y), linha, font=body_font, fill="black")
+            y += line_h
+    else:
+        # Faixa superior: imagem + yPoema.
+        top_y = margin
+        image_y = top_y + max(0, (top_h - image_h) // 2)
+        text_y = top_y + max(0, (top_h - altura_texto) // 2)
+        canvas.paste(art, (margin, image_y))
+        text_x = margin + image_w + gap
+        y = text_y
+        for linha in linhas:
+            draw.text((text_x, y), linha, font=body_font, fill="black")
+            y += line_h
+
+        # Linha divisória entre o acontecimento e a leitura.
+        separator_y = top_y + top_h + separador_gap
+        draw.line(
+            (margin, separator_y, canvas_w - margin, separator_y),
+            fill=(72, 72, 72),
+            width=2,
+        )
+
+        # Faixa inferior: análise + imagem_machina.
+        bottom_y = separator_y + separador_gap
+        ola_text_h = ola_title_h + 18 + max(ola_line_h, len(linhas_ola) * ola_line_h)
+        ola_y = bottom_y + max(0, (bottom_h - ola_text_h) // 2)
+        machina_y = bottom_y + max(0, (bottom_h - machina_h) // 2)
+
+        draw.text((margin, ola_y), titulo_ola, font=ola_title_font, fill="black")
+        y = ola_y + ola_title_h + 18
+        for linha in linhas_ola:
+            draw.text((margin, y), linha, font=ola_font, fill="black")
+            y += ola_line_h
+
+        machina_x = canvas_w - margin - machina_w
+        canvas.paste(machina_art, (machina_x, machina_y))
+
+    _aplicar_selo_origem(canvas, selo_real, RETRATO_SELO_RESPIRO, family=fonte_retrato)
 
     output = BytesIO()
     canvas.save(output, format="PNG", optimize=True)
@@ -2662,7 +2985,8 @@ def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
             padding-top: 0px !important;
             padding-left: 8px !important;
             text-align: left !important;
-            display: table !important;
+            display: block !important;
+            width: fit-content !important;
             max-width: min(96ch, 94%) !important;
             margin-left: auto !important;
             margin-right: auto !important;
@@ -2778,22 +3102,22 @@ def page_mini():
     help_talk = help_tips[6]
 
     with more_col:
-        more = st.button("✚", key="mini_more_btn", help=help_more, use_container_width=True)
+        more = st.button("✚", key="mini_more_btn", help=help_more, width="stretch")
 
     with rand_col:
-        rand = st.button("✻", key="mini_rand_btn", help=help_rand, use_container_width=True)
+        rand = st.button("✻", key="mini_rand_btn", help=help_rand, width="stretch")
 
     with auto_col:
-        if st.button("🔀", key="mini_auto_button", help="modo automático", use_container_width=True):
+        if st.button("🔀", key="mini_auto_button", help="modo automático", width="stretch"):
             st.session_state.auto = not st.session_state.auto
 
     with voz_col:
-        if st.button("♫", key="mini_voz_btn", help=help_talk, use_container_width=True):
+        if st.button("♫", key="mini_voz_btn", help=help_talk, width="stretch"):
             st.session_state.talk = not st.session_state.talk
 
     # Pedido: o botão ? deve existir como botão real logo após o ♫.
     with help_col:
-        manu = st.button("?", key="mini_help_btn", help="Modo de Usar & Manual do Usuário", use_container_width=True)
+        manu = st.button("?", key="mini_help_btn", help="Modo de Usar & Manual do Usuário", width="stretch")
 
     mini_voz_slot = render_voz_slot()
 
@@ -2879,7 +3203,7 @@ def page_mini():
                         curr_ypoema = load_poema(st.session_state.tema, "")
                         curr_ypoema = load_lypo()
 
-                    if st.session_state.lang != "pt":  # translate if idioma <> pt
+                    if st.session_state.lang != "pt" and not usou_snapshot_ypo:  # translate if idioma <> pt
                         curr_ypoema = translate(curr_ypoema)
                         typo_user = "TYPO_" + IPAddres
                         with open(
@@ -3090,13 +3414,13 @@ def page_ypoemas():
                 unsafe_allow_html=True,
             )
         nav_cols = st.columns([1, 1, 1, 1, 1, 1])
-        more = nav_cols[0].button("✚", help=help_more, use_container_width=True)
-        last = nav_cols[1].button("◀", help=help_last, use_container_width=True)
-        rand = nav_cols[2].button("✻", help=help_rand, use_container_width=True)
-        nest = nav_cols[3].button("▶", help=help_nest, use_container_width=True)
-        if nav_cols[4].button("♫", help=help_tips[6], key="ypoemas_voz_btn", use_container_width=True):
+        more = nav_cols[0].button("✚", help=help_more, width="stretch")
+        last = nav_cols[1].button("◀", help=help_last, width="stretch")
+        rand = nav_cols[2].button("✻", help=help_rand, width="stretch")
+        nest = nav_cols[3].button("▶", help=help_nest, width="stretch")
+        if nav_cols[4].button("♫", help=help_tips[6], key="ypoemas_voz_btn", width="stretch"):
             st.session_state.talk = not st.session_state.talk
-        manu = nav_cols[5].button("?", help="help !!!", use_container_width=True)
+        manu = nav_cols[5].button("?", help="help !!!", width="stretch")
 
         ypoemas_voz_slot = render_voz_slot()
 
@@ -3113,6 +3437,7 @@ def page_ypoemas():
         st.session_state["ypo_anchor_tema"] = st.session_state.get("tema", "")
 
     if more:
+        limpar_retrato_ypoemas()
         # ✚ = recarregar / mais uma versão do mesmo tema.
         # Usa a última âncora estável, não o eventual valor alterado por callback.
         frozen_book = st.session_state.get("ypo_anchor_book", _current_book())
@@ -3130,6 +3455,7 @@ def page_ypoemas():
 
     if last:
         limpar_copias_palco()
+        limpar_retrato_ypoemas()
         st.session_state.take -= 1
         if st.session_state.take < 0:
             st.session_state.take = maxy_ypoemas
@@ -3138,12 +3464,14 @@ def page_ypoemas():
 
     if rand:
         limpar_copias_palco()
+        limpar_retrato_ypoemas()
         st.session_state.take = random.randrange(0, maxy_ypoemas + 1)
         _sync_book_theme_state()
         _bump_palco_theme_widget()
 
     if nest:
         limpar_copias_palco()
+        limpar_retrato_ypoemas()
         st.session_state.take += 1
         if st.session_state.take > maxy_ypoemas:
             st.session_state.take = 0
@@ -3155,6 +3483,16 @@ def page_ypoemas():
 
     temas_list = load_temas(_current_book())
     _sync_book_theme_state()
+
+    retrato_contexto_atual = (
+        str(_current_book()),
+        int(st.session_state.get("take", 0)),
+        str(st.session_state.get("tema", "")),
+        str(st.session_state.get("lang", "pt")),
+    )
+    retrato_contexto_salvo = st.session_state.get("retrato_preview_context")
+    if retrato_contexto_salvo and tuple(retrato_contexto_salvo) != retrato_contexto_atual:
+        limpar_retrato_ypoemas()
 
     if more:
         frozen_book = st.session_state.get("more_same_book", _current_book())
@@ -3169,6 +3507,10 @@ def page_ypoemas():
         if st.session_state.take > maxy_ypoemas or st.session_state.take < 0:
             st.session_state.take = 0
             st.session_state.tema = temas_list[0] if temas_list else ""
+
+    preservar_palco_retrato = bool(
+        st.session_state.pop("ypo_retrato_preservar_palco", False)
+    )
 
     lnew = True
     if manu:
@@ -3190,7 +3532,22 @@ def page_ypoemas():
 
         ypoemas_expander = st.expander(what_book, expanded=True)
         with ypoemas_expander:
-            if st.session_state.lang != st.session_state.last_lang:
+            snapshot_contexto = st.session_state.get("ypo_palco_snapshot_context")
+            snapshot_contexto_atual = (
+                str(_current_book()),
+                int(st.session_state.get("take", 0)),
+                str(st.session_state.get("tema", "")),
+                str(st.session_state.get("lang", "pt")),
+            )
+            usou_snapshot_ypo = bool(
+                preservar_palco_retrato
+                and snapshot_contexto
+                and tuple(snapshot_contexto) == snapshot_contexto_atual
+                and st.session_state.get("ypo_palco_snapshot_text")
+            )
+            if usou_snapshot_ypo:
+                curr_ypoema = st.session_state["ypo_palco_snapshot_text"]
+            elif st.session_state.lang != st.session_state.last_lang:
                 curr_ypoema = load_lypo()  # changes in lang, keep LYPO
             else:
                 curr_ypoema = load_poema(st.session_state.tema, "")
@@ -3222,12 +3579,25 @@ def page_ypoemas():
             st.session_state["ypo_anchor_tema"] = st.session_state.get("tema", "")
 
             LOGO_TEXTO = curr_ypoema
-            _set_sidebar_context_image_for_theme(st.session_state.tema)
+            if preservar_palco_retrato:
+                st.session_state["sidebar_context_image"] = st.session_state.get(
+                    "ypo_palco_snapshot_image", st.session_state.get("sidebar_context_image", "")
+                )
+            else:
+                _set_sidebar_context_image_for_theme(st.session_state.tema)
 
             analysis_voice_atual = str(st.session_state.get("analysis_voice", "Machina")).upper()
 
             if analysis_voice_atual == "OLA":
-                analise_texto = gerar_analise_atual(LOGO_TEXTO, st.session_state.tema)
+                if (
+                    preservar_palco_retrato
+                    and tuple(st.session_state.get("ypo_palco_snapshot_context") or ())
+                    == snapshot_contexto_atual
+                    and st.session_state.get("ypo_palco_snapshot_analysis") is not None
+                ):
+                    analise_texto = st.session_state.get("ypo_palco_snapshot_analysis", "")
+                else:
+                    analise_texto = gerar_analise_atual(LOGO_TEXTO, st.session_state.tema)
 
                 col_poema, col_analise = st.columns([1.05, 0.95], gap="large")
                 with col_poema:
@@ -3236,6 +3606,14 @@ def page_ypoemas():
                     render_analise_palco(analise_texto)
             else:
                 write_ypoema(LOGO_TEXTO, None)
+
+            st.session_state["ypo_palco_snapshot_text"] = curr_ypoema
+            st.session_state["ypo_palco_snapshot_analysis"] = (
+                analise_texto if analysis_voice_atual == "OLA" else ""
+            )
+            st.session_state["ypo_palco_snapshot_context"] = snapshot_contexto_atual
+            st.session_state["ypo_palco_snapshot_title"] = st.session_state.get("tema", "")
+            st.session_state["ypo_palco_snapshot_image"] = st.session_state.get("sidebar_context_image", "")
 
             # Copiar 2..9 ocorrências do tema atual para leituras externas.
             # Para apenas +1 variação, o botão ✚ já cumpre esse papel.
@@ -3260,7 +3638,7 @@ def page_ypoemas():
                     f"criar ( {qtd_copias_atual} )",
                     help="variações",
                     key="copy_variacoes_btn",
-                    use_container_width=True,
+                    width="stretch",
                 )
 
             with copy_qtd_col:
@@ -3274,28 +3652,14 @@ def page_ypoemas():
                 )
 
             with retrato_col:
-                retrato_png = criar_retrato_png(
-                    curr_ypoema,
-                    st.session_state.get("sidebar_context_image", ""),
-                    st.session_state.get("tema", ""),
-                    selo_size=RETRATO_SELO_SIZE,
+                st.button(
+                    "Retrato",
+                    key="retrato_preview_btn",
+                    help="mostrar Retrato",
+                    width="stretch",
+                    on_click=_gerar_retrato_do_snapshot,
+                    args=("ypo",),
                 )
-                if retrato_png:
-                    nome_retrato = re.sub(
-                        r"[^A-Za-z0-9_-]+",
-                        "_",
-                        str(st.session_state.get("tema", "retrato") or "retrato"),
-                    ).strip("_") or "retrato"
-                    st.download_button(
-                        "Retrato",
-                        data=retrato_png,
-                        file_name=f"{nome_retrato}.png",
-                        mime="image/png",
-                        key="retrato_download_btn",
-                        help="Retrato — selo 40px",
-                        use_container_width=True,
-                        on_click="ignore",
-                    )
 
             qtd_copias = _normalizar_qtd_copias(qtd_copias)
             st.session_state["copy_qtd"] = qtd_copias
@@ -3329,6 +3693,24 @@ def page_ypoemas():
                 int(st.session_state.get("copy_bundle_token", 0)),
                 st.session_state.get("copy_bundle_qtd", None),
             )
+
+            retrato_preview_png = st.session_state.get("retrato_preview_png")
+            if retrato_preview_png:
+                st.markdown('<div id="retrato_ypoemas_gerado"></div>', unsafe_allow_html=True)
+                st.image(retrato_preview_png, width="stretch")
+                if st.session_state.pop("retrato_focus_pending", False):
+                    focar_retrato_no_palco("retrato_ypoemas_gerado")
+                salvar_left, salvar_center, salvar_right = st.columns([1, 1, 1])
+                with salvar_center:
+                    st.download_button(
+                        "salvar Retrato",
+                        data=retrato_preview_png,
+                        file_name=f"{st.session_state.get('retrato_preview_nome', 'retrato')}.png",
+                        mime="image/png",
+                        key="retrato_save_btn",
+                        width="stretch",
+                        on_click="ignore",
+                    )
 
             if manu:
                 LOGO_TEXTO = load_info(st.session_state.tema)
@@ -3394,14 +3776,14 @@ def page_eureka():
             )
 
         nav_cols = st.columns([1, 1, 1, 1])
-        more = nav_cols[0].button("✚", help=help_more, use_container_width=True)
-        rand = nav_cols[1].button("✻", help=help_rand, use_container_width=True)
+        more = nav_cols[0].button("✚", help=help_more, width="stretch")
+        rand = nav_cols[1].button("✻", help=help_rand, width="stretch")
 
-        if nav_cols[2].button("♫", key="eureka_voz_btn", help=help_talk, use_container_width=True):
+        if nav_cols[2].button("♫", key="eureka_voz_btn", help=help_talk, width="stretch"):
             _hide_eureka_help()
             st.session_state.talk = not st.session_state.talk
 
-        manu = nav_cols[3].button("?", help="help !!!", use_container_width=True)
+        manu = nav_cols[3].button("?", help="help !!!", width="stretch")
 
         eureka_voz_slot = render_voz_slot()
 
@@ -3582,6 +3964,7 @@ def page_off_machina():  # available off_machina_books
         )
 
     if opt_off_book != st.session_state.off_book:
+        limpar_retrato_off()
         st.session_state.off_book = opt_off_book
         st.session_state.off_take = 0
         st.session_state["off_take_widget_token"] = int(
@@ -3589,7 +3972,12 @@ def page_off_machina():  # available off_machina_books
         ) + 1
 
     off_book_name = off_books_list[st.session_state.off_book]
-    _set_off_anima_image_next()
+    if bool(st.session_state.get("off_retrato_preservar_palco", False)):
+        st.session_state["off_anima_image"] = st.session_state.get(
+            "off_palco_snapshot_image", st.session_state.get("off_anima_image", "")
+        )
+    else:
+        _set_off_anima_image_next()
     this_off_book = load_off_book(off_book_name)
     off_book_pagys = load_book_pages(this_off_book)
 
@@ -3613,26 +4001,29 @@ def page_off_machina():  # available off_machina_books
                 unsafe_allow_html=True,
             )
         nav_cols = st.columns([1, 1, 1, 1, 1])
-        last = nav_cols[0].button("◀", help=help_last, use_container_width=True)
-        rand = nav_cols[1].button("✻", help=help_rand, use_container_width=True)
-        nest = nav_cols[2].button("▶", help=help_nest, use_container_width=True)
-        if nav_cols[3].button("♫", help=help_tips[6], key="off_voz_btn", use_container_width=True):
+        last = nav_cols[0].button("◀", help=help_last, width="stretch")
+        rand = nav_cols[1].button("✻", help=help_rand, width="stretch")
+        nest = nav_cols[2].button("▶", help=help_nest, width="stretch")
+        if nav_cols[3].button("♫", help=help_tips[6], key="off_voz_btn", width="stretch"):
             st.session_state.talk = not st.session_state.talk
-        manu = nav_cols[4].button("?", help="help !!!", use_container_width=True)
+        manu = nav_cols[4].button("?", help="help !!!", width="stretch")
 
         off_voz_slot = render_voz_slot()
 
     if last:
+        limpar_retrato_off()
         nav_changed = True
         st.session_state.off_take -= 1
         if st.session_state.off_take < 0:
             st.session_state.off_take = maxy_off_machina
 
     if rand:
+        limpar_retrato_off()
         nav_changed = True
         st.session_state.off_take = random.randrange(0, maxy_off_machina + 1)
 
     if nest:
+        limpar_retrato_off()
         nav_changed = True
         st.session_state.off_take += 1
         if st.session_state.off_take > maxy_off_machina:
@@ -3663,7 +4054,24 @@ def page_off_machina():  # available off_machina_books
         )
 
     if opt_off_take != st.session_state.off_take:
+        limpar_retrato_off()
         st.session_state.off_take = opt_off_take
+
+    off_retrato_contexto_atual = (
+        int(st.session_state.get("off_book", 0)),
+        int(st.session_state.get("off_take", 0)),
+        str(st.session_state.get("lang", "pt")),
+    )
+    off_retrato_contexto_salvo = st.session_state.get("off_retrato_preview_context")
+    if (
+        off_retrato_contexto_salvo
+        and tuple(off_retrato_contexto_salvo) != off_retrato_contexto_atual
+    ):
+        limpar_retrato_off()
+
+    preservar_palco_retrato_off = bool(
+        st.session_state.pop("off_retrato_preservar_palco", False)
+    )
 
     lnew = True
     if manu:
@@ -3685,7 +4093,20 @@ def page_off_machina():  # available off_machina_books
         with off_machina_expander:
             off_book_text = ""
             pipe_line = this_off_book[st.session_state.off_take].split("|")
-            if off_book_name == "livro_vivo" and "@ " in pipe_line[1]:
+            off_snapshot_contexto_atual = (
+                int(st.session_state.get("off_book", 0)),
+                int(st.session_state.get("off_take", 0)),
+                str(st.session_state.get("lang", "pt")),
+            )
+            usou_snapshot_off = bool(
+                preservar_palco_retrato_off
+                and tuple(st.session_state.get("off_palco_snapshot_context") or ())
+                == off_snapshot_contexto_atual
+                and st.session_state.get("off_palco_snapshot_text")
+            )
+            if usou_snapshot_off:
+                off_book_text = st.session_state["off_palco_snapshot_text"]
+            elif off_book_name == "livro_vivo" and "@ " in pipe_line[1]:
                 if st.session_state.lang != st.session_state.last_lang:
                     off_book_text = load_lypo()  # changes in lang, keep LYPO
                 else:
@@ -3697,7 +4118,7 @@ def page_off_machina():  # available off_machina_books
 
             capo = st.session_state.off_take == 0
 
-            if st.session_state.lang != "pt" and not capo:
+            if st.session_state.lang != "pt" and not capo and not usou_snapshot_off:
                 off_book_text = translate(off_book_text)
 
             LOGO_TEXTO = off_book_text
@@ -3714,7 +4135,15 @@ def page_off_machina():  # available off_machina_books
 
             analysis_voice_atual = str(st.session_state.get("analysis_voice", "Machina")).upper()
             if analysis_voice_atual == "OLA":
-                analise_texto = gerar_analise_atual(LOGO_TEXTO, off_title)
+                if (
+                    preservar_palco_retrato_off
+                    and tuple(st.session_state.get("off_palco_snapshot_context") or ())
+                    == off_snapshot_contexto_atual
+                    and st.session_state.get("off_palco_snapshot_analysis") is not None
+                ):
+                    analise_texto = st.session_state.get("off_palco_snapshot_analysis", "")
+                else:
+                    analise_texto = gerar_analise_atual(LOGO_TEXTO, off_title)
                 col_texto, col_analise = st.columns([1.05, 0.95], gap="large")
                 with col_texto:
                     render_off_texto()
@@ -3722,6 +4151,40 @@ def page_off_machina():  # available off_machina_books
                     render_analise_palco(analise_texto)
             else:
                 render_off_texto()
+
+            st.session_state["off_palco_snapshot_text"] = LOGO_TEXTO
+            st.session_state["off_palco_snapshot_analysis"] = (
+                analise_texto if analysis_voice_atual == "OLA" else ""
+            )
+            st.session_state["off_palco_snapshot_context"] = off_snapshot_contexto_atual
+            st.session_state["off_palco_snapshot_title"] = off_title
+            st.session_state["off_palco_snapshot_image"] = st.session_state.get("off_anima_image", "")
+
+            st.markdown("<br>", unsafe_allow_html=True)
+            st.button(
+                "Retrato",
+                key=f"off_retrato_btn_{st.session_state.off_book}_{st.session_state.off_take}",
+                help="mostrar Retrato",
+                on_click=_gerar_retrato_do_snapshot,
+                args=("off",),
+            )
+
+            if st.session_state.get("off_retrato_preview_png"):
+                st.markdown('<div id="retrato_off_gerado"></div>', unsafe_allow_html=True)
+                st.image(st.session_state["off_retrato_preview_png"], width="stretch")
+                if st.session_state.pop("off_retrato_focus_pending", False):
+                    focar_retrato_no_palco("retrato_off_gerado")
+                off_save_left, off_save_center, off_save_right = st.columns([1, 1, 1])
+                with off_save_center:
+                    st.download_button(
+                        "salvar Retrato",
+                        data=st.session_state["off_retrato_preview_png"],
+                        file_name=f"{st.session_state.get('off_retrato_preview_nome', 'retrato')}.png",
+                        mime="image/png",
+                        key=f"off_retrato_save_{st.session_state.off_book}_{st.session_state.off_take}",
+                        width="stretch",
+                        on_click="ignore",
+                    )
 
             update_readings(off_book_name)
 
@@ -3943,8 +4406,8 @@ def page_abouts():
 
 SIDEBAR_FILHOTE_WIDTH_PX = 64
 OLA_ANALYSIS_OPTIONS = [
-    "Sintética",
     "Sintática",
+    "Sintética",
     "Aparição",
     "Completa",
 ]
@@ -3986,7 +4449,7 @@ def render_analysis_sidebar_block():
         if st.button(
             "MACHINA",
             key="analysis_voice_machina_btn",
-            use_container_width=True,
+            width="stretch",
             type="primary" if current_key == "MACHINA" else "secondary",
         ):
             _set_analysis_voice("Machina")
@@ -3999,7 +4462,7 @@ def render_analysis_sidebar_block():
         if st.button(
             "OLA",
             key="analysis_voice_ola_btn",
-            use_container_width=True,
+            width="stretch",
             type="primary" if current_key == "OLA" else "secondary",
         ):
             _set_analysis_voice("OLA")
@@ -4076,7 +4539,7 @@ def main():
                 if st.button(
                     page_label,
                     key=f"machina_page_btn_{page_label}",
-                    use_container_width=True,
+                    width="stretch",
                     type="primary" if page_label == st.session_state["machina_page_select"] else "secondary",
                 ):
                     _set_machina_page(page_label, page_ids[page_label])
