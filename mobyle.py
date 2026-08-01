@@ -14,7 +14,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 
 APP_BUILD = "2026-07-31_MOBILE_PUBLICO"
-APP_BUILD_NOTES = "Mobile público: yPoemas, Retrato e navegação preservados; camada analítica retirada."
+APP_BUILD_NOTES = "Teste MéM: rodapé de yPoemas reduzido a Copy nativo + Retrato; OLA ausente."
 
 from lay_2_ypo import gera_poema
 from readings import (
@@ -23,10 +23,6 @@ from readings import (
     update_visy,
 )
 
-    
-                                                                             
-                 
-                                  
 
 
 BOOKS_LIST = [
@@ -690,18 +686,11 @@ def init_session_state():
         "stage_font": "Trebuchet",
         "stage_size": 21,
         "sidebar_panel": "Machina",
-                                
-                                
-                              
-                              
-                              
-                              
 
         # chave de ouro
         "key_open": False,
         "key_poema_texto": "",
         "key_poema_tema": "",
-                          
         "copy_qtd": 2,
         "copy_qtd_widget": 2,
         "copy_bundle_text": "",
@@ -710,9 +699,6 @@ def init_session_state():
         "copy_bundle_source": "",
         "ypo_theme_widget_token": 0,
 
-                                   
-                                    
-                                      
     }
 
     for key, value in defaults.items():
@@ -2338,19 +2324,10 @@ def _gerar_retrato_do_snapshot(prefixo):
     """Gera o Retrato no callback, antes do rerun alterar o palco."""
     if prefixo == "ypo":
         texto = st.session_state.get("ypo_palco_snapshot_text", "")
-                                                                         
         titulo = st.session_state.get("ypo_palco_snapshot_title", st.session_state.get("tema", ""))
         imagem = st.session_state.get("ypo_palco_snapshot_image", "")
         contexto = st.session_state.get("ypo_palco_snapshot_context")
-                                                                              
-                      
-                                                                                                                   
-                                     
-         
-                                                                                                                                                  
         png = criar_retrato_png(texto, imagem, titulo, selo_size=RETRATO_SELO_SIZE)
-                                                                                 
-                                                                                       
         if png:
             st.session_state["retrato_preview_png"] = png
             st.session_state["retrato_preview_nome"] = re.sub(r"[^A-Za-z0-9_-]+", "_", str(titulo or "retrato")).strip("_") or "retrato"
@@ -2359,19 +2336,10 @@ def _gerar_retrato_do_snapshot(prefixo):
             st.session_state["ypo_retrato_preservar_palco"] = True
     elif prefixo == "off":
         texto = st.session_state.get("off_palco_snapshot_text", "")
-                                                                         
         titulo = st.session_state.get("off_palco_snapshot_title", "")
         imagem = st.session_state.get("off_palco_snapshot_image", "")
         contexto = st.session_state.get("off_palco_snapshot_context")
-                                                                              
-                      
-                                                                                                                   
-                                     
-         
-                                                                                                                                                  
         png = criar_retrato_png(texto, imagem, titulo, selo_size=RETRATO_SELO_SIZE)
-                                                                                 
-                                                                                       
         if png:
             st.session_state["off_retrato_preview_png"] = png
             st.session_state["off_retrato_preview_nome"] = re.sub(r"[^A-Za-z0-9_-]+", "_", str(titulo or "retrato")).strip("_") or "retrato"
@@ -2539,40 +2507,13 @@ def _retrato_imagem_machina_aleatoria(chave_fixa=""):
 
 
 def criar_retrato_png(ypoema_html, image_path, tema, selo_size=24):
-                
-               
-         
-                 
-                     
-                      
-                          
-  
     """Monta o Retrato com a imagem e o texto exibidos no palco."""
     if not image_path or not os.path.exists(image_path):
         return None
 
     texto = unicodedata.normalize("NFC", _ypoema_html_to_text(ypoema_html))
 
-                                 
-                                                    
-                                                                               
-                                                                               
     def _limpar_recuo_retrato(linha):
-                                
-
-                                                                    
-                         
-                                   
-                                                                
-                      
-                  
-         
-                 
-                                                                   
-                                                                                    
-
-                                           
-                                                               
         prefixo = []
         pos = 0
         while pos < len(linha):
@@ -2590,28 +2531,17 @@ def criar_retrato_png(ypoema_html, image_path, tema, selo_size=24):
                 pos += 1
                 continue
             break
-
         return "".join(prefixo) + linha[pos:]
 
     texto = "\n".join(_limpar_recuo_retrato(linha) for linha in texto.splitlines())
     if not texto:
         return None
 
-                                                                            
-                                                                                
-                                                                                                        
-
     margin = 64
     gap = 58
-                  
-                      
-
-                                                                                    
     fonte_retrato = "OpenDyslexic"
     corpo_png = 30
     body_font = _retrato_font(corpo_png, family=fonte_retrato)
-                                                      
-                                                                       
 
     medida = Image.new("RGB", (1, 1), "white")
     draw_medida = ImageDraw.Draw(medida)
@@ -2640,34 +2570,6 @@ def criar_retrato_png(ypoema_html, image_path, tema, selo_size=24):
             larguras_linhas.append(max(1, bbox[2] - bbox[0]))
     largura_texto_real = max(larguras_linhas or [1])
 
-                      
-                             
-                   
-                  
-                   
-                        
-
-               
-                                                      
-                                                                        
-                                                                             
-                                                   
-
-                            
-                                                                                  
-                                                                    
-                        
-                                                                     
-
-                                                                                   
-                                                             
-                                                                
-                                
-                     
-                                                                         
-                                                              
-                                                   
-
     selo_real = max(1, int(round(int(selo_size) * 0.60)))
     footer_font = _retrato_font(max(16, int(round(selo_real * 0.72))), family=fonte_retrato)
     footer_bbox = draw_medida.textbbox((0, 0), RETRATO_ORIGEM_URL, font=footer_font)
@@ -2678,29 +2580,10 @@ def criar_retrato_png(ypoema_html, image_path, tema, selo_size=24):
     footer_gap_y = 34
 
     top_content_w = image_w + gap + largura_texto_real
-                                      
-
-                        
-                
-               
-                                                                                     
-                                                             
-                                             
-
     largura_conteudo = margin + top_content_w + margin
     largura_rodape = margin + footer_group_w + margin
     canvas_w = max(700, largura_conteudo, largura_rodape)
     canvas_h = max(520, margin + max(image_h, altura_texto) + footer_gap_y + footer_h + margin)
-
-               
-                    
-                          
-                                               
-                      
-                                              
-         
-         
-                                                                              
 
     canvas = Image.new("RGB", (canvas_w, canvas_h), "white")
     draw = ImageDraw.Draw(canvas)
@@ -2712,52 +2595,7 @@ def criar_retrato_png(ypoema_html, image_path, tema, selo_size=24):
         draw.text((text_x, y), linha, font=body_font, fill="black")
         y += line_h
 
-                                                                  
-                   
-                                                        
-                                            
-                                       
-                  
-                            
-                                                                       
-                       
-         
-                                          
-                      
-                                                        
-                                                            
-                                            
-                                       
-                  
-                            
-                                                                       
-                       
-
-                                                             
-                                                   
-                  
-                                                                  
-                              
-                    
-         
-
-                                                    
-                                              
-                                                                                     
-                                                               
-                                                                  
-
-                                                                                 
-                                    
-                                
-                                                                      
-                           
-
-                                                 
-                                                         
-
     _aplicar_selo_origem(canvas, selo_real, RETRATO_SELO_RESPIRO, family=fonte_retrato)
-
     output = BytesIO()
     canvas.save(output, format="PNG", optimize=True)
     return output.getvalue()
@@ -2909,12 +2747,6 @@ def render_sidebar_context_image(chosen_id):
     - Off-Machina: imagem do livro em foco;
     - About: imagem própria da página.
     """
-        
-                             
-                                                                                   
-      
-              
-
     if not bool(st.session_state.get("draw", True)):
         return
 
@@ -3251,32 +3083,6 @@ def page_mini():
 
 
 
-            
-
-
-                                                   
-                                                   
-
-                                    
-                                            
-                         
-
-                                   
-                                                
-                                                                                
-                                                 
-                                             
-                                      
-
-                
-
-
-                                              
-                                                                           
-                                            
-
-
-                                   
 
 
 
@@ -3288,118 +3094,29 @@ def page_mini():
 
 
 
-               
-                                              
-                            
-                 
-                                
-                 
-
-
-                                                 
-                                                                          
-                                                  
-                                        
-
-                                                                
-                                     
-
-                             
-
-
-                                    
-              
-                        
-             
-
-
-                                  
-              
-                         
-             
-
-
-                                                
-                             
-
-                                                                 
-                                                            
-                                                            
-
-                                                                        
-       
-                                       
-                                                                                                           
-
-                                                                            
 
 
 
-                                           
-                                                                       
-                                                              
-                                                            
-                                                      
 
 
-                                 
-                                                       
-                                    
 
 
-                               
-                                                            
-                                             
 
 
-                                
-                                                                      
-                                      
-                                                                                  
 
-                                                                      
-                                                    
-                                         
-                                          
 
-                                                                   
-                                    
-                                          
 
-                
-            
-                                                  
-                          
-                              
-                                     
-                          
-                                                    
-                                  
-                            
-                                                              
-                                     
-                             
-                          
-                            
-          
-                        
-                                  
-                                
-                                     
-                                 
-                                
-                        
-                                  
-                                
-                             
-                                     
-                                 
-                                       
-                                  
-              
-            
-                               
-     
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -3589,12 +3306,6 @@ def page_ypoemas():
 
             update_readings(st.session_state.tema)
 
-                                                            
-                                                                    
-                                                              
-                                                                    
-                                                                    
-
             st.session_state["more_same_book"] = ""
             st.session_state["more_same_take"] = -1
             st.session_state["more_same_tema"] = ""
@@ -3612,68 +3323,22 @@ def page_ypoemas():
 
             write_ypoema(LOGO_TEXTO, None)
 
-                                             
-                    
-                                           
-                                                                                       
-                                              
-                                                                                       
-                  
-                                                                                           
-                     
-                                                                                          
-
-                                                                              
-                               
-                                                  
-                                 
-                                                       
-                 
-                                              
-
             st.session_state["ypo_palco_snapshot_text"] = curr_ypoema
-                                                               
-                                                                      
-             
             st.session_state["ypo_palco_snapshot_context"] = snapshot_contexto_atual
             st.session_state["ypo_palco_snapshot_title"] = st.session_state.get("tema", "")
             st.session_state["ypo_palco_snapshot_image"] = st.session_state.get("sidebar_context_image", "")
 
-            # Copiar 2..9 ocorrências do tema atual para leituras externas.
-            # Para apenas +1 variação, o botão ✚ já cumpre esse papel.
-            # Mantém o yPoema exibido como #1 e gera variações extras sem alterar o palco.
-            copy_bundle_text = st.session_state.get("copy_bundle_text", "")
-            if st.session_state.get("copy_bundle_source", "") != _copy_bundle_source_key(curr_ypoema):
-                copy_bundle_text = ""
-
+            # Rodapé MéM: somente cópia nativa do yPoema atual e Retrato.
             st.markdown("<br>", unsafe_allow_html=True)
+            rodape_left, copy_col, retrato_col, rodape_right = st.columns([3.4, 2.2, 2.2, 3.4])
 
-            qtd_copias_atual = _normalizar_qtd_copias(
-                st.session_state.get("copy_qtd_widget", st.session_state.get("copy_qtd", 2))
-            )
-            st.session_state["copy_qtd"] = qtd_copias_atual
-
-            # Cópias clean:
-            # [ criar (X) ] [ qtd ] [ Retrato ] [ copiar ]
-            copy_left, copy_generate_col, copy_qtd_col, retrato_col, copy_all_col, copy_right = st.columns([2.45, 3.15, 1.85, 2.55, 3.15, 2.45])
-
-            with copy_generate_col:
-                copy_submit = st.button(
-                    f"criar ( {qtd_copias_atual} )",
-                    help="variações",
-                    key="copy_variacoes_btn",
-                    width="stretch",
-                )
-
-            with copy_qtd_col:
-                qtd_copias = st.selectbox(
-                    "quantidade de cópias",
-                    list(range(2, 10)),
-                    index=list(range(2, 10)).index(qtd_copias_atual),
-                    key="copy_qtd_widget",
-                    label_visibility="collapsed",
-                    on_change=_on_copy_qtd_change,
-                )
+            with copy_col:
+                with st.popover("Copy", help="copiar yPoema", width="stretch"):
+                    st.code(
+                        _ypoema_html_to_text(curr_ypoema),
+                        language=None,
+                        wrap_lines=True,
+                    )
 
             with retrato_col:
                 st.button(
@@ -3684,39 +3349,6 @@ def page_ypoemas():
                     on_click=_gerar_retrato_do_snapshot,
                     args=("ypo",),
                 )
-
-            qtd_copias = _normalizar_qtd_copias(qtd_copias)
-            st.session_state["copy_qtd"] = qtd_copias
-
-            copy_qtd_changed = bool(st.session_state.pop("copy_qtd_changed", False))
-            copy_submit = bool(copy_submit or copy_qtd_changed)
-
-            if copy_submit:
-                qtd_copias = _normalizar_qtd_copias(st.session_state.get("copy_qtd", 2))
-                st.session_state["copy_bundle_text"] = montar_copias_ypoema(
-                    curr_ypoema,
-                    st.session_state.get("tema", ""),
-                    qtd_copias,
-                )
-                st.session_state["copy_bundle_qtd"] = qtd_copias
-                st.session_state["copy_bundle_source"] = _copy_bundle_source_key(curr_ypoema)
-                st.session_state["copy_bundle_token"] = int(st.session_state.get("copy_bundle_token", 0)) + 1
-                copy_bundle_text = st.session_state.get("copy_bundle_text", "")
-
-            # O botão "copiar..." só aparece quando há pacote real na área de cópias.
-            # Novo tema ou nova geração recriam o token e o texto volta para "copiar...".
-            with copy_all_col:
-                if copy_bundle_text:
-                    render_copy_bundle_button(
-                        copy_bundle_text,
-                        int(st.session_state.get("copy_bundle_token", 0)),
-                    )
-
-            render_copy_bundle_widget(
-                copy_bundle_text,
-                int(st.session_state.get("copy_bundle_token", 0)),
-                st.session_state.get("copy_bundle_qtd", None),
-            )
 
             retrato_preview_png = st.session_state.get("retrato_preview_png")
             if retrato_preview_png:
@@ -4148,38 +3780,12 @@ def page_off_machina():  # available off_machina_books
             LOGO_TEXTO = off_book_text
             off_title = off_book_pagys[st.session_state.off_take]
 
-                                                           
-                                                        
-                                                            
-                                                                        
-                                                                    
-
             def render_off_texto():
                 write_off_machina_texto(LOGO_TEXTO)
 
-                                                                                                 
-                                             
-                    
-                                               
-                                                                                       
-                                                  
-                                                                                       
-                  
-                                                                                           
-                     
-                                                                              
-                                                                              
-                               
             render_off_texto()
-                                 
-                                                       
-                 
-                                  
 
             st.session_state["off_palco_snapshot_text"] = LOGO_TEXTO
-                                                               
-                                                                      
-             
             st.session_state["off_palco_snapshot_context"] = off_snapshot_contexto_atual
             st.session_state["off_palco_snapshot_title"] = off_title
             st.session_state["off_palco_snapshot_image"] = st.session_state.get("off_anima_image", "")
@@ -4426,92 +4032,12 @@ def page_abouts():
 
 ### eof: pages
 
-
-
 SIDEBAR_FILHOTE_WIDTH_PX = 64
-                        
-                 
-                 
-                 
-               
- 
-
-
-                                       
-                                                       
-                                                                            
-
-
-                               
-                                                           
-                                                       
-                          
-                                                  
-                                                                   
-         
-                                                      
-                                              
-
-
-                                    
-                                                               
-                                                                                
-                                             
-                               
-                                                      
-
-                                                      
-                                                                                       
-                                               
-                                 
-                                                        
-
-                                                                                      
-                                                
-
-                     
-                     
-                      
-                                             
-                            
-                                                                        
-          
-                                          
-                
-                          
-                                  
-                                       
-
-                 
-                     
-                  
-                                         
-                            
-                                                                    
-          
-                                      
-                
-                          
-                                  
-                                       
-
-               
-                                                                                          
-                                      
-                   
-                    
-                                                                                
-                                       
-                                         
-         
-                                                  
-
 
 def render_sidebar_for_page(chosen_id):
     """Renderiza os controles fixos do leitor, sem botão arte fóssil."""
     pick_lang()
     pick_stage_font()
-                                   
 
 
 def _set_machina_page(page_label, page_id):
