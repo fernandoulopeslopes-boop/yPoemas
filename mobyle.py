@@ -665,7 +665,7 @@ def init_session_state():
     defaults = {
         "lang": "pt",
         "last_lang": "pt",
-        "book": "poemas",
+        "book": "todos os temas",
         "take": 0,
         "mini": 0,
         "tema": "Fatos",
