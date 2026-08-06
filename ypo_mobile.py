@@ -8,13 +8,15 @@ import html
 import unicodedata
 import socket
 import asyncio
+import functools
+from datetime import datetime
 from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 import streamlit as st
 import streamlit.components.v1 as components
 
-APP_BUILD = "2026-07-28_MOBILE_FBF_CAE"
-APP_BUILD_NOTES = "Mobile público derivado do corpo validado do Tools; página Tools removida; OLA e Retrato preservados."
+APP_BUILD = "2026-08-06_AVALIACAO_SMARTPHONE"
+APP_BUILD_NOTES = "Ajustes mobile-first locais: controles com toque confortável, colunas de leitura empilhadas e Tools sob demanda."
 
 from lay_2_ypo import gera_poema
 from readings import (
@@ -22,6 +24,163 @@ from readings import (
     update_readings,
     update_visy,
 )
+
+
+# -----------------------------------------------------------------------------
+# DNA :: laboratório de observação
+#
+# Escopo:
+# - somente este ypo_tools.py;
+# - não substitui nenhuma fonte atual;
+# - não altera retorno, fluxo ou conteúdo;
+# - registra em ./base/LOG.TXT as chamadas mapeadas;
+# - falha do LOG nunca interrompe a Machina.
+# -----------------------------------------------------------------------------
+DNA_LOG_RELATIVE_PATH = os.path.join("base", "LOG.TXT")
+
+DNA_MONITOR_MAP = {
+    "load_temas": {
+        "fonte": "base/rol_<livro>.txt",
+        "campo_dna": "tema",
+    },
+    "load_info": {
+        "fonte": "base/info.txt",
+        "campo_dna": (
+            "tema,genero,imagem,versos,verbetes_no_texto,"
+            "verbetes_do_tema,total_de_itimos,qtd_de_variacoes,qtd_cientifica"
+        ),
+    },
+    "_help_info_estavel": {
+        "fonte": "base/info.txt",
+        "campo_dna": "tema,genero,imagem,versos",
+    },
+    "_qtd_variacoes_index": {
+        "fonte": "base/index.txt",
+        "campo_dna": "qtd_de_variacoes",
+    },
+    "load_images": {
+        "fonte": "base/images.txt",
+        "campo_dna": "imagem",
+    },
+    "load_index": {
+        "fonte": "md_files/ABOUT_index.MD",
+        "campo_dna": "ELO_PERDIDO:index_md",
+    },
+    "load_md_files_catalog": {
+        "fonte": "md_files.txt|base/md_files.txt",
+        "campo_dna": "ELO_PERDIDO:catalogo_about",
+    },
+}
+
+
+def _dna_log_path():
+    """Resolve base/LOG.TXT sem criar dependência externa."""
+    here = os.path.dirname(os.path.abspath(__file__))
+    candidates = [
+        os.path.join(os.getcwd(), DNA_LOG_RELATIVE_PATH),
+        os.path.join(here, DNA_LOG_RELATIVE_PATH),
+    ]
+    for candidate in candidates:
+        if os.path.isdir(os.path.dirname(candidate)):
+            return candidate
+    return candidates[0]
+
+
+def _dna_clean(value, limit=260):
+    """Mantém uma ocorrência em uma única linha separada por pipes."""
+    value = str(value if value is not None else "")
+    value = value.replace("\r", " ").replace("\n", " ").replace("|", "¦")
+    value = re.sub(r"\s+", " ", value).strip()
+    if len(value) > int(limit):
+        value = value[: int(limit) - 3] + "..."
+    return value
+
+
+def _dna_result_summary(result):
+    """Resumo técnico pequeno; o conteúdo retornado não é copiado para o LOG."""
+    tipo = type(result).__name__
+    try:
+        tamanho = len(result)
+    except Exception:
+        tamanho = ""
+    return tipo + (f"[{tamanho}]" if tamanho != "" else "")
+
+
+def _dna_append_log(funcao, fonte, campo_dna, tema, argumentos, resultado, erro=""):
+    """Acrescenta uma ocorrência; qualquer falha permanece invisível ao fluxo."""
+    try:
+        log_path = _dna_log_path()
+        os.makedirs(os.path.dirname(log_path), exist_ok=True)
+        novo = not os.path.exists(log_path) or os.path.getsize(log_path) == 0
+
+        with open(log_path, "a", encoding="utf-8") as log:
+            if novo:
+                log.write(
+                    "|data_hora|funcao|fonte|campo_dna|tema|argumentos|resultado|erro|\n"
+                )
+            log.write(
+                "|"
+                + "|".join(
+                    [
+                        _dna_clean(datetime.now().strftime("%d/%m/%Y %H:%M")),
+                        _dna_clean(funcao),
+                        _dna_clean(fonte),
+                        _dna_clean(campo_dna),
+                        _dna_clean(tema),
+                        _dna_clean(argumentos),
+                        _dna_clean(resultado),
+                        _dna_clean(erro),
+                    ]
+                )
+                + "|\n"
+            )
+    except Exception:
+        # O observador nunca interfere no observado.
+        pass
+
+
+def dna_monitor(func):
+    """Decora somente funções constantes em DNA_MONITOR_MAP."""
+    meta = DNA_MONITOR_MAP.get(func.__name__, {})
+    fonte = meta.get("fonte", "ELO_PERDIDO:fonte")
+    campo_dna = meta.get("campo_dna", "ELO_PERDIDO:campo")
+
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        tema = (
+            kwargs.get("nome_tema")
+            or kwargs.get("tema")
+            or kwargs.get("book")
+            or (args[0] if args else "")
+        )
+        argumentos = f"args={args!r}; kwargs={kwargs!r}"
+        try:
+            result = func(*args, **kwargs)
+        except Exception as exc:
+            _dna_append_log(
+                func.__name__,
+                fonte,
+                campo_dna,
+                tema,
+                argumentos,
+                "ERRO",
+                f"{type(exc).__name__}: {exc}",
+            )
+            raise
+
+        _dna_append_log(
+            func.__name__,
+            fonte,
+            campo_dna,
+            tema,
+            argumentos,
+            _dna_result_summary(result),
+            "",
+        )
+        return result
+
+    return wrapper
+
 
 try:
     from ponte_ola_openai import gerar_analise_ola as _gerar_analise_ola_real
@@ -35,6 +194,20 @@ BOOKS_LIST = [
     "todos os signos",
 ]
 
+# Constantes usadas pelo Build Rimas em tools.py.
+# tools_mod.render_page(globals()) transfere este namespace ao módulo Tools.
+BUILD_RIMAS_WORD_RE = re.compile(
+    r"[^\W\d_]+(?:[-'][^\W\d_]+)*",
+    re.UNICODE,
+)
+
+BUILD_RIMAS_CLITIC_PRONOUNS = {
+    "me", "te", "se", "nos", "vos",
+    "o", "a", "os", "as",
+    "lo", "la", "los", "las",
+    "no", "na", "nos", "nas",
+    "lhe", "lhes",
+}
 
 OFF_BOOKS_LIST = [
     "a_torre_de_papel", "quase_que_eu_Poesia", "faz_de_conto", "um_romance", "parafernália",
@@ -43,7 +216,7 @@ OFF_BOOKS_LIST = [
 
 PAGE_IMAGES = {
     "1": "img_mini.jpg", "2": "img_ypoemas.jpg", "3": "img_eureka.jpg",
-    "4": "img_off-machina.jpg", "5": "img_about.jpg",
+    "4": "img_off-machina.jpg", "5": "img_tools.jpg", "6": "img_about.jpg",
 }
 
 VOICES_EDGE_TTS = {
@@ -96,8 +269,8 @@ IDIOMAS_OFICIAIS = [
 # Deve permanecer antes de qualquer saída visual do Streamlit.
 # -----------------------------------------------------------------------------
 st.set_page_config(
-    page_title="a Machina de fazer Poesia",
-    page_icon=":cyclone:",
+    page_title="a Machina de fazer Poesia - Tools",
+    page_icon=":construction:",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
@@ -621,6 +794,56 @@ def apply_styles():
                 margin-top: 0.08rem !important;
                 margin-bottom: 0 !important;
             }
+
+            /* Smartphone :: alvo de toque confortável em todo o palco público. */
+            main div[data-testid="stButton"] button,
+            main div[data-testid="stDownloadButton"] button,
+            [data-testid="stSidebar"] div[data-testid="stButton"] button {
+                min-height: 44px !important;
+                padding-top: 0.42rem !important;
+                padding-bottom: 0.42rem !important;
+                padding-left: 0.38rem !important;
+                padding-right: 0.38rem !important;
+            }
+
+            /* Leitura antes de painel: pares e trios principais viram fluxo vertical. */
+            main div[data-testid="stHorizontalBlock"]:has(> div:nth-child(2):last-child),
+            main div[data-testid="stHorizontalBlock"]:has(> div:nth-child(3):last-child) {
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 0.42rem !important;
+            }
+
+            main div[data-testid="stHorizontalBlock"]:has(> div:nth-child(2):last-child) > div,
+            main div[data-testid="stHorizontalBlock"]:has(> div:nth-child(3):last-child) > div {
+                width: 100% !important;
+                flex: 1 1 100% !important;
+                min-width: 0 !important;
+            }
+
+            /* Barras de quatro ou mais controles continuam horizontais, mas podem quebrar linha. */
+            main div[data-testid="stHorizontalBlock"]:has(> div:nth-child(4)) {
+                flex-wrap: wrap !important;
+                gap: 0.30rem !important;
+            }
+
+            main div[data-testid="stHorizontalBlock"]:has(> div:nth-child(4)) > div {
+                min-width: 44px !important;
+                flex-grow: 1 !important;
+            }
+
+            /* Menu principal: textos não devem virar botões microscópicos. */
+            main div[data-testid="stHorizontalBlock"]:has(button[key^="machina_page_btn_"]) > div {
+                min-width: 104px !important;
+            }
+
+            /* Sidebar mobile: imagem presente sem dominar a tela. */
+            .machina-sidebar-image-frame {
+                width: min(88vw, 320px) !important;
+                height: auto !important;
+                max-height: 52vh !important;
+                aspect-ratio: 32 / 33 !important;
+            }
         }
 </style>
         """,
@@ -633,7 +856,7 @@ def init_session_state():
     defaults = {
         "lang": "pt",
         "last_lang": "pt",
-        "book": "poemas",
+        "book": "todos os temas",
         "take": 0,
         "mini": 0,
         "tema": "Fatos",
@@ -666,12 +889,6 @@ def init_session_state():
         "key_poema_texto": "",
         "key_poema_tema": "",
         "key_analise": "",
-        "copy_qtd": 2,
-        "copy_qtd_widget": 2,
-        "copy_bundle_text": "",
-        "copy_bundle_token": 0,
-        "copy_bundle_qtd": 0,
-        "copy_bundle_source": "",
         "ypo_theme_widget_token": 0,
 
         # análise :: Machina / OLA
@@ -688,46 +905,67 @@ apply_styles()
 init_session_state()
 
 
-def _copy_bundle_source_key(curr_ypoema=""):
-    """Identidade do yPoema usado pelo pacote de cópias.
-
-    Evita que um pacote montado para um tema/variação continue visível
-    depois de troca de tema, livro, idioma ou nova variação.
-    """
-    texto = str(curr_ypoema or "")
-    return "|".join([
-        str(st.session_state.get("book", "")),
-        str(st.session_state.get("take", "")),
-        str(st.session_state.get("tema", "")),
-        str(st.session_state.get("lang", "")),
-        str(hash(texto)),
-    ])
+def limpar_retrato_ypo():
+    """Retira da tela o Retrato antigo ao gerar ou navegar em yPoemas."""
+    st.session_state.pop("retrato_preview_png", None)
+    st.session_state.pop("retrato_preview_nome", None)
+    st.session_state.pop("retrato_preview_context", None)
+    st.session_state.pop("retrato_focus_pending", None)
+    st.session_state.pop("ypo_retrato_preservar_palco", None)
 
 
-def limpar_copias_palco():
-    """Remove pacote de cópias antigo sem alterar a quantidade escolhida."""
-    st.session_state["copy_bundle_text"] = ""
-    st.session_state["copy_bundle_qtd"] = 0
-    st.session_state["copy_bundle_source"] = ""
-    st.session_state["copy_bundle_token"] = int(st.session_state.get("copy_bundle_token", 0)) + 1
+def limpar_retrato_off():
+    """Retira da tela o Retrato antigo ao navegar em Off-Machina."""
+    st.session_state.pop("off_retrato_preview_png", None)
+    st.session_state.pop("off_retrato_preview_nome", None)
+    st.session_state.pop("off_retrato_focus_pending", None)
+    st.session_state.pop("off_retrato_preview_context", None)
+    st.session_state.pop("off_retrato_preservar_palco", None)
 
-
-def _normalizar_qtd_copias(value):
-    """Quantidade em lote: 2..9. Para +1, o botão ✚ já cumpre esse papel."""
-    try:
-        qtd = int(value)
-    except Exception:
-        qtd = 2
-    return max(2, min(9, qtd))
-
-
-def _on_copy_qtd_change():
-    """Lista de quantidade como ação: um clique já escolhe e prepara o resultado."""
-    st.session_state["copy_qtd"] = _normalizar_qtd_copias(
-        st.session_state.get("copy_qtd_widget", st.session_state.get("copy_qtd", 2))
+def focar_retrato_no_palco(anchor_id):
+    """Move o foco visual para o Retrato recém-gerado."""
+    anchor_id = re.sub(r"[^A-Za-z0-9_-]+", "_", str(anchor_id or "retrato_gerado"))
+    components.html(
+        f"""
+        <script>
+        setTimeout(function() {{
+            const alvo = window.parent.document.getElementById({anchor_id!r});
+            if (alvo) {{
+                alvo.scrollIntoView({{behavior: 'smooth', block: 'start'}});
+            }}
+        }}, 80);
+        </script>
+        """,
+        height=0,
     )
-    st.session_state["copy_qtd_changed"] = True
 
+
+def _gerar_retrato_do_snapshot(prefixo):
+    """Gera o Retrato do palco já exibido, antes do rerun."""
+    if prefixo == "ypo":
+        texto = st.session_state.get("ypo_palco_snapshot_text", "")
+        titulo = st.session_state.get("ypo_palco_snapshot_title", st.session_state.get("tema", ""))
+        imagem = st.session_state.get("ypo_palco_snapshot_image", "")
+        contexto = st.session_state.get("ypo_palco_snapshot_context")
+        png = criar_retrato_png(texto, imagem, titulo, selo_size=RETRATO_SELO_SIZE)
+        if png:
+            st.session_state["retrato_preview_png"] = png
+            st.session_state["retrato_preview_nome"] = re.sub(r"[^A-Za-z0-9_-]+", "_", str(titulo or "retrato")).strip("_") or "retrato"
+            st.session_state["retrato_preview_context"] = contexto
+            st.session_state["retrato_focus_pending"] = True
+            st.session_state["ypo_retrato_preservar_palco"] = True
+    elif prefixo == "off":
+        texto = st.session_state.get("off_palco_snapshot_text", "")
+        titulo = st.session_state.get("off_palco_snapshot_title", "")
+        imagem = st.session_state.get("off_palco_snapshot_image", "")
+        contexto = st.session_state.get("off_palco_snapshot_context")
+        png = criar_retrato_png(texto, imagem, titulo, selo_size=RETRATO_SELO_SIZE)
+        if png:
+            st.session_state["off_retrato_preview_png"] = png
+            st.session_state["off_retrato_preview_nome"] = re.sub(r"[^A-Za-z0-9_-]+", "_", str(titulo or "retrato")).strip("_") or "retrato"
+            st.session_state["off_retrato_preview_context"] = contexto
+            st.session_state["off_retrato_focus_pending"] = True
+            st.session_state["off_retrato_preservar_palco"] = True
 
 def open_gramado():
     """Cria um container real para o gramado.
@@ -918,7 +1156,6 @@ def _on_palco_book_change():
     if choice != current_book:
         st.session_state.book = choice
         st.session_state.take = 0
-        limpar_copias_palco()
         _bump_palco_theme_widget()
     _sync_book_theme_state()
 
@@ -939,10 +1176,6 @@ def _on_palco_theme_change():
     old_take = st.session_state.get("take", 0)
     st.session_state.take = take
     st.session_state.tema = temas_list[take]
-    if take != old_take:
-        limpar_copias_palco()
-
-
 def pick_book_palco():
     """Escolhe o livro yPoemas diretamente no palco."""
     _sync_book_theme_state()
@@ -1283,7 +1516,7 @@ ___
 - ◀ = Move para o tema anterior
 - ✻ = Escolhe um tema aleatoriamente
 - ▶ = Move para o próximo tema
-♫ ouvir a leitura do texto
+- ♫ = ouvir a leitura do texto
 - ? = Modo de Usar & Manual do Usuário
 ___
 Selecione um tema na lista de Temas
@@ -1395,22 +1628,21 @@ def _help_find_ypo_file(nome_tema):
     return ""
 
 
+@dna_monitor
 def _help_info_estavel(nome_tema):
-    info = {"titulo": str(nome_tema or "").strip(), "genero": "", "imagem": "", "versos": ""}
-    path = _project_path("base", "info.txt")
-    try:
-        with open(path, encoding="utf-8-sig") as arquivo:
-            for linha in arquivo:
-                if not linha.startswith("|"):
-                    continue
-                campos = linha.split("|")
-                if len(campos) >= 5 and _md_nome_chave(campos[1]) == _md_nome_chave(nome_tema):
-                    info.update({"titulo": campos[1].strip() or info["titulo"], "genero": campos[2].strip(), "imagem": campos[3].strip(), "versos": campos[4].strip()})
-                    break
-    except Exception:
-        pass
-    return info
-
+    # return _help_info_estavel_legacy(nome_tema)  # <CHG>
+    registro = _dna_registro_tema(nome_tema)
+    return {
+        "titulo": registro.get("tema") or str(nome_tema or "").strip(),
+        "livro": registro.get("livro", ""),
+        "banco_tematico": registro.get("banco_tematico", ""),
+        "versos": registro.get("versos", ""),
+        "verbetes_no_texto": registro.get("verbetes_no_texto", ""),
+        "verbetes_do_tema": registro.get("verbetes_do_tema", ""),
+        "total_de_itimos": registro.get("total_de_itimos", ""),
+        "qtd_de_variacoes": registro.get("qtd_de_variacoes", ""),
+        "qtd_cientifica": registro.get("qtd_cientifica", ""),
+    }
 
 def _dados_vivos_do_tema(nome_tema):
     """Recalcula a realidade do tema e do yPoema no instante do Help."""
@@ -1442,52 +1674,34 @@ def _dados_vivos_do_tema(nome_tema):
     return dados
 
 
+@dna_monitor
 def _qtd_variacoes_index(nome_tema):
-    """Lê do ./base/index.txt o único resultado técnico persistido."""
-    path = _project_path("base", "index.txt")
-    if not os.path.exists(path):
-        return ""
-    alvo = _md_nome_chave(str(nome_tema or ""))
-    try:
-        with open(path, encoding="utf-8-sig") as arquivo:
-            for raw in arquivo:
-                linha = raw.strip()
-                if not linha:
-                    continue
-                partes = [p.strip() for p in re.split(r"\s*[:|;]\s*", linha) if p.strip()]
-                if not partes or _md_nome_chave(partes[0]) != alvo:
-                    continue
-                for parte in partes[1:]:
-                    digitos = re.sub(r"\D", "", parte)
-                    if digitos:
-                        return _fmt_numero_leitor(digitos)
-    except Exception:
-        pass
-    return ""
-
+    # return _qtd_variacoes_index_legacy(nome_tema)  # <CHG>
+    valor = _dna_registro_tema(nome_tema).get("qtd_de_variacoes", "")
+    return _fmt_numero_leitor(valor) if valor else ""
 
 def update_help_info(nome_tema):
-    """Ficha técnica viva: três cálculos JIT e variações vindas do índice."""
+    """Ficha Técnica: uma única autoridade permanente, base/DNA.TXT."""
     info = _help_info_estavel(nome_tema)
-    vivos = _dados_vivos_do_tema(nome_tema)
-    variacoes = _qtd_variacoes_index(nome_tema)
     linhas = [f"Título: {info.get('titulo') or nome_tema}"]
-    if info.get("genero"):
-        linhas.append(f"Gênero: {info['genero']}")
-    if info.get("imagem"):
-        linhas.append(f"Imagem: {info['imagem']}")
-    if info.get("versos"):
-        linhas.append(f"Versos: {_fmt_numero_leitor(info['versos'])}")
-    linhas.extend([
-        f"Verbetes no Texto: {_fmt_numero_leitor(vivos['verbetes_no_texto'])}",
-        f"Total de ítimos: {_fmt_numero_leitor(vivos['total_itimos'])}",
-        f"Total de verbetes: {_fmt_numero_leitor(vivos['total_verbetes'])}",
-    ])
-    if variacoes:
-        linhas.append(f"Qtd. de Variações: {variacoes}")
-    linhas.append("made in Machina")
+    if info.get("livro"):
+        linhas.append(f"Livro: {info['livro']}")
+    if info.get("banco_tematico"):
+        linhas.append(f"Banco Temático: {info['banco_tematico']}")
+    pares = [
+        ("Versos", "versos"),
+        ("Verbetes no Texto", "verbetes_no_texto"),
+        ("Verbetes do Tema", "verbetes_do_tema"),
+        ("Total de ítimos", "total_de_itimos"),
+        ("Qtd. de Variações", "qtd_de_variacoes"),
+        ("Notação Científica", "qtd_cientifica"),
+    ]
+    for rotulo, campo in pares:
+        valor = info.get(campo)
+        if valor:
+            linhas.append(f"{rotulo}: {_fmt_numero_leitor(valor) if campo != 'qtd_cientifica' else valor}")
+    linhas.append("made by Machina")
     return linhas
-
 
 def render_matrix_ficha_tecnica_ypoemas(tema):
     """Mostra Matrix à esquerda e Ficha Técnica à direita, sem vazar HTML/base64."""
@@ -1762,52 +1976,137 @@ def load_eureka(part_of_word):
     return lexico_list
 
 
+
+# -----------------------------------------------------------------------------
+# DNA.TXT :: autoridade central em transição
+# As antigas consultas permanecem abaixo, comentadas com <CHG>, até a degola.
+# -----------------------------------------------------------------------------
+DNA_FIELDS = (
+    "codigo", "tema", "ativo", "ordem", "livro", "banco_tematico",
+    "versos", "verbetes_no_texto", "verbetes_do_tema", "total_de_itimos",
+    "qtd_de_variacoes", "qtd_cientifica",
+)
+
+
+def _dna_txt_path():
+    return _project_path("base", "DNA.TXT")
+
+
+def _dna_normaliza_tema(value):
+    return _md_nome_chave(str(value or ""))
+
+
 @st.cache_data
-def load_temas(book):  # List of themes inside a Book
-    book_list = []
-    with open(
-        os.path.join("./base/rol_" + book + ".txt"), "r", encoding="utf-8"
-    ) as file:
-        for line in file:
-            line = line.replace(" ", "")
-            book_list.append(line.strip("\n"))
+def _dna_registros():
+    path = _dna_txt_path()
+    if not os.path.exists(path):
+        return []
+    header = []
+    registros = []
+    with open(path, encoding="utf-8-sig") as arquivo:
+        for raw in arquivo:
+            linha = raw.strip()
+            if not linha:
+                continue
+            if linha == "<EOF>":
+                break
+            if not linha.startswith("|"):
+                continue
+            campos = [campo.strip() for campo in linha.split("|")[1:-1]]
+            if not header:
+                header = campos
+                continue
+            if len(campos) != len(header):
+                continue
+            registros.append(dict(zip(header, campos)))
+    return registros
 
-    return book_list
+
+def _dna_registro_tema(nome_tema):
+    alvo = _dna_normaliza_tema(nome_tema)
+    for registro in _dna_registros():
+        if _dna_normaliza_tema(registro.get("tema")) == alvo:
+            return registro
+    return {}
+
+
+def _dna_ordem(registro):
+    try:
+        return int(str(registro.get("ordem", "")).strip())
+    except Exception:
+        return 10**9
+
+
+def _dna_ativo(registro):
+    return str(registro.get("ativo", "")).strip().upper() in {"S", "SIM", "1", "TRUE"}
+
+
+def _dna_livros(registro):
+    texto = str(registro.get("livro", "") or "")
+    return [item.strip() for item in re.split(r"[;,]", texto) if item.strip()]
+
+
+def _dna_temas_do_livro(book):
+    book = str(book or "").strip()
+    registros = [r for r in _dna_registros() if _dna_ativo(r)]
+    registros.sort(key=lambda r: (_dna_ordem(r), str(r.get("tema", "")).casefold()))
+    if book == "todos os temas":
+        return [r.get("tema", "") for r in registros if r.get("tema")]
+    if book == "todos os signos":
+        return [
+            r.get("tema", "") for r in registros
+            if {"signos_fem", "signos_mas"}.intersection(_dna_livros(r))
+        ]
+    return [r.get("tema", "") for r in registros if book in _dna_livros(r)]
+
+
+def _dna_banco_tematico(nome_tema):
+    return str(_dna_registro_tema(nome_tema).get("banco_tematico", "") or "").strip()
+
+
+def _dna_fmt_html(nome_tema):
+    r = _dna_registro_tema(nome_tema)
+    if not r:
+        return "nonono"
+    linhas = [
+        ("Titulo", r.get("tema") or nome_tema),
+        ("Livro", r.get("livro")),
+        ("Banco Temático", r.get("banco_tematico")),
+        ("Versos", r.get("versos")),
+        ("Verbetes no texto", r.get("verbetes_no_texto")),
+        ("Verbetes do Tema", r.get("verbetes_do_tema")),
+        ("Banco de Ítimos", r.get("total_de_itimos")),
+        ("Análise", r.get("qtd_de_variacoes")),
+        ("Notação Científica", r.get("qtd_cientifica")),
+    ]
+    return "<br><br><br>" + "".join(
+        f"{rotulo}: {valor}<br>" for rotulo, valor in linhas if str(valor or "").strip()
+    ) + "<br>"
+
+@st.cache_data
+@dna_monitor
+def load_temas(book):
+    # return _legacy_load_temas(book)  # <CHG>
+    temas = _dna_temas_do_livro(book)
+    if temas:
+        return temas
+    # Transição segura apenas enquanto DNA.TXT ainda não foi criado.
+    path = os.path.join("./base/rol_" + str(book) + ".txt")
+    if not os.path.exists(_dna_txt_path()) and os.path.exists(path):
+        with open(path, encoding="utf-8") as arquivo:
+            return [raw.replace(" ", "").strip() for raw in arquivo if raw.strip()]
+    return []
 
 
 @st.cache_data
+@dna_monitor
 def load_info(nome_tema):
-    with open(os.path.join("./base/" + "info.txt"), "r", encoding="utf-8") as file:
-        result = "nonono"
-        for line in file:
-            if line.startswith("|"):
-                pipe = line.split("|")
-                if pipe[1].upper() == nome_tema.upper():
-                    genero = pipe[2]
-                    imagem = pipe[3]
-                    qtd_versos = pipe[4]
-                    qtd_wordin = pipe[5]
-                    qtd_lexico = pipe[6]
-                    qtd_itimos = pipe[7]
-                    qtd_analiz = pipe[8]
-                    qtd_cienti = pipe[9]
-                    result = "<br>"
-                    result += "<br>"
-                    result += "<br>"
-                    result += "Titulo: " + nome_tema + "<br>"
-                    result += "Gênero: " + genero + "  " + "<br>"
-                    result += "Imagem: " + imagem + "  " + "<br>"
-                    result += "Versos: " + qtd_versos + "  " + "<br>"
-                    result += "Verbetes no texto: " + qtd_wordin + "  " + "<br>"
-                    result += "Verbetes  do Tema: " + qtd_lexico + "  " + "<br>"
-                    result += "• Banco de Ítimos: " + qtd_itimos + "  " + "<br>"
-                    result += "Análise : " + qtd_analiz + "  " + "<br>"
-                    result += "Notação Científica: " + qtd_cienti + "  " + "<br>"
-                    result += "<br>"
+    # return _legacy_load_info(nome_tema)  # <CHG>
+    return _dna_fmt_html(nome_tema)
 
-        return result
 
 @st.cache_data
+@dna_monitor
 def load_index():  # Load indexes numbers for all themes
     index_list = []
 
@@ -1874,16 +2173,33 @@ def load_all_offs():
     return OFF_BOOKS_LIST
 
 
+def _off_book_path(book):
+    """Localiza o arquivo .Pip sem depender da caixa da extensão."""
+    book = str(book or "").strip()
+    off_dir = _project_path("off_machina")
+    for ext in (".Pip", ".pip", ".PIP"):
+        path = os.path.join(off_dir, book + ext)
+        if os.path.isfile(path):
+            return path
+    return os.path.join(off_dir, book + ".Pip")
+
+def _off_book_has_catalog(book):
+    """Confere a primeira linha física do .Pip, tolerando BOM, caixa e espaços externos."""
+    try:
+        with open(_off_book_path(book), encoding="utf-8-sig") as file:
+            primeira = file.readline().rstrip("\r\n").lstrip()
+    except Exception:
+        return False
+    esperado = "|Dados de Catalogação na Publicação Internacional||"
+    return primeira.casefold().startswith(esperado.casefold())
+
 def load_off_book(book):  # Load selected off_book
     book_full = []
-    full_name = os.path.join("./off_machina/", book) + ".Pip"
-    with open(full_name, encoding="utf-8") as file:
+    with open(_off_book_path(book), encoding="utf-8-sig") as file:
         for line in file:
             if line.startswith("|"):
                 book_full.append(line)
-
     return book_full
-
 
 def load_book_pages(book):  # Load Book pages for off_book
     book_pages = []
@@ -2083,167 +2399,6 @@ def write_livro_vivo_texto(LOGO_TEXTO, LOGO_IMAGE=None):
 
     st.markdown(_off_machina_html(LOGO_TEXTO), unsafe_allow_html=True)
 
-def _gerar_ypoema_texto_cru(nome_tema):
-    """Gera uma variação sem alterar LYPO/TYPO nem o yPoema do palco."""
-    script = gera_poema(nome_tema, "")
-    linhas = [nome_tema]
-    for line in script:
-        if line == "\n":
-            linhas.append("")
-        else:
-            # Preserva recuos autorais do |$|: &emsp; vira espaço largo real.
-            linhas.append(html.unescape(str(line).rstrip("\n")))
-    return _trim_blank_edges_preservando_recuo(linhas)
-
-
-def _remover_titulo_inicial_duplicado(texto, nome_tema):
-    """Remove o título interno quando ele repete o nome do tema, preservando recuos."""
-    linhas = str(texto or "").splitlines()
-    while linhas and not linhas[0].strip():
-        linhas.pop(0)
-
-    if linhas and linhas[0].strip().casefold() == str(nome_tema or "").strip().casefold():
-        linhas.pop(0)
-        while linhas and not linhas[0].strip():
-            linhas.pop(0)
-
-    return _trim_blank_edges_preservando_recuo(linhas)
-
-
-def montar_copias_ypoema(curr_ypoema, nome_tema, qtd):
-    """Monta 2..9 cópias/variações para leitura externa, em desenho clean."""
-    qtd = _normalizar_qtd_copias(qtd)
-
-    partes = []
-    atual = _ypoema_html_to_text(curr_ypoema)
-
-    for n in range(1, qtd + 1):
-        if n == 1 and atual:
-            texto = atual
-        else:
-            texto = _gerar_ypoema_texto_cru(nome_tema)
-
-        texto = _remover_titulo_inicial_duplicado(texto, nome_tema)
-
-        partes.append(
-            f"___\n\n"
-            f"{nome_tema} #{n}\n\n"
-            f"{texto}"
-        )
-
-    return ("\n".join(partes).strip() + "\n___").strip()
-
-
-def _copy_bundle_total_blocos(texto, qtd_real=None):
-    """Calcula quantidade real de blocos/yPoemas no pacote de cópias."""
-    try:
-        total_blocos = int(qtd_real) if qtd_real is not None else 0
-    except Exception:
-        total_blocos = 0
-
-    if total_blocos < 1:
-        marcadores = len(re.findall(r"(?m)^___\s*$", str(texto or "")))
-        total_blocos = marcadores - 1 if str(texto or "").strip().endswith("___") and marcadores > 1 else marcadores
-        total_blocos = max(1, total_blocos)
-
-    return total_blocos
-
-
-def render_copy_bundle_button(texto, token):
-    """Botão HTML/JS: copia de verdade e troca o próprio texto para 'copiado'."""
-    import json
-
-    texto = str(texto or "")
-    js_text = json.dumps(texto, ensure_ascii=False)
-
-    components.html(
-        f"""
-        <div style="font-family:system-ui, sans-serif; padding:0; margin-top:-5px;">
-            <button id="copy_btn_{token}" style="
-                width:100%;
-                min-height:38px;
-                border:1px solid rgba(49,51,63,.22);
-                border-radius:8px;
-                padding:7px 12px;
-                cursor:pointer;
-                background:white;
-                color:rgb(49,51,63);
-                font-size:14px;
-                line-height:1.2;
-                white-space:nowrap;" title="variações">
-                copiar
-            </button>
-        </div>
-        <script>
-        const txt_{token} = {js_text};
-        const btn_{token} = document.getElementById("copy_btn_{token}");
-
-        async function fallbackCopy_{token}(text) {{
-            const ta = document.createElement("textarea");
-            ta.value = text;
-            ta.setAttribute("readonly", "");
-            ta.style.position = "fixed";
-            ta.style.left = "-9999px";
-            ta.style.top = "0";
-            document.body.appendChild(ta);
-            ta.focus();
-            ta.select();
-            const ok = document.execCommand("copy");
-            document.body.removeChild(ta);
-            return ok;
-        }}
-
-        if (btn_{token}) {{
-            btn_{token}.addEventListener("click", async function() {{
-                try {{
-                    if (navigator.clipboard && window.isSecureContext) {{
-                        await navigator.clipboard.writeText(txt_{token});
-                    }} else {{
-                        const ok = await fallbackCopy_{token}(txt_{token});
-                        if (!ok) throw new Error("fallback copy failed");
-                    }}
-                    btn_{token}.innerText = "copiado";
-                }} catch (e) {{
-                    try {{
-                        const ok = await fallbackCopy_{token}(txt_{token});
-                        btn_{token}.innerText = ok ? "copiado" : "copiar";
-                    }} catch (e2) {{
-                        btn_{token}.innerText = "copiar";
-                    }}
-                }}
-            }});
-        }}
-        </script>
-        """,
-        height=48,
-    )
-
-
-def render_copy_bundle_widget(texto, token, qtd_real=None):
-    """Mostra o pacote completo para conferência e fallback de cópia."""
-    if not texto:
-        return
-
-    texto = str(texto)
-    total_blocos = _copy_bundle_total_blocos(texto, qtd_real)
-
-    tema_label = str(st.session_state.get("tema", "") or "").strip()
-
-    pacote_label = f'pacote para copiar ({total_blocos}) ("{tema_label}")'
-    st.markdown(
-        f"<div style='text-align:center; margin:0.10rem 0 0.36rem 0;'>{html.escape(pacote_label)}</div>",
-        unsafe_allow_html=True,
-    )
-    st.markdown("<div style='height:24px;'></div>", unsafe_allow_html=True)
-    st.text_area(
-        pacote_label,
-        value=texto,
-        height=420,
-        key=f"copy_bundle_textarea_{token}",
-        label_visibility="collapsed",
-    )
-
-
 RETRATO_ORIGEM_URL = "ypoemas.streamlit.app"
 RETRATO_SELO_SIZE = 40
 RETRATO_SELO_RESPIRO = 30
@@ -2264,14 +2419,14 @@ def _retrato_logo_yp(size):
         return None
 
 
-def _aplicar_selo_origem(canvas, size, respiro=RETRATO_SELO_RESPIRO):
+def _aplicar_selo_origem(canvas, size, respiro=RETRATO_SELO_RESPIRO, family=None):
     """Assina o Retrato com yP + endereço de origem no canto inferior direito."""
     logo = _retrato_logo_yp(size)
     if logo is None:
         return canvas
 
     draw = ImageDraw.Draw(canvas)
-    url_font = _retrato_font(max(16, int(round(size * 0.72))))
+    url_font = _retrato_font(max(16, int(round(size * 0.72))), family=family)
     url = RETRATO_ORIGEM_URL
     bbox = draw.textbbox((0, 0), url, font=url_font)
     text_w = bbox[2] - bbox[0]
@@ -2288,117 +2443,208 @@ def _aplicar_selo_origem(canvas, size, respiro=RETRATO_SELO_RESPIRO):
     return canvas
 
 
-def _retrato_font(size, bold=False):
-    """Carrega uma fonte Unicode disponível para o PNG do Retrato."""
+def _retrato_font(size, bold=False, family=None):
+    """Carrega no PNG a fonte escolhida em Fontes & Letras."""
+    family = str(family or "Trebuchet MS").strip()
+
+    # Arquivos mais prováveis no Windows e no Linux/Streamlit Cloud.
+    nomes = {
+        "Trebuchet MS": ("trebucbd.ttf", "trebuc.ttf"),
+        "Inter": ("Inter-Bold.ttf", "Inter-Regular.ttf"),
+        "Spectral": ("Spectral-Bold.ttf", "Spectral-Regular.ttf"),
+        "EB Garamond": ("EBGaramond-Bold.ttf", "EBGaramond-Regular.ttf"),
+        "Libre Baskerville": ("LibreBaskerville-Bold.ttf", "LibreBaskerville-Regular.ttf"),
+        "Cormorant Garamond": ("CormorantGaramond-Bold.ttf", "CormorantGaramond-Regular.ttf"),
+        "Palatino Linotype": ("palab.ttf", "pala.ttf"),
+        "Georgia": ("georgiab.ttf", "georgia.ttf"),
+        "Atkinson Hyperlegible": ("AtkinsonHyperlegible-Bold.ttf", "AtkinsonHyperlegible-Regular.ttf"),
+        "OpenDyslexic": ("OpenDyslexic-Bold.otf", "OpenDyslexic-Regular.otf"),
+        "JetBrains Mono": ("JetBrainsMono-Bold.ttf", "JetBrainsMono-Regular.ttf"),
+        "Courier New": ("courbd.ttf", "cour.ttf"),
+        "IBM Plex Sans": ("IBMPlexSans-Bold.ttf", "IBMPlexSans-Regular.ttf"),
+    }
+
+    bold_name, regular_name = nomes.get(family, ("", ""))
+    filename = bold_name if bold else regular_name
     candidates = []
-    if bold:
+
+    if filename:
         candidates.extend([
-            _project_path("fonts", "DejaVuSans-Bold.ttf"),
-            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
-            "C:/Windows/Fonts/arialbd.ttf",
+            _project_path("fonts", filename),
+            os.path.join("C:/Windows/Fonts", filename),
+            filename,
         ])
-    else:
-        candidates.extend([
-            _project_path("fonts", "DejaVuSans.ttf"),
-            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
-            "C:/Windows/Fonts/arial.ttf",
-        ])
+
+    # Alguns pacotes Linux usam diretórios e nomes ligeiramente diferentes.
+    linux_aliases = {
+        "Inter": ["/usr/share/fonts/truetype/inter/Inter-Bold.ttf" if bold else "/usr/share/fonts/truetype/inter/Inter-Regular.ttf"],
+        "EB Garamond": ["/usr/share/fonts/truetype/ebgaramond/EBGaramond-Bold.ttf" if bold else "/usr/share/fonts/truetype/ebgaramond/EBGaramond-Regular.ttf"],
+        "JetBrains Mono": ["/usr/share/fonts/truetype/jetbrains-mono/JetBrainsMono-Bold.ttf" if bold else "/usr/share/fonts/truetype/jetbrains-mono/JetBrainsMono-Regular.ttf"],
+    }
+    candidates.extend(linux_aliases.get(family, []))
+
+    # Fallback Unicode seguro, apenas quando a fonte escolhida não existe
+    # como arquivo acessível ao Pillow naquele computador.
+    candidates.extend([
+        _project_path("fonts", "DejaVuSans-Bold.ttf" if bold else "DejaVuSans.ttf"),
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" if bold else "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+        "/usr/share/fonts/truetype/liberation2/LiberationSans-Bold.ttf" if bold else "/usr/share/fonts/truetype/liberation2/LiberationSans-Regular.ttf",
+        "C:/Windows/Fonts/arialbd.ttf" if bold else "C:/Windows/Fonts/arial.ttf",
+        "DejaVuSans-Bold.ttf" if bold else "DejaVuSans.ttf",
+    ])
 
     for candidate in candidates:
         try:
-            if candidate and os.path.exists(candidate):
-                return ImageFont.truetype(candidate, size=size)
+            if not candidate:
+                continue
+            if os.path.isabs(candidate) and not os.path.exists(candidate):
+                continue
+            return ImageFont.truetype(candidate, size=int(size))
         except Exception:
             pass
-    return ImageFont.load_default()
 
+    raise RuntimeError("Fonte Unicode não encontrada para gerar o Retrato.")
 
 def _retrato_wrap(draw, texto, font, largura):
-    """Quebra o yPoema sem alterar suas linhas autorais."""
+    """Quebra o texto preservando o recuo autoral com espaços ASCII."""
     linhas_finais = []
     for linha in str(texto or "").splitlines():
+        linha = linha.replace("\t", "    ")
         if not linha:
             linhas_finais.append("")
             continue
 
-        palavras = linha.split(" ")
-        atual = ""
+        recuo = linha[: len(linha) - len(linha.lstrip(" "))]
+        conteudo = linha[len(recuo):]
+
+        if not conteudo:
+            linhas_finais.append(recuo)
+            continue
+
+        palavras = conteudo.split(" ")
+        atual = recuo
         for palavra in palavras:
-            tentativa = palavra if not atual else atual + " " + palavra
+            if palavra == "":
+                continue
+            tentativa = atual + palavra if atual.endswith(" ") else atual + " " + palavra
             bbox = draw.textbbox((0, 0), tentativa, font=font)
-            if bbox[2] - bbox[0] <= largura or not atual:
+            if bbox[2] - bbox[0] <= largura or atual == recuo:
                 atual = tentativa
             else:
-                linhas_finais.append(atual)
-                atual = palavra
-        linhas_finais.append(atual)
+                linhas_finais.append(atual.rstrip())
+                atual = recuo + palavra
+        linhas_finais.append(atual.rstrip())
     return linhas_finais
 
 
 def criar_retrato_png(ypoema_html, image_path, tema, selo_size=24):
-    """Monta um PNG com imagem, yPoema e Denominação de Origem."""
+    """Monta o Retrato com a imagem e o texto exibidos no palco."""
     if not image_path or not os.path.exists(image_path):
         return None
 
-    texto = _ypoema_html_to_text(ypoema_html)
+    texto = unicodedata.normalize("NFC", _ypoema_html_to_text(ypoema_html))
+
+    def _limpar_recuo_retrato(linha):
+        prefixo = []
+        pos = 0
+        while pos < len(linha):
+            ch = linha[pos]
+            if ch == " ":
+                prefixo.append(" ")
+                pos += 1
+                continue
+            if ch == "\t":
+                prefixo.append("    ")
+                pos += 1
+                continue
+            if ch == "\u00A0" or "\u2000" <= ch <= "\u200A" or ch in ("\u202F", "\u205F", "\u3000"):
+                prefixo.append("  ")
+                pos += 1
+                continue
+            break
+        return "".join(prefixo) + linha[pos:]
+
+    texto = "\n".join(_limpar_recuo_retrato(linha) for linha in texto.splitlines())
     if not texto:
         return None
 
-    canvas_w, canvas_h = 1600, 1000
     margin = 64
     gap = 58
-    image_w = 650
-    text_x = margin + image_w + gap
-    text_w = canvas_w - text_x - margin
+    fonte_retrato = _fonte_palco_leitor()
+    # Retrato preserva a fonte escolhida pelo leitor. O corpo recebe apenas
+    # ampliação técnica mínima para não ficar diminuto no PNG.
+    corpo_palco = _corpo_palco_leitor()
+    corpo_png = max(28, int(round(corpo_palco * 1.35)))
+    body_font = _retrato_font(corpo_png, family=fonte_retrato)
 
-    canvas = Image.new("RGB", (canvas_w, canvas_h), "white")
+    medida = Image.new("RGB", (1, 1), "white")
+    draw_medida = ImageDraw.Draw(medida)
+    text_w_max = 900
 
     with Image.open(image_path) as source:
         art = ImageOps.exif_transpose(source).convert("RGB")
-        art = ImageOps.fit(
-            art,
-            (image_w, canvas_h - (2 * margin)),
-            method=Image.Resampling.LANCZOS,
-            centering=(0.5, 0.5),
-        )
-    canvas.paste(art, (margin, margin))
+        original_w, original_h = art.size
+        image_w_max = 360
+        escala = min(1.0, image_w_max / max(1, original_w))
+        image_w = max(1, int(round(original_w * escala)))
+        image_h = max(1, int(round(original_h * escala)))
+        if (image_w, image_h) != art.size:
+            art = art.resize((image_w, image_h), Image.Resampling.LANCZOS)
 
-    draw = ImageDraw.Draw(canvas)
-    title_font = _retrato_font(42, bold=True)
-    body_font = _retrato_font(31)
+    linhas = _retrato_wrap(draw_medida, texto, body_font, text_w_max)
+    bbox_linha = draw_medida.textbbox((0, 0), "Ag", font=body_font)
+    line_gap = max(8, int(round(corpo_png * 0.28)))
+    line_h = max(1, bbox_linha[3] - bbox_linha[1]) + line_gap
+    altura_texto = max(line_h, len(linhas) * line_h)
 
-    titulo = str(tema or "").strip()
-    y = margin
-    if titulo:
-        draw.text((text_x, y), titulo, font=title_font, fill="black")
-        y += 70
-
-    line_gap = 14
-    linhas = _retrato_wrap(draw, texto, body_font, text_w)
-    bbox = draw.textbbox((0, 0), "Ag", font=body_font)
-    line_h = (bbox[3] - bbox[1]) + line_gap
-
+    larguras_linhas = []
     for linha in linhas:
-        if y + line_h > canvas_h - margin:
-            break
+        if linha:
+            bbox = draw_medida.textbbox((0, 0), linha, font=body_font)
+            larguras_linhas.append(max(1, bbox[2] - bbox[0]))
+    largura_texto_real = max(larguras_linhas or [1])
+
+    selo_real = max(1, int(round(int(selo_size) * 0.60)))
+    footer_font = _retrato_font(max(16, int(round(selo_real * 0.72))), family=fonte_retrato)
+    footer_bbox = draw_medida.textbbox((0, 0), RETRATO_ORIGEM_URL, font=footer_font)
+    footer_text_w = footer_bbox[2] - footer_bbox[0]
+    footer_gap_x = max(8, int(round(selo_real * 0.35)))
+    footer_group_w = selo_real + footer_gap_x + footer_text_w
+    footer_h = selo_real
+    footer_gap_y = 34
+
+    top_content_w = image_w + gap + largura_texto_real
+    largura_conteudo = margin + top_content_w + margin
+    largura_rodape = margin + footer_group_w + margin
+    canvas_w = max(700, largura_conteudo, largura_rodape)
+    canvas_h = max(520, margin + max(image_h, altura_texto) + footer_gap_y + footer_h + margin)
+
+    canvas = Image.new("RGB", (canvas_w, canvas_h), "white")
+    draw = ImageDraw.Draw(canvas)
+    image_y = max(margin, (canvas_h - image_h) // 2)
+    canvas.paste(art, (margin, image_y))
+    text_x = margin + image_w + gap
+    y = margin
+    for linha in linhas:
         draw.text((text_x, y), linha, font=body_font, fill="black")
         y += line_h
 
-    _aplicar_selo_origem(canvas, selo_size, RETRATO_SELO_RESPIRO)
-
+    _aplicar_selo_origem(canvas, selo_real, RETRATO_SELO_RESPIRO, family=fonte_retrato)
     output = BytesIO()
     canvas.save(output, format="PNG", optimize=True)
     return output.getvalue()
 
 
-@st.cache_data
-def load_images():
-    images_list = []
-    with open(os.path.join("./base/images.txt"), encoding="utf-8") as lista:
-        for line in lista:
-            images_list.append(line)
 
-    return images_list
+@st.cache_data
+@dna_monitor
+def load_images():
+    # return _legacy_load_images()  # <CHG>
+    return [
+        f"{r.get('tema', '')} : {r.get('banco_tematico', '')}\n"
+        for r in _dna_registros()
+        if r.get("tema") and r.get("banco_tematico")
+    ]
 
 
 def load_arts(nome_tema):  # Select image for arts
@@ -2447,32 +2693,31 @@ def _set_sidebar_context_image_for_theme(nome_tema):
 
 
 def _resolve_off_machina_book_image(book_name):
-    """Localiza imagem contextual do livro Off-Machina, sem imagem decorativa de página."""
-    book_name = str(book_name or "").strip()
-    if not book_name:
+    """Localiza capa_<info_book>.jpg com comparação segura de caixa/Unicode."""
+    info_book = os.path.splitext(os.path.basename(str(book_name or "").strip()))[0]
+    if not info_book:
         return ""
 
-    candidates = [
-        os.path.join("./off-machina", "capa_" + book_name + ".jpg"),
-        os.path.join("./off_machina", "capa_" + book_name + ".jpg"),
-        os.path.join("./off-machina", book_name + ".jpg"),
-        os.path.join("./off_machina", book_name + ".jpg"),
-        os.path.join("./images/off_machina", "capa_" + book_name + ".jpg"),
-        os.path.join("./images/off-machina", "capa_" + book_name + ".jpg"),
-        os.path.join("./images/off_machina", book_name + ".jpg"),
-        os.path.join("./images/off-machina", book_name + ".jpg"),
-        os.path.join("./images/off", book_name + ".jpg"),
-        os.path.join("./images/livros", book_name + ".jpg"),
-        os.path.join("./images/books", book_name + ".jpg"),
-        os.path.join("./images", book_name + ".jpg"),
+    wanted = ("capa_" + info_book + ".jpg").casefold()
+    dirs = [
+        _project_path("images", "anima"),
+        _project_path("images"),
+        _project_path("off_machina"),
+        _project_path("off-machina"),
+        _project_path("images", "off_machina"),
+        _project_path("images", "off-machina"),
+        _project_path("images", "livros"),
+        _project_path("images", "books"),
     ]
-
-    for candidate in candidates:
-        if os.path.exists(candidate):
-            return candidate
-
+    for folder in dirs:
+        if not os.path.isdir(folder):
+            continue
+        for real_name in os.listdir(folder):
+            if real_name.casefold() == wanted:
+                path = os.path.join(folder, real_name)
+                if os.path.isfile(path):
+                    return path
     return ""
-
 
 def _images_from_group(group_name):
     """Lista imagens do grupo indicado, sem inferir ou alterar curadoria."""
@@ -2552,6 +2797,10 @@ def render_sidebar_context_image(chosen_id):
     elif str(chosen_id) == "4":
         image_path = st.session_state.get("off_anima_image", "")
     elif str(chosen_id) == "5":
+        page_image = PAGE_IMAGES.get("5", "")
+        if page_image:
+            image_path = os.path.join("./images", page_image)
+    elif str(chosen_id) == "6":
         image_path = st.session_state.get("about_author_image", "")
 
     if image_path and os.path.exists(image_path):
@@ -3077,6 +3326,7 @@ def page_ypoemas():
         st.session_state["ypo_anchor_tema"] = st.session_state.get("tema", "")
 
     if more:
+        limpar_retrato_ypo()
         # ✚ = recarregar / mais uma versão do mesmo tema.
         # Usa a última âncora estável, não o eventual valor alterado por callback.
         frozen_book = st.session_state.get("ypo_anchor_book", _current_book())
@@ -3093,7 +3343,6 @@ def page_ypoemas():
         # O congelamento é feito no estado canônico: book/take/tema.
 
     if last:
-        limpar_copias_palco()
         st.session_state.take -= 1
         if st.session_state.take < 0:
             st.session_state.take = maxy_ypoemas
@@ -3101,13 +3350,11 @@ def page_ypoemas():
         _bump_palco_theme_widget()
 
     if rand:
-        limpar_copias_palco()
         st.session_state.take = random.randrange(0, maxy_ypoemas + 1)
         _sync_book_theme_state()
         _bump_palco_theme_widget()
 
     if nest:
-        limpar_copias_palco()
         st.session_state.take += 1
         if st.session_state.take > maxy_ypoemas:
             st.session_state.take = 0
@@ -3134,6 +3381,10 @@ def page_ypoemas():
             st.session_state.take = 0
             st.session_state.tema = temas_list[0] if temas_list else ""
 
+    preservar_palco_retrato_ypo = bool(
+        st.session_state.pop("ypo_retrato_preservar_palco", False)
+    )
+
     lnew = True
     if manu:
         render_help_ypoemas_com_ficha()
@@ -3154,13 +3405,30 @@ def page_ypoemas():
 
         ypoemas_expander = st.expander(what_book, expanded=True)
         with ypoemas_expander:
-            if st.session_state.lang != st.session_state.last_lang:
+            ypo_snapshot_contexto_entrada = (
+                str(_current_book()),
+                int(st.session_state.get("take", 0)),
+                str(st.session_state.get("lang", "pt")),
+                str(st.session_state.get("tema", "")),
+                str(st.session_state.get("stage_font", "Trebuchet")),
+                int(st.session_state.get("stage_size", 21)),
+            )
+            usou_snapshot_ypo = bool(
+                preservar_palco_retrato_ypo
+                and tuple(st.session_state.get("ypo_palco_snapshot_context") or ())
+                == ypo_snapshot_contexto_entrada
+                and st.session_state.get("ypo_palco_snapshot_poem")
+            )
+
+            if usou_snapshot_ypo:
+                curr_ypoema = st.session_state["ypo_palco_snapshot_poem"]
+            elif st.session_state.lang != st.session_state.last_lang:
                 curr_ypoema = load_lypo()  # changes in lang, keep LYPO
             else:
                 curr_ypoema = load_poema(st.session_state.tema, "")
                 curr_ypoema = load_lypo()
 
-            if st.session_state.lang != "pt":  # translate if idioma <> pt
+            if st.session_state.lang != "pt" and not usou_snapshot_ypo:  # translate if idioma <> pt
                 curr_ypoema = translate(curr_ypoema)
                 typo_user = "TYPO_" + IPAddres
                 with open(
@@ -3186,12 +3454,21 @@ def page_ypoemas():
             st.session_state["ypo_anchor_tema"] = st.session_state.get("tema", "")
 
             LOGO_TEXTO = curr_ypoema
-            _set_sidebar_context_image_for_theme(st.session_state.tema)
+            if usou_snapshot_ypo:
+                snapshot_image = st.session_state.get("ypo_palco_snapshot_image", "")
+                if snapshot_image:
+                    st.session_state["sidebar_context_image"] = snapshot_image
+            else:
+                _set_sidebar_context_image_for_theme(st.session_state.tema)
 
             analysis_voice_atual = str(st.session_state.get("analysis_voice", "Machina")).upper()
+            analise_texto = ""
 
             if analysis_voice_atual == "OLA":
-                analise_texto = gerar_analise_atual(LOGO_TEXTO, st.session_state.tema)
+                if usou_snapshot_ypo:
+                    analise_texto = str(st.session_state.get("ypo_palco_snapshot_analysis", ""))
+                else:
+                    analise_texto = gerar_analise_atual(LOGO_TEXTO, st.session_state.tema)
 
                 col_poema, col_analise = st.columns([1.05, 0.95], gap="large")
                 with col_poema:
@@ -3201,98 +3478,68 @@ def page_ypoemas():
             else:
                 write_ypoema(LOGO_TEXTO, None)
 
-            # Copiar 2..9 ocorrências do tema atual para leituras externas.
-            # Para apenas +1 variação, o botão ✚ já cumpre esse papel.
-            # Mantém o yPoema exibido como #1 e gera variações extras sem alterar o palco.
-            copy_bundle_text = st.session_state.get("copy_bundle_text", "")
-            if st.session_state.get("copy_bundle_source", "") != _copy_bundle_source_key(curr_ypoema):
-                copy_bundle_text = ""
+            # Copy e Retrato devolvem ao leitor o palco atual.
+            texto_saida_palco = LOGO_TEXTO
+            if analise_texto:
+                texto_saida_palco = (
+                    str(LOGO_TEXTO).rstrip()
+                    + "\n\nOLA\n\n"
+                    + str(analise_texto).strip()
+                )
+
+            ypo_snapshot_contexto_atual = (
+                str(_current_book()),
+                int(st.session_state.get("take", 0)),
+                str(st.session_state.get("lang", "pt")),
+                str(st.session_state.get("tema", "")),
+                str(st.session_state.get("stage_font", "Trebuchet")),
+                int(st.session_state.get("stage_size", 21)),
+            )
+            st.session_state["ypo_palco_snapshot_text"] = texto_saida_palco
+            st.session_state["ypo_palco_snapshot_poem"] = LOGO_TEXTO
+            st.session_state["ypo_palco_snapshot_analysis"] = analise_texto
+            st.session_state["ypo_palco_snapshot_context"] = ypo_snapshot_contexto_atual
+            st.session_state["ypo_palco_snapshot_title"] = st.session_state.get("tema", "")
+            st.session_state["ypo_palco_snapshot_image"] = st.session_state.get("sidebar_context_image", "")
+
+            retrato_contexto_salvo = st.session_state.get("retrato_preview_context")
+            if retrato_contexto_salvo and tuple(retrato_contexto_salvo) != ypo_snapshot_contexto_atual:
+                st.session_state.pop("retrato_preview_png", None)
+                st.session_state.pop("retrato_preview_nome", None)
+                st.session_state.pop("retrato_preview_context", None)
+                st.session_state.pop("retrato_focus_pending", None)
 
             st.markdown("<br>", unsafe_allow_html=True)
-
-            qtd_copias_atual = _normalizar_qtd_copias(
-                st.session_state.get("copy_qtd_widget", st.session_state.get("copy_qtd", 2))
-            )
-            st.session_state["copy_qtd"] = qtd_copias_atual
-
-            # Cópias clean:
-            # [ criar (X) ] [ qtd ] [ Retrato ] [ copiar ]
-            copy_left, copy_generate_col, copy_qtd_col, retrato_col, copy_all_col, copy_right = st.columns([2.45, 3.15, 1.85, 2.55, 3.15, 2.45])
-
-            with copy_generate_col:
-                copy_submit = st.button(
-                    f"criar ( {qtd_copias_atual} )",
-                    help="variações",
-                    key="copy_variacoes_btn",
-                    use_container_width=True,
-                )
-
-            with copy_qtd_col:
-                qtd_copias = st.selectbox(
-                    "quantidade de cópias",
-                    list(range(2, 10)),
-                    index=list(range(2, 10)).index(qtd_copias_atual),
-                    key="copy_qtd_widget",
-                    label_visibility="collapsed",
-                    on_change=_on_copy_qtd_change,
-                )
-
+            rodape_left, copy_col, retrato_col, rodape_right = st.columns([3.4, 2.2, 2.2, 3.4])
+            with copy_col:
+                with st.popover("Copy", help="copiar texto", use_container_width=True):
+                    st.code(_ypoema_html_to_text(texto_saida_palco), language=None, wrap_lines=True)
             with retrato_col:
-                retrato_png = criar_retrato_png(
-                    curr_ypoema,
-                    st.session_state.get("sidebar_context_image", ""),
-                    st.session_state.get("tema", ""),
-                    selo_size=RETRATO_SELO_SIZE,
+                st.button(
+                    "Retrato",
+                    key=f"ypo_retrato_btn_{st.session_state.take}_{st.session_state.tema}",
+                    help="mostrar Retrato",
+                    use_container_width=True,
+                    on_click=_gerar_retrato_do_snapshot,
+                    args=("ypo",),
                 )
-                if retrato_png:
-                    nome_retrato = re.sub(
-                        r"[^A-Za-z0-9_-]+",
-                        "_",
-                        str(st.session_state.get("tema", "retrato") or "retrato"),
-                    ).strip("_") or "retrato"
+
+            if st.session_state.get("retrato_preview_png"):
+                st.markdown('<div id="retrato_ypo_gerado"></div>', unsafe_allow_html=True)
+                st.image(st.session_state["retrato_preview_png"], use_container_width=True)
+                if st.session_state.pop("retrato_focus_pending", False):
+                    focar_retrato_no_palco("retrato_ypo_gerado")
+                save_left, save_center, save_right = st.columns([1, 1, 1])
+                with save_center:
                     st.download_button(
-                        "Retrato",
-                        data=retrato_png,
-                        file_name=f"{nome_retrato}.png",
+                        "salvar Retrato",
+                        data=st.session_state["retrato_preview_png"],
+                        file_name=f"{st.session_state.get('retrato_preview_nome', 'retrato')}.png",
                         mime="image/png",
-                        key="retrato_download_btn",
-                        help="Retrato — selo 40px",
+                        key=f"ypo_retrato_save_{st.session_state.take}_{st.session_state.tema}",
                         use_container_width=True,
                         on_click="ignore",
                     )
-
-            qtd_copias = _normalizar_qtd_copias(qtd_copias)
-            st.session_state["copy_qtd"] = qtd_copias
-
-            copy_qtd_changed = bool(st.session_state.pop("copy_qtd_changed", False))
-            copy_submit = bool(copy_submit or copy_qtd_changed)
-
-            if copy_submit:
-                qtd_copias = _normalizar_qtd_copias(st.session_state.get("copy_qtd", 2))
-                st.session_state["copy_bundle_text"] = montar_copias_ypoema(
-                    curr_ypoema,
-                    st.session_state.get("tema", ""),
-                    qtd_copias,
-                )
-                st.session_state["copy_bundle_qtd"] = qtd_copias
-                st.session_state["copy_bundle_source"] = _copy_bundle_source_key(curr_ypoema)
-                st.session_state["copy_bundle_token"] = int(st.session_state.get("copy_bundle_token", 0)) + 1
-                copy_bundle_text = st.session_state.get("copy_bundle_text", "")
-
-            # O botão "copiar..." só aparece quando há pacote real na área de cópias.
-            # Novo tema ou nova geração recriam o token e o texto volta para "copiar...".
-            with copy_all_col:
-                if copy_bundle_text:
-                    render_copy_bundle_button(
-                        copy_bundle_text,
-                        int(st.session_state.get("copy_bundle_token", 0)),
-                    )
-
-            render_copy_bundle_widget(
-                copy_bundle_text,
-                int(st.session_state.get("copy_bundle_token", 0)),
-                st.session_state.get("copy_bundle_qtd", None),
-            )
 
             if manu:
                 LOGO_TEXTO = load_info(st.session_state.tema)
@@ -3435,16 +3682,14 @@ def page_eureka():
 
             with occurrences:
                 options = list(range(len(seed_list)))
-                opt_ocur_kwargs = {
-                    "label": "↓  " + str(len(seed_list)) + " " + info_find,
-                    "options": options,
-                    "format_func": lambda y: seed_list[y],
-                    "key": "opt_ocur",
-                    "on_change": _on_eureka_occurrence_change,
-                }
-                if "opt_ocur" not in st.session_state:
-                    opt_ocur_kwargs["index"] = st.session_state.eureka
-                opt_ocur = st.selectbox(**opt_ocur_kwargs)
+                opt_ocur = st.selectbox(
+                    "↓  " + str(len(seed_list)) + " " + info_find,
+                    options,
+                    index=st.session_state.eureka,
+                    format_func=lambda y: seed_list[y],
+                    key="opt_ocur",
+                    on_change=_on_eureka_occurrence_change,
+                )
 
             previous_opt = st.session_state.get("_eureka_last_opt_ocur")
             if previous_opt is not None and previous_opt != opt_ocur:
@@ -3547,7 +3792,10 @@ def page_off_machina():  # available off_machina_books
             key="opt_off_book",
         )
 
-    if opt_off_book != st.session_state.off_book:
+    off_book_changed = opt_off_book != st.session_state.off_book
+    if off_book_changed:
+        limpar_retrato_off()
+        nav_changed = True
         st.session_state.off_book = opt_off_book
         st.session_state.off_take = 0
         st.session_state["off_take_widget_token"] = int(
@@ -3555,7 +3803,11 @@ def page_off_machina():  # available off_machina_books
         ) + 1
 
     off_book_name = off_books_list[st.session_state.off_book]
-    _set_off_anima_image_next()
+    preservar_off = bool(st.session_state.get("off_retrato_preservar_palco", False))
+    if preservar_off:
+        snapshot_image = st.session_state.get("off_palco_snapshot_image", "")
+        if snapshot_image:
+            st.session_state["off_anima_image"] = snapshot_image
     this_off_book = load_off_book(off_book_name)
     off_book_pagys = load_book_pages(this_off_book)
 
@@ -3589,16 +3841,19 @@ def page_off_machina():  # available off_machina_books
         off_voz_slot = render_voz_slot()
 
     if last:
+        limpar_retrato_off()
         nav_changed = True
         st.session_state.off_take -= 1
         if st.session_state.off_take < 0:
             st.session_state.off_take = maxy_off_machina
 
     if rand:
+        limpar_retrato_off()
         nav_changed = True
         st.session_state.off_take = random.randrange(0, maxy_off_machina + 1)
 
     if nest:
+        limpar_retrato_off()
         nav_changed = True
         st.session_state.off_take += 1
         if st.session_state.off_take > maxy_off_machina:
@@ -3629,7 +3884,30 @@ def page_off_machina():  # available off_machina_books
         )
 
     if opt_off_take != st.session_state.off_take:
+        limpar_retrato_off()
+        nav_changed = True
         st.session_state.off_take = opt_off_take
+
+    # Linha 1 do .pip = Dados de Catalogação: capa fixa do livro.
+    # Demais linhas: nova imagem aleatória a cada navegação.
+    if not preservar_off:
+        if st.session_state.off_take == 0:
+            st.session_state["off_anima_image"] = _resolve_off_machina_book_image(off_book_name)
+        elif nav_changed or not st.session_state.get("off_anima_image"):
+            _set_off_anima_image_next()
+
+    off_retrato_contexto_atual = (
+        int(st.session_state.get("off_book", 0)),
+        int(st.session_state.get("off_take", 0)),
+        str(st.session_state.get("lang", "pt")),
+    )
+    off_retrato_contexto_salvo = st.session_state.get("off_retrato_preview_context")
+    if off_retrato_contexto_salvo and tuple(off_retrato_contexto_salvo) != off_retrato_contexto_atual:
+        limpar_retrato_off()
+
+    preservar_palco_retrato_off = bool(
+        st.session_state.pop("off_retrato_preservar_palco", False)
+    )
 
     lnew = True
     if manu:
@@ -3651,19 +3929,32 @@ def page_off_machina():  # available off_machina_books
         with off_machina_expander:
             off_book_text = ""
             pipe_line = this_off_book[st.session_state.off_take].split("|")
-            if off_book_name == "livro_vivo" and "@ " in pipe_line[1]:
+            off_snapshot_contexto_atual = (
+                int(st.session_state.get("off_book", 0)),
+                int(st.session_state.get("off_take", 0)),
+                str(st.session_state.get("lang", "pt")),
+            )
+            usou_snapshot_off = bool(
+                preservar_palco_retrato_off
+                and tuple(st.session_state.get("off_palco_snapshot_context") or ()) == off_snapshot_contexto_atual
+                and st.session_state.get("off_palco_snapshot_text")
+            )
+            titulo_pip = pipe_line[1] if len(pipe_line) > 1 else ""
+            if usou_snapshot_off:
+                off_book_text = st.session_state["off_palco_snapshot_text"]
+            elif str(titulo_pip).lstrip().startswith("@"):
                 if st.session_state.lang != st.session_state.last_lang:
-                    off_book_text = load_lypo()  # changes in lang, keep LYPO
+                    off_book_text = load_lypo()
                 else:
-                    nome_tema = pipe_line[1].replace("@ ", "")
-                    off_book_text = load_poema(nome_tema, "")  # no seed_eureka
+                    nome_tema = str(titulo_pip).lstrip()[1:].strip()
+                    off_book_text = load_poema(nome_tema, "")
                     off_book_text = "<br>" + load_lypo()
             else:
                 off_book_text = _pip_line_to_text(this_off_book[st.session_state.off_take])
 
             capo = st.session_state.off_take == 0
 
-            if st.session_state.lang != "pt" and not capo:
+            if st.session_state.lang != "pt" and not capo and not usou_snapshot_off:
                 off_book_text = translate(off_book_text)
 
             LOGO_TEXTO = off_book_text
@@ -3690,6 +3981,43 @@ def page_off_machina():  # available off_machina_books
                 render_off_texto()
 
             update_readings(off_book_name)
+
+            st.session_state["off_palco_snapshot_text"] = LOGO_TEXTO
+            st.session_state["off_palco_snapshot_context"] = off_snapshot_contexto_atual
+            st.session_state["off_palco_snapshot_title"] = off_title
+            st.session_state["off_palco_snapshot_image"] = st.session_state.get("off_anima_image", "")
+
+            st.markdown("<br>", unsafe_allow_html=True)
+            rodape_left, copy_col, retrato_col, rodape_right = st.columns([3.4, 2.2, 2.2, 3.4])
+            with copy_col:
+                with st.popover("Copy", help="copiar texto", use_container_width=True):
+                    st.code(_off_machina_texto_limpo(LOGO_TEXTO), language=None, wrap_lines=True)
+            with retrato_col:
+                st.button(
+                    "Retrato",
+                    key=f"off_retrato_btn_{st.session_state.off_book}_{st.session_state.off_take}",
+                    help="mostrar Retrato",
+                    use_container_width=True,
+                    on_click=_gerar_retrato_do_snapshot,
+                    args=("off",),
+                )
+
+            if st.session_state.get("off_retrato_preview_png"):
+                st.markdown('<div id="retrato_off_gerado"></div>', unsafe_allow_html=True)
+                st.image(st.session_state["off_retrato_preview_png"], use_container_width=True)
+                if st.session_state.pop("off_retrato_focus_pending", False):
+                    focar_retrato_no_palco("retrato_off_gerado")
+                off_save_left, off_save_center, off_save_right = st.columns([1, 1, 1])
+                with off_save_center:
+                    st.download_button(
+                        "salvar Retrato",
+                        data=st.session_state["off_retrato_preview_png"],
+                        file_name=f"{st.session_state.get('off_retrato_preview_nome', 'retrato')}.png",
+                        mime="image/png",
+                        key=f"off_retrato_save_{st.session_state.off_book}_{st.session_state.off_take}",
+                        use_container_width=True,
+                        on_click="ignore",
+                    )
 
         if st.session_state.talk:
             with off_voz_slot:
@@ -3754,6 +4082,7 @@ def load_about_md(title):
     return translate("ooops... arquivo ( " + expected + " ) não pode ser aberto.")
 
 
+@dna_monitor
 def load_md_files_catalog():
     """Carrega o catálogo externo da página ABOUT.
 
@@ -4025,13 +4354,14 @@ def main():
     gramado = open_gramado()
 
     with gramado:
-        page_labels = ["mini", "yPoemas", "eureka", "off-Machina", "ABOUT"]
+        page_labels = ["mini", "yPoemas", "eureka", "off-Machina", "TOOLS"]
         page_ids = {
             "mini": "1",
             "yPoemas": "2",
             "eureka": "3",
             "off-Machina": "4",
-            "ABOUT": "5",
+                         
+            "TOOLS": "5",
         }
 
         _sync_machina_page_state(page_labels, page_ids)
@@ -4081,9 +4411,14 @@ def main():
                 elif chosen_id == "4":
                     page_off_machina()
                     status = palco_status("off-machina")
+                                      
+                                                    
+                                                  
                 elif chosen_id == "5":
-                    page_abouts()
-                    status = palco_status("ABOUT")
+                    # Oficina carregada somente quando realmente aberta.
+                    import tools as tools_mod
+                    tools_mod.render_page(globals())
+                    status = palco_status("TOOLS")
                 else:
                     page_ypoemas()
                     current_book = _current_book()
