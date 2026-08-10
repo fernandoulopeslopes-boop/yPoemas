@@ -1,11 +1,11 @@
 *-
-*- Essa.ypo
+*-  Essa.ypo
 *-
 *- |01|03|o verbo na 1° pessoa do plural envolve o leitor
 *- |02|02..04..06|convite ao leitor para escolher suas palavras preferidas|Manter despareados|
 *- |03|02|desafia o leitor a criar novas palavras
 *- |05|01|ítimos diferentes na mesma ideia (adivinha = verbo+substantivo)
-*-
+*- 
 *- |05|03|pensar na negativa: im + plausível /in + aferível| == não cabe o |05|02|sem|
 *-
 *- |02|02|Essa_0202|F|1|1|< pCata_Pala >|
@@ -15,28 +15,28 @@
 |01|03|Essa_0103|F|12|1|gosto|são sonoras|usamos|acalanto|prezamos|admiro|venero|gostamos|ostento|amamos|estimo|falam por si|
 |01|04|Essa_0104|F|1|1|,|
 |02|01|Essa_0201|F|1|1|( |
-|02|02|Essa_0202|F|46|15|abóbada|acordeão|alavanca|alcateia|alfazema|artefato|artimanha|audácia|aurora|barricada|carapaça|castiçal|catarata|clamor|compasso|cotovelo|cratera|curare|descalvado|desmaio|dueto|estupefato|gafanhoto|galhofa|grotesco|hipotálamo|odisseia|papoula|paradoxo|pelicano|porcelana|primavera|quimera|saibro|sanfona|sinagoga|sinopse|sucata|tacanho|tapera|tentáculo|tijolo|tornozelo|travesso|tropeço|tálamo|
+|02|02|Essa_0202|F|46|3|abóbada|acordeão|alavanca|alcateia|alfazema|artefato|artimanha|audácia|aurora|barricada|carapaça|castiçal|catarata|clamor|compasso|cotovelo|cratera|curare|descalvado|desmaio|dueto|estupefato|gafanhoto|galhofa|grotesco|hipotálamo|odisseia|papoula|paradoxo|pelicano|porcelana|primavera|quimera|saibro|sanfona|sinagoga|sinopse|sucata|tacanho|tapera|tentáculo|tijolo|tornozelo|travesso|tropeço|tálamo|
 |02|03|Essa_0203|F|1|1|,|
-|02|04|Essa_0204|F|50|3|albatroz|acordes|ampulheta|amuleto|apogeu|arremesso|balela|bagatela|bigorna|borboleta|bracelete|caractere|carroça|centopeia|cerebelo|colchete|coreto|envelope|equinócio|escafandro|escaravelho|espectro|estilete|exagero|filete|folheto|gangorra|gorjeta|graveto|indelével|lampejo|lembrete|marionete|mariposa|minueto|mureta|palacete|parafuso|película|peçonha|pistom|placebo|proveta|ramalhete|roleta|sabonete|sarjeta|silhueta|trombeta|verbete|
+|02|04|Essa_0204|F|51|41|albatroz|acordes|ampulheta|amuleto|apogeu|maçaneta|arremesso|balela|bagatela|bigorna|borboleta|bracelete|caractere|carroça|centopeia|cerebelo|colchete|coreto|envelope|equinócio|escafandro|escaravelho|espectro|estilete|exagero|filete|folheto|gangorra|gorjeta|graveto|indelével|lampejo|lembrete|marionete|mariposa|minueto|mureta|palacete|parafuso|película|peçonha|pistom|placebo|proveta|ramalhete|roleta|sabonete|sarjeta|silhueta|trombeta|verbete|
 |02|05|Essa_0205|F|1|1|,|
-|02|06|Essa_0206|F|32|14|adivinho|almotolia|andaluz|anomalia|antúrio|armadilha|calmaria|catapulta|cardume|deriva|dicotomia|ergonomia|espelunca|euforia|extravio|hipotenusa|idílio|lacuna|lamparina|ludíbrio|matutino|minúcia|obtusa|obtuso|ocarina|paraninfo|perdiz|pergaminho|recidiva|remoinho|revelia|vislumbre|
+|02|06|Essa_0206|F|32|2|adivinho|almotolia|andaluz|anomalia|antúrio|armadilha|calmaria|catapulta|cardume|deriva|dicotomia|ergonomia|espelunca|euforia|extravio|hipotenusa|idílio|lacuna|lamparina|ludíbrio|matutino|minúcia|obtusa|obtuso|ocarina|paraninfo|perdiz|pergaminho|recidiva|remoinho|revelia|vislumbre|
 |02|07|Essa_0207|F|1|1| )|
 |03|01|Essa_0301|F|1|1|esta, "|
-|03|02|Essa_0302|F|34|19|raiossol|maislodias|luassua|nanônimo|passocio|viasruas|humildilhado|sonhadelo|maisnino|milviu|raciossano|ninua|dormil|neovais|nanomimo|veramais|nanocaos|cossonhei|cionasduas|egoando|surgideus|visemver|expiadias|veracaso|corachão|soacaso|mãocia|femeacho|novanave|neurapia|temporiu|mesmória|cinemalesca|amoego|
+|03|02|Essa_0302|F|34|7|raiossol|maislodias|luassua|nanônimo|passocio|viasruas|humildilhado|sonhadelo|maisnino|milviu|raciossano|ninua|dormil|neovais|nanomimo|veramais|nanocaos|cossonhei|cionasduas|egoando|surgideus|visemver|expiadias|veracaso|corachão|soacaso|mãocia|femeacho|novanave|neurapia|temporiu|mesmória|cinemalesca|amoego|
 |03|03|Essa_0303|F|1|1|"|
 |03|04|Essa_0304|F|1|1|,|
-|04|01|Essa_0401|F|17|4|traz em si|escancara|desafia|faz-que-exala|alavanca|ressuscita|instaura|traz consigo|alumia|renova|adivinha|explora|instala|soletra|sussurra|remexe|inventa|
-|04|02|Essa_0402|F|7|5|o perfume de si mesma|a brevidade de tudo|o valor do que é mero|um sentimento de mundo|a calma do não-pensar|um perdão imprevisível|algo de novo na alma|
+|04|01|Essa_0401|F|17|9|traz em si|escancara|desafia|faz-que-exala|alavanca|ressuscita|instaura|traz consigo|alumia|renova|adivinha|explora|instala|soletra|sussurra|remexe|inventa|
+|04|02|Essa_0402|F|7|7|o perfume de si mesma|a brevidade de tudo|o valor do que é mero|um sentimento de mundo|a calma do não-pensar|um perdão imprevisível|algo de novo na alma|
 |04|03|Essa_0403|F|1|1|.|
 |05|00|
-|06|01|Essa_0601|F|10|1|Paira leve|Aquieta|Vaga livre|Desacata|Insinua-se|Adivinha|Balbucia-se|Acalanta|Ecoa|Propaga-se|
+|06|01|Essa_0601|F|10|9|Paira leve|Aquieta|Vaga livre|Desacata|Insinua-se|Adivinha|Balbucia-se|Acalanta|Ecoa|Propaga-se|
 |06|02|Essa_0602|F|3|1|com|em|... tem|
-|06|03|Essa_0603|F|15|7|plausível|visível|inefável|possível|cabível|dizível|inegável|finita|credível|tangível|legível|sabível|palpável|tecível|inaferível|
-|06|04|Essa_0604|F|11|7|geometria|simetria|revelia|maestria|rebeldia|alforria|calmaria|sintonia|nostalgia|empatia|melodia|
+|06|03|Essa_0603|F|15|10|plausível|visível|inefável|possível|cabível|dizível|inegável|finita|credível|tangível|legível|sabível|palpável|tecível|inaferível|
+|06|04|Essa_0604|F|11|6|geometria|simetria|revelia|maestria|rebeldia|alforria|calmaria|sintonia|nostalgia|empatia|melodia|
 |06|05|Essa_0605|F|1|1|.|
 <EOF>
 Verbetes no Texto = 23
   Total de ítimos = 250
 Total de verbetes = 260
 Qtd. de Variações = 35.376.929.280.000 (trilhões)
-build_by lay_2_ypo em 27/07/2026 - 12:19
+build_by lay_2_ypo em 10/08/2026 - 06:00
