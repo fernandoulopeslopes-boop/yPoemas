@@ -1,19 +1,20 @@
 *- 
 *- bi-palavras.ypo
 *- 
-|01|01|bi-palavras_0101|F|7|1|a Dor no adorno:|no corredor, corre Dor:|o dormente à Dor mente:| a dor inspira Ação:|a dor de ter mina a Ação:|a dor aspira Ação:|dolor ida é dor que não dói mais:|
+|01|01|bi-palavras_0101|F|7|2|a Dor no adorno:|no corredor, corre Dor:|o dormente à Dor mente:| a dor inspira Ação:|a dor de ter mina a Ação:|a dor aspira Ação:|dolor ida é dor que não dói mais:|
 |02|00|
-|02|01|bi-palavras_0201|F|13|11|o amador ama|o procurador procura|o cantador canta|o contador conta|o criador cria|o domador doma|o inovador inova|o sonhador sonha|o tentador tenta|o amador ama|o atirador atira|o sofredor sofre|o enganador engana|
+|02|01|bi-palavras_0201|F|13|5|o amador ama|o procurador procura|o cantador canta|o contador conta|o criador cria|o domador doma|o inovador inova|o sonhador sonha|o tentador tenta|o amador ama|o atirador atira|o sofredor sofre|o enganador engana|
 |02|02|bi-palavras_0202|F|1|1|dor|
 |03|01|bi-palavras_0301|F|1|1|e|
-|03|02|bi-palavras_0302|T|13|12|o amador, ama|o procurador, procura|o cantador, canta|o contador, conta|o criador, cria|o domador, doma|o inovador, inova|o sonhador, sonha|o tentador, tenta|o amador, ama|o atirador, atira|o sofredor, sofre|o enganador, engana|
+|03|02|bi-palavras_0302|T|13|8|o amador, ama|o procurador, procura|o cantador, canta|o contador, conta|o criador, cria|o domador, doma|o inovador, inova|o sonhador, sonha|o tentador, tenta|o amador, ama|o atirador, atira|o sofredor, sofre|o enganador, engana|
 |03|03|bi-palavras_0303|F|1|1|a Dor|
 |03|04|bi-palavras_0304|F|1|1|.|
 |04|00|
-|04|01|bi-palavras_0401|F|4|3|"Real Idade" nem sempre é realidade|"Par Tido" é amor que foi embora|"Ampla Mente" pensa diferente|"Sem tido" nunca teve sentido|
+|04|01|bi-palavras_0401|F|4|1|"Real Idade" nem sempre é realidade|"Par Tido" é amor que foi embora|"Ampla Mente" pensa diferente|"Sem tido" nunca teve sentido|
 |04|02|bi-palavras_0402|F|1|1|.|
 <EOF>
 Verbetes no Texto = 8
   Total de ítimos = 8
 Total de verbetes = 65
 Qtd. de Variações = 4.732 (mil)
+build_by lay_2_ypo em 09/08/2026 - 15:47
