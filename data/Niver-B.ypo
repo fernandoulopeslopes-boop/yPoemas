@@ -8,23 +8,23 @@
 *-
 *- ANI_0101 no singular|Caro amigo|Meu amor|Minha querida|Meu querido|Meu amor|Minha paixão|Amiga do coração|
 *-
-|01|01|Niver-B_0101|F|4|1|Desejo-lhe|Meus sinceros votos de|Congratulo-me desejando-lhe|Que a vida lhe traga|
-|01|02|Niver-B_0102|T|11|3|sucesso|saúde|paz|muita luz|realizações|boas energias|vitórias|conquistas|bons momentos|sabedoria|confiança|
+|01|01|Niver-B_0101|F|4|2|Desejo-lhe|Meus sinceros votos de|Congratulo-me desejando-lhe|Que a vida lhe traga|
+|01|02|Niver-B_0102|T|11|1|sucesso|saúde|paz|muita luz|realizações|boas energias|vitórias|conquistas|bons momentos|sabedoria|confiança|
 |01|03|Niver-B_0103|F|1|1|...|
 |02|00|
 |02|01|Niver-B_0201|F|1|1|+|
-|02|02|Niver-B_0202|T|30|12|simplicidade|afinidades|amenidades|oportunidades|tranquilidade|vitalidade|prosperidade|serenidade|felicidade|abraços|amigos|audácia|dias de praia|bondade|graça|entusiamo|dias de férias|confiança|esperança|pujança|abundância|paz|amores|flores|descanso|amizades|carnavais|ânimo|amor|viagens|
+|02|02|Niver-B_0202|T|30|10|simplicidade|afinidades|amenidades|oportunidades|tranquilidade|vitalidade|prosperidade|serenidade|felicidade|abraços|amigos|audácia|dias de praia|bondade|graça|entusiamo|dias de férias|confiança|esperança|pujança|abundância|paz|amores|flores|descanso|amizades|carnavais|ânimo|amor|viagens|
 |03|01|Niver-B_0301|F|1|1|$$|+|
-|03|02|Niver-B_0302|T|34|24|excelência|sapiência|comunhão|disposição|determinação|inspiração|horizontes|vitórias|emoções|realizações|respostas|sonhos|lembranças|bom humor|metas|bons momentos|lazeres|prazeres|passeios|contentamento|deleites|ótimos momentos|bom humor|paixões|caminhos|forças|saúde|sorte|vigor|relax|festas|projetos|sucesso|momentos de ócio|
+|03|02|Niver-B_0302|T|34|12|excelência|sapiência|comunhão|disposição|determinação|inspiração|horizontes|vitórias|emoções|realizações|respostas|sonhos|lembranças|bom humor|metas|bons momentos|lazeres|prazeres|passeios|contentamento|deleites|ótimos momentos|bom humor|paixões|caminhos|forças|saúde|sorte|vigor|relax|festas|projetos|sucesso|momentos de ócio|
 |04|01|Niver-B_0401|F|1|1|$$$$|+|
-|04|02|Niver-B_0402|T|21|19|dinamismo|otimismo|empatia|simpatia|alegrias|harmonia|ousadia|poesia|sabedoria|novas energias|boas energias|brilhos|futuros|objetivos|propósitos|equilíbrio|conquistas|carisma|muita luz|música|virtudes|
+|04|02|Niver-B_0402|T|21|4|dinamismo|otimismo|empatia|simpatia|alegrias|harmonia|ousadia|poesia|sabedoria|novas energias|boas energias|brilhos|futuros|objetivos|propósitos|equilíbrio|conquistas|carisma|muita luz|música|virtudes|
 |04|03|Niver-B_0403|F|1|1|e...|
 |06|00|
-|06|01|Niver-B_0601|F|6|6|Parabéns pelo seu dia!|Um Feliz Aniversário!|Feliz Nova Idade!|Parabéns pelo Aniversário!|Feliz Idades Novas!|Fortuna por esta data!|
+|06|01|Niver-B_0601|F|6|3|Parabéns pelo seu dia!|Um Feliz Aniversário!|Feliz Nova Idade!|Parabéns pelo Aniversário!|Feliz Idades Novas!|Fortuna por esta data!|
 <EOF>
 Verbetes no Texto = 11
   Total de ítimos = 114
 Total de verbetes = 120
 Qtd. de Variações = 3.692.304 (milhões)
 Build_By_Lay_2_Ipo em 24/01/2021_08:30
-build_by lay_2_ypo em 28/07/2026 - 15:56
+build_by lay_2_ypo em 06/08/2026 - 12:01

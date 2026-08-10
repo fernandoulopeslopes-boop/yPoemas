@@ -9,9 +9,9 @@
 |04|02|travessia_0402|F|3|2|compartilha|reparte|divide|
 |04|03|travessia_0403|F|2|2|com os outros|com o próximo|
 |05|01|travessia_0501|F|1|1|onde há|
-|05|02|travessia_0502|T|15|11|encruzilhadas|atoleiros|pousadas|mirantes|abismos|estaleiros|aclives|encostas|neblinas|perigos|fontes de água|declives|abrigos|frutas silvestres|desvios|
+|05|02|travessia_0502|T|15|3|encruzilhadas|atoleiros|pousadas|mirantes|abismos|estaleiros|aclives|encostas|neblinas|perigos|fontes de água|declives|abrigos|frutas silvestres|desvios|
 |05|03|travessia_0503|F|1|1|,|
-|05|04|travessia_0502|T|15|12|encruzilhadas|atoleiros|pousadas|mirantes|abismos|estaleiros|aclives|encostas|neblinas|perigos|fontes de água|declives|abrigos|frutas silvestres|desvios|
+|05|04|travessia_0502|T|15|13|encruzilhadas|atoleiros|pousadas|mirantes|abismos|estaleiros|aclives|encostas|neblinas|perigos|fontes de água|declives|abrigos|frutas silvestres|desvios|
 |05|05|travessia_0505|F|1|1|,|
 |05|05|travessia_0502|T|15|6|encruzilhadas|atoleiros|pousadas|mirantes|abismos|estaleiros|aclives|encostas|neblinas|perigos|fontes de água|declives|abrigos|frutas silvestres|desvios|
 |05|06|travessia_0506|F|1|1|...|
@@ -23,4 +23,4 @@ Verbetes no Texto = 16
 Total de verbetes = 58
 Qtd. de Variações = 4.050 (mil)
 Build_By_Lay_2_Ypo = 2026-07-25 10:49:10.830285
-build_by lay_2_ypo em 26/07/2026 - 10:15
+build_by lay_2_ypo em 07/08/2026 - 09:58
