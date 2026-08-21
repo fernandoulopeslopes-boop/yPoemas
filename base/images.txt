@@ -163,3 +163,9 @@ livro_vivo : anima
 quase_que_eu_Poesia : anima
 um_romance : beauty
 segredo_público : anima
+parafernália : anima
+desvoto : anima
+ensaios : anima
+urbano : anima
+essencial : anima
+secreto : anima
