@@ -35,11 +35,11 @@ def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo y
     find_coords = ""
     look_for_seed = False
 
-    #if seed_eureka != "":
-    look_for_seed = True
-    part_string = seed_eureka.partition(" ➪ ")
-    this_seed = part_string[0]
-    find_coords = part_string[2]
+    if seed_eureka != "":
+        look_for_seed = True
+        part_string = seed_eureka.partition(" ➪ ")
+        this_seed = part_string[0]
+        find_coords = part_string[2]
 
     nome_tema = nome_tema.strip("\n")
 
@@ -164,7 +164,7 @@ def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo y
                         lista_unicos.append(itimo_escolhido.upper())
                         break
                     else:
-                        tentativas += 1                   
+                        tentativas += 1
                         if (
                             tentativas > total_itimos
                         ):  # tentativas > que total de ítimos: pega o próximo sequencial
@@ -198,7 +198,7 @@ def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo y
             if tabs > 0:
                 novo_verso = tabs*'&emsp;' + novo_verso
                 tabs = 0
-                    
+                  
             if "si" == pula_linha:
                 novo_poema.append("\n")
                 pula_linha = "no"
@@ -325,10 +325,15 @@ def acerto_final(texto):
 
 
 def fala_cidade_fato():
+    """
+    :return: alguma cidade do arquivo fatos_cidades.txt
+    """
     cidades = []
     with open(os.path.join("./base/fatos_cidades.txt"), encoding="utf8") as file:
         for line in file:
             cidades.append(line)
+        file.close()
+
     x = randrange(0, len(cidades))
     city = cidades[x]
     city = city.replace("\n", "")
@@ -336,17 +341,26 @@ def fala_cidade_fato():
 
 
 def fala_cidade_oficio():
+    """
+    :return: alguma cidade do arquivo cidade_país.txt
+    """
     cidades = []
     with open(os.path.join("./base/fatos_cidades.txt"), encoding="utf8") as file:
         for line in file:
             cidades.append(line)
+        file.close()
+
     x = randrange(0, len(cidades))
     city = cidades[x]
     city = city.replace("\n", "")
+
     return city
 
 
 def fala_celsius():
+    """
+    :return: temperatura randômica entre 1 e 50 graus celcius - Meteoro
+    """
     ini = randrange(1, 50)
     fim = randrange(1, 50)
     if ini > fim:
@@ -359,11 +373,18 @@ def fala_celsius():
 
 
 def fala_umidade():
+    """
+    :return: umidade randômica entre 1 e 99% - Meteoro
+    """
     ini = randrange(1, 99)
     return str(ini) + "%"
 
 
 def fala_data(dref):
+    """
+    :param data de referência
+    :return: data genérica: dia + mês_extenso + ano
+    """
     meses = [
         "Janeiro",
         "Fevereiro",
@@ -378,12 +399,14 @@ def fala_data(dref):
         "Novembro",
         "Dezembro",
     ]
+
     dia = dref.day
     mes = dref.month
     if mes > 0 and mes < 13:
         mes -= 1
     else:
         mes = 5
+
     mestxt = meses[mes]
     ano = dref.year
     return str(dia) + " de " + str(mestxt) + " de " + str(ano)
@@ -398,6 +421,9 @@ def fala_nome_OLA():
 
 
 def fala_norma_abnp():
+    """
+    :return: data randômicamente 'anterior' à data atual
+    """
     hoje = datetime.datetime.now().date()
     rand = randrange(0, hoje.year * 30)
     ontem = hoje - datetime.timedelta(days=rand)
@@ -412,16 +438,24 @@ def fala_abnp():
             alinhas = line.split("|")
             for item in alinhas:
                 lista.append(item)
+
     nany = randrange(0, len(lista))
     return lista[nany]
 
 
 def abre(nome_do_tema):
+    """
+    :param nome_do_tema
+    :return: lista do arquivo
+    """
+
     full_name = os.path.join("./data/", nome_do_tema) + ".ypo"
     lista = []
     with open(full_name, encoding="utf-8") as file:
         for line in file:
             lista.append(line)
+        file.close()
+
     return lista
 
 
@@ -435,10 +469,16 @@ def load_babel():
 
 
 def novo_babel(swap_pala):
+    """
+    :param swap_pala: quantas palavras por linhas no poema: 0 = rand; n = n-1 palavras
+    :return: poema aleatório
+    """
+
     lista_silabas = load_babel()
     sinais_ini = [".", ",", ":", "!", "?", "...", " "]
     sinais_end = [".", "!", "?", "..."]
 
+    #   5 - 15
     min_versos = 5
     max_versos = 15
     qtd_versos = random.randrange(min_versos, max_versos)
@@ -447,10 +487,12 @@ def novo_babel(swap_pala):
     novo_poema = []
     for nQtdLin in range(1, qtd_versos):
         novo_babel = ""
+        #   3 - 7
         if swap_pala == 0:
             qtd_palas = random.randrange(3, 7)
         else:
             qtd_palas = swap_pala
+        #   2 - 4
         for nova_frase in range(1, qtd_palas):
             nova_pala = ""
             qtd_silabas = random.randrange(2, 4)
@@ -477,7 +519,7 @@ def novo_babel(swap_pala):
                 sinal = sinais_ini[njump]
                 novo_babel = novo_babel.rstrip() + sinal
             novo_poema.append(novo_babel.strip())
-            if nany <= 50:
+            if nany <= 50:  # put some ","
                 if "," != sinal:
                     novo_poema.append("")
 
