@@ -35,8 +35,8 @@ def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo y
     find_coords = ""
     look_for_seed = False
 
-    if seed_eureka != "":
-        look_for_seed = True
+    #if seed_eureka != "":
+    look_for_seed = True
     part_string = seed_eureka.partition(" ➪ ")
     this_seed = part_string[0]
     find_coords = part_string[2]
