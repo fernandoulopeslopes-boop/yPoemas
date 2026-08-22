@@ -97,6 +97,12 @@ def registro(tema: str, base_dir: str | Path = "./base") -> dict[str, str]:
     return {}
 
 
+def banco_do_tema(tema: str, base_dir: str | Path = "./base") -> str:
+    """Retorna o banco temático cadastrado no DNA para um tema."""
+    row = registro(tema, base_dir)
+    return str(row.get("banco_tematico", "")).strip() if row else ""
+
+
 def _status_visivel(include_testes: bool) -> set[str]:
     return {"S", "T"} if include_testes else {"S"}
 
