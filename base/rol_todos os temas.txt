@@ -125,7 +125,7 @@ Tempo
 Tempus
 Tiro
 Tolero
-Travessia      
+Travessia
 Usinas
 Veio
 Victor
@@ -158,3 +158,10 @@ Touro=m
 Virgem=f
 Virgem=m
 Jealousy
+Design
+Isso
+o Culto
+Oculto
+OLA
+OLA_abertura
+Psiume
