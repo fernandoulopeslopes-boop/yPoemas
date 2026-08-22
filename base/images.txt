@@ -31,6 +31,7 @@ Crítico : anima
 Cromossomo : joco
 Cuores : persona
 Destinos : anima
+Demo : joco
 Distintos : anima
 Dolores : persona
 Duralex : machina
@@ -169,3 +170,7 @@ ensaios : anima
 urbano : anima
 essencial : anima
 secreto : anima
+O Culto : ex-libris
+Oculto : ex-libris
+OLA : machina
+OLA_abertura : machina
