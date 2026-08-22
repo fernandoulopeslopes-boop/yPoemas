@@ -2623,7 +2623,10 @@ def _retrato_font(size, bold=False, family=None):
         except Exception:
             pass
 
-    raise RuntimeError("Fonte Unicode não encontrada para gerar o Retrato.")
+    try:
+        return ImageFont.load_default()
+    except Exception as exc:
+        raise RuntimeError("Fonte Unicode não encontrada para gerar o Retrato.") from exc
 
 def _retrato_wrap(draw, texto, font, largura):
     """Quebra o texto preservando o recuo autoral com espaços ASCII."""
