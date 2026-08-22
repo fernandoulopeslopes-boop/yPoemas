@@ -2706,7 +2706,9 @@ def criar_retrato_png(ypoema_html, image_path, tema, selo_size=24):
     margin = 64
     gap = 58
     fonte_retrato = _fonte_palco_leitor()
-    corpo_png = _corpo_palco_leitor()
+    # No Retrato, a família tipográfica segue "Fontes & Letras",
+    # mas o corpo do texto fica fixo para manter presença visual.
+    corpo_png = 40
     body_font = _retrato_font(corpo_png, family=fonte_retrato)
     title_font = _retrato_font(max(corpo_png + 4, int(round(corpo_png * 1.18))), family=fonte_retrato)
 
