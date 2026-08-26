@@ -3,18 +3,24 @@
 *- prisma
 *- 
 |01|01|ka-os_0101|F|1|1|A|
-|01|02|ka-os_0102|F|41|33|abstração|vontade|amplidão|argúcia|arte|astúcia|atualidade|audácia|aventura|agonia|batalha|brevidade|causa|centelha|certeza|contemporaneidade|alegoria|aleluia|contradição|distância|empáfia|alegria|agilidade|epopéia|dúvida|equidade|fome|ilusão|espera|força|fragilidade|imprecisão|genialidade|insignificância|invencionice|incerteza|entrelinha|insensatez|vastidão|urgência|têmpera|
-|01|03|ka-os_0103|F|31|20|abusada|duradoura|emblemática|endêmica|estática|imóvel|inabalável|indelével|indubitável|indômita|invisível|obsessiva|obstinada|persistente|possível|previsível|recursiva|reincidente|metafísica|da matéria|fatal|dos silêncios|em sinuca|artificial|inaferível|indiferente|maleável|insinuante|tridimensional|embutida|escancarada|
+|01|02|ka-os_0102|F|41|38|abstração|vontade|amplidão|argúcia|arte|astúcia|atualidade|audácia|aventura|agonia|batalha|brevidade|causa|centelha|certeza|contemporaneidade|alegoria|aleluia|contradição|distância|empáfia|alegria|agilidade|epopéia|dúvida|equidade|fome|ilusão|espera|força|fragilidade|imprecisão|genialidade|insignificância|invencionice|incerteza|entrelinha|insensatez|vastidão|urgência|têmpera|
+|01|03|ka-os_0103|F|31|15|abusada|duradoura|emblemática|endêmica|estática|imóvel|inabalável|indelével|indubitável|indômita|invisível|obsessiva|obstinada|persistente|possível|previsível|recursiva|reincidente|metafísica|da matéria|fatal|dos silêncios|em sinuca|artificial|inaferível|indiferente|maleável|insinuante|tridimensional|embutida|escancarada|
 |01|04|ka-os_0104|F|1|1|,|
 |02|01|ka-os_0201|F|1|1|a|
-|02|02|ka-os_0202|T|41|29|abstração|vontade|amplidão|argúcia|arte|astúcia|atualidade|audácia|aventura|agonia|batalha|brevidade|causa|centelha|certeza|contemporaneidade|alegoria|aleluia|contradição|distância|empáfia|alegria|agilidade|epopéia|dúvida|equidade|fome|ilusão|espera|força|fragilidade|imprecisão|genialidade|insignificância|invencionice|incerteza|entrelinha|insensatez|vastidão|urgência|têmpera|
-|02|03|ka-os_0103|T|31|13|abusada|duradoura|emblemática|endêmica|estática|imóvel|inabalável|indelével|indubitável|indômita|invisível|obsessiva|obstinada|persistente|possível|previsível|recursiva|reincidente|metafísica|da matéria|fatal|dos silêncios|em sinuca|artificial|inaferível|indiferente|maleável|insinuante|tridimensional|embutida|escancarada|
-|02|04|ka-os_0204|T|17|5|com classe|com glória|com afinco|com defeitos|com estilo|com garra|com gosto|com graça|com minúcia|com poesia|com requinte|com transparência|com travessuras|com urgência|com vigor|com viço|com vontades|
+|02|02|ka-os_0202|T|41|30|abstração|vontade|amplidão|argúcia|arte|astúcia|atualidade|audácia|aventura|agonia|batalha|brevidade|causa|centelha|certeza|contemporaneidade|alegoria|aleluia|contradição|distância|empáfia|alegria|agilidade|epopéia|dúvida|equidade|fome|ilusão|espera|força|fragilidade|imprecisão|genialidade|insignificância|invencionice|incerteza|entrelinha|insensatez|vastidão|urgência|têmpera|
+|02|03|ka-os_0103|T|31|22|abusada|duradoura|emblemática|endêmica|estática|imóvel|inabalável|indelével|indubitável|indômita|invisível|obsessiva|obstinada|persistente|possível|previsível|recursiva|reincidente|metafísica|da matéria|fatal|dos silêncios|em sinuca|artificial|inaferível|indiferente|maleável|insinuante|tridimensional|embutida|escancarada|
+|02|04|ka-os_0204|T|17|4|com classe|com glória|com afinco|com defeitos|com estilo|com garra|com gosto|com graça|com minúcia|com poesia|com requinte|com transparência|com travessuras|com urgência|com vigor|com viço|com vontades|
 |03|01|ka-os_0301|F|1|1|e a|
-|03|02|ka-os_0302|T|10|3|chave do cofre|chuva na alma|esfinge que devora|certeza impossível|hora sinistra|gênese do impossível|imensidão do ego|imensidão do cosmo|"cereja do bolo"|rebimboca da parafuseta|
+|03|02|ka-os_0302|T|10|1|chave do cofre|chuva na alma|esfinge que devora|certeza impossível|hora sinistra|gênese do impossível|imensidão do ego|imensidão do cosmo|"cereja do bolo"|rebimboca da parafuseta|
 |03|03|ka-os_0303|F|1|1|:|
 |04|00|
-|04|01|ka-os_0401|F|10|2|a construção da rodovia Oiapoque-Chuí|a construção de um alto-forno para pizzas em Ilhéus|uma filial do Elevador Lacerda em Brasília|a construção de um ovni-porto em Varginha|a duplicação da ponte aérea Rio-São Paulo|a exportação de pamonhas para Paris e Bangladesh|a maquiagem da estátua do Cristo-Redentor|a pavimentação da Transamazônica|a pintura da ponte Rio-Niterói|a transposição do rio Amazonas|
+|04|01|ka-os_0401|F|10|6|a construção da rodovia Oiapoque-Chuí|a construção de um alto-forno para pizzas em Ilhéus|uma filial do Elevador Lacerda em Brasília|a construção de um ovni-porto em Varginha|a duplicação da ponte aérea Rio-São Paulo|a exportação de pamonhas para Paris e Bangladesh|a maquiagem da estátua do Cristo-Redentor|a pavimentação da Transamazônica|a pintura da ponte Rio-Niterói|a transposição do rio Amazonas|
 |04|02|ka-os_0402|F|1|1|.|
 <EOF>
-build_by lay_2_ypo em 09/08/2026 - 19:05
+Verbetes no Texto = 13
+  Total de ítimos = 187
+Total de verbetes = 149
+Qtd. de Variações = 2.657.661.000 (bilhões)
+
+build_by lay_2_ypo em 22/08/2026 - 08:52
+updated em: 25/08/2026 - 17:49

@@ -15,29 +15,31 @@
 *- |15|00|
 *- |15|01|Clandestino_1501|F|1|1|( Palavras de Victor Leonardi )|
 *-
-|01|01|Clandestino_0101|F|6|1|Desconhecedor de segredos|Viajante sem rumo|Clandestino num navio|Inventor de reversos|Guardião de sementes|Passageiro perene|
+|01|01|Clandestino_0101|F|6|5|Desconhecedor de segredos|Viajante sem rumo|Clandestino num navio|Inventor de reversos|Guardião de sementes|Passageiro perene|
 |01|02|Clandestino_0102|F|1|1|,|
 |02|01|Clandestino_0201|F|14|2|participo do silêncio da noite|trilho trajetórias no imprevisto|lanço vinho nos versos|junto-me às estrelas|penetro no início do silêncio|perfuro o tempo com insubmissão|lanço acaso nos dias|chego ao inconcebível|elevo a voz ante as estrelas|danço nos prados, à noite|busco a ordem no caos|emano perfume de mirra|faço do tempo um não-tempo|caminho por trilhas sinuosas|
 |06|01|Clandestino_0601|F|7|1|aguardando mensageiros|navegando por luz e sombra|pilotando minha própria nuvem|criando belezas sem alarde|inovando a solidão|( certo do futuro incerto )|( tal chafariz em desertos )|
-|07|01|Clandestino_0701|F|11|11|no escritório sonâmbulo|no simbólico da montanha|na rua dos insurgentes|em florestas de poetas|em casas com raízes cósmicas|no fundo de uma taverna|em vilas misteriosas|nesse tempo de insensatos|na hora dos insurgentes|em cidades labirínticas|no intrincado templo verde|
+|07|01|Clandestino_0701|F|11|8|no escritório sonâmbulo|no simbólico da montanha|na rua dos insurgentes|em florestas de poetas|em casas com raízes cósmicas|no fundo de uma taverna|em vilas misteriosas|nesse tempo de insensatos|na hora dos insurgentes|em cidades labirínticas|no intrincado templo verde|
 |07|02|Clandestino_0702|F|1|1|.|
 |08|00|
-|09|01|Clandestino_0901|F|3|3|Entre|Diante de|Em meio a|
+|09|01|Clandestino_0901|F|3|1|Entre|Diante de|Em meio a|
 |09|02|Clandestino_0902|F|14|11|aves agourentas|espíritos imundos|carrascos da história|olhos entrecerrados|entidades vazias|terrenos dilacerados|pentagramas do sofrimento|doutrinas sofísticas|frutos da impermanência|princípios indeterminados|limites e fronteiras|frutos da errância|galopes às cegas|vidas à beira do abismo|
 |09|03|Clandestino_0903|F|1|1|,|
-|10|01|Clandestino_1001|F|12|6|a mobilidade alada|certezas insuportáveis|famílias errantes|gentes descrentes|o lavor de não-fazer-nada|o palácio da imaginação|escolhas irrevogáveis|provas improváveis|dragões galopantes|ideias sedutoras|almas esvoaçantes|pessoas impermeáveis|
+|10|01|Clandestino_1001|F|12|4|a mobilidade alada|certezas insuportáveis|famílias errantes|gentes descrentes|o lavor de não-fazer-nada|o palácio da imaginação|escolhas irrevogáveis|provas improváveis|dragões galopantes|ideias sedutoras|almas esvoaçantes|pessoas impermeáveis|
 |11|01|Clandestino_1101|F|1|1|e|
-|11|02|Clandestino_1102|T|9|9|lugares quase secretos|mundos sem limites|a abstração metafísica|a sedução dos labirintos|o espírito da ventania|o voo livre dos xamãs|afinidades com as nuvens|belezas sem formas|imortais de ilhas remotas|
+|11|02|Clandestino_1102|T|9|1|lugares quase secretos|mundos sem limites|a abstração metafísica|a sedução dos labirintos|o espírito da ventania|o voo livre dos xamãs|afinidades com as nuvens|belezas sem formas|imortais de ilhas remotas|
 |11|03|Clandestino_0803|F|1|1|,|
-|12|01|Clandestino_1201|F|18|4|participo do silêncio da noite|trilho trajetórias no imprevisto|lanço vinho nos versos|junto-me às estrelas|penetro no início do silêncio|perfuro o tempo com insubmissão|lanço acaso nos dias|chego ao inconcebível|danço nos prados, à noite|busco a ordem no caos|emano perfume de mirra|faço do tempo um não-tempo|elevo a voz ante as estrelas|germino o pó dos túmulos|vivo numa "Terra sem Males"|peço mais vinho ao taverneiro|sou ser em exílio|aprendo em escolas invisíveis|
+|12|01|Clandestino_1201|F|18|8|participo do silêncio da noite|trilho trajetórias no imprevisto|lanço vinho nos versos|junto-me às estrelas|penetro no início do silêncio|perfuro o tempo com insubmissão|lanço acaso nos dias|chego ao inconcebível|danço nos prados, à noite|busco a ordem no caos|emano perfume de mirra|faço do tempo um não-tempo|elevo a voz ante as estrelas|germino o pó dos túmulos|vivo numa "Terra sem Males"|peço mais vinho ao taverneiro|sou ser em exílio|aprendo em escolas invisíveis|
 |12|02|Clandestino_0702|F|1|1|:|
 |13|00|
 |14|01|Clandestino_1401|F|1|1|- |
-|14|02|Clandestino_1201|T|18|8|participo do silêncio da noite|trilho trajetórias no imprevisto|lanço vinho nos versos|junto-me às estrelas|penetro no início do silêncio|perfuro o tempo com insubmissão|lanço acaso nos dias|chego ao inconcebível|danço nos prados, à noite|busco a ordem no caos|emano perfume de mirra|faço do tempo um não-tempo|elevo a voz ante as estrelas|germino o pó dos túmulos|vivo numa "Terra sem Males"|peço mais vinho ao taverneiro|sou ser em exílio|aprendo em escolas invisíveis|
+|14|02|Clandestino_1201|T|18|6|participo do silêncio da noite|trilho trajetórias no imprevisto|lanço vinho nos versos|junto-me às estrelas|penetro no início do silêncio|perfuro o tempo com insubmissão|lanço acaso nos dias|chego ao inconcebível|danço nos prados, à noite|busco a ordem no caos|emano perfume de mirra|faço do tempo um não-tempo|elevo a voz ante as estrelas|germino o pó dos túmulos|vivo numa "Terra sem Males"|peço mais vinho ao taverneiro|sou ser em exílio|aprendo em escolas invisíveis|
 |14|03|Clandestino_0702|F|1|1|.|
 <EOF>
 Verbetes no Texto = 18
   Total de ítimos = 120
 Total de verbetes = 202
 Qtd. de Variações = 16.899.176.448 (bilhões)
-build_by lay_2_ypo em 10/08/2026 - 05:43
+
+build_by lay_2_ypo em 20/08/2026 - 11:58
+updated em: 26/08/2026 - 10:06
