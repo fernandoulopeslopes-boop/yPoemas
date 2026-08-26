@@ -1,0 +1,27 @@
+a linguagem explica a linguagem.md
+ABOUT_Anarquia.md
+ABOUT_Baudelaire.MD
+ABOUT_bibliografia.md
+ABOUT_linguagem.MD
+ABOUT_livros.md
+ABOUT_notes.md
+ABOUT_Onde está o teu contrário.md
+ABOUT_outros_autores.md
+ABOUT_pensador.md
+ABOUT_pensares.md
+ABOUT_Poesias Ocultistas - Fernando Pessoa.md
+ABOUT_poly.md
+ABOUT_pontuação.md
+ABOUT_samisdàt.md.md
+ABOUT_sites de literatura eletrônica.md
+ABOUT_sites de poesia eletrônica.md
+ABOUT_tradittore.md
+ABOUT_traduções.md
+Citações_Fatos.md
+Ciúme.md
+com sequências.md
+Fábulas.md
+Humanos Direitos.md
+INFO_POLY.md
+Magda Soares.md
+MANUAL_POLY.md
