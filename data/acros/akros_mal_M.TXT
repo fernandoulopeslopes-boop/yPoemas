@@ -1,0 +1,209 @@
+|abestalhado|Adora o óbvio até ele pedir documento|Atropela certeza suficiente para dispensar a dúvida|Adora o mapa de cabeça para baixo e culpa a bússola|Arranja o mapa de cabeça para baixo e culpa a bússola|
+|abjeto|Acumula vantagem até onde só havia conversa|Apronta a verdade como se fosse cláusula opcional|Acha a verdade como se fosse cláusula opcional|Aposta desculpas com acabamento profissional|
+|abobado|Arranja certeza suficiente para dispensar a dúvida|Atropela o óbvio até ele pedir documento|Acha o mapa de cabeça para baixo e culpa a bússola|Apronta explicações para perguntas que ninguém fez|
+|abobalhado|Acha o simples até ele precisar de manual|Acumula o óbvio até ele pedir documento|Aparece o óbvio até ele pedir documento|Aparece uma conclusão e esquece de levar o raciocínio|
+|alcagüete|Apronta desculpas com acabamento profissional|Aposta promessas com prazo de validade invisível|Acumula o próprio álibi antes do problema existir|Arranja o próprio álibi antes do problema existir|
+|apalermado|Aposta a certeza antes de conferir o endereço|Acha atalhos que terminam exatamente onde começaram|Aparece explicações para perguntas que ninguém fez|Acumula o simples até ele precisar de manual|
+|aparvado|Apronta atalhos que terminam exatamente onde começaram|Aparece o mapa de cabeça para baixo e culpa a bússola|Arranja o óbvio até ele pedir documento|Apronta o simples até ele precisar de manual|
+|aparvalhado|Adora atalhos que terminam exatamente onde começaram|Aposta atalhos que terminam exatamente onde começaram|Acumula uma conclusão e esquece de levar o raciocínio|Acumula certeza suficiente para dispensar a dúvida|
+|aparvanhado|Arranja a certeza antes de conferir o endereço|Atropela a certeza antes de conferir o endereço|Atropela atalhos que terminam exatamente onde começaram|Apronta o mapa de cabeça para baixo e culpa a bússola|
+|apatetado|Atropela explicações para perguntas que ninguém fez|Atropela o simples até ele precisar de manual|Acumula explicações para perguntas que ninguém fez|Aparece o simples até ele precisar de manual|
+|ardiloso|Apronta o jogo e ainda pergunta quem mexeu nas regras|Adora vantagem até onde só havia conversa|Apronta um atalho e cobra pedágio na saída|Aparece promessas com prazo de validade invisível|
+|argucioso|Aparece duas versões antes mesmo da primeira pergunta|Arranja um atalho e cobra pedágio na saída|Atropela a verdade como se fosse cláusula opcional|Arranja a verdade como se fosse cláusula opcional|
+|asno|Acha a certeza antes de conferir o endereço|Acha explicações para perguntas que ninguém fez|Arranja o simples até ele precisar de manual|Aposta o mapa de cabeça para baixo e culpa a bússola|
+|astucioso|Adora desculpas com acabamento profissional|Aposta o jogo e ainda pergunta quem mexeu nas regras|Apronta o próprio álibi antes do problema existir|Acumula a verdade como se fosse cláusula opcional|
+|babaca|Banca o óbvio até ele pedir documento|Baralha atalhos que terminam exatamente onde começaram|Borda o óbvio até ele pedir documento|Bate o óbvio até ele pedir documento|
+|babão|Balança um limite só para ter prazer em atravessá-lo|Banca delicadeza em porções microscópicas|Balança o ambiente até a elegância pedir licença|Balança uma entrada triunfal para uma ideia pequena|
+|babaquara|Bate atalhos que terminam exatamente onde começaram|Brinca o simples até ele precisar de manual|Busca o simples até ele precisar de manual|Brilha o mapa de cabeça para baixo e culpa a bússola|
+|baboso|Busca barulho onde bastava presença|Balança franqueza com falta de freio|Busca delicadeza em porções microscópicas|Banca um limite só para ter prazer em atravessá-lo|
+|bandalho|Bate duas versões antes mesmo da primeira pergunta|Balança desculpas com acabamento profissional|Brilha o jogo e ainda pergunta quem mexeu nas regras|Baralha desculpas com acabamento profissional|
+|basbaque|Balança a certeza antes de conferir o endereço|Baralha certeza suficiente para dispensar a dúvida|Bate explicações para perguntas que ninguém fez|Busca o óbvio até ele pedir documento|
+|besta|Banca explicações para perguntas que ninguém fez|Borda uma conclusão e esquece de levar o raciocínio|Brinca explicações para perguntas que ninguém fez|Balança o óbvio até ele pedir documento|
+|bestalhão|Banca certeza suficiente para dispensar a dúvida|Brinca o mapa de cabeça para baixo e culpa a bússola|Banca uma conclusão e esquece de levar o raciocínio|Banca atalhos que terminam exatamente onde começaram|
+|bilontra|Banca um atalho e cobra pedágio na saída|Baralha promessas com prazo de validade invisível|Bate vantagem até onde só havia conversa|Brinca duas versões antes mesmo da primeira pergunta|
+|biltre|Brilha duas versões antes mesmo da primeira pergunta|Borda desculpas com acabamento profissional|Baralha a verdade como se fosse cláusula opcional|Baralha o jogo e ainda pergunta quem mexeu nas regras|
+|bobo|Busca uma conclusão e esquece de levar o raciocínio|Brilha uma conclusão e esquece de levar o raciocínio|Bate uma conclusão e esquece de levar o raciocínio|Balança atalhos que terminam exatamente onde começaram|
+|boboca|Baralha uma conclusão e esquece de levar o raciocínio|Baralha o óbvio até ele pedir documento|Banca o simples até ele precisar de manual|Baralha o simples até ele precisar de manual|
+|boçal|Brilha atalhos que terminam exatamente onde começaram|Balança explicações para perguntas que ninguém fez|Baralha o mapa de cabeça para baixo e culpa a bússola|Brinca o óbvio até ele pedir documento|
+|bocó|Borda atalhos que terminam exatamente onde começaram|Busca atalhos que terminam exatamente onde começaram|Baralha explicações para perguntas que ninguém fez|Busca o mapa de cabeça para baixo e culpa a bússola|
+|bronco|Brilha o óbvio até ele pedir documento|Borda explicações para perguntas que ninguém fez|Baralha a certeza antes de conferir o endereço|Bate a certeza antes de conferir o endereço|
+|bunda-mole|Banca um passo à frente e dois recibos de recuo|Bate tempestade e entrega garoa|Baralha atitude em versão de demonstração|Brilha rotas de ida desde que incluam volta imediata|
+|burro|Brilha certeza suficiente para dispensar a dúvida|Banca o mapa de cabeça para baixo e culpa a bússola|Brilha a certeza antes de conferir o endereço|Bate certeza suficiente para dispensar a dúvida|
+|cachorro|Confunde coragem para amanhã, sem falta|Complica firmeza até a primeira curva|Cava um passo à frente e dois recibos de recuo|Costuma um passo à frente e dois recibos de recuo|
+|caconso|Cria atalhos que terminam exatamente onde começaram|Costuma o óbvio até ele pedir documento|Costuma o simples até ele precisar de manual|Coleciona uma conclusão e esquece de levar o raciocínio|
+|cafajeste|Cria um atalho e cobra pedágio na saída|Coleciona o jogo e ainda pergunta quem mexeu nas regras|Coleciona vantagem até onde só havia conversa|Confunde o jogo e ainda pergunta quem mexeu nas regras|
+|calhorda|Circula o próprio álibi antes do problema existir|Calcula desculpas com acabamento profissional|Cria vantagem até onde só havia conversa|Cria o jogo e ainda pergunta quem mexeu nas regras|
+|caloteiro|Cava vantagem até onde só havia conversa|Calcula o próprio álibi antes do problema existir|Complica a verdade como se fosse cláusula opcional|Confunde o próprio álibi antes do problema existir|
+|cambalacheiro|Costuma a verdade como se fosse cláusula opcional|Coleciona desculpas com acabamento profissional|Cava o próprio álibi antes do problema existir|Complica o próprio álibi antes do problema existir|
+|camelo|Costuma o mapa de cabeça para baixo e culpa a bússola|Circula o óbvio até ele pedir documento|Coleciona a certeza antes de conferir o endereço|Calcula uma conclusão e esquece de levar o raciocínio|
+|canastrão|Costuma um detalhe e promove a evento principal|Cria o imprevisto como se fosse rotina|Complica um desvio mesmo em linha reta|Confunde o imprevisto como se fosse rotina|
+|capadócio|Complica desculpas com acabamento profissional|Coleciona o próprio álibi antes do problema existir|Cava duas versões antes mesmo da primeira pergunta|Coleciona promessas com prazo de validade invisível|
+|capcioso|Costuma um atalho e cobra pedágio na saída|Circula desculpas com acabamento profissional|Cria a verdade como se fosse cláusula opcional|Confunde a verdade como se fosse cláusula opcional|
+|careta|Calcula firmeza até a primeira curva|Calcula heroísmo com horário comercial|Complica heroísmo com horário comercial|Costuma atitude em versão de demonstração|
+|cavalgadura|Circula a certeza antes de conferir o endereço|Cria uma conclusão e esquece de levar o raciocínio|Circula o mapa de cabeça para baixo e culpa a bússola|Coleciona atalhos que terminam exatamente onde começaram|
+|chapetão|Cava o óbvio até ele pedir documento|Coleciona certeza suficiente para dispensar a dúvida|Cria o óbvio até ele pedir documento|Confunde certeza suficiente para dispensar a dúvida|
+|charlatão|Calcula o jogo e ainda pergunta quem mexeu nas regras|Coleciona a verdade como se fosse cláusula opcional|Costuma desculpas com acabamento profissional|Cava desculpas com acabamento profissional|
+|chato|Cria um detalhe e promove a evento principal|Cria um desvio mesmo em linha reta|Cria a paciência alheia como laboratório permanente|Cava a paciência alheia como laboratório permanente|
+|chulo|Complica um limite só para ter prazer em atravessá-lo|Cava franqueza com falta de freio|Costuma franqueza com falta de freio|Calcula um limite só para ter prazer em atravessá-lo|
+|cínico|Calcula vantagem até onde só havia conversa|Costuma vantagem até onde só havia conversa|Costuma duas versões antes mesmo da primeira pergunta|Coleciona um atalho e cobra pedágio na saída|
+|coió|Calcula certeza suficiente para dispensar a dúvida|Cria explicações para perguntas que ninguém fez|Cava o mapa de cabeça para baixo e culpa a bússola|Coleciona o mapa de cabeça para baixo e culpa a bússola|
+|corrupto|Complica promessas com prazo de validade invisível|Circula promessas com prazo de validade invisível|Cava um atalho e cobra pedágio na saída|Confunde duas versões antes mesmo da primeira pergunta|
+|covarde|Calcula coragem para amanhã, sem falta|Complica rotas de ida desde que incluam volta imediata|Complica prudência onde às vezes mora apenas fuga|Coleciona atitude em versão de demonstração|
+|crédulo|Calcula a certeza antes de conferir o endereço|Confunde explicações para perguntas que ninguém fez|Confunde a certeza antes de conferir o endereço|Complica o simples até ele precisar de manual|
+|débil|Descobre a certeza antes de conferir o endereço|Dobra o simples até ele precisar de manual|Dobra certeza suficiente para dispensar a dúvida|Descobre o simples até ele precisar de manual|
+|dedo-duro|Desvia o jogo e ainda pergunta quem mexeu nas regras|Desvia um atalho e cobra pedágio na saída|Derrapa vantagem até onde só havia conversa|Disfarça promessas com prazo de validade invisível|
+|degenerado|Decide um atalho e cobra pedágio na saída|Derrapa um atalho e cobra pedágio na saída|Diz um atalho e cobra pedágio na saída|Diz o próprio álibi antes do problema existir|
+|depravado|Diz barulho onde bastava presença|Descobre o nível sem precisar de escada|Disfarça o ambiente até a elegância pedir licença|Desvia o mau gosto e ainda pede bis|
+|desavergonhado|Desvia duas versões antes mesmo da primeira pergunta|Desvia a verdade como se fosse cláusula opcional|Dobra o jogo e ainda pergunta quem mexeu nas regras|Descobre promessas com prazo de validade invisível|
+|desbriado|Decide duas versões antes mesmo da primeira pergunta|Descobre vantagem até onde só havia conversa|Desmonta o jogo e ainda pergunta quem mexeu nas regras|Descobre desculpas com acabamento profissional|
+|descarado|Decide vantagem até onde só havia conversa|Desmonta promessas com prazo de validade invisível|Desvia promessas com prazo de validade invisível|Decide o próprio álibi antes do problema existir|
+|desonesto|Decide a verdade como se fosse cláusula opcional|Diz a verdade como se fosse cláusula opcional|Desvia vantagem até onde só havia conversa|Descobre o jogo e ainda pergunta quem mexeu nas regras|
+|desonroso|Derrapa promessas com prazo de validade invisível|Desmonta o próprio álibi antes do problema existir|Disfarça a verdade como se fosse cláusula opcional|Disfarça o jogo e ainda pergunta quem mexeu nas regras|
+|desprezível|Diz vantagem até onde só havia conversa|Derrapa o próprio álibi antes do problema existir|Disfarça desculpas com acabamento profissional|Descobre duas versões antes mesmo da primeira pergunta|
+|desregrado|Desmonta uma dúvida onde havia certeza demais|Derrapa a paciência alheia como laboratório permanente|Desmonta um desvio mesmo em linha reta|Derrapa um problema pequeno e devolve em tamanho família|
+|dissimulado|Derrapa a verdade como se fosse cláusula opcional|Desmonta um atalho e cobra pedágio na saída|Dobra duas versões antes mesmo da primeira pergunta|Decide promessas com prazo de validade invisível|
+|embusteiro|Empilha promessas com prazo de validade invisível|Exagera vantagem até onde só havia conversa|Espalha desculpas com acabamento profissional|Empilha o jogo e ainda pergunta quem mexeu nas regras|
+|enganoso|Empilha um atalho e cobra pedágio na saída|Escolhe o jogo e ainda pergunta quem mexeu nas regras|Escolhe um atalho e cobra pedágio na saída|Ensaia o jogo e ainda pergunta quem mexeu nas regras|
+|enrolador|Escapa duas versões antes mesmo da primeira pergunta|Escolhe desculpas com acabamento profissional|Espalha promessas com prazo de validade invisível|Encontra promessas com prazo de validade invisível|
+|escroque|Escolhe duas versões antes mesmo da primeira pergunta|Exagera o próprio álibi antes do problema existir|Escapa o próprio álibi antes do problema existir|Ensaia desculpas com acabamento profissional|
+|escroto|Exagera uma entrada triunfal para uma ideia pequena|Ensaia uma entrada triunfal para uma ideia pequena|Exagera delicadeza em porções microscópicas|Ensaia um limite só para ter prazer em atravessá-lo|
+|espaçoso|Encontra franqueza com falta de freio|Empilha o nível sem precisar de escada|Esconde delicadeza em porções microscópicas|Escolhe um limite só para ter prazer em atravessá-lo|
+|espertalhão|Espalha certezas como quem coleciona recibos vencidos|Escolhe razões para voltar o assunto para si mesmo|Empilha um espelho até em sala sem parede|Exagera opiniões onde bastava silêncio|
+|espurco|Ensaia barulho onde bastava presença|Empilha delicadeza em porções microscópicas|Ensaia o ambiente até a elegância pedir licença|Encontra delicadeza em porções microscópicas|
+|esquisito|Exagera um detalhe surreal e chama de rotina|Ensaia um detalhe surreal e chama de rotina|Ensaia uma lógica que esqueceu de avisar aos outros|Escolhe coerência onde a coerência não costuma passar|
+|estulto|Escolhe a certeza antes de conferir o endereço|Empilha o simples até ele precisar de manual|Encontra o óbvio até ele pedir documento|Encontra certeza suficiente para dispensar a dúvida|
+|estúpido|Esconde certeza suficiente para dispensar a dúvida|Encontra o simples até ele precisar de manual|Escapa atalhos que terminam exatamente onde começaram|Escolhe certeza suficiente para dispensar a dúvida|
+|falso|Flerta um atalho e cobra pedágio na saída|Finge promessas com prazo de validade invisível|Fogem duas versões antes mesmo da primeira pergunta|Força o próprio álibi antes do problema existir|
+|farsante|Faz desculpas com acabamento profissional|Fura um atalho e cobra pedágio na saída|Fala duas versões antes mesmo da primeira pergunta|Força desculpas com acabamento profissional|
+|feio|Fala barulho onde bastava presença|Fogem um limite só para ter prazer em atravessá-lo|Fabrica franqueza com falta de freio|Força um limite só para ter prazer em atravessá-lo|
+|fingido|Fabrica o jogo e ainda pergunta quem mexeu nas regras|Fala vantagem até onde só havia conversa|Faz duas versões antes mesmo da primeira pergunta|Fura promessas com prazo de validade invisível|
+|fingidor|Flerta desculpas com acabamento profissional|Flerta promessas com prazo de validade invisível|Fala desculpas com acabamento profissional|Fala o próprio álibi antes do problema existir|
+|fofoqueiro|Finge um problema pequeno e devolve em tamanho família|Flerta o imprevisto como se fosse rotina|Força um detalhe e promove a evento principal|Finge um detalhe e promove a evento principal|
+|folgado|Força um desvio mesmo em linha reta|Finge uma vírgula suspeita quando tudo parecia resolvido|Faz uma certeza nova antes da antiga esfriar|Flerta uma dúvida onde havia certeza demais|
+|frauduloso|Força vantagem até onde só havia conversa|Fabrica a verdade como se fosse cláusula opcional|Força duas versões antes mesmo da primeira pergunta|Flerta o próprio álibi antes do problema existir|
+|frívolo|Fala rotas de ida desde que incluam volta imediata|Faz coragem para amanhã, sem falta|Força firmeza até a primeira curva|Faz atitude em versão de demonstração|
+|grosso|Guarda franqueza com falta de freio|Grita barulho onde bastava presença|Gira delicadeza em porções microscópicas|Garante barulho onde bastava presença|
+|grupista|Garante opiniões onde bastava silêncio|Gira três cadeiras e ainda pergunta se há espaço|Gasta o centro da conversa com habilidade olímpica|Gosta certezas como quem coleciona recibos vencidos|
+|hediondo|Humilha o mau gosto e ainda pede bis|Habilita o ambiente até a elegância pedir licença|Humilha barulho onde bastava presença|Harmoniza franqueza com falta de freio|
+|hipócrita|Hipoteca duas versões antes mesmo da primeira pergunta|Hospeda duas versões antes mesmo da primeira pergunta|Hospeda a verdade como se fosse cláusula opcional|Herdeiro o jogo e ainda pergunta quem mexeu nas regras|
+|idiota|Ignora certeza suficiente para dispensar a dúvida|Invade o óbvio até ele pedir documento|Improvisa o simples até ele precisar de manual|Insiste uma conclusão e esquece de levar o raciocínio|
+|ignóbil|Invade o jogo e ainda pergunta quem mexeu nas regras|Insinua desculpas com acabamento profissional|Inverte o próprio álibi antes do problema existir|Ignora duas versões antes mesmo da primeira pergunta|
+|ignorante|Invade o simples até ele precisar de manual|Inventa a certeza antes de conferir o endereço|Inventa uma conclusão e esquece de levar o raciocínio|Insinua certeza suficiente para dispensar a dúvida|
+|imbecil|Inventa certeza suficiente para dispensar a dúvida|Ignora o óbvio até ele pedir documento|Imagina atalhos que terminam exatamente onde começaram|Imagina o mapa de cabeça para baixo e culpa a bússola|
+|imoral|Improvisa duas versões antes mesmo da primeira pergunta|Insinua promessas com prazo de validade invisível|Improvisa promessas com prazo de validade invisível|Invade a verdade como se fosse cláusula opcional|
+|impostor|Invade o próprio álibi antes do problema existir|Imagina o jogo e ainda pergunta quem mexeu nas regras|Inventa desculpas com acabamento profissional|Inventa promessas com prazo de validade invisível|
+|imundo|Ignora delicadeza em porções microscópicas|Improvisa o nível sem precisar de escada|Inventa franqueza com falta de freio|Imagina um limite só para ter prazer em atravessá-lo|
+|incapaz|Insinua o mapa de cabeça para baixo e culpa a bússola|Imagina uma conclusão e esquece de levar o raciocínio|Insinua a certeza antes de conferir o endereço|Insinua atalhos que terminam exatamente onde começaram|
+|inconveniente|Improvisa uma certeza nova antes da antiga esfriar|Inventa a paciência alheia como laboratório permanente|Ignora um detalhe e promove a evento principal|Inverte um desvio mesmo em linha reta|
+|incorreto|Ignora o jogo e ainda pergunta quem mexeu nas regras|Insiste duas versões antes mesmo da primeira pergunta|Imagina vantagem até onde só havia conversa|Inverte um atalho e cobra pedágio na saída|
+|inculto|Insinua explicações para perguntas que ninguém fez|Inventa o simples até ele precisar de manual|Improvisa o óbvio até ele pedir documento|Inventa atalhos que terminam exatamente onde começaram|
+|indecente|Inverte delicadeza em porções microscópicas|Ignora o ambiente até a elegância pedir licença|Insinua barulho onde bastava presença|Invade uma entrada triunfal para uma ideia pequena|
+|indecoroso|Insinua o mau gosto e ainda pede bis|Inverte o ambiente até a elegância pedir licença|Invade delicadeza em porções microscópicas|Insiste barulho onde bastava presença|
+|indelicado|Insiste delicadeza em porções microscópicas|Insiste o ambiente até a elegância pedir licença|Invade barulho onde bastava presença|Inventa uma entrada triunfal para uma ideia pequena|
+|inepto|Improvisa atalhos que terminam exatamente onde começaram|Ignora uma conclusão e esquece de levar o raciocínio|Ignora a certeza antes de conferir o endereço|Invade a certeza antes de conferir o endereço|
+|inexperiente|Insinua o simples até ele precisar de manual|Imagina certeza suficiente para dispensar a dúvida|Insiste o óbvio até ele pedir documento|Insinua o óbvio até ele pedir documento|
+|infame|Imagina um atalho e cobra pedágio na saída|Improvisa o próprio álibi antes do problema existir|Improvisa a verdade como se fosse cláusula opcional|Ignora um atalho e cobra pedágio na saída|
+|inocente|Improvisa certeza suficiente para dispensar a dúvida|Improvisa explicações para perguntas que ninguém fez|Ignora explicações para perguntas que ninguém fez|Insiste explicações para perguntas que ninguém fez|
+|insensato|Ignora o simples até ele precisar de manual|Inverte explicações para perguntas que ninguém fez|Invade atalhos que terminam exatamente onde começaram|Inventa o óbvio até ele pedir documento|
+|insípido|Inverte o mapa de cabeça para baixo e culpa a bússola|Imagina o simples até ele precisar de manual|Inverte o óbvio até ele pedir documento|Inverte atalhos que terminam exatamente onde começaram|
+|insistente|Imagina um espelho até em sala sem parede|Ignora razões para voltar o assunto para si mesmo|Inverte certezas como quem coleciona recibos vencidos|Imagina um palco onde havia apenas uma cadeira|
+|insosso|Improvisa a certeza antes de conferir o endereço|Invade explicações para perguntas que ninguém fez|Insiste o simples até ele precisar de manual|Ignora o mapa de cabeça para baixo e culpa a bússola|
+|intelijumento|Improvisa uma conclusão e esquece de levar o raciocínio|Imagina o óbvio até ele pedir documento|Imagina a certeza antes de conferir o endereço|Inventa explicações para perguntas que ninguém fez|
+|interesseiro|Insiste desculpas com acabamento profissional|Imagina promessas com prazo de validade invisível|Insinua um atalho e cobra pedágio na saída|Invade vantagem até onde só havia conversa|
+|intolerante|Ignora certezas como quem coleciona recibos vencidos|Insinua o centro da conversa com habilidade olímpica|Inverte opiniões onde bastava silêncio|Inventa certezas como quem coleciona recibos vencidos|
+|intolerável|Improvisa uma entrada triunfal para uma ideia pequena|Imagina o mau gosto e ainda pede bis|Invade o mau gosto e ainda pede bis|Ignora barulho onde bastava presença|
+|intrometido|Insinua uma certeza nova antes da antiga esfriar|Insiste um problema pequeno e devolve em tamanho família|Inventa um detalhe e promove a evento principal|Imagina um problema pequeno e devolve em tamanho família|
+|invejoso|Inventa modéstia suficiente para caber numa lupa|Insiste um espelho até em sala sem parede|Insinua certezas como quem coleciona recibos vencidos|Imagina o centro da conversa com habilidade olímpica|
+|jegue|Julga o óbvio até ele pedir documento|Julga certeza suficiente para dispensar a dúvida|Joga o óbvio até ele pedir documento|Jamais a certeza antes de conferir o endereço|
+|jerico|Joga atalhos que terminam exatamente onde começaram|Junta a certeza antes de conferir o endereço|Julga atalhos que terminam exatamente onde começaram|Jubila o simples até ele precisar de manual|
+|jumento|Janta o óbvio até ele pedir documento|Jura explicações para perguntas que ninguém fez|Jubila certeza suficiente para dispensar a dúvida|Julga a certeza antes de conferir o endereço|
+|lacaio|Liga um detalhe e promove a evento principal|Leva o imprevisto como se fosse rotina|Lê uma certeza nova antes da antiga esfriar|Liga uma vírgula suspeita quando tudo parecia resolvido|
+|ladino|Lucra o jogo e ainda pergunta quem mexeu nas regras|Luta a verdade como se fosse cláusula opcional|Lança um atalho e cobra pedágio na saída|Liga duas versões antes mesmo da primeira pergunta|
+|ladrão|Luta duas versões antes mesmo da primeira pergunta|Lembra o próprio álibi antes do problema existir|Leva um atalho e cobra pedágio na saída|Lança a verdade como se fosse cláusula opcional|
+|lascivo|Leva delicadeza em porções microscópicas|Luta o nível sem precisar de escada|Liga um limite só para ter prazer em atravessá-lo|Luta barulho onde bastava presença|
+|libertino|Lê um limite só para ter prazer em atravessá-lo|Lê o mau gosto e ainda pede bis|Lapida um limite só para ter prazer em atravessá-lo|Luta uma entrada triunfal para uma ideia pequena|
+|loroteiro|Lê duas versões antes mesmo da primeira pergunta|Lê promessas com prazo de validade invisível|Lê um atalho e cobra pedágio na saída|Lapida vantagem até onde só havia conversa|
+|ludibrioso|Lança duas versões antes mesmo da primeira pergunta|Leva duas versões antes mesmo da primeira pergunta|Lucra um atalho e cobra pedágio na saída|Liga o próprio álibi antes do problema existir|
+|lunático|Liga o normal em hipótese remota|Lapida um detalhe surreal e chama de rotina|Lembra coerência onde a coerência não costuma passar|Luta o acaso e chama de planejamento|
+|lerdo|Lembra o mapa de cabeça para baixo e culpa a bússola|Lê atalhos que terminam exatamente onde começaram|Lucra certeza suficiente para dispensar a dúvida|Leva o simples até ele precisar de manual|
+|negligente|Negocia heroísmo com horário comercial|Navega atitude em versão de demonstração|Navega rotas de ida desde que incluam volta imediata|Nasce firmeza até a primeira curva|
+|néscio|Nega o mapa de cabeça para baixo e culpa a bússola|Nomeia certeza suficiente para dispensar a dúvida|Nota certeza suficiente para dispensar a dúvida|Navega explicações para perguntas que ninguém fez|
+|negativista|Nivela coragem para amanhã, sem falta|Nega coragem para amanhã, sem falta|Nasce prudência onde às vezes mora apenas fuga|Negocia prudência onde às vezes mora apenas fuga|
+|neófito|Nivela explicações para perguntas que ninguém fez|Nasce uma conclusão e esquece de levar o raciocínio|Navega o simples até ele precisar de manual|Negocia explicações para perguntas que ninguém fez|
+|non-sense|Nivela o normal em hipótese remota|Nega dois quarteirões depois do improvável|Nomeia dois quarteirões depois do improvável|Navega sentido apenas em dias alternados|
+|malandro|Mede o jogo e ainda pergunta quem mexeu nas regras|Manobra um atalho e cobra pedágio na saída|Multiplica vantagem até onde só havia conversa|Monta o jogo e ainda pergunta quem mexeu nas regras|
+|malicioso|Monta o próprio álibi antes do problema existir|Multiplica o próprio álibi antes do problema existir|Morde a verdade como se fosse cláusula opcional|Monta a verdade como se fosse cláusula opcional|
+|mané|Monta o mapa de cabeça para baixo e culpa a bússola|Mede o mapa de cabeça para baixo e culpa a bússola|Manobra o óbvio até ele pedir documento|Manobra o mapa de cabeça para baixo e culpa a bússola|
+|manhoso|Mistura coragem para amanhã, sem falta|Manobra coragem para amanhã, sem falta|Mede firmeza até a primeira curva|Mistura atitude em versão de demonstração|
+|maroto|Muda tempestade e entrega garoa|Multiplica atitude em versão de demonstração|Mede rotas de ida desde que incluam volta imediata|Multiplica coragem para amanhã, sem falta|
+|meliante|Muda desculpas com acabamento profissional|Mistura um atalho e cobra pedágio na saída|Monta duas versões antes mesmo da primeira pergunta|Manobra o jogo e ainda pergunta quem mexeu nas regras|
+|mentecapto|Manobra o simples até ele precisar de manual|Mexe o simples até ele precisar de manual|Mexe uma conclusão e esquece de levar o raciocínio|Mistura o simples até ele precisar de manual|
+|mentiroso|Mexe desculpas com acabamento profissional|Muda vantagem até onde só havia conversa|Morde o jogo e ainda pergunta quem mexeu nas regras|Morde promessas com prazo de validade invisível|
+|mesquinho|Morde razões para voltar o assunto para si mesmo|Manobra um palco onde havia apenas uma cadeira|Mistura opiniões onde bastava silêncio|Muda certezas como quem coleciona recibos vencidos|
+|metido|Mede o centro da conversa com habilidade olímpica|Multiplica opiniões onde bastava silêncio|Mistura razões para voltar o assunto para si mesmo|Morde três cadeiras e ainda pergunta se há espaço|
+|miserável|Muda a verdade como se fosse cláusula opcional|Mexe vantagem até onde só havia conversa|Monta promessas com prazo de validade invisível|Morde duas versões antes mesmo da primeira pergunta|
+|néscio|Nivela certeza suficiente para dispensar a dúvida|Nomeia o mapa de cabeça para baixo e culpa a bússola|Nega atalhos que terminam exatamente onde começaram|Nasce certeza suficiente para dispensar a dúvida|
+|obnóxio|Organiza opiniões onde bastava silêncio|Ousa opiniões onde bastava silêncio|Oferece um espelho até em sala sem parede|Orquestra o centro da conversa com habilidade olímpica|
+|obsceno|Oscila um limite só para ter prazer em atravessá-lo|Opera franqueza com falta de freio|Ocupa o ambiente até a elegância pedir licença|Oferece o nível sem precisar de escada|
+|obtuso|Oferece explicações para perguntas que ninguém fez|Ocupa o óbvio até ele pedir documento|Oferece a certeza antes de conferir o endereço|Ousa o simples até ele precisar de manual|
+|ordinário|Opera um atalho e cobra pedágio na saída|Observa o jogo e ainda pergunta quem mexeu nas regras|Orquestra um atalho e cobra pedágio na saída|Ousa promessas com prazo de validade invisível|
+|orelhudo|Oscila o simples até ele precisar de manual|Ocupa o mapa de cabeça para baixo e culpa a bússola|Opera o mapa de cabeça para baixo e culpa a bússola|Orquestra atalhos que terminam exatamente onde começaram|
+|otário|Ousa certeza suficiente para dispensar a dúvida|Observa uma conclusão e esquece de levar o raciocínio|Organiza o simples até ele precisar de manual|Oscila atalhos que terminam exatamente onde começaram|
+|paca|Pensa o óbvio até ele pedir documento|Pensa uma conclusão e esquece de levar o raciocínio|Prefere o simples até ele precisar de manual|Planta o simples até ele precisar de manual|
+|palerma|Põe o simples até ele precisar de manual|Puxa certeza suficiente para dispensar a dúvida|Promete a certeza antes de conferir o endereço|Planta certeza suficiente para dispensar a dúvida|
+|palpiteiro|Prefere opiniões onde bastava silêncio|Prefere três cadeiras e ainda pergunta se há espaço|Põe um espelho até em sala sem parede|Promete razões para voltar o assunto para si mesmo|
+|panaca|Pensa o mapa de cabeça para baixo e culpa a bússola|Prefere o óbvio até ele pedir documento|Puxa atalhos que terminam exatamente onde começaram|Planta explicações para perguntas que ninguém fez|
+|papudo|Pensa modéstia suficiente para caber numa lupa|Põe opiniões onde bastava silêncio|Planta certezas como quem coleciona recibos vencidos|Põe o centro da conversa com habilidade olímpica|
+|parvo|Provoca certeza suficiente para dispensar a dúvida|Põe a certeza antes de conferir o endereço|Persegue certeza suficiente para dispensar a dúvida|Põe explicações para perguntas que ninguém fez|
+|pasmado|Planta o óbvio até ele pedir documento|Puxa uma conclusão e esquece de levar o raciocínio|Planta a certeza antes de conferir o endereço|Põe atalhos que terminam exatamente onde começaram|
+|paspalho|Promete o óbvio até ele pedir documento|Planta o mapa de cabeça para baixo e culpa a bússola|Pensa a certeza antes de conferir o endereço|Põe certeza suficiente para dispensar a dúvida|
+|pateta|Promete certeza suficiente para dispensar a dúvida|Persegue explicações para perguntas que ninguém fez|Prefere certeza suficiente para dispensar a dúvida|Puxa o simples até ele precisar de manual|
+|patife|Pensa promessas com prazo de validade invisível|Planta duas versões antes mesmo da primeira pergunta|Planta a verdade como se fosse cláusula opcional|Promete vantagem até onde só havia conversa|
+|pato|Puxa a certeza antes de conferir o endereço|Prefere uma conclusão e esquece de levar o raciocínio|Promete o simples até ele precisar de manual|Põe o mapa de cabeça para baixo e culpa a bússola|
+|pelintra|Pensa uma vírgula suspeita quando tudo parecia resolvido|Provoca um desvio mesmo em linha reta|Puxa uma dúvida onde havia certeza demais|Provoca um detalhe e promove a evento principal|
+|pentelho|Puxa três cadeiras e ainda pergunta se há espaço|Pensa três cadeiras e ainda pergunta se há espaço|Puxa certezas como quem coleciona recibos vencidos|Puxa o centro da conversa com habilidade olímpica|
+|perdido|Prefere atalhos que terminam exatamente onde começaram|Planta uma conclusão e esquece de levar o raciocínio|Persegue a certeza antes de conferir o endereço|Põe o óbvio até ele pedir documento|
+|pervertido|Provoca barulho onde bastava presença|Promete o mau gosto e ainda pede bis|Prefere franqueza com falta de freio|Puxa o mau gosto e ainda pede bis|
+|pífio|Persegue o mapa de cabeça para baixo e culpa a bússola|Provoca a certeza antes de conferir o endereço|Pensa certeza suficiente para dispensar a dúvida|Provoca explicações para perguntas que ninguém fez|
+|pilantra|Põe um atalho e cobra pedágio na saída|Puxa desculpas com acabamento profissional|Persegue duas versões antes mesmo da primeira pergunta|Promete desculpas com acabamento profissional|
+|mala|Muda prudência onde às vezes mora apenas fuga|Mexe firmeza até a primeira curva|Monta tempestade e entrega garoa|Manobra rotas de ida desde que incluam volta imediata|
+|prepotente|Promete o centro da conversa com habilidade olímpica|Põe modéstia suficiente para caber numa lupa|Promete um palco onde havia apenas uma cadeira|Planta um palco onde havia apenas uma cadeira|
+|pretensioso|Pensa certezas como quem coleciona recibos vencidos|Provoca o centro da conversa com habilidade olímpica|Persegue certezas como quem coleciona recibos vencidos|Puxa um palco onde havia apenas uma cadeira|
+|provinciano|Pensa um espelho até em sala sem parede|Persegue o centro da conversa com habilidade olímpica|Provoca razões para voltar o assunto para si mesmo|Promete certezas como quem coleciona recibos vencidos|
+|pulha|Persegue a verdade como se fosse cláusula opcional|Puxa a verdade como se fosse cláusula opcional|Planta o próprio álibi antes do problema existir|Pensa o próprio álibi antes do problema existir|
+|puxa-saco|Planta opiniões onde bastava silêncio|Prefere um palco onde havia apenas uma cadeira|Põe certezas como quem coleciona recibos vencidos|Põe razões para voltar o assunto para si mesmo|
+|ranzinza|Reinventa razões para voltar o assunto para si mesmo|Reclama um espelho até em sala sem parede|Repete três cadeiras e ainda pergunta se há espaço|Repete opiniões onde bastava silêncio|
+|sacana|Sussurra duas versões antes mesmo da primeira pergunta|Semeia promessas com prazo de validade invisível|Sussurra um atalho e cobra pedágio na saída|Sobra o próprio álibi antes do problema existir|
+|safado|Salta duas versões antes mesmo da primeira pergunta|Sobra promessas com prazo de validade invisível|Sabe o jogo e ainda pergunta quem mexeu nas regras|Semeia vantagem até onde só havia conversa|
+|salafrário|Semeia a verdade como se fosse cláusula opcional|Semeia o próprio álibi antes do problema existir|Sempre o próprio álibi antes do problema existir|Sobra um atalho e cobra pedágio na saída|
+|sem-vergonha|Sabe o próprio álibi antes do problema existir|Salta desculpas com acabamento profissional|Semeia um atalho e cobra pedágio na saída|Sorri o jogo e ainda pergunta quem mexeu nas regras|
+|simplório|Sempre o simples até ele precisar de manual|Salta o mapa de cabeça para baixo e culpa a bússola|Sempre o mapa de cabeça para baixo e culpa a bússola|Sobra a certeza antes de conferir o endereço|
+|simulador|Semeia o jogo e ainda pergunta quem mexeu nas regras|Sorri a verdade como se fosse cláusula opcional|Sabe um atalho e cobra pedágio na saída|Sorri o próprio álibi antes do problema existir|
+|songamonga|Sabe explicações para perguntas que ninguém fez|Sabe o óbvio até ele pedir documento|Sempre atalhos que terminam exatamente onde começaram|Salta explicações para perguntas que ninguém fez|
+|sonso|Semeia uma conclusão e esquece de levar o raciocínio|Sorri o simples até ele precisar de manual|Sempre explicações para perguntas que ninguém fez|Sabe uma conclusão e esquece de levar o raciocínio|
+|sórdido|Sussurra promessas com prazo de validade invisível|Salta a verdade como se fosse cláusula opcional|Simula desculpas com acabamento profissional|Simula duas versões antes mesmo da primeira pergunta|
+|sorrateiro|Sussurra a verdade como se fosse cláusula opcional|Salta um atalho e cobra pedágio na saída|Sussurra vantagem até onde só havia conversa|Simula vantagem até onde só havia conversa|
+|sovina|Sabe três cadeiras e ainda pergunta se há espaço|Semeia opiniões onde bastava silêncio|Simula o centro da conversa com habilidade olímpica|Salta opiniões onde bastava silêncio|
+|súcio|Semeia uma dúvida onde havia certeza demais|Sabe um desvio mesmo em linha reta|Semeia um problema pequeno e devolve em tamanho família|Sempre um problema pequeno e devolve em tamanho família|
+|tacanho|Torce um espelho até em sala sem parede|Tropeça um espelho até em sala sem parede|Transforma razões para voltar o assunto para si mesmo|Torce modéstia suficiente para caber numa lupa|
+|tagarela|Transforma três cadeiras e ainda pergunta se há espaço|Trata um palco onde havia apenas uma cadeira|Torce certezas como quem coleciona recibos vencidos|Tem três cadeiras e ainda pergunta se há espaço|
+|tapado|Tropeça certeza suficiente para dispensar a dúvida|Tropeça o mapa de cabeça para baixo e culpa a bússola|Trata o mapa de cabeça para baixo e culpa a bússola|Tira o simples até ele precisar de manual|
+|tolo|Torce o mapa de cabeça para baixo e culpa a bússola|Trava uma conclusão e esquece de levar o raciocínio|Tem o simples até ele precisar de manual|Tenta certeza suficiente para dispensar a dúvida|
+|tonto|Trata explicações para perguntas que ninguém fez|Tira uma conclusão e esquece de levar o raciocínio|Torce atalhos que terminam exatamente onde começaram|Tenta o mapa de cabeça para baixo e culpa a bússola|
+|torpe|Trava uma dúvida onde havia certeza demais|Trata um desvio mesmo em linha reta|Trata um detalhe e promove a evento principal|Tenta uma vírgula suspeita quando tudo parecia resolvido|
+|traíra|Transforma desculpas com acabamento profissional|Trata duas versões antes mesmo da primeira pergunta|Trata o próprio álibi antes do problema existir|Tira duas versões antes mesmo da primeira pergunta|
+|trambiqueiro|Tira promessas com prazo de validade invisível|Tira vantagem até onde só havia conversa|Trava vantagem até onde só havia conversa|Tropeça o próprio álibi antes do problema existir|
+|trapaceador|Trata desculpas com acabamento profissional|Tem um atalho e cobra pedágio na saída|Tenta vantagem até onde só havia conversa|Trata um atalho e cobra pedágio na saída|
+|tratante|Tem a verdade como se fosse cláusula opcional|Tropeça a verdade como se fosse cláusula opcional|Torce promessas com prazo de validade invisível|Tropeça vantagem até onde só havia conversa|
+|trouxa|Transforma uma conclusão e esquece de levar o raciocínio|Tropeça o simples até ele precisar de manual|Trava a certeza antes de conferir o endereço|Tenta o óbvio até ele pedir documento|
+|vagabundo|Varia promessas com prazo de validade invisível|Vira o próprio álibi antes do problema existir|Vira desculpas com acabamento profissional|Vence um atalho e cobra pedágio na saída|
+|velhaco|Varia o jogo e ainda pergunta quem mexeu nas regras|Volta a verdade como se fosse cláusula opcional|Veste a verdade como se fosse cláusula opcional|Vaza o jogo e ainda pergunta quem mexeu nas regras|
+|vigarista|Volta desculpas com acabamento profissional|Varia um atalho e cobra pedágio na saída|Vigia o próprio álibi antes do problema existir|Vigia vantagem até onde só havia conversa|
+|vil|Vaza a verdade como se fosse cláusula opcional|Vigia um atalho e cobra pedágio na saída|Volta um atalho e cobra pedágio na saída|Veste um atalho e cobra pedágio na saída|
+|vulgar|Vigia o nível sem precisar de escada|Volta franqueza com falta de freio|Vira delicadeza em porções microscópicas|Varia uma entrada triunfal para uma ideia pequena|
+|xarope|Xeretando delicadeza em porções microscópicas|Xisca delicadeza em porções microscópicas|Xaveca barulho onde bastava presença|Xisca o mau gosto e ainda pede bis|
+|xexé|Xama o ambiente até a elegância pedir licença|Xama barulho onde bastava presença|Xinga o mau gosto e ainda pede bis|Xereta o ambiente até a elegância pedir licença|
+|xucro|Xeretando o óbvio até ele pedir documento|Xisca a certeza antes de conferir o endereço|Xeretando o mapa de cabeça para baixo e culpa a bússola|Xisca o óbvio até ele pedir documento|
+|zamboa|Zarpa o óbvio até ele pedir documento|Zanga o óbvio até ele pedir documento|Zomba uma conclusão e esquece de levar o raciocínio|Zera o simples até ele precisar de manual|
+|zote|Zomba atalhos que terminam exatamente onde começaram|Zomba o mapa de cabeça para baixo e culpa a bússola|Zera explicações para perguntas que ninguém fez|Zera atalhos que terminam exatamente onde começaram|
+|zuco|Zune a certeza antes de conferir o endereço|Zanga certeza suficiente para dispensar a dúvida|Ziguezagueia explicações para perguntas que ninguém fez|Zanga o mapa de cabeça para baixo e culpa a bússola|

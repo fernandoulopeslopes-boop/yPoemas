@@ -483,3 +483,43 @@
 |zelosa|que zela, cuida e protege com carinho|preserva o que é bom, belo e valioso|guarda com amor, dedicação e lealdade|protege e preserva o bem|cuidado e amor|
 |zoadora|alegre, brincalhona e divertida com todos|espalha alegria, bom humor e leveza|faz todos sorrirem, felizes e leves|alegria que contagia e encanta|humor e alegria|
 |zombadora|alegre, leve e feliz em seu viver e brilhar|faz rir, ver o lado bom e leve da vida|espírito livre, alegre e descontraído|leveza, alegria e bom humor sempre|alegria e liberdade|
+|Kindhearted|De coração generosa e terna|Espalha bondade sem fazer alarde|Acolhe cada uma como se fosse família|
+|Keen|Mente afiada e olhar perspicaz|Compreende antes de todos terminarem de falar|Vê o que as outras não conseguem perceber|
+|Kingly|Alma nobre e postura generosa|Reina pela bondade, não pela autoridade|Trata a humilde e a poderosa com a mesma cortesia|
+|Knightly|Honrada, leal e protetora|Defende o que é justo mesmo quando ninguém olha|Sua palavra vale mais que contrato escrito|
+|Knowledgeable|Sábia e bem informada|Fala com propriedade sobre tudo o que aborda|Amplia o saber sem jamais perder a humildade|
+|Kosher|Autêntica, genuína e confiável|Sem máscaras, sem fingimento, sem artifícios|O que se vê é o que se é — íntegra e verdadeira|
+|Kempt|Bem-arrumada, elegante e equilibrada|Cuida de si e do mundo ao redor com apuro|Reflete ordem e harmonia em tudo o que faz|
+|Kaleidoscopic|Revela beleza em constante mudança|Surpreende a cada instante com nova forma|Traz cor e variedade à vida de quem a rodeia|
+|Kinsmanly|Irmã, calorosa e acolhedora|Trata estranhas como se fossem parentes|Pertencer segue por onde ela passa|
+|Kismet|Destinada ao bem e ao encontro do que é belo|Traz consigo a sorte de quem segue o caminho certo|Onde passa, o destino se torna mais gentil|
+|Kundalini|Cheia de energia interior e força serena|Guarda um fogo sagrado que aquece sem queimar|Eleva o espírito de todas que a conhecem|
+|Xenial|Acolhe a todas com calor e respeito|Faz a desconhecida sentir-se em casa|Não distingue quem merece ou não merece bondade|
+|Xanthic|Brilha com luz própria e dourada|Ilumina o ambiente com simples presença|Espalha calor sem queimar, brilha sem ofuscar|
+|Xenodochial|Generosa e acolhedora com estrangeiras|Abre o coração e a porta a quem chega de longe|Vê em cada pessoa uma irmã, não uma forasteira|
+|X-factor|Possui um brilho que não se explica|É única, insubstituível e inconfundível|Basta estar presente para transformar o momento|
+|Xylophonic|Voz e conduta claras e melodiosas|Ressoam verdade e clareza por onde passa|Harmonia segue em tudo o que faz|
+|Xenophile|Ama todas as pessoas e culturas|Encontra beleza na diferença e na diversidade|Une em vez de dividir|
+|Xenogenic|Traz algo novo e belo de outro lugar|Renova o ambiente com frescor e leveza|Transforma o comum em algo extraordinário|
+|Xenharmonic|Harmoniza o diferente com perfeição|Une sons e almas que pareciam incompatíveis|Cria beleza onde outras só viam desacordo|
+|Xanthous|Radiante, de brilho dourado e quente|Espalha luz suave por onde caminha|Ilumina sem ofuscar, aquece sem consumir|
+|Yare|Ágil, graciosa e sempre pronta|Age com elegância sem perder a eficiência|Desliza pela vida sem nunca perder o equilíbrio|
+|Youthful|Espírito eternamente jovem e leve|Renova a esperança de quem a rodeia|Vê possibilidades onde outras só veem limites|
+|Yearning|Alma que anseia pelo bem e pelo belo|Busca o que eleva e transforma com ternura|Cresce em bondade a cada dia que passa|
+|Yours-truly|Autêntica, fiel a si mesma e aos princípios|Sem máscaras, sem fingimento, sem reservas|Diz o que pensa e faz o que diz com integridade|
+|Yielding|Gentil, flexível e compassiva|Força envolta em doçura e paciência|Bondade que nunca se quebra nem se impõe|
+|Yarehearted|Pronta a ajudar e rápida a cuidar|Corajosa e terna ao mesmo tempo|Bravura revestida de graça e cuidado|
+|Yearnful|Anseia pelo bem e eleva-se ao belo|Busca o que há de mais nobre em cada pessoa|Inspira todas a serem melhores a cada dia|
+|Youthsome|Eternamente jovem no espírito e no olhar|Guarda a esperança e a leveza da infância|Renova a alegria de quem a rodeia|
+|Zestful|Cheia de alegria e entusiasmo|Abraça a vida com paixão e energia|Faz do comum algo especial só por estar presente|
+|Zealous|Dedicada, fervorosa e comprometida|Entrega-se de coração ao que faz|Empenha-se de verdade, sem reservas nem meio-termo|
+|Zenithal|Exemplo de virtude e caráter no mais alto grau|Representa o melhor que se pode ser|Brilha como referência de nobreza e integridade|
+|Zephyr-like|Suave, leve e serena como a brisa|Acalma sem precisar dizer uma palavra|Traz leveza a situações pesadas e difíceis|
+|Zen-like|Equilibrada, sábia e serena em toda circunstância|Mantém a calma mesmo no meio da tempestade|Sua presença já traz paz e sabedoria às outras|
+|Zephyrine|Graciosa, livre e suave em tudo o que faz|Sem peso, sem amargura, apenas doçura|Muda o ambiente com leveza e bondade|
+|Zingy|Vibrante, espirituosa e cheia de vida|Energia que contagia e levanta o ânimo|Deixa rastro de alegria e brilho por onde passa|
+|Zodiacal|Harmoniosa, completa e equilibrada|Reúne múltiplas virtudes em perfeita sintonia|Raridade que reúne o melhor de todos os aspectos|
+|Zest-hearted|Generosa em alegria e entusiasmo|Compartilha o melhor de si sem medir esforços|Sua energia nutre e não esgota|
+|Zenith-glow|Brilha no ponto mais alto e nobre|Exemplo de virtude que guia e inspira|Seu brilho eleva sem ofuscar as outras|
+|Zephyr-flow|Flui com suavidade, graça e serenidade|Não resiste, não força, apenas acompanha|Abranda tudo o que toca com leveza|
+|Zeal-soul|Dedicada, fervorosa e inteira no bem|Entrega-se com paixão e sem reservas|O amor e a dedicação são sua essência mesma|

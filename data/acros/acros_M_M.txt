@@ -1,3 +1,4 @@
+abestalhado
 abjeto
 abobado
 abobalhado
@@ -70,7 +71,6 @@ espaçoso
 espertalhão
 espurco
 esquisito
-estulto
 estúpido
 falso
 farsante
@@ -124,12 +124,6 @@ libertino
 loroteiro
 ludibrioso
 lunático
-lerdo
-negligente
-néscio
-negativista
-neófito
-non-sense
 malandro
 malicioso
 mané
@@ -182,7 +176,6 @@ songamonga
 sonso
 sórdido
 sorrateiro
-sovina
 súcio
 tacanho
 tagarela

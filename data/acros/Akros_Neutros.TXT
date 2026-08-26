@@ -1,0 +1,43 @@
+|Acessível|que se aproxima, se deixa conhecer e acolhe com abertura|não se fecha, não se distancia e não se torna inatingível|abre-se ao outro com confiança, simplicidade e nobreza|ponte entre mundos, corações e caminhos|
+|Admirável|digno de olhar, respeito e louvor sincero|exemplo que inspira, guia e eleva quem o observa|tem brilho e virtude que cativam sem esforço|merece ser visto, seguido e aplaudido|
+|Afável|doce no trato, calmo na fala e nobre no agir|acolhe com sorriso, atenção e bondade|fala com respeito e ouve com carinho|presença que acalma, alegra e inspira confiança|
+|Agradável|traz leveza, conforto e satisfação por onde passa|sua presença torna tudo mais leve, nobre e belo|não pesa, não impõe e não incomoda|alegra o ambiente e acalma o coração|
+|Alerta|percebe antes de ver, ouvir e compreender|está atento ao que acontece ao redor e dentro de si|não se deixa surpreender, enganar ou distrair|vigilância nobre que protege e guia|
+|Altruísta|coloca o bem do outro antes do próprio bem|doa-se sem medir, sem esperar retorno e sem condição|ama, protege e cuida sem olhar a quem|generosidade que nasce da alma e não se pede|
+|Amigável|faz amigos com facilidade, respeito e carinho|trata todos com igualdade, afeto e nobreza|abre o coração e acolhe sem distinção|amizade que nasce, cresce e perdura|
+|Amável|trata a todos com bondade, calma e gentileza|doce no gesto, na palavra e no olhar|espalha luz e carinho sem exigir nada em troca|bondade que vem do coração e se espalha|
+|Brilhante|irradia luz própria por onde caminha e vai|se destaca naturalmente e com nobreza|tem brilho que não se apaga nem se esmaece|estrela que guia, ilumina e aquece|
+|Capaz|tem força, talento e sabedoria para realizar|transforma vontade em fato e sonho em realidade|confia em si e cumpre com mérito e honra|não diz "não posso", diz "vou e farei"|
+|Clemente|perdoa, compreende e acolhe sem julgar|não pune com rigor sem necessidade nem medida|brandura que equilibra justiça e bondade|justiça que aquece em vez de ferir|
+|Confiável|em quem se pode confiar sempre e sem medo|sua palavra é firme, verdadeira e leal|não trai, não falta e não se esquece|pode-se contar com ele em qualquer dia|
+|Competente|faz bem feito, com mérito, sabedoria e brilho|não erra por negligência nem descuido|cumple com excelência, dedicação e honra|exemplo de esforço, talento e resultado|
+|Consistente|mantém-se firme, constante e verdadeiro|não muda por conveniência nem medo|coerente em palavras, atos e ações sempre|o que diz é o que faz e o que é|
+|Decente|honesto, digno e correto em tudo o que faz|preserva sua honra, valor e integridade|age com nobreza, simplicidade e luz|não se deixa levar pelo erro nem pelo mal|
+|Diligente|cuida, zela e empenha-se em tudo o que faz|não descansa antes de concluir e bem feito|perseverante, atento e dedicado sempre|esforço constante que gera mérito e brilho|
+|Eficaz|consegue o que se propõe com sabedoria e mérito|não falha, cumpre e entrega resultado|age com precisão, clareza e firmeza|transforma intenção em realidade concreta|
+|Eficiente|faz bem feito, com economia e sabedoria|não desperdiça, não exagera e não falha|atinge o melhor com o mínimo de esforço|sabedoria que une resultado e medida|
+|Exemplar|serve de modelo, guia e referência a todos|merece ser seguido, copiado e admirado|o melhor exemplo de virtude, honra e luz|não pede que se faça, mostra-se fazendo|
+|Excelente|acima do comum, do vulgar e do mediano|supera o esperado em tudo o que faz|brilha, encanta e inspira por seu mérito|não é apenas bom, é o melhor que pode ser|
+|Fascinante|prende, encanta e não se esquece nunca|tem algo que atrai, guia e domina|beleza, força e mistério que cativam|deixa todos maravilhados e sem fala|
+|Fiel|mantém-se leal até o fim dos tempos|não trai, não abandona e não se esquece|confiável, verdadeiro e constante sempre|palavra que se cumpre e honra que se preserva|
+|Flexível|acomoda-se sem perder brilho nem essência|muda e se renova sem deixar de ser si mesmo|forte e leve ao mesmo tempo, sem quebrar|como rocha que dobra mas não se parte|
+|Gentil|trata com delicadeza, respeito e bondade|fala com calma, atenção e nobreza de alma|alma suave, forte e acolhedora sempre|força que não precisa rugir para ser sentida|
+|Hábil|faz tudo com facilidade, perfeição e brilho|transforma o difícil em simples e belo|talento natural que encanta e impressiona|não luta contra, domina com leveza|
+|Humilde|sabe o que vale sem se exibir nem se achar|grande justamente por ser simples e verdadeiro|não precisa se mostrar para brilhar|simplicidade que é maior que qualquer orgulho|
+|Ilustre|conhecido, respeitado e admirado por virtude|se destaca por brilho, mérito e nobreza|nome que carrega luz, honra e exemplo|reconhecimento merecido e sem vaidade|
+|Incomparável|não tem igual, par nem semelhança|supera tudo em virtude, força e brilho|único, raro e sem comparação possível|não há outro igual em todo o mundo|
+|Imparável|ninguém o supera, alcança ou iguala|mantém-se à frente por mérito e brilho|não se alcança, não se iguala e não se vence|exemplo que serve de medida a todos|
+|Imparcial|vê com justiça, clareza e equilíbrio|não favorece, não prejudica e não se deixa levar|olha amplo, sábio e sem distinção|a todos mede com a mesma medida justa|
+|Independente|dono de si mesmo, de seus passos e de seu destino|não precisa de ninguém para brilhar e ser|força própria que guia, sustenta e ilumina|livre, forte e senhor de si|
+|Inteligente|compreende antes de ouvir e age com sabedoria|vê o que os outros ainda não perceberam|mente brilhante, perspicaz e criativa|sabe, entende e ensina sem impor|
+|Paciente|espera com calma, fé e perseverança|não se desespera, não se impacienta e não desiste|confia no tempo, no bem e na justiça|espera e crê, pois sabe que vem|
+|Perspicaz|vê além do que se mostra por fora e aos olhos|compreende o essencial antes de tudo|olhar que penetra, esclarece e ilumina|nada lhe escapa ao raciocínio e ao olhar|
+|Prudente|age com sabedoria, calma e medida|não se precipita, não se arrisca sem necessidade|pensa antes de falar e avalia antes de agir|sabedoria que protege e preserva|
+|Razoável|sabe o que é justo, certo e equilibrado|não exagera, não falta e não se perde|busca o meio termo entre o tudo e o nada|justiça, equilíbrio e bom senso|
+|Sagaz|sábio, perspicaz e profundo no olhar e no agir|vê o que está oculto aos olhos comuns|compreende antes de ouvir e age com luz|sabedoria que vem de dentro e guia|
+|Sensível|sente com profundidade, ternura e nobreza|percebe o que os outros ainda não sentiram|coração aberto que acolhe, compreende e ama|sente antes de ver e compreende antes de falar|
+|Útil|serve, auxilia e faz o bem a todos ao redor|não existe em vão nem sem propósito|tem valor, sentido e razão de ser|presença que faz falta quando ausente|
+|Valente|enfrenta com coragem, fé e firmeza|não teme, não recua e não se curva|forte, destemido e nobre sempre|coragem que nasce da alma e não se mostra|
+|Versátil|adapta-se, brilha e se faz útil em tudo|não se limita a um só caminho ou virtude|muda e se renova sem perder essência|capaz de ser, fazer e brilhar em muitos modos|
+|Vivaz|cheio de vida, energia e brilho próprio|não cansa, não esmorece e não se apaga|alegria, força e vitalidade constante|vida que transborda e ilumina|
+|Zureta|tem jeito próprio, graça e brilho singular|encanta por ser exatamente como é|peculiar, nobre e sem igual|só dele e de mais ninguém|
