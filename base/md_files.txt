@@ -1,40 +1,65 @@
 temas da Machina
-
-comentários|ABOUT_comentários.md  
-prefácil|ABOUT_prefácil.md  
-machina|ABOUT_machine.md  
-off-machina|ABOUT_off-machina.md  
-outros autores|ABOUT_outros_autores.md, ABOUT_outros autores.md  
-livros|ABOUT_livros.md  
-
-sobre os temas|ABOUT_sobre os temas.md  
-ítimos|ABOUT_ítimos.md  
-o átomo do ítimo|ABOUT_o átomo do ítimo.md  
-eixo Z|ABOUT_eixo_Z.md   
-pontuação|ABOUT_pontuação.md  
-imagens|ABOUT_imagens.md  
-seleção das imagens|ABOUT_seleção das imagens.md  
-notes|ABOUT_notes.md  
-versão Mobile|ABOUT_mobile.md  
-
-veredas|ABOUT_veredas.md  
-carta de Guimarães Rosa|A incrível carta de Guimarães Rosa.md  
-anjos|ABOUT_Augusto dos Anjos.md  
-Baudelaire|ABOUT_Baudelaire.md  
-tradittore|ABOUT_tradittore.md  
-poly|ABOUT_poly.md  
-samizdàt|ABOUT_samizdàt.md  
-
-a ABA da Machina|a ABA da Machina.md  
-o Autor e uma IA - conversas|ABOUT_Autor_da_Machina_e_uma_IA.md  
-com sequências|com sequências.md  
-machina-IA|ABOUT_machina-IA.md  
-confissões de uma IA|confissões de uma IA.md  
-falsa entrega|ABOUT_falsa entrega  
-mais Machina|mais Machina.md  
-     
-pensares|ABOUT_pensares.md  
-bibliografia|ABOUT_bibliografia.md  
-icones|ABOUT_icones.md  
-index|ABOUT_index.md  
-license|ABOUT_license.md  
+___
+comentários|ABOUT_comentários.md
+prefácil|ABOUT_prefácil.md
+machina|ABOUT_machine.md
+off-machina|ABOUT_off-machina.md
+outros autores|ABOUT_outros_autores.md, ABOUT_outros autores.md
+Rui Torres|ABOUT_Rui Torres.md
+livros|ABOUT_livros.md
+___
+sobre os temas|ABOUT_sobre os temas.md
+ítimos|ABOUT_ítimos.md
+o átomo do ítimo|ABOUT_o átomo do ítimo.md
+eixo Z|ABOUT_eixo_Z.md 
+pontuação|ABOUT_pontuação.md
+imagens|ABOUT_imagens.md
+seleção das imagens|ABOUT_seleção das imagens.md
+notes|ABOUT_notes.md
+TIRO - o ELO da Machina|ABOUT_TIRO - o ELO da Machina.md
+versão Mobile|ABOUT_mobile.md
+DNA da Machina|ABOUT_DNA da Machina.md
+___
+veredas|ABOUT_veredas.md
+carta de Guimarães Rosa|A incrível carta de Guimarães Rosa.md
+Poesias Ocultistas|ABOUT_Poesias Ocultistas - Fernando Pessoa.md
+Onde está o teu contrário|ABOUT_Onde está o teu contrário.md
+anjos|ABOUT_Augusto dos Anjos.md
+Baudelaire|ABOUT_Baudelaire.md
+Fábulas|Fábulas.md
+___
+a estória de Babel|ABOUT_a estória de Babel.md
+a História de Babel|ABOUT_A História da Torre de Babel.md
+o poema_definitivo|ABOUT_poema_definitivo.md
+a origem do tema Perfil|ABOUT_a origem do tema Perfil.md
+o perfil nas redes sociais|ABOUT_perfil nas redes sociais
+as origens do tema Pessoa|ABOUT_as origens do tema Pessoa.md
+tradittore|ABOUT_tradittore.md
+poly|ABOUT_poly.md
+samizdàt|ABOUT_samizdàt.md
+Humanos Direitos|ABOUT_Humanos Direitos.md
+___
+a chave de ouro|ABOUT_a chave de ouro.md
+a ABA da Machina|a ABA da Machina.md
+modelos na IA|ABOUT_modelos na IA.md
+o Autor e uma IA - conversas|ABOUT_Autor_da_Machina_e_uma_IA.md
+contrato com uma IA|ABOUT_contrato com uma IA
+com sequências|com sequências.md
+machina-IA|ABOUT_machina-IA.md
+confissões de uma IA|confissões de uma IA.md
+falsa entrega|ABOUT_falsa entrega
+nem só de flores vive uma parceria|ABOUT_nem só de flores vive uma parceria.md
+pê da vida...|ABOUT_p da vida.md
+mais Machina|mais Machina.md
+___
+pensares|ABOUT_pensares.md
+sites de poesia eletrônica|ABOUT_sites de poesia eletrônica
+bibliografia|ABOUT_bibliografia.md
+icones|ABOUT_icones.md
+index|ABOUT_index.md
+license|ABOUT_license.md
+___
+A de Análises e Apresentações: leituras, apresentações, textos de enquadramento, materiais de entrada e interpretação.  
+B de Baboseiras em geral: o território livre: humor, desvios, provocações, pequenas peças, coisas que não precisam vestir terno.  
+C de críticas e comentários: leituras externas, avaliações, comentários, recepção da Machina, diálogo com leitores e pesquisadores.  
+D de Documentação: história, funcionamento, conceitos, especificações, registros técnicos e institucionais.  

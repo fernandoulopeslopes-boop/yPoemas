@@ -1,0 +1,15 @@
+|arquivo|pasta|uso_em_tools|acao|relacao_com_tema|
+|ativos.txt|base|fonte dos temas ativos; cadastro de novo tema; remoção; UTF-8|leitura_gravacao|direta|
+|images.txt|base|grupo de imagem de cada tema para INFO|leitura|direta|
+|info.txt|base|ficha técnica dos temas gerada por build_info|gravacao|direta|
+|itimos.txt|base|total de ítimos por tema gerado por build_matrix; remoção de tema|gravacao_remocao|direta|
+|versos.txt|base|total de versos por tema gerado por build_matrix; remoção de tema|gravacao_remocao|direta|
+|lexico_pt.txt|base|léxico derivado dos temas|gravacao_por_build_lexico|derivada|
+|verbetes.txt|base|verbetes derivados dos temas|gravacao_por_build_lexico|derivada|
+|rol_todos os temas.txt|base|cadastro de novo tema; lista geral em circulação; remoção|leitura_gravacao_remocao|direta|
+|rol_*.txt|base|listas de temas por livro; localização e remoção de temas|leitura_remocao|direta|
+|readings.txt|temp|cadastro técnico de leitura do novo tema; remoção|gravacao_remocao|direta|
+|ABOUT_index.MD|md_files|índice de variações por tema gerado por build_indexy|gravacao|derivada|
+|INDEX.txt|md_files|bloco Ambiente Léxico da Machina|leitura_gravacao|derivada|
+|off_lexico.txt|off_machina|léxico dos livros OFF .pip|gravacao|off|
+|off_verbet.txt|off_machina|verbetes dos livros OFF .pip|gravacao|off|

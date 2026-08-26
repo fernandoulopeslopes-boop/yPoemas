@@ -1,0 +1,4 @@
+temas_ypo=175
+erros=0
+inseridos_em_rol_todos=0
+banco_tematico_ausente=3

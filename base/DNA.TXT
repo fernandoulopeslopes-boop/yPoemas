@@ -1,184 +1,185 @@
-|codigo|tema|ativo|ordem|livro|banco_tematico|versos|verbetes_no_texto|verbetes_do_tema|total_de_itimos|qtd_de_variacoes|qtd_cientifica|
-|M0001|Ais|S|1|ensaios|machina|3|10|162|147|275148900|2.75e+08|
-|M0002|Amaré|S|2|livro vivo;poemas|persona|5|23|89|251|54191856554035200|5.42e+16|
-|M0003|Anjos|S|3|livro vivo;outros autores|author|14|62|255|261|9276752574317347209216000000000|9.28e+30|
-|M0004|Aolero|S|4|livro vivo;variações|anima|8|20|373|246|7581869568000|7.58e+12|
-|M0005|Aquarius=f|S|5|signos_fem|esoteric|8|18|123|75|107811000|1.08e+08|
-|M0006|Aquarius=m|S|6|signos_mas|esoteric|8|18|124|75|107811000|1.08e+08|
-|M0007|Arerir|S|7|ensaios|machina|4|9|156|197|12305920|1.23e+07|
-|M0008|Aries=f|S|8|signos_fem|esoteric|6|12|101|58|1848000|1.85e+06|
-|M0009|Aries=m|S|9|signos_mas|esoteric|6|12|101|58|1848000|1.85e+06|
-|M0010|Astros|S|10|livro vivo;ensaios|esoteric|6|16|263|129|637528320|6.38e+08|
-|M0011|Atido|S|11|livro vivo;poemas|persona|5|17|247|200|834290150400|8.34e+11|
-|M0012|Augusto|S|12|outros autores|author|14|66|368|392|731619324106718334890803200000000000000|7.32e+38|
-|M0013|Avevida|S|13|livro vivo|anima|3|10|294|268|2122788864|2.12e+09|
-|M0014|Babel|S|14|ensaios;metalinguagem|machina|1|2|1|2|1|1.00e+00|
-|M0015|Batismo|S|15|metalinguagem|machina|4|10|91|51|32640|3.26e+04|
-|M0016|Beaba|S|16|livro vivo;metalinguagem|machina|5|17|117|128|17923368960000|1.79e+13|
-|M0017|Becos|S|17|poemas;sociais|persona|8|22|302|264|298456756332134400|2.98e+17|
-|M0018|bi-palavras|S|18|todos os temas|machina|4|9|65|42|4732|4.73e+03|
-|M0019|Blablabla|S|19|variações;metalinguagem|joco|3|6|398|270|24360000|2.44e+07|
-|M0020|Bolero|S|20|variações|author|8|19|266|418|157517650667520000|1.58e+17|
-|M0021|Brado|S|21|livro vivo;jocosos;sociais|joco|5|15|224|168|747242496000|7.47e+11|
-|M0022|Bula|S|22|variações|joco|3|12|190|142|85503600|8.55e+07|
-|M0023|Cacos|S|23|todos os temas|author|6|14|475|511|72827464500000|7.28e+13|
-|M0024|Cadência|S|24|metalinguagem|joco|3|9|132|127|9463860|9.46e+06|
-|M0025|Cancer=f|S|25|signos_fem|esoteric|7|16|113|82|30965760|3.10e+07|
-|M0026|Cancer=m|S|26|signos_mas|esoteric|7|16|113|82|30965760|3.10e+07|
-|M0027|Caprico=f|S|27|signos_fem|esoteric|7|25|122|86|459841536|4.60e+08|
-|M0028|Caprico=m|S|28|signos_mas|esoteric|7|25|122|86|459841536|4.60e+08|
-|M0029|Carroussel|S|29|todos os temas|anima|5|14|77|64|3919104|3.92e+06|
-|M0030|Cartaz|S|30|livro vivo;jocosos;metalinguagem|joco|10|36|274|317|699764141900462284800000|7.00e+23|
-|M0031|Circular|S|31|todos os temas|persona|6|16|171|153|1337851468800|1.34e+12|
-|M0032|Ciuminho|S|32|livro vivo;poemas;variações|beauty|6|20|801|677|18053038201259160000|1.81e+19|
-|M0033|Clandestino|S|33|livro vivo;poemas;outros autores|author|9|18|202|120|16899176448|1.69e+10|
-|M0034|Clarice|S|34|livro vivo;poemas;outros autores|persona|8|25|122|85|54432000000|5.44e+10|
-|M0035|Conto|S|35|livro vivo;poemas|anima|10|21|257|154|132723360000000|1.33e+14|
-|M0036|Cordel|S|36|metalinguagem|joco|3|12|190|138|1048110000|1.05e+09|
-|M0037|Cromossomo|S|37|livro vivo;jocosos;sociais|joco|9|24|203|134|2779486617600|2.78e+12|
-|M0038|Críticas|S|38|todos os temas|joco|17|49|327|331|871906910318166999564288000000|8.72e+29|
-|M0039|Crítico|S|39|todos os temas|author|10|30|141|90|367332019200|3.67e+11|
-|M0040|Cuores|S|40|livro vivo;poemas|persona|9|36|169|246|2126233687818240000000|2.13e+21|
-|M0041|Demo|S|41|ensaios|joco|4|10|128|211|6429196800|6.43e+09|
-|M0042|Design|S|42|todos os temas||3|6|620|3720|56800235584000000|5.68e+16|
-|M0043|Destinos|S|43|jocosos;variações|anima|8|36|654|627|6778327515640192512000|6.78e+21|
-|M0044|Distintos|S|44|livro vivo;jocosos;variações|anima|8|36|651|627|6380511142927406284800|6.38e+21|
-|M0045|Dolores|S|45|livro vivo;variações|persona|9|20|458|293|247676194022400000|2.48e+17|
-|M0046|Duralex|S|46|sociais|machina|3|15|159|145|6706022400|6.71e+09|
-|M0047|Eles|S|47|todos os temas|tempo|5|12|91|53|113400|1.13e+05|
-|M0048|Elogio|S|48|livro vivo;poemas;outros autores|author|5|10|201|87|831600|8.32e+05|
-|M0049|Enfrente|S|49|livro vivo|persona|4|12|97|62|8890560|8.89e+06|
-|M0050|Epitafiando|S|50|livro vivo;variações|machina|5|15|393|434|50484814969680|5.05e+13|
-|M0051|Escorpio=f|S|51|signos_fem|esoteric|6|21|114|72|853493760|8.53e+08|
-|M0052|Escorpio=m|S|52|signos_mas|esoteric|6|21|114|72|853493760|8.53e+08|
-|M0053|Escriba|S|53|outros autores|author|12|35|268|236|425301477100093440000|4.25e+20|
-|M0054|Essa|S|54|livro vivo;metalinguagem|anima|5|23|261|251|36084467865600|3.61e+13|
-|M0055|Essas|S|55|livro vivo;ensaios;variações|persona|5|12|253|239|169558272000|1.70e+11|
-|M0056|Esses|S|56|ensaios;variações|machina|14|14|54|88|4898880|4.90e+06|
-|M0057|Estudo|S|57|jocosos|joco|6|18|271|241|486150160003200|4.86e+14|
-|M0058|eus|S|58|todos os temas|anima|5|11|158|185|575890560|5.76e+08|
-|M0059|Evidências|S|59|todos os temas|machina|3|9|37|72|4745520|4.75e+06|
-|M0060|Fabulas|S|60|todos os temas|joco|5|16|144|102|923400000|9.23e+08|
-|M0061|Fake-News|S|61|todos os temas|joco|17|45|123|334|87405037707755520000000000000|8.74e+28|
-|M0062|Fatos|S|62|livro vivo|author|17|59|419|335|1122238708489596891561984000000|1.12e+30|
-|M0063|Feiras|S|63|livro vivo;metalinguagem;sociais|author|9|22|312|247|1024215895987200000|1.02e+18|
-|M0064|Festim|S|64|livro vivo;poemas|anima|7|21|255|147|476150875200|4.76e+11|
-|M0065|Finalmentes|S|65|livro vivo;outros autores|esoteric|6|17|239|196|154939599360000|1.55e+14|
-|M0066|Frases|S|66|jocosos|joco|4|12|299|168|332299968|3.32e+08|
-|M0067|Fugaz|S|67|livro vivo;variações|anima|5|13|444|594|17416269561600000|1.74e+16|
-|M0068|Gemeos=f|S|68|signos_fem|esoteric|7|15|116|59|1782000|1.78e+06|
-|M0069|Gemeos=m|S|69|signos_mas|esoteric|7|15|117|59|1782000|1.78e+06|
-|M0070|Gula|S|70|livro vivo;jocosos|joco|6|18|258|270|1063827923558400|1.06e+15|
-|M0071|Haikai|S|71|variações|anima|3|7|570|572|479204121600|4.79e+11|
-|M0072|i-Mundo|S|72|livro vivo;sociais|author|6|23|233|224|697095243694080000|6.97e+17|
-|M0073|Imaginação|S|73|ensaios|joco|3|10|64|268|143437500|1.43e+08|
-|M0074|Impar|S|74|sociais|anima|4|16|75|63|653184|6.53e+05|
-|M0075|Indolor|S|75|livro vivo;poemas;variações|anima|9|28|543|386|468886830572160000000|4.69e+20|
-|M0076|Inhos|S|76|livro vivo;sociais|anima|7|11|198|103|314496000|3.14e+08|
-|M0077|Insano|S|77|sociais|joco|5|19|173|140|1100736000000|1.10e+12|
-|M0078|Isso|S|78|todos os temas||4|11|196|254|11623772160|1.16e+10|
-|M0079|Jealousy|S|79|todos os temas|anima|3|5|380|178|6900|6.90e+03|
-|M0080|Joker|S|80|livro vivo;jocosos;sociais|joco|4|16|149|144|531116974080|5.31e+11|
-|M0081|ka-os|S|81|todos os temas|joco|4|13|149|187|2657661000|2.66e+09|
-|M0082|Lady-Murphy|S|82|todos os temas|persona|5|12|201|118|22787072|2.28e+07|
-|M0083|Lato|S|83|livro vivo;poemas|author|8|32|281|283|43937882486784000000|4.39e+19|
-|M0084|Leao=f|S|84|signos_fem|esoteric|6|14|90|58|1036800|1.04e+06|
-|M0085|Leao=m|S|85|signos_mas|esoteric|6|14|89|58|1036800|1.04e+06|
-|M0086|Leituras|S|86|livro vivo;metalinguagem|author|10|33|185|136|1024192512000000|1.02e+15|
-|M0087|Lero|S|87|variações|author|5|16|313|338|194712336000|1.95e+11|
-|M0088|Liberta|S|88|todos os temas|author|12|22|173|130|5530639564800|5.53e+12|
-|M0089|Libra=f|S|89|signos_fem|esoteric|6|14|107|77|21228480|2.12e+07|
-|M0090|Libra=m|S|90|signos_mas|esoteric|6|14|107|77|21228480|2.12e+07|
-|M0091|Loremipsum|S|91|ensaios|machina|8|14|106|45|1843200|1.84e+06|
-|M0092|MachBeth|S|92|poemas;outros autores|persona|10|24|299|163|398340963820800|3.98e+14|
-|M0093|MachBrait|S|93|poemas;outros autores|author|14|26|351|206|106563309679411200000|1.07e+20|
-|M0094|Manifesto|S|94|livro vivo|author|15|53|545|507|27941438662973671531004544079311667200000|2.79e+40|
-|M0095|Manusgrite|S|95|livro vivo;variações;metalinguagem|joco|11|30|161|130|963158999040000|9.63e+14|
-|M0096|Manusgrito|S|96|variações;metalinguagem|author|11|29|160|128|842764124160000|8.43e+14|
-|M0097|Meteoro|S|97|livro vivo;jocosos|joco|10|33|321|316|65044548902931333120000|6.50e+22|
-|M0098|Minuto|S|98|livro vivo|esoteric|6|12|285|213|2817522540000|2.82e+12|
-|M0099|Mirante|S|99|livro vivo;poemas;variações|persona|5|19|158|211|7892654740185600|7.89e+15|
-|M0100|Niver|S|100|todos os temas|anima|3|11|120|114|3692304|3.69e+06|
-|M0101|Niver-B|S|101|todos os temas|anima|5|11|116|111|5654880|5.65e+06|
-|M0102|Nonono|S|102|variações;metalinguagem|machina|9|27|426|572|145218793269173944320000|1.45e+23|
-|M0103|Nós|S|103|livro vivo;ensaios;sociais|author|10|28|131|122|663896217600|6.64e+11|
-|M0104|Nós_nos_nós|S|104|todos os temas|anima|4|18|97|56|5184000|5.18e+06|
-|M0105|o Culto|S|105|outros autores|ex-libris|4|20|207|395|826868656373760|8.27e+14|
-|M0106|Oca|S|106|poemas|beauty|4|12|217|160|29295302400|2.93e+10|
-|M0107|Ocio|S|107|livro vivo;jocosos|joco|12|46|504|385|29717837074855467417600000000000|2.97e+31|
-|M0108|Oco|S|108|poemas|anima|4|12|216|159|26040268800|2.60e+10|
-|M0109|Oculto|S|109|variações|ex-libris|3|13|188|258|736551351360|7.37e+11|
-|M0110|Oficia|S|110|todos os temas|joco|15|44|523|526|5933583529929761087878594560000000|5.93e+33|
-|M0111|Oficio|S|111|livro vivo;jocosos|author|15|44|536|475|57110137135498442550804480000000|5.71e+31|
-|M0112|Ogiva|S|112|poemas;variações|beauty|5|24|253|232|1624147132608000|1.62e+15|
-|M0113|OLA|S|113|metalinguagem|machina|1|3|35|35|1248|1.25e+03|
-|M0114|OLA_abertura|S|114|metalinguagem|machina|11|46|149|141|2528292372480000000|2.53e+18|
-|M0115|Olhares|S|115|poemas;variações|persona|14|50|192|464|167249974512681215092510949376000000|1.67e+35|
-|M0116|Ores|S|116|todos os temas|machina|4|15|86|106|267079680|2.67e+08|
-|M0117|Palyndro|S|117|ensaios|machina|13|20|58|52|967680|9.68e+05|
-|M0118|Papilio|S|118|poemas;outros autores|persona|14|24|576|299|17276809528053504000|1.73e+19|
-|M0119|Paroles|S|119|livro vivo;variações;metalinguagem|machina|6|18|421|418|58025870622720000|5.80e+16|
-|M0120|Passagens|S|120|todos os temas|machina|7|17|170|118|95777510400|9.58e+10|
-|M0121|Paz|S|121|todos os temas|beauty|3|10|39|51|108108|1.08e+05|
-|M0122|Pedidos|S|122|livro vivo|author|8|21|170|95|40236134400|4.02e+10|
-|M0123|Peixes=f|S|123|signos_fem|esoteric|6|16|103|53|1209600|1.21e+06|
-|M0124|Peixes=m|S|124|signos_mas|esoteric|6|16|101|52|1058400|1.06e+06|
-|M0125|Perfil|S|125|jocosos;sociais;outros autores|beauty|6|17|352|236|20427651921600000|2.04e+16|
-|M0126|Pessoa|S|126|livro vivo;outros autores|author|7|20|98|58|4665600|4.67e+06|
-|M0127|Portal|S|127|variações|machina|6|14|393|298|1754298589680|1.75e+12|
-|M0128|Posfácio|S|128|livro vivo|author|16|49|289|267|23356081768224522240000000|2.34e+25|
-|M0129|Preciso|S|129|livro vivo;sociais|joco|11|28|227|165|4307843284992000|4.31e+15|
-|M0130|Prefácil|S|130|livro vivo;metalinguagem|joco|13|39|334|310|8113087959898521600000000|8.11e+24|
-|M0131|Psiu|S|131|poemas;variações|persona|4|15|524|322|3464123520|3.46e+09|
-|M0132|Psiume|S|132|todos os temas||4|13|520|330|196263540|1.96e+08|
-|M0133|Reger|S|133|livro vivo;poemas|anima|7|18|119|85|404352000|4.04e+08|
-|M0134|Reinos|S|134|jocosos|joco|11|29|220|256|789146976367411200|7.89e+17|
-|M0135|Remedeio|S|135|jocosos|joco|3|7|415|185|1967232|1.97e+06|
-|M0136|Restos|S|136|todos os temas|author|5|13|123|116|589906800|5.90e+08|
-|M0137|Rever|S|137|livro vivo;poemas|anima|4|8|132|77|2519424|2.52e+06|
-|M0138|Rito|S|138|livro vivo;jocosos|joco|4|13|151|169|57550500000|5.76e+10|
-|M0139|Sagitari=f|S|139|todos os temas|esoteric|8|19|120|81|2911334400|2.91e+09|
-|M0140|Sagitari=m|S|140|todos os temas|esoteric|8|19|120|81|2911334400|2.91e+09|
-|M0141|Salute|S|141|variações|machina|5|9|542|267|32637136896|3.26e+10|
-|M0142|Saudades|S|142|livro vivo;poemas|persona|6|16|271|181|7420616146944|7.42e+12|
-|M0143|Seguro|S|143|livro vivo;jocosos;sociais|joco|9|16|118|67|373248000|3.73e+08|
-|M0144|Sentença|S|144|livro vivo|anima|7|21|256|165|159667040332800|1.60e+14|
-|M0145|Ser|S|145|livro vivo;poemas|anima|5|10|160|82|849660|8.50e+05|
-|M0146|Silente|S|146|livro vivo;poemas|anima|9|30|319|254|313233575510016000000|3.13e+20|
-|M0147|Sinais|S|147|poemas;ensaios;variações|anima|5|15|242|319|329504881305600|3.30e+14|
-|M0148|Sinas|S|148|variações|beauty|5|13|242|285|2526115680000|2.53e+12|
-|M0149|Slogans|S|149|todos os temas|machina|3|3|1004|2952|952763904|9.53e+08|
-|M0150|Sn6=ball|S|150|ensaios;variações|machina|13|18|242|252|258863705100000|2.59e+14|
-|M0151|Sn8=ball|S|151|ensaios;variações|machina|16|18|242|251|1682614083150000|1.68e+15|
-|M0152|SnowBall|S|152|ensaios;variações;metalinguagem|machina|20|26|416|427|20441528502877359259200000|2.04e+25|
-|M0153|Solero|S|153|todos os temas|author|8|19|381|252|34215616512000|3.42e+13|
-|M0154|Sonoro|S|154|livro vivo;poemas|anima|3|5|116|90|1192320|1.19e+06|
-|M0155|Sopros|S|155|livro vivo;poemas|anima|9|26|255|189|94680907776000000|9.47e+16|
-|M0156|Sos|S|156|livro vivo;jocosos|joco|5|17|211|220|6111356719104|6.11e+12|
-|M0157|Tempo|S|157|livro vivo;poemas;variações|machina|14|43|941|1745|112765820236797923580529825269143876665344000000000|1.13e+50|
-|M0158|Tempus|S|158|poemas|machina|6|18|107|99|87178291200|8.72e+10|
-|M0159|Tiro|S|159|livro vivo;metalinguagem|author|9|23|496|384|2903854393440000000|2.90e+18|
-|M0160|Tolero|S|160|variações|anima|14|27|324|420|6372790375311360000|6.37e+18|
-|M0161|Touro=f|S|161|signos_fem|esoteric|5|13|113|59|1254528|1.25e+06|
-|M0162|Touro=m|S|162|signos_mas|esoteric|5|13|113|59|1254528|1.25e+06|
-|M0163|Travessia|S|163|todos os temas|anima|7|16|58|63|49140|4.91e+04|
-|M0164|Usinas|S|164|livro vivo;poemas|anima|7|34|252|225|102938787190407168000|1.03e+20|
-|M0165|Veio|S|165|livro vivo;poemas|anima|7|30|371|318|2907865942960295116800|2.91e+21|
-|M0166|Victor|S|166|poemas;outros autores|author|8|15|178|112|308998800|3.09e+08|
-|M0167|Virgem=f|S|167|signos_fem|esoteric|7|20|97|110|4255027200|4.26e+09|
-|M0168|Virgem=m|S|168|signos_mas|esoteric|7|20|96|107|3616773120|3.62e+09|
-|M0169|Vozes|S|169|jocosos|joco|3|6|134|85|393120|3.93e+05|
-|M0170|Zelo|S|170|poemas;variações|persona|6|13|410|246|151240320|1.51e+08|
-|M0171|Zodiacaos|S|171|jocosos|esoteric|16|55|413|375|14365992237323928993792000000000000|1.44e+34|
-|M0172|Zoia|S|172|livro vivo;poemas;variações|persona|14|50|213|484|23297836384021203533168640000000000|2.33e+34|
+|tema|ativo|livro|banco_tematico|versos|verbetes_no_texto|verbetes_do_tema|total_de_itimos|qtd_de_variacoes|qtd_cientifica|
+|Abacaxis|S|todos os temas|joco|4|8|153|123|586264|5.86e+05|
+|Ais|S|ensaios|machina|3|10|162|147|275148900|2.75e+08|
+|Amaré|S|livro vivo;poemas|persona|5|23|89|251|54191856554035200|5.42e+16|
+|Anjos|S|livro vivo;outros autores|author|14|62|255|261|9276752574317347209216000000000|9.28e+30|
+|Aolero|S|livro vivo;variações|anima|8|20|373|246|7581869568000|7.58e+12|
+|Aquarius=f|S|signos_fem|esoteric|8|18|123|75|107811000|1.08e+08|
+|Aquarius=m|S|signos_mas|esoteric|8|18|124|75|107811000|1.08e+08|
+|Arerir|S|ensaios|machina|4|9|156|197|12305920|1.23e+07|
+|Aries=f|S|signos_fem|esoteric|6|12|101|58|1848000|1.85e+06|
+|Aries=m|S|signos_mas|esoteric|6|12|101|58|1848000|1.85e+06|
+|Astros|S|livro vivo;ensaios|esoteric|6|16|263|129|637528320|6.38e+08|
+|Atido|S|livro vivo;poemas|persona|5|17|247|200|834290150400|8.34e+11|
+|Augusto|S|outros autores|author|14|66|368|392|731619324106718334890803200000000000000|7.32e+38|
+|Avevida|S|livro vivo|anima|3|10|294|268|2122788864|2.12e+09|
+|Babel|S|ensaios;metalinguagem|machina|1|2|1|2|1|1.00e+00|
+|Batismo|S|metalinguagem|machina|4|10|91|51|32640|3.26e+04|
+|Beaba|S|livro vivo;metalinguagem|machina|5|17|117|128|17923368960000|1.79e+13|
+|Becos|S|poemas;sociais|persona|8|22|302|264|298456756332134400|2.98e+17|
+|bi-palavras|S|todos os temas|machina|4|9|65|44|18928|1.89e+04|
+|Blablabla|S|variações;metalinguagem|joco|3|6|398|270|24360000|2.44e+07|
+|Bolero|S|variações|author|8|19|266|418|157517650667520000|1.58e+17|
+|Brado|S|livro vivo;jocosos;sociais|joco|5|15|224|168|747242496000|7.47e+11|
+|Bula|S|variações|joco|3|12|190|142|85503600|8.55e+07|
+|Cacos|S|todos os temas|author|6|14|475|511|72827464500000|7.28e+13|
+|Cadência|S|metalinguagem|joco|3|9|132|127|9463860|9.46e+06|
+|Cancer=f|S|signos_fem|esoteric|7|16|113|82|30965760|3.10e+07|
+|Cancer=m|S|signos_mas|esoteric|7|16|113|82|30965760|3.10e+07|
+|Caprico=f|S|signos_fem|esoteric|7|25|122|86|459841536|4.60e+08|
+|Caprico=m|S|signos_mas|esoteric|7|25|122|86|459841536|4.60e+08|
+|Carroussel|S|todos os temas|anima|5|14|77|64|3919104|3.92e+06|
+|Cartaz|S|livro vivo;jocosos;metalinguagem|joco|10|36|274|317|699764141900462284800000|7.00e+23|
+|Circular|S|todos os temas|persona|6|16|171|153|1337851468800|1.34e+12|
+|Ciuminho|S|livro vivo;poemas;variações|beauty|6|20|801|677|18053038201259160000|1.81e+19|
+|Clandestino|S|livro vivo;poemas;outros autores|author|9|18|202|120|16899176448|1.69e+10|
+|Clarice|S|livro vivo;poemas;outros autores|persona|8|25|122|85|54432000000|5.44e+10|
+|Conto|S|livro vivo;poemas|anima|10|21|257|154|132723360000000|1.33e+14|
+|Cordel|S|metalinguagem|joco|3|12|190|138|1048110000|1.05e+09|
+|Cromossomo|S|livro vivo;jocosos;sociais|joco|9|24|203|134|2779486617600|2.78e+12|
+|Críticas|S|todos os temas|joco|17|49|327|331|871906910318166999564288000000|8.72e+29|
+|Crítico|S|todos os temas|author|11|31|141|91|734664038400|7.35e+11|
+|Cuores|S|livro vivo;poemas|persona|9|36|169|246|2126233687818240000000|2.13e+21|
+|Demo|S|ensaios|joco|4|10|128|211|6429196800|6.43e+09|
+|Design|S|todos os temas||3|6|620|3720|56800235584000000|5.68e+16|
+|Destinos|S|jocosos;variações|anima|8|36|654|627|6778327515640192512000|6.78e+21|
+|Distintos|S|livro vivo;jocosos;variações|anima|8|36|651|627|6380511142927406284800|6.38e+21|
+|Dolores|S|livro vivo;variações|persona|9|20|458|293|247676194022400000|2.48e+17|
+|Duralex|S|sociais|machina|3|15|159|145|6706022400|6.71e+09|
+|Eles|S|todos os temas|tempo|5|12|91|53|113400|1.13e+05|
+|Elogio|S|livro vivo;poemas;outros autores|author|5|10|201|87|831600|8.32e+05|
+|Enfrente|S|livro vivo|persona|4|12|97|62|8890560|8.89e+06|
+|Epitafiando|S|livro vivo;variações|machina|5|15|393|434|50484814969680|5.05e+13|
+|Escorpio=f|S|signos_fem|esoteric|6|21|114|72|853493760|8.53e+08|
+|Escorpio=m|S|signos_mas|esoteric|6|21|114|72|853493760|8.53e+08|
+|Escriba|S|outros autores|author|12|35|268|236|425301477100093440000|4.25e+20|
+|Essa|S|livro vivo;metalinguagem|anima|5|23|261|251|36084467865600|3.61e+13|
+|Essas|S|livro vivo;ensaios;variações|persona|5|12|253|239|169558272000|1.70e+11|
+|Esses|S|ensaios;variações|machina|14|14|54|88|4898880|4.90e+06|
+|Estudo|S|jocosos|joco|6|18|271|241|486150160003200|4.86e+14|
+|eus|S|todos os temas|anima|5|11|158|185|575890560|5.76e+08|
+|Evidências|S|todos os temas|machina|3|9|37|72|4745520|4.75e+06|
+|Fabulas|S|todos os temas|joco|5|16|144|102|923400000|9.23e+08|
+|Fake-News|S|todos os temas|joco|17|45|123|334|87405037707755520000000000000|8.74e+28|
+|Fatos|S|livro vivo|author|17|59|419|335|1122238708489596891561984000000|1.12e+30|
+|Feiras|S|livro vivo;metalinguagem;sociais|author|9|22|312|247|1024215895987200000|1.02e+18|
+|Festim|S|livro vivo;poemas|anima|7|21|255|147|476150875200|4.76e+11|
+|Finalmentes|S|livro vivo;outros autores|esoteric|6|17|239|196|154939599360000|1.55e+14|
+|Frases|S|jocosos|joco|4|12|299|168|332299968|3.32e+08|
+|Fugaz|S|livro vivo;variações|anima|5|13|444|594|17416269561600000|1.74e+16|
+|Gemeos=f|S|signos_fem|esoteric|7|15|116|59|1782000|1.78e+06|
+|Gemeos=m|S|signos_mas|esoteric|7|15|117|59|1782000|1.78e+06|
+|Gula|S|livro vivo;jocosos|joco|6|18|258|270|1063827923558400|1.06e+15|
+|Haikai|S|variações|anima|3|7|570|572|479204121600|4.79e+11|
+|i-Mundo|S|livro vivo;sociais|author|6|23|233|224|697095243694080000|6.97e+17|
+|Imaginação|S|ensaios|joco|3|10|64|268|143437500|1.43e+08|
+|Impar|S|sociais|anima|4|16|75|63|653184|6.53e+05|
+|Indolor|S|livro vivo;poemas;variações|anima|9|28|543|386|468886830572160000000|4.69e+20|
+|Inhos|S|livro vivo;sociais|anima|7|11|198|103|314496000|3.14e+08|
+|Insano|S|sociais|joco|5|19|173|140|1100736000000|1.10e+12|
+|Isso|S|todos os temas||4|11|196|254|11623772160|1.16e+10|
+|Jealousy|S|todos os temas|anima|3|5|380|178|6900|6.90e+03|
+|Joker|S|livro vivo;jocosos;sociais|joco|4|16|149|144|531116974080|5.31e+11|
+|ka-os|S|todos os temas|joco|4|13|149|187|2657661000|2.66e+09|
+|Lady-Murphy|S|todos os temas|persona|5|12|201|118|22787072|2.28e+07|
+|Lato|S|livro vivo;poemas|author|8|32|281|283|43937882486784000000|4.39e+19|
+|Leao=f|S|signos_fem|esoteric|6|14|90|58|1036800|1.04e+06|
+|Leao=m|S|signos_mas|esoteric|6|14|89|58|1036800|1.04e+06|
+|Leituras|S|livro vivo;metalinguagem|author|10|33|185|136|1024192512000000|1.02e+15|
+|Lero|S|variações|author|5|16|313|338|194712336000|1.95e+11|
+|Liberta|S|todos os temas|author|12|22|173|130|5530639564800|5.53e+12|
+|Libra=f|S|signos_fem|esoteric|6|14|107|77|21228480|2.12e+07|
+|Libra=m|S|signos_mas|esoteric|6|14|107|77|21228480|2.12e+07|
+|Libre|S|todos os temas|author|3|3|199|41|400|4.00e+02|
+|Loremipsum|S|ensaios|machina|8|14|106|45|1843200|1.84e+06|
+|MachBeth|S|poemas;outros autores|persona|10|24|299|163|398340963820800|3.98e+14|
+|Machbrait|S|poemas;outros autores|author|14|26|351|206|106563309679411200000|1.07e+20|
+|Manifesto|S|livro vivo|author|15|53|545|507|27941438662973671531004544079311667200000|2.79e+40|
+|Manusgrite|S|livro vivo;variações;metalinguagem|joco|11|30|161|130|963158999040000|9.63e+14|
+|Manusgrito|S|variações;metalinguagem|author|11|29|160|128|842764124160000|8.43e+14|
+|Meteoro|S|livro vivo;jocosos|joco|10|33|321|316|65044548902931333120000|6.50e+22|
+|Minuto|S|livro vivo|esoteric|6|12|285|213|2817522540000|2.82e+12|
+|Mirante|S|livro vivo;poemas;variações|persona|5|19|158|211|7892654740185600|7.89e+15|
+|Nhô-Borges|S|livro vivo|Machina|3|15|65|74|110638080|1.11e+08|
+|Niver|S|todos os temas|anima|3|11|120|114|3692304|3.69e+06|
+|Niver-B|S|todos os temas|anima|5|11|116|111|5654880|5.65e+06|
+|Nonono|S|variações;metalinguagem|machina|9|27|426|572|145218793269173944320000|1.45e+23|
+|Nós|S|livro vivo;ensaios;sociais|author|10|28|131|122|663896217600|6.64e+11|
+|Nós_nos_nós|S|todos os temas|anima|4|18|97|56|5184000|5.18e+06|
+|o Culto|S|outros autores|#Exlibris|4|20|208|396|866243354296320|8.66e+14|
+|Oca|S|poemas|beauty|4|12|217|160|29295302400|2.93e+10|
+|Ocio|S|livro vivo;jocosos|joco|12|46|504|385|29717837074855467417600000000000|2.97e+31|
+|Oco|S|poemas|anima|4|12|216|159|26040268800|2.60e+10|
+|Oculto|S|variações|#Exlibris|3|13|203|267|305101209600|3.05e+11|
+|Oficia|S|todos os temas|joco|15|44|523|526|5933583529929761087878594560000000|5.93e+33|
+|Oficio|S|livro vivo;jocosos|author|15|44|536|475|57110137135498442550804480000000|5.71e+31|
+|Ogiva|S|poemas;variações|beauty|5|24|253|232|1624147132608000|1.62e+15|
+|OLA|S|metalinguagem|machina|1|3|35|35|1248|1.25e+03|
+|OLA_abertura|S|metalinguagem|machina|11|46|149|141|2528292372480000000|2.53e+18|
+|Olhares|S|poemas;variações|persona|14|50|192|464|167249974512681215092510949376000000|1.67e+35|
+|Ores|S|todos os temas|machina|4|15|86|106|267079680|2.67e+08|
+|Palyndro|S|ensaios|machina|13|20|58|52|967680|9.68e+05|
+|Papilio|S|poemas;outros autores|persona|14|24|576|299|17276809528053504000|1.73e+19|
+|Paroles|S|livro vivo;variações;metalinguagem|machina|6|18|421|418|58025870622720000|5.80e+16|
+|Passagens|S|todos os temas|machina|7|17|170|118|95777510400|9.58e+10|
+|Paz|S|todos os temas|beauty|3|10|39|51|108108|1.08e+05|
+|Pedidos|S|livro vivo|author|8|21|170|95|40236134400|4.02e+10|
+|Peixes=f|S|signos_fem|esoteric|6|16|103|53|1209600|1.21e+06|
+|Peixes=m|S|signos_mas|esoteric|6|16|101|52|1058400|1.06e+06|
+|Perfil|S|jocosos;sociais;outros autores|beauty|6|17|352|236|20427651921600000|2.04e+16|
+|Pessoa|S|livro vivo;outros autores|author|7|20|98|58|4665600|4.67e+06|
+|Portal|S|variações|machina|6|14|393|298|1754298589680|1.75e+12|
+|Posfácio|S|livro vivo|author|16|49|289|267|23356081768224522240000000|2.34e+25|
+|Preciso|S|livro vivo;sociais|joco|11|28|227|165|4307843284992000|4.31e+15|
+|Prefácil|S|livro vivo;metalinguagem|joco|13|39|334|310|8113087959898521600000000|8.11e+24|
+|Psiu|S|poemas;variações|persona|4|15|524|322|3464123520|3.46e+09|
+|Psiume|S|todos os temas||4|13|520|330|196263540|1.96e+08|
+|Reger|S|livro vivo;poemas|anima|7|18|119|85|404352000|4.04e+08|
+|Reinos|S|jocosos|joco|11|29|220|256|789146976367411200|7.89e+17|
+|Remedeio|S|jocosos|joco|3|7|415|185|1967232|1.97e+06|
+|Restos|S|todos os temas|author|5|13|123|116|589906800|5.90e+08|
+|Rever|S|livro vivo;poemas|anima|4|8|132|77|2519424|2.52e+06|
+|Rito|S|livro vivo;jocosos|joco|4|13|151|169|57550500000|5.76e+10|
+|Sagitari=f|S|todos os temas|esoteric|8|19|120|81|2911334400|2.91e+09|
+|Sagitari=m|S|todos os temas|esoteric|8|19|120|81|2911334400|2.91e+09|
+|Salute|S|variações|machina|5|9|542|267|32637136896|3.26e+10|
+|Saudades|S|livro vivo;poemas|persona|6|16|271|181|7420616146944|7.42e+12|
+|Seguro|S|livro vivo;jocosos;sociais|joco|9|16|118|67|373248000|3.73e+08|
+|Sentença|S|livro vivo|anima|7|21|256|165|159667040332800|1.60e+14|
+|Ser|S|livro vivo;poemas|anima|5|10|160|82|849660|8.50e+05|
+|Silente|S|livro vivo;poemas|anima|9|30|319|254|313233575510016000000|3.13e+20|
+|Sinais|S|poemas;ensaios;variações|anima|5|15|242|319|329504881305600|3.30e+14|
+|Sinas|S|variações|beauty|5|13|242|285|2526115680000|2.53e+12|
+|Slogans|S|todos os temas|machina|3|3|1004|2952|952763904|9.53e+08|
+|Sn6=ball|S|ensaios;variações|machina|13|18|242|252|258863705100000|2.59e+14|
+|Sn8=ball|S|ensaios;variações|machina|16|18|242|251|1682614083150000|1.68e+15|
+|SnowBall|S|ensaios;variações;metalinguagem|machina|20|26|416|427|20441528502877359259200000|2.04e+25|
+|Solero|S|todos os temas|author|8|19|381|252|34215616512000|3.42e+13|
+|Sonoro|S|livro vivo;poemas|anima|3|5|116|90|1192320|1.19e+06|
+|Sopros|S|livro vivo;poemas|anima|9|26|255|189|94680907776000000|9.47e+16|
+|Sos|S|livro vivo;jocosos|joco|5|17|211|220|6111356719104|6.11e+12|
+|Tempo|S|livro vivo;poemas;variações|machina|14|43|941|1745|112765820236797923580529825269143876665344000000000|1.13e+50|
+|Tempus|S|poemas|machina|6|18|107|99|87178291200|8.72e+10|
+|Tiro|S|livro vivo;metalinguagem|author|9|23|496|384|2903854393440000000|2.90e+18|
+|Tolero|S|variações|anima|14|27|324|420|6372790375311360000|6.37e+18|
+|Touro=f|S|signos_fem|esoteric|5|13|113|59|1254528|1.25e+06|
+|Touro=m|S|signos_mas|esoteric|5|13|113|59|1254528|1.25e+06|
+|Travessia|S|todos os temas|anima|7|16|58|63|49140|4.91e+04|
+|Usinas|S|livro vivo;poemas|anima|7|34|252|225|102938787190407168000|1.03e+20|
+|Veio|S|livro vivo;poemas|anima|7|30|371|318|2907865942960295116800|2.91e+21|
+|Victor|S|poemas;outros autores|author|8|15|178|112|308998800|3.09e+08|
+|Virgem=f|S|signos_fem|esoteric|7|20|97|110|4255027200|4.26e+09|
+|Virgem=m|S|signos_mas|esoteric|7|20|96|107|3616773120|3.62e+09|
+|Vozes|S|jocosos|joco|3|6|134|85|393120|3.93e+05|
+|Zelo|S|poemas;variações|persona|6|13|410|246|151240320|1.51e+08|
+|Zodiacaos|S|jocosos|esoteric|16|55|413|375|14365992237323928993792000000000000|1.44e+34|
+|Zoia|S|livro vivo;poemas;variações|persona|14|50|213|484|23297836384021203533168640000000000|2.33e+34|
 <EOF>
 
 LEGENDA
-codigo = identificador interno e estável do tema.
 tema = nome autoral do tema; existência material vem de data/.ypo ou data/.new.
 ativo = circulação: N fora do palco; T testes locais; S circulação pública.
-ordem = posição canônica de circulação desta versão pública.
-livro = livro(s) aos quais o tema pertence.
+livro = livro(s) aos quais o tema pertence; a ORDEM pertence exclusivamente ao rol_<livro>.txt.
 banco_tematico = banco visual associado ao tema.
 imagem = escolha RANDOM do banco_tematico; não integra o DNA.
 versos = quantidade de versos do yPoema.

@@ -26,25 +26,28 @@ Clandestino : outros autores
 Clarice : outros autores
 Conto : poemas
 Cordel : metalinguagem
-Cromossomo : jocosos
 Críticas : jocosos
 Crítico : jocosos
+Cromossomo : jocosos
 Cuores : poemas
 Demo : jocosos
 Destinos : poemas
 Distintos : beauty
 Dolores : poemas
 Duralex : jocosos
+Eles : poemas
 Elogio : outros autores
 Enfrente : ensaio
 Epitafiando : poemas
-Escriba : ooutros autores
+Escriba : outros autores
 Essa : metalinguagem
 Essas : ensaio
 Esses : ensaio
 Estudo : jocosos
 Eus : poemas
 Evidências : ensaio
+Fabulas : ensaio
+Fake-News : jocosos
 Fatos : metalinguagem
 Feiras : metalinguagem
 Festim : poemas
@@ -55,13 +58,14 @@ Gula : jocosos
 Haikai : poemas
 Imaginação : ensaio
 Impar : ensaio
-Jealousy : poemas
 i-Mundo : poemas
 Indolor : poemas
 Inhos : poemas
 Insano : jocosos
+Jealousy : poemas
 Joker : jocosos
 Lady-Murphy : jocosos
+ka-os : ensaio
 Lato : poemas
 Leituras : metalinguagem
 Lero : ensaio
@@ -79,13 +83,16 @@ Niver : poemas
 Niver-B : poemas
 Nonono : ensaio
 Nós : poemas
-nós_nos_nós : poemas
+Nós_nos_nós : poemas
+o culto : outros autores
+Oculto : variações
 Oca : poemas
 Ocio : jocosos
 Oco : poemas
 Oficia : jocosos
 Oficio : jocosos
 Ogiva : poemas
+OLA : metalinguagem
 Olhares : poemas
 Ores : ensaio
 Palyndro : ensaio
@@ -115,6 +122,7 @@ Ser : poemas
 Silente : poemas
 Sinais : poemas
 Sinas : ensaio
+Slogans : ensaio
 Sn6=ball : ensaio
 Sn8=ball : ensaio
 SnowBall : ensaio
@@ -134,6 +142,10 @@ Vozes : jocosos
 Zelo : poemas
 Zodiacaos : zodíaco
 Zoia : poemas
+ola_abertura : metalinguagem
+Nhô-Borges : livro vivo
+Libre : todos os temas
+abacaxis : todos os temas
 Aquarius=f : zodíaco
 Aquarius=m : zodíaco
 Aries=f : zodíaco

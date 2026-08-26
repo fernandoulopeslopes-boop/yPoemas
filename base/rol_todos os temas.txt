@@ -1,3 +1,4 @@
+Abacaxis
 Ais
 Amaré
 Anjos
@@ -26,15 +27,17 @@ Clandestino
 Clarice
 Conto
 Cordel
-Cromossomo
 Críticas
 Crítico
+Cromossomo
 Cuores
 Demo
+Design
 Destinos
 Distintos
 Dolores
 Duralex
+Eles
 Elogio
 Enfrente
 Epitafiando
@@ -45,6 +48,8 @@ Esses
 Estudo
 Eus
 Evidências
+Fabulas
+Fake-News
 Fatos
 Feiras
 Festim
@@ -53,18 +58,22 @@ Frases
 Fugaz
 Gula
 Haikai
+i-Mundo
 Imaginação
 Impar
-i-Mundo
 Indolor
 Inhos
 Insano
+Isso
+Jealousy
 Joker
+ka-os
 Lady-Murphy
 Lato
 Leituras
 Lero
 Liberta
+Libre
 Loremipsum
 Machbeth
 Machbrait
@@ -74,17 +83,22 @@ Manusgrito
 Meteoro
 Minuto
 Mirante
+Nhô-Borges
 Niver
 Niver-B
 Nonono
 Nós
 Nós_nos_nós
+o Culto
 Oca
 Ocio
 Oco
+Oculto
 Oficia
 Oficio
 Ogiva
+OLA
+ola_abertura
 Olhares
 Ores
 Palyndro
@@ -100,6 +114,7 @@ Posfácio
 Preciso
 Prefácil
 Psiu
+Psiume
 Reger
 Reinos
 Remedeio
@@ -114,6 +129,7 @@ Ser
 Silente
 Sinais
 Sinas
+slogans
 Sn6=ball
 Sn8=ball
 SnowBall
@@ -157,11 +173,3 @@ Touro=f
 Touro=m
 Virgem=f
 Virgem=m
-Jealousy
-Design
-Isso
-o Culto
-Oculto
-OLA
-OLA_abertura
-Psiume
