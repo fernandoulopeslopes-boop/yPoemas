@@ -62,6 +62,8 @@ class AcrosResultado:
 _MODO = {
     "BEM": "bem",
     "MAL": "mal",
+    "NEM TANTO": "mix",
+    "NEM_TANTO": "mix",
 }
 
 _GENERO = {
@@ -69,6 +71,7 @@ _GENERO = {
     "MASCULINO": "M",
     "F": "F",
     "FEMININO": "F",
+    "MIX": "Mix",
 }
 
 
@@ -86,14 +89,14 @@ def _chave_letra(ch: str) -> str:
 def _normaliza_modo(modo: str) -> str:
     key = str(modo or "").strip().upper()
     if key not in _MODO:
-        raise AcrosError("Modo inválido. Use Bem ou Mal.")
+        raise AcrosError("Modo inválido. Use Bem, Mal ou nem tanto.")
     return _MODO[key]
 
 
 def _normaliza_genero(genero: str) -> str:
     key = str(genero or "").strip().upper()
     if key not in _GENERO:
-        raise AcrosError("Gênero inválido. Use Masculino ou Feminino.")
+        raise AcrosError("Gênero inválido. Use Masculino, Feminino ou Mix.")
     return _GENERO[key]
 
 
@@ -101,11 +104,13 @@ def nome_fonte(modo: str, genero: str) -> str:
     """
     Nome canônico da fonte.
 
-    O SPEC atual usa quatro fontes .txt mnemônicas:
-    Bem/Mal x Feminino/Masculino.
+    O SPEC atual mantém as quatro fontes Bem/Mal x Feminino/Masculino.
+    Mix ou nem tanto usam a fonte única Acros_Mix.TXT.
     """
     m = _normaliza_modo(modo)
     g = _normaliza_genero(genero)
+    if m == "mix" or g == "Mix":
+        return "Acros_Mix.TXT"
     return f"acros_{m}_{g}.txt"
 
 
@@ -192,7 +197,7 @@ def indexar_por_letra(verbetes: tuple[str, ...]) -> dict[str, tuple[str, ...]]:
 
 
 def _mensagem_sem_verbete(ch: str) -> str:
-    return f'Nenhum verbete digno da sua entrada para a letra "{ch}".'
+    return f'Nenhum verbete digno na Machina para a letra "{ch}".'
 
 
 def _monta_markdown(ch_entrada: str, verbete: str) -> str:
@@ -238,6 +243,7 @@ def gerar_acros(
     for ch in texto:
         chave = _chave_letra(ch)
 
+        # "acidentes" da entrada permanecem as-is.
         if not chave.isalpha():
             linhas.append(AcrosLinha(
                 entrada=ch,

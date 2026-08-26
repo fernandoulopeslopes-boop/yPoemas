@@ -5,20 +5,25 @@ import streamlit as st
 
 from random import randrange
 
+from lay_tools import (
+    abre_ypo_preservando_newline,
+    comando_espacamento_compacto,
+    gravar_ypo_certificado,
+    indice_konstante,
+    linha_com_itimos_atual,
+    linha_fim,
+    tabs_payload,
+    validar_estrutura_ypo,
+)
+
+
 def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo yPoema
     """
-    :param = script, tema
-         numero_linea = '01'  # linha
-         ideia_numero = '01'  # ideia
-         fonte_itimos = nome_tema + '_' + numero_linea + ideia_numero # fonte dos itimos. Pode haver re-uso !!!
-         se_randomico = 'F'   # se_random
-         total_itimos = 1     # qtd_itimos
-         itimos_atual = 1     # itimos_atual
-         array_itimos = []    # array com todos os itimos da ideia na linha
-    return: novo_poema
+    Motor histórico da Machina.
 
-    ToDo:
-       obs: the search for a seed acctualy only works in portuguese. Try to translate your search_seed into this language.
+    A arquitetura permanece explícita: HEADER / BODY / FINAIS.
+    Na persistência, somente itimos_atual pode mudar no BODY.
+    O lay_2_ypo não cria nem altera build_by; atualiza apenas "updated em:".
     """
 
     lista_header = []
@@ -28,8 +33,6 @@ def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo y
     lista_duplos = []
     lista_errata = []
     lista_unicos = []
-
-    conta_palavra = 0
 
     this_seed = ""
     find_coords = ""
@@ -45,35 +48,66 @@ def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo y
 
     try:
         if nome_tema == "Babel":
-            novo_poema = novo_babel(0)
-            return novo_poema
-        else:
-            tema = abre(nome_tema)
-            for line in tema:
-                if line.startswith("*-", 0, 2):  # observações e cabeçalho
-                    lista_header.append(line)
-                elif line.startswith("|", 0, 1):  # ideias & itimos
-                    lista_linhas.append(line)
-                else:  # <eof> + análise + build_date
-                    lista_finais.append(line)
+            return novo_babel(0)
+
+        path = os.path.join("./data", nome_tema + ".ypo")
+        tema = abre_ypo_preservando_newline(path)
+        validar_estrutura_ypo(tema)
+        original_linhas = list(tema)
+
+        # Divisão histórica da casa: HEADER / BODY / FINAIS.
+        em_body = False
+        em_finais = False
+        for line in tema:
+            corpo = str(line).rstrip("\r\n")
+
+            if em_finais:
+                lista_finais.append(line)
+                continue
+
+            if corpo == "<EOF>":
+                em_finais = True
+                lista_finais.append(line)
+                continue
+
+            if line.startswith("|", 0, 1):
+                em_body = True
+                lista_linhas.append(line)
+                continue
+
+            if not em_body:
+                lista_header.append(line)
+                continue
+
+            # validar_estrutura_ypo já deveria ter bloqueado este caso.
+            raise RuntimeError("estrutura .ypo inválida entre BODY e <EOF>")
+
     except UnicodeDecodeError:
         lista_errata.append(nome_tema)
-        pass
+        original_linhas = []
+    except (OSError, RuntimeError, ValueError) as exc:
+        lista_errata.append(nome_tema)
+        original_linhas = []
+        st.warning(str(exc))
 
     novo_poema = []
     novo_verso = ""
     muda_linha = "00"
     pula_linha = "no"
-    find_eureka = ""
+    tabs_pendente = 0
 
     for line in lista_linhas:
-        alinhas = line.split("|")
-
-        if len(alinhas) == 0:
+        tabs_comando = comando_espacamento_compacto(line)
+        if tabs_comando:
+            tabs_pendente = tabs_comando
+            lista_change.append(line)
             continue
 
-        if len(alinhas) < 2:
+        alinhas = line.rstrip("\r\n").split("|")
+
+        if len(alinhas) < 3:
             lista_errata.append(nome_tema)
+            lista_change.append(line)
             continue
 
         if alinhas[2] == "00":
@@ -81,154 +115,129 @@ def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo y
             lista_change.append(line)
             continue
 
-        if len(alinhas) >= 7:
-            numero_linea = alinhas[1]
-            ideia_numero = alinhas[2]
-            fonte_itimos = alinhas[3]
-            se_randomico = alinhas[4]
-            total_itimos = int(alinhas[5])
+        if len(alinhas) < 9:
+            lista_errata.append(nome_tema)
+            lista_change.append(line)
+            continue
+
+        numero_linea = alinhas[1]
+        ideia_numero = alinhas[2]
+        fonte_itimos = alinhas[3]
+        se_randomico = alinhas[4]
+
+        try:
+            int(alinhas[5])  # qtd declarada: leitura apenas; não é regravada pelo motor
             itimos_atual = int(alinhas[6])
-            array_itimos = alinhas[7 : len(alinhas) - 1]
-            
-            tabs = array_itimos[0].count('$')
-            if tabs > 0:
-                array_itimos = array_itimos[1 : len(array_itimos)]
+        except (TypeError, ValueError):
+            lista_errata.append(nome_tema)
+            lista_change.append(line)
+            continue
 
-            find_eureka = nome_tema + "_" + numero_linea + ideia_numero
+        array_itimos, tabs = tabs_payload(alinhas[7:-1], tabs_pendente)
+        tabs_pendente = 0
 
-            if itimos_atual > len(array_itimos):
-                itimos_atual = len(array_itimos)
+        find_eureka = nome_tema + "_" + numero_linea + ideia_numero
+        total_itimos = len(array_itimos)
 
-            if total_itimos != len(array_itimos):  # just in case...
-                total_itimos = len(array_itimos)  # real lenght...
+        if total_itimos <= 0:
+            lista_errata.append(nome_tema)
+            lista_change.append(line)
+            continue
 
-            if total_itimos == 1:  # just in case...
-                se_randomico = "F"
+        if itimos_atual > total_itimos:
+            itimos_atual = total_itimos
 
-            tentativas = 0
-            while True:  # seleciona próximo ítimo válido
-                if 1 != total_itimos:  # mais de hum ítimo
-                    if se_randomico == "F":
-                        itimos_atual -= 1  # pega ítimo anterior
-                        if itimos_atual < 0:
-                            itimos_atual = ( total_itimos - 1)  # because matrix começa em zero
-                    elif se_randomico == "K":  # Konstante: mantém o ítimo atual desta linha
-                        itimo_k = max(1, min(itimos_atual, total_itimos)) - 1
-                    else:
-                        if total_itimos >= 1:
-                            itimos_atual = randrange(0, total_itimos)  # pega ítimo random
-                        else:
-                            itimos_atual = 0  # just in case
-                else:  # apenas hum ítimo
-                    itimos_atual = 0
+        if total_itimos == 1:
+            se_randomico = "F"
 
-                if se_randomico == "K":
-                    itimo_escolhido = array_itimos[itimo_k]  # mantém o ítimo atual
-                elif itimos_atual >= 0 and itimos_atual <= len(array_itimos):
-                    itimo_escolhido = array_itimos[itimos_atual]  # escolheu ítimo
+        tentativas = 0
+        while True:
+            if total_itimos != 1:
+                if se_randomico == "F":
+                    itimos_atual -= 1
+                    if itimos_atual < 0:
+                        itimos_atual = total_itimos - 1
+                elif se_randomico == "K":
+                    itimo_k = indice_konstante(itimos_atual, total_itimos)
                 else:
-                    st.warning(
-                        "Algo deu errado em "
-                        + fonte_itimos
-                        + ". Se puder, entre em contato com o '[autor](mailto:lopes.fernando@hotmail.com)'"
-                    )
-                    itimo_escolhido = "_Erro_"
-
-                if ( find_eureka == find_coords ):  # marcar palavra/semente em eureka parameter
-                    if look_for_seed:  # not changed yet...
-                        for itimo in array_itimos:
-                            if this_seed.lower() in itimo.lower():
-                                itimo_escolhido = itimo
-                                lista_unicos.append(
-                                    itimo_escolhido.upper()
-                                )  # no repeated words...
-                                itimo_escolhido = itimo_escolhido.replace(
-                                    this_seed, "<mark>" + this_seed + "</mark>"
-                                )  # markdown text
-                                look_for_seed = False
-
-                #  verifica se ítimo ainda não foi escolhido
-                if se_randomico == "K":
-                    if itimo_escolhido.upper() not in lista_unicos:
-                        lista_unicos.append(itimo_escolhido.upper())
-                    break
-
-                temp_random = se_randomico
-                if (
-                    not itimo_escolhido.upper()  # Elimina duplicidaders óbvias...
-                    in "_E_A_AS_O_OS_OU_NO_NOS_NA_NAS_ME_DE_SE_QUE_NÃO_SO_SEM_NEM_EM_UM_UMA_POR_MEU_VE_TE_TÃO_DA_SER_TER_PRA_PARA_QUANDO_..._._,_:_!_?"
-                ):
-                    if (
-                        itimo_escolhido.upper() not in lista_unicos
-                    ):  # check if not yet used...
-                        lista_unicos.append(itimo_escolhido.upper())
-                        break
-                    else:
-                        tentativas += 1
-                        if (
-                            tentativas > total_itimos
-                        ):  # tentativas > que total de ítimos: pega o próximo sequencial
-                            if temp_random == "T":
-                                tentativas = 0  # Da Capo
-                                temp_random = "F"
-                            else:
-                                lista_unicos.append(itimo_escolhido.upper())
-                                lista_duplos.append(itimo_escolhido.upper())
-                                break
-
-                        if (
-                            itimo_escolhido.upper() in lista_duplos
-                            # and nome_tema != "Cacos"
-                        ):  # para não repetir verbetes/ítimos usados em mais de uma ideia/linha
-                            if len(itimo_escolhido) > 3:
-                                continue
-
-                        if tentativas > 30:
-                            break
-                else:
-                    break
-
-            if numero_linea != muda_linha:  # check new line in script
-                novo_verso = acerto_final(novo_verso)
-                novo_poema.append(novo_verso)
-                novo_verso = ""
-                muda_linha = numero_linea
-
-            novo_verso += itimo_escolhido + " "
-            if tabs > 0:
-                novo_verso = tabs*'&emsp;' + novo_verso
-                tabs = 0
-                  
-            if "si" == pula_linha:
-                novo_poema.append("\n")
-                pula_linha = "no"
-
-            changed_line = (
-                "|" + numero_linea + "|" + ideia_numero + "|" + fonte_itimos + "|"
-            )
-
-            if itimos_atual < 1:  # sequencial = -1
-                if total_itimos == 1:
-                    itimos_atual = 1
-                else:
-                    itimos_atual = total_itimos
-
-            if se_randomico == "T":
-                changed_line += "T"
-            elif se_randomico == "K":
-                changed_line += "K"
+                    itimos_atual = randrange(0, total_itimos)
             else:
-                changed_line += "F"
-                
-            changed_line += "|" + str(total_itimos) + "|" + str(itimos_atual)
+                itimos_atual = 0
 
-            for v in alinhas[7 : len(alinhas) - 1]:
-                changed_line += "|" + v
-            changed_line += "|\n"
-            lista_change.append(changed_line)
-            
-        # endif len(alinhas) >= 7:
-    # end for... line in lista_linhas
+            if se_randomico == "K":
+                itimo_escolhido = array_itimos[itimo_k]
+            elif 0 <= itimos_atual < len(array_itimos):
+                itimo_escolhido = array_itimos[itimos_atual]
+            else:
+                st.warning(
+                    "Algo deu errado em "
+                    + fonte_itimos
+                    + ". Se puder, entre em contato com o '[autor](mailto:lopes.fernando@hotmail.com)'"
+                )
+                itimo_escolhido = "_Erro_"
+
+            if find_eureka == find_coords and look_for_seed:
+                for itimo in array_itimos:
+                    if this_seed.lower() in itimo.lower():
+                        itimo_escolhido = itimo
+                        lista_unicos.append(itimo_escolhido.upper())
+                        itimo_escolhido = itimo_escolhido.replace(
+                            this_seed, "<mark>" + this_seed + "</mark>"
+                        )
+                        look_for_seed = False
+                        break
+
+            if se_randomico == "K":
+                if itimo_escolhido.upper() not in lista_unicos:
+                    lista_unicos.append(itimo_escolhido.upper())
+                break
+
+            temp_random = se_randomico
+            if (
+                itimo_escolhido.upper()
+                not in "_E_A_AS_O_OS_OU_NO_NOS_NA_NAS_ME_DE_SE_QUE_NÃO_SO_SEM_NEM_EM_UM_UMA_POR_MEU_VE_TE_TÃO_DA_SER_TER_PRA_PARA_QUANDO_..._._,_:_!_?"
+            ):
+                if itimo_escolhido.upper() not in lista_unicos:
+                    lista_unicos.append(itimo_escolhido.upper())
+                    break
+
+                tentativas += 1
+                if tentativas > total_itimos:
+                    if temp_random == "T":
+                        tentativas = 0
+                        temp_random = "F"
+                    else:
+                        lista_unicos.append(itimo_escolhido.upper())
+                        lista_duplos.append(itimo_escolhido.upper())
+                        break
+
+                if itimo_escolhido.upper() in lista_duplos and len(itimo_escolhido) > 3:
+                    continue
+
+                if tentativas > 30:
+                    break
+            else:
+                break
+
+        if numero_linea != muda_linha:
+            novo_verso = acerto_final(novo_verso)
+            novo_poema.append(novo_verso)
+            novo_verso = ""
+            muda_linha = numero_linea
+
+        novo_verso += itimo_escolhido + " "
+        if tabs > 0:
+            novo_verso = tabs * "&emsp;" + novo_verso
+
+        if pula_linha == "si":
+            novo_poema.append("\n")
+            pula_linha = "no"
+
+        # Única alteração autorizada no BODY: itimos_atual (campo 6).
+        persist_index = itimos_atual
+        if persist_index < 1:
+            persist_index = 1 if total_itimos == 1 else total_itimos
+        lista_change.append(linha_com_itimos_atual(line, persist_index))
 
     novo_poema.append(acerto_final(novo_verso))
 
@@ -245,29 +254,8 @@ def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo y
             + ". Se puder, entre em contato com o '[autor](mailto:lopes.fernando@hotmail.com)'"
         )
     else:
-        # rebuild script with new positions
-        path = os.path.join("./data", nome_tema + ".ypo")
-        tmp_path = path + ".tmp"
-        
-        with open(tmp_path, "w", encoding="utf-8", newline="") as file:
-            for linha in lista_header:
-                file.write(linha)
-
-            for linha in lista_change:
-                file.write(linha)
-
-            for linha in lista_finais:
-                if linha.lower().startswith("build_by lay_2_ypo"):
-                    continue
-                file.write(linha)
-
-            file.write(
-                "build_by lay_2_ypo em "
-                + datetime.datetime.now().strftime("%d/%m/%Y - %H:%M")
-                + "\n"
-            )
-
-        os.replace(tmp_path, path)
+        novas_linhas = lista_header + lista_change + lista_finais
+        gravar_ypo_certificado(path, original_linhas, novas_linhas)
 
     return novo_poema
 
@@ -478,7 +466,7 @@ def novo_babel(swap_pala):
     sinais_ini = [".", ",", ":", "!", "?", "...", " "]
     sinais_end = [".", "!", "?", "..."]
 
-    #   5 - 15
+#   5 - 15
     min_versos = 5
     max_versos = 15
     qtd_versos = random.randrange(min_versos, max_versos)
@@ -487,15 +475,16 @@ def novo_babel(swap_pala):
     novo_poema = []
     for nQtdLin in range(1, qtd_versos):
         novo_babel = ""
-        #   3 - 7
+#   3 - 7
         if swap_pala == 0:
-            qtd_palas = random.randrange(3, 7)
+            qtd_palas = random.randrange(2, 10)
         else:
             qtd_palas = swap_pala
-        #   2 - 4
+#   2 - 4
         for nova_frase in range(1, qtd_palas):
             nova_pala = ""
-            qtd_silabas = random.randrange(2, 4)
+
+            qtd_silabas = random.randrange(1, 4)
             for palavra in range(1, qtd_silabas):
                 njump = random.randrange(0, len(lista_silabas))
                 nova_silaba = str(lista_silabas[njump])
