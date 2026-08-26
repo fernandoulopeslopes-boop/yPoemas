@@ -1,18 +1,19 @@
-|01|01|Evidências_0101|F|1|1|a|
-|01|02|Evidências_0102|T|13|1|ciência|presciência|consciência|desconsciência|inconsciência|subconsciência|semiconsciência|omnisciência|onisciência|neurociência|pseudociência|subciência|semiciência|
-|01|03|Evidências_0103|F|1|1|da|
-|01|04|Evidências_0104|F|13|13|ciência|presciência|consciência|desconsciência|inconsciência|subconsciência|semiconsciência|omnisciência|onisciência|neurociência|pseudociência|subciência|semiciência|
-|02|01|Evidências_0201|F|6|5|pode|não pode|deve|não deve|"seria"|não seria|
-|02|02|Evidências_0202|F|4|4|transformar-se em|incorrer em|tornar-se|ser vista como|
-|03|01|Evidências_0301|T|15|3|sub-||nova|semi-||outra|"fake"-||meta-|meia-||pseudo-||versão|mais uma|
-|03|02|Evidências_0302|T|13|12|ciência|presciência|consciência|desconsciência|inconsciência|subconsciência|semiconsciência|omnisciência|onisciência|neurociência|pseudociência|subciência|semiciência|
-|03|03|Evidências_0303|F|6|5|.|?|!|...|?|?|
 *
 * evidências.ypo
 *
+|01|01|Evidências_0101|F|1|1|a|
+|01|02|Evidências_0102|T|13|9|ciência|presciência|consciência|desconsciência|inconsciência|subconsciência|semiconsciência|omnisciência|onisciência|neurociência|pseudociência|subciência|semiciência|
+|01|03|Evidências_0103|F|1|1|da|
+|01|04|Evidências_0104|F|13|2|ciência|presciência|consciência|desconsciência|inconsciência|subconsciência|semiconsciência|omnisciência|onisciência|neurociência|pseudociência|subciência|semiciência|
+|02|01|Evidências_0201|F|6|6|pode|não pode|deve|não deve|"seria"|não seria|
+|02|02|Evidências_0202|F|4|1|transformar-se em|incorrer em|tornar-se|ser vista como|
+|03|01|Evidências_0301|T|10|11|sub-||nova|semi-||outra|"fake"-||meta-|meia-||pseudo-||versão|mais uma|
+|03|02|Evidências_0302|T|13|6|ciência|presciência|consciência|desconsciência|inconsciência|subconsciência|semiconsciência|omnisciência|onisciência|neurociência|pseudociência|subciência|semiciência|
+|03|03|Evidências_0303|F|6|6|.|?|!|...|?|?|
 <EOF>
 Verbetes no Texto = 9
   Total de ítimos = 72
 Total de verbetes = 37
-Qtd. de Variações = 3.163.680 (milhões)
-build_by lay_2_ypo em 08/08/2026 - 14:52
+Qtd. de Variações = 4.745.520 (milhões)
+
+build_by lay_2_ypo em 22/08/2026 - 14:20

@@ -2,22 +2,23 @@
 *- Demo.ypo
 *-
 *-
-|01|01|Demo_0101|F|5|1|Eu voto|Meu voto foi|Se eu votar|Aquele voto|E se eu votei|
+|01|01|Demo_0101|F|5|2|Eu voto|Meu voto foi|Se eu votar|Aquele voto|E se eu votei|
 |02|00|
-|02|02|Demo_0202|T|54|14|anunciado|válido|casto|vesgo|pensado|tosco|comprado|enganado|nulo|inútil|mandado|já visto|calculado|útil|indeciso|obrigado|casado|em branco|pelo novo|simplório|inocente|correto|secreto|discreto|já visto|vencido|de cabresto|iludido|de direita|de esquerda|de centro|sabido|firme|de costume|vendido|por impulso|verde|perdido|sofrido|marxista|capitalista|neo-liberal|situacionista|democrata|trotskista|bolivariano|comunista|progressista|ideológico|conservador|oposicionista|anarquista|no partido|trabalhista|
-|02|03|Demo_0203|F|3|2|...|?|,|
-|02|04|Demo_0202|T|54|8|anunciado|válido|casto|vesgo|pensado|tosco|comprado|enganado|nulo|inútil|mandado|já visto|calculado|útil|indeciso|obrigado|casado|em branco|pelo novo|simplório|inocente|correto|secreto|discreto|já visto|vencido|de cabresto|iludido|de direita|de esquerda|de centro|sabido|firme|de costume|vendido|por impulso|verde|perdido|sofrido|marxista|capitalista|neo-liberal|situacionista|democrata|trotskista|bolivariano|comunista|progressista|ideológico|conservador|oposicionista|anarquista|no partido|trabalhista|
-|02|05|Demo_0205|F|3|2|...|?|,|
-|02|06|Demo_0202|T|54|28|anunciado|válido|casto|vesgo|pensado|tosco|comprado|enganado|nulo|inútil|mandado|já visto|calculado|útil|indeciso|obrigado|casado|em branco|pelo novo|simplório|inocente|correto|secreto|discreto|já visto|vencido|de cabresto|iludido|de direita|de esquerda|de centro|sabido|firme|de costume|vendido|por impulso|verde|perdido|sofrido|marxista|capitalista|neo-liberal|situacionista|democrata|trotskista|bolivariano|comunista|progressista|ideológico|conservador|oposicionista|anarquista|no partido|trabalhista|
+|02|02|Demo_0202|T|54|41|anunciado|válido|casto|vesgo|pensado|tosco|comprado|enganado|nulo|inútil|mandado|já visto|calculado|útil|indeciso|obrigado|casado|em branco|pelo novo|simplório|inocente|correto|secreto|discreto|já visto|vencido|de cabresto|iludido|de direita|de esquerda|de centro|sabido|firme|de costume|vendido|por impulso|verde|perdido|sofrido|marxista|capitalista|neo-liberal|situacionista|democrata|trotskista|bolivariano|comunista|progressista|ideológico|conservador|oposicionista|anarquista|no partido|trabalhista|
+|02|03|Demo_0203|F|3|3|...|?|,|
+|02|04|Demo_0202|T|54|1|anunciado|válido|casto|vesgo|pensado|tosco|comprado|enganado|nulo|inútil|mandado|já visto|calculado|útil|indeciso|obrigado|casado|em branco|pelo novo|simplório|inocente|correto|secreto|discreto|já visto|vencido|de cabresto|iludido|de direita|de esquerda|de centro|sabido|firme|de costume|vendido|por impulso|verde|perdido|sofrido|marxista|capitalista|neo-liberal|situacionista|democrata|trotskista|bolivariano|comunista|progressista|ideológico|conservador|oposicionista|anarquista|no partido|trabalhista|
+|02|05|Demo_0205|F|3|3|...|?|,|
+|02|06|Demo_0202|T|54|32|anunciado|válido|casto|vesgo|pensado|tosco|comprado|enganado|nulo|inútil|mandado|já visto|calculado|útil|indeciso|obrigado|casado|em branco|pelo novo|simplório|inocente|correto|secreto|discreto|já visto|vencido|de cabresto|iludido|de direita|de esquerda|de centro|sabido|firme|de costume|vendido|por impulso|verde|perdido|sofrido|marxista|capitalista|neo-liberal|situacionista|democrata|trotskista|bolivariano|comunista|progressista|ideológico|conservador|oposicionista|anarquista|no partido|trabalhista|
 |02|07|Demo_0207|F|2|1|...|?|
 |03|00|
-|03|01|Demo_0301|F|10|5|é meu direito!|estou errado?|fala por mim.|foi escolha minha!|me cabe.|perdido?|fui enganado?|vencido?|foi de cabresto?|e daí?|
+|03|01|Demo_0301|F|10|1|é meu direito!|estou errado?|fala por mim.|foi escolha minha!|me cabe.|perdido?|fui enganado?|vencido?|foi de cabresto?|e daí?|
 |04|00|
-|04|01|Demo_0401|F|24|14|Olha o respeito|Também opino|Foi minha escolha|Assim decreto|Me respeite|Tenho motivos|Sei o que faço|Eu acredito|Mas, sem ditadura|Vai que algo muda..|É o fim do mundo?|Não são apostas|Vivas à liberdade|Por livre arbítrio|Cabe sigilo|Olha a patrulha|É agora José|E daí, pergunto|Um dia acerto|Eu o sustento|É só um a mais|Não cabe veto|Basta causar|Nunca omisso|
+|04|01|Demo_0401|F|24|24|Olha o respeito|Também opino|Foi minha escolha|Assim decreto|Me respeite|Tenho motivos|Sei o que faço|Eu acredito|Mas, sem ditadura|Vai que algo muda..|É o fim do mundo?|Não são apostas|Vivas à liberdade|Por livre arbítrio|Cabe sigilo|Olha a patrulha|É agora José|E daí, pergunto|Um dia acerto|Eu o sustento|É só um a mais|Não cabe veto|Basta causar|Nunca omisso|
 |04|02|Demo_0402|F|2|1|!|.|
 <EOF>
 Verbetes no Texto = 10
   Total de ítimos = 211
 Total de verbetes = 128
 Qtd. de Variações = 6.429.196.800 (bilhões)
-build_by lay_2_ypo em 10/08/2026 - 04:49
+
+build_by lay_2_ypo em 22/08/2026 - 16:28
