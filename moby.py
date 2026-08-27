@@ -1,8 +1,7 @@
 # moby.py
-# Etapa 028: @ = recuo autoral seguro; blindagem HTML preservada.
+# Etapa 032: Off-Machina autoral (13 livros) + contato com o mundo na sidebar.
 # MACHINA — Mobile ultra-light
-# Etapa 025: responsividade vertical real + rodapé duplo + swap Machina/Off-Mach + OLA no foco.
-# Não altera basico.py, DNA, .ypo, .pip ou conteúdo autoral.
+# Blindagem HTML preservada; não altera basico.py, DNA, .ypo, .pip ou conteúdo autoral.
 
 from pathlib import Path
 import base64
@@ -36,6 +35,23 @@ LINKS_PATH = Path("./base/links.txt")
 IMAGES_ROOT = Path("./images")
 IMAGES_MAP_PATH = Path("./base/images.txt")
 OFF_DIR = Path("./off_machina")
+
+# Autoridade autoral do Off-Machina: existir como .pip não publica um livro.
+OFF_BOOKS_LIST = [
+    "a_torre_de_papel",
+    "quase_que_eu_Poesia",
+    "faz_de_conto",
+    "um_romance",
+    "parafernália",
+    "linguafiada",
+    "livro_vivo",
+    "desvoto",
+    "ensaios",
+    "urbano",
+    "essencial",
+    "secreto",
+    "cunho",
+]
 
 IDIOMAS_MACHINA = [
     ("Português", "Brasil", "pt"),
@@ -486,14 +502,21 @@ def current_theme():
 
 
 def off_books():
-    """Livros .Pip reais disponíveis no Off-Machina."""
+    """Livros Off-Machina publicados, na ordem da autoridade autoral."""
     if not OFF_DIR.is_dir():
         return []
-    livros = []
-    for path in sorted(OFF_DIR.iterdir(), key=lambda p: p.name.casefold()):
-        if path.is_file() and path.suffix.casefold() == ".pip":
-            livros.append(path)
-    return livros
+
+    pip_por_nome = {
+        path.stem.casefold(): path
+        for path in OFF_DIR.iterdir()
+        if path.is_file() and path.suffix.casefold() == ".pip"
+    }
+
+    return [
+        pip_por_nome[nome.casefold()]
+        for nome in OFF_BOOKS_LIST
+        if nome.casefold() in pip_por_nome
+    ]
 
 
 def off_pages(path):
@@ -1176,6 +1199,14 @@ if st.session_state.moby_sidebar_open:
         )
     st.session_state.moby_font_family = fonte_lookup.get(fonte_escolhida, st.session_state.moby_font_family)
     st.session_state.moby_font_size = int(corpo_escolhido)
+
+    st.markdown(
+        "[facebook](https://www.facebook.com/nandoulopes) · "
+        "[e-mail](mailto:lopes.fernando@hotmail.com) · "
+        "[coffee](https://www.buymeacoffee.com/yPoemas) · "
+        "[instagram](https://www.instagram.com/fernando.lopes.942/) · "
+        "[whatsapp-pix](https://api.whatsapp.com/send?phone=+5512991368181)"
+    )
 
     if st.button("Fechar", key="moby_close_sidebar", width="stretch"):
         st.session_state.moby_sidebar_open = False
