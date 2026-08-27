@@ -724,11 +724,11 @@ def update_real_poem():
             linhas.append("")
         else:
             texto_linha = str(line).rstrip("\r\n")
-            recuo = len(texto_linha) - len(texto_linha.lstrip("@"))
-            conteudo = html.escape(texto_linha[recuo:])
-            if recuo:
-                conteudo = ("&#8195;" * recuo) + conteudo
-            linhas.append(conteudo)
+            # O recuo autoral já vem resolvido pelo lay_2_ypo como &emsp;.
+            # Converte apenas essa entidade histórica em espaço Unicode antes
+            # de escapar o restante: o palco não interpreta HTML do yPoema.
+            texto_linha = texto_linha.replace("&emsp;", "\u2003")
+            linhas.append(html.escape(texto_linha))
 
     st.session_state.moby_poem_html = "<br>".join(linhas)
     st.session_state.moby_poem_signature = assinatura
