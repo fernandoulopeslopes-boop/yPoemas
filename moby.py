@@ -304,8 +304,8 @@ def banco_de_imagens_do_tema(tema, path=IMAGES_MAP_PATH):
     return "machina"
 
 
-def imagem_do_tema(rows, tema):
-    """Escolhe imagem respeitando o mapeamento canônico nome -> grupo em base/images.txt."""
+def imagens_do_tema(rows, tema):
+    """Escolhe duas imagens distintas do mesmo banco temático curado."""
     if str(st.session_state.get("moby_mode", "Machina")) == "Off-Machina":
         livro_off = current_off_book_path()
         nome_mapeado = livro_off.stem if livro_off else ""
@@ -315,25 +315,29 @@ def imagem_do_tema(rows, tema):
 
     pasta = IMAGES_ROOT / banco
     if not pasta.is_dir():
-        return None
+        return None, None
 
     imagens = [
         item for item in pasta.iterdir()
         if item.is_file() and item.suffix.lower() in {".jpg", ".jpeg", ".png", ".webp", ".gif"}
     ]
     if not imagens:
-        return None
+        return None, None
 
     usadas = set(st.session_state.get("moby_arts", []))
     disponiveis = [img for img in imagens if str(img) not in usadas]
-    if not disponiveis:
-        disponiveis = imagens
+    pool = disponiveis if len(disponiveis) >= 2 else imagens
 
-    escolhida = random.choice(disponiveis)
+    if len(pool) >= 2:
+        primeira, segunda = random.sample(pool, 2)
+    else:
+        primeira = pool[0]
+        segunda = None
+
     historico = list(st.session_state.get("moby_arts", []))
-    historico.append(str(escolhida))
+    historico.extend(str(img) for img in (primeira, segunda) if img is not None)
     st.session_state.moby_arts = historico[-36:]
-    return escolhida
+    return primeira, segunda
 
 
 try:
@@ -402,6 +406,9 @@ if "moby_image_theme" not in st.session_state:
 
 if "moby_image_path" not in st.session_state:
     st.session_state.moby_image_path = ""
+
+if "moby_image_path_2" not in st.session_state:
+    st.session_state.moby_image_path_2 = ""
 
 if "moby_image_visible" not in st.session_state:
     st.session_state.moby_image_visible = True
@@ -497,8 +504,10 @@ def off_pages(path):
     paginas = []
     for raw in linhas:
         line = raw.rstrip("\r\n")
-        if not line.strip() or line.strip() == "<EOF>":
+        if not line.strip():
             continue
+        if line.strip() == "<EOF>":
+            break
         if line.startswith("|"):
             line = line[1:]
         if line.endswith("|"):
@@ -574,9 +583,10 @@ def update_real_image():
     if st.session_state.get("moby_image_theme") == assinatura:
         return
 
-    img = imagem_do_tema(DNA_ROWS, tema)
+    img1, img2 = imagens_do_tema(DNA_ROWS, tema)
     st.session_state.moby_image_theme = assinatura
-    st.session_state.moby_image_path = str(img) if img else ""
+    st.session_state.moby_image_path = str(img1) if img1 else ""
+    st.session_state.moby_image_path_2 = str(img2) if img2 else ""
 
 
 def invalidate_real_poem():
@@ -588,6 +598,7 @@ def invalidate_real_image():
     """Força nova escolha de imagem sem alterar o yPoema."""
     st.session_state.moby_image_theme = ""
     st.session_state.moby_image_path = ""
+    st.session_state.moby_image_path_2 = ""
 
 
 def random_seal_path():
@@ -677,10 +688,16 @@ def swap_machina_off():
 
 
 def prepare_portrait():
-    """Congela a imagem da leitura mesmo quando Imagem está OFF."""
+    """Congela uma das duas imagens da leitura para o Retrato, por par/ímpar."""
     dismiss_help()
     update_real_image()
-    st.session_state.moby_portrait_image = str(st.session_state.get("moby_image_path", ""))
+    img1 = str(st.session_state.get("moby_image_path", ""))
+    img2 = str(st.session_state.get("moby_image_path_2", ""))
+    if st.session_state.get("moby_mode") == "Off-Machina":
+        indice = int(st.session_state.get("moby_off_take", 0))
+    else:
+        indice = int(st.session_state.get("moby_reading_n", 1))
+    st.session_state.moby_portrait_image = img2 if (indice % 2 and img2) else img1
 
 
 def update_real_poem():
@@ -1059,10 +1076,12 @@ st.markdown(
 # =============================================================================
 # CABEÇALHO — SWAP + LINKS + SIDEBAR
 # =============================================================================
-modo_label = "off-Mach" if st.session_state.get("moby_mode") == "Off-Machina" else "Machina"
+modo_label = "¿" if st.session_state.get("moby_mode") == "Off-Machina" else "❓"
 head_mode, head_links, head_side = st.columns([1.35, 4.3, 1.35], gap="small")
 
 with head_mode:
+    if st.session_state.get("moby_mode") == "Off-Machina":
+        st.markdown("<style>.st-key-moby_mode_swap button {color:#d40000 !important; font-weight:800 !important;}</style>", unsafe_allow_html=True)
     st.button(modo_label, key="moby_mode_swap", width="stretch", on_click=swap_machina_off)
 
 with head_links:
@@ -1320,11 +1339,10 @@ with c2:
 with c3:
     st.button("Retrato", key="moby_portrait", width="stretch", on_click=prepare_portrait)
 
-# Selo RANDOM + imagem real no rodapé — ambos as is, apenas FIT.
+# Duas imagens distintas do mesmo banco temático no rodapé — apenas FIT.
 update_real_image()
-update_random_seal()
-imagem_atual = str(st.session_state.get("moby_image_path", "")).strip()
-selo_atual = str(st.session_state.get("moby_seal_path", "")).strip()
+imagem_1 = str(st.session_state.get("moby_image_path", "")).strip()
+imagem_2 = str(st.session_state.get("moby_image_path_2", "")).strip()
 
 if st.session_state.moby_image_visible:
     def _img_data_uri(path_text):
@@ -1339,31 +1357,30 @@ if st.session_state.moby_image_visible:
         mime = "jpeg" if ext in {"jpg", "jpeg"} else (ext or "jpeg")
         return f"data:image/{mime};base64,{payload}"
 
-    selo_uri = _img_data_uri(selo_atual)
-    imagem_uri = _img_data_uri(imagem_atual)
+    uri_1 = _img_data_uri(imagem_1)
+    uri_2 = _img_data_uri(imagem_2)
 
-    selo_html = (
-        f'<img src="{selo_uri}" alt="selo da Machina" '
-        'style="max-width:100%; max-height:185px; width:auto; height:auto; object-fit:contain; display:block;" />'
-        if selo_uri else ""
-    )
-    imagem_html = (
-        f'<img src="{imagem_uri}" alt="imagem do tema" '
-        'style="max-width:100%; max-height:185px; width:auto; height:auto; object-fit:contain; display:block;" />'
-        if imagem_uri else ""
-    )
+    def _foto_html(uri, alt):
+        if not uri:
+            return ""
+        return (
+            f'<img src="{uri}" alt="{alt}" '
+            'style="max-width:100%; max-height:185px; width:auto; height:auto; object-fit:contain; display:block;" />'
+        )
+
+    foto_1 = _foto_html(uri_1, "imagem temática 1")
+    foto_2 = _foto_html(uri_2, "imagem temática 2")
 
     st.markdown(
         f"""
-        <div style="height:205px; width:100%; display:flex; align-items:center; justify-content:center; gap:15px; overflow:hidden; padding:5px 4px 10px 4px; box-sizing:border-box;">
-            <div style="width:110px; height:185px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
-                {selo_html}
+        <div style="height:205px; width:100%; display:flex; align-items:center; justify-content:center; gap:10px; overflow:hidden; padding:5px 4px 10px 4px; box-sizing:border-box;">
+            <div style="width:187px; height:185px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                {foto_1}
             </div>
-            <div style="width:260px; height:185px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
-                {imagem_html}
+            <div style="width:187px; height:185px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                {foto_2}
             </div>
         </div>
         """,
         unsafe_allow_html=True,
     )
-
