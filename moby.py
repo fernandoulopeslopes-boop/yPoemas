@@ -1,6 +1,6 @@
 # moby.py
 # MACHINA — Mobile ultra-light
-# Etapa 022: rodapé fixo + swap Machina/Off-Mach + links no topo + OLA no foco.
+# Etapa 025: responsividade vertical real + rodapé duplo + swap Machina/Off-Mach + OLA no foco.
 # Não altera basico.py, DNA, .ypo, .pip ou conteúdo autoral.
 
 from pathlib import Path
@@ -1067,6 +1067,37 @@ st.markdown(
     section[data-testid="stSidebar"] {
         display: none !important;
     }
+
+    /* Moby em celular vertical: as barras continuam barras, não pilhas. */
+    @media (max-width: 600px) {
+        .block-container {
+            width: calc(100vw - 12px) !important;
+            max-width: 430px !important;
+            margin: 6px auto 24px auto !important;
+            padding: 12px 12px 18px 12px !important;
+            height: auto !important;
+            min-height: 820px !important;
+            max-height: none !important;
+            overflow: visible !important;
+            border-radius: 20px;
+        }
+
+        div[data-testid="stHorizontalBlock"] {
+            flex-wrap: nowrap !important;
+            gap: .28rem !important;
+        }
+
+        div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"] {
+            min-width: 0 !important;
+            width: auto !important;
+        }
+
+        div[data-testid="stHorizontalBlock"] button {
+            min-width: 0 !important;
+            padding-left: .18rem !important;
+            padding-right: .18rem !important;
+        }
+    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -1165,7 +1196,7 @@ if st.session_state.get("moby_mode") == "Off-Machina":
     idx_off = int(st.session_state.get("moby_off_book_index", 0)) % len(livros_off)
     col_book, col_ola, col_theme = st.columns([3, 1.25, 3], gap="small")
     with col_book:
-        livro_off = st.selectbox("Livro", nomes_off, index=idx_off, key="moby_off_book_pick")
+        livro_off = st.selectbox(f"livros: {idx_off + 1} / {len(nomes_off)}", nomes_off, index=idx_off, key="moby_off_book_pick")
         novo_idx = nomes_off.index(livro_off)
         if novo_idx != st.session_state.moby_off_book_index:
             st.session_state.moby_off_book_index = novo_idx
@@ -1187,7 +1218,7 @@ if st.session_state.get("moby_mode") == "Off-Machina":
         st.button("OLA", key="moby_ola_focus_off", width="stretch", on_click=request_ola)
 
     with col_theme:
-        titulo_off = st.selectbox("Tema", titulos_off, key="moby_off_page_pick")
+        titulo_off = st.selectbox(f"temas: {st.session_state.moby_off_take + 1} / {len(titulos_off)}", titulos_off, key="moby_off_page_pick")
         novo_take = titulos_off.index(titulo_off)
         if novo_take != st.session_state.moby_off_take:
             st.session_state.moby_off_take = novo_take
@@ -1201,14 +1232,16 @@ else:
         st.stop()
 
     st.session_state["moby_theme_pick"] = current_theme()
+    livro_atual_idx = MOBY_BOOKS.index(st.session_state.moby_book) if st.session_state.moby_book in MOBY_BOOKS else 0
+    tema_atual_idx = int(st.session_state.get("moby_theme_index", 0)) % len(temas)
     col_book, col_ola, col_theme = st.columns([3, 1.25, 3], gap="small")
     with col_book:
-        st.selectbox("Livro", MOBY_BOOKS, key="moby_book", on_change=book_changed)
+        st.selectbox(f"livros: {livro_atual_idx + 1} / {len(MOBY_BOOKS)}", MOBY_BOOKS, key="moby_book", on_change=book_changed)
     with col_ola:
         st.markdown("<div style='height:1.45rem'></div>", unsafe_allow_html=True)
         st.button("OLA", key="moby_ola_focus", width="stretch", on_click=request_ola)
     with col_theme:
-        st.selectbox("Tema", temas, key="moby_theme_pick", on_change=theme_picked)
+        st.selectbox(f"temas: {tema_atual_idx + 1} / {len(temas)}", temas, key="moby_theme_pick", on_change=theme_picked)
 
 
 # =============================================================================
