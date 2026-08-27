@@ -891,14 +891,11 @@ def theme_picked():
 apply_pending_link()
 normalize_theme_index()
 
-# Na primeira abertura da bancada, prioriza um tema real com LINK
-# para que a aparição possa ser auditada visualmente.
+# Na primeira abertura, a Machina entra por um tema ao acaso.
 if not st.session_state.get("moby_started", False):
     temas_iniciais = current_themes()
-    for idx, tema in enumerate(temas_iniciais):
-        if links_do_tema(tema):
-            st.session_state.moby_theme_index = idx
-            break
+    if temas_iniciais:
+        st.session_state.moby_theme_index = random.randrange(len(temas_iniciais))
     st.session_state.moby_started = True
 
 update_real_image()
@@ -1406,11 +1403,11 @@ if st.session_state.moby_image_visible:
 
     st.markdown(
         f"""
-        <div style="height:205px; width:100%; display:flex; align-items:center; justify-content:center; gap:10px; overflow:hidden; padding:5px 4px 10px 4px; box-sizing:border-box;">
-            <div style="width:187px; height:185px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+        <div style="width:100%; display:flex; align-items:flex-start; justify-content:center; gap:10px; padding:5px 4px 10px 4px; box-sizing:border-box;">
+            <div style="width:187px; display:flex; align-items:flex-start; justify-content:center;">
                 {foto_1}
             </div>
-            <div style="width:187px; height:185px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+            <div style="width:187px; display:flex; align-items:flex-start; justify-content:center;">
                 {foto_2}
             </div>
         </div>
