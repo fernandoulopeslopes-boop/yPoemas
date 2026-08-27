@@ -711,10 +711,8 @@ def update_real_poem():
     try:
         script = gera_poema(tema, "")
     except Exception as exc:
-        st.session_state.moby_poem_html = (
-            '<div class="moby-poem-error">'
-            f'Moby não conseguiu gerar esta leitura: {exc}'
-            '</div>'
+        st.session_state.moby_poem_html = html.escape(
+            f"Moby não conseguiu gerar esta leitura: {exc}"
         )
         st.session_state.moby_poem_signature = assinatura
         return
@@ -724,7 +722,7 @@ def update_real_poem():
         if line == "\n":
             linhas.append("")
         else:
-            linhas.append(str(line).rstrip("\r\n"))
+            linhas.append(html.escape(str(line).rstrip("\r\n")))
 
     st.session_state.moby_poem_html = "<br>".join(linhas)
     st.session_state.moby_poem_signature = assinatura
@@ -1319,7 +1317,7 @@ if st.session_state.moby_help_open:
 fonte_palco = str(st.session_state.get("moby_font_family", "Trebuchet MS"))
 fonte_css = fonte_palco_css(fonte_palco)
 corpo_palco = int(st.session_state.get("moby_font_size", 16))
-altura_palco = 315 if st.session_state.moby_image_visible else 520
+limite_palco = 315 if st.session_state.moby_image_visible else 520
 
 if st.session_state.get("moby_mode") == "Off-Machina":
     titulo_palco, corpo_off = current_off_page()
@@ -1347,7 +1345,7 @@ if analise_ola:
     )
 
 st.markdown(
-    f"<div class='ypoema' style='font-family:{fonte_css}; font-size:{corpo_palco}px; height:{altura_palco}px; max-height:{altura_palco}px;'>"
+    f"<div class='ypoema' style='font-family:{fonte_css}; font-size:{corpo_palco}px; max-height:{limite_palco}px;'>"
     f"{poema_html}{ola_html}</div>",
     unsafe_allow_html=True,
 )
