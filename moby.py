@@ -1379,42 +1379,15 @@ imagem_1 = str(st.session_state.get("moby_image_path", "")).strip()
 imagem_2 = str(st.session_state.get("moby_image_path_2", "")).strip()
 
 if st.session_state.moby_image_visible:
-    def _img_data_uri(path_text):
-        path = Path(path_text)
-        if not path.is_file():
-            return ""
-        try:
-            payload = base64.b64encode(path.read_bytes()).decode("ascii")
-        except OSError:
-            return ""
-        ext = path.suffix.lower().lstrip(".")
-        mime = "jpeg" if ext in {"jpg", "jpeg"} else (ext or "jpeg")
-        return f"data:image/{mime};base64,{payload}"
+    # As imagens pertencem ao palco visual, mas não precisam de HTML artesanal.
+    # st.image preserva a proporção (FIT, sem crop) e elimina a possibilidade
+    # de o código do contêiner vazar como texto para o palco.
+    img_col_1, img_col_2 = st.columns(2, gap="small")
 
-    uri_1 = _img_data_uri(imagem_1)
-    uri_2 = _img_data_uri(imagem_2)
+    with img_col_1:
+        if imagem_1 and Path(imagem_1).is_file():
+            st.image(imagem_1, width=187)
 
-    def _foto_html(uri, alt):
-        if not uri:
-            return ""
-        return (
-            f'<img src="{uri}" alt="{alt}" '
-            'style="max-width:100%; max-height:185px; width:auto; height:auto; object-fit:contain; display:block;" />'
-        )
-
-    foto_1 = _foto_html(uri_1, "imagem temática 1")
-    foto_2 = _foto_html(uri_2, "imagem temática 2")
-
-    st.markdown(
-        f"""
-        <div style="width:100%; display:flex; align-items:flex-start; justify-content:center; gap:10px; padding:5px 4px 10px 4px; box-sizing:border-box;">
-            <div style="width:187px; display:flex; align-items:flex-start; justify-content:center;">
-                {foto_1}
-            </div>
-            <div style="width:187px; display:flex; align-items:flex-start; justify-content:center;">
-                {foto_2}
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    with img_col_2:
+        if imagem_2 and Path(imagem_2).is_file():
+            st.image(imagem_2, width=187)
