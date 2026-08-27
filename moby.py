@@ -1,4 +1,5 @@
 # moby.py
+# Etapa 028: @ = recuo autoral seguro; blindagem HTML preservada.
 # MACHINA — Mobile ultra-light
 # Etapa 025: responsividade vertical real + rodapé duplo + swap Machina/Off-Mach + OLA no foco.
 # Não altera basico.py, DNA, .ypo, .pip ou conteúdo autoral.
@@ -722,7 +723,12 @@ def update_real_poem():
         if line == "\n":
             linhas.append("")
         else:
-            linhas.append(html.escape(str(line).rstrip("\r\n")))
+            texto_linha = str(line).rstrip("\r\n")
+            recuo = len(texto_linha) - len(texto_linha.lstrip("@"))
+            conteudo = html.escape(texto_linha[recuo:])
+            if recuo:
+                conteudo = ("&#8195;" * recuo) + conteudo
+            linhas.append(conteudo)
 
     st.session_state.moby_poem_html = "<br>".join(linhas)
     st.session_state.moby_poem_signature = assinatura
