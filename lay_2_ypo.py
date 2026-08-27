@@ -7,12 +7,10 @@ from random import randrange
 
 from lay_tools import (
     abre_ypo_preservando_newline,
-    comando_espacamento_compacto,
     gravar_ypo_certificado,
     indice_konstante,
     linha_com_itimos_atual,
     linha_fim,
-    tabs_payload,
     validar_estrutura_ypo,
 )
 
@@ -97,13 +95,22 @@ def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo y
     tabs_pendente = 0
 
     for line in lista_linhas:
-        tabs_comando = comando_espacamento_compacto(line)
-        if tabs_comando:
-            tabs_pendente = tabs_comando
+        # Recuo autoral: |@|, |@@|, |@@@|, ...
+        # O comando pertence ao motor; não participa da escolha de ítimos.
+        corpo_linha = line.rstrip("\r\n")
+        partes_comando = corpo_linha.split("|")
+        if (
+            len(partes_comando) == 3
+            and partes_comando[0] == ""
+            and partes_comando[2] == ""
+            and partes_comando[1]
+            and set(partes_comando[1]) == {"@"}
+        ):
+            tabs_pendente = len(partes_comando[1])
             lista_change.append(line)
             continue
 
-        alinhas = line.rstrip("\r\n").split("|")
+        alinhas = corpo_linha.split("|")
 
         if len(alinhas) < 3:
             lista_errata.append(nome_tema)
@@ -133,7 +140,13 @@ def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo y
             lista_change.append(line)
             continue
 
-        array_itimos, tabs = tabs_payload(alinhas[7:-1], tabs_pendente)
+        array_itimos = alinhas[7:-1]
+        tabs = 0
+        if array_itimos and array_itimos[0] and set(array_itimos[0]) == {"@"}:
+            tabs = len(array_itimos[0])
+            array_itimos = array_itimos[1:]
+        elif tabs_pendente:
+            tabs = int(tabs_pendente)
         tabs_pendente = 0
 
         find_eureka = nome_tema + "_" + numero_linea + ideia_numero
