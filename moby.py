@@ -1,5 +1,5 @@
 # moby.py
-# Etapa 034: ajustes finais — sidebar ocupada, palco livre.
+# Etapa 035: sincroniza livros/temas + retorno da sidebar ao palco.
 # MACHINA — Mobile ultra-light
 # Blindagem HTML preservada; não altera basico.py, DNA, .ypo, .pip ou conteúdo autoral.
 
@@ -219,7 +219,7 @@ CORPOS_MOBY = list(range(16, 37, 2))
 
 
 VOICES_EDGE_TTS = {
-    "pt": "pt-BR-FranciscaNeural", "es": "es-ES-AlvaroNeural",
+    "pt": "pt-BR-AntonioNeural", "es": "es-ES-AlvaroNeural",
     "fr": "fr-FR-HenriNeural", "it": "it-IT-DiegoNeural",
     "en": "en-US-AvaNeural", "gl": "gl-ES-RoiNeural",
     "eu": "eu-ES-AnderNeural", "de": "de-DE-ConradNeural",
@@ -377,11 +377,37 @@ ABOUT_ALIASES = {
 
 
 PERSONAL_LINKS = [
-    ("facebook", "https://www.facebook.com/nandoulopes"),
-    ("e-mail", "mailto:lopes.fernando@hotmail.com"),
-    ("coffee", "https://www.buymeacoffee.com/yPoemas"),
-    ("instagram", "https://www.instagram.com/fernando.lopes.942/"),
-    ("whatsapp-pix", "https://api.whatsapp.com/send?phone=+5512991368181"),
+    {
+        "label": "Facebook",
+        "url": "https://www.facebook.com/nandoulopes",
+        "icon": "https://cdn.simpleicons.org/facebook/1877F2",
+        "kind": "facebook",
+    },
+    {
+        "label": "Instagram",
+        "url": "https://www.instagram.com/fernando.lopes.942/",
+        "icon": "https://cdn.simpleicons.org/instagram/E4405F",
+        "kind": "instagram",
+    },
+    {
+        "label": "E-mail",
+        "url": "mailto:lopes.fernando@hotmail.com",
+        "icon": "https://cdn.simpleicons.org/microsoftoutlook/0078D4",
+        "kind": "email",
+    },
+    {
+        "label": "Buy Me a Coffee",
+        "url": "https://www.buymeacoffee.com/yPoemas",
+        "icon": "https://cdn.simpleicons.org/buymeacoffee/FFDD00",
+        "kind": "coffee",
+    },
+    {
+        "label": "WhatsApp / Pix",
+        "url": "https://api.whatsapp.com/send?phone=+5512991368181",
+        "icon": "https://cdn.simpleicons.org/whatsapp/25D366",
+        "icon_2": "https://cdn.simpleicons.org/pix/32BCAD",
+        "kind": "whatsapp wide",
+    },
 ]
 
 
@@ -464,16 +490,43 @@ def sidebar_show_links():
     st.session_state.moby_sidebar_panel = "links"
 
 
-def personal_link_prev():
-    st.session_state.moby_personal_link_index = (
-        int(st.session_state.get("moby_personal_link_index", 0)) - 1
-    ) % len(PERSONAL_LINKS)
+def sidebar_return_to_stage():
+    """Fecha a documentação e devolve imediatamente o leitor ao palco."""
+    st.session_state.moby_sidebar_open = False
 
 
-def personal_link_next():
-    st.session_state.moby_personal_link_index = (
-        int(st.session_state.get("moby_personal_link_index", 0)) + 1
-    ) % len(PERSONAL_LINKS)
+def render_social_links():
+    """Painel visual direto: presença da Machina no mundo, sem paginação."""
+    cards = []
+    for item in PERSONAL_LINKS:
+        label = html.escape(str(item.get("label", "")))
+        url = html.escape(str(item.get("url", "")), quote=True)
+        icon = html.escape(str(item.get("icon", "")), quote=True)
+        icon_2 = html.escape(str(item.get("icon_2", "")), quote=True)
+        kind = html.escape(str(item.get("kind", "")), quote=True)
+
+        icons = f"<img src='{icon}' alt='' loading='lazy'>"
+        if icon_2:
+            icons += f"<img src='{icon_2}' alt='' loading='lazy'>"
+
+        external = "" if url.startswith("mailto:") else " target='_blank' rel='noopener noreferrer'"
+        cards.append(
+            f"<a class='moby-social-card {kind}' href='{url}'{external}>"
+            f"<span class='moby-social-icons'>{icons}</span>"
+            f"<span class='moby-social-label'>{label}</span>"
+            "</a>"
+        )
+
+    st.markdown(
+        "<div class='moby-social-stage'>"
+        "<div class='moby-social-title'>Conecte-se com a Machina</div>"
+        "<div class='moby-social-subtitle'>presença, contato e apoio</div>"
+        "<div class='moby-social-grid'>"
+        + "".join(cards)
+        + "</div></div>",
+        unsafe_allow_html=True,
+    )
+
 
 def toggle_sound():
     dismiss_help()
@@ -486,7 +539,7 @@ def _generate_sound_bytes(text):
     clean = re.sub(r"\s+", " ", str(text or "")).strip()
     if not clean:
         return b""
-    voice = VOICES_EDGE_TTS.get(st.session_state.get("moby_lang", "pt"), "pt-BR-FranciscaNeural")
+    voice = VOICES_EDGE_TTS.get(st.session_state.get("moby_lang", "pt"), "pt-BR-AntonioNeural")
     async def _run():
         audio = bytearray()
         communicate = edge_tts.Communicate(clean, voice)
@@ -565,29 +618,48 @@ def load_dna(path=DNA_PATH):
     return rows
 
 
-def temas_do_livro(rows, livro):
-    """Ordem = ordem física/natural dos registros no DNA."""
-    alvo = str(livro or "").strip().casefold()
+def _rol_temas(livro):
+    """Lê a ordem autoral do livro em base/rol_<livro>.txt."""
+    path = Path("./base") / f"rol_{livro}.txt"
+    if not path.is_file():
+        return []
     temas = []
+    try:
+        for raw in path.read_text(encoding="utf-8-sig").splitlines():
+            tema = raw.strip().strip("|").strip()
+            if not tema or tema.startswith("#") or tema == "<EOF>":
+                continue
+            temas.append(tema)
+    except OSError:
+        return []
+    return temas
 
+
+def temas_do_livro(rows, livro):
+    """A ordem autoral vive nos rol_*.txt; DNA valida pertencimento/atividade."""
+    alvo = str(livro or "").strip().casefold()
+    ativos = {}
     for row in rows:
         if str(row.get("ativo", "")).strip().upper() != "S":
             continue
-
-        livros = [
-            item.strip().casefold()
-            for item in str(row.get("livro", "")).split(";")
-            if item.strip()
-        ]
-
-        if alvo not in livros:
-            continue
-
+        livros = [item.strip().casefold() for item in str(row.get("livro", "")).split(";") if item.strip()]
         tema = str(row.get("tema", "")).strip()
-        if tema:
-            temas.append(tema)
+        if tema and alvo in livros:
+            ativos[nome_normalizado(tema)] = tema
 
-    return temas
+    ordem = _rol_temas(livro)
+    if ordem:
+        vistos = set()
+        saida = []
+        for tema_rol in ordem:
+            chave = nome_normalizado(tema_rol)
+            tema = ativos.get(chave)
+            if tema and chave not in vistos:
+                saida.append(tema)
+                vistos.add(chave)
+        return saida
+
+    return list(ativos.values())
 
 
 def nome_normalizado(valor):
@@ -851,8 +923,6 @@ if "moby_translation_html" not in st.session_state:
     st.session_state.moby_translation_html = ""
 if "moby_sidebar_panel" not in st.session_state:
     st.session_state.moby_sidebar_panel = "about"
-if "moby_personal_link_index" not in st.session_state:
-    st.session_state.moby_personal_link_index = 0
 if "moby_about_pick" not in st.session_state:
     st.session_state.moby_about_pick = "machina"
 
@@ -1304,8 +1374,12 @@ def random_theme():
 
 
 def book_changed():
+    escolha = str(st.session_state.get("moby_book_pick", st.session_state.get("moby_book", MOBY_DEFAULT_BOOK)))
+    if escolha in MOBY_BOOKS:
+        st.session_state.moby_book = escolha
     st.session_state.moby_theme_index = 0
     st.session_state.moby_reading_n = 1
+    st.session_state.pop("moby_theme_pick", None)
     invalidate_real_poem()
     invalidate_real_image()
 
@@ -1475,6 +1549,84 @@ st.markdown(
         font-size: .78rem;
         opacity: .70;
         line-height: 1.42;
+    }
+
+    .moby-social-stage {
+        margin-top: .15rem;
+        padding: .25rem .05rem .4rem .05rem;
+    }
+
+    .moby-social-title {
+        text-align: center;
+        font-weight: 700;
+        font-size: 1.05rem;
+        margin: .35rem 0 .08rem 0;
+        letter-spacing: .01em;
+    }
+
+    .moby-social-subtitle {
+        text-align: center;
+        font-size: .76rem;
+        opacity: .58;
+        margin-bottom: .75rem;
+    }
+
+    .moby-social-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: .55rem;
+    }
+
+    .moby-social-card {
+        min-height: 68px;
+        border: 1px solid rgba(0,0,0,.12);
+        border-radius: 13px;
+        background: #fff;
+        text-decoration: none !important;
+        color: #202124 !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: .34rem;
+        padding: .58rem .42rem;
+        box-shadow: 0 3px 10px rgba(0,0,0,.06);
+        transition: transform .13s ease, box-shadow .13s ease, border-color .13s ease;
+    }
+
+    .moby-social-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 7px 17px rgba(0,0,0,.11);
+        border-color: rgba(0,0,0,.25);
+    }
+
+    .moby-social-card.wide {
+        grid-column: 1 / -1;
+        min-height: 62px;
+        flex-direction: row;
+        gap: .65rem;
+    }
+
+    .moby-social-icons {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: .30rem;
+        min-height: 24px;
+    }
+
+    .moby-social-icons img {
+        width: 24px;
+        height: 24px;
+        object-fit: contain;
+        display: block;
+    }
+
+    .moby-social-label {
+        font-size: .82rem;
+        font-weight: 600;
+        line-height: 1.1;
+        text-align: center;
     }
 
 
@@ -1648,20 +1800,7 @@ if st.session_state.moby_sidebar_open:
         st.button("links", key="moby_sidebar_links", width="stretch", on_click=sidebar_show_links)
 
     if st.session_state.get("moby_sidebar_panel", "about") == "links":
-        idx = int(st.session_state.get("moby_personal_link_index", 0)) % len(PERSONAL_LINKS)
-        label, url = PERSONAL_LINKS[idx]
-        st.markdown(
-            f"<div style='text-align:center; opacity:.62; font-size:.78rem; margin:.2rem 0 .45rem'>"
-            f"{idx + 1} / {len(PERSONAL_LINKS)}</div>",
-            unsafe_allow_html=True,
-        )
-        lprev, lmain, lnext = st.columns([1, 3.2, 1], gap="small")
-        with lprev:
-            st.button("<", key="moby_personal_link_prev", width="stretch", on_click=personal_link_prev)
-        with lmain:
-            st.link_button(label, url, width="stretch")
-        with lnext:
-            st.button(">", key="moby_personal_link_next", width="stretch", on_click=personal_link_next)
+        render_social_links()
     else:
         current_about = str(st.session_state.get("moby_about_pick", "machina"))
         if current_about not in ABOUTS_LIST:
@@ -1674,9 +1813,12 @@ if st.session_state.moby_sidebar_open:
         )
         st.markdown(load_about_text(about_choice))
 
-    if st.button("Fechar", key="moby_close_sidebar", width="stretch"):
-        st.session_state.moby_sidebar_open = False
-        st.rerun()
+    st.button(
+        "yPoemas",
+        key="moby_close_sidebar",
+        width="stretch",
+        on_click=sidebar_return_to_stage,
+    )
 
     st.stop()
 
@@ -1729,17 +1871,31 @@ else:
         st.error(f'O DNA não contém temas ativos para o livro "{st.session_state.moby_book}".')
         st.stop()
 
-    st.session_state["moby_theme_pick"] = current_theme()
     livro_atual_idx = MOBY_BOOKS.index(st.session_state.moby_book) if st.session_state.moby_book in MOBY_BOOKS else 0
     tema_atual_idx = int(st.session_state.get("moby_theme_index", 0)) % len(temas)
     col_book, col_ola, col_theme = st.columns([3, 1.25, 3], gap="small")
     with col_book:
-        st.selectbox(f"livros: {livro_atual_idx + 1} / {len(MOBY_BOOKS)}", MOBY_BOOKS, key="moby_book", on_change=book_changed)
+        st.selectbox(
+            f"livros: {livro_atual_idx + 1} / {len(MOBY_BOOKS)}",
+            MOBY_BOOKS,
+            index=livro_atual_idx,
+            key="moby_book_pick",
+            on_change=book_changed,
+        )
     with col_ola:
         st.markdown("<div style='height:1.45rem'></div>", unsafe_allow_html=True)
         st.button("OLA", key="moby_ola_focus", width="stretch", on_click=request_ola)
     with col_theme:
-        st.selectbox(f"temas: {tema_atual_idx + 1} / {len(temas)}", temas, key="moby_theme_pick", on_change=theme_picked)
+        current = current_theme()
+        if st.session_state.get("moby_theme_pick") not in temas:
+            st.session_state["moby_theme_pick"] = current
+        st.selectbox(
+            f"temas: {tema_atual_idx + 1} / {len(temas)}",
+            temas,
+            index=temas.index(current),
+            key="moby_theme_pick",
+            on_change=theme_picked,
+        )
 
 
 # =============================================================================
