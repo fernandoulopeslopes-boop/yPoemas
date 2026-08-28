@@ -1,15 +1,28 @@
 # moby.py
-# Etapa 032: Off-Machina autoral (13 livros) + contato com o mundo na sidebar.
+# Etapa 033: Copiar + Retrato-surpresa + Som no lugar do título.
 # MACHINA — Mobile ultra-light
 # Blindagem HTML preservada; não altera basico.py, DNA, .ypo, .pip ou conteúdo autoral.
 
 from pathlib import Path
+import asyncio
 import base64
 import html
 import random
 import re
+from io import BytesIO
 
+from PIL import Image, ImageDraw, ImageFont, ImageOps
 import streamlit as st
+
+try:
+    import edge_tts
+except Exception:
+    edge_tts = None
+
+try:
+    from st_copy_to_clipboard import st_copy_to_clipboard
+except Exception:
+    st_copy_to_clipboard = None
 
 from lay_2_ypo import gera_poema
 
@@ -167,6 +180,159 @@ def bootstrap_fontes_machina():
     )
 
 CORPOS_MOBY = list(range(16, 37, 2))
+
+
+VOICES_EDGE_TTS = {
+    "pt": "pt-BR-AntonioNeural", "es": "es-ES-AlvaroNeural",
+    "fr": "fr-FR-HenriNeural", "it": "it-IT-DiegoNeural",
+    "en": "en-US-AvaNeural", "gl": "gl-ES-RoiNeural",
+    "eu": "eu-ES-AnderNeural", "de": "de-DE-ConradNeural",
+    "da": "da-DK-JeppeNeural", "nl": "nl-NL-MaartenNeural",
+    "pl": "pl-PL-MarekNeural", "ro": "ro-RO-EmilNeural",
+    "no": "nb-NO-PernilleNeural", "fi": "fi-FI-SelmaNeural",
+    "is": "is-IS-GunnarNeural", "hu": "hu-HU-TamasNeural",
+    "sv": "sv-SE-MattiasNeural", "ca": "ca-ES-EnricNeural",
+    "ru": "ru-RU-DmitryNeural",
+}
+
+
+def _moby_font(size, bold=False):
+    candidates = [
+        Path("./fonts/OpenDyslexic-Bold.otf" if bold else "./fonts/OpenDyslexic-Regular.otf"),
+        Path("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" if bold else "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"),
+        Path("C:/Windows/Fonts/arialbd.ttf" if bold else "C:/Windows/Fonts/arial.ttf"),
+    ]
+    for candidate in candidates:
+        try:
+            if candidate.is_file():
+                return ImageFont.truetype(str(candidate), int(size))
+        except Exception:
+            pass
+    return ImageFont.load_default()
+
+
+def _wrap_portrait(draw, text, font, width):
+    lines = []
+    for raw in str(text or "").splitlines():
+        if not raw.strip():
+            lines.append("")
+            continue
+        indent = len(raw) - len(raw.lstrip("  "))
+        prefix = " " * indent
+        words = raw.strip().split()
+        current = prefix
+        for word in words:
+            trial = (current + " " + word).rstrip() if current.strip() else prefix + word
+            if draw.textbbox((0, 0), trial, font=font)[2] <= width:
+                current = trial
+            else:
+                if current.strip():
+                    lines.append(current)
+                current = prefix + word
+        lines.append(current)
+    return lines
+
+
+def create_moby_portrait_png(poem_html, image_path, title):
+    """Retrato do texto atual com uma das duas imagens que a Machina mostrou."""
+    if not image_path or not Path(image_path).is_file():
+        return None
+    body = ypoema_html_to_text(poem_html)
+    if not body:
+        return None
+    body = (str(title or "").strip() + "\n\n" + body).strip()
+    margin, gap = 54, 44
+    body_font = _moby_font(28)
+    footer_font = _moby_font(17)
+    measure = Image.new("RGB", (1, 1), "white")
+    draw = ImageDraw.Draw(measure)
+    with Image.open(image_path) as source:
+        art = ImageOps.exif_transpose(source).convert("RGB")
+        scale = min(1.0, 360 / max(1, art.width))
+        art = art.resize((max(1, round(art.width * scale)), max(1, round(art.height * scale))), Image.Resampling.LANCZOS)
+    lines = _wrap_portrait(draw, body, body_font, 720)
+    bbox = draw.textbbox((0, 0), "Ag", font=body_font)
+    line_h = max(34, bbox[3] - bbox[1] + 9)
+    text_h = max(line_h, len(lines) * line_h)
+    canvas_w = max(760, margin + art.width + gap + 720 + margin)
+    canvas_h = max(520, margin + max(art.height, text_h) + 62 + margin)
+    canvas = Image.new("RGB", (canvas_w, canvas_h), "white")
+    canvas.paste(art, (margin, max(margin, (canvas_h - 62 - art.height)//2)))
+    draw = ImageDraw.Draw(canvas)
+    x, y = margin + art.width + gap, margin
+    for line in lines:
+        draw.text((x, y), line, font=body_font, fill="black")
+        y += line_h
+    footer = "ypoemas.streamlit.app"
+    fb = draw.textbbox((0, 0), footer, font=footer_font)
+    draw.text((canvas_w - margin - (fb[2]-fb[0]), canvas_h - margin - (fb[3]-fb[1])), footer, font=footer_font, fill=(60,60,60))
+    output = BytesIO()
+    canvas.save(output, format="PNG", optimize=True)
+    return output.getvalue()
+
+
+def moby_copy_button(copy_text, key):
+    """Copia somente o texto atual do yPoema/Off-Machina."""
+    safe = ypoema_html_to_text(copy_text)
+    if st_copy_to_clipboard is None:
+        st.button("Copiar", key=f"{key}_fallback", width="stretch", disabled=True)
+        return
+    try:
+        st_copy_to_clipboard(safe, key=key, before_copy_label="Copiar", after_copy_label="Copiado")
+    except TypeError:
+        st_copy_to_clipboard(safe, key=key)
+
+
+def toggle_sound():
+    dismiss_help()
+    st.session_state.moby_sound_open = not bool(st.session_state.get("moby_sound_open", False))
+
+
+def _generate_sound_bytes(text):
+    if edge_tts is None:
+        return b""
+    clean = re.sub(r"\s+", " ", str(text or "")).strip()
+    if not clean:
+        return b""
+    voice = VOICES_EDGE_TTS.get(st.session_state.get("moby_lang", "pt"), "pt-BR-AntonioNeural")
+    async def _run():
+        audio = bytearray()
+        communicate = edge_tts.Communicate(clean, voice)
+        async for chunk in communicate.stream():
+            if chunk.get("type") == "audio":
+                audio.extend(chunk.get("data", b""))
+        return bytes(audio)
+    loop = asyncio.new_event_loop()
+    try:
+        return loop.run_until_complete(_run())
+    finally:
+        loop.close()
+
+
+def update_sound_audio(title, poem_html):
+    """A voz lê somente o conteúdo; o título dá lugar ao player."""
+    body = ypoema_html_to_text(poem_html)
+    signature = (st.session_state.get("moby_lang", "pt"), str(title), body)
+    if st.session_state.get("moby_sound_signature") == signature:
+        return st.session_state.get("moby_sound_audio", b"")
+    try:
+        audio = _generate_sound_bytes(body)
+    except Exception:
+        audio = b""
+    st.session_state.moby_sound_signature = signature
+    st.session_state.moby_sound_audio = audio
+    return audio
+
+
+def render_sound_player(audio_bytes):
+    if not audio_bytes:
+        st.markdown("<div class='moby-sound-slot'>som indisponível</div>", unsafe_allow_html=True)
+        return
+    payload = base64.b64encode(audio_bytes).decode("ascii")
+    st.markdown(
+        f"<div class='moby-sound-slot'><audio controls autoplay preload='auto' src='data:audio/mpeg;base64,{payload}'></audio></div>",
+        unsafe_allow_html=True,
+    )
 
 
 def load_dna(path=DNA_PATH):
@@ -473,6 +639,20 @@ if "moby_analysis_kind" not in st.session_state:
 
 if "moby_portrait_image" not in st.session_state:
     st.session_state.moby_portrait_image = ""
+if "moby_portrait_png" not in st.session_state:
+    st.session_state.moby_portrait_png = b""
+if "moby_portrait_name" not in st.session_state:
+    st.session_state.moby_portrait_name = "retrato"
+if "moby_sound_open" not in st.session_state:
+    st.session_state.moby_sound_open = False
+if "moby_sound_audio" not in st.session_state:
+    st.session_state.moby_sound_audio = b""
+if "moby_sound_signature" not in st.session_state:
+    st.session_state.moby_sound_signature = None
+if "moby_current_title" not in st.session_state:
+    st.session_state.moby_current_title = ""
+if "moby_current_poem_html" not in st.session_state:
+    st.session_state.moby_current_poem_html = ""
 
 if "moby_seal_path" not in st.session_state:
     st.session_state.moby_seal_path = ""
@@ -619,10 +799,12 @@ def invalidate_real_poem():
 
 
 def invalidate_real_image():
-    """Força nova escolha de imagem sem alterar o yPoema."""
+    """Força nova dupla de imagens sem alterar o yPoema."""
     st.session_state.moby_image_theme = ""
     st.session_state.moby_image_path = ""
     st.session_state.moby_image_path_2 = ""
+    st.session_state.moby_portrait_png = b""
+    st.session_state.moby_portrait_image = ""
 
 
 def random_seal_path():
@@ -712,16 +894,27 @@ def swap_machina_off():
 
 
 def prepare_portrait():
-    """Congela uma das duas imagens da leitura para o Retrato, por par/ímpar."""
+    """A Machina escolhe, de surpresa, uma das duas imagens atuais para o Retrato."""
     dismiss_help()
     update_real_image()
-    img1 = str(st.session_state.get("moby_image_path", ""))
-    img2 = str(st.session_state.get("moby_image_path_2", ""))
-    if st.session_state.get("moby_mode") == "Off-Machina":
-        indice = int(st.session_state.get("moby_off_take", 0))
-    else:
-        indice = int(st.session_state.get("moby_reading_n", 1))
-    st.session_state.moby_portrait_image = img2 if (indice % 2 and img2) else img1
+    candidates = [
+        path for path in (
+            str(st.session_state.get("moby_image_path", "")),
+            str(st.session_state.get("moby_image_path_2", "")),
+        )
+        if path and Path(path).is_file()
+    ]
+    if not candidates:
+        return
+    chosen = random.choice(candidates)
+    st.session_state.moby_portrait_image = chosen
+    title = st.session_state.get("moby_current_title", "retrato")
+    poem_html = st.session_state.get("moby_current_poem_html", "")
+    png = create_moby_portrait_png(poem_html, chosen, title)
+    if png:
+        st.session_state.moby_portrait_png = png
+        safe = re.sub(r"[^A-Za-z0-9_-]+", "_", str(title or "retrato")).strip("_") or "retrato"
+        st.session_state.moby_portrait_name = safe
 
 
 def update_real_poem():
@@ -845,6 +1038,7 @@ def new_reading():
         return
     st.session_state.moby_reading_n += 1
     invalidate_real_poem()
+    invalidate_real_image()
 
 
 def previous_theme():
@@ -861,6 +1055,7 @@ def previous_theme():
         st.session_state.moby_theme_index = (st.session_state.moby_theme_index - 1) % len(temas)
         st.session_state.moby_reading_n = 1
         invalidate_real_poem()
+        invalidate_real_image()
 
 
 def next_theme():
@@ -877,6 +1072,7 @@ def next_theme():
         st.session_state.moby_theme_index = (st.session_state.moby_theme_index + 1) % len(temas)
         st.session_state.moby_reading_n = 1
         invalidate_real_poem()
+        invalidate_real_image()
 
 
 def random_theme():
@@ -898,12 +1094,14 @@ def random_theme():
     st.session_state.moby_theme_index = random.choice(candidatos) if candidatos else atual
     st.session_state.moby_reading_n = 1
     invalidate_real_poem()
+    invalidate_real_image()
 
 
 def book_changed():
     st.session_state.moby_theme_index = 0
     st.session_state.moby_reading_n = 1
     invalidate_real_poem()
+    invalidate_real_image()
 
 
 def theme_picked():
@@ -913,6 +1111,7 @@ def theme_picked():
         st.session_state.moby_theme_index = temas.index(escolha)
         st.session_state.moby_reading_n = 1
         invalidate_real_poem()
+        invalidate_real_image()
 
 
 apply_pending_link()
@@ -1072,6 +1271,22 @@ st.markdown(
         line-height: 1.42;
     }
 
+
+    .moby-sound-slot {
+        height: 24px;
+        min-height: 24px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        margin: 3px 0 4px 0;
+        font-size:.78rem;
+        opacity:.88;
+        overflow:hidden;
+    }
+    .moby-sound-slot audio {
+        width:100%;
+        height:24px;
+    }
 
     .end-rule {
         border-top:1px solid rgba(0,0,0,.12);
@@ -1318,7 +1533,7 @@ with b_sound:
         "♫",
         key="moby_sound",
         width="stretch",
-        on_click=dismiss_help,
+        on_click=toggle_sound,
     )
 
 with b_help:
@@ -1364,12 +1579,19 @@ else:
     titulo_palco = current_theme()
     poema_html = st.session_state.get("moby_poem_html", "")
 
-# Aspas simples no atributo: as pilhas CSS contêm aspas duplas nos nomes das fontes.
-st.markdown(
-    f"<div class='poem-title' style='font-family:{fonte_css}; font-size:{corpo_palco}px;'>"
-    f"{html.escape(str(titulo_palco))}</div>",
-    unsafe_allow_html=True,
-)
+st.session_state.moby_current_title = str(titulo_palco)
+st.session_state.moby_current_poem_html = str(poema_html)
+
+# Troca justa: o Som ocupa o lugar do título; o yPoema permanece onde estava.
+if st.session_state.get("moby_sound_open", False):
+    render_sound_player(update_sound_audio(titulo_palco, poema_html))
+else:
+    # Aspas simples no atributo: as pilhas CSS contêm aspas duplas nos nomes das fontes.
+    st.markdown(
+        f"<div class='poem-title' style='font-family:{fonte_css}; font-size:{corpo_palco}px;'>"
+        f"{html.escape(str(titulo_palco))}</div>",
+        unsafe_allow_html=True,
+    )
 
 analise_ola = update_ola_analysis(titulo_palco, poema_html)
 ola_html = ""
@@ -1396,13 +1618,29 @@ st.markdown('<div class="end-rule"></div>', unsafe_allow_html=True)
 c1, c2, c3 = st.columns(3, gap="small")
 
 with c1:
-    st.button("Copiar", key="moby_copy", width="stretch", on_click=dismiss_help)
+    copy_payload = f"{titulo_palco}\n\n{ypoema_html_to_text(poema_html)}".strip()
+    copy_key = f"moby_copy_{abs(hash(copy_payload))}"
+    moby_copy_button(copy_payload, copy_key)
 
 with c2:
     st.button("Imagem", key="moby_image", width="stretch", on_click=toggle_image)
 
 with c3:
     st.button("Retrato", key="moby_portrait", width="stretch", on_click=prepare_portrait)
+
+portrait_png = st.session_state.get("moby_portrait_png", b"")
+if portrait_png:
+    st.image(portrait_png, width="stretch")
+    save_left, save_center, save_right = st.columns([1.2, 1, 1.2])
+    with save_center:
+        st.download_button(
+            "Salvar Retrato",
+            data=portrait_png,
+            file_name=f"{st.session_state.get('moby_portrait_name', 'retrato')}.png",
+            mime="image/png",
+            key="moby_portrait_save",
+            width="stretch",
+        )
 
 # Duas imagens distintas do mesmo banco temático no rodapé — apenas FIT.
 update_real_image()
