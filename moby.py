@@ -1,5 +1,5 @@
 # moby.py
-# Etapa 033: Copiar + Retrato-surpresa + Som no lugar do título.
+# Etapa 034: ajustes finais — sidebar ocupada, palco livre.
 # MACHINA — Mobile ultra-light
 # Blindagem HTML preservada; não altera basico.py, DNA, .ypo, .pip ou conteúdo autoral.
 
@@ -7,8 +7,11 @@ from pathlib import Path
 import asyncio
 import base64
 import html
+import importlib.util
+import os
 import random
 import re
+import unicodedata
 from io import BytesIO
 
 from PIL import Image, ImageDraw, ImageFont, ImageOps
@@ -20,16 +23,46 @@ except Exception:
     edge_tts = None
 
 try:
-    from st_copy_to_clipboard import st_copy_to_clipboard
+    from deep_translator import GoogleTranslator
 except Exception:
-    st_copy_to_clipboard = None
+    GoogleTranslator = None
 
 from lay_2_ypo import gera_poema
 
-try:
-    from ponte_ola_openai import gerar_analise_ola as _gerar_analise_ola_real
-except Exception:
-    _gerar_analise_ola_real = None
+
+def _bootstrap_openai_key():
+    """No Streamlit Cloud, expõe a secret também ao bridge OLA legado."""
+    if os.getenv("OPENAI_API_KEY", "").strip():
+        return
+    try:
+        key = str(st.secrets.get("OPENAI_API_KEY", "")).strip()
+    except Exception:
+        key = ""
+    if key:
+        os.environ["OPENAI_API_KEY"] = key
+
+
+def _load_ola_bridge():
+    """Aceita a ponte na raiz ou em ./md_files, como no repositório atual."""
+    _bootstrap_openai_key()
+    try:
+        from ponte_ola_openai import gerar_analise_ola
+        return gerar_analise_ola
+    except Exception:
+        pass
+
+    bridge_path = Path("./md_files/ponte_ola_openai.py")
+    if not bridge_path.is_file():
+        return None
+    try:
+        spec = importlib.util.spec_from_file_location("moby_ponte_ola_openai", bridge_path)
+        if spec is None or spec.loader is None:
+            return None
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return getattr(module, "gerar_analise_ola", None)
+    except Exception:
+        return None
 
 
 st.set_page_config(
@@ -38,6 +71,9 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed",
 )
+
+
+_gerar_analise_ola_real = _load_ola_bridge()
 
 
 # =============================================================================
@@ -183,7 +219,7 @@ CORPOS_MOBY = list(range(16, 37, 2))
 
 
 VOICES_EDGE_TTS = {
-    "pt": "pt-BR-AntonioNeural", "es": "es-ES-AlvaroNeural",
+    "pt": "pt-BR-FranciscaNeural", "es": "es-ES-AlvaroNeural",
     "fr": "fr-FR-HenriNeural", "it": "it-IT-DiegoNeural",
     "en": "en-US-AvaNeural", "gl": "gl-ES-RoiNeural",
     "eu": "eu-ES-AnderNeural", "de": "de-DE-ConradNeural",
@@ -271,17 +307,173 @@ def create_moby_portrait_png(poem_html, image_path, title):
     return output.getvalue()
 
 
-def moby_copy_button(copy_text, key):
-    """Copia somente o texto atual do yPoema/Off-Machina."""
-    safe = ypoema_html_to_text(copy_text)
-    if st_copy_to_clipboard is None:
-        st.button("Copiar", key=f"{key}_fallback", width="stretch", disabled=True)
-        return
-    try:
-        st_copy_to_clipboard(safe, key=key, before_copy_label="Copiar", after_copy_label="Copiado")
-    except TypeError:
-        st_copy_to_clipboard(safe, key=key)
+ABOUTS_FALLBACK = [
+    ("comentários", "ABOUT_comentários.md"),
+    ("prefácil", "ABOUT_prefácil.md"),
+    ("notes", "ABOUT_notes.md"),
+    ("machina", "ABOUT_machine.md"),
+    ("off-machina", "ABOUT_off-machina.md"),
+    ("outros autores", "ABOUT_outros_autores.md"),
+    ("livros", "ABOUT_livros.md"),
+    ("bibliografia", "ABOUT_bibliografia.md"),
+    ("versão Mobile", "ABOUT_mobile.md"),
+    ("imagens", "ABOUT_imagens.md"),
+    ("seleção das imagens", "ABOUT_seleção das imagens"),
+    ("certidão de nascimento", "ABOUT_certidão de nascimento"),
+    ("ítimos", "ABOUT_ítimos.md"),
+    ("o átomo do ítimo", "ABOUT_o átomo do ítimo.md"),
+    ("eixo Z", "ABOUT_eixo_Z.md"),
+    ("pontuação", "ABOUT_pontuação.md"),
+    ("poly", "ABOUT_poly.md"),
+    ("tradittore", "ABOUT_tradittore.md"),
+    ("veredas", "ABOUT_veredas.md"),
+    ("carta de Guimarães Rosa", "A incrível carta de Guimarães Rosa.md"),
+    ("samizdàt", "ABOUT_samizdàt.md"),
+    ("a ABA da Machina", "a ABA da Machina.md"),
+    ("anjos", "ABOUT_Augusto dos Anjos.md"),
+    ("o Autor e uma IA - conversas", "ABOUT_Autor_da_Machina_e_uma_IA.md"),
+    ("machina-IA", "ABOUT_machina-IA.md"),
+    ("icones", "ABOUT_icones.md"),
+    ("pensares", "ABOUT_pensares.md"),
+    ("index", "ABOUT_index.md"),
+    ("license", "ABOUT_license.md"),
+]
 
+
+def load_about_catalog(path=Path("./base/lista_abouts.txt")):
+    """A lista autoral em base/lista_abouts.txt é a autoridade do ABOUT."""
+    rows = []
+    if path.is_file():
+        try:
+            for raw in path.read_text(encoding="utf-8-sig").splitlines():
+                line = raw.strip()
+                if not line:
+                    continue
+                if line == "<EOF>":
+                    break
+                if "|" not in line:
+                    continue
+                title, filename = line.split("|", 1)
+                title = title.strip()
+                filename = filename.strip().strip('"').strip()
+                if title:
+                    rows.append((title, filename))
+        except OSError:
+            rows = []
+    return rows or list(ABOUTS_FALLBACK)
+
+
+ABOUTS_CATALOG = load_about_catalog()
+ABOUTS_LIST = [title for title, _ in ABOUTS_CATALOG]
+ABOUTS_FILES = {title: [filename] for title, filename in ABOUTS_CATALOG if filename}
+
+ABOUT_ALIASES = {
+    "machina": ["ABOUT_machine.md", "ABOUT_machina.md"],
+    "versão Mobile": ["ABOUT_mobile.md"],
+    "carta de Guimarães Rosa": ["A incrível carta de Guimarães Rosa.md"],
+    "off-machina": ["ABOUT_off-machina.md", "ABOUT_off_machina.md", "ABOUT_off machina.md"],
+    "outros autores": ["ABOUT_outros_autores.md", "ABOUT_outros autores.md"],
+}
+
+
+PERSONAL_LINKS = [
+    ("facebook", "https://www.facebook.com/nandoulopes"),
+    ("e-mail", "mailto:lopes.fernando@hotmail.com"),
+    ("coffee", "https://www.buymeacoffee.com/yPoemas"),
+    ("instagram", "https://www.instagram.com/fernando.lopes.942/"),
+    ("whatsapp-pix", "https://api.whatsapp.com/send?phone=+5512991368181"),
+]
+
+
+def _doc_key(value):
+    value = unicodedata.normalize("NFKD", str(value or ""))
+    value = "".join(ch for ch in value if not unicodedata.combining(ch))
+    return re.sub(r"[^a-z0-9]+", "", value.casefold())
+
+
+def _about_candidates(title):
+    aliases = list(ABOUTS_FILES.get(title, [])) + list(ABOUT_ALIASES.get(title, []))
+    aliases.extend([
+        f"ABOUT_{title}.md",
+        f"ABOUT_{title.replace(' ', '_')}.md",
+        f"ABOUT_{title.replace(' ', '-')}.md",
+    ])
+    return aliases
+
+
+def load_about_text(title):
+    roots = [Path("./md_files"), Path(".")]
+    candidates = _about_candidates(title)
+    candidate_keys = {_doc_key(Path(name).stem) for name in candidates}
+    title_keys = {_doc_key(title), _doc_key("ABOUT_" + title)}
+
+    for root in roots:
+        if not root.exists():
+            continue
+        for name in candidates:
+            direct = root / name
+            if direct.is_file():
+                try:
+                    return direct.read_text(encoding="utf-8-sig")
+                except OSError:
+                    pass
+        try:
+            for path in root.rglob("*.md"):
+                stem_key = _doc_key(path.stem)
+                if stem_key in candidate_keys or stem_key in title_keys:
+                    try:
+                        return path.read_text(encoding="utf-8-sig")
+                    except OSError:
+                        continue
+        except OSError:
+            pass
+    return f'ooops... documentação "{title}" não encontrada.'
+
+
+def translate_poem_html(poem_html):
+    """Mesmo mecanismo histórico da Machina: traduz o yPoema, preservando <br>."""
+    lang = str(st.session_state.get("moby_lang", "pt"))
+    source = str(poem_html or "")
+    if lang == "pt" or not source.strip() or GoogleTranslator is None:
+        return source
+
+    signature = (lang, source)
+    if st.session_state.get("moby_translation_signature") == signature:
+        return st.session_state.get("moby_translation_html", source)
+
+    try:
+        translated = GoogleTranslator(source="pt", target=lang).translate(text=source)
+        translated = str(translated or source)
+        translated = translated.replace("<br>>", "<br>")
+        translated = translated.replace("< br>", "<br>")
+        translated = translated.replace("<br >", "<br>")
+        translated = translated.replace("<br ", "<br>")
+        translated = translated.replace(" br>", "<br>")
+    except Exception:
+        translated = source
+
+    st.session_state.moby_translation_signature = signature
+    st.session_state.moby_translation_html = translated
+    return translated
+
+def sidebar_show_about():
+    st.session_state.moby_sidebar_panel = "about"
+
+
+def sidebar_show_links():
+    st.session_state.moby_sidebar_panel = "links"
+
+
+def personal_link_prev():
+    st.session_state.moby_personal_link_index = (
+        int(st.session_state.get("moby_personal_link_index", 0)) - 1
+    ) % len(PERSONAL_LINKS)
+
+
+def personal_link_next():
+    st.session_state.moby_personal_link_index = (
+        int(st.session_state.get("moby_personal_link_index", 0)) + 1
+    ) % len(PERSONAL_LINKS)
 
 def toggle_sound():
     dismiss_help()
@@ -294,7 +486,7 @@ def _generate_sound_bytes(text):
     clean = re.sub(r"\s+", " ", str(text or "")).strip()
     if not clean:
         return b""
-    voice = VOICES_EDGE_TTS.get(st.session_state.get("moby_lang", "pt"), "pt-BR-AntonioNeural")
+    voice = VOICES_EDGE_TTS.get(st.session_state.get("moby_lang", "pt"), "pt-BR-FranciscaNeural")
     async def _run():
         audio = bytearray()
         communicate = edge_tts.Communicate(clean, voice)
@@ -653,6 +845,16 @@ if "moby_current_title" not in st.session_state:
     st.session_state.moby_current_title = ""
 if "moby_current_poem_html" not in st.session_state:
     st.session_state.moby_current_poem_html = ""
+if "moby_translation_signature" not in st.session_state:
+    st.session_state.moby_translation_signature = None
+if "moby_translation_html" not in st.session_state:
+    st.session_state.moby_translation_html = ""
+if "moby_sidebar_panel" not in st.session_state:
+    st.session_state.moby_sidebar_panel = "about"
+if "moby_personal_link_index" not in st.session_state:
+    st.session_state.moby_personal_link_index = 0
+if "moby_about_pick" not in st.session_state:
+    st.session_state.moby_about_pick = "machina"
 
 if "moby_seal_path" not in st.session_state:
     st.session_state.moby_seal_path = ""
@@ -963,6 +1165,10 @@ def sidebar_language_changed():
     for nome, pais, code in IDIOMAS_MACHINA:
         if escolha == f"{nome} — {pais}":
             st.session_state.moby_lang = code
+            st.session_state.moby_translation_signature = None
+            st.session_state.moby_translation_html = ""
+            st.session_state.moby_sound_signature = None
+            st.session_state.moby_sound_audio = b""
             return
 
 
@@ -1301,6 +1507,31 @@ st.markdown(
         font-size: .88rem !important;
     }
 
+
+
+    /* Copiar pertence à mesma família visual de Imagem/Retrato. */
+    div[data-testid="stPopover"] > button,
+    div[data-testid="stPopover"] button {
+        width: 100% !important;
+        min-height: 38px !important;
+        border-radius: 9px !important;
+        font-size: .88rem !important;
+    }
+
+    /* O controle nativo de expansão do Retrato precisa aparecer. */
+    button[title="Fullscreen"],
+    button[aria-label="Fullscreen"],
+    button[title="View fullscreen"],
+    button[aria-label="View fullscreen"] {
+        opacity: 1 !important;
+        visibility: visible !important;
+        filter: none !important;
+        background: rgba(255,255,255,.94) !important;
+        border: 1px solid rgba(0,0,0,.24) !important;
+        color: #222 !important;
+    }
+
+
     #MainMenu, footer, header { visibility: hidden; }
 
     section[data-testid="stSidebar"] {
@@ -1377,12 +1608,7 @@ with head_side:
 
 
 if st.session_state.moby_sidebar_open:
-    s1, s2 = st.columns(2, gap="small")
-    with s1:
-        st.button("yPoemas", width="stretch", disabled=True)
-    with s2:
-        st.button("About", width="stretch", on_click=dismiss_help)
-
+    # Idiomas passam a ocupar o topo da sidebar.
     idioma_labels = [f"{nome} — {pais}" for nome, pais, _ in IDIOMAS_MACHINA]
     idioma_atual = next(
         (f"{nome} — {pais}" for nome, pais, code in IDIOMAS_MACHINA if code == st.session_state.moby_lang),
@@ -1404,24 +1630,49 @@ if st.session_state.moby_sidebar_open:
     fonte_col, corpo_col = st.columns([2.15, 1], gap="small")
     with fonte_col:
         fonte_escolhida = st.selectbox(
-            "fontes & letras", fonte_labels, index=fonte_labels.index(fonte_atual),
+            "Fontes & Letras", fonte_labels, index=fonte_labels.index(fonte_atual),
             key="moby_font_pick", on_change=sidebar_font_changed,
         )
     with corpo_col:
         corpo_escolhido = st.selectbox(
-            "corpo", CORPOS_MOBY, index=CORPOS_MOBY.index(corpo_atual),
+            "Corpo", CORPOS_MOBY, index=CORPOS_MOBY.index(corpo_atual),
             key="moby_size_pick", on_change=sidebar_size_changed,
         )
     st.session_state.moby_font_family = fonte_lookup.get(fonte_escolhida, st.session_state.moby_font_family)
     st.session_state.moby_font_size = int(corpo_escolhido)
 
-    st.markdown(
-        "[facebook](https://www.facebook.com/nandoulopes) · "
-        "[e-mail](mailto:lopes.fernando@hotmail.com) · "
-        "[coffee](https://www.buymeacoffee.com/yPoemas) · "
-        "[instagram](https://www.instagram.com/fernando.lopes.942/) · "
-        "[whatsapp-pix](https://api.whatsapp.com/send?phone=+5512991368181)"
-    )
+    about_col, links_col = st.columns([4.4, 1.35], gap="small")
+    with about_col:
+        st.button("ABOUT", key="moby_sidebar_about", width="stretch", on_click=sidebar_show_about)
+    with links_col:
+        st.button("links", key="moby_sidebar_links", width="stretch", on_click=sidebar_show_links)
+
+    if st.session_state.get("moby_sidebar_panel", "about") == "links":
+        idx = int(st.session_state.get("moby_personal_link_index", 0)) % len(PERSONAL_LINKS)
+        label, url = PERSONAL_LINKS[idx]
+        st.markdown(
+            f"<div style='text-align:center; opacity:.62; font-size:.78rem; margin:.2rem 0 .45rem'>"
+            f"{idx + 1} / {len(PERSONAL_LINKS)}</div>",
+            unsafe_allow_html=True,
+        )
+        lprev, lmain, lnext = st.columns([1, 3.2, 1], gap="small")
+        with lprev:
+            st.button("<", key="moby_personal_link_prev", width="stretch", on_click=personal_link_prev)
+        with lmain:
+            st.link_button(label, url, width="stretch")
+        with lnext:
+            st.button(">", key="moby_personal_link_next", width="stretch", on_click=personal_link_next)
+    else:
+        current_about = str(st.session_state.get("moby_about_pick", "machina"))
+        if current_about not in ABOUTS_LIST:
+            current_about = "machina"
+        about_choice = st.selectbox(
+            "sobre",
+            ABOUTS_LIST,
+            index=ABOUTS_LIST.index(current_about),
+            key="moby_about_pick",
+        )
+        st.markdown(load_about_text(about_choice))
 
     if st.button("Fechar", key="moby_close_sidebar", width="stretch"):
         st.session_state.moby_sidebar_open = False
@@ -1494,14 +1745,14 @@ else:
 # =============================================================================
 # PAINEL DE COMANDO DO LEITOR
 # =============================================================================
-b_plus, b_prev, b_rand, b_next, b_sound, b_help = st.columns(6, gap="small")
+b_rand, b_prev, b_plus, b_next, b_sound, b_help = st.columns(6, gap="small")
 
-with b_plus:
+with b_rand:
     st.button(
-        "+",
-        key="moby_plus",
+        "*",
+        key="moby_rand",
         width="stretch",
-        on_click=new_reading,
+        on_click=random_theme,
     )
 
 with b_prev:
@@ -1512,12 +1763,12 @@ with b_prev:
         on_click=previous_theme,
     )
 
-with b_rand:
+with b_plus:
     st.button(
-        "*",
-        key="moby_rand",
+        "+",
+        key="moby_plus",
         width="stretch",
-        on_click=random_theme,
+        on_click=new_reading,
     )
 
 with b_next:
@@ -1550,9 +1801,9 @@ if st.session_state.moby_help_open:
         """
         <div class="moby-help">
         <ul>
-          <li><b>+</b> nova leitura do tema</li>
-          <li><b>&lt;</b> tema anterior</li>
           <li><b>*</b> tema ao acaso</li>
+          <li><b>&lt;</b> tema anterior</li>
+          <li><b>+</b> nova leitura do tema</li>
           <li><b>&gt;</b> próximo tema</li>
           <li><b>♫</b> som</li>
           <li><b>?</b> help</li>
@@ -1579,6 +1830,8 @@ else:
     titulo_palco = current_theme()
     poema_html = st.session_state.get("moby_poem_html", "")
 
+poema_html_original = str(poema_html)
+poema_html = translate_poem_html(poema_html_original)
 st.session_state.moby_current_title = str(titulo_palco)
 st.session_state.moby_current_poem_html = str(poema_html)
 
@@ -1593,7 +1846,7 @@ else:
         unsafe_allow_html=True,
     )
 
-analise_ola = update_ola_analysis(titulo_palco, poema_html)
+analise_ola = update_ola_analysis(titulo_palco, poema_html_original)
 ola_html = ""
 if analise_ola:
     ola_html = (
@@ -1618,9 +1871,9 @@ st.markdown('<div class="end-rule"></div>', unsafe_allow_html=True)
 c1, c2, c3 = st.columns(3, gap="small")
 
 with c1:
-    copy_payload = f"{titulo_palco}\n\n{ypoema_html_to_text(poema_html)}".strip()
-    copy_key = f"moby_copy_{abs(hash(copy_payload))}"
-    moby_copy_button(copy_payload, copy_key)
+    # Comportamento original: abre o texto; o ícone do bloco faz a cópia real.
+    with st.popover("Copiar", help="copiar texto", use_container_width=True):
+        st.code(ypoema_html_to_text(poema_html), language=None, wrap_lines=True)
 
 with c2:
     st.button("Imagem", key="moby_image", width="stretch", on_click=toggle_image)
@@ -1634,7 +1887,7 @@ if portrait_png:
     save_left, save_center, save_right = st.columns([1.2, 1, 1.2])
     with save_center:
         st.download_button(
-            "Salvar Retrato",
+            "salvar...",
             data=portrait_png,
             file_name=f"{st.session_state.get('moby_portrait_name', 'retrato')}.png",
             mime="image/png",
