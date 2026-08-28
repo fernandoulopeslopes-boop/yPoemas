@@ -1,0 +1,62 @@
+*- 
+*- cia_abertura.ypo
+*- |01|02|Abertura_0102|F|1|1|< nome_ola > )|
+*- 
+|01|01|Abertura_0101|F|1|1|a OLA|
+|01|03|Abertura_0103|F|2|1|não chega ao|não aparece no|
+|01|04|Abertura_0104|F|1|1|ambiente da Machina|
+|02|05|Abertura_0205|F|2|1|para |com intenção de|
+|02|06|Abertura_0206|T|3|1|explicar o|dar respostas ao|indicar caminhos ao|
+|02|07|Abertura_0207|T|4|4|mundo|obvio|texto|escrito|
+|02|08|Abertura_0208|F|3|1|:|.|...|
+|03|01|Abertura_0301|F|1|1|Chega para|
+|03|02|Abertura_0302|T|3|1|perceber|destacar|pontuar|
+|03|03|Abertura_0303|F|1|1|o que,|
+|03|04|Abertura_0304|T|5|3|no texto,|no yPoema,|no resultado,|no contexto,|nas entrelinhas,|
+|03|05|Abertura_0305|T|5|5|organiza a|traz sentido à|conduz a|há por traz da|"se esconde" na|
+|03|06|Abertura_0306|F|1|1|leitura.|
+|04|00|
+|04|01|Abertura_0401|T|3|1|Às vezes é|Pode ser|Talvez|
+|04|02|Abertura_0402|F|4|1|uma torção|uma outra visão|um novo sentido|uma "releitura"|
+|04|03|Abertura_0403|F|1|1|da frase.|
+|05|01|Abertura_0501|T|5|3|Às vezes é|Pode ser|Talvez|Quiçá|Ou então|
+|05|02|Abertura_0502|T|7|5|uma pausa|um respiro|um lapso|um silêncio|uma linha em branco|uma vírgula|uma "releitura"|
+|05|03|Abertura_0503|F|2|1|que pesa mais|que é mais forte|
+|05|04|Abertura_0504|F|1|1|que uma palavra.|
+|06|01|Abertura_0601|T|5|4|Às vezes é|Pode ser|Talvez|Quiçá|Ou então|
+|06|02|Abertura_0602|T|4|4|uma imagem|uma "sombra"|uma "ideia" oculta|uma trilha|
+|06|03|Abertura_0603|F|1|1|que parece|
+|06|04|Abertura_0604|T|4|2|lateral,|deslocada,|perdida,|"nas nuvens",|
+|06|05|Abertura_0605|T|2|2|mas sustenta o centro.|mas mantém o centro.|
+|07|00|
+|07|01|Abertura_0701|F|2|1|Nada aqui|Nada na OLA|
+|07|02|Abertura_0702|F|3|1|acontece|entra|é feito|
+|07|03|Abertura_0703|T|5|5|por enfeite.|ao acaso.|por acidente.|"de graça".|como ornamento.|
+|08|00|
+|08|01|Abertura_0801|T|4|2|Cada escolha|Cada rodada|Cada sorteio|Cada Análise|
+|08|02|Abertura_0802|T|5|5|empurra|desloca|deposita|transfere|apresenta|
+|08|03|Abertura_0803|F|4|1|o sentido|a leitura|o trecho|o contexto|
+|09|04|Abertura_0904|F|1|1|um pouco para|
+|09|05|Abertura_0905|F|4|1|diante|o longe|dentro|o centro|
+|09|06|Abertura_0906|F|1|1|, um pouco para|
+|09|07|Abertura_0907|T|6|3|o lado|diante|o longe|dentro|o centro|a frente|
+|09|08|Abertura_0908|F|1|1|, um pouco para|
+|09|09|Abertura_0909|T|7|7|diante|o longe|dentro|o centro|o inusitado|o inesperado|o imprevisto|
+|09|10|Abertura_0910|F|1|1|.|
+|10|00|
+|11|01|Abertura_1101|F|2|1|Ler bem|Uma boa leitura|
+|11|02|Abertura_1102|T|5|1|é notar|é reconhecer|é intuir|é abraçar|é pairar sobre|
+|11|03|Abertura_1103|T|4|1|esse desenho.|esse quadro.|essa paisagem.|essa visão.|
+|12|01|Abertura_1201|F|1|1|Não para|
+|12|02|Abertura_1202|F|3|1|fechar o poema,|terminar o poema|concluir o poema|
+|12|03|Abertura_1203|T|3|1|mas para|e sim|... apenas|
+|12|04|Abertura_1204|T|6|6|penetrar no|desvendar o|mergulhar no|acompanhar o|desvelar o|insinuar o|
+|12|05|Abertura_1205|F|2|1|modo como ele se abre.|modo como ele se revela.|
+<EOF>
+Verbetes no Texto = 46
+  Total de ítimos = 141
+Total de verbetes = 149
+Qtd. de Variações = 2.528.292.372.480.000.000 (quintilhões)
+build_by update_rodape em 17/08/2026 - 15:27
+updated em: 28/08/2026 - 15:25
+
