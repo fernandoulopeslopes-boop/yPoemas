@@ -1,5 +1,5 @@
-# moby.py
-# Etapa 035: sincroniza livros/temas + retorno da sidebar ao palco.
+# moby_v038.py
+# Etapa 038: sincronismo livro/tema + EOF Off-Machina + corpo inicial 20.
 # MACHINA — Mobile ultra-light
 # Blindagem HTML preservada; não altera basico.py, DNA, .ypo, .pip ou conteúdo autoral.
 
@@ -390,10 +390,16 @@ PERSONAL_LINKS = [
         "kind": "instagram",
     },
     {
-        "label": "E-mail",
+        "label": "Outlook",
         "url": "mailto:lopes.fernando@hotmail.com",
         "icon": "https://cdn.simpleicons.org/microsoftoutlook/0078D4",
-        "kind": "email",
+        "kind": "outlook",
+    },
+    {
+        "label": "Gmail",
+        "url": "mailto:lopes.fernando@gmail.com",
+        "icon": "https://cdn.simpleicons.org/gmail/EA4335",
+        "kind": "gmail",
     },
     {
         "label": "Buy Me a Coffee",
@@ -403,7 +409,7 @@ PERSONAL_LINKS = [
     },
     {
         "label": "WhatsApp / Pix",
-        "url": "https://api.whatsapp.com/send?phone=+5512991368181",
+        "url": "https://wa.me/5512991368181",
         "icon": "https://cdn.simpleicons.org/whatsapp/25D366",
         "icon_2": "https://cdn.simpleicons.org/pix/32BCAD",
         "kind": "whatsapp wide",
@@ -519,8 +525,6 @@ def render_social_links():
 
     st.markdown(
         "<div class='moby-social-stage'>"
-        "<div class='moby-social-title'>Conecte-se com a Machina</div>"
-        "<div class='moby-social-subtitle'>presença, contato e apoio</div>"
         "<div class='moby-social-grid'>"
         + "".join(cards)
         + "</div></div>",
@@ -638,13 +642,14 @@ def _rol_temas(livro):
 def temas_do_livro(rows, livro):
     """A ordem autoral vive nos rol_*.txt; DNA valida pertencimento/atividade."""
     alvo = str(livro or "").strip().casefold()
+    todos_os_temas = nome_normalizado(livro) == "todosostemas"
     ativos = {}
     for row in rows:
         if str(row.get("ativo", "")).strip().upper() != "S":
             continue
         livros = [item.strip().casefold() for item in str(row.get("livro", "")).split(";") if item.strip()]
         tema = str(row.get("tema", "")).strip()
-        if tema and alvo in livros:
+        if tema and (todos_os_temas or alvo in livros):
             ativos[nome_normalizado(tema)] = tema
 
     ordem = _rol_temas(livro)
@@ -878,7 +883,7 @@ if "moby_font_family" not in st.session_state:
     st.session_state.moby_font_family = "Trebuchet MS"
 
 if "moby_font_size" not in st.session_state:
-    st.session_state.moby_font_size = 16
+    st.session_state.moby_font_size = 20
 
 if "moby_mode" not in st.session_state:
     st.session_state.moby_mode = "Machina"
@@ -982,7 +987,8 @@ def off_pages(path):
         line = raw.rstrip("\r\n")
         if not line.strip():
             continue
-        if line.strip() == "<EOF>":
+        marcador = line.strip()
+        if marcador == "<EOF>" or marcador.strip("|").strip() == "<EOF>":
             break
         if line.startswith("|"):
             line = line[1:]
@@ -1039,6 +1045,7 @@ def apply_pending_link():
         if nome_normalizado(tema) == alvo:
             st.session_state.moby_book = livro
             st.session_state.moby_theme_index = idx
+            st.session_state["moby_theme_pick"] = tema
             st.session_state.moby_reading_n = 1
             invalidate_real_poem()
             break
@@ -1160,7 +1167,8 @@ def swap_machina_off():
         st.session_state.moby_mode = "Machina"
     else:
         st.session_state.moby_mode = "Off-Machina"
-        st.session_state.moby_off_take = 0
+        paginas = current_off_pages()
+        st.session_state.moby_off_take = random.randrange(len(paginas)) if paginas else 0
     invalidate_real_image()
     invalidate_ola()
 
@@ -1254,7 +1262,7 @@ def sidebar_font_changed():
 def sidebar_size_changed():
     dismiss_help()
     st.session_state.moby_font_size = int(
-        st.session_state.get("moby_size_pick", 16)
+        st.session_state.get("moby_size_pick", 20)
     )
 
 
@@ -1284,7 +1292,8 @@ def select_off_machina_sidebar():
     """Abre o Off-Machina real preservando o mapeamento livro -> pasta de imagens."""
     dismiss_help()
     st.session_state.moby_mode = "Off-Machina"
-    st.session_state.moby_off_take = 0
+    paginas = current_off_pages()
+    st.session_state.moby_off_take = random.randrange(len(paginas)) if paginas else 0
     invalidate_real_image()
     st.session_state.moby_sidebar_open = False
 
@@ -1329,6 +1338,7 @@ def previous_theme():
     temas = current_themes()
     if temas:
         st.session_state.moby_theme_index = (st.session_state.moby_theme_index - 1) % len(temas)
+        st.session_state["moby_theme_pick"] = temas[st.session_state.moby_theme_index]
         st.session_state.moby_reading_n = 1
         invalidate_real_poem()
         invalidate_real_image()
@@ -1346,6 +1356,7 @@ def next_theme():
     temas = current_themes()
     if temas:
         st.session_state.moby_theme_index = (st.session_state.moby_theme_index + 1) % len(temas)
+        st.session_state["moby_theme_pick"] = temas[st.session_state.moby_theme_index]
         st.session_state.moby_reading_n = 1
         invalidate_real_poem()
         invalidate_real_image()
@@ -1368,6 +1379,7 @@ def random_theme():
     atual = st.session_state.moby_theme_index
     candidatos = [i for i in range(len(temas)) if i != atual]
     st.session_state.moby_theme_index = random.choice(candidatos) if candidatos else atual
+    st.session_state["moby_theme_pick"] = temas[st.session_state.moby_theme_index]
     st.session_state.moby_reading_n = 1
     invalidate_real_poem()
     invalidate_real_image()
@@ -1378,8 +1390,12 @@ def book_changed():
     if escolha in MOBY_BOOKS:
         st.session_state.moby_book = escolha
     st.session_state.moby_theme_index = 0
+    temas = current_themes()
+    if temas:
+        st.session_state["moby_theme_pick"] = temas[0]
+    else:
+        st.session_state.pop("moby_theme_pick", None)
     st.session_state.moby_reading_n = 1
-    st.session_state.pop("moby_theme_pick", None)
     invalidate_real_poem()
     invalidate_real_image()
 
@@ -1775,9 +1791,9 @@ if st.session_state.moby_sidebar_open:
         (label for label, family in FONTES_MACHINA if family == st.session_state.moby_font_family),
         "Trebuchet",
     )
-    corpo_atual = int(st.session_state.get("moby_font_size", 16))
+    corpo_atual = int(st.session_state.get("moby_font_size", 20))
     if corpo_atual not in CORPOS_MOBY:
-        corpo_atual = 16
+        corpo_atual = 20
 
     fonte_col, corpo_col = st.columns([2.15, 1], gap="small")
     with fonte_col:
@@ -1793,9 +1809,11 @@ if st.session_state.moby_sidebar_open:
     st.session_state.moby_font_family = fonte_lookup.get(fonte_escolhida, st.session_state.moby_font_family)
     st.session_state.moby_font_size = int(corpo_escolhido)
 
-    about_col, links_col = st.columns([4.4, 1.35], gap="small")
+    about_col, close_col, links_col = st.columns([1.55, 1.25, 1.55], gap="small")
     with about_col:
-        st.button("ABOUT", key="moby_sidebar_about", width="stretch", on_click=sidebar_show_about)
+        st.button("about", key="moby_sidebar_about", width="stretch", on_click=sidebar_show_about)
+    with close_col:
+        st.button("fechar", key="moby_close_sidebar", width="stretch", on_click=sidebar_return_to_stage)
     with links_col:
         st.button("links", key="moby_sidebar_links", width="stretch", on_click=sidebar_show_links)
 
@@ -1813,12 +1831,6 @@ if st.session_state.moby_sidebar_open:
         )
         st.markdown(load_about_text(about_choice))
 
-    st.button(
-        "yPoemas",
-        key="moby_close_sidebar",
-        width="stretch",
-        on_click=sidebar_return_to_stage,
-    )
 
     st.stop()
 
@@ -1840,7 +1852,10 @@ if st.session_state.get("moby_mode") == "Off-Machina":
         novo_idx = nomes_off.index(livro_off)
         if novo_idx != st.session_state.moby_off_book_index:
             st.session_state.moby_off_book_index = novo_idx
-            st.session_state.moby_off_take = 0
+            paginas_novo_livro = current_off_pages()
+            st.session_state.moby_off_take = (
+                random.randrange(len(paginas_novo_livro)) if paginas_novo_livro else 0
+            )
             invalidate_real_image()
             invalidate_ola()
             st.rerun()
@@ -1975,7 +1990,7 @@ if st.session_state.moby_help_open:
 # =============================================================================
 fonte_palco = str(st.session_state.get("moby_font_family", "Trebuchet MS"))
 fonte_css = fonte_palco_css(fonte_palco)
-corpo_palco = int(st.session_state.get("moby_font_size", 16))
+corpo_palco = int(st.session_state.get("moby_font_size", 20))
 limite_palco = 315 if st.session_state.moby_image_visible else 520
 
 if st.session_state.get("moby_mode") == "Off-Machina":
