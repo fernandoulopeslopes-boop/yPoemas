@@ -1,5 +1,5 @@
-# moby_v038.py
-# Etapa 038: sincronismo livro/tema + EOF Off-Machina + corpo inicial 20.
+# moby_v058.py
+# Etapa 058: Help externo em ./md_files/Manual_Moby.md; Matrix + Ficha preservadas no scroll do palco.
 # MACHINA — Mobile ultra-light
 # Blindagem HTML preservada; não altera basico.py, DNA, .ypo, .pip ou conteúdo autoral.
 
@@ -67,7 +67,7 @@ def _load_ola_bridge():
 
 st.set_page_config(
     page_title="Moby — a Machina Mobile",
-    page_icon="🌀",
+    page_icon="❓",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
@@ -215,11 +215,11 @@ def bootstrap_fontes_machina():
         unsafe_allow_html=True,
     )
 
-CORPOS_MOBY = list(range(16, 37, 2))
+CORPOS_MOBY = list(range(16, 37, 1))
 
 
 VOICES_EDGE_TTS = {
-    "pt": "pt-BR-AntonioNeural", "es": "es-ES-AlvaroNeural",
+    "pt": "pt-BR-FranciscaNeural", "es": "es-ES-AlvaroNeural",
     "fr": "fr-FR-HenriNeural", "it": "it-IT-DiegoNeural",
     "en": "en-US-AvaNeural", "gl": "gl-ES-RoiNeural",
     "eu": "eu-ES-AnderNeural", "de": "de-DE-ConradNeural",
@@ -376,6 +376,17 @@ ABOUT_ALIASES = {
 }
 
 
+OUTLOOK_ICON_DATA = "data:image/svg+xml;base64," + base64.b64encode(
+    b"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+<rect x="10" y="12" width="44" height="40" rx="5" fill="#0A64C9"/>
+<path d="M14 20h36v26H14z" fill="#1B78D0"/>
+<path d="M14 21l18 14 18-14" fill="none" stroke="white" stroke-width="4" stroke-linejoin="round"/>
+<rect x="6" y="16" width="25" height="32" rx="3" fill="#075FB5"/>
+<circle cx="18.5" cy="32" r="8.5" fill="none" stroke="white" stroke-width="4"/>
+</svg>"""
+).decode("ascii")
+
+
 PERSONAL_LINKS = [
     {
         "label": "Facebook",
@@ -392,7 +403,7 @@ PERSONAL_LINKS = [
     {
         "label": "Outlook",
         "url": "mailto:lopes.fernando@hotmail.com",
-        "icon": "https://cdn.simpleicons.org/microsoftoutlook/0078D4",
+        "icon": OUTLOOK_ICON_DATA,
         "kind": "outlook",
     },
     {
@@ -431,6 +442,14 @@ def _about_candidates(title):
         f"ABOUT_{title.replace(' ', '-')}.md",
     ])
     return aliases
+
+
+def load_manual_moby():
+    path = Path("./md_files/Manual_Moby.md")
+    try:
+        return path.read_text(encoding="utf-8-sig")
+    except OSError:
+        return 'ooops... documentação "Manual_Moby.md" não encontrada.'
 
 
 def load_about_text(title):
@@ -543,7 +562,7 @@ def _generate_sound_bytes(text):
     clean = re.sub(r"\s+", " ", str(text or "")).strip()
     if not clean:
         return b""
-    voice = VOICES_EDGE_TTS.get(st.session_state.get("moby_lang", "pt"), "pt-BR-AntonioNeural")
+    voice = VOICES_EDGE_TTS.get(st.session_state.get("moby_lang", "pt"), "pt-BR-FranciscaNeural")
     async def _run():
         audio = bytearray()
         communicate = edge_tts.Communicate(clean, voice)
@@ -640,31 +659,24 @@ def _rol_temas(livro):
 
 
 def temas_do_livro(rows, livro):
-    """A ordem autoral vive nos rol_*.txt; DNA valida pertencimento/atividade."""
+    """rol_<livro>.txt é a autoridade integral de conteúdo e ordem; DNA é fallback."""
+    ordem = _rol_temas(livro)
+    if ordem:
+        return ordem
+
     alvo = str(livro or "").strip().casefold()
-    todos_os_temas = nome_normalizado(livro) == "todosostemas"
-    ativos = {}
+    temas = []
+    vistos = set()
     for row in rows:
         if str(row.get("ativo", "")).strip().upper() != "S":
             continue
         livros = [item.strip().casefold() for item in str(row.get("livro", "")).split(";") if item.strip()]
         tema = str(row.get("tema", "")).strip()
-        if tema and (todos_os_temas or alvo in livros):
-            ativos[nome_normalizado(tema)] = tema
-
-    ordem = _rol_temas(livro)
-    if ordem:
-        vistos = set()
-        saida = []
-        for tema_rol in ordem:
-            chave = nome_normalizado(tema_rol)
-            tema = ativos.get(chave)
-            if tema and chave not in vistos:
-                saida.append(tema)
-                vistos.add(chave)
-        return saida
-
-    return list(ativos.values())
+        chave = nome_normalizado(tema)
+        if tema and alvo in livros and chave not in vistos:
+            temas.append(tema)
+            vistos.add(chave)
+    return temas
 
 
 def nome_normalizado(valor):
@@ -865,6 +877,9 @@ if "moby_image_path_2" not in st.session_state:
 if "moby_image_visible" not in st.session_state:
     st.session_state.moby_image_visible = True
 
+if "moby_footer_view" not in st.session_state:
+    st.session_state.moby_footer_view = "images"
+
 
 if "moby_arts" not in st.session_state:
     st.session_state.moby_arts = []
@@ -883,7 +898,7 @@ if "moby_font_family" not in st.session_state:
     st.session_state.moby_font_family = "Trebuchet MS"
 
 if "moby_font_size" not in st.session_state:
-    st.session_state.moby_font_size = 20
+    st.session_state.moby_font_size = 18
 
 if "moby_mode" not in st.session_state:
     st.session_state.moby_mode = "Machina"
@@ -1125,6 +1140,20 @@ def ypoema_html_to_text(ypoema_html):
     return html.unescape(texto).strip()
 
 
+def image_path_to_data_uri(path):
+    path = Path(path)
+    ext = path.suffix.casefold()
+    mime = {
+        ".jpg": "image/jpeg",
+        ".jpeg": "image/jpeg",
+        ".png": "image/png",
+        ".webp": "image/webp",
+        ".gif": "image/gif",
+    }.get(ext, "application/octet-stream")
+    payload = base64.b64encode(path.read_bytes()).decode("ascii")
+    return f"data:{mime};base64,{payload}"
+
+
 def limpar_analise(texto, max_chars=900):
     texto = html.unescape(re.sub(r"<[^>]+>", "", str(texto or ""))).strip()
     if len(texto) > int(max_chars):
@@ -1193,6 +1222,8 @@ def prepare_portrait():
     png = create_moby_portrait_png(poem_html, chosen, title)
     if png:
         st.session_state.moby_portrait_png = png
+        st.session_state.moby_footer_view = "portrait"
+        st.session_state.moby_image_visible = False
         safe = re.sub(r"[^A-Za-z0-9_-]+", "_", str(title or "retrato")).strip("_") or "retrato"
         st.session_state.moby_portrait_name = safe
 
@@ -1262,7 +1293,7 @@ def sidebar_font_changed():
 def sidebar_size_changed():
     dismiss_help()
     st.session_state.moby_font_size = int(
-        st.session_state.get("moby_size_pick", 20)
+        st.session_state.get("moby_size_pick", 18)
     )
 
 
@@ -1303,6 +1334,77 @@ def select_ola_sidebar():
     st.session_state.moby_mode = "OLA"
 
 
+def _matrix_image_path_for_theme(nome_tema):
+    """Localiza a Matrix do tema atual em ./images/matrix."""
+    tema = str(nome_tema or "").strip()
+    if not tema:
+        return None
+
+    matrix_dir = Path("./images/matrix")
+    if not matrix_dir.is_dir():
+        return None
+
+    def chave(valor):
+        normal = unicodedata.normalize("NFKD", str(valor or ""))
+        sem_acentos = "".join(c for c in normal if not unicodedata.combining(c))
+        return re.sub(r"[^a-z0-9]+", "", sem_acentos.casefold())
+
+    alvo = chave(tema)
+    for path in sorted(matrix_dir.iterdir()):
+        if path.is_file() and path.suffix.casefold() in {".jpg", ".jpeg", ".png", ".webp"}:
+            if chave(path.stem) == alvo:
+                return path
+    return None
+
+
+
+def _fmt_help_numero(valor):
+    texto = str(valor or "").strip()
+    if not texto:
+        return ""
+    try:
+        return f"{int(texto):,}".replace(",", ".")
+    except (TypeError, ValueError):
+        return texto
+
+
+def _build_seal_from_ypo(nome_tema):
+    path = Path("./data") / f"{str(nome_tema or '').strip()}.ypo"
+    selo = ""
+    try:
+        for raw in path.read_text(encoding="utf-8-sig").splitlines():
+            line = raw.strip()
+            if line.casefold().startswith("build_by lay_2_ypo"):
+                selo = line
+    except (OSError, UnicodeError):
+        pass
+    return selo
+
+
+def _help_ficha_linhas(nome_tema):
+    row = registro_do_tema(DNA_ROWS, nome_tema)
+    if not row:
+        return []
+    pares = [
+        ("Título", row.get("tema", "") or nome_tema),
+        ("Livro", row.get("livro", "")),
+        ("Banco temático", row.get("banco_tematico", "")),
+        ("Versos", row.get("versos", "")),
+        ("Verbetes no Texto", row.get("verbetes_no_texto", "")),
+        ("Verbetes do Tema", row.get("verbetes_do_tema", "")),
+        ("Total de ítimos", row.get("total_de_itimos", "")),
+        ("Qtd. de Variações", row.get("qtd_de_variacoes", "")),
+    ]
+    linhas = []
+    for rotulo, valor in pares:
+        valor = _fmt_help_numero(valor) if rotulo not in {"Título", "Livro", "Banco temático"} else str(valor or "").strip()
+        if valor:
+            linhas.append(f"{rotulo}: {valor}")
+    selo = _build_seal_from_ypo(nome_tema)
+    if selo:
+        linhas.append(selo)
+    return linhas
+
 def toggle_help():
     st.session_state.moby_help_open = not st.session_state.moby_help_open
 
@@ -1312,8 +1414,14 @@ def dismiss_help():
 
 
 def toggle_image():
+    """Imagem recolhe/abre a ilustração; o espaço liberado volta ao palco."""
     dismiss_help()
-    st.session_state.moby_image_visible = not st.session_state.moby_image_visible
+    if st.session_state.get("moby_footer_view", "images") == "images":
+        st.session_state.moby_footer_view = "none"
+        st.session_state.moby_image_visible = False
+    else:
+        st.session_state.moby_footer_view = "images"
+        st.session_state.moby_image_visible = True
 
 
 def new_reading():
@@ -1463,7 +1571,12 @@ st.markdown(
     .theme-image-shell {
         display:flex;
         justify-content:center;
-        margin: 7px 0 8px 0;
+        margin: 7px 0 14px 0;
+    }
+
+    .moby-images-bottom-space {
+        height: 18px;
+        min-height: 18px;
     }
 
     .theme-image {
@@ -1489,23 +1602,22 @@ st.markdown(
         opacity:.78;
     }
 
-    .poem-title {
-        text-align:center;
-        font-weight:700;
-        text-decoration: underline;
-        margin: 3px 0 4px 0;
-    }
-
     .ypoema {
         line-height: 1.60;
         padding: 0 8px 0 3px;
         margin: 4px 0 8px 0;
         overflow-wrap: anywhere;
-        max-height: 315px;
+    }
+
+    .st-key-moby_stage_scroll {
+        height: 355px;
+        min-height: 355px;
+        max-height: 355px;
         overflow-y: auto;
         overflow-x: hidden;
         overscroll-behavior: contain;
-        scrollbar-gutter: stable;
+        padding: 2px 5px 8px 1px;
+        margin-top: 2px;
     }
 
     .moby-ola-inline {
@@ -1565,6 +1677,97 @@ st.markdown(
         font-size: .78rem;
         opacity: .70;
         line-height: 1.42;
+    }
+
+    .st-key-moby_about_text {
+        max-height: 465px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        overscroll-behavior: contain;
+        scrollbar-gutter: stable;
+        padding: 0 14px 26px 14px;
+        margin: 0 2px 10px 2px;
+    }
+
+    .st-key-moby_footer_zone {
+        height: 210px;
+        min-height: 210px;
+        max-height: 210px;
+        overflow: hidden;
+        margin-top: 2px;
+        padding: 0 0 8px 0;
+    }
+
+    .st-key-moby_footer_controls {
+        margin: 0;
+        padding: 0;
+    }
+
+    .st-key-moby_footer_controls div[data-testid="stHorizontalBlock"] {
+        gap: 2px !important;
+    }
+
+    .st-key-moby_footer_controls button {
+        min-height: 34px !important;
+        height: 34px !important;
+        margin-bottom: 0 !important;
+    }
+
+    .st-key-moby_images_stage,
+    .st-key-moby_portrait_stage {
+        height: 158px;
+        min-height: 158px;
+        max-height: 158px;
+        overflow: hidden;
+        margin: 2px 0 0 0;
+        padding: 0 0 7px 0;
+    }
+
+    .st-key-moby_images_stage .moby-footer-images-flex {
+        width: 100%;
+        height: 142px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 2px;
+        overflow: hidden;
+    }
+
+    .st-key-moby_images_stage .moby-footer-image {
+        display: block;
+        max-height: 142px;
+        max-width: calc(50% - 1px);
+        width: auto;
+        height: auto;
+        object-fit: contain;
+        border-radius: 8px;
+        flex: 0 1 auto;
+    }
+
+    .st-key-moby_images_stage .moby-footer-image-left {
+        margin-left: 0;
+        margin-right: auto;
+    }
+
+    .st-key-moby_images_stage .moby-footer-image-right {
+        margin-left: auto;
+        margin-right: 0;
+    }
+
+    .st-key-moby_portrait_stage img {
+        display: block !important;
+        max-height: 118px !important;
+        width: auto !important;
+        max-width: 100% !important;
+        margin: 0 auto !important;
+        object-fit: contain !important;
+    }
+
+    .st-key-moby_portrait_save button {
+        min-height: 28px !important;
+        height: 28px !important;
+        padding-top: .05rem !important;
+        padding-bottom: .05rem !important;
     }
 
     .moby-social-stage {
@@ -1694,9 +1897,26 @@ st.markdown(
         opacity: 1 !important;
         visibility: visible !important;
         filter: none !important;
-        background: rgba(255,255,255,.94) !important;
-        border: 1px solid rgba(0,0,0,.24) !important;
-        color: #222 !important;
+        background: rgba(255,255,255,.98) !important;
+        border: 2px solid rgba(0,0,0,.58) !important;
+        color: #111 !important;
+        width: 36px !important;
+        height: 36px !important;
+        min-width: 36px !important;
+        min-height: 36px !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,.28) !important;
+        z-index: 20 !important;
+    }
+
+    button[title="Fullscreen"] svg,
+    button[aria-label="Fullscreen"] svg,
+    button[title="View fullscreen"] svg,
+    button[aria-label="View fullscreen"] svg {
+        width: 21px !important;
+        height: 21px !important;
+        color: #111 !important;
+        stroke: #111 !important;
+        opacity: 1 !important;
     }
 
 
@@ -1713,10 +1933,10 @@ st.markdown(
             max-width: 430px !important;
             margin: 6px auto 24px auto !important;
             padding: 12px 12px 18px 12px !important;
-            height: auto !important;
+            height: 820px !important;
             min-height: 820px !important;
-            max-height: none !important;
-            overflow: visible !important;
+            max-height: 820px !important;
+            overflow: hidden !important;
             border-radius: 20px;
         }
 
@@ -1745,12 +1965,23 @@ st.markdown(
 # =============================================================================
 # CABEÇALHO — SWAP + LINKS + SIDEBAR
 # =============================================================================
-modo_label = "¿" if st.session_state.get("moby_mode") == "Off-Machina" else "❓"
+modo_label = "📖" if st.session_state.get("moby_mode") == "Off-Machina" else "❓"
+if st.session_state.get("moby_mode") != "Off-Machina":
+    st.markdown(
+        """
+        <style>
+        .st-key-moby_mode_swap button {
+            color: #c40000 !important;
+            font-weight: 800 !important;
+            font-size: 1.18rem !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
 head_mode, head_links, head_side = st.columns([1.35, 4.3, 1.35], gap="small")
 
 with head_mode:
-    if st.session_state.get("moby_mode") == "Off-Machina":
-        st.markdown("<style>.st-key-moby_mode_swap button {color:#d40000 !important; font-weight:800 !important;}</style>", unsafe_allow_html=True)
     st.button(modo_label, key="moby_mode_swap", width="stretch", on_click=swap_machina_off)
 
 with head_links:
@@ -1782,7 +2013,8 @@ if st.session_state.moby_sidebar_open:
         (f"{nome} — {pais}" for nome, pais, code in IDIOMAS_MACHINA if code == st.session_state.moby_lang),
         idioma_labels[0],
     )
-    st.session_state["moby_lang_pick"] = idioma_atual
+    if str(st.session_state.get("moby_lang_pick", "")) not in idioma_labels:
+        st.session_state["moby_lang_pick"] = idioma_atual
     st.selectbox("idiomas disponíveis...", idioma_labels, key="moby_lang_pick", on_change=sidebar_language_changed)
 
     fonte_labels = [label for label, _ in FONTES_MACHINA]
@@ -1791,19 +2023,23 @@ if st.session_state.moby_sidebar_open:
         (label for label, family in FONTES_MACHINA if family == st.session_state.moby_font_family),
         "Trebuchet",
     )
-    corpo_atual = int(st.session_state.get("moby_font_size", 20))
+    corpo_atual = int(st.session_state.get("moby_font_size", 18))
     if corpo_atual not in CORPOS_MOBY:
-        corpo_atual = 20
+        corpo_atual = 18
 
     fonte_col, corpo_col = st.columns([2.15, 1], gap="small")
     with fonte_col:
+        if str(st.session_state.get("moby_font_pick", "")) not in fonte_labels:
+            st.session_state["moby_font_pick"] = fonte_atual
         fonte_escolhida = st.selectbox(
-            "Fontes & Letras", fonte_labels, index=fonte_labels.index(fonte_atual),
+            "Fontes & Letras", fonte_labels,
             key="moby_font_pick", on_change=sidebar_font_changed,
         )
     with corpo_col:
+        if st.session_state.get("moby_size_pick") not in CORPOS_MOBY:
+            st.session_state["moby_size_pick"] = corpo_atual
         corpo_escolhido = st.selectbox(
-            "Corpo", CORPOS_MOBY, index=CORPOS_MOBY.index(corpo_atual),
+            "Corpo", CORPOS_MOBY,
             key="moby_size_pick", on_change=sidebar_size_changed,
         )
     st.session_state.moby_font_family = fonte_lookup.get(fonte_escolhida, st.session_state.moby_font_family)
@@ -1823,13 +2059,15 @@ if st.session_state.moby_sidebar_open:
         current_about = str(st.session_state.get("moby_about_pick", "machina"))
         if current_about not in ABOUTS_LIST:
             current_about = "machina"
+        if str(st.session_state.get("moby_about_pick", "")) not in ABOUTS_LIST:
+            st.session_state["moby_about_pick"] = current_about
         about_choice = st.selectbox(
             "sobre",
             ABOUTS_LIST,
-            index=ABOUTS_LIST.index(current_about),
             key="moby_about_pick",
         )
-        st.markdown(load_about_text(about_choice))
+        with st.container(key="moby_about_text"):
+            st.markdown(load_about_text(about_choice))
 
 
     st.stop()
@@ -1967,120 +2205,133 @@ with b_help:
     )
 
 
-if st.session_state.moby_help_open:
-    st.markdown(
-        """
-        <div class="moby-help">
-        <ul>
-          <li><b>*</b> tema ao acaso</li>
-          <li><b>&lt;</b> tema anterior</li>
-          <li><b>+</b> nova leitura do tema</li>
-          <li><b>&gt;</b> próximo tema</li>
-          <li><b>♫</b> som</li>
-          <li><b>?</b> help</li>
-        </ul>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-
 # =============================================================================
-# PALCO DE PROVA
+# PALCO — área de aparição; única região rolável
 # =============================================================================
 fonte_palco = str(st.session_state.get("moby_font_family", "Trebuchet MS"))
 fonte_css = fonte_palco_css(fonte_palco)
-corpo_palco = int(st.session_state.get("moby_font_size", 20))
-limite_palco = 315 if st.session_state.moby_image_visible else 520
+corpo_palco = int(st.session_state.get("moby_font_size", 18))
 
 if st.session_state.get("moby_mode") == "Off-Machina":
     titulo_palco, corpo_off = current_off_page()
-    poema_html = html.escape(str(corpo_off)).replace("\n", "<br>")
+    poema_html_original = html.escape(str(corpo_off)).replace("\n", "<br>")
 else:
     update_real_poem()
     titulo_palco = current_theme()
-    poema_html = st.session_state.get("moby_poem_html", "")
+    poema_html_original = str(st.session_state.get("moby_poem_html", ""))
 
-poema_html_original = str(poema_html)
 poema_html = translate_poem_html(poema_html_original)
 st.session_state.moby_current_title = str(titulo_palco)
 st.session_state.moby_current_poem_html = str(poema_html)
 
-# Troca justa: o Som ocupa o lugar do título; o yPoema permanece onde estava.
-if st.session_state.get("moby_sound_open", False):
-    render_sound_player(update_sound_audio(titulo_palco, poema_html))
-else:
-    # Aspas simples no atributo: as pilhas CSS contêm aspas duplas nos nomes das fontes.
-    st.markdown(
-        f"<div class='poem-title' style='font-family:{fonte_css}; font-size:{corpo_palco}px;'>"
-        f"{html.escape(str(titulo_palco))}</div>",
-        unsafe_allow_html=True,
-    )
+with st.container(key="moby_stage_scroll", border=False):
+    if st.session_state.moby_help_open:
+        with st.container(key="moby_help_text"):
+            st.markdown(load_manual_moby())
+        if st.session_state.get("moby_mode") == "Machina":
+            tema_help = current_theme()
+            matrix_path = _matrix_image_path_for_theme(tema_help)
+            if matrix_path:
+                st.image(str(matrix_path), width="stretch")
+            linhas_ficha = _help_ficha_linhas(tema_help)
+            if linhas_ficha:
+                st.text("\n".join(linhas_ficha))
+    else:
+        # O título continua sendo referência da lista e integra o Retrato,
+        # mas não ocupa o palco. Quando aberto, Som ocupa o início do palco.
+        if st.session_state.get("moby_sound_open", False):
+            render_sound_player(update_sound_audio(titulo_palco, poema_html))
 
-analise_ola = update_ola_analysis(titulo_palco, poema_html_original)
-ola_html = ""
-if analise_ola:
-    ola_html = (
-        "<div class='moby-ola-inline'>"
-        "<div class='moby-ola-inline-title'>OLA</div>"
-        + html.escape(str(analise_ola)).replace("\n", "<br>")
-        + "</div>"
-    )
+        analise_ola = update_ola_analysis(titulo_palco, poema_html_original)
+        ola_html = ""
+        if analise_ola:
+            ola_html = (
+                "<div class='moby-ola-inline'>"
+                "<div class='moby-ola-inline-title'>OLA</div>"
+                + html.escape(str(analise_ola)).replace("\n", "<br>")
+                + "</div>"
+            )
 
-st.markdown(
-    f"<div class='ypoema' style='font-family:{fonte_css}; font-size:{corpo_palco}px; max-height:{limite_palco}px;'>"
-    f"{poema_html}{ola_html}</div>",
-    unsafe_allow_html=True,
-)
-
-st.markdown('<div class="end-rule"></div>', unsafe_allow_html=True)
-
-
-# =============================================================================
-# AÇÕES FINAIS
-# =============================================================================
-c1, c2, c3 = st.columns(3, gap="small")
-
-with c1:
-    # Comportamento original: abre o texto; o ícone do bloco faz a cópia real.
-    with st.popover("Copiar", help="copiar texto", use_container_width=True):
-        st.code(ypoema_html_to_text(poema_html), language=None, wrap_lines=True)
-
-with c2:
-    st.button("Imagem", key="moby_image", width="stretch", on_click=toggle_image)
-
-with c3:
-    st.button("Retrato", key="moby_portrait", width="stretch", on_click=prepare_portrait)
-
-portrait_png = st.session_state.get("moby_portrait_png", b"")
-if portrait_png:
-    st.image(portrait_png, width="stretch")
-    save_left, save_center, save_right = st.columns([1.2, 1, 1.2])
-    with save_center:
-        st.download_button(
-            "salvar...",
-            data=portrait_png,
-            file_name=f"{st.session_state.get('moby_portrait_name', 'retrato')}.png",
-            mime="image/png",
-            key="moby_portrait_save",
-            width="stretch",
+        st.markdown(
+            f"<div class='ypoema' style='font-family:{fonte_css}; font-size:{corpo_palco}px;'>"
+            f"{poema_html}{ola_html}</div>",
+            unsafe_allow_html=True,
         )
 
-# Duas imagens distintas do mesmo banco temático no rodapé — apenas FIT.
+# =============================================================================
+# RODAPÉ — bloco físico fixo: controles + ilustração dispensável
+# =============================================================================
 update_real_image()
 imagem_1 = str(st.session_state.get("moby_image_path", "")).strip()
 imagem_2 = str(st.session_state.get("moby_image_path_2", "")).strip()
+footer_view = str(st.session_state.get("moby_footer_view", "images"))
 
-if st.session_state.moby_image_visible:
-    # As imagens pertencem ao palco visual, mas não precisam de HTML artesanal.
-    # st.image preserva a proporção (FIT, sem crop) e elimina a possibilidade
-    # de o código do contêiner vazar como texto para o palco.
-    img_col_1, img_col_2 = st.columns(2, gap="small")
+# Quando a ilustração é dispensada, apenas a faixa dos controles permanece;
+# o espaço liberado volta ao palco.
+if footer_view == "none":
+    st.markdown(
+        """
+        <style>
+        .st-key-moby_stage_scroll {
+            height: 525px; min-height: 525px; max-height: 525px;
+        }
+        .st-key-moby_footer_zone {
+            height: 40px; min-height: 40px; max-height: 40px; padding-bottom: 0;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
 
-    with img_col_1:
-        if imagem_1 and Path(imagem_1).is_file():
-            st.image(imagem_1, width=187)
+with st.container(key="moby_footer_zone", border=False):
+    with st.container(key="moby_footer_controls", border=False):
+        c1, c2, c3 = st.columns(3, gap="small")
 
-    with img_col_2:
-        if imagem_2 and Path(imagem_2).is_file():
-            st.image(imagem_2, width=187)
+        with c1:
+            with st.popover("Copiar", help="copiar texto", use_container_width=True):
+                st.code(ypoema_html_to_text(poema_html), language=None, wrap_lines=True)
+
+        with c2:
+            st.button("Imagem", key="moby_image", width="stretch", on_click=toggle_image)
+
+        with c3:
+            st.button("Retrato", key="moby_portrait", width="stretch", on_click=prepare_portrait)
+
+    if footer_view == "portrait" and st.session_state.get("moby_portrait_png", b""):
+        portrait_png = st.session_state.get("moby_portrait_png", b"")
+        with st.container(key="moby_portrait_stage", border=False):
+            st.image(portrait_png, width="content")
+            save_left, save_center, save_right = st.columns([1.35, 1, 1.35])
+            with save_center:
+                st.download_button(
+                    "salvar...",
+                    data=portrait_png,
+                    file_name=f"{st.session_state.get('moby_portrait_name', 'retrato')}.png",
+                    mime="image/png",
+                    key="moby_portrait_save",
+                    width="stretch",
+                )
+
+    elif footer_view != "none":
+        st.session_state.moby_footer_view = "images"
+        st.session_state.moby_image_visible = True
+        with st.container(key="moby_images_stage", border=False):
+            itens_imagem = []
+            if imagem_1 and Path(imagem_1).is_file():
+                itens_imagem.append(
+                    f'<img class="moby-footer-image moby-footer-image-left" src="{image_path_to_data_uri(imagem_1)}" alt="">'
+                )
+            else:
+                itens_imagem.append('<span></span>')
+
+            if imagem_2 and Path(imagem_2).is_file():
+                itens_imagem.append(
+                    f'<img class="moby-footer-image moby-footer-image-right" src="{image_path_to_data_uri(imagem_2)}" alt="">'
+                )
+            else:
+                itens_imagem.append('<span></span>')
+
+            st.markdown(
+                '<div class="moby-footer-images-flex">' + ''.join(itens_imagem) + '</div>',
+                unsafe_allow_html=True,
+            )
