@@ -1,5 +1,5 @@
-# moby_v058.py
-# Etapa 058: Help externo em ./md_files/Manual_Moby.md; Matrix + Ficha preservadas no scroll do palco.
+# moby_v060.py
+# Etapa 060: única exceção HTML do Moby = link autoral de nós; corpo oficial 20.
 # MACHINA — Mobile ultra-light
 # Blindagem HTML preservada; não altera basico.py, DNA, .ypo, .pip ou conteúdo autoral.
 
@@ -898,7 +898,7 @@ if "moby_font_family" not in st.session_state:
     st.session_state.moby_font_family = "Trebuchet MS"
 
 if "moby_font_size" not in st.session_state:
-    st.session_state.moby_font_size = 18
+    st.session_state.moby_font_size = 20
 
 if "moby_mode" not in st.session_state:
     st.session_state.moby_mode = "Machina"
@@ -1255,7 +1255,16 @@ def update_real_poem():
             # Converte apenas essa entidade histórica em espaço Unicode antes
             # de escapar o restante: o palco não interpreta HTML do yPoema.
             texto_linha = texto_linha.replace("&emsp;", "\u2003")
-            linhas.append(html.escape(texto_linha))
+            # ÚNICA exceção HTML do Moby: link autoral de "nós",
+            # já resolvido pelo lay_2_ypo e usado em 3 temas .ypo.
+            link_autoral_nos = (
+                '<a href="https://thispersondoesnotexist.com/" target="_blank">'
+                '... quem será essa pessoa que não existe?</a>'
+            )
+            if texto_linha.strip() == link_autoral_nos:
+                linhas.append(texto_linha)
+            else:
+                linhas.append(html.escape(texto_linha))
 
     st.session_state.moby_poem_html = "<br>".join(linhas)
     st.session_state.moby_poem_signature = assinatura
@@ -2023,9 +2032,9 @@ if st.session_state.moby_sidebar_open:
         (label for label, family in FONTES_MACHINA if family == st.session_state.moby_font_family),
         "Trebuchet",
     )
-    corpo_atual = int(st.session_state.get("moby_font_size", 18))
+    corpo_atual = int(st.session_state.get("moby_font_size", 20))
     if corpo_atual not in CORPOS_MOBY:
-        corpo_atual = 18
+        corpo_atual = 20
 
     fonte_col, corpo_col = st.columns([2.15, 1], gap="small")
     with fonte_col:
@@ -2210,7 +2219,7 @@ with b_help:
 # =============================================================================
 fonte_palco = str(st.session_state.get("moby_font_family", "Trebuchet MS"))
 fonte_css = fonte_palco_css(fonte_palco)
-corpo_palco = int(st.session_state.get("moby_font_size", 18))
+corpo_palco = int(st.session_state.get("moby_font_size", 20))
 
 if st.session_state.get("moby_mode") == "Off-Machina":
     titulo_palco, corpo_off = current_off_page()
