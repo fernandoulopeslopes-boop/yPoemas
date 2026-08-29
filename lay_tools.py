@@ -1,5 +1,5 @@
 # =============================================================================
-# lay_2_ypo_tools.py — puxadinho autorizado do motor histórico lay_2_ypo.py
+# lay_tools.py — puxadinho autorizado do motor histórico lay_2_ypo.py
 # =============================================================================
 # Modernizações de proteção/persistência ficam aqui para preservar legível e
 # reconhecível a arquitetura do motor.
@@ -136,13 +136,18 @@ def _newline_referencia(linhas):
 
 def aplicar_updated_em(linhas, agora=None):
     """
-    Cria/substitui uma única assinatura `updated em:` no FINAIS.
-    Não cria, remove, reordena nem modifica build_by.
+    Atualiza as duas assinaturas técnicas autorizadas no FINAIS:
+      - build_by lay_2_ypo: dd/mm/aaaa - hh:mm
+      - updated em: dd/mm/aaaa - hh:mm
+
+    Todo o restante do rodapé, inclusive território autoral, permanece intocado.
     """
     validar_estrutura_ypo(linhas)
     agora = agora or datetime.datetime.now()
     newline = _newline_referencia(linhas)
-    assinatura = "updated em: " + agora.strftime("%d/%m/%Y - %H:%M") + newline
+    carimbo = agora.strftime("%d/%m/%Y - %H:%M")
+    build_assinatura = f"build_by lay_2_ypo: {carimbo}"
+    updated_assinatura = f"updated em: {carimbo}"
 
     eof_idx = next(
         i for i, linha in enumerate(linhas)
@@ -151,37 +156,60 @@ def aplicar_updated_em(linhas, agora=None):
 
     antes = list(linhas[: eof_idx + 1])
     finais = list(linhas[eof_idx + 1 :])
+    novos_finais = []
 
-    # Remove apenas assinaturas updated antigas. Todo o resto permanece intocado.
-    sem_updated = [linha for linha in finais if not _eh_updated(linha)]
+    build_pos = None
+    updated_pos = None
 
-    # Posição canônica: imediatamente após o último build_by, se existir.
-    build_indices = [i for i, linha in enumerate(sem_updated) if _eh_build_by(linha)]
-    if build_indices:
-        pos = build_indices[-1] + 1
-    else:
-        pos = len(sem_updated)
+    for linha in finais:
+        fim = linha_fim(linha) or newline
 
-    # Evita colagem caso a linha anterior não possua terminador.
-    if pos > 0 and linha_fim(sem_updated[pos - 1]) == "":
-        assinatura = newline + assinatura
-    elif pos == 0 and linha_fim(antes[-1]) == "":
-        assinatura = newline + assinatura
+        if _eh_build_by(linha):
+            if build_pos is None:
+                build_pos = len(novos_finais)
+                novos_finais.append(build_assinatura + fim)
+            # Assinaturas build_by duplicadas são território técnico;
+            # mantém-se uma única assinatura canônica.
+            continue
 
-    sem_updated.insert(pos, assinatura)
-    return antes + sem_updated
+        if _eh_updated(linha):
+            if updated_pos is None:
+                updated_pos = len(novos_finais)
+                novos_finais.append(updated_assinatura + fim)
+            # Mesmo princípio: uma única assinatura updated em.
+            continue
+
+        novos_finais.append(linha)
+
+    if build_pos is None:
+        # Sem build_by anterior: cria logo no início do FINAIS,
+        # sem alterar nenhum conteúdo autoral existente.
+        novos_finais.insert(0, build_assinatura + newline)
+        build_pos = 0
+        if updated_pos is not None:
+            updated_pos += 1
+
+    if updated_pos is None:
+        # Posição canônica: imediatamente após build_by.
+        novos_finais.insert(build_pos + 1, updated_assinatura + newline)
+
+    return antes + novos_finais
 
 
-def _sem_updated(linhas):
-    return [linha for linha in linhas if not _eh_updated(linha)]
+def _sem_assinaturas_tecnicas(linhas):
+    return [
+        linha for linha in linhas
+        if not _eh_updated(linha) and not _eh_build_by(linha)
+    ]
 
 
 def validar_persistencia(original_linhas, novas_linhas):
     """
     CAE estrutural da escrita:
-      - HEADER e FINAIS permanecem idênticos, exceto `updated em:`;
+      - HEADER permanece idêntico;
       - BODY mantém estrutura/conteúdo e só pode mudar o campo 6;
-      - build_by jamais pode ser criado, removido ou alterado.
+      - no FINAIS, somente build_by e updated em podem mudar;
+      - todo o restante do rodapé permanece byte a byte e na mesma ordem.
     """
     validar_estrutura_ypo(original_linhas)
     validar_estrutura_ypo(novas_linhas)
@@ -232,18 +260,30 @@ def validar_persistencia(original_linhas, novas_linhas):
                     f"persistência bloqueada: campo {idx} mudou no BODY {numero}"
                 )
 
-    # Retirando apenas `updated em:`, os FINAIS devem continuar exatamente iguais.
-    if _sem_updated(of) != _sem_updated(nf):
-        raise RuntimeError("persistência bloqueada: FINAIS mudaram além de updated em")
+    # Removendo somente as duas assinaturas técnicas autorizadas,
+    # o restante do FINAIS deve ser rigorosamente idêntico.
+    if _sem_assinaturas_tecnicas(of) != _sem_assinaturas_tecnicas(nf):
+        raise RuntimeError(
+            "persistência bloqueada: FINAIS mudaram além de build_by/updated em"
+        )
 
-    builds_original = [linha for linha in of if _eh_build_by(linha)]
     builds_novos = [linha for linha in nf if _eh_build_by(linha)]
-    if builds_original != builds_novos:
-        raise RuntimeError("persistência bloqueada: build_by mudou")
+    if len(builds_novos) != 1:
+        raise RuntimeError(
+            "persistência bloqueada: build_by deve existir uma única vez"
+        )
+    if not str(builds_novos[0]).strip().casefold().startswith(
+        "build_by lay_2_ypo:"
+    ):
+        raise RuntimeError(
+            "persistência bloqueada: assinatura build_by fora do formato canônico"
+        )
 
     updated_novos = [linha for linha in nf if _eh_updated(linha)]
     if len(updated_novos) != 1:
-        raise RuntimeError("persistência bloqueada: updated em deve existir uma única vez")
+        raise RuntimeError(
+            "persistência bloqueada: updated em deve existir uma única vez"
+        )
 
 
 def gravar_ypo_certificado(path, original_linhas, linhas_com_body_atualizado, agora=None):

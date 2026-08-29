@@ -1,5 +1,5 @@
-# moby_v060.py
-# Etapa 060: única exceção HTML do Moby = link autoral de nós; corpo oficial 20.
+# moby_v061.py
+# Etapa 061: ajustes humanos de Help/Retrato sobre a Etapa 060; corpo oficial 20.
 # MACHINA — Mobile ultra-light
 # Blindagem HTML preservada; não altera basico.py, DNA, .ypo, .pip ou conteúdo autoral.
 
@@ -1377,6 +1377,74 @@ def _fmt_help_numero(valor):
         return texto
 
 
+
+def _numero_por_extenso_pt(valor):
+    """Leitura humana de número inteiro em português."""
+    texto = str(valor or "").strip()
+    digitos = re.sub(r"[^0-9]", "", texto)
+    if not digitos:
+        return ""
+    numero = int(digitos)
+    if numero == 0:
+        return "zero"
+
+    unidades = ["", "um", "dois", "três", "quatro", "cinco", "seis", "sete", "oito", "nove"]
+    especiais = {10:"dez",11:"onze",12:"doze",13:"treze",14:"quatorze",15:"quinze",16:"dezesseis",17:"dezessete",18:"dezoito",19:"dezenove"}
+    dezenas = ["", "", "vinte", "trinta", "quarenta", "cinquenta", "sessenta", "setenta", "oitenta", "noventa"]
+    centenas = ["", "cento", "duzentos", "trezentos", "quatrocentos", "quinhentos", "seiscentos", "setecentos", "oitocentos", "novecentos"]
+
+    def bloco_999(n):
+        if n == 0: return ""
+        if n == 100: return "cem"
+        partes = []
+        c, r = divmod(n, 100)
+        if c: partes.append(centenas[c])
+        if r:
+            if r < 10: partes.append(unidades[r])
+            elif r < 20: partes.append(especiais[r])
+            else:
+                d, u = divmod(r, 10)
+                trecho = dezenas[d] + ((" e " + unidades[u]) if u else "")
+                partes.append(trecho)
+        return " e ".join(partes)
+
+    escalas = [
+        ("", ""), ("mil", "mil"), ("milhão", "milhões"), ("bilhão", "bilhões"),
+        ("trilhão", "trilhões"), ("quadrilhão", "quadrilhões"), ("quintilhão", "quintilhões"),
+        ("sextilhão", "sextilhões"), ("septilhão", "septilhões"), ("octilhão", "octilhões"),
+        ("nonilhão", "nonilhões"), ("decilhão", "decilhões"), ("undecilhão", "undecilhões"),
+        ("duodecilhão", "duodecilhões"), ("tredecilhão", "tredecilhões"),
+        ("quatuordecilhão", "quatuordecilhões"), ("quindecilhão", "quindecilhões"),
+        ("sexdecilhão", "sexdecilhões"), ("septendecilhão", "septendecilhões"),
+        ("octodecilhão", "octodecilhões"), ("novendecilhão", "novendecilhões"),
+        ("vigintilhão", "vigintilhões"),
+    ]
+    grupos=[]; n=numero
+    while n:
+        grupos.append(n%1000); n//=1000
+    if len(grupos) > len(escalas):
+        return f"{numero} (10 elevado a {len(str(numero))-1})"
+    partes=[]
+    for i in range(len(grupos)-1,-1,-1):
+        g=grupos[i]
+        if not g: continue
+        if i==0:
+            partes.append(bloco_999(g)); continue
+        singular, plural=escalas[i]
+        if i==1:
+            partes.append("mil" if g==1 else f"{bloco_999(g)} mil")
+        else:
+            partes.append(f"{'um' if g==1 else bloco_999(g)} {singular if g==1 else plural}")
+    if len(partes)==1: return partes[0]
+    return ", ".join(partes[:-1]) + " e " + partes[-1]
+
+
+def _variacoes_humano(valor):
+    texto = str(valor or "").strip()
+    match = re.search(r"[0-9][0-9.,]*", texto)
+    return _numero_por_extenso_pt(match.group(0)) if match else ""
+
+
 def _build_seal_from_ypo(nome_tema):
     path = Path("./data") / f"{str(nome_tema or '').strip()}.ypo"
     selo = ""
@@ -1406,13 +1474,23 @@ def _help_ficha_linhas(nome_tema):
     ]
     linhas = []
     for rotulo, valor in pares:
+        valor_bruto = valor
         valor = _fmt_help_numero(valor) if rotulo not in {"Título", "Livro", "Banco temático"} else str(valor or "").strip()
         if valor:
             linhas.append(f"{rotulo}: {valor}")
+            if rotulo == "Qtd. de Variações":
+                humano = _variacoes_humano(valor_bruto)
+                if humano:
+                    linhas.append(humano)
     selo = _build_seal_from_ypo(nome_tema)
     if selo:
         linhas.append(selo)
     return linhas
+
+@st.dialog("Retrato", width="large")
+def ampliar_retrato_moby(png):
+    st.image(png, width="stretch")
+
 
 def toggle_help():
     st.session_state.moby_help_open = not st.session_state.moby_help_open
@@ -1765,7 +1843,7 @@ st.markdown(
 
     .st-key-moby_portrait_stage img {
         display: block !important;
-        max-height: 118px !important;
+        max-height: 150px !important;
         width: auto !important;
         max-width: 100% !important;
         margin: 0 auto !important;
@@ -1897,35 +1975,24 @@ st.markdown(
         border-radius: 9px !important;
         font-size: .88rem !important;
     }
-
-    /* O controle nativo de expansão do Retrato precisa aparecer. */
-    button[title="Fullscreen"],
-    button[aria-label="Fullscreen"],
-    button[title="View fullscreen"],
-    button[aria-label="View fullscreen"] {
-        opacity: 1 !important;
-        visibility: visible !important;
-        filter: none !important;
-        background: rgba(255,255,255,.98) !important;
-        border: 2px solid rgba(0,0,0,.58) !important;
-        color: #111 !important;
-        width: 36px !important;
-        height: 36px !important;
-        min-width: 36px !important;
-        min-height: 36px !important;
-        box-shadow: 0 2px 8px rgba(0,0,0,.28) !important;
-        z-index: 20 !important;
-    }
-
-    button[title="Fullscreen"] svg,
-    button[aria-label="Fullscreen"] svg,
-    button[title="View fullscreen"] svg,
-    button[aria-label="View fullscreen"] svg {
-        width: 21px !important;
-        height: 21px !important;
-        color: #111 !important;
-        stroke: #111 !important;
-        opacity: 1 !important;
+    /* Fullscreen nativo fora do Moby: Retrato usa apenas Ampliar/Salvar. */
+    button[title*="fullscreen" i],
+    button[aria-label*="fullscreen" i],
+    button[data-testid="stImageFullscreenButton"],
+    [data-testid="stImageFullscreenButton"],
+    [data-testid*="Fullscreen"] {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        width: 0 !important;
+        height: 0 !important;
+        min-width: 0 !important;
+        min-height: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border: 0 !important;
+        overflow: hidden !important;
+        pointer-events: none !important;
     }
 
 
@@ -2309,15 +2376,24 @@ with st.container(key="moby_footer_zone", border=False):
     if footer_view == "portrait" and st.session_state.get("moby_portrait_png", b""):
         portrait_png = st.session_state.get("moby_portrait_png", b"")
         with st.container(key="moby_portrait_stage", border=False):
-            st.image(portrait_png, width="content")
-            save_left, save_center, save_right = st.columns([1.35, 1, 1.35])
-            with save_center:
+            portrait_view, portrait_actions = st.columns([2.25, 1.0], gap="small")
+            with portrait_view:
+                st.image(portrait_png, width="content")
+            with portrait_actions:
+                if st.button(
+                    "Ampliar",
+                    key="moby_portrait_ampliar",
+                    help="ampliar",
+                    width="stretch",
+                ):
+                    ampliar_retrato_moby(portrait_png)
                 st.download_button(
-                    "salvar...",
+                    "Salvar",
                     data=portrait_png,
                     file_name=f"{st.session_state.get('moby_portrait_name', 'retrato')}.png",
                     mime="image/png",
                     key="moby_portrait_save",
+                    help="salvar",
                     width="stretch",
                 )
 

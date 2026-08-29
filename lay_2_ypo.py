@@ -15,13 +15,14 @@ from lay_tools import (
 )
 
 
+
 def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo yPoema
     """
     Motor histórico da Machina.
 
     A arquitetura permanece explícita: HEADER / BODY / FINAIS.
     Na persistência, somente itimos_atual pode mudar no BODY.
-    O lay_2_ypo não cria nem altera build_by; atualiza apenas "updated em:".
+    A persistência certificada atualiza itimos_atual e as assinaturas técnicas build_by/updated em.
     """
 
     lista_header = []
@@ -254,7 +255,7 @@ def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo y
 
     novo_poema.append(acerto_final(novo_verso))
 
-    if nome_tema == "Nós":
+    if "nós" in nome_tema.casefold():
         novo_poema.append("\n")
         novo_poema.append(
             '<a href="https://thispersondoesnotexist.com/" target="_blank">... quem será essa pessoa que não existe?</a>'

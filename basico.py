@@ -53,7 +53,7 @@ livros_list = [
 ]
 
 # Constantes usadas pelo Build Rimas em tools.py.
-# tools_mod.render_page(globals()) transfere este namespace ao módulo Tools.
+# tools_mod.show_tools(globals()) transfere este namespace ao módulo Tools.
 BUILD_RIMAS_WORD_RE = re.compile(
     r"[^\W\d_]+(?:[-'][^\W\d_]+)*",
     re.UNICODE,
@@ -1374,12 +1374,12 @@ def list_readings():
 # =============================================================================
 def load_temas(book):  # List of themes inside a Book
     """DNA ÚNICO: lista temas do livro sem consultar rol_*.txt."""
-    return dna_core.temas_do_livro(book, include_testes=True)
+    return dna_core.get_temas_livro(book, include_testes=True)
 
 @st.cache_data
 def load_info(nome_tema):
     """Compatibilidade de apresentação: lê exclusivamente o DNA."""
-    row = dna_core.registro(nome_tema)
+    row = dna_core.get_registro(nome_tema)
     if not row:
         return "nonono"
     linhas = [
@@ -2016,7 +2016,7 @@ def _help_find_ypo_file(nome_tema):
 
 def _help_info_estavel(nome_tema):
     """Ficha cadastral: autoridade permanente = base/DNA.TXT."""
-    row = dna_core.registro(nome_tema)
+    row = dna_core.get_registro(nome_tema)
     if not row:
         return {"titulo": str(nome_tema or "").strip()}
     return {
@@ -2145,6 +2145,74 @@ def _qtd_variacoes_index(nome_tema):
 
     return _qtd_variacoes_rodape_ypo(nome_tema)
 
+
+def _numero_por_extenso_pt(valor):
+    """Leitura humana de número inteiro em português."""
+    texto = str(valor or "").strip()
+    digitos = re.sub(r"[^0-9]", "", texto)
+    if not digitos:
+        return ""
+    numero = int(digitos)
+    if numero == 0:
+        return "zero"
+
+    unidades = ["", "um", "dois", "três", "quatro", "cinco", "seis", "sete", "oito", "nove"]
+    especiais = {10:"dez",11:"onze",12:"doze",13:"treze",14:"quatorze",15:"quinze",16:"dezesseis",17:"dezessete",18:"dezoito",19:"dezenove"}
+    dezenas = ["", "", "vinte", "trinta", "quarenta", "cinquenta", "sessenta", "setenta", "oitenta", "noventa"]
+    centenas = ["", "cento", "duzentos", "trezentos", "quatrocentos", "quinhentos", "seiscentos", "setecentos", "oitocentos", "novecentos"]
+
+    def bloco_999(n):
+        if n == 0: return ""
+        if n == 100: return "cem"
+        partes = []
+        c, r = divmod(n, 100)
+        if c: partes.append(centenas[c])
+        if r:
+            if r < 10: partes.append(unidades[r])
+            elif r < 20: partes.append(especiais[r])
+            else:
+                d, u = divmod(r, 10)
+                trecho = dezenas[d] + ((" e " + unidades[u]) if u else "")
+                partes.append(trecho)
+        return " e ".join(partes)
+
+    escalas = [
+        ("", ""), ("mil", "mil"), ("milhão", "milhões"), ("bilhão", "bilhões"),
+        ("trilhão", "trilhões"), ("quadrilhão", "quadrilhões"), ("quintilhão", "quintilhões"),
+        ("sextilhão", "sextilhões"), ("septilhão", "septilhões"), ("octilhão", "octilhões"),
+        ("nonilhão", "nonilhões"), ("decilhão", "decilhões"), ("undecilhão", "undecilhões"),
+        ("duodecilhão", "duodecilhões"), ("tredecilhão", "tredecilhões"),
+        ("quatuordecilhão", "quatuordecilhões"), ("quindecilhão", "quindecilhões"),
+        ("sexdecilhão", "sexdecilhões"), ("septendecilhão", "septendecilhões"),
+        ("octodecilhão", "octodecilhões"), ("novendecilhão", "novendecilhões"),
+        ("vigintilhão", "vigintilhões"),
+    ]
+    grupos=[]; n=numero
+    while n:
+        grupos.append(n%1000); n//=1000
+    if len(grupos) > len(escalas):
+        return f"{numero} (10 elevado a {len(str(numero))-1})"
+    partes=[]
+    for i in range(len(grupos)-1,-1,-1):
+        g=grupos[i]
+        if not g: continue
+        if i==0:
+            partes.append(bloco_999(g)); continue
+        singular, plural=escalas[i]
+        if i==1:
+            partes.append("mil" if g==1 else f"{bloco_999(g)} mil")
+        else:
+            partes.append(f"{'um' if g==1 else bloco_999(g)} {singular if g==1 else plural}")
+    if len(partes)==1: return partes[0]
+    return ", ".join(partes[:-1]) + " e " + partes[-1]
+
+
+def _variacoes_humano(valor):
+    texto = str(valor or "").strip()
+    match = re.search(r"[0-9][0-9.,]*", texto)
+    return _numero_por_extenso_pt(match.group(0)) if match else ""
+
+
 def _build_seal_from_ypo(nome_tema):
     """Lê o selo build_by real do tema, sem inventar assinatura paralela."""
     path = os.path.join("./data", str(nome_tema or "").strip() + ".ypo")
@@ -2178,6 +2246,9 @@ def update_help_info(nome_tema):
         linhas.append(f"Total de ítimos: {_fmt_numero_leitor(info['total_de_itimos'])}")
     if info.get("qtd_de_variacoes"):
         linhas.append(f"Qtd. de Variações: {_fmt_numero_leitor(info['qtd_de_variacoes'])}")
+        humano = _variacoes_humano(info["qtd_de_variacoes"])
+        if humano:
+            linhas.append(humano)
     selo = _build_seal_from_ypo(nome_tema)
     if selo:
         linhas.append(selo)
@@ -2675,22 +2746,6 @@ def make_retrato_xerox(prefixo):
     titulo = st.session_state.get(f"{prefixo}_palco_xerox_title", "")
     contexto = st.session_state.get(f"{prefixo}_palco_xerox_context")
 
-    # A OLA pertence ao quadro visível. Quando estiver materializada no palco,
-    # congela junto com o texto para que também apareça na foto/Retrato.
-    ola_ativa = str(st.session_state.get("voz_analise", "Machina")).upper() == "OLA"
-    ola_texto = (
-        str(st.session_state.get(f"{prefixo}_palco_xerox_ola_text", "") or "").strip()
-        if ola_ativa else ""
-    )
-    if ola_texto:
-        ola_titulo = str(st.session_state.get(f"{prefixo}_palco_xerox_ola_title", "") or "OLA").strip()
-        ola_subtitulo = str(st.session_state.get(f"{prefixo}_palco_xerox_ola_subtitle", "") or "").strip()
-        bloco_ola = ola_titulo
-        if ola_subtitulo:
-            bloco_ola += " — " + ola_subtitulo
-        bloco_ola += "\n" + ola_texto
-        texto = str(texto or "").rstrip() + "\n\n" + bloco_ola
-
     # Fidelidade visual do clique: usa a ÚLTIMA imagem efetivamente renderizada
     # na sidebar, não uma variável de estado que já possa ter sido renovada.
     # Essa chave é gravada por render_sidebar_context_image() no fim de cada rerun.
@@ -2765,6 +2820,11 @@ def show_retrato_no_topo(prefixo):
         focar_retrato_no_palco(anchor)
     return True
 
+@st.dialog("Retrato", width="large")
+def ampliar_retrato_local(png):
+    st.image(png, use_container_width=True)
+
+
 def _toggle_sidebar_image():
     """Liga/desliga somente a imagem contextual da sidebar."""
     st.session_state["draw"] = not bool(st.session_state.get("draw", True))
@@ -2799,14 +2859,21 @@ def show_copy_retrato_xerox(prefixo, texto_copia):
 
     png = st.session_state.get(f"{prefixo}_imagem_retrato")
     if png:
-        col_left, col_save, col_right = st.columns([1, 1, 1])
-        with col_save:
+        with retrato_col:
+            if st.button(
+                "Ampliar",
+                key=f"{prefixo}_retrato_ampliar",
+                help="ampliar",
+                use_container_width=True,
+            ):
+                ampliar_retrato_local(png)
             st.download_button(
-                "salvar Retrato",
+                "Salvar",
                 data=png,
                 file_name=f"{st.session_state.get(f'{prefixo}_nome_retrato', 'retrato')}.png",
                 mime="image/png",
                 key=f"{prefixo}_retrato_save",
+                help="salvar",
                 use_container_width=True,
                 on_click="ignore",
             )
@@ -3151,7 +3218,7 @@ def load_images():
 def load_arts(nome_tema):  # Select image for arts
     """Banco visual do tema vem exclusivamente do DNA."""
     nome_tema = str(nome_tema or "").strip()
-    grupo = dna_core.banco_do_tema(nome_tema) or "machina"
+    grupo = dna_core.get_banco_tema(nome_tema) or "machina"
     path = "./images/" + grupo + "/"
     if not os.path.isdir(path):
         return None
@@ -3479,7 +3546,7 @@ def _analysis_kind_label(kind):
     """Tipo da análise em caixa baixa para o subtítulo."""
     return str(kind or "").strip().casefold()
 
-def render_analise_palco(texto, prefixo=None):
+def render_analise_palco(texto):
     """Renderiza análise no palco direito, com cabeçalho padrão."""
     fonte_palco = _fonte_palco_leitor()
     fonte_palco_css = _fonte_palco_css(fonte_palco)
@@ -3489,13 +3556,6 @@ def render_analise_palco(texto, prefixo=None):
     kind = st.session_state.get("tipo_analise", "")
     titulo = _analysis_voice_title(voice)
     subtitulo = _analysis_kind_label(kind)
-
-    # Guarda exatamente a OLA que acabou de ser exibida. O Retrato consome
-    # esse Xerox no clique seguinte, sem gerar uma segunda análise/título.
-    if prefixo:
-        st.session_state[f"{prefixo}_palco_xerox_ola_text"] = str(texto or "")
-        st.session_state[f"{prefixo}_palco_xerox_ola_title"] = str(titulo or "")
-        st.session_state[f"{prefixo}_palco_xerox_ola_subtitle"] = str(subtitulo or "")
 
     safe_text = html.escape(str(texto or "")).replace("\n", "<br>")
     safe_title = html.escape(titulo)
@@ -4305,40 +4365,24 @@ def _render_eureka_registro(texto_html, texto_copia, tema, imagem, key_prefix, s
     show_copy_retrato_xerox(prefixo, texto_copia)
 
 def _render_acros_texto(acros_html):
-    """Renderiza ACROS/AKROS com a mesma fonte e corpo escolhidos na sidebar."""
-    # Lê diretamente os widgets quando disponíveis. Assim o ACROS não depende
-    # de uma cópia intermediária de estado e acompanha Fonte & Letras no rerun atual.
-    lookup_fontes = {label: fonte for label, fonte in FONTES_MACHINA}
-    escolha_fonte = st.session_state.get("sidebar_font_select")
-    fonte_palco = lookup_fontes.get(escolha_fonte, _fonte_palco_leitor())
-    try:
-        corpo_palco = int(st.session_state.get("sidebar_size_select", _corpo_palco_leitor()))
-    except Exception:
-        corpo_palco = _corpo_palco_leitor()
-    corpo_palco = max(14, min(34, corpo_palco))
+    """Renderiza ACROS/AKROS com a mesma fonte escolhida para o Palco."""
+    fonte_palco = _fonte_palco_leitor()
     fonte_css = _fonte_palco_css(fonte_palco)
-                                       
+    corpo_palco = _corpo_palco_leitor()
 
-                                                     
-                                                                                   
+    # ACROS/AKROS usam <strong> na inicial destacada.
+    # A família é aplicada inline também ali para não depender de herança CSS.
     conteudo = str(acros_html or "")
-                                
-                   
-                                                                
-     
+    conteudo = conteudo.replace(
+        "<strong>",
+        f'<strong style="font-family:{fonte_css} !important;">',
+    )
 
     st.markdown(
         f"""
-        <style>
-        .acros-resultado,
-        .acros-resultado * {{
-            font-family:{fonte_css} !important;
-            font-size:{corpo_palco}px !important;
-        }}
-        </style>
         <div class="acros-resultado" style="
             font-family:{fonte_css} !important;
-            font-size:{corpo_palco}px !important;
+            font-size:{corpo_palco}px;
             line-height:1.35;
             font-weight:400;
             color:#000;
@@ -4868,209 +4912,6 @@ def page_mini():
 # =============================================================================
 # < PAGE > 2 — yPOEMAS
 # =============================================================================
-def mapa_subterraneo_ypoemas():
-    """LINKs inteligentes da yPoemas: cada linha de links.txt é uma lista autônoma."""
-    tema_atual = str(st.session_state.get("tema", "")).strip()
-    if not tema_atual:
-        return
-
-    def nome_link(valor):
-        # Preserva espaços internos: nomes autorais distintos não podem colapsar.
-        # Ex.: "Oculto" != "o Culto". Apenas normaliza espaços repetidos/bordas e caixa.
-        return " ".join(str(valor or "").split()).casefold()
-
-    def ler_lista_link_do_tema(tema):
-        """Relê links.txt e devolve a primeira lista TOP DOWN que contenha o tema."""
-        links_path = _project_path("base", "links.txt")
-        if not os.path.isfile(links_path):
-            return []
-
-        tema_cf = nome_link(tema)
-        try:
-            with open(links_path, encoding="utf-8-sig") as arquivo_links:
-                for raw in arquivo_links:
-                    linha = raw.strip()
-                    if not linha or linha.startswith("#"):
-                        continue
-                    if not (linha.startswith("|") and linha.endswith("|")):
-                        continue
-
-                    campos = [campo.strip() for campo in linha[1:-1].split("|")]
-                    campos = [campo for campo in campos if campo]
-                    if len(campos) < 2:
-                                   
-                                                                                                             
-                        continue
-
-                    if any(nome_link(campo) == tema_cf for campo in campos):
-                        return campos
-        except OSError:
-            return []
-
-        return []
-                                     
-                                                                        
-
-    lista_link = ler_lista_link_do_tema(tema_atual)
-                                         
-                                                       
-                                                                                                
-                                                         
-                                                    
-                                                                              
-    if not lista_link:
-                                                
-                                           
-                   
-        return
-
-    atual_cf = nome_link(tema_atual)
-    links = []
-    links_cf = set()
-    for item in lista_link:
-        item_cf = nome_link(item)
-        if item_cf and item_cf != atual_cf and item_cf not in links_cf:
-            links.append(item)
-            links_cf.add(item_cf)
-
-    if not links:
-                                                             
-        return
-
-    def executar_link(destino):
-        destino = str(destino or "").strip()
-        destino_cf = nome_link(destino)
-        if not destino_cf:
-            return
-
-        livro_destino = "todos os temas"
-        temas_destino = load_temas(livro_destino)
-        indice = next(
-            (
-                i
-                for i, tema in enumerate(temas_destino)
-                if nome_link(tema) == destino_cf
-            ),
-            None,
-                                     
-             
-                 
-                                                       
-                                                
-              
-                 
-        )
-
-        if indice is None:
-            arquivo_destino = _help_find_ypo_file(destino)
-            if arquivo_destino:
-                chave_arquivo = _md_nome_chave(
-                    os.path.splitext(os.path.basename(arquivo_destino))[0]
-                )
-                if chave_arquivo:
-                    indice = next(
-                        (
-                            i
-                            for i, tema in enumerate(temas_destino)
-                            if _md_nome_chave(tema) == chave_arquivo
-                        ),
-                        None,
-                    )
-
-        if indice is None:
-            return
-                                      
-                                                                                              
-                                                   
-                                 
-                                          
-                                                                                                       
-                                          
-                                                 
-                      
-                                         
-
-        destino_canonico = temas_destino[indice]
-              
-
-        limpar_retrato("ypo")
-        limpar_copias_palco()
-
-        st.session_state.book = livro_destino
-        st.session_state.take = indice
-        st.session_state.tema = destino_canonico
-        st.session_state["ypo_keep_book"] = livro_destino
-        st.session_state["ypo_keep_take"] = indice
-        st.session_state["ypo_keep_tema"] = destino_canonico
-        next_tema_key()
-
-    if st.session_state.get("ypo_imagem_retrato"):
-        return
-                                                                                     
-             
-     
-
-    fonte_links_css = _fonte_palco_css(_fonte_palco_leitor())
-                                        
-                                                 
-                      
-                                                                                         
-                 
-         
-
-    st.markdown(
-        f"""
-        <style>
-        div[class*="st-key-links_machina_popover_"] button,
-        div[class*="st-key-links_machina_popover_"] button *,
-        div[class*="st-key-links_machina_item_"] button,
-        div[class*="st-key-links_machina_item_"] button * {{
-            font-family: {fonte_links_css} !important;
-            font-weight: 600 !important;
-            letter-spacing: 0.015em !important;
-        }}
-
-        div[class*="st-key-links_machina_item_"] button p {{
-            text-decoration-line: underline !important;
-            text-decoration-thickness: 1px !important;
-            text-underline-offset: 0.16em !important;
-        }}
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
-                   
-
-    _vazio, col_link = st.columns([8.6, 1.4])
-    with col_link:
-        pop_key = "links_machina_popover_" + re.sub(r"[^0-9A-Za-z_]+", "_", atual_cf)
-        try:
-            painel_links = st.popover("link", use_container_width=True)
-        except TypeError:
-            painel_links = st.popover("link")
-                                                                      
-                         
-                                            
-
-        with painel_links:
-            for n, destino in enumerate(links):
-                item_key = (
-                    "links_machina_item_"
-                    + re.sub(r"[^0-9A-Za-z_]+", "_", atual_cf)
-                    + "_"
-                    + str(n)
-                    + "_"
-                    + re.sub(r"[^0-9A-Za-z_]+", "_", nome_link(destino))
-                )
-                st.button(
-                    str(destino)[:12],
-                    key=item_key,
-                    use_container_width=True,
-                    on_click=executar_link,
-                    args=(destino,),
-                )
-
-
 def page_ypoemas():
     sync_livro_tema()
     temas = load_temas(_current_book())
@@ -5209,9 +5050,6 @@ def page_ypoemas():
 
         ypoemas_expander = st.expander(what_book, expanded=True)
         with ypoemas_expander:
-            # LINKs: canto superior direito do palco, antes do conteúdo do yPoema.
-            mapa_subterraneo_ypoemas()
-
             ypo_contexto = (str(_current_book()), int(st.session_state.get("take", 0)), str(st.session_state.get("tema", "")), str(st.session_state.get("lang", "pt")))
             preservar_ypo = bool(st.session_state.pop("ypo_retrato_keep_palco", False))
             usou_xerox_ypo = bool(preservar_ypo and tuple(st.session_state.get("ypo_palco_xerox_context") or ()) == ypo_contexto and st.session_state.get("ypo_palco_xerox_text"))
@@ -5263,11 +5101,8 @@ def page_ypoemas():
                 with col_poema:
                     write_ypoema(LOGO_TEXTO, None)
                 with col_analise:
-                    render_analise_palco(analise_texto, prefixo="ypo")
+                    render_analise_palco(analise_texto)
             else:
-                st.session_state.pop("ypo_palco_xerox_ola_text", None)
-                st.session_state.pop("ypo_palco_xerox_ola_title", None)
-                st.session_state.pop("ypo_palco_xerox_ola_subtitle", None)
                 write_ypoema(LOGO_TEXTO, None)
 
             st.session_state["ypo_palco_xerox_text"] = LOGO_TEXTO
@@ -5277,7 +5112,6 @@ def page_ypoemas():
             if st.session_state.get("ypo_contexto_retrato") and tuple(st.session_state.get("ypo_contexto_retrato")) != ypo_contexto:
                 _limpar_retrato_contextual("ypo")
             show_copy_retrato_xerox("ypo", _ypoema_html_to_text(LOGO_TEXTO))
-                                      
 
             if manu:
                 LOGO_TEXTO = load_info(st.session_state.tema)
@@ -5816,11 +5650,8 @@ def page_off_machina():  # available off_machina_books
                 with col_texto:
                     render_off_texto()
                 with col_analise:
-                    render_analise_palco(analise_texto, prefixo="off")
+                    render_analise_palco(analise_texto)
             else:
-                st.session_state.pop("off_palco_xerox_ola_text", None)
-                st.session_state.pop("off_palco_xerox_ola_title", None)
-                st.session_state.pop("off_palco_xerox_ola_subtitle", None)
                 render_off_texto()
 
             update_readings(off_book_name)
@@ -5883,16 +5714,17 @@ def page_atelier():
 
     if not st.session_state.get("atelier_image"):
         _set_atelier_image_next()
-    tools_mod.render_page(globals())
+    tools_mod.show_tools(globals())
 
 
 # =============================================================================
 # SAÍDA / ROTEAMENTO
 # Entrada comum para LOCAL e MOBILE.
 # =============================================================================
-def main(app_variant="local"):
+def start_machina(app_variant="local"):
     global APP_VARIANT
     APP_VARIANT = "mobile" if str(app_variant).strip().lower() == "mobile" else "local"
+                                                                                   
 
     apply_styles()
     init_session_state()

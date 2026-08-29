@@ -62,38 +62,192 @@ def _bind_host(host_globals):
     for name, value in host_globals.items():
         if not name.startswith("__"):
             globals()[name] = value
-from ypo_structure import (
-    YpoDocument,
-    YpoRecord,
-    parse_record as _ypo_parse_record,
-    payload_itimos as _ypo_payload_itimos,
-    read_document as _ypo_read_document,
-    validate_boundary as _ypo_validate_boundary,
-)
+@dataclass(frozen=True)
+class YpoRecord:
+    raw: str
+    fields: tuple
 
+    @property
+    def is_blank_command(self):
+        return len(self.fields) == 4 and self.fields[2] == "00"
+
+    @property
+    def is_spacing_command(self):
+        return re.fullmatch(r"\|\$+\|", self.raw) is not None
+
+    @property
+    def is_content(self):
+        return not self.is_blank_command and not self.is_spacing_command
+
+    @property
+    def line_id(self):
+        return self.fields[1].strip() if len(self.fields) > 1 else ""
+
+    @property
+    def idea_id(self):
+        return self.fields[2].strip() if len(self.fields) > 2 else ""
+
+    @property
+    def source(self):
+        return self.fields[3].strip() if len(self.fields) > 3 else ""
+
+    @property
+    def random_mode(self):
+        return self.fields[4].strip() if len(self.fields) > 4 else ""
+
+    @property
+    def declared_total(self):
+        if not self.is_content:
+            raise ValueError(f"comando estrutural não possui quantidade: {self.raw}")
+        try:
+            value = int(self.fields[5].strip())
+        except (ValueError, TypeError, IndexError) as exc:
+            raise ValueError(f"quantidade de ítimos inválida: {self.raw}") from exc
+        if value < 0:
+            raise ValueError(f"quantidade de ítimos negativa: {self.raw}")
+        return value
+
+    @property
+    def current_index(self):
+        if not self.is_content:
+            raise ValueError(f"comando estrutural não possui itimos_atual: {self.raw}")
+        try:
+            return int(self.fields[6].strip())
+        except (ValueError, TypeError, IndexError) as exc:
+            raise ValueError(f"itimos_atual inválido: {self.raw}") from exc
+
+    @property
+    def itimos(self):
+        if not self.is_content:
+            return tuple()
+        payload = list(self.fields[7:-1])
+        if payload and re.fullmatch(r"\$+", payload[0] or ""):
+            payload = payload[1:]
+        return tuple(payload)
+
+@dataclass(frozen=True)
+
+class YpoDocument:
+    path: str
+    header_lines: tuple
+    body_lines: tuple
+    footer_lines: tuple
+    newline: str
+    @property
+    def records(self):
+        return tuple(_tools_parse_record(line, self.path) for line in self.body_lines)
 
 def _tools_parse_record(line, path=""):
-    """Compatibilidade interna: valida pela autoridade única ypo_structure."""
-    return _ypo_parse_record(line, path)
+    """Valida uma linha do bloco 2 sem reinterpretar o conteúdo autoral."""
+    raw = str(line).rstrip("\r\n")
+    if not raw.startswith("|") or not raw.endswith("|"):
+        raise ValueError(f"registro .ypo sem pipes de borda em {path}: {raw}")
+    fields = tuple(raw.split("|"))
+
+    # Comandos estruturais válidos e independentes dos registros de conteúdo.
+    if re.fullmatch(r"\|\$+\|", raw):
+        return YpoRecord(raw=raw, fields=fields)
+    if len(fields) == 4 and fields[2] == "00":
+        return YpoRecord(raw=raw, fields=fields)
+
+    # |linha|ideia|fonte|T/F/K|total|atual|ítimo...|
+    if len(fields) < 9:
+        raise ValueError(f"registro .ypo incompleto em {path}: {raw}")
+    if fields[4] not in {"T", "F", "K"}:
+        raise ValueError(f"modo T/F/K inválido em {path}: {raw}")
+    record = YpoRecord(raw=raw, fields=fields)
+    _ = record.declared_total
+    _ = record.current_index
+    return record
 
 
 def _tools_validar_fronteira_ypo(path, corrigir=False):
-    """Compatibilidade interna: fronteira validada pela autoridade única."""
-    return _ypo_validate_boundary(
-        path,
-        corrigir=bool(corrigir),
-        backup_callback=_tools_backup_path if corrigir else None,
-    )
+    """Valida a fronteira canônica entre o corpo autoral e <EOF>.
+
+    Regra: a linha imediatamente anterior a <EOF> deve ser o último registro
+    do corpo e terminar em ``|``. Quando ``corrigir=True``, remove somente as
+    linhas indevidas entre esse último registro e <EOF>, preservando Header,
+    corpo autoral e todo o rodapé posterior a <EOF>.
+    """
+    with open(path, "r", encoding="utf-8", newline="") as file:
+        texto = file.read()
+    newline = "\r\n" if "\r\n" in texto else "\n"
+    linhas = texto.splitlines()
+    eof_positions = [i for i, linha in enumerate(linhas) if linha.strip() == "<EOF>"]
+    if len(eof_positions) != 1:
+        raise ValueError(f".ypo deve conter exatamente um <EOF>: {path}")
+    eof_index = eof_positions[0]
+    ultimo_registro = None
+    for index in range(eof_index - 1, -1, -1):
+        linha = linhas[index]
+        if linha.startswith("|") and linha.endswith("|"):
+            ultimo_registro = index
+            break
+    if ultimo_registro is None:
+        raise ValueError(f"nenhum registro válido antes de <EOF>: {path}")
+    if ultimo_registro + 1 == eof_index:
+        return 0
+    intervalo = linhas[ultimo_registro + 1:eof_index]
+    if not corrigir:
+        detalhe = intervalo[0] if intervalo else ""
+        raise ValueError(
+            f"fronteira inválida antes de <EOF> em {path}: {detalhe}"
+        )
+    novas_linhas = linhas[:ultimo_registro + 1] + linhas[eof_index:]
+    novo_texto = newline.join(novas_linhas) + (newline if texto.endswith(("\n", "\r")) else "")
+    _tools_backup_path(path)
+    with open(path, "w", encoding="utf-8", newline="") as file:
+        file.write(novo_texto)
+    with open(path, "r", encoding="utf-8", newline="") as file:
+        confirmado = file.read().splitlines()
+    eof_confirmado = [i for i, linha in enumerate(confirmado) if linha.strip() == "<EOF>"]
+    if len(eof_confirmado) != 1:
+        raise ValueError(f"correção da fronteira falhou em {path}")
+    pos = eof_confirmado[0]
+    if pos < 1 or not confirmado[pos - 1].startswith("|") or not confirmado[pos - 1].endswith("|"):
+        raise ValueError(f"fronteira continua inválida após correção em {path}")
+    return len(intervalo)
 
 
 def ypo_ler(path, corrigir_fronteira=False):
-    """Compatibilidade pública local: leitura estrutural canônica."""
-    return _ypo_read_document(
-        path,
-        corrigir_fronteira=bool(corrigir_fronteira),
-        backup_callback=_tools_backup_path if corrigir_fronteira else None,
-    )
+    """Separa e valida os três blocos canônicos do .ypo.
 
+    Bloco 1: Header inicial, composto apenas por linhas iniciadas por '*'.
+    Bloco 2: registros iniciados por '|', até a linha imediatamente anterior a <EOF>.
+    Bloco 3: ficha técnica após <EOF>.
+    """
+    _tools_validar_fronteira_ypo(path, corrigir=bool(corrigir_fronteira))
+    with open(path, "r", encoding="utf-8", newline="") as file:
+        text = file.read()
+    newline = "\r\n" if "\r\n" in text else "\n"
+    lines = text.splitlines()
+    if not lines:
+        raise ValueError(f".ypo vazio: {path}")
+    eof_positions = [i for i, line in enumerate(lines) if line.strip() == "<EOF>"]
+    if len(eof_positions) != 1:
+        raise ValueError(f".ypo deve conter exatamente um <EOF>: {path}")
+    eof_index = eof_positions[0]
+    header_end = 0
+    while header_end < eof_index and lines[header_end].startswith("*"):
+        header_end += 1
+    if header_end == 0:
+        raise ValueError(f"Header ausente ou inválido: {path}")
+    header = tuple(lines[:header_end])
+    body = tuple(lines[header_end:eof_index])
+    footer = tuple(lines[eof_index + 1:])
+    if not body:
+        raise ValueError(f"corpo .ypo vazio: {path}")
+    for line in body:
+        if not line.startswith("|"):
+            raise ValueError(f"linha estranha entre Header e <EOF> em {path}: {line}")
+        _tools_parse_record(line, path)
+    return YpoDocument(
+        path=str(path),
+        header_lines=header,
+        body_lines=body,
+        footer_lines=footer,
+        newline=newline,
+    )
 
 def _tools_body_signature(document, ignore_current_index=False):
     """Assinatura do corpo; opcionalmente ignora apenas o campo itimos_atual."""
@@ -227,29 +381,24 @@ def _tools_add_ativo_line(path, line, key, livro):
 
 
 def _tools_resolve_ypo_path(tema):
-    """Localiza o .ypo por KEY case-insensitive, preservando o nome autoral e seus espaços."""
     tema = str(tema or "").strip()
-    data_dir = _project_path("data")
     candidatos = [
-        os.path.join(data_dir, tema + ".ypo"),
-        os.path.join(data_dir, tema + ".YPO"),
+        _project_path("data", tema + ".ypo"),
+        _project_path("data", tema + ".YPO"),
     ]
     for path in candidatos:
         if os.path.exists(path):
             return path
-
-    key = tema.casefold()
-    if os.path.isdir(data_dir):
-        for nome in os.listdir(data_dir):
-            path = os.path.join(data_dir, nome)
-            stem, ext = os.path.splitext(nome)
-            if os.path.isfile(path) and ext.casefold() == ".ypo" and stem.casefold() == key:
-                return path
     return candidatos[0]
 
 
+DNA_HEADER = [
+    "codigo", "tema", "ativo", "ordem", "livro", "banco_tematico",
+    "versos", "verbetes_no_texto", "verbetes_do_tema", "total_de_itimos",
+    "qtd_de_variacoes", "qtd_cientifica",
+]
 DNA_LIVROS_PRINCIPAIS = [
-    "todos os temas", "livro vivo", "poemas", "jocosos", "ensaios", "variações",
+    "livro vivo", "poemas", "jocosos", "ensaios", "variações",
     "metalinguagem", "sociais", "outros autores", "signos_fem", "signos_mas",
 ]
 
@@ -309,7 +458,7 @@ def _tools_livros_por_tema():
     for livro in DNA_LIVROS_PRINCIPAIS:
         path = _project_path("base", "rol_" + livro + ".txt")
         for tema in _tools_lista_simples(path):
-            chave = tema.strip().casefold()
+            chave = tema.replace(" ", "").casefold()
             out.setdefault(chave, []).append(livro)
     return out
 
@@ -317,9 +466,11 @@ def _tools_livros_por_tema():
 def _tools_dna_footer():
     return [
         "LEGENDA",
+        "codigo = identificador interno e estável do tema.",
         "tema = nome autoral do tema.",
-        "ativo = estado material atual: .ypo=S; .new=T.",
-        "livro = livro(s) da Machina ao qual o tema pertence; a ordem vive nos rol_*.txt.",
+        "ativo = autorização de circulação no palco.",
+        "ordem = posição canônica de circulação; preserva o bloco final dos 24 signos.",
+        "livro = livro(s) da Machina ao qual o tema pertence.",
         "banco_tematico = banco visual associado ao tema.",
         "imagem = escolha RANDOM do banco_tematico; não integra o DNA.",
         "versos = quantidade de versos do yPoema.",
@@ -333,22 +484,23 @@ def _tools_dna_footer():
 
 
 def _tools_temas_ativos():
-    """Temas ativos são os .ypo materialmente presentes na biblioteca data."""
-    data_dir = _project_path("data")
-    if not os.path.isdir(data_dir):
-        raise FileNotFoundError(f"biblioteca de temas não encontrada: {data_dir}")
+    """Temas ativos vêm sempre da autoridade base/ativos.txt."""
     temas = []
     vistos = set()
-    for nome in sorted(os.listdir(data_dir), key=str.casefold):
-        path = os.path.join(data_dir, nome)
-        if not os.path.isfile(path) or not nome.casefold().endswith(".ypo"):
-            continue
-        tema = os.path.splitext(nome)[0]
-        chave = tema.casefold()
-        if chave in vistos:
-            raise ValueError(f"tema .ypo duplicado em data: {tema}")
-        vistos.add(chave)
-        temas.append((tema, path))
+    ativos_path = _project_path("base", "ativos.txt")
+    if not os.path.exists(ativos_path):
+        raise FileNotFoundError(f"autoridade de temas não encontrada: {ativos_path}")
+    with open(ativos_path, encoding="utf-8-sig") as file:
+        for raw in file:
+            linha = raw.strip()
+            if not linha:
+                continue
+            tema = linha.partition(" : ")[0].strip()
+            chave = tema.casefold()
+            if chave in vistos:
+                raise ValueError(f"tema duplicado em ativos.txt: {tema}")
+            vistos.add(chave)
+            temas.append((tema, _tools_resolve_ypo_path(tema)))
     return temas
 
 
@@ -378,7 +530,7 @@ def _tools_temas_para_remover():
             try:
                 with open(os.path.join(base_dir, file_name), encoding="utf-8") as file:
                     for raw in file:
-                        add(raw.strip())
+                        add(raw.replace(" ", "").strip())
             except Exception:
                 pass
     # 3) Ativos, caso algum tema esteja cadastrado mas fora dos livros.
@@ -396,123 +548,39 @@ def _tools_temas_para_remover():
                 add(os.path.splitext(file_name)[0])
     return sorted(nomes, key=natural_keys)
 
-def _tools_validar_correcao_quantidades(original, novo):
-    """Prova que a reconciliação alterou somente qtd_itimos e acertou a conta real."""
-    if original.header_lines != novo.header_lines:
-        raise ValueError("reconciliação de qtd_itimos alterou Header")
-    if original.footer_lines != novo.footer_lines:
-        raise ValueError("reconciliação de qtd_itimos alterou rodapé")
-    if len(original.body_lines) != len(novo.body_lines):
-        raise ValueError("reconciliação de qtd_itimos alterou quantidade de registros")
-
-    for antes, depois in zip(original.records, novo.records):
-        if antes.is_content != depois.is_content:
-            raise ValueError("reconciliação de qtd_itimos alterou tipo de registro")
-        if not antes.is_content:
-            if antes.raw != depois.raw:
-                raise ValueError("reconciliação de qtd_itimos alterou comando estrutural")
-            continue
-
-        campos_antes = list(antes.fields)
-        campos_depois = list(depois.fields)
-        if len(campos_antes) != len(campos_depois):
-            raise ValueError("reconciliação de qtd_itimos alterou estrutura do registro")
-
-        # Única diferença autorizada: campo 5 = quantidade declarada.
-        campos_antes[5] = "<QTD_ITIMOS>"
-        campos_depois[5] = "<QTD_ITIMOS>"
-        if campos_antes != campos_depois:
-            raise ValueError("reconciliação de qtd_itimos alterou conteúdo autoral")
-
-        real = len(_tools_payload_itimos(list(depois.fields)))
-        declarado = _tools_qtd_itimos_declarada(list(depois.fields))
-        if declarado != real:
-            raise ValueError(
-                f"reconciliação de qtd_itimos falhou: declarado={declarado}; real={real}"
-            )
-
-
 def _tools_corrigir_quantidades_declaradas(path):
-    """Sincroniza qtd_itimos com a contagem real, sem tocar nos ítimos autorais.
+    """Reconcilia apenas o campo quantidade com os ítimos reais do próprio .ypo.
 
-    Autoridade: o payload de ítimos existente no próprio .ypo.
-    A única alteração permitida no corpo é o campo qtd_itimos (posição 5).
-
-    Retorna uma lista com cada correção aplicada, para que novo_tema/update_tema
-    possam mostrá-la explicitamente no relatório final.
+    O payload autoral é a autoridade. Nenhum ítimo, Header ou rodapé é alterado.
     """
-    original = ypo_ler(path, corrigir_fronteira=False)
     with open(path, "r", encoding="utf-8", newline="") as file:
         texto = file.read()
-
     newline = "\r\n" if "\r\n" in texto else "\n"
-    termina_com_newline = texto.endswith(("\n", "\r"))
     linhas = texto.splitlines()
+    alterou = False
     dentro_corpo = True
     saida = []
-    correcoes = []
-
     for linha in linhas:
         if linha.strip() == "<EOF>":
             dentro_corpo = False
             saida.append(linha)
             continue
-
         if dentro_corpo and linha.startswith("|") and linha.endswith("|"):
-            record = _tools_parse_record(linha, path)
-            if record.is_content:
-                campos = list(record.fields)
-                real = len(_tools_payload_itimos(campos))
-                declarado = _tools_qtd_itimos_declarada(campos)
+            campos = linha.split("|")
+            if len(campos) >= 8 and campos[2] != "00":
+                real = len([item for item in campos[7:-1] if item != ""])
+                try:
+                    declarado = int(str(campos[5]).strip())
+                except Exception:
+                    declarado = None
                 if declarado != real:
-                    linha_id = "|".join(campos[1:4])
-                    correcoes.append((linha_id, declarado, real))
                     campos[5] = str(real)
                     linha = "|".join(campos)
-
+                    alterou = True
         saida.append(linha)
-
-    if not correcoes:
-        return []
-
-    novo_texto = newline.join(saida) + (newline if termina_com_newline else "")
-    tmp_path = str(path) + ".qtd_itimos.tmp"
-    backup_path = ""
-    with open(tmp_path, "w", encoding="utf-8", newline="") as file:
-        file.write(novo_texto)
-
-    try:
-        candidato = ypo_ler(tmp_path, corrigir_fronteira=False)
-        _tools_validar_correcao_quantidades(original, candidato)
-
-        backup_path = _tools_backup_path(path)
-        with open(tmp_path, "rb") as src, open(path, "wb") as dst:
-            dst.write(src.read())
-
-        persistido = ypo_ler(path, corrigir_fronteira=False)
-        _tools_validar_correcao_quantidades(original, persistido)
-    except Exception:
-        if backup_path and os.path.exists(backup_path):
-            with open(backup_path, "rb") as src, open(path, "wb") as dst:
-                dst.write(src.read())
-        raise
-    finally:
-        if os.path.exists(tmp_path):
-            os.remove(tmp_path)
-
-    return correcoes
-
-
-def _tools_relatorio_correcoes_qtd_itimos(correcoes):
-    """Formata as correções autorizadas de qtd_itimos para o relatório final."""
-    if not correcoes:
-        return "qtd_itimos: sem correções"
-    linhas = [f"qtd_itimos corrigida em {len(correcoes)} registro(s):"]
-    linhas.extend(
-        f"{linha_id}: {declarado} -> {real}"
-        for linha_id, declarado, real in correcoes
-    )
-    return "\n".join(linhas)
+    if alterou:
+        _tools_write_text(path, newline.join(saida) + newline)
+    return alterou
 
 
 def _tools_linhas_ypo(path):
@@ -524,8 +592,13 @@ def _tools_linhas_ypo(path):
 
 
 def _tools_payload_itimos(campos):
-    """Compatibilidade interna: payload vem exclusivamente de ypo_structure."""
-    return list(_ypo_payload_itimos(campos))
+    """Ítimos reais: preserva NULL e remove somente o marcador estrutural $ x N."""
+    if len(campos) < 9:
+        return []
+    payload = list(campos[7:-1])
+    if payload and re.fullmatch(r"\$+", payload[0] or ""):
+        payload = payload[1:]
+    return payload
 
 
 def _tools_qtd_itimos_declarada(campos):
@@ -684,7 +757,7 @@ def _tools_normalizar_nota_rodape(linha):
 
 
 def _tools_notas_apos_build_by(footer_lines):
-    """Compatibilidade histórica; não é usada para reconstruir o rodapé."""
+    """Preserva somente a memória de oficina posterior ao último Build By."""
     build_idx = None
     for idx, linha in enumerate(footer_lines):
         if _tools_eh_build_by(linha):
@@ -699,42 +772,6 @@ def _tools_notas_apos_build_by(footer_lines):
     return notas
 
 
-def _tools_eh_linha_tecnica_rodape(linha):
-    chave = str(linha or "").strip().casefold()
-    prefixos = (
-        "verbetes no texto =",
-        "total de ítimos =",
-        "total de itimos =",
-        "total de verbetes =",
-        "qtd. de variações =",
-        "qtd. de variacoes =",
-    )
-    return any(chave.startswith(prefixo) for prefixo in prefixos)
-
-
-def _tools_preservar_footer_com_ficha(footer_lines, technical):
-    """Troca só a Ficha Técnica conhecida; todo o restante é preservado na ordem original."""
-    footer_original = list(footer_lines)
-    indices_tecnicos = [
-        idx for idx, linha in enumerate(footer_original)
-        if _tools_eh_linha_tecnica_rodape(linha)
-    ]
-
-    if indices_tecnicos:
-        inserir_em = indices_tecnicos[0]
-        resto = [
-            linha for idx, linha in enumerate(footer_original)
-            if idx not in set(indices_tecnicos)
-        ]
-        removidos_antes = sum(1 for idx in indices_tecnicos if idx < inserir_em)
-        inserir_em -= removidos_antes
-        return resto[:inserir_em] + list(technical) + resto[inserir_em:]
-
-    # Sem Ficha Técnica anterior: acrescenta apenas a ficha, sem interpretar nem
-    # reformatar o território autoral já existente.
-    return list(technical) + footer_original
-
-
 def _tools_build_line_existente(footer_lines):
     for linha in reversed(footer_lines):
         if _tools_eh_build_by(linha):
@@ -746,11 +783,11 @@ def _tools_update_rodape_um_tema(tema, path):
     """Reconstrói a Ficha Técnica; Header e corpo ficam byte-a-byte em suas linhas."""
     document = ypo_ler(path, corrigir_fronteira=False)
     technical = _tools_linhas_rodape_ypo(path)
-    footer = _tools_preservar_footer_com_ficha(document.footer_lines, technical)
-                      
-                                                                                
-                                                             
-                                                 
+    build_line = _tools_build_line_existente(document.footer_lines)
+    if not build_line:
+        build_line = time.strftime("build_by update_rodape em %d/%m/%Y - %H:%M")
+    notas = _tools_notas_apos_build_by(document.footer_lines)
+    footer = technical + [build_line, ""] + notas
     novo_texto = _tools_compor_ypo(document, footer)
     atual = _tools_compor_ypo(document, document.footer_lines)
     if atual == novo_texto:
@@ -812,19 +849,8 @@ def _tools_natural_key(value):
     return [int(part) if part.isdigit() else part.casefold() for part in re.split(r"(\d+)", str(value))]
 
 
-ZODIACO_24 = {
-    "Aquarius=f", "Aquarius=m", "Aries=f", "Aries=m",
-    "Cancer=f", "Cancer=m", "Caprico=f", "Caprico=m",
-    "Escorpio=f", "Escorpio=m", "Gemeos=f", "Gemeos=m",
-    "Leao=f", "Leao=m", "Libra=f", "Libra=m",
-    "Peixes=f", "Peixes=m", "Sagitari=f", "Sagitari=m",
-    "Touro=f", "Touro=m", "Virgem=f", "Virgem=m",
-}
-_ZODIACO_24_CF = {tema.casefold() for tema in ZODIACO_24}
-
-
 def _tools_add_unique_sorted_line(path, line, key=None):
-    """Inclui linha única em ROL com dois territórios: normais + 24 zodíacos."""
+    """Inclui uma linha única e mantém a lista alfabeticamente ordenada."""
     os.makedirs(os.path.dirname(path), exist_ok=True)
     existentes = []
     if os.path.exists(path):
@@ -835,21 +861,9 @@ def _tools_add_unique_sorted_line(path, line, key=None):
         raw_key = raw.partition(" : ")[0].strip().casefold()
         if raw_key == chave or raw.strip().casefold() == chave:
             return False
-
     existentes.append(str(line).strip())
-
-    normais, zodiaco = [], []
-    for raw in existentes:
-        tema_raw = raw.partition(" : ")[0].strip()
-        if tema_raw.casefold() in _ZODIACO_24_CF:
-            zodiaco.append(raw)
-        else:
-            normais.append(raw)
-
-    normais.sort(key=_tools_natural_key)
-    zodiaco.sort(key=_tools_natural_key)
-    ordenadas = normais + zodiaco
-    _tools_write_text(path, "\n".join(ordenadas) + "\n")
+    existentes.sort(key=_tools_natural_key)
+    _tools_write_text(path, "\n".join(existentes) + "\n")
     return True
 
 
@@ -896,28 +910,19 @@ def _tools_tentar_derivado(nome, func, *args):
 
 
 def update_tema(tema):
-    """Atualiza um tema; qtd_itimos segue a contagem real do payload autoral."""
+    """Valida um tema existente e atualiza derivados sem tocar no corpo .ypo."""
     tema = str(tema or "").strip()
     path = _tools_resolve_ypo_path(tema)
     if not tema or not os.path.exists(path):
         raise ValueError(f"update_tema: tema/arquivo não encontrado: {tema}")
-    # A grafia física do .ypo é a forma autoral canônica; caixa de entrada não a substitui.
-    tema = os.path.splitext(os.path.basename(path))[0]
-
-    correcoes = _tools_corrigir_quantidades_declaradas(path)
-    original = _tools_validar_quantidades_tema(path)
-
-    resultados = [
-        f"update_tema: {tema} validado",
-        _tools_relatorio_correcoes_qtd_itimos(correcoes),
-    ]
-
+    original = ypo_ler(path, corrigir_fronteira=False)
+    _tools_validar_quantidades_tema(path)
+    resultados = [f"update_tema: {tema} validado"]
     resultados.append(_tools_executar("Matrix", builders.build_matrix, tema))
     resultados.append(_tools_executar("Léxico", builders.build_lexico))
     resultados.append(_tools_executar("Indexy", builders.build_indexy))
     resultados.append(_tools_executar("DNA", builders.build_dna))
     resultados.append(update_rodape(tema))
-
     persistido = ypo_ler(path, corrigir_fronteira=False)
     ypo_validar_corpo_preservado(original, persistido, permitir_itimos_atual=False)
     try:
@@ -941,12 +946,6 @@ def novo_tema(tema, livro, banco_tematico="Machina"):
     ypo_path = _tools_resolve_ypo_path(tema)
     if not os.path.exists(ypo_path):
         raise FileNotFoundError(f"novo_tema: crie antes ./data/{tema}.ypo")
-    # O nome físico do .ypo é autoridade autoral: preserva espaços e grafia original.
-    tema = os.path.splitext(os.path.basename(ypo_path))[0]
-
-    # Autoridade canônica: a quantidade real de ítimos no payload.
-    # novo_tema é autorizado a reconciliar somente o contador qtd_itimos.
-    correcoes = _tools_corrigir_quantidades_declaradas(ypo_path)
     original = _tools_validar_quantidades_tema(ypo_path)
     alteracoes = []
     if _tools_add_ativo_line(_project_path("base", "ativos.txt"), f"{tema} : {livro}", tema, livro):
@@ -963,7 +962,6 @@ def novo_tema(tema, livro, banco_tematico="Machina"):
     resultados = [
         f"novo_tema: {tema} cadastrado",
         f"livro={livro}; banco_tematico={banco_tematico}",
-        _tools_relatorio_correcoes_qtd_itimos(correcoes),
         "alterados: " + (", ".join(alteracoes) if alteracoes else "nenhum; cadastro já existia"),
     ]
     resultados.append(_tools_tentar_derivado("Matrix", builders.build_matrix, tema))
@@ -1090,18 +1088,13 @@ def build_off_lex():
 
 
 def build_all():
-    """UPDATE GLOBAL da Machina = soma da família Builds globais.
-
-    Cada Build constrói/reconstrói seu território derivável.
-    STOP é reservado a falha real que impeça construir com segurança;
-    qualquer tarefa posterior à falha não é chamada.
-    """
+    """Executa a fila consolidada; STOP imediato na primeira falha."""
     tarefas = [
         ("build_dna", builders.build_dna, ()),
         ("build_matrix", builders.build_matrix, ()),
         ("build_lexico", builders.build_lexico, ()),
         ("build_indexy", builders.build_indexy, ()),
-                                             
+        ("update_rodape", update_rodape, ()),
     ]
     barra = st.progress(0)
     status = st.empty()
@@ -2110,21 +2103,8 @@ def _resize_images_remover_rodape_branco(imagem, tolerancia=245, minimo_branco=0
         return imagem, 0
     return imagem.crop((0, 0, largura, corte)), removidos
 
-def _resize_images_aplicar_moldura(imagem, largura, altura, pixels=5, cor="white"):
-    """Aplica moldura dentro do quadro final, preservando largura/altura escolhidas."""
-    from PIL import Image, ImageOps
-    pixels = max(0, int(pixels or 0))
-    limite = max(0, (min(int(largura), int(altura)) - 2) // 2)
-    pixels = min(pixels, limite)
-    if pixels == 0:
-        return imagem.resize((int(largura), int(altura)))
-    conteudo_w = max(1, int(largura) - 2 * pixels)
-    conteudo_h = max(1, int(altura) - 2 * pixels)
-    conteudo = imagem.resize((conteudo_w, conteudo_h), Image.Resampling.LANCZOS)
-    return ImageOps.expand(conteudo, border=pixels, fill=cor)
-
-def _resize_images_processar(origem, destino, largura=240, altura=360, fundo="white", moldura_px=5):
-    """Remove rodapé branco, ajusta a altura e aplica moldura sem cortar laterais.
+def _resize_images_processar(origem, destino, largura=240, altura=360, fundo="white"):
+    """Remove rodapé branco e ajusta a altura sem cortar laterais.
 
     Primeiro elimina somente a faixa branca contígua encostada no rodapé.
     Depois normaliza a largura, se necessário, e altera apenas a altura até o
@@ -2174,8 +2154,9 @@ def _resize_images_processar(origem, destino, largura=240, altura=360, fundo="wh
                         (largura, altura_proporcional),
                         Image.Resampling.LANCZOS,
                     )
-                nova = _resize_images_aplicar_moldura(
-                    imagem, largura, altura, pixels=moldura_px, cor=fundo
+                nova = imagem.resize(
+                    (largura, altura),
+                    Image.Resampling.LANCZOS,
                 )
                 parametros = {}
                 if os.path.splitext(saida)[1].casefold() in {".jpg", ".jpeg"}:
@@ -2192,8 +2173,8 @@ def render_resize_images_tool():
     """Interface local para padronizar lotes de imagens."""
     st.markdown("### resize_images")
     st.caption(
-        "Remove faixa branca contígua do rodapé, ajusta a altura e pode aplicar moldura. "
-        "Não usa corte lateral. Os originais não são apagados."
+        "Remove faixa branca contígua do rodapé e ajusta a altura. "
+        "Não usa fit, pad ou corte lateral. Os originais não são apagados."
     )
     col_largura, col_altura = st.columns(2)
     with col_largura:
@@ -2216,23 +2197,10 @@ def render_resize_images_tool():
         value="images/#resized",
         key="resize_images_destino",
     )
-    cores_disponiveis = [
-        "white", "black", "gray", "lightgray", "ivory", "beige",
-        "navy", "blue", "red", "green", "yellow", "orange", "purple",
-    ]
-    fundo = st.selectbox(
-        "cor da moldura",
-        cores_disponiveis,
-        index=0,
+    fundo = st.text_input(
+        "cor do fundo",
+        value="white",
         key="resize_images_fundo",
-    )
-    moldura_px = st.slider(
-        "moldura (pixels)",
-        min_value=0,
-        max_value=30,
-        value=5,
-        step=1,
-        key="resize_images_moldura_px",
     )
     origem = origem_rel if os.path.isabs(origem_rel) else _project_path(*origem_rel.replace("\\", "/").split("/"))
     destino = destino_rel if os.path.isabs(destino_rel) else _project_path(*destino_rel.replace("\\", "/").split("/"))
@@ -2241,7 +2209,7 @@ def render_resize_images_tool():
     if st.button("resize_images", use_container_width=True):
         try:
             processadas, falhas = _resize_images_processar(
-                origem, destino, largura=largura, altura=altura, fundo=fundo, moldura_px=moldura_px
+                origem, destino, largura=largura, altura=altura, fundo=fundo
             )
             st.success(f"resize_images concluído: {len(processadas)} imagem(ns).")
             removidos = [(nome, px) for nome, px in processadas if px]
@@ -2389,26 +2357,29 @@ def page_tools():
     st.subheader("Tools")
 #    st.caption("LOCAL. Lista funcional simples. Lê temas; não altera poesia.")
     tools_items = [
-        "atelier",
-        "build_all",
-        "build_dna",
-        "build_indexy",
-        "build_lexico",
-        "build_matrix",
-        "build_off-lex",
-        "build_rimas",
-        "build_unicos",
-        "build_utf-8",
-        "ficha_lexico",
-        "help_?",
-        "make_md",
-        "make_ola",
-        "make_pip",
         "novo_tema",
         "remove_tema",
-        "resize_images",
-        "update_rodape",
         "update_tema",
+        "update_rodape",
+        "---",
+        "atelier",
+        "make_md",
+        "make_ola",
+        "build_rimas",
+        "make_pip",
+        "build_unicos",
+        "resize_images",
+        "---",
+        "build_indexy",
+        "build_lexico",
+        "build_off-lex",
+        "build_matrix",
+        "build_dna",
+        "build_all",
+        "ficha_lexico",
+        "build_utf-8",
+        "---",
+        "help_?",
     ]
     try:
         temas_local = [tema for tema, path in _tools_temas_ativos()]
@@ -2424,6 +2395,9 @@ def page_tools():
         index=tools_items.index("help_?"),
         key="tools_lista_funcional",
     )
+    if escolha == "---":
+        st.info("separador")
+        return
     tema_update = None
     tema_remove = None
     tema_rodape = None
@@ -2438,7 +2412,7 @@ def page_tools():
                 key="tools_lista_update_tema",
             )
         else:
-            st.warning("Nenhum tema .ypo encontrado em ./data.")
+            st.warning("Nenhum tema encontrado em ./base/ativos.txt.")
             return
     elif escolha == "remove_tema":
         if temas_remocao:
@@ -2526,7 +2500,7 @@ def page_tools():
             except Exception as exc:
                 st.error(f"{escolha} falhou: {exc}")
 
-def render_page(host_globals=None):
+def show_tools(host_globals=None):
     """Entrada pública chamada apenas por ypo_tools.py."""
     _bind_host(host_globals)
     return page_tools()
