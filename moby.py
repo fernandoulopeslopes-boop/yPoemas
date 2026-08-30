@@ -1618,20 +1618,33 @@ bootstrap_fontes_machina()
 st.markdown(
     """
     <style>
-    .stApp { background: #ececec; }
+    .stApp {
+        background: #ececec;
+    }
 
-    .block-container {
+    /* st.markdown(<style>) não deve ocupar uma linha invisível no layout. */
+    div[data-testid="stElementContainer"]:has(style) {
+        display: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        height: 0 !important;
+        min-height: 0 !important;
+    }
+
+    .block-container,
+    div[data-testid="stMainBlockContainer"] {
         max-width: 430px !important;
-        margin: 18px auto 60px auto !important;
-        padding: 18px 18px 28px 18px !important;
+        margin: 0 auto !important;
+        padding: 12px !important;
         background: white;
         border: 1px solid rgba(0,0,0,.18);
         border-radius: 28px;
         box-shadow: 0 10px 35px rgba(0,0,0,.10);
-        height: 820px;
-        min-height: 820px;
-        max-height: 820px;
-        overflow: hidden;
+        height: auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        overflow: visible !important;
+        box-sizing: border-box !important;
     }
 
     div[data-testid="stVerticalBlock"] { gap: .48rem; }
@@ -2007,16 +2020,18 @@ st.markdown(
 
     /* Moby em celular vertical: as barras continuam barras, não pilhas. */
     @media (max-width: 600px) {
-        .block-container {
-            width: calc(100vw - 12px) !important;
+        .block-container,
+        div[data-testid="stMainBlockContainer"] {
+            width: calc(100vw - 24px) !important;
             max-width: 430px !important;
-            margin: 6px auto 24px auto !important;
-            padding: 12px 12px 18px 12px !important;
-            height: 820px !important;
-            min-height: 820px !important;
-            max-height: 820px !important;
-            overflow: hidden !important;
+            margin: 0 auto !important;
+            padding: 12px !important;
+            height: auto !important;
+            min-height: 0 !important;
+            max-height: none !important;
+            overflow: visible !important;
             border-radius: 20px;
+            box-sizing: border-box !important;
         }
 
         div[data-testid="stHorizontalBlock"] {
