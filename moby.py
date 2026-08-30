@@ -2109,7 +2109,7 @@ if st.session_state.moby_sidebar_open:
     )
     if str(st.session_state.get("moby_lang_pick", "")) not in idioma_labels:
         st.session_state["moby_lang_pick"] = idioma_atual
-    st.selectbox("idiomas disponíveis...", idioma_labels, key="moby_lang_pick", on_change=sidebar_language_changed)
+    st.selectbox("idiomas disponíveis...", idioma_labels, index=None, key="moby_lang_pick", on_change=sidebar_language_changed)
 
     fonte_labels = [label for label, _ in FONTES_MACHINA]
     fonte_lookup = {label: family for label, family in FONTES_MACHINA}
@@ -2127,14 +2127,14 @@ if st.session_state.moby_sidebar_open:
             st.session_state["moby_font_pick"] = fonte_atual
         fonte_escolhida = st.selectbox(
             "Fontes & Letras", fonte_labels,
-            key="moby_font_pick", on_change=sidebar_font_changed,
+            index=None, key="moby_font_pick", on_change=sidebar_font_changed,
         )
     with corpo_col:
         if st.session_state.get("moby_size_pick") not in CORPOS_MOBY:
             st.session_state["moby_size_pick"] = corpo_atual
         corpo_escolhido = st.selectbox(
             "Corpo", CORPOS_MOBY,
-            key="moby_size_pick", on_change=sidebar_size_changed,
+            index=None, key="moby_size_pick", on_change=sidebar_size_changed,
         )
     st.session_state.moby_font_family = fonte_lookup.get(fonte_escolhida, st.session_state.moby_font_family)
     st.session_state.moby_font_size = int(corpo_escolhido)
@@ -2158,7 +2158,7 @@ if st.session_state.moby_sidebar_open:
         about_choice = st.selectbox(
             "sobre",
             ABOUTS_LIST,
-            key="moby_about_pick",
+            index=None, key="moby_about_pick",
         )
         with st.container(key="moby_about_text"):
             st.markdown(load_about_text(about_choice))
@@ -2180,7 +2180,9 @@ if st.session_state.get("moby_mode") == "Off-Machina":
     idx_off = int(st.session_state.get("moby_off_book_index", 0)) % len(livros_off)
     col_book, col_ola, col_theme = st.columns([3, 1.25, 3], gap="small")
     with col_book:
-        livro_off = st.selectbox(f"livros: {idx_off + 1} / {len(nomes_off)}", nomes_off, index=idx_off, key="moby_off_book_pick")
+        if str(st.session_state.get("moby_off_book_pick", "")) not in nomes_off:
+            st.session_state["moby_off_book_pick"] = nomes_off[idx_off]
+        livro_off = st.selectbox(f"livros: {idx_off + 1} / {len(nomes_off)}", nomes_off, index=None, key="moby_off_book_pick")
         novo_idx = nomes_off.index(livro_off)
         if novo_idx != st.session_state.moby_off_book_index:
             st.session_state.moby_off_book_index = novo_idx
@@ -2205,7 +2207,7 @@ if st.session_state.get("moby_mode") == "Off-Machina":
         st.button("OLA", key="moby_ola_focus_off", width="stretch", on_click=request_ola)
 
     with col_theme:
-        titulo_off = st.selectbox(f"temas: {st.session_state.moby_off_take + 1} / {len(titulos_off)}", titulos_off, key="moby_off_page_pick")
+        titulo_off = st.selectbox(f"temas: {st.session_state.moby_off_take + 1} / {len(titulos_off)}", titulos_off, index=None, key="moby_off_page_pick")
         novo_take = titulos_off.index(titulo_off)
         if novo_take != st.session_state.moby_off_take:
             st.session_state.moby_off_take = novo_take
@@ -2222,10 +2224,12 @@ else:
     tema_atual_idx = int(st.session_state.get("moby_theme_index", 0)) % len(temas)
     col_book, col_ola, col_theme = st.columns([3, 1.25, 3], gap="small")
     with col_book:
+        if str(st.session_state.get("moby_book_pick", "")) not in MOBY_BOOKS or st.session_state.get("moby_book_pick") != st.session_state.moby_book:
+            st.session_state["moby_book_pick"] = st.session_state.moby_book
         st.selectbox(
             f"livros: {livro_atual_idx + 1} / {len(MOBY_BOOKS)}",
             MOBY_BOOKS,
-            index=livro_atual_idx,
+            index=None,
             key="moby_book_pick",
             on_change=book_changed,
         )
@@ -2239,7 +2243,7 @@ else:
         st.selectbox(
             f"temas: {tema_atual_idx + 1} / {len(temas)}",
             temas,
-            index=temas.index(current),
+            index=None,
             key="moby_theme_pick",
             on_change=theme_picked,
         )
