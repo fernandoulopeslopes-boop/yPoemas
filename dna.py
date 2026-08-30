@@ -151,7 +151,7 @@ def validar(
     return erros
 
 
-def registro(
+def get_registro(
     tema: str,
     base_dir: str | Path = "./base",
 ) -> dict[str, str]:
@@ -163,14 +163,14 @@ def registro(
     return {}
 
 
-def banco_do_tema(
+def get_banco_tema(
     tema: str,
     base_dir: str | Path = "./base",
     *,
     include_testes: bool = True,
 ) -> str:
     """Retorna exclusivamente do DNA o banco temático associado ao tema."""
-    row = registro(tema, base_dir)
+    row = get_registro(tema, base_dir)
     if not row:
         return ""
 
@@ -209,7 +209,7 @@ def _nome_fisico_tema(tema: str, base_dir: str | Path = "./base") -> str:
     return str(tema or "").strip()
 
 
-def temas_do_livro(
+def get_temas_livro(
     livro: str,
     base_dir: str | Path = "./base",
     *,
@@ -303,9 +303,9 @@ __all__ = [
     "dna_path",
     "ler",
     "validar",
-    "registro",
-    "banco_do_tema",
-    "temas_do_livro",
+    "get_registro",
+    "get_banco_tema",
+    "get_temas_livro",
     "mapa_bancos",
     "bancos",
     "linhas_images_compat",

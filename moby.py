@@ -1,5 +1,5 @@
-# moby_v061.py
-# Etapa 061: ajustes humanos de Help/Retrato sobre a Etapa 060; corpo oficial 20.
+# moby_v062.py
+# Etapa 062: regime visual FBF no rodapé + Retrato usa imagem #1; corpo oficial 20.
 # MACHINA — Mobile ultra-light
 # Blindagem HTML preservada; não altera basico.py, DNA, .ypo, .pip ou conteúdo autoral.
 
@@ -1203,19 +1203,11 @@ def swap_machina_off():
 
 
 def prepare_portrait():
-    """A Machina escolhe, de surpresa, uma das duas imagens atuais para o Retrato."""
+    """Retrato usa diretamente a imagem #1 da leitura atual."""
     dismiss_help()
-    update_real_image()
-    candidates = [
-        path for path in (
-            str(st.session_state.get("moby_image_path", "")),
-            str(st.session_state.get("moby_image_path_2", "")),
-        )
-        if path and Path(path).is_file()
-    ]
-    if not candidates:
+    chosen = str(st.session_state.get("moby_image_path", "")).strip()
+    if not chosen or not Path(chosen).is_file():
         return
-    chosen = random.choice(candidates)
     st.session_state.moby_portrait_image = chosen
     title = st.session_state.get("moby_current_title", "retrato")
     poem_html = st.session_state.get("moby_current_poem_html", "")
@@ -1777,12 +1769,12 @@ st.markdown(
     }
 
     .st-key-moby_footer_zone {
-        height: 210px;
-        min-height: 210px;
-        max-height: 210px;
+        height: 182px;
+        min-height: 182px;
+        max-height: 182px;
         overflow: hidden;
         margin-top: 2px;
-        padding: 0 0 8px 0;
+        padding: 0;
     }
 
     .st-key-moby_footer_controls {
@@ -1800,7 +1792,15 @@ st.markdown(
         margin-bottom: 0 !important;
     }
 
-    .st-key-moby_images_stage,
+    .st-key-moby_images_stage {
+        height: 146px;
+        min-height: 146px;
+        max-height: 146px;
+        overflow: hidden;
+        margin: 2px 0 0 0;
+        padding: 0;
+    }
+
     .st-key-moby_portrait_stage {
         height: 158px;
         min-height: 158px;
@@ -1813,32 +1813,30 @@ st.markdown(
     .st-key-moby_images_stage .moby-footer-images-flex {
         width: 100%;
         height: 142px;
+        display: grid;
+        grid-template-columns: 1fr 2fr 1fr 2fr 1fr;
+        align-items: center;
+        gap: 0;
+        overflow: hidden;
+    }
+
+    .st-key-moby_images_stage .moby-footer-image-cell {
+        min-width: 0;
         display: flex;
-        justify-content: space-between;
-        align-items: flex-end;
-        gap: 2px;
+        align-items: center;
+        justify-content: center;
         overflow: hidden;
     }
 
     .st-key-moby_images_stage .moby-footer-image {
         display: block;
         max-height: 142px;
-        max-width: calc(50% - 1px);
+        max-width: 100%;
         width: auto;
         height: auto;
         object-fit: contain;
         border-radius: 8px;
-        flex: 0 1 auto;
-    }
-
-    .st-key-moby_images_stage .moby-footer-image-left {
-        margin-left: 0;
-        margin-right: auto;
-    }
-
-    .st-key-moby_images_stage .moby-footer-image-right {
-        margin-left: auto;
-        margin-right: 0;
+        margin: 0 auto;
     }
 
     .st-key-moby_portrait_stage img {
@@ -1967,13 +1965,18 @@ st.markdown(
 
 
 
-    /* Copiar pertence à mesma família visual de Imagem/Retrato. */
-    div[data-testid="stPopover"] > button,
-    div[data-testid="stPopover"] button {
+    /* Copiar: mesma altura visual de Imagem/Retrato. */
+    .st-key-moby_footer_controls div[data-testid="stPopover"] > button,
+    .st-key-moby_footer_controls div[data-testid="stPopover"] button {
         width: 100% !important;
-        min-height: 38px !important;
+        min-height: 34px !important;
+        height: 34px !important;
+        max-height: 34px !important;
         border-radius: 9px !important;
         font-size: .88rem !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        margin: 0 !important;
     }
     /* Fullscreen nativo fora do Moby: Retrato usa apenas Ampliar/Salvar. */
     button[title*="fullscreen" i],
@@ -2401,22 +2404,21 @@ with st.container(key="moby_footer_zone", border=False):
         st.session_state.moby_footer_view = "images"
         st.session_state.moby_image_visible = True
         with st.container(key="moby_images_stage", border=False):
-            itens_imagem = []
-            if imagem_1 and Path(imagem_1).is_file():
-                itens_imagem.append(
-                    f'<img class="moby-footer-image moby-footer-image-left" src="{image_path_to_data_uri(imagem_1)}" alt="">'
-                )
-            else:
-                itens_imagem.append('<span></span>')
-
-            if imagem_2 and Path(imagem_2).is_file():
-                itens_imagem.append(
-                    f'<img class="moby-footer-image moby-footer-image-right" src="{image_path_to_data_uri(imagem_2)}" alt="">'
-                )
-            else:
-                itens_imagem.append('<span></span>')
-
+            imagem_1_html = (
+                f'<img class="moby-footer-image" src="{image_path_to_data_uri(imagem_1)}" alt="">'
+                if imagem_1 and Path(imagem_1).is_file() else ""
+            )
+            imagem_2_html = (
+                f'<img class="moby-footer-image" src="{image_path_to_data_uri(imagem_2)}" alt="">'
+                if imagem_2 and Path(imagem_2).is_file() else ""
+            )
             st.markdown(
-                '<div class="moby-footer-images-flex">' + ''.join(itens_imagem) + '</div>',
+                '<div class="moby-footer-images-flex">'
+                '<div></div>'
+                f'<div class="moby-footer-image-cell">{imagem_1_html}</div>'
+                '<div></div>'
+                f'<div class="moby-footer-image-cell">{imagem_2_html}</div>'
+                '<div></div>'
+                '</div>',
                 unsafe_allow_html=True,
             )
