@@ -210,7 +210,12 @@ def bootstrap_fontes_machina():
         <style>
         @import url('{GOOGLE_FONTS_CSS}');
         {local_open}
-        </style>
+        
+/* Moby: remove o controle interno "Clear value" dos selectbox. */
+[data-baseweb="select"] [aria-label="Clear value"] {{
+    display: none !important;
+}}
+</style>
         """,
         unsafe_allow_html=True,
     )
