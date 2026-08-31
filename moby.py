@@ -428,7 +428,7 @@ PERSONAL_LINKS = [
         "url": "https://wa.me/5512991368181",
         "icon": "https://cdn.simpleicons.org/whatsapp/25D366",
         "icon_2": "https://cdn.simpleicons.org/pix/32BCAD",
-        "kind": "whatsapp wide",
+        "kind": "whatsapp",
     },
 ]
 
@@ -1048,26 +1048,22 @@ def current_off_page():
 
 
 def apply_pending_link():
-    """Aplica navegação LINK antes da instanciação dos widgets."""
+    """LINK navega somente dentro do livro atualmente selecionado."""
     destino = str(st.session_state.get("moby_link_pending", "")).strip()
     if not destino:
         return
 
-    livro = primeiro_livro_do_tema(DNA_ROWS, destino)
-    if not livro:
-        st.session_state.moby_link_pending = ""
-        return
-
-    temas = temas_do_livro(DNA_ROWS, livro)
+    livro_atual = str(st.session_state.get("moby_book", "")).strip()
+    temas = temas_do_livro(DNA_ROWS, livro_atual)
     alvo = nome_normalizado(destino)
 
     for idx, tema in enumerate(temas):
         if nome_normalizado(tema) == alvo:
-            st.session_state.moby_book = livro
             st.session_state.moby_theme_index = idx
             st.session_state["moby_theme_pick"] = tema
             st.session_state.moby_reading_n = 1
             invalidate_real_poem()
+            invalidate_real_image()
             break
 
     st.session_state.moby_link_pending = ""
@@ -1590,6 +1586,7 @@ def book_changed():
     st.session_state.moby_reading_n = 1
     invalidate_real_poem()
     invalidate_real_image()
+    invalidate_ola()
 
 
 def theme_picked():
@@ -1942,13 +1939,6 @@ st.markdown(
         transform: translateY(-2px);
         box-shadow: 0 7px 17px rgba(0,0,0,.11);
         border-color: rgba(0,0,0,.25);
-    }
-
-    .moby-social-card.wide {
-        grid-column: 1 / -1;
-        min-height: 62px;
-        flex-direction: row;
-        gap: .65rem;
     }
 
     .moby-social-icons {
