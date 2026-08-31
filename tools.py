@@ -2062,6 +2062,90 @@ def render_make_md_tool():
         except Exception as exc:
             st.error(f"make_md falhou: {exc}")
 
+
+def render_make_texto_tool():
+    """Faz texto; se a saída for .md, aplica a padronização Markdown da Machina."""
+    st.markdown("### make_texto")
+
+    texto_colado = st.text_area(
+        "texto",
+        height=260,
+        key="make_texto_texto",
+        placeholder="Ctrl+V ou escolha um arquivo abaixo...",
+    )
+    uploaded = st.file_uploader(
+        "arquivo.ext",
+        type=None,
+        key="make_texto_upload",
+    )
+
+    texto_colado = str(texto_colado or "")
+    if texto_colado:
+        texto = texto_colado
+        nome_origem = "arquivo.txt"
+        if uploaded is not None:
+            st.caption("fonte ativa: texto colado")
+    elif uploaded is not None:
+        texto, encoding = _texto_externo_decodificar(uploaded.getvalue())
+        nome_origem = os.path.basename(uploaded.name) or "arquivo.txt"
+        if encoding not in {"utf-8", "utf-8-sig"}:
+            st.caption("entrada convertida para UTF-8")
+    else:
+        st.info("Cole o texto ou escolha um arquivo textual.")
+        return
+
+    raiz, ext_atual = os.path.splitext(nome_origem)
+    ext_atual = ext_atual or ".txt"
+    nome_padrao = (raiz or "arquivo") + ext_atual
+
+    nome_saida = st.text_input(
+        "salvar como",
+        value=nome_padrao,
+        key="make_texto_nome_saida",
+    ).strip() or nome_padrao
+
+    _, ext_saida = os.path.splitext(nome_saida)
+    ext_saida = (ext_saida or ext_atual).lower()
+    if not os.path.splitext(nome_saida)[1]:
+        nome_saida += ext_saida
+
+    resultado = texto
+    if ext_saida == ".md":
+        col_min, col_max = st.columns(2)
+        with col_min:
+            chr_minimo = st.number_input(
+                "chr_minimo",
+                min_value=1,
+                max_value=1000,
+                value=60,
+                step=1,
+                key="make_texto_chr_minimo",
+            )
+        with col_max:
+            chr_maximo = st.number_input(
+                "chr_maximo",
+                min_value=1,
+                max_value=1000,
+                value=80,
+                step=1,
+                key="make_texto_chr_maximo",
+            )
+        resultado = _make_md_texto_utf8(
+            texto.encode("utf-8"),
+            chr_minimo=chr_minimo,
+            chr_maximo=chr_maximo,
+        )
+
+    st.download_button(
+        "make_texto",
+        data=resultado.encode("utf-8"),
+        file_name=os.path.basename(nome_saida),
+        mime="text/markdown" if ext_saida == ".md" else "text/plain",
+        use_container_width=True,
+        key="make_texto_download",
+    )
+
+
 def _resize_images_validar_dimensoes(largura, altura):
     try:
         largura = int(largura)
@@ -2353,6 +2437,133 @@ def render_build_utf8_tool():
     st.text(resultado)
 
 
+
+LISTA_MD_PATH = os.path.join(".", "base", "md_files.txt")
+LISTA_MD_DIR = os.path.join(".", "md_files")
+
+
+def _lista_md_ler():
+    """Lê a lista oficial de ABOUTs sem alterar sua ordem autoral."""
+    if not os.path.isfile(LISTA_MD_PATH):
+        return ""
+    with open(LISTA_MD_PATH, "r", encoding="utf-8-sig", newline="") as handle:
+        return handle.read().replace("\r\n", "\n").replace("\r", "\n")
+
+
+def _lista_md_validar(texto):
+    """Valida o formato título|arquivo.md e a existência dos arquivos citados."""
+    registros = []
+    erros = []
+    vistos_titulos = set()
+    vistos_arquivos = set()
+
+    for numero, linha in enumerate(str(texto or "").splitlines(), start=1):
+        if not linha.strip():
+            continue
+        partes = linha.split("|")
+        if len(partes) != 2:
+            erros.append(f"linha {numero}: deve conter exatamente 2 campos — título|arquivo.md")
+            continue
+
+        titulo = partes[0].strip()
+        arquivo = partes[1].strip()
+        if not titulo:
+            erros.append(f"linha {numero}: título vazio")
+            continue
+        if not arquivo:
+            erros.append(f"linha {numero}: arquivo vazio")
+            continue
+        if not arquivo.lower().endswith(".md"):
+            erros.append(f"linha {numero}: arquivo deve terminar em .md — {arquivo}")
+            continue
+        if os.path.basename(arquivo) != arquivo:
+            erros.append(f"linha {numero}: use apenas o nome do arquivo, sem caminho — {arquivo}")
+            continue
+
+        titulo_key = titulo.casefold()
+        arquivo_key = arquivo.casefold()
+        if titulo_key in vistos_titulos:
+            erros.append(f"linha {numero}: título repetido — {titulo}")
+            continue
+        if arquivo_key in vistos_arquivos:
+            erros.append(f"linha {numero}: arquivo repetido — {arquivo}")
+            continue
+
+        vistos_titulos.add(titulo_key)
+        vistos_arquivos.add(arquivo_key)
+        registros.append((titulo, arquivo))
+
+    disponiveis = {}
+    if os.path.isdir(LISTA_MD_DIR):
+        for nome in os.listdir(LISTA_MD_DIR):
+            if nome.lower().endswith(".md"):
+                disponiveis[nome.casefold()] = nome
+
+    ausentes = [arquivo for _, arquivo in registros if arquivo.casefold() not in disponiveis]
+    return registros, erros, ausentes, disponiveis
+
+
+def _lista_md_salvar(registros):
+    """Grava atomicamente a lista oficial, em UTF-8, preservando a ordem editada."""
+    os.makedirs(os.path.dirname(LISTA_MD_PATH), exist_ok=True)
+    conteudo = "".join(f"{titulo}|{arquivo}\n" for titulo, arquivo in registros)
+    temporario = LISTA_MD_PATH + ".tmp"
+    with open(temporario, "w", encoding="utf-8", newline="\n") as handle:
+        handle.write(conteudo)
+    os.replace(temporario, LISTA_MD_PATH)
+    return conteudo
+
+
+def show_lista_md_tool():
+    """Editor LOCAL da lista oficial de ABOUTs: ./base/md_files.txt."""
+    st.caption("lista oficial dos ABOUTs — título|arquivo.md")
+
+    if "lista_md_editor" not in st.session_state:
+        try:
+            st.session_state["lista_md_editor"] = _lista_md_ler()
+        except Exception as exc:
+            st.error(f"lista_md falhou ao ler {LISTA_MD_PATH}: {exc}")
+            return
+
+    texto = st.text_area(
+        "md_files.txt",
+        key="lista_md_editor",
+        height=520,
+        help="Uma linha por ABOUT. Exatamente 2 campos: título|arquivo.md. A ordem das linhas é a ordem oficial.",
+    )
+
+    registros, erros, ausentes, disponiveis = _lista_md_validar(texto)
+    listados = {arquivo.casefold() for _, arquivo in registros}
+    fora_da_lista = sorted(
+        (nome for chave, nome in disponiveis.items() if chave not in listados),
+        key=str.casefold,
+    )
+
+    c1, c2, c3 = st.columns(3)
+    c1.metric("na lista", len(registros))
+    c2.metric("arquivos md", len(disponiveis))
+    c3.metric("fora da lista", len(fora_da_lista))
+
+    if erros:
+        st.error("\n".join(erros))
+    if ausentes:
+        st.warning("arquivos citados e não encontrados em ./md_files:\n" + "\n".join(ausentes))
+
+    if fora_da_lista:
+        with st.expander("md_files fora da lista oficial"):
+            st.text("\n".join(fora_da_lista))
+
+    if st.button("salvar lista_md", use_container_width=True):
+        if erros or ausentes:
+            st.error("lista_md não foi salva: corrija o formato e os arquivos ausentes.")
+            return
+        try:
+            _lista_md_salvar(registros)
+        except Exception as exc:
+            st.error(f"lista_md falhou ao salvar {LISTA_MD_PATH}: {exc}")
+            return
+        st.success(f"lista oficial salva: {LISTA_MD_PATH} — {len(registros)} registros")
+
 def page_tools():
     st.subheader("Tools")
 #    st.caption("LOCAL. Lista funcional simples. Lê temas; não altera poesia.")
@@ -2364,6 +2575,8 @@ def page_tools():
         "---",
         "atelier",
         "make_md",
+        "make_texto",
+        "lista_md",
         "make_ola",
         "build_rimas",
         "make_pip",
@@ -2461,6 +2674,12 @@ def page_tools():
         return
     if escolha == "make_md":
         render_make_md_tool()
+        return
+    if escolha == "make_texto":
+        render_make_texto_tool()
+        return
+    if escolha == "lista_md":
+        show_lista_md_tool()
         return
     if escolha == "make_ola":
         if make_ola_tools is None:
