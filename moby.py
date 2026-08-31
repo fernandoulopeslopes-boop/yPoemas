@@ -1699,6 +1699,14 @@ st.markdown(
         opacity:.78;
     }
 
+    .moby-poem-title {
+        text-align: center;
+        font-weight: 700;
+        text-decoration: underline;
+        text-underline-offset: .18em;
+        margin: 2px 0 8px 0;
+    }
+
     .ypoema {
         line-height: 1.60;
         padding: 0 8px 0 3px;
@@ -1909,42 +1917,45 @@ st.markdown(
 
     .moby-social-grid {
         display: grid;
-        grid-template-columns: 1fr;
-        gap: .18rem;
-        width: 100%;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: .55rem;
     }
 
-    .moby-social-card,
-    .moby-social-card.wide {
-        width: 100%;
-        min-height: 32px;
-        border: 0;
-        border-radius: 0;
-        background: transparent;
-        box-shadow: none;
+    .moby-social-card {
+        min-height: 68px;
+        border: 1px solid rgba(0,0,0,.12);
+        border-radius: 13px;
+        background: #fff;
         text-decoration: none !important;
         color: #202124 !important;
         display: flex;
         align-items: center;
-        justify-content: flex-start;
-        flex-direction: row;
-        gap: .55rem;
-        padding: .22rem .18rem;
+        justify-content: center;
+        flex-direction: column;
+        gap: .34rem;
+        padding: .58rem .42rem;
+        box-shadow: 0 3px 10px rgba(0,0,0,.06);
+        transition: transform .13s ease, box-shadow .13s ease, border-color .13s ease;
     }
 
     .moby-social-card:hover {
-        transform: none;
-        box-shadow: none;
-        border-color: transparent;
-        background: rgba(0,0,0,.035);
+        transform: translateY(-2px);
+        box-shadow: 0 7px 17px rgba(0,0,0,.11);
+        border-color: rgba(0,0,0,.25);
+    }
+
+    .moby-social-card.wide {
+        grid-column: 1 / -1;
+        min-height: 62px;
+        flex-direction: row;
+        gap: .65rem;
     }
 
     .moby-social-icons {
         display: inline-flex;
         align-items: center;
-        justify-content: flex-start;
+        justify-content: center;
         gap: .30rem;
-        min-width: 50px;
         min-height: 24px;
     }
 
@@ -1959,7 +1970,7 @@ st.markdown(
         font-size: .82rem;
         font-weight: 600;
         line-height: 1.1;
-        text-align: left;
+        text-align: center;
     }
 
 
@@ -2230,7 +2241,7 @@ if st.session_state.get("moby_mode") == "Off-Machina":
         st.button("OLA", key="moby_ola_focus_off", width="stretch", on_click=request_ola)
 
     with col_theme:
-        titulo_off = st.selectbox(f"temas: {st.session_state.moby_off_take + 1} / {len(titulos_off)}", titulos_off, index=None, key="moby_off_page_pick")
+        titulo_off = st.selectbox(f"temas: {st.session_state.moby_off_take + 1} / {len(titulos_off)}", titulos_off, key="moby_off_page_pick")
         novo_take = titulos_off.index(titulo_off)
         if novo_take != st.session_state.moby_off_take:
             st.session_state.moby_off_take = novo_take
@@ -2247,12 +2258,10 @@ else:
     tema_atual_idx = int(st.session_state.get("moby_theme_index", 0)) % len(temas)
     col_book, col_ola, col_theme = st.columns([3, 1.25, 3], gap="small")
     with col_book:
-        if str(st.session_state.get("moby_book_pick", "")) not in MOBY_BOOKS or st.session_state.get("moby_book_pick") != st.session_state.moby_book:
-            st.session_state["moby_book_pick"] = st.session_state.moby_book
         st.selectbox(
             f"livros: {livro_atual_idx + 1} / {len(MOBY_BOOKS)}",
             MOBY_BOOKS,
-            index=None,
+            index=livro_atual_idx,
             key="moby_book_pick",
             on_change=book_changed,
         )
@@ -2266,7 +2275,7 @@ else:
         st.selectbox(
             f"temas: {tema_atual_idx + 1} / {len(temas)}",
             temas,
-            index=None,
+            index=temas.index(current),
             key="moby_theme_pick",
             on_change=theme_picked,
         )
@@ -2358,8 +2367,12 @@ with st.container(key="moby_stage_scroll", border=False):
             if linhas_ficha:
                 st.text("\n".join(linhas_ficha))
     else:
-        # O título continua sendo referência da lista e integra o Retrato,
-        # mas não ocupa o palco. Quando aberto, Som ocupa o início do palco.
+        # Título do yPoema: referência visual permanente do palco.
+        # A voz lê somente o conteúdo e não substitui o título.
+        st.markdown(
+            f"<div class='moby-poem-title'>{html.escape(str(titulo_palco))}</div>",
+            unsafe_allow_html=True,
+        )
         if st.session_state.get("moby_sound_open", False):
             render_sound_player(update_sound_audio(titulo_palco, poema_html))
 
