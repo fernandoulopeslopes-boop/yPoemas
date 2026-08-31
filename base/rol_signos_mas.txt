@@ -7,6 +7,6 @@ Gemeos=m
 Leao=m
 Libra=m
 Peixes=m
-Sagitar=m
+Sagitari=m
 Touro=m
 Virgem=m
