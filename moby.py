@@ -1820,12 +1820,24 @@ st.markdown(
     }
 
     .st-key-moby_portrait_stage {
+        width: 100%;
+        max-width: 100%;
         height: 158px;
         min-height: 158px;
         max-height: 158px;
         overflow: hidden;
         margin: 2px 0 0 0;
         padding: 0 0 7px 0;
+        box-sizing: border-box;
+    }
+
+    .st-key-moby_portrait_stage div[data-testid="stHorizontalBlock"],
+    .st-key-moby_portrait_stage div[data-testid="stColumn"],
+    .st-key-moby_portrait_stage div[data-testid="stImage"],
+    .st-key-moby_portrait_stage figure {
+        min-width: 0 !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
     }
 
     .st-key-moby_images_stage .moby-footer-images-flex {
@@ -1862,8 +1874,10 @@ st.markdown(
         max-height: 150px !important;
         width: auto !important;
         max-width: 100% !important;
+        height: auto !important;
         margin: 0 auto !important;
         object-fit: contain !important;
+        box-sizing: border-box !important;
     }
 
     .st-key-moby_portrait_save button {
@@ -1895,45 +1909,42 @@ st.markdown(
 
     .moby-social-grid {
         display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: .55rem;
+        grid-template-columns: 1fr;
+        gap: .18rem;
+        width: 100%;
     }
 
-    .moby-social-card {
-        min-height: 68px;
-        border: 1px solid rgba(0,0,0,.12);
-        border-radius: 13px;
-        background: #fff;
+    .moby-social-card,
+    .moby-social-card.wide {
+        width: 100%;
+        min-height: 32px;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
         text-decoration: none !important;
         color: #202124 !important;
         display: flex;
         align-items: center;
-        justify-content: center;
-        flex-direction: column;
-        gap: .34rem;
-        padding: .58rem .42rem;
-        box-shadow: 0 3px 10px rgba(0,0,0,.06);
-        transition: transform .13s ease, box-shadow .13s ease, border-color .13s ease;
+        justify-content: flex-start;
+        flex-direction: row;
+        gap: .55rem;
+        padding: .22rem .18rem;
     }
 
     .moby-social-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 7px 17px rgba(0,0,0,.11);
-        border-color: rgba(0,0,0,.25);
-    }
-
-    .moby-social-card.wide {
-        grid-column: 1 / -1;
-        min-height: 62px;
-        flex-direction: row;
-        gap: .65rem;
+        transform: none;
+        box-shadow: none;
+        border-color: transparent;
+        background: rgba(0,0,0,.035);
     }
 
     .moby-social-icons {
         display: inline-flex;
         align-items: center;
-        justify-content: center;
+        justify-content: flex-start;
         gap: .30rem;
+        min-width: 50px;
         min-height: 24px;
     }
 
@@ -1948,7 +1959,7 @@ st.markdown(
         font-size: .82rem;
         font-weight: 600;
         line-height: 1.1;
-        text-align: center;
+        text-align: left;
     }
 
 
