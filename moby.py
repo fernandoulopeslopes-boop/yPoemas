@@ -127,11 +127,11 @@ IDIOMAS_MACHINA = [
 ]
 
 FONTES_MACHINA = [
-    ("OpenDyslexic", "OpenDyslexic"),
+    ("JetBrains Mono", "JetBrains Mono"),
     ("MV Boli", "MV Boli"),
+    ("OpenDyslexic", "OpenDyslexic"),
     ("Source Code SemiBold", "Source Code Pro"),
     ("Comic Relief", "Comic Relief"),
-    ("JetBrains Mono", "JetBrains Mono"),
     ("Ubuntu Condensed", "Ubuntu Condensed"),
 ]
 
