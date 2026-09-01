@@ -3377,13 +3377,10 @@ def render_sidebar_context_image(chosen_id):
 
         image_path = st.session_state.get("off_machina_images_pasta", "")
 
-    elif str(chosen_id) in {"5", "6", "7", "8"}:
+    elif str(chosen_id) == "5":
         image_path = st.session_state.get("about_image", "") or _set_about_image_next()
-    elif str(chosen_id) == "9":
-        if APP_VARIANT == "local":
-            image_path = st.session_state.get("atelier_image", "") or _set_atelier_image_next()
-        else:
-            image_path = st.session_state.get("about_image", "") or _set_about_image_next()
+    elif str(chosen_id) == "6" and APP_VARIANT == "local":
+        image_path = st.session_state.get("atelier_image", "") or _set_atelier_image_next()
 
     if image_path and os.path.exists(image_path):
         # Autoridade do que o leitor realmente viu. O clique em Retrato usa
@@ -4465,102 +4462,32 @@ def load_about_md(title):
     expected = "ABOUT_" + title + ".md"
     return translate("ooops... arquivo ( " + expected + " ) não pode ser aberto.")
 
-def load_md_files_catalog():
-    """Carrega o catálogo externo da página ABOUT.
-                                                     
-                                 
-                                     
-               
-                            
-                                                  
-                                             
+def load_about_catalog():
+    """Carrega o ABOUT único pela mesma lista plana usada no Moby.
 
-                      
-                                                          
-                                             
-                                   
-                               
-                                                    
-                                                         
-                        
-
-                            
-                                                   
-                                       
-                            
-                               
-               
-
-
-                                  
-                                  
-                  
-                                             
-                                             
-     
-                           
-                                
-                       
-                        
-
-
-                          
-              
-                                                     
-                                                     
-                        
-                                   
-                                 
-                        
-                                                    
-                    
-                                                                   
-                
-
-
-    Formato obrigatório de cada linha:
-        texto_na_pagina_About|nome_exato_do_arquivo_em_md_files
-
-    O primeiro campo é apenas o rótulo exibido. O segundo é usado literalmente
-    para abrir o arquivo; não há filtro ABOUT_, dedução, tradução ou renomeação.
+    Autoridade: ./base/lista_abouts.txt
+    Formato: título|arquivo.md
+    Leitura até <EOF>, preservando a ordem autoral.
     """
-    candidates = [
-
-        _project_path("md_files.txt"),
-
-        _project_path("base", "md_files.txt"),
-
-    ]
+    path = _project_path("base", "lista_abouts.txt")
     catalog = []
-    for path in candidates:
-
-        if not os.path.isfile(path):
-            continue
-
-        with open(path, encoding="utf-8") as file:
-
-            for raw in file:
-                line = raw.rstrip("\r\n")
-                if not line.strip() or line.lstrip().startswith("#"):
-                    continue
-
-                if line.strip().upper() == "<EOF>":
-                    break
-                label, sep, file_name = line.partition("|")
-                label = label.strip()
-                file_name = file_name.strip()
-                if not sep or not label or not file_name:
-                    continue
-
-                # O segundo campo pode conter alternativas separadas por vírgula.
-                # O catálogo continua sendo a autoridade; o leitor tentará cada
-                # nome na ordem informada, sem concatená-los.
-                file_name = file_name.strip()
-                if not file_name:
-                    continue
-                catalog.append((label, file_name))
+    if not os.path.isfile(path):
         return catalog
+
+    with open(path, encoding="utf-8-sig") as file:
+        for raw in file:
+            line = raw.strip()
+            if not line or line.startswith("#"):
+                continue
+            if line.upper() == "<EOF>":
+                break
+            label, sep, file_name = line.partition("|")
+            label = label.strip()
+            file_name = file_name.strip().strip(chr(34)).strip(chr(39))
+            if sep and label and file_name:
+                catalog.append((label, file_name))
     return catalog
+
 
 def _md_catalog_name_candidates(file_spec):
     """Expande uma entrada do catálogo em nomes de arquivo tentáveis.
@@ -4650,90 +4577,6 @@ def _load_md_catalog_file(file_spec):
 
     )
 
-def _abouts_catalog_section(section):
-    """Lê md_files/<LETRA>/abouts_<LETRA>.txt.
-
-    Aceita:
-      arquivo.md
-      rótulo público|arquivo.md
-    """
-    section = str(section or "").strip().upper()
-    if section not in {"A", "B", "C", "D", "H"}:
-        return []
-
-    list_path = _project_path("md_files", section, f"abouts_{section}.txt")
-    if not os.path.isfile(list_path):
-        return []
-
-    catalog = []
-    with open(list_path, encoding="utf-8-sig") as file:
-        for raw in file:
-            line = raw.strip()
-            if not line or line.startswith("#"):
-                continue
-            if line.upper() == "<EOF>":
-                break
-
-            label, sep, file_name = line.partition("|")
-            if sep:
-                label = label.strip()
-                file_name = file_name.strip()
-            else:
-                file_name = line
-                label = os.path.splitext(os.path.basename(file_name))[0]
-                if label.casefold().startswith("about_"):
-                    label = label[6:]
-
-            if label and file_name:
-                catalog.append((label, file_name))
-    return catalog
-
-def _about_section_exact_path(section, file_name):
-    """Localiza um MD somente dentro de md_files/<LETRA>/."""
-    section = str(section or "").strip().upper()
-    requested = os.path.basename(str(file_name or "").strip())
-    if section not in {"A", "B", "C", "D", "H"} or not requested:
-        return ""
-
-    folder = _project_path("md_files", section)
-    if not os.path.isdir(folder):
-        return ""
-
-    candidates = [requested]
-    if not os.path.splitext(requested)[1]:
-        candidates.append(requested + ".md")
-
-    for candidate in candidates:
-        direct = os.path.join(folder, candidate)
-        if os.path.isfile(direct):
-            return direct
-
-    wanted = {unicodedata.normalize("NFC", x).casefold() for x in candidates}
-    for real_name in os.listdir(folder):
-        real_path = os.path.join(folder, real_name)
-        if not os.path.isfile(real_path):
-            continue
-        if unicodedata.normalize("NFC", real_name).casefold() in wanted:
-            return real_path
-    return ""
-
-def _load_about_section_file(section, file_spec):
-    """Abre a primeira alternativa existente no quadrado da letra."""
-    attempted = []
-    for file_name in _md_catalog_name_candidates(file_spec):
-        attempted.append(file_name)
-        path = _about_section_exact_path(section, file_name)
-        if not path:
-            continue
-        try:
-            with open(path, encoding="utf-8-sig") as file:
-                return translate(file.read())
-        except (OSError, UnicodeError):
-            continue
-
-    return translate(
-        "ooops... arquivo ( " + str(file_spec) + " ) não pode ser aberto."
-    )
 
 
 # =============================================================================
@@ -5674,35 +5517,29 @@ def page_off_machina():  # available off_machina_books
 # =============================================================================
 # < PAGE > 5 — ABOUT
 # =============================================================================
-def page_abouts(section="A"):
-    """Página documental ABCDH, cada letra no seu próprio quadrado."""
-    section = str(section or "A").strip().upper()
-    catalog = _abouts_catalog_section(section)
-
+def page_about():
+    """ABOUT único e editável, governado por base/lista_abouts.txt."""
+    catalog = load_about_catalog()
     if not catalog:
-        st.warning(
-            translate(
-                f"md_files/{section}/abouts_{section}.txt vazio ou não encontrado"
-            )
-        )
+        st.warning(translate("base/lista_abouts.txt vazio ou não encontrado"))
         return
 
     if not st.session_state.get("about_image"):
         _set_about_image_next()
 
     options = list(range(len(catalog)))
-    opt_abouts = st.selectbox(
+    opt_about = st.selectbox(
         "↓  " + translate("sobre"),
         options,
         format_func=lambda x: catalog[x][0],
-        key=f"opt_abouts_{section}",
+        key="opt_about",
         on_change=_set_about_image_next,
     )
 
-    _label, file_name = catalog[opt_abouts]
+    _label, file_name = catalog[opt_about]
     about_expander = st.expander("", True)
     with about_expander:
-        st.subheader(_load_about_section_file(section, file_name))
+        st.subheader(_load_md_catalog_file(file_name))
 
 
 # =============================================================================
@@ -5724,7 +5561,6 @@ def page_atelier():
 def start_machina(app_variant="local"):
     global APP_VARIANT
     APP_VARIANT = "mobile" if str(app_variant).strip().lower() == "mobile" else "local"
-                                                                                   
 
     apply_styles()
     init_session_state()
@@ -5751,52 +5587,38 @@ def start_machina(app_variant="local"):
 
     with gramado:
         if APP_VARIANT == "local":
-            page_labels = ["mini", "yPoemas", "eureka", "off-Machina", "A", "B", "C", "D", "atelier"]
+            page_labels = ["mini", "yPoemas", "eureka", "off-Machina", "ABOUT", "atelier"]
             page_ids = {
                 "mini": "1",
                 "yPoemas": "2",
                 "eureka": "3",
                 "off-Machina": "4",
-                "A": "5",
-                "B": "6",
-                "C": "7",
-                "D": "8",
-                "atelier": "9",
+                "ABOUT": "5",
+                "atelier": "6",
             }
             nav_items = [
                 ("mini", "mini", 1.0),
                 ("yPoemas", "yPoemas", 1.0),
                 ("eureka", "eureka", 1.0),
                 ("off-Mach", "off-Machina", 1.0),
-                ("A", "A", 0.5),
-                ("B", "B", 0.5),
-                ("C", "C", 0.5),
-                ("D", "D", 0.5),
+                ("ABOUT", "ABOUT", 0.8),
                 ("Z", "atelier", 0.5),
             ]
         else:
-            page_labels = ["mini", "yPoemas", "eureka", "off-Machina", "A", "B", "C", "D", "H"]
+            page_labels = ["mini", "yPoemas", "eureka", "off-Machina", "ABOUT"]
             page_ids = {
                 "mini": "1",
                 "yPoemas": "2",
                 "eureka": "3",
                 "off-Machina": "4",
-                "A": "5",
-                "B": "6",
-                "C": "7",
-                "D": "8",
-                "H": "9",
+                "ABOUT": "5",
             }
             nav_items = [
                 ("mini", "mini", 1.0),
                 ("yPoemas", "yPoemas", 1.0),
                 ("eureka", "eureka", 1.0),
                 ("off-Mach", "off-Machina", 1.0),
-                ("A", "A", 0.5),
-                ("B", "B", 0.5),
-                ("C", "C", 0.5),
-                ("D", "D", 0.5),
-                ("H", "H", 0.5),
+                ("ABOUT", "ABOUT", 0.8),
             ]
 
         _sync_machina_page_state(page_labels, page_ids)
@@ -5858,16 +5680,12 @@ def start_machina(app_variant="local"):
                 elif chosen_id == "4":
                     page_off_machina()
                     status = palco_status("off-machina")
-                elif chosen_id in {"5", "6", "7", "8"}:
-                    page_abouts(chosen_label)
-                    status = palco_status(chosen_label)
-                elif chosen_id == "9":
-                    if APP_VARIANT == "local":
-                        page_atelier()
-                        status = palco_status("atelier")
-                    else:
-                        page_abouts("H")
-                        status = palco_status("H")
+                elif chosen_id == "5":
+                    page_about()
+                    status = palco_status("ABOUT")
+                elif chosen_id == "6" and APP_VARIANT == "local":
+                    page_atelier()
+                    status = palco_status("atelier")
                 else:
                     page_ypoemas()
                     current_book = _current_book()
