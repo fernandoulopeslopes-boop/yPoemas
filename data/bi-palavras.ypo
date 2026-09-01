@@ -3,14 +3,14 @@
 *- 
 |01|01|bi-palavras_0101|F|7|6|a Dor no adorno:|no corredor, corre Dor:|o dormente à Dor mente:| a dor inspira Ação:|a dor de ter mina a Ação:|a dor aspira Ação:|dolor ida é dor que não dói mais:|
 |02|00|
-|02|01|bi-palavras_0201|T|13|4|o amador ama|o procurador procura|o cantador canta|o contador conta|o criador cria|o domador doma|o inovador inova|o sonhador sonha|o tentador tenta|o amador ama|o atirador atira|o sofredor sofre|o enganador engana|
+|02|01|bi-palavras_0201|T|13|2|o amador ama|o procurador procura|o cantador canta|o contador conta|o criador cria|o domador doma|o inovador inova|o sonhador sonha|o tentador tenta|o amador ama|o atirador atira|o sofredor sofre|o enganador engana|
 |02|02|bi-palavras_0202|F|2|2|dor|a dor|
 |03|01|bi-palavras_0301|F|1|1|e|
-|03|02|bi-palavras_0302|T|13|7|o amador, ama|o procurador, procura|o cantador, canta|o contador, conta|o criador, cria|o domador, doma|o inovador, inova|o sonhador, sonha|o tentador, tenta|o amador, ama|o atirador, atira|o sofredor, sofre|o enganador, engana|
+|03|02|bi-palavras_0302|T|13|1|o amador, ama|o procurador, procura|o cantador, canta|o contador, conta|o criador, cria|o domador, doma|o inovador, inova|o sonhador, sonha|o tentador, tenta|o amador, ama|o atirador, atira|o sofredor, sofre|o enganador, engana|
 |03|03|bi-palavras_0303|F|2|2|a Dor|Dor|
 |03|04|bi-palavras_0304|F|1|1|.|
 |04|00|
-|04|01|bi-palavras_0401|F|4|1|"Real Idade" nem sempre é realidade|"Par Tido" é amor que foi embora|"Ampla Mente" pensa diferente|"Sem tido" nunca teve sentido|
+|04|01|bi-palavras_0401|F|4|3|"Real Idade" nem sempre é realidade|"Par Tido" é amor que foi embora|"Ampla Mente" pensa diferente|"Sem tido" nunca teve sentido|
 |04|02|bi-palavras_0402|F|1|1|.|
 <EOF>
 Verbetes no Texto = 9
@@ -18,5 +18,5 @@ Verbetes no Texto = 9
 Total de verbetes = 65
 Qtd. de Variações = 4.732 (mil)
 
-build_by lay_2_ypo em 22/08/2026 - 10:43
-updated em: 24/08/2026 - 14:30
+build_by lay_2_ypo: 01/09/2026 - 12:24
+updated em: 01/09/2026 - 12:24
