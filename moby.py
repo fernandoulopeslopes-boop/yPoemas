@@ -127,47 +127,67 @@ IDIOMAS_MACHINA = [
 ]
 
 FONTES_MACHINA = [
-    ("Courier", "Courier New"),
     ("OpenDyslexic", "OpenDyslexic"),
-    ("Trebuchet", "Trebuchet MS"),
-    ("Cormorant", "Cormorant Garamond"),
-    ("Palatino", "Palatino Linotype"),
-    ("Georgia", "Georgia"),
-    ("Jet_Brains", "JetBrains Mono"),
-    ("IBM Plex Sans", "IBM Plex Sans"),
-    ("Saira", "Saira"),
+    ("MV Boli", "MV Boli"),
+    ("Source Code SemiBold", "Source Code Pro"),
     ("Comic Relief", "Comic Relief"),
-    ("Hand Writing", "Hand Writing"),
+    ("JetBrains Mono", "JetBrains Mono"),
+    ("Ubuntu Condensed", "Ubuntu Condensed"),
 ]
 
-# Mesmo bootstrap tipográfico usado nos deploys anteriores da Machina.
+# Conjunto único de variantes para as seis famílias.
+# A permanência de cada variante será decidida pelo efeito visual real no palco.
+ESTILOS_MACHINA = [
+    "normal",
+    "itálico",
+    "bold",
+    "bold itálico",
+]
+
+FONTES_PESO_BASE = {
+    "OpenDyslexic": 400,
+    "MV Boli": 400,
+    "Source Code Pro": 600,
+    "Comic Relief": 400,
+    "JetBrains Mono": 400,
+    "Ubuntu Condensed": 400,
+}
+
+# Famílias web abertas; OpenDyslexic e eventuais arquivos locais continuam
+# podendo ser servidos pela pasta ./fonts.
 GOOGLE_FONTS_CSS = (
     "https://fonts.googleapis.com/css2?"
-    "family=Comic+Relief:wght@400;700&"
-    "family=Cormorant+Garamond:wght@400;600;700&"
-    "family=IBM+Plex+Sans:wght@400;600;700&"
-    "family=JetBrains+Mono:wght@400;600;700&"
-    "family=Saira:wght@400;600;700&"
+    "family=Comic+Relief:ital,wght@0,400;0,700;1,400;1,700&"
+    "family=JetBrains+Mono:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&"
+    "family=Source+Code+Pro:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&"
+    "family=Ubuntu+Condensed&"
     "display=swap"
 )
 
 FONTES_PALCO_CSS = {
-    "Courier New": '"Courier New", Courier, monospace',
     "OpenDyslexic": '"OpenDyslexic", sans-serif',
-    "Trebuchet MS": '"Trebuchet MS", Trebuchet, Arial, sans-serif',
-    "Cormorant Garamond": '"Cormorant Garamond", Georgia, serif',
-    "Palatino Linotype": '"Palatino Linotype", Palatino, "Book Antiqua", serif',
-    "Georgia": 'Georgia, "Times New Roman", serif',
-    "JetBrains Mono": '"JetBrains Mono", Consolas, "Courier New", monospace',
-    "IBM Plex Sans": '"IBM Plex Sans", Arial, sans-serif',
-    "Saira": 'Saira, Arial, sans-serif',
+    "MV Boli": '"MV Boli", "Segoe Print", cursive',
+    "Source Code Pro": '"Source Code Pro", Consolas, "Courier New", monospace',
     "Comic Relief": '"Comic Relief", "Comic Sans MS", cursive',
-    "Hand Writing": '"Segoe Print", "Bradley Hand", cursive',
+    "JetBrains Mono": '"JetBrains Mono", Consolas, "Courier New", monospace',
+    "Ubuntu Condensed": '"Ubuntu Condensed", "Arial Narrow", Arial, sans-serif',
 }
 
 def fonte_palco_css(family=None):
-    family = str(family or st.session_state.get("moby_font_family", "Trebuchet MS")).strip()
+    family = str(family or st.session_state.get("moby_font_family", "OpenDyslexic")).strip()
     return FONTES_PALCO_CSS.get(family, f'"{family}", sans-serif')
+
+def estilo_palco_atual():
+    estilo = str(st.session_state.get("moby_font_style", "normal")).strip().casefold()
+    return estilo if estilo in ESTILOS_MACHINA else "normal"
+
+def estilo_palco_css(family=None, estilo=None):
+    family = str(family or st.session_state.get("moby_font_family", "OpenDyslexic")).strip()
+    estilo = str(estilo or estilo_palco_atual()).strip().casefold()
+    peso_base = int(FONTES_PESO_BASE.get(family, 400))
+    peso = 700 if "bold" in estilo else peso_base
+    inclinacao = "italic" if "itálico" in estilo else "normal"
+    return peso, inclinacao
 
 def open_dyslexic_font_face():
     fonts_dir = Path("./fonts")
@@ -900,7 +920,10 @@ if "moby_lang" not in st.session_state:
     st.session_state.moby_lang = "pt"
 
 if "moby_font_family" not in st.session_state:
-    st.session_state.moby_font_family = "Trebuchet MS"
+    st.session_state.moby_font_family = "OpenDyslexic"
+
+if "moby_font_style" not in st.session_state:
+    st.session_state.moby_font_style = "normal"
 
 if "moby_font_size" not in st.session_state:
     st.session_state.moby_font_size = 20
@@ -1290,6 +1313,12 @@ def sidebar_font_changed():
         if escolha == label:
             st.session_state.moby_font_family = family
             return
+
+
+def sidebar_style_changed():
+    dismiss_help()
+    estilo = str(st.session_state.get("moby_style_pick", "normal")).strip().casefold()
+    st.session_state.moby_font_style = estilo if estilo in ESTILOS_MACHINA else "normal"
 
 
 def sidebar_size_changed():
@@ -2139,28 +2168,38 @@ if st.session_state.moby_sidebar_open:
     fonte_lookup = {label: family for label, family in FONTES_MACHINA}
     fonte_atual = next(
         (label for label, family in FONTES_MACHINA if family == st.session_state.moby_font_family),
-        "Trebuchet",
+        fonte_labels[0],
     )
+    estilo_atual = estilo_palco_atual()
     corpo_atual = int(st.session_state.get("moby_font_size", 20))
     if corpo_atual not in CORPOS_MOBY:
         corpo_atual = 20
 
-    fonte_col, corpo_col = st.columns([2.15, 1], gap="small")
+    # Efeito: um único conjunto de controles — fonte | estilo | corpo.
+    fonte_col, estilo_col, corpo_col = st.columns([1.75, 1.20, 0.72], gap="small")
     with fonte_col:
         if str(st.session_state.get("moby_font_pick", "")) not in fonte_labels:
             st.session_state["moby_font_pick"] = fonte_atual
         fonte_escolhida = st.selectbox(
-            "Fontes & Letras", fonte_labels,
+            "fonte", fonte_labels,
             index=None, key="moby_font_pick", on_change=sidebar_font_changed,
+        )
+    with estilo_col:
+        if str(st.session_state.get("moby_style_pick", "")) not in ESTILOS_MACHINA:
+            st.session_state["moby_style_pick"] = estilo_atual
+        estilo_escolhido = st.selectbox(
+            "estilo", ESTILOS_MACHINA,
+            index=None, key="moby_style_pick", on_change=sidebar_style_changed,
         )
     with corpo_col:
         if st.session_state.get("moby_size_pick") not in CORPOS_MOBY:
             st.session_state["moby_size_pick"] = corpo_atual
         corpo_escolhido = st.selectbox(
-            "Corpo", CORPOS_MOBY,
+            "corpo", CORPOS_MOBY,
             index=None, key="moby_size_pick", on_change=sidebar_size_changed,
         )
     st.session_state.moby_font_family = fonte_lookup.get(fonte_escolhida, st.session_state.moby_font_family)
+    st.session_state.moby_font_style = estilo_escolhido if estilo_escolhido in ESTILOS_MACHINA else "normal"
     st.session_state.moby_font_size = int(corpo_escolhido)
 
     about_col, close_col, links_col = st.columns([1.55, 1.25, 1.55], gap="small")
@@ -2328,8 +2367,9 @@ with b_help:
 # =============================================================================
 # PALCO — área de aparição; única região rolável
 # =============================================================================
-fonte_palco = str(st.session_state.get("moby_font_family", "Trebuchet MS"))
+fonte_palco = str(st.session_state.get("moby_font_family", "OpenDyslexic"))
 fonte_css = fonte_palco_css(fonte_palco)
+peso_palco, estilo_css = estilo_palco_css(fonte_palco)
 corpo_palco = int(st.session_state.get("moby_font_size", 20))
 
 if st.session_state.get("moby_mode") == "Off-Machina":
@@ -2377,7 +2417,7 @@ with st.container(key="moby_stage_scroll", border=False):
             )
 
         st.markdown(
-            f"<div class='ypoema' style='font-family:{fonte_css}; font-size:{corpo_palco}px;'>"
+            f"<div class='ypoema' style='font-family:{fonte_css}; font-size:{corpo_palco}px; font-weight:{peso_palco}; font-style:{estilo_css};'>"
             f"{poema_html}{ola_html}</div>",
             unsafe_allow_html=True,
         )
