@@ -324,9 +324,9 @@ def apply_styles():
         /* Sidebar :: nativa/recolhível — oficina disponível, palco livre */
         [data-testid="stSidebar"] {
             background-color: #eef6fb !important;
-            width: 430px !important;
-            min-width: 430px !important;
-            max-width: 430px !important;
+                                    
+                                        
+                                        
         }
 
         [data-testid="stSidebar"] .machina-sidebar-title {
@@ -395,7 +395,7 @@ def apply_styles():
 
         /* Sidebar :: módulo visual unificado — idioma e imagem com mesma largura */
         [data-testid="stSidebar"] div[data-testid="stSelectbox"] {
-            max-width: 410px !important;
+            max-width: 320px !important;
             margin-left: auto !important;
             margin-right: auto !important;
         }
@@ -708,7 +708,7 @@ def init_session_state():
         "rand": False,
 
         "fonte_palco": "OpenDyslexic",
-        "estilo_palco": "normal",
+                                 
         "corpo_palco": 21,
         "sidebar_panel": "Machina",
 
@@ -794,14 +794,14 @@ FONTES_MACHINA = [
     ("Ubuntu Condensed", "Ubuntu Condensed"),
 ]
 
-# Uma lista única de estilo para as seis famílias.
-# É um território de teste visual no palco; a curadoria final continua autoral.
-ESTILOS_MACHINA = [
-    "normal",
-    "itálico",
-    "bold",
-    "bold itálico",
-]
+                                                    
+                                                                                 
+                   
+             
+               
+           
+                    
+ 
 
 # Peso-base faz parte da identidade da família escolhida.
 FONTES_PESO_BASE = {
@@ -920,20 +920,21 @@ def _fonte_palco_css(family=None):
     return FONTES_PALCO_CSS.get(family, f'"{family}", sans-serif')
 
 
-def _estilo_palco_leitor():
-    """Estilo tipográfico escolhido pelo leitor para o palco."""
-    estilo = str(st.session_state.get("estilo_palco", "normal")).strip().casefold()
-    return estilo if estilo in ESTILOS_MACHINA else "normal"
+                           
+                                                                 
+                                                                                   
+                                                            
 
 
-def _estilo_palco_css(family=None, estilo=None):
-    """Converte o estilo comum da Machina em peso + inclinação CSS."""
+def _peso_palco_leitor(family=None):
+    """Peso-base da família escolhida; não existe controle de estilo."""
     family = str(family or st.session_state.get("fonte_palco", "OpenDyslexic")).strip()
-    estilo = str(estilo or _estilo_palco_leitor()).strip().casefold()
-    peso_base = int(FONTES_PESO_BASE.get(family, 400))
-    peso = 700 if "bold" in estilo else peso_base
-    inclinacao = "italic" if "itálico" in estilo else "normal"
-    return peso, inclinacao
+                                                                     
+    return int(FONTES_PESO_BASE.get(family, 400))
+                                                 
+                                                               
+                           
+
 
 def _open_dyslexic_font_face():
     """Monta @font-face somente para a OpenDyslexic existente em ./fonts."""
@@ -1134,7 +1135,7 @@ def pick_tema_palco():
     )
 
 def pick_fonte_palco():
-    """Escolhe fonte, estilo e corpo de leitura do Palco."""
+    """Escolhe fonte e corpo de leitura do Palco."""
     labels = [label for label, fonte in FONTES_MACHINA]
     lookup = {label: fonte for label, fonte in FONTES_MACHINA}
 
@@ -1144,15 +1145,15 @@ def pick_fonte_palco():
         labels[0],
     )
 
-    current_style = _estilo_palco_leitor()
+                                          
     corpos = list(range(14, 35, 2))
     current_size = st.session_state.get("corpo_palco", 22)
     if current_size not in corpos:
         current_size = 22
 
-    # Topy: monitor horizontal tem folga; sidebar mais larga acomoda
-    # fonte | estilo | corpo e pode voltar recolhida para liberar o palco.
-    col_font, col_estilo, col_corpo = st.sidebar.columns([2.20, 1.45, 0.90])
+                                                                    
+                                                                          
+    col_font, col_corpo = st.sidebar.columns([2.78, 1.32])
 
     with col_font:
         choice = st.selectbox(
@@ -1162,13 +1163,13 @@ def pick_fonte_palco():
             key="sidebar_font_select",
         )
 
-    with col_estilo:
-        estilo = st.selectbox(
-            translate("estilo"),
-            ESTILOS_MACHINA,
-            index=ESTILOS_MACHINA.index(current_style),
-            key="sidebar_style_select",
-        )
+                    
+                              
+                                
+                            
+                                                       
+                                       
+         
 
     with col_corpo:
         size = st.selectbox(
@@ -1179,7 +1180,7 @@ def pick_fonte_palco():
         )
 
     st.session_state.fonte_palco = lookup[choice]
-    st.session_state.estilo_palco = estilo
+                                          
     st.session_state.corpo_palco = size
 
 def load_help(idiom):
@@ -1242,14 +1243,14 @@ def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
 
     fonte_palco = _fonte_palco_leitor()
     fonte_palco_css = _fonte_palco_css(fonte_palco)
-    peso_palco, estilo_css = _estilo_palco_css(fonte_palco)
+    peso_palco = _peso_palco_leitor(fonte_palco)
     corpo_palco = _corpo_palco_leitor()
 
     logo_css = f"""
         <style>
         .logo-text {{
             font-weight: {peso_palco} !important;
-            font-style: {estilo_css} !important;
+                                                
             font-size: {corpo_palco}px !important;
             font-family: {fonte_palco_css} !important;
             color: #000000 !important;
@@ -1655,7 +1656,7 @@ def _off_machina_css():
     """CSS próprio do Off-Machina: obedece fonte/corpo do leitor."""
     fonte_palco = _fonte_palco_leitor()
     fonte_palco_css = _fonte_palco_css(fonte_palco)
-    peso_palco, estilo_css = _estilo_palco_css(fonte_palco)
+    peso_palco = _peso_palco_leitor(fonte_palco)
     corpo_palco = _corpo_palco_leitor()
     return f"""
         <style>
@@ -1669,7 +1670,7 @@ def _off_machina_css():
             color: #000000 !important;
             text-align: left !important;
             font-weight: {peso_palco} !important;
-            font-style: {estilo_css} !important;
+                                                
         }}
         .machina-off-text {{
             display: block !important;
@@ -3027,6 +3028,53 @@ def _retrato_webfont_cache(family, bold=False):
 
     return ""
 
+def _retrato_font_files(family):
+    """Localiza em ./fonts arquivos pertencentes à família selecionada."""
+    family = str(family or "").strip()
+    fonts_dir = _project_path("fonts")
+    if not family or not os.path.isdir(fonts_dir):
+        return []
+
+    def chave(value):
+        value = unicodedata.normalize("NFKD", str(value or "")).casefold()
+        return re.sub(r"[^a-z0-9]+", "", "".join(
+            ch for ch in value if not unicodedata.combining(ch)
+        ))
+
+    wanted = chave(family)
+    aliases = {
+        "sourcecodepro": {"sourcecodepro", "sourcecodesemibold"},
+        "mvboli": {"mvboli"},
+        "comicrelief": {"comicrelief"},
+        "jetbrainsmono": {"jetbrainsmono"},
+        "ubuntucondensed": {"ubuntucondensed"},
+        "opendyslexic": {"opendyslexic"},
+    }
+    targets = aliases.get(wanted, {wanted})
+    found = []
+
+    for nome in sorted(os.listdir(fonts_dir)):
+        if not nome.casefold().endswith((".ttf", ".otf")):
+            continue
+        path = os.path.join(fonts_dir, nome)
+        file_key = chave(os.path.splitext(nome)[0])
+        matched = any(target and target in file_key for target in targets)
+        if not matched:
+            try:
+                probe = ImageFont.truetype(path, 14)
+                real_family, _real_style = probe.getname()
+                real_key = chave(real_family)
+                matched = any(
+                    target and (target in real_key or real_key in target)
+                    for target in targets
+                )
+            except Exception:
+                matched = False
+        if matched:
+            found.append(path)
+    return found
+
+
 def _retrato_font(size, bold=False, family=None):
     """Carrega no PNG a mesma família escolhida em Fontes & Letras."""
     family = str(family or "Trebuchet MS").strip()
@@ -3035,7 +3083,18 @@ def _retrato_font(size, bold=False, family=None):
 
     candidates = []
 
-    # OpenDyslexic: única família lida da pasta ./fonts.
+    local_family_files = _retrato_font_files(family)
+
+    def _score_font(path):
+        low = os.path.basename(str(path)).casefold()
+        is_bold = any(tag in low for tag in ("bold", "semibold", "demibold", "600", "700"))
+        if family == "Source Code Pro" and not bold:
+            return (0 if ("semibold" in low or "600" in low) else 1, len(low), low)
+        return (0 if bool(is_bold) == bool(bold) else 1, len(low), low)
+
+    candidates.extend(sorted(local_family_files, key=_score_font))
+
+    # OpenDyslexic continua com nomes históricos conhecidos.
     if family == "OpenDyslexic":
         filename = "OpenDyslexic-Bold.otf" if bold else "OpenDyslexic-Regular.otf"
         candidates.append(_project_path("fonts", filename))
@@ -3595,7 +3654,7 @@ def render_analise_palco(texto):
     """Renderiza análise no palco direito, com cabeçalho padrão."""
     fonte_palco = _fonte_palco_leitor()
     fonte_palco_css = _fonte_palco_css(fonte_palco)
-    peso_palco, estilo_css = _estilo_palco_css(fonte_palco)
+    peso_palco = _peso_palco_leitor(fonte_palco)
     corpo_palco = max(14, min(30, int(st.session_state.get("corpo_palco", 21)) - 1))
 
     voice = str(st.session_state.get("voz_analise", "OLA")).upper()
@@ -3622,7 +3681,7 @@ def render_analise_palco(texto):
             line-height:1.42;
             color:#000000;
             font-weight:{peso_palco};
-            font-style:{estilo_css};
+                                    
         ">
             <div style="
                 text-align:center;
@@ -3633,7 +3692,7 @@ def render_analise_palco(texto):
             <div style="
                 text-align:center;
                 font-weight:{peso_palco};
-            font-style:{estilo_css};
+                                    
                 opacity:0.88;
                 margin:0 0 0.75rem 0;
                 line-height:1.22;
@@ -5565,6 +5624,39 @@ def page_off_machina():  # available off_machina_books
                 talk(off_book_text)
 
 
+def render_about_document(texto):
+    """Renderiza ABOUT em Markdown usando somente fonte + corpo do leitor."""
+    fonte = _fonte_palco_leitor()
+    fonte_css = _fonte_palco_css(fonte)
+    corpo = _corpo_palco_leitor()
+    peso = _peso_palco_leitor(fonte)
+
+    st.markdown(
+        f"""
+        <style>
+        .st-key-machina_about_text,
+        .st-key-machina_about_text [data-testid="stMarkdownContainer"],
+        .st-key-machina_about_text [data-testid="stMarkdownContainer"] p,
+        .st-key-machina_about_text [data-testid="stMarkdownContainer"] li {{
+            font-family: {fonte_css} !important;
+            font-size: {corpo}px !important;
+            font-weight: {peso} !important;
+            line-height: 1.45 !important;
+        }}
+        .st-key-machina_about_text [data-testid="stMarkdownContainer"] h1,
+        .st-key-machina_about_text [data-testid="stMarkdownContainer"] h2,
+        .st-key-machina_about_text [data-testid="stMarkdownContainer"] h3,
+        .st-key-machina_about_text [data-testid="stMarkdownContainer"] h4 {{
+            font-family: {fonte_css} !important;
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+    with st.container(key="machina_about_text"):
+        st.markdown(str(texto or ""))
+
+
 # =============================================================================
 # < PAGE > 5 — ABOUT
 # =============================================================================
@@ -5590,7 +5682,7 @@ def page_about():
     _label, file_name = catalog[opt_about]
     about_expander = st.expander("", True)
     with about_expander:
-        st.subheader(_load_md_catalog_file(file_name))
+        render_about_document(_load_md_catalog_file(file_name))
 
 
 # =============================================================================
