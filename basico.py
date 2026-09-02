@@ -1152,15 +1152,15 @@ def pick_fonte_palco():
     if current_size not in corpos:
         current_size = 22
 
-    col_font, col_estilo, col_corpo = st.sidebar.columns([2.35, 1.45, 0.80])
+    # Fonte ocupa a largura inteira; estilo e corpo dividem apenas a linha abaixo.
+    choice = st.sidebar.selectbox(
+        translate("fonte"),
+        labels,
+        index=labels.index(current_label),
+        key="sidebar_font_select",
+    )
 
-    with col_font:
-        choice = st.selectbox(
-            translate("fonte"),
-            labels,
-            index=labels.index(current_label),
-            key="sidebar_font_select",
-        )
+    col_estilo, col_corpo = st.sidebar.columns([1.65, 1.15])
 
     with col_estilo:
         style = st.selectbox(
