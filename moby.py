@@ -12,6 +12,8 @@ import os
 import random
 import re
 import unicodedata
+import urllib.parse
+import urllib.request
 from io import BytesIO
 
 from PIL import Image, ImageDraw, ImageFont, ImageOps
@@ -127,11 +129,11 @@ IDIOMAS_MACHINA = [
 ]
 
 FONTES_MACHINA = [
-    ("JetBrains Mono", "JetBrains Mono"),
-    ("MV Boli", "MV Boli"),
     ("OpenDyslexic", "OpenDyslexic"),
+    ("MV Boli", "MV Boli"),
     ("Source Code SemiBold", "Source Code Pro"),
     ("Comic Relief", "Comic Relief"),
+    ("JetBrains Mono", "JetBrains Mono"),
     ("Ubuntu Condensed", "Ubuntu Condensed"),
 ]
 
@@ -257,18 +259,195 @@ VOICES_EDGE_TTS = {
 }
 
 
-def _moby_font(size, bold=False):
-    candidates = [
-        Path("./fonts/OpenDyslexic-Bold.otf" if bold else "./fonts/OpenDyslexic-Regular.otf"),
+RETRATO_WEBFONT_FAMILIES = {
+    "JetBrains Mono",
+    "Source Code Pro",
+    "Comic Relief",
+    "Ubuntu Condensed",
+}
+
+
+def _font_key(value):
+    value = unicodedata.normalize("NFKD", str(value or "")).casefold()
+    return re.sub(
+        r"[^a-z0-9]+",
+        "",
+        "".join(ch for ch in value if not unicodedata.combining(ch)),
+    )
+
+
+def _moby_local_font_files(family):
+    """Localiza em ./fonts arquivos pertencentes à família escolhida."""
+    family = str(family or "").strip()
+    fonts_dir = Path("./fonts")
+    if not family or not fonts_dir.is_dir():
+        return []
+
+    wanted = _font_key(family)
+    aliases = {
+        "sourcecodepro": {"sourcecodepro", "sourcecodesemibold"},
+        "mvboli": {"mvboli"},
+        "comicrelief": {"comicrelief"},
+        "jetbrainsmono": {"jetbrainsmono"},
+        "ubuntucondensed": {"ubuntucondensed"},
+        "opendyslexic": {"opendyslexic"},
+    }
+    targets = aliases.get(wanted, {wanted})
+    found = []
+
+    for path in sorted(fonts_dir.iterdir()):
+        if not path.is_file() or path.suffix.casefold() not in {".ttf", ".otf", ".woff", ".woff2"}:
+            continue
+
+        file_key = _font_key(path.stem)
+        matched = any(target and target in file_key for target in targets)
+
+        if not matched:
+            try:
+                probe = ImageFont.truetype(str(path), 14)
+                real_family, _real_style = probe.getname()
+                real_key = _font_key(real_family)
+                matched = any(
+                    target and (target in real_key or real_key in target)
+                    for target in targets
+                )
+            except Exception:
+                matched = False
+
+        if matched:
+            found.append(path)
+
+    return found
+
+
+def _moby_google_font_urls(family, bold=False):
+    """Obtém a mesma família web usada pelo palco para o PNG do Retrato."""
+    family = str(family or "").strip()
+    if family not in RETRATO_WEBFONT_FAMILIES:
+        return []
+
+    base_weight = int(FONTES_PESO_BASE.get(family, 400))
+    weight = 700 if bold else base_weight
+    query_family = urllib.parse.quote_plus(family)
+    css_url = (
+        "https://fonts.googleapis.com/css2?"
+        f"family={query_family}:wght@{weight}&display=swap"
+    )
+
+    try:
+        req = urllib.request.Request(
+            css_url,
+            headers={
+                "User-Agent": (
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                    "AppleWebKit/537.36 (KHTML, like Gecko) "
+                    "Chrome/152 Safari/537.36"
+                )
+            },
+        )
+        with urllib.request.urlopen(req, timeout=8) as response:
+            css = response.read().decode("utf-8", errors="replace")
+    except Exception:
+        return []
+
+    urls = re.findall(r"url\\((https://[^)]+)\\)", css)
+    return list(dict.fromkeys(reversed(urls)))
+
+
+def _moby_webfont_cache(family, bold=False):
+    """Cache temporário da webfont selecionada para uso pelo Pillow."""
+    urls = _moby_google_font_urls(family, bold=bold)
+    if not urls:
+        return None
+
+    cache_dir = Path("./temp/font_cache")
+    try:
+        cache_dir.mkdir(parents=True, exist_ok=True)
+    except Exception:
+        return None
+
+    base_weight = int(FONTES_PESO_BASE.get(family, 400))
+    weight = 700 if bold else base_weight
+    safe = re.sub(r"[^A-Za-z0-9_-]+", "_", str(family)).strip("_") or "font"
+
+    for index, url in enumerate(urls):
+        ext = ".woff2" if ".woff2" in url.casefold() else ".woff"
+        target = cache_dir / f"{safe}_{weight}_{index}{ext}"
+
+        try:
+            if not (target.is_file() and target.stat().st_size > 1024):
+                req = urllib.request.Request(
+                    url,
+                    headers={"User-Agent": "Mozilla/5.0 Machina-yPoemas"},
+                )
+                with urllib.request.urlopen(req, timeout=8) as response:
+                    data = response.read()
+                if len(data) <= 1024:
+                    continue
+                target.write_bytes(data)
+
+            test_font = ImageFont.truetype(str(target), size=18)
+            del test_font
+            return target
+        except Exception:
+            try:
+                if target.is_file():
+                    target.unlink()
+            except Exception:
+                pass
+
+    return None
+
+
+def _moby_font(size, bold=False, family=None):
+    """Carrega no Retrato a família que o leitor selecionou no Moby."""
+    family = str(
+        family or st.session_state.get("moby_font_family", "OpenDyslexic")
+    ).strip()
+
+    candidates = []
+
+    local_files = _moby_local_font_files(family)
+
+    def score_font(path):
+        low = path.name.casefold()
+        is_bold = any(tag in low for tag in ("bold", "semibold", "demibold", "600", "700"))
+        if family == "Source Code Pro" and not bold:
+            return (0 if ("semibold" in low or "600" in low) else 1, len(low), low)
+        return (0 if bool(is_bold) == bool(bold) else 1, len(low), low)
+
+    candidates.extend(sorted(local_files, key=score_font))
+
+    if family == "OpenDyslexic":
+        candidates.append(
+            Path("./fonts/OpenDyslexic-Bold.otf" if bold else "./fonts/OpenDyslexic-Regular.otf")
+        )
+
+    # MV Boli é família nativa do Windows; usa-a quando realmente disponível.
+    if family == "MV Boli":
+        candidates.extend([
+            Path("C:/Windows/Fonts/mvboli.ttf"),
+            Path("mvboli.ttf"),
+        ])
+
+    webfont = _moby_webfont_cache(family, bold=bold)
+    if webfont is not None:
+        candidates.append(webfont)
+
+    # Fallback técnico apenas se a família escolhida não estiver disponível.
+    candidates.extend([
         Path("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" if bold else "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"),
+        Path("/usr/share/fonts/truetype/liberation2/LiberationSans-Bold.ttf" if bold else "/usr/share/fonts/truetype/liberation2/LiberationSans-Regular.ttf"),
         Path("C:/Windows/Fonts/arialbd.ttf" if bold else "C:/Windows/Fonts/arial.ttf"),
-    ]
+    ])
+
     for candidate in candidates:
         try:
             if candidate.is_file():
                 return ImageFont.truetype(str(candidate), int(size))
         except Exception:
             pass
+
     return ImageFont.load_default()
 
 
@@ -303,8 +482,11 @@ def create_moby_portrait_png(poem_html, image_path, title):
         return None
     body = (str(title or "").strip() + "\n\n" + body).strip()
     margin, gap = 54, 44
-    body_font = _moby_font(28)
-    footer_font = _moby_font(17)
+    portrait_family = str(st.session_state.get("moby_font_family", "OpenDyslexic"))
+    portrait_style = estilo_palco_atual()
+    portrait_bold = "bold" in portrait_style
+    body_font = _moby_font(28, bold=portrait_bold, family=portrait_family)
+    footer_font = _moby_font(17, family=portrait_family)
     measure = Image.new("RGB", (1, 1), "white")
     draw = ImageDraw.Draw(measure)
     with Image.open(image_path) as source:
@@ -2162,7 +2344,7 @@ if st.session_state.moby_sidebar_open:
     )
     if str(st.session_state.get("moby_lang_pick", "")) not in idioma_labels:
         st.session_state["moby_lang_pick"] = idioma_atual
-    st.selectbox("idiomas disponíveis...", idioma_labels, index=None, key="moby_lang_pick", on_change=sidebar_language_changed)
+    st.selectbox("idiomas disponíveis...", idioma_labels, key="moby_lang_pick", on_change=sidebar_language_changed)
 
     fonte_labels = [label for label, _ in FONTES_MACHINA]
     fonte_lookup = {label: family for label, family in FONTES_MACHINA}
@@ -2182,21 +2364,21 @@ if st.session_state.moby_sidebar_open:
             st.session_state["moby_font_pick"] = fonte_atual
         fonte_escolhida = st.selectbox(
             "fonte", fonte_labels,
-            index=None, key="moby_font_pick", on_change=sidebar_font_changed,
+            key="moby_font_pick", on_change=sidebar_font_changed,
         )
     with estilo_col:
         if str(st.session_state.get("moby_style_pick", "")) not in ESTILOS_MACHINA:
             st.session_state["moby_style_pick"] = estilo_atual
         estilo_escolhido = st.selectbox(
             "estilo", ESTILOS_MACHINA,
-            index=None, key="moby_style_pick", on_change=sidebar_style_changed,
+            key="moby_style_pick", on_change=sidebar_style_changed,
         )
     with corpo_col:
         if st.session_state.get("moby_size_pick") not in CORPOS_MOBY:
             st.session_state["moby_size_pick"] = corpo_atual
         corpo_escolhido = st.selectbox(
             "corpo", CORPOS_MOBY,
-            index=None, key="moby_size_pick", on_change=sidebar_size_changed,
+            key="moby_size_pick", on_change=sidebar_size_changed,
         )
     st.session_state.moby_font_family = fonte_lookup.get(fonte_escolhida, st.session_state.moby_font_family)
     st.session_state.moby_font_style = estilo_escolhido if estilo_escolhido in ESTILOS_MACHINA else "normal"
@@ -2221,7 +2403,28 @@ if st.session_state.moby_sidebar_open:
         about_choice = st.selectbox(
             "sobre",
             ABOUTS_LIST,
-            index=None, key="moby_about_pick",
+            key="moby_about_pick",
+        )
+        about_family = str(st.session_state.get("moby_font_family", "OpenDyslexic"))
+        about_font_css = fonte_palco_css(about_family)
+        about_weight, about_style_css = estilo_palco_css(about_family)
+        about_size = int(st.session_state.get("moby_font_size", 20))
+        st.markdown(
+            f"""
+            <style>
+            .st-key-moby_about_text,
+            .st-key-moby_about_text * {{
+                font-family: {about_font_css} !important;
+                font-style: {about_style_css} !important;
+            }}
+            .st-key-moby_about_text p,
+            .st-key-moby_about_text li {{
+                font-size: {about_size}px !important;
+                font-weight: {about_weight};
+            }}
+            </style>
+            """,
+            unsafe_allow_html=True,
         )
         with st.container(key="moby_about_text"):
             st.markdown(load_about_text(about_choice))
@@ -2245,7 +2448,7 @@ if st.session_state.get("moby_mode") == "Off-Machina":
     with col_book:
         if str(st.session_state.get("moby_off_book_pick", "")) not in nomes_off:
             st.session_state["moby_off_book_pick"] = nomes_off[idx_off]
-        livro_off = st.selectbox(f"livros: {idx_off + 1} / {len(nomes_off)}", nomes_off, index=None, key="moby_off_book_pick")
+        livro_off = st.selectbox(f"livros: {idx_off + 1} / {len(nomes_off)}", nomes_off, key="moby_off_book_pick")
         novo_idx = nomes_off.index(livro_off)
         if novo_idx != st.session_state.moby_off_book_index:
             st.session_state.moby_off_book_index = novo_idx
@@ -2304,7 +2507,6 @@ else:
         st.selectbox(
             f"temas: {tema_atual_idx + 1} / {len(temas)}",
             temas,
-            index=temas.index(current),
             key="moby_theme_pick",
             on_change=theme_picked,
         )
