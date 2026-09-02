@@ -324,9 +324,6 @@ def apply_styles():
         /* Sidebar :: nativa/recolhível — oficina disponível, palco livre */
         [data-testid="stSidebar"] {
             background-color: #eef6fb !important;
-                                    
-                                        
-                                        
         }
 
         [data-testid="stSidebar"] .machina-sidebar-title {
@@ -708,7 +705,7 @@ def init_session_state():
         "rand": False,
 
         "fonte_palco": "OpenDyslexic",
-                                 
+        "estilo_palco": "normal",
         "corpo_palco": 21,
         "sidebar_panel": "Machina",
 
@@ -794,14 +791,13 @@ FONTES_MACHINA = [
     ("Ubuntu Condensed", "Ubuntu Condensed"),
 ]
 
-                                                    
-                                                                                 
-                   
-             
-               
-           
-                    
- 
+ESTILOS_MACHINA = [
+    "normal",
+    "itálico",
+    "bold",
+    "bold itálico",
+]
+
 
 # Peso-base faz parte da identidade da família escolhida.
 FONTES_PESO_BASE = {
@@ -815,7 +811,7 @@ FONTES_PESO_BASE = {
 
 GOOGLE_FONTS_CSS = (
     "https://fonts.googleapis.com/css2?"
-    "family=Comic+Relief:wght@400;700&"
+    "family=Comic+Relief:ital,wght@0,400;0,700;1,400;1,700&"
     "family=JetBrains+Mono:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&"
     "family=Source+Code+Pro:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&"
     "family=Ubuntu+Condensed&"
@@ -920,20 +916,24 @@ def _fonte_palco_css(family=None):
     return FONTES_PALCO_CSS.get(family, f'"{family}", sans-serif')
 
 
-                           
-                                                                 
-                                                                                   
-                                                            
+def _estilo_palco_atual():
+    """Estilo tipográfico escolhido pelo leitor."""
+    estilo = str(st.session_state.get("estilo_palco", "normal")).strip().casefold()
+    return estilo if estilo in ESTILOS_MACHINA else "normal"
 
 
-def _peso_palco_leitor(family=None):
-    """Peso-base da família escolhida; não existe controle de estilo."""
+def _peso_palco_leitor(family=None, estilo=None):
+    """Peso efetivo da família + estilo escolhidos pelo leitor."""
     family = str(family or st.session_state.get("fonte_palco", "OpenDyslexic")).strip()
-                                                                     
-    return int(FONTES_PESO_BASE.get(family, 400))
-                                                 
-                                                               
-                           
+    estilo = str(estilo or _estilo_palco_atual()).strip().casefold()
+    peso_base = int(FONTES_PESO_BASE.get(family, 400))
+    return 700 if "bold" in estilo else peso_base
+
+
+def _estilo_palco_css(estilo=None):
+    """Inclinação CSS efetiva do estilo escolhido."""
+    estilo = str(estilo or _estilo_palco_atual()).strip().casefold()
+    return "italic" if "itálico" in estilo else "normal"
 
 
 def _open_dyslexic_font_face():
@@ -1135,7 +1135,7 @@ def pick_tema_palco():
     )
 
 def pick_fonte_palco():
-    """Escolhe fonte e corpo de leitura do Palco."""
+    """Escolhe fonte, estilo e corpo de leitura do Palco."""
     labels = [label for label, fonte in FONTES_MACHINA]
     lookup = {label: fonte for label, fonte in FONTES_MACHINA}
 
@@ -1145,15 +1145,14 @@ def pick_fonte_palco():
         labels[0],
     )
 
-                                          
+    current_style = _estilo_palco_atual()
+
     corpos = list(range(14, 35, 2))
     current_size = st.session_state.get("corpo_palco", 22)
     if current_size not in corpos:
         current_size = 22
 
-                                                                    
-                                                                          
-    col_font, col_corpo = st.sidebar.columns([2.78, 1.32])
+    col_font, col_estilo, col_corpo = st.sidebar.columns([2.35, 1.45, 0.80])
 
     with col_font:
         choice = st.selectbox(
@@ -1163,13 +1162,13 @@ def pick_fonte_palco():
             key="sidebar_font_select",
         )
 
-                    
-                              
-                                
-                            
-                                                       
-                                       
-         
+    with col_estilo:
+        style = st.selectbox(
+            translate("estilo"),
+            ESTILOS_MACHINA,
+            index=ESTILOS_MACHINA.index(current_style),
+            key="sidebar_style_select",
+        )
 
     with col_corpo:
         size = st.selectbox(
@@ -1180,7 +1179,7 @@ def pick_fonte_palco():
         )
 
     st.session_state.fonte_palco = lookup[choice]
-                                          
+    st.session_state.estilo_palco = style
     st.session_state.corpo_palco = size
 
 def load_help(idiom):
@@ -1244,13 +1243,14 @@ def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
     fonte_palco = _fonte_palco_leitor()
     fonte_palco_css = _fonte_palco_css(fonte_palco)
     peso_palco = _peso_palco_leitor(fonte_palco)
+    estilo_palco_css = _estilo_palco_css()
     corpo_palco = _corpo_palco_leitor()
 
     logo_css = f"""
         <style>
         .logo-text {{
             font-weight: {peso_palco} !important;
-                                                
+            font-style: {estilo_palco_css} !important;
             font-size: {corpo_palco}px !important;
             font-family: {fonte_palco_css} !important;
             color: #000000 !important;
@@ -1657,6 +1657,7 @@ def _off_machina_css():
     fonte_palco = _fonte_palco_leitor()
     fonte_palco_css = _fonte_palco_css(fonte_palco)
     peso_palco = _peso_palco_leitor(fonte_palco)
+    estilo_palco_css = _estilo_palco_css()
     corpo_palco = _corpo_palco_leitor()
     return f"""
         <style>
@@ -1670,7 +1671,7 @@ def _off_machina_css():
             color: #000000 !important;
             text-align: left !important;
             font-weight: {peso_palco} !important;
-                                                
+            font-style: {estilo_palco_css} !important;
         }}
         .machina-off-text {{
             display: block !important;
@@ -3231,9 +3232,15 @@ def criar_retrato_png(ypoema_html, image_path, tema, selo_size=24):
     margin = 64
     gap = 58
     fonte_retrato = _fonte_palco_leitor()
+    estilo_retrato = _estilo_palco_atual()
+    bold_retrato = "bold" in estilo_retrato
     corpo_png = 42
-    body_font = _retrato_font(corpo_png, family=fonte_retrato)
-    title_font = _retrato_font(max(corpo_png + 4, int(round(corpo_png * 1.18))), family=fonte_retrato)
+    body_font = _retrato_font(corpo_png, bold=bold_retrato, family=fonte_retrato)
+    title_font = _retrato_font(
+        max(corpo_png + 4, int(round(corpo_png * 1.18))),
+        bold=bold_retrato,
+        family=fonte_retrato,
+    )
 
     medida = Image.new("RGB", (1, 1), "white")
     draw_medida = ImageDraw.Draw(medida)
@@ -3263,7 +3270,11 @@ def criar_retrato_png(ypoema_html, image_path, tema, selo_size=24):
     largura_texto_real = max(larguras_linhas or [1])
 
     selo_real = max(1, int(round(int(selo_size) * 0.60)))
-    footer_font = _retrato_font(max(16, int(round(selo_real * 0.72))), family=fonte_retrato)
+    footer_font = _retrato_font(
+        max(16, int(round(selo_real * 0.72))),
+        bold=bold_retrato,
+        family=fonte_retrato,
+    )
     footer_bbox = draw_medida.textbbox((0, 0), RETRATO_ORIGEM_URL, font=footer_font)
     footer_text_w = footer_bbox[2] - footer_bbox[0]
     footer_gap_x = max(8, int(round(selo_real * 0.35)))
@@ -3655,6 +3666,7 @@ def render_analise_palco(texto):
     fonte_palco = _fonte_palco_leitor()
     fonte_palco_css = _fonte_palco_css(fonte_palco)
     peso_palco = _peso_palco_leitor(fonte_palco)
+    estilo_palco_css = _estilo_palco_css()
     corpo_palco = max(14, min(30, int(st.session_state.get("corpo_palco", 21)) - 1))
 
     voice = str(st.session_state.get("voz_analise", "OLA")).upper()
@@ -3681,7 +3693,7 @@ def render_analise_palco(texto):
             line-height:1.42;
             color:#000000;
             font-weight:{peso_palco};
-                                    
+            font-style:{estilo_palco_css};
         ">
             <div style="
                 text-align:center;
@@ -3692,7 +3704,6 @@ def render_analise_palco(texto):
             <div style="
                 text-align:center;
                 font-weight:{peso_palco};
-                                    
                 opacity:0.88;
                 margin:0 0 0.75rem 0;
                 line-height:1.22;
@@ -3978,10 +3989,11 @@ def _render_eureka_off(find_what, occurrences, more, rand, manu, eureka_voz_slot
         options = list(range(len(achados)))
         indice = int(st.session_state.get("eureka", 0))
         indice = max(0, min(indice, len(options) - 1))
+        if st.session_state.get("opt_ocur_key") not in options:
+            st.session_state["opt_ocur_key"] = indice
         opt_ocur_key = st.selectbox(
             "↓  " + str(len(achados)) + " " + info_find,
             options,
-            index=indice,
             format_func=lambda y: seed_list[y],
             key="opt_ocur_key",
             on_change=_on_eureka_occurrence_change,
@@ -4475,6 +4487,7 @@ def _render_acros_texto(acros_html):
     """Renderiza ACROS/AKROS com a mesma fonte escolhida para o Palco."""
     fonte_palco = _fonte_palco_leitor()
     fonte_css = _fonte_palco_css(fonte_palco)
+    estilo_palco_css = _estilo_palco_css()
     corpo_palco = _corpo_palco_leitor()
 
     # ACROS/AKROS usam <strong> na inicial destacada.
@@ -4491,7 +4504,8 @@ def _render_acros_texto(acros_html):
             font-family:{fonte_css} !important;
             font-size:{corpo_palco}px;
             line-height:1.35;
-            font-weight:400;
+            font-weight:{_peso_palco_leitor(fonte_palco)};
+            font-style:{estilo_palco_css};
             color:#000;
             width:fit-content;
             max-width:min(96ch,94%);
@@ -5286,10 +5300,11 @@ def page_eureka():
 
             with occurrences:
                 options = list(range(len(seed_list)))
+                if st.session_state.get("opt_ocur_key") not in options:
+                    st.session_state["opt_ocur_key"] = int(st.session_state.eureka)
                 opt_ocur_key = st.selectbox(
                     "↓  " + str(len(seed_list)) + " " + info_find,
                     options,
-                    index=st.session_state.eureka,
                     format_func=lambda y: seed_list[y],
                     key="opt_ocur_key",
                     on_change=_on_eureka_occurrence_change,
@@ -5625,11 +5640,12 @@ def page_off_machina():  # available off_machina_books
 
 
 def render_about_document(texto):
-    """Renderiza ABOUT em Markdown usando somente fonte + corpo do leitor."""
+    """Renderiza ABOUT em Markdown usando fonte + estilo + corpo do leitor."""
     fonte = _fonte_palco_leitor()
     fonte_css = _fonte_palco_css(fonte)
     corpo = _corpo_palco_leitor()
     peso = _peso_palco_leitor(fonte)
+    estilo_css = _estilo_palco_css()
 
     st.markdown(
         f"""
@@ -5641,6 +5657,7 @@ def render_about_document(texto):
             font-family: {fonte_css} !important;
             font-size: {corpo}px !important;
             font-weight: {peso} !important;
+            font-style: {estilo_css} !important;
             line-height: 1.45 !important;
         }}
         .st-key-machina_about_text [data-testid="stMarkdownContainer"] h1,
@@ -5648,6 +5665,7 @@ def render_about_document(texto):
         .st-key-machina_about_text [data-testid="stMarkdownContainer"] h3,
         .st-key-machina_about_text [data-testid="stMarkdownContainer"] h4 {{
             font-family: {fonte_css} !important;
+            font-style: {estilo_css} !important;
         }}
         </style>
         """,
