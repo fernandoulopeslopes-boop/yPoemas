@@ -274,10 +274,19 @@ def build_lexico():
         for line_number, fields in records:
             if _ypo_is_blank_fields(fields):
                 continue
-            source_id = str(fields[3]).strip()
-            if not source_id:
-                errors.append(f"{theme}: linha {line_number}: ID de origem vazio")
+
+            # Contrato histórico EUREKA / lay_2_ypo:
+            # o léxico aponta para a ideia exata; dentro dela o motor
+            # confirma a ocorrência procurando a seed em array_itimos.
+            numero_linea = str(fields[1]).strip()
+            ideia_numero = str(fields[2]).strip()
+            if not numero_linea or not ideia_numero:
+                errors.append(
+                    f"{theme}: linha {line_number}: linha/ideia vazia"
+                )
                 continue
+
+            source_id = f"{theme}_{numero_linea}{ideia_numero}"
 
             for itimo in _payload_itimos(fields):
                 for word in _words_from_itimo(itimo):
