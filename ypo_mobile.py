@@ -2,7 +2,7 @@
 import streamlit as st
 
 st.set_page_config(
-    page_title="a Machina de fazer Poesia - Mobile",
+    page_title="a Machina de fazer Poesia - laptops",
     page_icon="🌀",
     layout="wide",
     initial_sidebar_state="collapsed",
