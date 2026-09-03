@@ -26,19 +26,36 @@ def _project_path(*parts):
     return PROJECT_ROOT.joinpath(*parts)
 
 
+def _theme_name(tema):
+    """Nome canônico do tema: .ypo é a assinatura da Machina."""
+    valor = str(tema or "").strip()
+    if not valor:
+        return ""
+    nome = Path(valor).name
+    ext = Path(nome).suffix
+    if not ext:
+        return nome
+    if ext.casefold() == ".ypo":
+        return Path(nome).stem
+    raise ValueError(
+        f"assinatura inválida para tema da Machina: {nome}. "
+        "A assinatura oficial é .ypo; confirmação explícita é necessária para outra extensão."
+    )
+
+
 def _resolve_ypo_path(tema):
-    """Localiza o .ypo por KEY case-insensitive, preservando o nome autoral e seus espaços."""
-    tema = str(tema or "").strip()
+    """Localiza Design ou Design.ypo sem duplicar a assinatura oficial."""
+    tema_nome = _theme_name(tema)
     data_dir = _project_path("data")
     candidatos = (
-        data_dir / (tema + ".ypo"),
-        data_dir / (tema + ".YPO"),
+        data_dir / (tema_nome + ".ypo"),
+        data_dir / (tema_nome + ".YPO"),
     )
     for path in candidatos:
         if path.exists():
             return path
 
-    key = tema.casefold()
+    key = tema_nome.casefold()
     if data_dir.is_dir():
         for path in data_dir.iterdir():
             if path.is_file() and path.suffix.casefold() == ".ypo" and path.stem.casefold() == key:
@@ -823,8 +840,8 @@ def _discover_theme_files():
 def _dna_footer():
     return [
         "LEGENDA",
-        "tema = nome autoral do tema; existência material vem de data/.ypo ou data/.new.",
-        "ativo = circulação: N fora do palco; T testes locais; S circulação pública.",
+        "tema = nome autoral do tema; existência material oficial vem somente de data/*.ypo.",
+        "ativo = circulação: S quando presente em rol_todos os temas; N quando fora dele.",
         "livro = livro(s) aos quais o tema pertence; a ORDEM pertence exclusivamente ao rol_<livro>.txt.",
         "banco_tematico = banco visual associado ao tema.",
         "imagem = escolha RANDOM do banco_tematico; não integra o DNA.",
@@ -896,25 +913,26 @@ def build_dna():
             continue
 
         theme_key_rol = theme.strip().casefold()
+        ativo = "S" if theme_key_rol in rol_todos_keys else "N"
         theme_books = books.get(theme_key_rol, [])
         if theme_books:
             livro = ";".join(theme_books)
-        elif theme_key_rol in rol_todos_keys:
+        elif ativo == "S":
             livro = "todos os temas"
         else:
-            livro = "todos os temas"
+            livro = ""
             sem_livro.append(theme)
 
         # Banco temático é um ECHO de images.txt, não autoridade sobre o tema.
-        # Se estiver ausente, o DNA registra vazio e o Build_All continua;
-        # a existência do tema é determinada exclusivamente por data/*.ypo.
+        # A presença física de data/*.ypo preserva o tema autoral, mas NÃO o
+        # reinsere no ambiente. Somente novo_tema/ROLs podem reativá-lo.
         banco = image_map.get(theme.casefold(), "")
         if not banco:
             sem_banco.append(theme)
 
         rows.append({
             "tema": theme,
-            "ativo": "S",
+            "ativo": ativo,
             "livro": livro,
             "banco_tematico": banco,
             **metrics,
@@ -939,18 +957,13 @@ def build_dna():
             f"Runtime: {time.time() - start_time:.2f}s"
         )
 
-    inseridos_rol = []
-    if sem_livro:
-        atuais = list(rol_todos_atual)
-        chaves = set(rol_todos_keys)
-        for theme in sorted(sem_livro, key=str.casefold):
-            key = theme.strip().casefold()
-            if key not in chaves:
-                atuais.append(theme)
-                chaves.add(key)
-                inseridos_rol.append(theme)
-        if inseridos_rol:
-            _write_derived_text(rol_todos_path, "\n".join(atuais).rstrip() + "\n")
+    # Cada um no seu quadrado:
+    # Build_DNA fotografa; não cadastra nem ressuscita tema removido.
+    # A reintegração ao ambiente pertence exclusivamente a novo_tema.
+    inativos_fora_rol = sorted(
+        (row["tema"] for row in rows if str(row.get("ativo", "")).upper() != "S"),
+        key=str.casefold,
+    )
 
     dna_lines = ["|" + "|".join(DNA_HEADER) + "|"]
     for row in rows:
@@ -961,7 +974,8 @@ def build_dna():
     audit_lines = [
         f"temas_ypo={len(rows)}",
         "erros=0",
-        f"inseridos_em_rol_todos={len(inseridos_rol)}",
+        "inseridos_em_rol_todos=0",
+        f"inativos_fora_rol_todos={len(inativos_fora_rol)}",
         f"banco_tematico_ausente={len(sem_banco)}",
         "",
     ]
@@ -971,7 +985,8 @@ def build_dna():
     return (
         f"Build_DNA: {len(rows)} tema(s) .ypo; "
         "DNA reconstruído do zero; "
-        f"inseridos em rol_todos os temas={len(inseridos_rol)}; "
+        "inseridos em rol_todos os temas=0; "
+        f"inativos fora de rol_todos os temas={len(inativos_fora_rol)}; "
         f"banco temático ausente={len(sem_banco)} (não bloqueante); "
         f"saídas: {dna_path}; {audit_path}. "
         f"Runtime: {time.time() - start_time:.2f}s"

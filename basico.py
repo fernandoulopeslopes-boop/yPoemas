@@ -791,13 +791,14 @@ FONTES_MACHINA = [
     ("Ubuntu Condensed", "Ubuntu Condensed"),
 ]
 
+# Uma lista única de estilo para as seis famílias.
+# É um território de teste visual no palco; a curadoria final continua autoral.
 ESTILOS_MACHINA = [
     "normal",
     "itálico",
     "bold",
     "bold itálico",
 ]
-
 
 # Peso-base faz parte da identidade da família escolhida.
 FONTES_PESO_BASE = {
@@ -811,7 +812,7 @@ FONTES_PESO_BASE = {
 
 GOOGLE_FONTS_CSS = (
     "https://fonts.googleapis.com/css2?"
-    "family=Comic+Relief:ital,wght@0,400;0,700;1,400;1,700&"
+    "family=Comic+Relief:wght@400;700&"
     "family=JetBrains+Mono:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&"
     "family=Source+Code+Pro:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&"
     "family=Ubuntu+Condensed&"
@@ -916,25 +917,20 @@ def _fonte_palco_css(family=None):
     return FONTES_PALCO_CSS.get(family, f'"{family}", sans-serif')
 
 
-def _estilo_palco_atual():
-    """Estilo tipográfico escolhido pelo leitor."""
+def _estilo_palco_leitor():
+    """Estilo tipográfico escolhido pelo leitor para o palco."""
     estilo = str(st.session_state.get("estilo_palco", "normal")).strip().casefold()
     return estilo if estilo in ESTILOS_MACHINA else "normal"
 
 
-def _peso_palco_leitor(family=None, estilo=None):
-    """Peso efetivo da família + estilo escolhidos pelo leitor."""
+def _estilo_palco_css(family=None, estilo=None):
+    """Converte o estilo comum da Machina em peso + inclinação CSS."""
     family = str(family or st.session_state.get("fonte_palco", "OpenDyslexic")).strip()
-    estilo = str(estilo or _estilo_palco_atual()).strip().casefold()
+    estilo = str(estilo or _estilo_palco_leitor()).strip().casefold()
     peso_base = int(FONTES_PESO_BASE.get(family, 400))
-    return 700 if "bold" in estilo else peso_base
-
-
-def _estilo_palco_css(estilo=None):
-    """Inclinação CSS efetiva do estilo escolhido."""
-    estilo = str(estilo or _estilo_palco_atual()).strip().casefold()
-    return "italic" if "itálico" in estilo else "normal"
-
+    peso = 700 if "bold" in estilo else peso_base
+    inclinacao = "italic" if "itálico" in estilo else "normal"
+    return peso, inclinacao
 
 def _open_dyslexic_font_face():
     """Monta @font-face somente para a OpenDyslexic existente em ./fonts."""
@@ -1145,14 +1141,13 @@ def pick_fonte_palco():
         labels[0],
     )
 
-    current_style = _estilo_palco_atual()
-
+    current_style = _estilo_palco_leitor()
     corpos = list(range(14, 35, 2))
     current_size = st.session_state.get("corpo_palco", 22)
     if current_size not in corpos:
         current_size = 22
 
-    # Fonte ocupa a largura inteira; estilo e corpo dividem apenas a linha abaixo.
+    # Fonte ocupa a largura inteira; estilo e corpo dividem a linha abaixo.
     choice = st.sidebar.selectbox(
         translate("fonte"),
         labels,
@@ -1163,7 +1158,7 @@ def pick_fonte_palco():
     col_estilo, col_corpo = st.sidebar.columns([1.65, 1.15])
 
     with col_estilo:
-        style = st.selectbox(
+        estilo = st.selectbox(
             translate("estilo"),
             ESTILOS_MACHINA,
             index=ESTILOS_MACHINA.index(current_style),
@@ -1179,20 +1174,9 @@ def pick_fonte_palco():
         )
 
     st.session_state.fonte_palco = lookup[choice]
-    st.session_state.estilo_palco = style
+    st.session_state.estilo_palco = estilo
     st.session_state.corpo_palco = size
 
-def load_help(idiom):
-    returns = []
-    returns.append(translate("tema anterior"))
-    returns.append(translate("escolhe tema ao acaso"))
-    returns.append(translate("próximo tema"))
-    returns.append(translate("mais lidos..."))
-    returns.append(translate("gera nova versão do tema"))
-    returns.append("")  # posição histórica removida: antigo botão arte
-    returns.append(translate("voz"))
-
-    return returns
 
 def draw_check_buttons():
     """Botão arte removido: a sidebar já mostra/oculta a arte pela lógica de contexto."""
@@ -1242,15 +1226,14 @@ def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
 
     fonte_palco = _fonte_palco_leitor()
     fonte_palco_css = _fonte_palco_css(fonte_palco)
-    peso_palco = _peso_palco_leitor(fonte_palco)
-    estilo_palco_css = _estilo_palco_css()
+    peso_palco, estilo_css = _estilo_palco_css(fonte_palco)
     corpo_palco = _corpo_palco_leitor()
 
     logo_css = f"""
         <style>
         .logo-text {{
             font-weight: {peso_palco} !important;
-            font-style: {estilo_palco_css} !important;
+            font-style: {estilo_css} !important;
             font-size: {corpo_palco}px !important;
             font-family: {fonte_palco_css} !important;
             color: #000000 !important;
@@ -1656,8 +1639,7 @@ def _off_machina_css():
     """CSS próprio do Off-Machina: obedece fonte/corpo do leitor."""
     fonte_palco = _fonte_palco_leitor()
     fonte_palco_css = _fonte_palco_css(fonte_palco)
-    peso_palco = _peso_palco_leitor(fonte_palco)
-    estilo_palco_css = _estilo_palco_css()
+    peso_palco, estilo_css = _estilo_palco_css(fonte_palco)
     corpo_palco = _corpo_palco_leitor()
     return f"""
         <style>
@@ -1671,7 +1653,7 @@ def _off_machina_css():
             color: #000000 !important;
             text-align: left !important;
             font-weight: {peso_palco} !important;
-            font-style: {estilo_palco_css} !important;
+            font-style: {estilo_css} !important;
         }}
         .machina-off-text {{
             display: block !important;
@@ -2052,7 +2034,7 @@ def _help_find_ypo_file(nome_tema):
                 return os.path.join(data_dir, nome)
     return ""
 
-def _help_info_estavel(nome_tema):
+def _ficha_info_estavel(nome_tema):
     """Ficha cadastral: autoridade permanente = base/DNA.TXT."""
     row = dna_core.get_registro(nome_tema)
     if not row:
@@ -2264,9 +2246,9 @@ def _build_seal_from_ypo(nome_tema):
     except (OSError, UnicodeError):
         return ""
 
-def update_help_info(nome_tema):
+def update_ficha_info(nome_tema):
     """Ficha Técnica é uma visão do DNA; não recalcula cadastro em paralelo."""
-    info = _help_info_estavel(nome_tema)
+    info = _ficha_info_estavel(nome_tema)
     if not info or not info.get("titulo"):
         return []
     linhas = [f"Título: {info.get('titulo') or nome_tema}"]
@@ -2298,7 +2280,7 @@ def render_matrix_ficha_tecnica_ypoemas(tema):
     if not tema:
         return
 
-    linhas_info = update_help_info(tema)
+    linhas_info = update_ficha_info(tema)
     if st.session_state.lang != "pt":
         linhas_info = [translate(linha) for linha in linhas_info]
 
@@ -2857,38 +2839,35 @@ def show_retrato_no_topo(prefixo):
         focar_retrato_no_palco(anchor)
     return True
 
-@st.dialog("Retrato", width="large")
-def ampliar_retrato_local(png):
-    st.image(png, use_container_width=True)
+def _copiar_popover_sem_seta():
+    """Mantém a função do popover Copiar, sem exibir a seta visual do componente."""
+    st.markdown(
+        """
+        <style>
+        [data-testid="stPopover"] button [data-testid="stIconMaterial"],
+        [data-testid="stPopover"] button span[aria-hidden="true"] {
+            display: none !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
 
-
-def _toggle_sidebar_image():
-    """Liga/desliga somente a imagem contextual da sidebar."""
-    st.session_state["draw"] = not bool(st.session_state.get("draw", True))
 
 def show_copy_retrato_xerox(prefixo, texto_copia):
-    """Copy/Imagem/Retrato com o mesmo comportamento em todas as páginas."""
+    """Copiar/Retrato com o mesmo comportamento em todas as páginas."""
+    _copiar_popover_sem_seta()
     st.markdown("<br>", unsafe_allow_html=True)
-    left, copy_col, image_col, retrato_col, right = st.columns([2.6, 2.0, 2.0, 2.0, 2.6])
+    left, copy_col, retrato_col, right = st.columns([3.6, 2.0, 2.0, 3.6])
 
     with copy_col:
-        with st.popover("Copy", help="copiar texto", use_container_width=True):
+        with st.popover("Copiar", use_container_width=True):
             st.code(str(texto_copia or ""), language=None, wrap_lines=True)
-
-    with image_col:
-        st.button(
-            "Imagem",
-            key=f"{prefixo}_imagem_btn",
-            help="ligar/desligar imagem",
-            use_container_width=True,
-            on_click=_toggle_sidebar_image,
-        )
 
     with retrato_col:
         st.button(
             "Retrato",
             key=f"{prefixo}_retrato_btn",
-            help="mostrar Retrato",
             use_container_width=True,
             on_click=make_retrato_xerox,
             args=(prefixo,),
@@ -2897,20 +2876,12 @@ def show_copy_retrato_xerox(prefixo, texto_copia):
     png = st.session_state.get(f"{prefixo}_imagem_retrato")
     if png:
         with retrato_col:
-            if st.button(
-                "Ampliar",
-                key=f"{prefixo}_retrato_ampliar",
-                help="ampliar",
-                use_container_width=True,
-            ):
-                ampliar_retrato_local(png)
             st.download_button(
                 "Salvar",
                 data=png,
                 file_name=f"{st.session_state.get(f'{prefixo}_nome_retrato', 'retrato')}.png",
                 mime="image/png",
                 key=f"{prefixo}_retrato_save",
-                help="salvar",
                 use_container_width=True,
                 on_click="ignore",
             )
@@ -3029,53 +3000,6 @@ def _retrato_webfont_cache(family, bold=False):
 
     return ""
 
-def _retrato_font_files(family):
-    """Localiza em ./fonts arquivos pertencentes à família selecionada."""
-    family = str(family or "").strip()
-    fonts_dir = _project_path("fonts")
-    if not family or not os.path.isdir(fonts_dir):
-        return []
-
-    def chave(value):
-        value = unicodedata.normalize("NFKD", str(value or "")).casefold()
-        return re.sub(r"[^a-z0-9]+", "", "".join(
-            ch for ch in value if not unicodedata.combining(ch)
-        ))
-
-    wanted = chave(family)
-    aliases = {
-        "sourcecodepro": {"sourcecodepro", "sourcecodesemibold"},
-        "mvboli": {"mvboli"},
-        "comicrelief": {"comicrelief"},
-        "jetbrainsmono": {"jetbrainsmono"},
-        "ubuntucondensed": {"ubuntucondensed"},
-        "opendyslexic": {"opendyslexic"},
-    }
-    targets = aliases.get(wanted, {wanted})
-    found = []
-
-    for nome in sorted(os.listdir(fonts_dir)):
-        if not nome.casefold().endswith((".ttf", ".otf")):
-            continue
-        path = os.path.join(fonts_dir, nome)
-        file_key = chave(os.path.splitext(nome)[0])
-        matched = any(target and target in file_key for target in targets)
-        if not matched:
-            try:
-                probe = ImageFont.truetype(path, 14)
-                real_family, _real_style = probe.getname()
-                real_key = chave(real_family)
-                matched = any(
-                    target and (target in real_key or real_key in target)
-                    for target in targets
-                )
-            except Exception:
-                matched = False
-        if matched:
-            found.append(path)
-    return found
-
-
 def _retrato_font(size, bold=False, family=None):
     """Carrega no PNG a mesma família escolhida em Fontes & Letras."""
     family = str(family or "Trebuchet MS").strip()
@@ -3084,18 +3008,7 @@ def _retrato_font(size, bold=False, family=None):
 
     candidates = []
 
-    local_family_files = _retrato_font_files(family)
-
-    def _score_font(path):
-        low = os.path.basename(str(path)).casefold()
-        is_bold = any(tag in low for tag in ("bold", "semibold", "demibold", "600", "700"))
-        if family == "Source Code Pro" and not bold:
-            return (0 if ("semibold" in low or "600" in low) else 1, len(low), low)
-        return (0 if bool(is_bold) == bool(bold) else 1, len(low), low)
-
-    candidates.extend(sorted(local_family_files, key=_score_font))
-
-    # OpenDyslexic continua com nomes históricos conhecidos.
+    # OpenDyslexic: única família lida da pasta ./fonts.
     if family == "OpenDyslexic":
         filename = "OpenDyslexic-Bold.otf" if bold else "OpenDyslexic-Regular.otf"
         candidates.append(_project_path("fonts", filename))
@@ -3232,15 +3145,9 @@ def criar_retrato_png(ypoema_html, image_path, tema, selo_size=24):
     margin = 64
     gap = 58
     fonte_retrato = _fonte_palco_leitor()
-    estilo_retrato = _estilo_palco_atual()
-    bold_retrato = "bold" in estilo_retrato
     corpo_png = 42
-    body_font = _retrato_font(corpo_png, bold=bold_retrato, family=fonte_retrato)
-    title_font = _retrato_font(
-        max(corpo_png + 4, int(round(corpo_png * 1.18))),
-        bold=bold_retrato,
-        family=fonte_retrato,
-    )
+    body_font = _retrato_font(corpo_png, family=fonte_retrato)
+    title_font = _retrato_font(max(corpo_png + 4, int(round(corpo_png * 1.18))), family=fonte_retrato)
 
     medida = Image.new("RGB", (1, 1), "white")
     draw_medida = ImageDraw.Draw(medida)
@@ -3270,11 +3177,7 @@ def criar_retrato_png(ypoema_html, image_path, tema, selo_size=24):
     largura_texto_real = max(larguras_linhas or [1])
 
     selo_real = max(1, int(round(int(selo_size) * 0.60)))
-    footer_font = _retrato_font(
-        max(16, int(round(selo_real * 0.72))),
-        bold=bold_retrato,
-        family=fonte_retrato,
-    )
+    footer_font = _retrato_font(max(16, int(round(selo_real * 0.72))), family=fonte_retrato)
     footer_bbox = draw_medida.textbbox((0, 0), RETRATO_ORIGEM_URL, font=footer_font)
     footer_text_w = footer_bbox[2] - footer_bbox[0]
     footer_gap_x = max(8, int(round(selo_real * 0.35)))
@@ -3484,9 +3387,6 @@ def render_sidebar_context_image(chosen_id):
     ):
         return
 
-    if not bool(st.session_state.get("draw", True)):
-        return
-
     image_path = ""
 
     if str(chosen_id) in {"1", "2", "3"}:
@@ -3665,8 +3565,7 @@ def render_analise_palco(texto):
     """Renderiza análise no palco direito, com cabeçalho padrão."""
     fonte_palco = _fonte_palco_leitor()
     fonte_palco_css = _fonte_palco_css(fonte_palco)
-    peso_palco = _peso_palco_leitor(fonte_palco)
-    estilo_palco_css = _estilo_palco_css()
+    peso_palco, estilo_css = _estilo_palco_css(fonte_palco)
     corpo_palco = max(14, min(30, int(st.session_state.get("corpo_palco", 21)) - 1))
 
     voice = str(st.session_state.get("voz_analise", "OLA")).upper()
@@ -3693,7 +3592,7 @@ def render_analise_palco(texto):
             line-height:1.42;
             color:#000000;
             font-weight:{peso_palco};
-            font-style:{estilo_palco_css};
+            font-style:{estilo_css};
         ">
             <div style="
                 text-align:center;
@@ -3704,6 +3603,7 @@ def render_analise_palco(texto):
             <div style="
                 text-align:center;
                 font-weight:{peso_palco};
+            font-style:{estilo_css};
                 opacity:0.88;
                 margin:0 0 0.75rem 0;
                 line-height:1.22;
@@ -3989,11 +3889,10 @@ def _render_eureka_off(find_what, occurrences, more, rand, manu, eureka_voz_slot
         options = list(range(len(achados)))
         indice = int(st.session_state.get("eureka", 0))
         indice = max(0, min(indice, len(options) - 1))
-        if st.session_state.get("opt_ocur_key") not in options:
-            st.session_state["opt_ocur_key"] = indice
         opt_ocur_key = st.selectbox(
             "↓  " + str(len(achados)) + " " + info_find,
             options,
+            index=indice,
             format_func=lambda y: seed_list[y],
             key="opt_ocur_key",
             on_change=_on_eureka_occurrence_change,
@@ -4127,7 +4026,6 @@ def _render_acros_cereja():
     st.button(
         "🍒",
         key="acros_cereja",
-        help="acrósticos",
         use_container_width=True,
         on_click=_acros_abrir,
     )
@@ -4291,7 +4189,6 @@ def _render_acros_painel_eureka():
                 gerar = st.button(
                     "✅",
                     key="acros_gerar",
-                    help="gerar acróstico",
                     use_container_width=True,
                 )
             with sair_col:
@@ -4333,6 +4230,7 @@ def _render_acros_painel_eureka():
                 poetico = leitura == "Poético"
 
             with acao1_col:
+                _copiar_popover_sem_seta()
                 if tem_resultado:
                     with st.popover("Copiar", use_container_width=True):
                         st.code(str(acros_texto or ""), language=None, wrap_lines=True)
@@ -4487,7 +4385,6 @@ def _render_acros_texto(acros_html):
     """Renderiza ACROS/AKROS com a mesma fonte escolhida para o Palco."""
     fonte_palco = _fonte_palco_leitor()
     fonte_css = _fonte_palco_css(fonte_palco)
-    estilo_palco_css = _estilo_palco_css()
     corpo_palco = _corpo_palco_leitor()
 
     # ACROS/AKROS usam <strong> na inicial destacada.
@@ -4504,8 +4401,7 @@ def _render_acros_texto(acros_html):
             font-family:{fonte_css} !important;
             font-size:{corpo_palco}px;
             line-height:1.35;
-            font-weight:{_peso_palco_leitor(fonte_palco)};
-            font-style:{estilo_palco_css};
+            font-weight:400;
             color:#000;
             width:fit-content;
             max-width:min(96ch,94%);
@@ -4722,34 +4618,28 @@ def page_mini():
     # ✚ = nova variação | ✻ = tema ao acaso | 🔀 = automático | ♫ = voz | ? = help
     foo1, more_col, rand_col, auto_col, voz_col, help_col, foo2 = st.columns([2.35, 1.0, 1.0, 1.35, 1.0, 1.0, 2.35])
 
-    help_tips = load_help(st.session_state.lang)
-    help_rand = help_tips[1]
-    help_more = help_tips[4]
-    help_talk = help_tips[6]
-
     with more_col:
-        more = st.button("✚", key="mini_more_btn", help=help_more, use_container_width=True)
+        more = st.button("✚", key="mini_more_btn", use_container_width=True)
 
     with rand_col:
-        rand = st.button("✻", key="mini_rand_btn", help=help_rand, use_container_width=True)
+        rand = st.button("✻", key="mini_rand_btn", use_container_width=True)
 
     with auto_col:
         auto_clicked = st.button(
             "🔀",
             key="mini_auto_button",
-            help="modo automático",
             use_container_width=True,
         )
         if auto_clicked:
             st.session_state.auto = not st.session_state.auto
 
     with voz_col:
-        if st.button("♫", key="mini_voz_btn", help=help_talk, use_container_width=True):
+        if st.button("♫", key="mini_voz_btn", use_container_width=True):
             st.session_state.talk = not st.session_state.talk
 
     # Pedido: o botão ? deve existir como botão real logo após o ♫.
     with help_col:
-        manu = st.button("?", key="mini_help_btn", help="Modo de Usar & Manual do Usuário", use_container_width=True)
+        manu = st.button("?", key="mini_help_btn", use_container_width=True)
 
     mini_voz_slot = render_voz_slot()
 
@@ -4759,6 +4649,7 @@ def page_mini():
     if st.session_state.auto:
         st.session_state.talk = False
         with st.sidebar:
+            st.markdown("<div style='height:0.85rem'></div>", unsafe_allow_html=True)
             wait_time = st.slider(translate("tempo de exibição (em segundos): "), 5, 60, label_visibility="collapsed")
 
     if rand:
@@ -4902,11 +4793,6 @@ def page_ypoemas():
         pick_livro_palco()
 
     with col_nav:
-        help_tips = load_help(st.session_state.lang)
-        help_last = help_tips[0]
-        help_rand = help_tips[1]
-        help_nest = help_tips[2]
-        help_more = help_tips[4]
 
         if machina_nav_needs_spacer:
             st.markdown(
@@ -4914,13 +4800,13 @@ def page_ypoemas():
                 unsafe_allow_html=True,
             )
         nav_cols = st.columns([1, 1, 1, 1, 1, 1])
-        more = nav_cols[0].button("✚", help=help_more, use_container_width=True)
-        last = nav_cols[1].button("◀", help=help_last, use_container_width=True)
-        rand = nav_cols[2].button("✻", help=help_rand, use_container_width=True)
-        nest = nav_cols[3].button("▶", help=help_nest, use_container_width=True)
-        if nav_cols[4].button("♫", help=help_tips[6], key="ypoemas_voz_btn", use_container_width=True):
+        more = nav_cols[0].button("✚", use_container_width=True)
+        last = nav_cols[1].button("◀", use_container_width=True)
+        rand = nav_cols[2].button("✻", use_container_width=True)
+        nest = nav_cols[3].button("▶", use_container_width=True)
+        if nav_cols[4].button("♫", key="ypoemas_voz_btn", use_container_width=True):
             st.session_state.talk = not st.session_state.talk
-        manu = nav_cols[5].button("?", help="help !!!", use_container_width=True)
+        manu = nav_cols[5].button("?", use_container_width=True)
 
         ypoemas_voz_slot = render_voz_slot()
 
@@ -5099,7 +4985,6 @@ def page_ypoemas():
 # < PAGE > 3 — EUREKA / ACROS
 # =============================================================================
 def page_eureka():
-    help_tips = load_help(st.session_state.lang)
     acros_visitando = bool(
         st.session_state.get("acros_open", False)
         or st.session_state.get("acros_on", False)
@@ -5111,10 +4996,6 @@ def page_eureka():
         _hide_eureka_help()
         _render_acros_painel_eureka()
         return
-
-    help_rand = help_tips[1]
-    help_more = help_tips[4]
-    help_talk = help_tips[6]
 
     # Mesmo desenho de yPoemas/off-Machina:
     # [ busca ] [ nav_buttons + player compacto ] [ lista de ocorrências ]
@@ -5139,7 +5020,6 @@ def page_eureka():
         with busca_col:
             find_what = st.text_input(
                 label=translate("buscar por..."),
-                help=translate("digite pelo menos 3 letras para buscar uma palavra que você goste..."),
                 key="eureka_find",
                 on_change=_on_eureka_find_change,
                 disabled=acros_visitando,
@@ -5157,7 +5037,6 @@ def page_eureka():
                 st.button(
                     "💡",
                     key="eureka_scope_ypo_btn",
-                    help="buscar nos yPoemas",
                     use_container_width=True,
                     on_click=_set_eureka_scope,
                     args=("ypo",),
@@ -5168,7 +5047,6 @@ def page_eureka():
                 st.button(
                     "✒️",
                     key="eureka_scope_off_btn",
-                    help="buscar no Off-Machina",
                     use_container_width=True,
                     on_click=_set_eureka_scope,
                     args=("off",),
@@ -5199,20 +5077,20 @@ def page_eureka():
             )
 
         nav_cols = st.columns([1, 1, 1, 1, 1])
-        more = nav_cols[0].button("✚", help=help_more, use_container_width=True, disabled=acros_visitando)
-        rand = nav_cols[1].button("✻", help=help_rand, use_container_width=True, disabled=acros_visitando)
+        more = nav_cols[0].button("✚", use_container_width=True, disabled=acros_visitando)
+        rand = nav_cols[1].button("✻", use_container_width=True, disabled=acros_visitando)
 
         with nav_cols[2]:
             if acros_visitando:
-                st.button("🍒", key="acros_cereja_congelada", help="acrósticos", use_container_width=True, disabled=True)
+                st.button("🍒", key="acros_cereja_congelada", use_container_width=True, disabled=True)
             else:
                 _render_acros_cereja()
 
-        if nav_cols[3].button("♫", key="eureka_voz_btn", help=help_talk, use_container_width=True, disabled=acros_visitando):
+        if nav_cols[3].button("♫", key="eureka_voz_btn", use_container_width=True, disabled=acros_visitando):
             _hide_eureka_help()
             st.session_state.talk = not st.session_state.talk
 
-        manu = nav_cols[4].button("?", help="help !!!", use_container_width=True, disabled=acros_visitando)
+        manu = nav_cols[4].button("?", use_container_width=True, disabled=acros_visitando)
 
         eureka_voz_slot = render_voz_slot()
 
@@ -5300,11 +5178,10 @@ def page_eureka():
 
             with occurrences:
                 options = list(range(len(seed_list)))
-                if st.session_state.get("opt_ocur_key") not in options:
-                    st.session_state["opt_ocur_key"] = int(st.session_state.eureka)
                 opt_ocur_key = st.selectbox(
                     "↓  " + str(len(seed_list)) + " " + info_find,
                     options,
+                    index=st.session_state.eureka,
                     format_func=lambda y: seed_list[y],
                     key="opt_ocur_key",
                     on_change=_on_eureka_occurrence_change,
@@ -5449,10 +5326,6 @@ def page_off_machina():  # available off_machina_books
         st.session_state.off_take = 0
 
     with col_nav:
-        help_tips = load_help(st.session_state.lang)
-        help_last = help_tips[0]
-        help_rand = help_tips[1]
-        help_nest = help_tips[2]
 
         if off_nav_needs_spacer:
             st.markdown(
@@ -5460,12 +5333,12 @@ def page_off_machina():  # available off_machina_books
                 unsafe_allow_html=True,
             )
         nav_cols = st.columns([1, 1, 1, 1, 1])
-        last = nav_cols[0].button("◀", help=help_last, use_container_width=True)
-        rand = nav_cols[1].button("✻", help=help_rand, use_container_width=True)
-        nest = nav_cols[2].button("▶", help=help_nest, use_container_width=True)
-        if nav_cols[3].button("♫", help=help_tips[6], key="off_voz_btn", use_container_width=True):
+        last = nav_cols[0].button("◀", use_container_width=True)
+        rand = nav_cols[1].button("✻", use_container_width=True)
+        nest = nav_cols[2].button("▶", use_container_width=True)
+        if nav_cols[3].button("♫", key="off_voz_btn", use_container_width=True):
             st.session_state.talk = not st.session_state.talk
-        manu = nav_cols[4].button("?", help="help !!!", use_container_width=True)
+        manu = nav_cols[4].button("?", use_container_width=True)
 
         off_voz_slot = render_voz_slot()
 
@@ -5644,8 +5517,7 @@ def render_about_document(texto):
     fonte = _fonte_palco_leitor()
     fonte_css = _fonte_palco_css(fonte)
     corpo = _corpo_palco_leitor()
-    peso = _peso_palco_leitor(fonte)
-    estilo_css = _estilo_palco_css()
+    peso, estilo_css = _estilo_palco_css(fonte)
 
     st.markdown(
         f"""
