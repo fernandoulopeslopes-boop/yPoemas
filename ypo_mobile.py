@@ -8,6 +8,6 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-from basico import main
+from basico import start_machina
 
-main("mobile")
+start_machina("mobile")
