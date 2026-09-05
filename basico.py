@@ -1927,10 +1927,10 @@ def _manual_ypoemas_texto():
 ___
 Selecione um livro na lista de Livros
 ___
-- ✚ = Gera um novo texto para o tema
-- ◀ = Move para o tema anterior
-- ✻ = Escolhe um tema aleatoriamente
-- ▶ = Move para o próximo tema
+- * = Escolhe um tema aleatoriamente
+- < = Move para o tema anterior
+- + = Gera um novo texto para o tema
+- > = Move para o próximo tema
 - ♫ = ouvir a leitura do texto
 - ? = Modo de Usar & Manual do Usuário
 ___
@@ -2359,10 +2359,10 @@ def _manual_talk_intro():
     return translate("♫ ouvir a leitura do texto")
 
 def _manual_inserir_talk_entre_botoes(raw_text):
-    """Insere a legenda da voz entre ▶ e ? no manual dos botões.
+    """Insere a legenda da voz entre > e ? no manual dos botões.
 
     Regra visual pedida:
-    - ▶ = Move para o próximo tema
+    - > = Move para o próximo tema
     - ♫ ouvir a leitura do texto
     - ?  = Modo de Usar & Manual do Usuário
     """
@@ -2381,9 +2381,9 @@ def _manual_inserir_talk_entre_botoes(raw_text):
             linhas.insert(idx, talk_line)
             return "\n".join(linhas)
 
-    # Fallback: inserir logo após a linha do botão ▶.
+    # Fallback: inserir logo após a linha do botão seguinte.
     for idx, line in enumerate(linhas):
-        if "▶" in line:
+        if "▶" in line or re.match(r"^\s*(?:[-*]\s*)?>\s*=", line):
             linhas.insert(idx + 1, talk_line)
             return "\n".join(linhas)
 
@@ -2417,6 +2417,28 @@ def _manual_off_machina_texto():
         manual = padrao.sub(bloco_listas + r"\1", manual, count=1)
     elif bloco_listas not in manual:
         manual = bloco_listas + manual
+
+    # A faixa Off mantém os mesmos lugares da navegação comum, sem inventar
+    # função para +. Reordena somente as linhas dos botões já documentados.
+    linhas = manual.splitlines()
+    padrao_botao = re.compile(r"^\s*(?:[-*]\s*)?(?:✻|◀|✚|▶|\*|<|\+|>|♫|\?)\s*(?:=|\b)")
+    indices = [
+        idx for idx, linha in enumerate(linhas)
+        if padrao_botao.search(linha)
+        or re.match(r"^\s*(?:[-*]\s*)?s\s*=", linha, flags=re.IGNORECASE)
+    ]
+    if indices:
+        inserir_em = indices[0]
+        linhas = [linha for idx, linha in enumerate(linhas) if idx not in set(indices)]
+        botoes = [
+            "* = Escolhe um tema aleatoriamente",
+            "< = Move para o tema anterior",
+            "> = Move para o próximo tema",
+            _manual_talk_intro(),
+            "? = Modo de Usar & Manual do Usuário",
+        ]
+        linhas[inserir_em:inserir_em] = botoes
+        manual = "\n".join(linhas)
 
     return manual
 
@@ -2505,17 +2527,27 @@ def render_manual_mini():
 
 def _manual_eureka_texto():
     """Manual padrão da página Eureka em formato de lista avaliável."""
-    return """eureka: modo de usar
-___
-Digite pelo menos 3 letras para buscar uma palavra que você goste...
-___
-- ✚ = Gera novo texto para o tema
-- ✻ = Escolhe uma palavra aleatoriamente
-- ♫ ouvir a leitura do texto
-- ? = Modo de Usar & Manual do Usuário
-___
-A lista mostra palavras/verbetes encontrados no léxico da Machina.
-___"""
+    botoes = [
+        "- * = Escolhe uma ocorrência aleatoriamente",
+        "- < = Move para a ocorrência anterior",
+    ]
+    if str(st.session_state.get("eureka_scope", "ypo")).lower() != "off":
+        botoes.append("- + = Gera novo texto para o tema")
+    botoes.extend([
+        "- > = Move para a próxima ocorrência",
+        "- ♫ ouvir a leitura do texto",
+        "- ? = Modo de Usar & Manual do Usuário",
+    ])
+    return "\n".join([
+        "eureka: modo de usar",
+        "___",
+        "Digite pelo menos 3 letras para buscar uma palavra que você goste...",
+        "___",
+        *botoes,
+        "___",
+        "A lista mostra palavras/verbetes encontrados no léxico da Machina.",
+        "___",
+    ])
 
 def render_manual_eureka():
     """Help padrão da página Eureka."""
@@ -3826,7 +3858,16 @@ def _eureka_off_texto_html(texto, seed):
     linhas = str(texto or "").splitlines()
     return "<br>".join(_eureka_off_mark_text(linha, seed) for linha in linhas)
 
-def _render_eureka_off(find_what, occurrences, more, rand, manu, eureka_voz_slot, show_help_eureka):
+def _render_eureka_off(
+    find_what,
+    occurrences,
+    last,
+    rand,
+    nest,
+    manu,
+    eureka_voz_slot,
+    show_help_eureka,
+):
     """Mesmo EUREKA, segundo território: pesquisa direta nos .pip."""
     achados = ler_pip(find_what)
 
@@ -3862,9 +3903,9 @@ def _render_eureka_off(find_what, occurrences, more, rand, manu, eureka_voz_slot
             atual = 0
         st.session_state["eureka"] = max(0, min(atual, len(achados) - 1))
 
-    if more:
+    if last:
         atual = int(st.session_state.get("eureka", 0))
-        st.session_state["eureka"] = (atual + 1) % len(achados)
+        st.session_state["eureka"] = (atual - 1) % len(achados)
         st.session_state["opt_ocur_key"] = st.session_state["eureka"]
 
     if rand:
@@ -3876,6 +3917,11 @@ def _render_eureka_off(find_what, occurrences, more, rand, manu, eureka_voz_slot
             st.session_state["eureka"] = new_eureka
         else:
             st.session_state["eureka"] = 0
+        st.session_state["opt_ocur_key"] = st.session_state["eureka"]
+
+    if nest:
+        atual = int(st.session_state.get("eureka", 0))
+        st.session_state["eureka"] = (atual + 1) % len(achados)
         st.session_state["opt_ocur_key"] = st.session_state["eureka"]
 
     livros = {str(item.get("livro", "")) for item in achados}
@@ -3903,7 +3949,7 @@ def _render_eureka_off(find_what, occurrences, more, rand, manu, eureka_voz_slot
         _hide_eureka_help()
         show_help_eureka = False
     st.session_state["eureka_last_ocur"] = opt_ocur_key
-    if not rand:
+    if not (last or rand or nest):
         st.session_state["eureka"] = opt_ocur_key
 
     if show_help_eureka:
@@ -4382,9 +4428,10 @@ def _render_eureka_registro(texto_html, texto_copia, tema, imagem, key_prefix, s
     show_copy_retrato_xerox(prefixo, texto_copia)
 
 def _render_acros_texto(acros_html):
-    """Renderiza ACROS/AKROS com a mesma fonte escolhida para o Palco."""
+    """Renderiza ACROS/AKROS com fonte, estilo e corpo escolhidos pelo leitor."""
     fonte_palco = _fonte_palco_leitor()
     fonte_css = _fonte_palco_css(fonte_palco)
+    peso_palco, estilo_css = _estilo_palco_css(fonte_palco)
     corpo_palco = _corpo_palco_leitor()
 
     # ACROS/AKROS usam <strong> na inicial destacada.
@@ -4392,7 +4439,10 @@ def _render_acros_texto(acros_html):
     conteudo = str(acros_html or "")
     conteudo = conteudo.replace(
         "<strong>",
-        f'<strong style="font-family:{fonte_css} !important;">',
+        (
+            f'<strong style="font-family:{fonte_css} !important;'
+            f'font-style:{estilo_css} !important;font-weight:700 !important;">'
+        ),
     )
 
     st.markdown(
@@ -4401,7 +4451,8 @@ def _render_acros_texto(acros_html):
             font-family:{fonte_css} !important;
             font-size:{corpo_palco}px;
             line-height:1.35;
-            font-weight:400;
+            font-weight:{peso_palco};
+            font-style:{estilo_css};
             color:#000;
             width:fit-content;
             max-width:min(96ch,94%);
@@ -4800,10 +4851,10 @@ def page_ypoemas():
                 unsafe_allow_html=True,
             )
         nav_cols = st.columns([1, 1, 1, 1, 1, 1])
-        more = nav_cols[0].button("✚", use_container_width=True)
-        last = nav_cols[1].button("◀", use_container_width=True)
-        rand = nav_cols[2].button("✻", use_container_width=True)
-        nest = nav_cols[3].button("▶", use_container_width=True)
+        rand = nav_cols[0].button("*", use_container_width=True)
+        last = nav_cols[1].button("<", use_container_width=True)
+        more = nav_cols[2].button("+", use_container_width=True)
+        nest = nav_cols[3].button(">", use_container_width=True)
         if nav_cols[4].button("♫", key="ypoemas_voz_btn", use_container_width=True):
             st.session_state.talk = not st.session_state.talk
         manu = nav_cols[5].button("?", use_container_width=True)
@@ -4818,7 +4869,7 @@ def page_ypoemas():
     if st.session_state.take > maxy_ypoemas or st.session_state.take < 0:
         st.session_state.take = 0
 
-    # Âncora estável: usada pelo ✚ para evitar que qualquer callback de lista
+    # Âncora estável: usada pelo + para evitar que qualquer callback de lista
     # troque tema antes da geração de "mais uma versão do mesmo tema".
     if not st.session_state.get("ypo_keep_book"):
         st.session_state["ypo_keep_book"] = _current_book()
@@ -4826,7 +4877,7 @@ def page_ypoemas():
         st.session_state["ypo_keep_tema"] = st.session_state.get("tema", "")
 
     if more:
-        # ✚ = recarregar / mais uma versão do mesmo tema.
+        # + = recarregar / mais uma versão do mesmo tema.
         # Usa a última âncora estável, não o eventual valor alterado por callback.
         frozen_book = st.session_state.get("ypo_keep_book", _current_book())
         frozen_take = int(st.session_state.get("ypo_keep_take", st.session_state.get("take", 0)))
@@ -5013,9 +5064,9 @@ def page_eureka():
     with seed:
         # "o quê" + "onde buscar": input + bloco compacto com 2 chaves.
         try:
-            busca_col, scope_col = st.columns([3.55, 0.85], vertical_alignment="bottom")
+            busca_col, scope_col = st.columns([3.25, 1.15], vertical_alignment="bottom")
         except TypeError:
-            busca_col, scope_col = st.columns([3.55, 0.85])
+            busca_col, scope_col = st.columns([3.25, 1.15])
 
         with busca_col:
             find_what = st.text_input(
@@ -5031,7 +5082,7 @@ def page_eureka():
             st.session_state["eureka_scope"] = "ypo"
 
         with scope_col:
-            ypo_col, off_col = st.columns([1, 1], gap="small")
+            ypo_col, off_col, acros_col = st.columns([1, 1, 1], gap="small")
 
             with ypo_col:
                 st.button(
@@ -5052,6 +5103,9 @@ def page_eureka():
                     args=("off",),
                     disabled=acros_visitando,
                 )
+
+            with acros_col:
+                _render_acros_cereja()
 
             # Marca apenas estes dois botões no DOM para o CSS acima.
             components.html(
@@ -5076,31 +5130,39 @@ def page_eureka():
                 unsafe_allow_html=True,
             )
 
-        nav_cols = st.columns([1, 1, 1, 1, 1])
-        more = nav_cols[0].button("✚", use_container_width=True, disabled=acros_visitando)
-        rand = nav_cols[1].button("✻", use_container_width=True, disabled=acros_visitando)
-
+        nav_cols = st.columns([1, 1, 1, 1, 1, 1])
+        rand = nav_cols[0].button(
+            "*", key="eureka_rand_btn", use_container_width=True, disabled=acros_visitando
+        )
+        last = nav_cols[1].button(
+            "<", key="eureka_prev_btn", use_container_width=True, disabled=acros_visitando
+        )
         with nav_cols[2]:
-            if acros_visitando:
-                st.button("🍒", key="acros_cereja_congelada", use_container_width=True, disabled=True)
+            if eureka_scope == "off":
+                more = False
             else:
-                _render_acros_cereja()
+                more = st.button(
+                    "+", key="eureka_more_btn", use_container_width=True, disabled=acros_visitando
+                )
+        nest = nav_cols[3].button(
+            ">", key="eureka_next_btn", use_container_width=True, disabled=acros_visitando
+        )
 
-        if nav_cols[3].button("♫", key="eureka_voz_btn", use_container_width=True, disabled=acros_visitando):
+        if nav_cols[4].button("♫", key="eureka_voz_btn", use_container_width=True, disabled=acros_visitando):
             _hide_eureka_help()
             st.session_state.talk = not st.session_state.talk
 
-        manu = nav_cols[4].button("?", use_container_width=True, disabled=acros_visitando)
+        manu = nav_cols[5].button("?", use_container_width=True, disabled=acros_visitando)
 
         eureka_voz_slot = render_voz_slot()
 
-    if more or rand or manu:
+    if more or last or rand or nest or manu:
         limpar_retrato("eureka")
 
     if manu:
         st.session_state["help_eureka_open"] = True
 
-    if more or rand:
+    if more or last or rand or nest:
         _hide_eureka_help()
 
     show_help_eureka = bool(st.session_state.get("help_eureka_open", False))
@@ -5115,8 +5177,9 @@ def page_eureka():
             _render_eureka_off(
                 find_what,
                 occurrences,
-                more,
+                last,
                 rand,
+                nest,
                 manu,
                 eureka_voz_slot,
                 show_help_eureka,
@@ -5140,7 +5203,7 @@ def page_eureka():
                 if not seed_tema in soma_tema:
                     soma_tema.append(seed_tema)
 
-        if (not more) and (not manu) and not st.session_state.get("eureka_retrato_keep_palco", False):
+        if not any((more, last, rand, nest, manu)) and not st.session_state.get("eureka_retrato_keep_palco", False):
             st.session_state.eureka = 0
 
         if len(seed_list) == 0:
@@ -5163,6 +5226,11 @@ def page_eureka():
             else:
                 info_find += '"'
 
+            if last:
+                atual = int(st.session_state.get("eureka", 0))
+                st.session_state.eureka = (atual - 1) % len(seed_list)
+                st.session_state["opt_ocur_key"] = st.session_state.eureka
+
             if rand:
                 old_eureka = st.session_state.get("eureka", 0)
                 if len(seed_list) > 1:
@@ -5174,6 +5242,11 @@ def page_eureka():
                     st.session_state.eureka = 0
 
                 # O selectbox precisa refletir a ocorrência sorteada.
+                st.session_state["opt_ocur_key"] = st.session_state.eureka
+
+            if nest:
+                atual = int(st.session_state.get("eureka", 0))
+                st.session_state.eureka = (atual + 1) % len(seed_list)
                 st.session_state["opt_ocur_key"] = st.session_state.eureka
 
             with occurrences:
@@ -5193,7 +5266,7 @@ def page_eureka():
                 show_help_eureka = False
             st.session_state["eureka_last_ocur"] = opt_ocur_key
 
-            if not rand:
+            if not (last or rand or nest):
                 st.session_state.eureka = opt_ocur_key
 
             if show_help_eureka:
@@ -5283,7 +5356,7 @@ def page_off_machina():  # available off_machina_books
         st.session_state.off_take = 0
 
     # Header limpo, herdado do palco yPoemas:
-    # [ lista_livros ] [ ◀ ✻ ▶ ? ] [ lista_temas ]
+    # [ lista_livros ] [ * < (sem +) > ♫ ? ] [ lista_temas ]
     try:
         col_livros, col_nav, col_temas = st.columns(
             [3, 4, 3],
@@ -5332,13 +5405,17 @@ def page_off_machina():  # available off_machina_books
                 "<div style='height:1.95rem; min-height:1.95rem;'></div>",
                 unsafe_allow_html=True,
             )
-        nav_cols = st.columns([1, 1, 1, 1, 1])
-        last = nav_cols[0].button("◀", use_container_width=True)
-        rand = nav_cols[1].button("✻", use_container_width=True)
-        nest = nav_cols[2].button("▶", use_container_width=True)
-        if nav_cols[3].button("♫", key="off_voz_btn", use_container_width=True):
+        nav_cols = st.columns([1, 1, 1, 1, 1, 1])
+        rand = nav_cols[0].button("*", use_container_width=True)
+        last = nav_cols[1].button("<", use_container_width=True)
+        # A terceira posição pertence ao + nas páginas que geram variações.
+        # Off-Machina não gera variações: o botão simplesmente não nasce.
+        with nav_cols[2]:
+            pass
+        nest = nav_cols[3].button(">", use_container_width=True)
+        if nav_cols[4].button("♫", key="off_voz_btn", use_container_width=True):
             st.session_state.talk = not st.session_state.talk
-        manu = nav_cols[4].button("?", use_container_width=True)
+        manu = nav_cols[5].button("?", use_container_width=True)
 
         off_voz_slot = render_voz_slot()
 
@@ -5367,7 +5444,7 @@ def page_off_machina():  # available off_machina_books
     if st.session_state.off_take > maxy_off_machina:  # just in case...
         st.session_state.off_take = 0
 
-    # Mantém a lista_temas sincronizada com os botões ◀ ✻ ▶,
+    # Mantém a lista_temas sincronizada com os botões < * >,
     # sem escrever diretamente na key interna do widget.
     if nav_changed:
         st.session_state["off_take_widget_token"] = int(

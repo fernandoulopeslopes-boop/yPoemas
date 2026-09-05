@@ -1,6 +1,7 @@
 import os
 import random
 import datetime
+import re
 import streamlit as st
 
 from random import randrange
@@ -34,14 +35,22 @@ def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo y
     lista_unicos = []
 
     this_seed = ""
-    find_coords = ""
+    find_tema = ""
+    find_linha = ""
+    find_ideia = ""
+    find_posicao = 0
     look_for_seed = False
 
     if seed_eureka != "":
-        look_for_seed = True
         part_string = seed_eureka.partition(" ➪ ")
         this_seed = part_string[0]
-        find_coords = part_string[2]
+        fonte = part_string[2].strip()
+        find_tema, sep, sufixo = fonte.rpartition("_")
+        if sep and find_tema and re.fullmatch(r"\d{7}", sufixo):
+            find_linha = sufixo[:2]
+            find_ideia = sufixo[2:4]
+            find_posicao = int(sufixo[4:])
+            look_for_seed = find_posicao >= 1
 
     nome_tema = nome_tema.strip("\n")
 
@@ -96,7 +105,7 @@ def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo y
     tabs_pendente = 0
 
     for line in lista_linhas:
-        # Recuo autoral: |@|, |@@|, |@@@|, ...
+        # Recuo autoral: |$|, |$$|, |$$$|, ...
         # O comando pertence ao motor; não participa da escolha de ítimos.
         corpo_linha = line.rstrip("\r\n")
         partes_comando = corpo_linha.split("|")
@@ -105,7 +114,7 @@ def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo y
             and partes_comando[0] == ""
             and partes_comando[2] == ""
             and partes_comando[1]
-            and set(partes_comando[1]) == {"@"}
+            and set(partes_comando[1]) == {"$"}
         ):
             tabs_pendente = len(partes_comando[1])
             lista_change.append(line)
@@ -143,14 +152,13 @@ def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo y
 
         array_itimos = alinhas[7:-1]
         tabs = 0
-        if array_itimos and array_itimos[0] and set(array_itimos[0]) == {"@"}:
+        if array_itimos and array_itimos[0] and set(array_itimos[0]) == {"$"}:
             tabs = len(array_itimos[0])
             array_itimos = array_itimos[1:]
         elif tabs_pendente:
             tabs = int(tabs_pendente)
         tabs_pendente = 0
 
-        find_eureka = nome_tema + "_" + numero_linea + ideia_numero
         total_itimos = len(array_itimos)
 
         if total_itimos <= 0:
@@ -190,16 +198,23 @@ def gera_poema(nome_tema, seed_eureka):  # abrir um script.ypo e gerar um novo y
                 )
                 itimo_escolhido = "_Erro_"
 
-            if find_eureka == find_coords and look_for_seed:
-                for itimo in array_itimos:
-                    if this_seed.lower() in itimo.lower():
-                        itimo_escolhido = itimo
-                        lista_unicos.append(itimo_escolhido.upper())
-                        itimo_escolhido = itimo_escolhido.replace(
-                            this_seed, "<mark>" + this_seed + "</mark>"
-                        )
-                        look_for_seed = False
-                        break
+            if (
+                look_for_seed
+                and nome_tema == find_tema
+                and numero_linea.zfill(2) == find_linha
+                and ideia_numero.zfill(2) == find_ideia
+                and find_posicao <= total_itimos
+            ):
+                itimo_escolhido = array_itimos[find_posicao - 1]
+                lista_unicos.append(itimo_escolhido.upper())
+                itimo_escolhido = re.sub(
+                    re.escape(this_seed),
+                    lambda match: "<mark>" + match.group(0) + "</mark>",
+                    itimo_escolhido,
+                    flags=re.IGNORECASE,
+                )
+                look_for_seed = False
+                break
 
             if se_randomico == "K":
                 if itimo_escolhido.upper() not in lista_unicos:

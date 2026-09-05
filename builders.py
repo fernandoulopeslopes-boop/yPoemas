@@ -11,6 +11,7 @@ from pathlib import Path
 import shutil
 import time
 import re
+import unicodedata
 from ypo_structure import (
     is_blank_fields as _ypo_is_blank_fields,
     payload_itimos as _ypo_payload_itimos,
@@ -24,6 +25,12 @@ PROJECT_ROOT = Path(__file__).resolve().parent
 def _project_path(*parts):
     """Monta um caminho interno da Machina a partir da raiz do projeto."""
     return PROJECT_ROOT.joinpath(*parts)
+
+
+def _dna_alpha_key(value):
+    """Chave alfabética estável: ignora caixa e acentos, preserva o nome original."""
+    text = unicodedata.normalize("NFKD", str(value or "").strip().casefold())
+    return "".join(ch for ch in text if not unicodedata.combining(ch))
 
 
 def _theme_name(tema):
@@ -275,20 +282,33 @@ def build_lexico():
             if _ypo_is_blank_fields(fields):
                 continue
 
-            # Contrato histórico EUREKA / lay_2_ypo:
-            # o léxico aponta para a ideia exata; dentro dela o motor
-            # confirma a ocorrência procurando a seed em array_itimos.
             numero_linea = str(fields[1]).strip()
             ideia_numero = str(fields[2]).strip()
-            if not numero_linea or not ideia_numero:
+            if not numero_linea.isdigit() or not ideia_numero.isdigit():
                 errors.append(
-                    f"{theme}: linha {line_number}: linha/ideia vazia"
+                    f"{theme}: linha {line_number}: linha/ideia inválida"
                 )
                 continue
 
-            source_id = f"{theme}_{numero_linea}{ideia_numero}"
+            numero_linea = int(numero_linea)
+            ideia_numero = int(ideia_numero)
+            if numero_linea > 99 or ideia_numero > 99:
+                errors.append(
+                    f"{theme}: linha {line_number}: linha/ideia excede 2 dígitos"
+                )
+                continue
 
-            for itimo in _payload_itimos(fields):
+            payload_itimos = _payload_itimos(fields)
+            if len(payload_itimos) > 999:
+                errors.append(
+                    f"{theme}: linha {line_number}: payload excede 999 ítimos"
+                )
+                continue
+
+            for posicao, itimo in enumerate(payload_itimos, start=1):
+                source_id = (
+                    f"{theme}_{numero_linea:02d}{ideia_numero:02d}{posicao:03d}"
+                )
                 for word in _words_from_itimo(itimo):
                     all_unique_words.add(word)
                     if len(word) >= 3:
@@ -911,7 +931,7 @@ def build_dna():
     rows = []
     sem_livro = []
     sem_banco = []
-    ordered = sorted(theme_files.items(), key=lambda item: item[1].stem.casefold())
+    ordered = sorted(theme_files.items(), key=lambda item: _dna_alpha_key(item[1].stem))
 
     for indice, (key, path) in enumerate(ordered, start=1):
         theme = path.stem

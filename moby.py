@@ -1,5 +1,5 @@
-# moby_v062.py
-# Etapa 062: regime visual FBF no rodapé + Retrato usa imagem #1; corpo oficial 20.
+# moby_v063.py
+# Etapa 063: EUREKA substitui OLA no Moby; usa listas existentes e preserva o palco.
 # MACHINA — Mobile ultra-light
 # Blindagem HTML preservada; não altera basico.py, DNA, .ypo, .pip ou conteúdo autoral.
 
@@ -176,7 +176,7 @@ FONTES_PALCO_CSS = {
 }
 
 def fonte_palco_css(family=None):
-    family = str(family or st.session_state.get("moby_font_family", "OpenDyslexic")).strip()
+    family = str(family or st.session_state.get("moby_font_family", "Comic Relief")).strip()
     return FONTES_PALCO_CSS.get(family, f'"{family}", sans-serif')
 
 def estilo_palco_atual():
@@ -184,7 +184,7 @@ def estilo_palco_atual():
     return estilo if estilo in ESTILOS_MACHINA else "normal"
 
 def estilo_palco_css(family=None, estilo=None):
-    family = str(family or st.session_state.get("moby_font_family", "OpenDyslexic")).strip()
+    family = str(family or st.session_state.get("moby_font_family", "Comic Relief")).strip()
     estilo = str(estilo or estilo_palco_atual()).strip().casefold()
     peso_base = int(FONTES_PESO_BASE.get(family, 400))
     peso = 700 if "bold" in estilo else peso_base
@@ -482,7 +482,7 @@ def create_moby_portrait_png(poem_html, image_path, title):
         return None
     body = (str(title or "").strip() + "\n\n" + body).strip()
     margin, gap = 54, 44
-    portrait_family = str(st.session_state.get("moby_font_family", "OpenDyslexic"))
+    portrait_family = "OpenDyslexic"
     portrait_style = estilo_palco_atual()
     portrait_bold = "bold" in portrait_style
     body_font = _moby_font(28, bold=portrait_bold, family=portrait_family)
@@ -713,6 +713,30 @@ def translate_poem_html(poem_html):
     st.session_state.moby_translation_signature = signature
     st.session_state.moby_translation_html = translated
     return translated
+
+def _moby_eureka_mark_html(texto_html, termo):
+    """Destaca TODAS as aparições da ocorrência EUREKA no texto visível."""
+    texto_html = str(texto_html or "")
+    termo = str(termo or "").strip()
+    if not termo:
+        return texto_html
+
+    # O motor histórico já pode devolver uma marca única. Normalizamos primeiro
+    # para impedir marca parcial/nested e depois marcamos todas as aparições.
+    texto_html = re.sub(r"</?mark>", "", texto_html, flags=re.IGNORECASE)
+    texto_html = texto_html.replace("&lt;mark&gt;", "").replace("&lt;/mark&gt;", "")
+
+    pattern = re.compile(re.escape(termo), flags=re.IGNORECASE)
+    partes = []
+    for trecho in re.split(r"(<[^>]+>)", texto_html):
+        if trecho.startswith("<") and trecho.endswith(">"):
+            partes.append(trecho)
+        else:
+            partes.append(
+                pattern.sub(lambda m: "<mark>" + m.group(0) + "</mark>", trecho)
+            )
+    return "".join(partes)
+
 
 def sidebar_show_about():
     st.session_state.moby_sidebar_panel = "about"
@@ -1102,7 +1126,7 @@ if "moby_lang" not in st.session_state:
     st.session_state.moby_lang = "pt"
 
 if "moby_font_family" not in st.session_state:
-    st.session_state.moby_font_family = "OpenDyslexic"
+    st.session_state.moby_font_family = "Comic Relief"
 
 if "moby_font_style" not in st.session_state:
     st.session_state.moby_font_style = "normal"
@@ -1119,6 +1143,9 @@ if "moby_off_book_index" not in st.session_state:
 if "moby_off_take" not in st.session_state:
     st.session_state.moby_off_take = 0
 
+if "moby_off_plus_help" not in st.session_state:
+    st.session_state.moby_off_plus_help = False
+
 if "moby_ola_requested" not in st.session_state:
     st.session_state.moby_ola_requested = False
 
@@ -1127,6 +1154,24 @@ if "moby_ola_signature" not in st.session_state:
 
 if "moby_ola_text" not in st.session_state:
     st.session_state.moby_ola_text = ""
+
+if "moby_eureka_open" not in st.session_state:
+    st.session_state.moby_eureka_open = False
+if "moby_eureka_seed" not in st.session_state:
+    st.session_state.moby_eureka_seed = ""
+if "moby_eureka_index" not in st.session_state:
+    st.session_state.moby_eureka_index = 0
+if "moby_eureka_pick" not in st.session_state:
+    st.session_state.moby_eureka_pick = ""
+
+if "moby_eureka_mark_term" not in st.session_state:
+    st.session_state.moby_eureka_mark_term = ""
+
+if "moby_eureka_seed_ref" not in st.session_state:
+    st.session_state.moby_eureka_seed_ref = ""
+
+if "moby_eureka_tema_motor" not in st.session_state:
+    st.session_state.moby_eureka_tema_motor = ""
 
 if "moby_analysis_kind" not in st.session_state:
     st.session_state.moby_analysis_kind = "Sintática"
@@ -1367,6 +1412,259 @@ def limpar_analise(texto, max_chars=900):
     return texto
 
 
+def toggle_eureka():
+    """EUREKA ocupa o lugar da OLA sem criar nova página."""
+    dismiss_help()
+    st.session_state.moby_eureka_open = not bool(st.session_state.get("moby_eureka_open", False))
+    st.session_state.moby_eureka_index = 0
+    st.session_state.moby_eureka_pick = ""
+    st.session_state.moby_eureka_seed_ref = ""
+    st.session_state.moby_eureka_tema_motor = ""
+    invalidate_real_poem()
+    invalidate_ola()
+
+
+def _moby_eureka_seed_changed():
+    dismiss_help()
+    st.session_state.moby_eureka_index = 0
+    st.session_state.moby_eureka_pick = ""
+    st.session_state.moby_eureka_mark_term = ""
+    st.session_state.moby_eureka_seed_ref = ""
+    st.session_state.moby_eureka_tema_motor = ""
+    invalidate_real_poem()
+    invalidate_real_image()
+    invalidate_ola()
+
+
+def _moby_eureka_theme_from_source(fonte):
+    """Extrai do GPS o nome EXATO do tema usado pelo motor.
+
+    build_lexico grava:
+        TEMA_EXATO + "_" + linha(2) + ideia(2) + posição(3)
+
+    Portanto o tema é tudo antes do ÚLTIMO "_".
+    Isso preserva nomes como nós_nos_nós e, mais importante,
+    mantém exatamente a mesma grafia usada pelo motor.
+    """
+    fonte = str(fonte or "").strip()
+    tema, sep, coords = fonte.rpartition("_")
+    if not sep or not tema or re.fullmatch(r"\d{7}", coords) is None:
+        return ""
+    return tema
+
+
+def _moby_eureka_ypo_results(seed):
+    """Encontra a seed no verbete do léxico e usa tema+GPS só como endereço."""
+    seed = str(seed or "").strip()
+    if len(seed) < 3:
+        return []
+
+    path = Path("./base/lexico_pt.txt")
+    if not path.is_file():
+        return []
+
+    out = []
+    alvo = seed.casefold()
+    try:
+        linhas = path.read_text(encoding="utf-8", errors="replace").splitlines()
+    except OSError:
+        return []
+
+    for raw in linhas:
+        this_line = str(raw).strip()
+        if not this_line:
+            continue
+
+        verbete, sep, fonte = this_line.partition(" : ")
+        if not sep:
+            continue
+
+        # Engenharia original da EUREKA:
+        # seed -> verbete encontrado -> tema + GPS exato.
+        # O nome do tema é somente a chave do .ypo; nunca vira seed.
+        ocorrencias = len(
+            list(
+                re.finditer(
+                    rf"(?={re.escape(alvo)})",
+                    verbete.casefold(),
+                )
+            )
+        )
+        if ocorrencias == 0:
+            continue
+
+        fonte = fonte.strip()
+        tema = _moby_eureka_theme_from_source(fonte)
+        if not tema:
+            continue
+
+        item = {
+            "label": f"{verbete} ➪ {fonte}",
+            "tema": tema,
+            "fonte": fonte,
+            "seed": seed,
+            # O motor recebe a seed procurada à esquerda e o GPS exato à direita.
+            "seed_ref": f"{seed} ➪ {fonte}",
+            "mark_term": seed,
+        }
+        for _ in range(ocorrencias):
+            out.append(dict(item))
+
+    out.sort(key=lambda item: item["label"].casefold())
+    return out
+
+def _moby_eureka_off_results(seed):
+    """Busca a seed diretamente em todos os .pip do Off-Machina."""
+    seed = str(seed or "").strip()
+    if len(seed) < 3 or not OFF_DIR.is_dir():
+        return []
+
+    alvo = seed.casefold()
+    out = []
+    for path in off_books():
+        paginas = off_pages(path)
+        for idx, (titulo, corpo) in enumerate(paginas):
+            texto = f"{titulo}\n{corpo}"
+            if alvo not in texto.casefold():
+                continue
+
+            verbete = seed
+            for token in re.findall(r"[^\W\d_]+(?:[-'][^\W\d_]+)*", texto, flags=re.UNICODE):
+                if alvo in token.casefold():
+                    verbete = token
+                    break
+
+            out.append(
+                {
+                    "label": f"{verbete} ➪ {path.stem} / {titulo}",
+                    "book": path.stem,
+                    "page_index": idx,
+                    "titulo": titulo,
+                    "mark_term": seed,
+                }
+            )
+
+    out.sort(key=lambda item: item["label"].casefold())
+    return out
+
+
+def moby_eureka_results():
+    seed = str(st.session_state.get("moby_eureka_seed", "")).strip()
+    if st.session_state.get("moby_mode") == "Off-Machina":
+        return _moby_eureka_off_results(seed)
+    return _moby_eureka_ypo_results(seed)
+
+
+def _moby_book_for_theme(tema):
+    """Descobre um livro Moby que contenha o tema encontrado pelo EUREKA."""
+    alvo = nome_normalizado(tema)
+    for book in MOBY_BOOKS:
+        temas = temas_do_livro(DNA_ROWS, book)
+        for item in temas:
+            if nome_normalizado(item) == alvo:
+                return book
+    return None
+
+
+def apply_eureka_occurrence(index=None):
+    """Faz as listas existentes apontarem para a ocorrência escolhida."""
+    resultados = moby_eureka_results()
+    if not resultados:
+        st.session_state.moby_eureka_index = 0
+        return
+
+    if index is None:
+        try:
+            index = int(st.session_state.get("moby_eureka_pick", st.session_state.get("moby_eureka_index", 0)))
+        except Exception:
+            index = 0
+
+    index = max(0, min(int(index), len(resultados) - 1))
+    st.session_state.moby_eureka_index = index
+    item = resultados[index]
+    st.session_state.moby_eureka_mark_term = str(
+        item.get("mark_term", st.session_state.get("moby_eureka_seed", ""))
+    ).strip()
+
+    if st.session_state.get("moby_mode") == "Off-Machina":
+        livros = off_books()
+        nomes = [p.stem for p in livros]
+        book = str(item.get("book", ""))
+        if book in nomes:
+            st.session_state.moby_off_book_index = nomes.index(book)
+            st.session_state["moby_off_book_pick"] = book
+            paginas = current_off_pages()
+            if paginas:
+                take = max(0, min(int(item.get("page_index", 0)), len(paginas) - 1))
+                st.session_state.moby_off_take = take
+                st.session_state["moby_off_page_pick"] = paginas[take][0]
+        invalidate_real_image()
+        invalidate_ola()
+        return
+
+    tema = str(item.get("tema", "")).strip()
+    book = _moby_book_for_theme(tema)
+    if book:
+        st.session_state.moby_book = book
+        st.session_state["moby_book_pick"] = book
+
+    temas = current_themes()
+    for i, nome in enumerate(temas):
+        if nome_normalizado(nome) == nome_normalizado(tema):
+            st.session_state.moby_theme_index = i
+            st.session_state["moby_theme_pick"] = nome
+            break
+
+    # GPS EUREKA: palavra + endereço exato LLIIPPP.
+    # A geração fica centralizada em update_real_poem(); assim nenhum rerun
+    # pode regenerar o tema sem o endereço e "perder o GPS".
+    seed_ref = str(item.get("seed_ref", "")).strip()
+    st.session_state.moby_eureka_seed_ref = seed_ref
+    st.session_state.moby_eureka_tema_motor = str(item.get("tema", "")).strip()
+    invalidate_real_poem()
+
+    invalidate_real_image()
+    invalidate_ola()
+
+
+def eureka_occurrence_picked():
+    apply_eureka_occurrence()
+
+
+def eureka_previous():
+    resultados = moby_eureka_results()
+    if not resultados:
+        return
+    atual = int(st.session_state.get("moby_eureka_index", 0))
+    novo = (atual - 1) % len(resultados)
+    st.session_state.moby_eureka_index = novo
+    st.session_state.moby_eureka_pick = novo
+    apply_eureka_occurrence(novo)
+
+
+def eureka_next():
+    resultados = moby_eureka_results()
+    if not resultados:
+        return
+    atual = int(st.session_state.get("moby_eureka_index", 0))
+    novo = (atual + 1) % len(resultados)
+    st.session_state.moby_eureka_index = novo
+    st.session_state.moby_eureka_pick = novo
+    apply_eureka_occurrence(novo)
+
+
+def eureka_random():
+    resultados = moby_eureka_results()
+    if not resultados:
+        return
+    atual = int(st.session_state.get("moby_eureka_index", 0))
+    candidatos = [i for i in range(len(resultados)) if i != atual]
+    novo = random.choice(candidatos) if candidatos else atual
+    st.session_state.moby_eureka_index = novo
+    st.session_state.moby_eureka_pick = novo
+    apply_eureka_occurrence(novo)
+
+
 def request_ola():
     dismiss_help()
     st.session_state.moby_ola_requested = True
@@ -1398,6 +1696,7 @@ def update_ola_analysis(titulo, corpo_html):
 
 def swap_machina_off():
     dismiss_help()
+    st.session_state.moby_off_plus_help = False
     if st.session_state.get("moby_mode") == "Off-Machina":
         st.session_state.moby_mode = "Machina"
     else:
@@ -1427,15 +1726,53 @@ def prepare_portrait():
 
 
 def update_real_poem():
-    """Gera e congela o yPoema real da leitura atual no palco do Moby."""
+    """Gera e congela a leitura atual; no EUREKA o GPS LLIIPPP é obrigatório."""
     tema = current_theme()
-    assinatura = (tema, int(st.session_state.get("moby_reading_n", 1)))
+    tema_motor = tema
+    reading_n = int(st.session_state.get("moby_reading_n", 1))
+
+    eureka_ativa = (
+        st.session_state.get("moby_mode") != "Off-Machina"
+        and bool(st.session_state.get("moby_eureka_open", False))
+    )
+
+    seed_ref = ""
+    if eureka_ativa:
+        seed_ref = str(st.session_state.get("moby_eureka_seed_ref", "")).strip()
+        tema_motor = str(st.session_state.get("moby_eureka_tema_motor", "")).strip() or tema
+
+        # Defesa contra rerun/estado incompleto: reconstrói o GPS diretamente
+        # da ocorrência selecionada, nunca apenas da palavra ou do tema.
+        if not seed_ref:
+            resultados = moby_eureka_results()
+            if resultados:
+                indice = int(st.session_state.get("moby_eureka_index", 0))
+                indice = max(0, min(indice, len(resultados) - 1))
+                item = resultados[indice]
+                seed_ref = str(item.get("seed_ref", "")).strip()
+                tema_motor = str(item.get("tema", "")).strip() or tema
+                st.session_state.moby_eureka_seed_ref = seed_ref
+                st.session_state.moby_eureka_tema_motor = tema_motor
+                st.session_state.moby_eureka_mark_term = str(
+                    item.get("mark_term", st.session_state.get("moby_eureka_seed", ""))
+                ).strip()
+
+    if eureka_ativa and seed_ref:
+        assinatura = ("EUREKA", tema_motor, seed_ref, reading_n)
+    else:
+        assinatura = (tema, reading_n)
 
     if st.session_state.get("moby_poem_signature") == assinatura:
         return
 
     try:
-        script = gera_poema(tema, "")
+        # GPS_NAO_FALHA:
+        # EUREKA -> "palavra ➪ tema_LLIIPPP"
+        # leitura comum -> seed vazia
+        script = gera_poema(
+            tema_motor if eureka_ativa else tema,
+            seed_ref if eureka_ativa else "",
+        )
     except Exception as exc:
         st.session_state.moby_poem_html = html.escape(
             f"Moby não conseguiu gerar esta leitura: {exc}"
@@ -1449,20 +1786,26 @@ def update_real_poem():
             linhas.append("")
         else:
             texto_linha = str(line).rstrip("\r\n")
-            # O recuo autoral já vem resolvido pelo lay_2_ypo como &emsp;.
-            # Converte apenas essa entidade histórica em espaço Unicode antes
-            # de escapar o restante: o palco não interpreta HTML do yPoema.
             texto_linha = texto_linha.replace("&emsp;", "\u2003")
-            # ÚNICA exceção HTML do Moby: link autoral de "nós",
-            # já resolvido pelo lay_2_ypo e usado em 3 temas .ypo.
+
             link_autoral_nos = (
                 '<a href="https://thispersondoesnotexist.com/" target="_blank">'
                 '... quem será essa pessoa que não existe?</a>'
             )
+
             if texto_linha.strip() == link_autoral_nos:
                 linhas.append(texto_linha)
             else:
-                linhas.append(html.escape(texto_linha))
+                # Preserva somente a marca produzida pelo GPS do motor.
+                # Todo o restante continua escapado como antes.
+                partes = re.split(r"(</?mark>)", texto_linha, flags=re.IGNORECASE)
+                seguro = []
+                for parte in partes:
+                    if re.fullmatch(r"</?mark>", parte, flags=re.IGNORECASE):
+                        seguro.append(parte.lower())
+                    else:
+                        seguro.append(html.escape(parte))
+                linhas.append("".join(seguro))
 
     st.session_state.moby_poem_html = "<br>".join(linhas)
     st.session_state.moby_poem_signature = assinatura
@@ -1719,8 +2062,13 @@ def new_reading():
     dismiss_help()
     invalidate_ola()
     if st.session_state.get("moby_mode") == "Off-Machina":
+        st.session_state.moby_off_plus_help = True
         return
+    st.session_state.moby_off_plus_help = False
     st.session_state.moby_reading_n += 1
+    if st.session_state.get("moby_eureka_open", False) and moby_eureka_results():
+        apply_eureka_occurrence(st.session_state.get("moby_eureka_index", 0))
+        return
     invalidate_real_poem()
     invalidate_real_image()
 
@@ -1728,6 +2076,10 @@ def new_reading():
 def previous_theme():
     dismiss_help()
     invalidate_ola()
+    st.session_state.moby_off_plus_help = False
+    if st.session_state.get("moby_eureka_open", False):
+        eureka_previous()
+        return
     if st.session_state.get("moby_mode") == "Off-Machina":
         paginas = current_off_pages()
         if paginas:
@@ -1746,6 +2098,10 @@ def previous_theme():
 def next_theme():
     dismiss_help()
     invalidate_ola()
+    st.session_state.moby_off_plus_help = False
+    if st.session_state.get("moby_eureka_open", False):
+        eureka_next()
+        return
     if st.session_state.get("moby_mode") == "Off-Machina":
         paginas = current_off_pages()
         if paginas:
@@ -1764,6 +2120,10 @@ def next_theme():
 def random_theme():
     dismiss_help()
     invalidate_ola()
+    st.session_state.moby_off_plus_help = False
+    if st.session_state.get("moby_eureka_open", False):
+        eureka_random()
+        return
     if st.session_state.get("moby_mode") == "Off-Machina":
         paginas = current_off_pages()
         if paginas:
@@ -1833,6 +2193,23 @@ st.markdown(
     <style>
     .stApp {
         background: #ececec;
+    }
+
+    mark {
+        background-color: powderblue;
+        color: black;
+    }
+
+    /* Sidebar: o botão FECHAR precisa aparecer visualmente. */
+    .st-key-moby_close_sidebar button {
+        background: #f3b6c8 !important;
+        border-color: #d98da5 !important;
+        color: #111 !important;
+    }
+    .st-key-moby_close_sidebar button:hover {
+        background: #eca5ba !important;
+        border-color: #cf7895 !important;
+        color: #111 !important;
     }
 
     /* st.markdown(<style>) não deve ocupar uma linha invisível no layout. */
@@ -2196,6 +2573,41 @@ st.markdown(
         margin: 15px 0 8px 0;
     }
 
+
+    /* ALADIN — lâmpada revela; 34x34; callback Streamlit preservado. */
+    .st-key-moby_eureka_focus button,
+    .st-key-moby_eureka_focus_off button,
+    .st-key-moby_eureka_focus_close button {
+        background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACIAAAAiCAYAAAA6RwvCAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAGHaVRYdFhNTDpjb20uYWRvYmUueG1wAAAAAAA8P3hwYWNrZXQgYmVnaW49J++7vycgaWQ9J1c1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCc/Pg0KPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyI+PHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj48cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0idXVpZDpmYWY1YmRkNS1iYTNkLTExZGEtYWQzMS1kMzNkNzUxODJmMWIiIHhtbG5zOnRpZmY9Imh0dHA6Ly9ucy5hZG9iZS5jb20vdGlmZi8xLjAvIj48dGlmZjpPcmllbnRhdGlvbj4xPC90aWZmOk9yaWVudGF0aW9uPjwvcmRmOkRlc2NyaXB0aW9uPjwvcmRmOlJERj48L3g6eG1wbWV0YT4NCjw/eHBhY2tldCBlbmQ9J3cnPz4slJgLAAAIzklEQVRYR32Xa4xV1RXHf3ufc8+982IUBpChAkO0PGIMVsVEbKEpUq02ipXW0FrbmtYPJg0+2g++WhRMGsWqqZBoP9jStPho2jSmorUxhloQbZoiWEBmYHQGZhhB7vOcO/eevfph733uHUy6b+6955y9z1r/9V+Pvbaq1SqCAo0dgrgrEFHZNQqU/bNzrRlQAqJQqGxGAGlfNEWUICgQUO65Vm0gaH9ZOQWZZnHi3QPlFAqIUVYxxj7zyz3yNhAeqAKUElCCwmEQQJQXoyza1jtuiFVKGzgEpQSl7FtgAZ5NhLdaodDKMqd1iNIhiMJ4IJZSS1WLAWUlZExY3uxdizb7ERQahQbRmfI2vGilCcIIpUOCXAFMjCJFaY1C0JmVU0C06Z/CrQUrxoF2kCyDgiiZEmN+KCDIRSQT+zDJaYIgID55gEZ5DKUja0ytVrHqPCkZgLOEZYQ5VT6Q2y3PHlg3ehN0Lk8uCDHGujI5dZhTux9F9Szk3EtuJ+ic1YpTZ+D/Gc5ur8B5buo71k0umAAIow40Quno36kde4VmPIFplJDkJCTjSKPiGSkLKBdQLq38aMu/jDHTYkEpjYi13q9RgFtCkMtjkiJHXvoOenKM81c/TG76UnK98zlz6BWi3gV0zVlGYzJGt7i10mzgWThWuUWQ1RT3ZxkUlNJoDVqDckgUglKKXBBSPLaLTw/spHPWIroWfh10F1qF9MxfRUffYkRsrrqsccVLrELxeXS2/8W+4MghCEPy+Q6bLX5GLFNBEJI2avSev5zpi1fQOPEW5XfuIWweJRl9E2lUCHIFKqP/BtN0weqtcNVABLTFZYPUuNhoqxc6CKnVYkZHRvj8osUYkyImdVxpwqhA5ehOeuavwjTrVI++Qj6oEBS6ObPvt5TGx+la8j1mXXEnqVFoXyHB+V5BGAYEYWhlGlBK0K4KOqeRyxX45+7dfOOmazl5cowoylsjAMGQNut0zf8KokLCwrn0LrmVYN569Mw15ObdjAoiTh/8C9Xj/0HnIu8a6yeAfL6LXBghoigUuqzfXXwosUGttE22QqHAkqXL6O7uhqws2rXGpKSpYExKfOYIzUaVtF4kqZU55+I7yPUtI00b6I4ZmDSFOC5LEpclSSoiIvLaa6/KypVXyqqVV8hLO54XEZF6vSZJXJEkrkg9qYmIyMcjIzKwcIFM64nk2a2Pih1G4riSyUviqkzWq1L9dFCazUm3QiRtJDK88y45/eFOMSKSJFWhFpclScpiTCr7978vixYtkJdfflH27t0j69aukbfefENEjBXsQAx/NCy33nKdLFnYJVetuESWLZktjzx0t0xMTNi1cUWSpCr1eiwiqQM5dTTiU5KUPpJ6vSpJUhFVq5VFK0W+0MV99/2Uej1hy5anaTQabH3maT6ZOMEjmx/PNqb39x9g86aHSatjDAz0E3TMIq6dYfDDIT43sJQHHtzI3P7zMlcXi0XefnsX7727i/f27mZur+Har63hyzdsoCPSGDRGDCGtEKBUKjIwMADA77Y/zyMP/4zlyy9j395XufiiCzh0cJDNmx+nWKoS5Tt5//AYyHG01uTzeUaO7uOxTRu4964NFGPDy3/ayf59exkaOkhcrbLii6u56NKryJ3bTxJXKHTMRJoNW1njuCw28Lp54YXf8+vntvG3N3ZRLpcYPPIhI6PHuf27N3Lpoj4WzOlh9nkzmdbTTb6rm6DzHEzHPEhGaZ4ZpVxM+PhkiUPHPuHj8TIz+nqJE8O8BYt58KFNLL/88oypZrNO2mxkFVLFcVkEyAU5UAHf+uZaent7+eWTv6K39xwA/rBjB7d9/zY6OjoJAk0YKAJXU2bP6OTERAVRAYLCGEVnQdPf18Hw6ATXXncz27Y9Sz4fMTkZY0w6pUiK3SMJ7n/g/p9rsH4Kc9xww1r+sestnnrqCd599x2GhgZZsWIFCsPE2AiNyRo93d0opfjC0tls2vAlStUGxydiOgoRHfkQMSmDwye4/Yd38swz2whDTZLUMMY3Vb42+z0ONGI7MwU0JmMKhTxPPrWV7dt3cM0112GM4Y4f/YDBI4dZe9M6Fi68gNOnToEKmNapmdOZ0BUptA4AKJdLlMsVNm7cxOOPPYExDZKklu3e3hXZ9uzraa1WlmqtJL6exElZknpVRJpZqq1bd6Pce8+PpVgsyqFDB+X6678q3T2R9M+ZLisvmyv9c6ZLX980mTGjW1atulJef32nTdFGIrW4LLH7ZvUlqWZ1yc659IXPbnAGu+kEQcjkZIMoioiiCNCMj4+xZcsv+ODAfro7I0qVhOkzZrJ+/bdZvXoNUZSnXq9hxEyRab3i3WLl2zbLdWhK2f3ETvo/5TpxIReGiAhpmhIEIblcgdOfnmH9LTcxq7tBkoZsfuw5LrzwAkRS6vWkzRUeglXYugcwrukQe5wA31R102IRKRRps4lJDVoHaB0wNnaCP774Gw5+8C/e2PNfBocO89c/b2f42BCNRhOtA6e6zXon03/s8My01RGr0i72v8quyTboKN/Jnj172LxpI83aSeb2z6Szt596UmR8dJi66eHun9zH1VdfzWS9ljHh1UqbYNv921sRULW4ZFtF576s3RTfnbSAK6VpNJoYI4S5PCKCMU20ClBakzYnUQhRlMP4ntJBaOs6s5S1rnfPqtWSKGW3deW6bxHb6lnoU7pYtNYEOmix6szwdhtjEJNi8EeO9mEPY1OYEnttgfh2zC327ZhSygZxu0DP51k3ZsrxwhUucS3olJH5xsJ389pmjGUjyxzHnfef+GsvyrElgEFZ691rbQa3RKn2t1vAxN/a87dlw4dq2zqb52dZZO/bKLL8AoL4QGibnjL8oT4T0ToxWiDtFmeK/er2qLe1JTv9e6vdPO6Z+NOAuFrkwXrZLYHZ0Nl5xFOrpCU6C2/HxFmWerdaljwc1/+6ZtteZz9tw9hEUPb0oHE7oFYK5aygTcmUkuyGx6c+g611p5zL7WMfPK3AV0q3nZGE/wGnROwBurkT2AAAAABJRU5ErkJggg==") !important;
+        background-repeat: no-repeat !important;
+        background-position: center center !important;
+        background-size: 34px 34px !important;
+        color: transparent !important;
+        text-shadow: none !important;
+        overflow: hidden !important;
+    }
+    .st-key-moby_eureka_focus button *,
+    .st-key-moby_eureka_focus_off button *,
+    .st-key-moby_eureka_focus_close button * {
+        color: transparent !important;
+        fill: transparent !important;
+    }
+
+    /* CHAVE DE OURO — sinaliza o ambiente Off-Machina no swap principal. */
+    .st-key-moby_mode_swap_off button {
+        background-image: url("data:image/png;base64,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") !important;
+        background-repeat: no-repeat !important;
+        background-position: center center !important;
+        background-size: 34px 34px !important;
+        color: transparent !important;
+        text-shadow: none !important;
+        overflow: hidden !important;
+    }
+    .st-key-moby_mode_swap_off button * {
+        color: transparent !important;
+        fill: transparent !important;
+    }
+
     div[data-testid="stButton"] button {
         min-height: 38px;
         border-radius: 9px;
@@ -2292,49 +2704,9 @@ st.markdown(
 
 
 # =============================================================================
-# CABEÇALHO — SWAP + LINKS + SIDEBAR
+# CONFIG — TERCEIRA VIA
+# Decide o território antes de qualquer componente do PALCO/CABEÇALHO nascer.
 # =============================================================================
-modo_label = "📖" if st.session_state.get("moby_mode") == "Off-Machina" else "❓"
-if st.session_state.get("moby_mode") != "Off-Machina":
-    st.markdown(
-        """
-        <style>
-        .st-key-moby_mode_swap button {
-            color: #c40000 !important;
-            font-weight: 800 !important;
-            font-size: 1.18rem !important;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
-head_mode, head_links, head_side = st.columns([1.35, 4.3, 1.35], gap="small")
-
-with head_mode:
-    st.button(modo_label, key="moby_mode_swap", width="stretch", on_click=swap_machina_off)
-
-with head_links:
-    if st.session_state.get("moby_mode") != "Off-Machina":
-        links_top = links_do_tema(current_theme())
-        if links_top:
-            st.selectbox(
-                "links",
-                links_top,
-                index=None,
-                placeholder="links",
-                key="moby_links_pick",
-                on_change=link_picked,
-                label_visibility="collapsed",
-            )
-        else:
-            st.markdown("<div style='height:38px'></div>", unsafe_allow_html=True)
-    else:
-        st.markdown("<div style='height:38px'></div>", unsafe_allow_html=True)
-
-with head_side:
-    st.button("☰", key="moby_open_sidebar", width="stretch", on_click=open_sidebar)
-
-
 if st.session_state.moby_sidebar_open:
     # Idiomas passam a ocupar o topo da sidebar.
     idioma_labels = [f"{nome} — {pais}" for nome, pais, _ in IDIOMAS_MACHINA]
@@ -2405,7 +2777,7 @@ if st.session_state.moby_sidebar_open:
             ABOUTS_LIST,
             key="moby_about_pick",
         )
-        about_family = str(st.session_state.get("moby_font_family", "OpenDyslexic"))
+        about_family = str(st.session_state.get("moby_font_family", "Comic Relief"))
         about_font_css = fonte_palco_css(about_family)
         about_weight, about_style_css = estilo_palco_css(about_family)
         about_size = int(st.session_state.get("moby_font_size", 20))
@@ -2434,9 +2806,114 @@ if st.session_state.moby_sidebar_open:
 
 
 # =============================================================================
-# LIVRO + OLA + TEMA / OFF-MACHINA
+# CABEÇALHO — SWAP + LINKS + SIDEBAR
 # =============================================================================
-if st.session_state.get("moby_mode") == "Off-Machina":
+modo_off = st.session_state.get("moby_mode") == "Off-Machina"
+modo_label = "❓"
+if not modo_off:
+    st.markdown(
+        """
+        <style>
+        .st-key-moby_mode_swap button {
+            color: #c40000 !important;
+            font-weight: 800 !important;
+            font-size: 1.18rem !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+head_mode, head_links, head_side = st.columns([1.35, 4.3, 1.35], gap="small")
+
+with head_mode:
+    modo_key = "moby_mode_swap_off" if modo_off else "moby_mode_swap"
+    st.button(modo_label, key=modo_key, width="stretch", on_click=swap_machina_off)
+
+with head_links:
+    if st.session_state.get("moby_mode") != "Off-Machina":
+        links_top = links_do_tema(current_theme())
+        if links_top:
+            st.selectbox(
+                "links",
+                links_top,
+                index=None,
+                placeholder="links",
+                key="moby_links_pick",
+                on_change=link_picked,
+                label_visibility="collapsed",
+            )
+        else:
+            st.markdown("<div style='height:38px'></div>", unsafe_allow_html=True)
+    else:
+        st.markdown("<div style='height:38px'></div>", unsafe_allow_html=True)
+
+with head_side:
+    st.button("☰", key="moby_open_sidebar", width="stretch", on_click=open_sidebar)
+
+
+
+
+# =============================================================================
+# LIVRO + EUREKA + TEMA / OFF-MACHINA
+# EUREKA usa o mesmo território das listas existentes.
+# =============================================================================
+eureka_aberta = bool(st.session_state.get("moby_eureka_open", False))
+
+if eureka_aberta:
+    resultados_eureka = moby_eureka_results()
+    col_book, col_eureka, col_theme = st.columns([3, 1.25, 3], gap="small")
+
+    with col_book:
+        st.text_input(
+            "buscar por...",
+            key="moby_eureka_seed",
+            on_change=_moby_eureka_seed_changed,
+            placeholder="buscar por...",
+        )
+
+    with col_eureka:
+        st.markdown("<div style='height:1.45rem'></div>", unsafe_allow_html=True)
+        st.button("EUREKA", key="moby_eureka_focus_close", width="stretch", on_click=toggle_eureka)
+
+    with col_theme:
+        seed_atual = str(st.session_state.get("moby_eureka_seed", "")).strip()
+        if len(seed_atual) < 3:
+            st.selectbox(
+                "ocorrências",
+                ["digite pelo menos 3 letras..."],
+                key="moby_eureka_wait",
+                disabled=True,
+            )
+        elif not resultados_eureka:
+            st.selectbox(
+                "ocorrências",
+                ["nenhuma ocorrência"],
+                key="moby_eureka_none",
+                disabled=True,
+            )
+        else:
+            indice = int(st.session_state.get("moby_eureka_index", 0))
+            indice = max(0, min(indice, len(resultados_eureka) - 1))
+            options = list(range(len(resultados_eureka)))
+
+            # A lista visual acompanha sempre a mesma posição dos nav_buttons.
+            if st.session_state.get("moby_eureka_pick") != indice:
+                st.session_state.moby_eureka_pick = indice
+
+            st.selectbox(
+                f"tema: {indice + 1}/{len(resultados_eureka)}",
+                options,
+                format_func=lambda i: resultados_eureka[i]["label"],
+                key="moby_eureka_pick",
+                on_change=eureka_occurrence_picked,
+            )
+
+    # A ocorrência só precisa ser aplicada quando o GPS ainda não foi firmado.
+    # Reaplicá-la em todo rerun invalida a imagem/retrato recém-gerado.
+    if resultados_eureka and not str(st.session_state.get("moby_eureka_seed_ref", "")).strip():
+        apply_eureka_occurrence(st.session_state.get("moby_eureka_index", 0))
+
+elif st.session_state.get("moby_mode") == "Off-Machina":
     livros_off = off_books()
     if not livros_off:
         st.error("Off-Machina não encontrou arquivos .Pip em ./off_machina.")
@@ -2444,13 +2921,14 @@ if st.session_state.get("moby_mode") == "Off-Machina":
 
     nomes_off = [p.stem for p in livros_off]
     idx_off = int(st.session_state.get("moby_off_book_index", 0)) % len(livros_off)
-    col_book, col_ola, col_theme = st.columns([3, 1.25, 3], gap="small")
+    col_book, col_eureka, col_theme = st.columns([3, 1.25, 3], gap="small")
     with col_book:
         if str(st.session_state.get("moby_off_book_pick", "")) not in nomes_off:
             st.session_state["moby_off_book_pick"] = nomes_off[idx_off]
         livro_off = st.selectbox(f"livros: {idx_off + 1} / {len(nomes_off)}", nomes_off, key="moby_off_book_pick")
         novo_idx = nomes_off.index(livro_off)
         if novo_idx != st.session_state.moby_off_book_index:
+            st.session_state.moby_off_plus_help = False
             st.session_state.moby_off_book_index = novo_idx
             paginas_novo_livro = current_off_pages()
             st.session_state.moby_off_take = (
@@ -2468,14 +2946,15 @@ if st.session_state.get("moby_mode") == "Off-Machina":
     st.session_state.moby_off_take %= len(paginas_off)
     st.session_state["moby_off_page_pick"] = titulos_off[st.session_state.moby_off_take]
 
-    with col_ola:
+    with col_eureka:
         st.markdown("<div style='height:1.45rem'></div>", unsafe_allow_html=True)
-        st.button("OLA", key="moby_ola_focus_off", width="stretch", on_click=request_ola)
+        st.button("EUREKA", key="moby_eureka_focus_off", width="stretch", on_click=toggle_eureka)
 
     with col_theme:
         titulo_off = st.selectbox(f"temas: {st.session_state.moby_off_take + 1} / {len(titulos_off)}", titulos_off, key="moby_off_page_pick")
         novo_take = titulos_off.index(titulo_off)
         if novo_take != st.session_state.moby_off_take:
+            st.session_state.moby_off_plus_help = False
             st.session_state.moby_off_take = novo_take
             invalidate_real_image()
             invalidate_ola()
@@ -2488,7 +2967,7 @@ else:
 
     livro_atual_idx = MOBY_BOOKS.index(st.session_state.moby_book) if st.session_state.moby_book in MOBY_BOOKS else 0
     tema_atual_idx = int(st.session_state.get("moby_theme_index", 0)) % len(temas)
-    col_book, col_ola, col_theme = st.columns([3, 1.25, 3], gap="small")
+    col_book, col_eureka, col_theme = st.columns([3, 1.25, 3], gap="small")
     with col_book:
         st.selectbox(
             f"livros: {livro_atual_idx + 1} / {len(MOBY_BOOKS)}",
@@ -2497,9 +2976,9 @@ else:
             key="moby_book_pick",
             on_change=book_changed,
         )
-    with col_ola:
+    with col_eureka:
         st.markdown("<div style='height:1.45rem'></div>", unsafe_allow_html=True)
-        st.button("OLA", key="moby_ola_focus", width="stretch", on_click=request_ola)
+        st.button("EUREKA", key="moby_eureka_focus", width="stretch", on_click=toggle_eureka)
     with col_theme:
         current = current_theme()
         if st.session_state.get("moby_theme_pick") not in temas:
@@ -2569,7 +3048,7 @@ with b_help:
 # =============================================================================
 # PALCO — área de aparição; única região rolável
 # =============================================================================
-fonte_palco = str(st.session_state.get("moby_font_family", "OpenDyslexic"))
+fonte_palco = str(st.session_state.get("moby_font_family", "Comic Relief"))
 fonte_css = fonte_palco_css(fonte_palco)
 peso_palco, estilo_css = estilo_palco_css(fonte_palco)
 corpo_palco = int(st.session_state.get("moby_font_size", 20))
@@ -2583,11 +3062,31 @@ else:
     poema_html_original = str(st.session_state.get("moby_poem_html", ""))
 
 poema_html = translate_poem_html(poema_html_original)
+
+if st.session_state.get("moby_eureka_open", False):
+    termo_eureka = st.session_state.get(
+        "moby_eureka_mark_term",
+        st.session_state.get("moby_eureka_seed", ""),
+    )
+    poema_html = _moby_eureka_mark_html(poema_html, termo_eureka)
+
 st.session_state.moby_current_title = str(titulo_palco)
 st.session_state.moby_current_poem_html = str(poema_html)
 
 with st.container(key="moby_stage_scroll", border=False):
-    if st.session_state.moby_help_open:
+    if (
+        st.session_state.get("moby_mode") == "Off-Machina"
+        and st.session_state.get("moby_off_plus_help", False)
+    ):
+        st.markdown(
+            "<div style='font-family:\"MV Boli\", \"Segoe Print\", cursive; font-size:.95rem; line-height:1.55; padding:20px 12px;'>"
+            "<b>Os livros Off-Machina não têm variações.</b><br>"
+            "Cada poema pertence a um livro do autor e é único.<br>"
+            "Os outros botões navegam por essas páginas."
+            "</div>",
+            unsafe_allow_html=True,
+        )
+    elif st.session_state.moby_help_open:
         with st.container(key="moby_help_text"):
             st.markdown(load_manual_moby())
         if st.session_state.get("moby_mode") == "Machina":
@@ -2608,19 +3107,9 @@ with st.container(key="moby_stage_scroll", border=False):
         if st.session_state.get("moby_sound_open", False):
             render_sound_player(update_sound_audio(titulo_palco, poema_html))
 
-        analise_ola = update_ola_analysis(titulo_palco, poema_html_original)
-        ola_html = ""
-        if analise_ola:
-            ola_html = (
-                "<div class='moby-ola-inline'>"
-                "<div class='moby-ola-inline-title'>OLA</div>"
-                + html.escape(str(analise_ola)).replace("\n", "<br>")
-                + "</div>"
-            )
-
         st.markdown(
             f"<div class='ypoema' style='font-family:{fonte_css}; font-size:{corpo_palco}px; font-weight:{peso_palco}; font-style:{estilo_css};'>"
-            f"{poema_html}{ola_html}</div>",
+            f"{poema_html}</div>",
             unsafe_allow_html=True,
         )
 

@@ -380,40 +380,38 @@ def _tools_add_ativo_line(path, line, key, livro):
     return True
 
 
-def _tools_theme_name(tema):
-    """Nome canônico do tema: .ypo é a assinatura da Machina."""
-    valor = str(tema or "").strip()
-    if not valor:
-        return ""
-    nome = os.path.basename(valor)
-    stem, ext = os.path.splitext(nome)
-    if not ext:
-        return nome
-    if ext.casefold() == ".ypo":
-        return stem
-    raise ValueError(
-        f"assinatura inválida para tema da Machina: {nome}. "
-        "A assinatura oficial é .ypo; confirmação explícita é necessária para outra extensão."
-    )
-
-
 def _tools_resolve_ypo_path(tema):
-    """Resolve Design ou Design.ypo sem duplicar a assinatura .ypo."""
-    tema_nome = _tools_theme_name(tema)
-    data_dir = _project_path("data")
-    candidatos = [
-        os.path.join(data_dir, tema_nome + ".ypo"),
-        os.path.join(data_dir, tema_nome + ".YPO"),
-    ]
+    """Resolve o arquivo sem rebatizar uma extensão informada pelo autor.
+
+    Um nome sem extensão continua sob o contrato histórico ``tema -> tema.ypo``.
+    Quando o nome já traz uma extensão (por exemplo ``Design.new``), essa
+    assinatura é preservada integralmente e nunca vira ``Design.new.ypo``.
+    """
+    tema = str(tema or "").strip()
+    nome = tema.replace("\\", "/").rsplit("/", 1)[-1]
+    extensao_explicita = bool(os.path.splitext(nome)[1])
+
+    if extensao_explicita:
+        candidatos = [_project_path("data", nome)]
+    else:
+        candidatos = [
+            _project_path("data", nome + ".ypo"),
+            _project_path("data", nome + ".YPO"),
+        ]
+
     for path in candidatos:
         if os.path.exists(path):
             return path
+
+    # Windows não distingue caixa; este fallback conserva a mesma autoridade
+    # também em ambientes case-sensitive usados no CAE/deploy.
+    data_dir = _project_path("data")
     if os.path.isdir(data_dir):
-        key = tema_nome.casefold()
-        for file_name in os.listdir(data_dir):
-            stem, ext = os.path.splitext(file_name)
-            if ext.casefold() == ".ypo" and stem.casefold() == key:
-                return os.path.join(data_dir, file_name)
+        nomes_esperados = {os.path.basename(path).casefold() for path in candidatos}
+        for existente in os.listdir(data_dir):
+            if existente.casefold() in nomes_esperados:
+                return os.path.join(data_dir, existente)
+
     return candidatos[0]
 
 
@@ -826,13 +824,12 @@ def update_rodape(tema_unico=None):
     start_time = time.time()
     temas = _tools_temas_ativos()
     if tema_unico:
-        tema_unico = _tools_theme_name(tema_unico)
-        tema_norm = tema_unico.casefold()
+        tema_norm = str(tema_unico).strip().casefold()
         temas = [(tema, path) for tema, path in temas if tema.casefold() == tema_norm]
         if not temas:
             path = _tools_resolve_ypo_path(tema_unico)
             if os.path.exists(path):
-                temas = [(tema_unico, path)]
+                temas = [(str(tema_unico).strip(), path)]
             else:
                 raise ValueError(f"update_rodape: tema não encontrado: {tema_unico}")
 
@@ -876,20 +873,53 @@ def _tools_natural_key(value):
 
 
 def _tools_add_unique_sorted_line(path, line, key=None):
-    """Inclui uma linha única e mantém a lista alfabeticamente ordenada."""
+    """Inclui uma linha única e mantém a ordem canônica da lista.
+
+    Em rol_todos os temas.txt, a lista é formada por dois blocos:
+    1) temas comuns em ordem alfabética;
+    2) temas do Zodíaco (nomes terminados em =f ou =m) em ordem alfabética.
+    
+    A identificação do Zodíaco é estrutural pelo sufixo, sem depender de uma
+    quantidade fixa nem do nome do signo. Assim Sagitari=f/m entra no bloco
+    correto e qualquer grafia antiga não é corrigida silenciosamente.
+    """
     os.makedirs(os.path.dirname(path), exist_ok=True)
     existentes = []
     if os.path.exists(path):
         with open(path, encoding="utf-8-sig") as file:
             existentes = [raw.strip() for raw in file if raw.strip()]
+
+    original = list(existentes)
     chave = str(key if key is not None else line).strip().casefold()
+    ja_existe = False
     for raw in existentes:
         raw_key = raw.partition(" : ")[0].strip().casefold()
         if raw_key == chave or raw.strip().casefold() == chave:
-            return False
-    existentes.append(str(line).strip())
-    existentes.sort(key=_tools_natural_key)
-    _tools_write_text(path, "\n".join(existentes) + "\n")
+            ja_existe = True
+            break
+
+    if not ja_existe:
+        existentes.append(str(line).strip())
+
+    if os.path.basename(path).casefold() == "rol_todos os temas.txt":
+        temas = []
+        zodiacos = []
+        for raw in existentes:
+            nome = raw.partition(" : ")[0].strip()
+            if re.search(r"=(?:f|m)$", nome, flags=re.IGNORECASE):
+                zodiacos.append(raw)
+            else:
+                temas.append(raw)
+        temas.sort(key=_tools_natural_key)
+        zodiacos.sort(key=_tools_natural_key)
+        ordenadas = temas + zodiacos
+    else:
+        ordenadas = sorted(existentes, key=_tools_natural_key)
+
+    if ordenadas == original:
+        return False
+
+    _tools_write_text(path, "\n".join(ordenadas) + "\n")
     return True
 
 
@@ -937,7 +967,7 @@ def _tools_tentar_derivado(nome, func, *args):
 
 def update_tema(tema):
     """Valida um tema existente e atualiza derivados sem tocar no corpo .ypo."""
-    tema = _tools_theme_name(tema)
+    tema = str(tema or "").strip()
     path = _tools_resolve_ypo_path(tema)
     if not tema or not os.path.exists(path):
         raise ValueError(f"update_tema: tema/arquivo não encontrado: {tema}")
@@ -959,8 +989,8 @@ def update_tema(tema):
 
 
 def novo_tema(tema, livro, banco_tematico="Machina"):
-    """Cadastra tema autoral .ypo já existente; nunca promove outra assinatura."""
-    tema = _tools_theme_name(tema)
+    """Cadastra tema autoral; erro em outro .ypo não desfaz o cadastro do alvo válido."""
+    tema = str(tema or "").strip()
     livro = str(livro or "").strip()
     banco_tematico = str(banco_tematico or "Machina").strip() or "Machina"
     if not tema:
@@ -971,7 +1001,7 @@ def novo_tema(tema, livro, banco_tematico="Machina"):
         raise ValueError(f"novo_tema: livro inválido: {livro}")
     ypo_path = _tools_resolve_ypo_path(tema)
     if not os.path.exists(ypo_path):
-        raise FileNotFoundError(f"novo_tema: arquivo oficial não encontrado: ./data/{tema}.ypo")
+        raise FileNotFoundError(f"novo_tema: crie antes ./data/{tema}.ypo")
     original = _tools_validar_quantidades_tema(ypo_path)
     alteracoes = []
     if _tools_add_ativo_line(_project_path("base", "ativos.txt"), f"{tema} : {livro}", tema, livro):
@@ -1037,7 +1067,7 @@ def _tools_remover_arquivo_derivado(path):
 
 def remove_tema(tema):
     """Retira o tema do ambiente; nunca apaga o .ypo e não trava por erro de outro tema."""
-    tema = _tools_theme_name(tema)
+    tema = str(tema or "").strip()
     if not tema:
         raise ValueError("remove_tema: escolha um tema")
     removidos = []
@@ -2385,25 +2415,25 @@ def page_tools():
     tools_items = [
         "novo_tema",
         "remove_tema",
-        "update_tema",
         "update_rodape",
+        "update_tema",
         "---",
         "atelier",
+        "build_rimas",
+        "build_unicos",
         "make_md",
         "make_ola",
-        "build_rimas",
         "make_pip",
-        "build_unicos",
         "resize_images",
         "---",
+        "build_all",
+        "build_dna",
         "build_indexy",
         "build_lexico",
-        "build_off-lex",
         "build_matrix",
-        "build_dna",
-        "build_all",
-        "ficha_lexico",
+        "build_off-lex",
         "build_utf-8",
+        "ficha_lexico",
         "---",
         "help_?",
     ]
@@ -2527,6 +2557,11 @@ def page_tools():
                 st.error(f"{escolha} falhou: {exc}")
 
 def show_tools(host_globals=None):
-    """Entrada pública chamada pelo Atelier LOCAL em basico.py."""
+    """Entrada pública canônica chamada por basico.py no Atelier LOCAL."""
     _bind_host(host_globals)
     return page_tools()
+
+
+def render_page(host_globals=None):
+    """Compatibilidade histórica; delega para a entrada pública canônica."""
+    return show_tools(host_globals)
