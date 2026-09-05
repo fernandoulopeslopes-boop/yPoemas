@@ -62,7 +62,6 @@ i-Mundo : poemas
 Indolor : poemas
 Inhos : poemas
 Insano : jocosos
-Jealousy : poemas
 Joker : jocosos
 Lady-Murphy : jocosos
 ka-os : ensaio
@@ -142,7 +141,6 @@ Vozes : jocosos
 Zelo : poemas
 Zodiacaos : zodíaco
 Zoia : poemas
-ola_abertura : metalinguagem
 Nhô-Borges : livro vivo
 Libre : todos os temas
 abacaxis : todos os temas

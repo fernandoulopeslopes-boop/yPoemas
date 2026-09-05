@@ -62,7 +62,6 @@ Impar : anima
 Indolor : anima
 Inhos : anima
 Insano : joco
-Jealousy : anima
 Joker : joco
 Lady-murphy : persona
 ka-os : joco                     
@@ -93,7 +92,6 @@ Oficia : joco
 Oficio : author
 Ogiva : beauty
 OLA : machina
-ola_abertura : machina
 Olhares : persona
 Ores : machina
 Palyndro : machina
