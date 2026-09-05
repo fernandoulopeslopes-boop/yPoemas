@@ -1,67 +1,67 @@
 *-
 *- Olhares.ypo
 *-
-|01|01|Olhares_0101|F|3|1|Sei...|Sim,|Pois|
+|01|01|Olhares_0101|F|3|3|Sei...|Sim,|Pois|
 |01|02|Olhares_0102|F|1|1|você tem o olhar mais|
-|01|03|Olhares_0103|F|7|6|inefável|indomável|agradável|insaciável|desejável|adorável|impensável|
+|01|03|Olhares_0103|F|7|2|inefável|indomável|agradável|insaciável|desejável|adorável|impensável|
 |02|01|Olhares_0201|F|4|3|que o meu modo de ver já viu ao vivo|que até hoje em minha vida vi ao vivo|que eu já tenha em minha vida visto ao vivo|que eu já pude em minha vida ver ao vivo|
 |02|02|Olhares_0202|F|1|1|...|
-|03|01|Olhares_0301|F|19|8|Cativante|Cintilante|Confiante|De amante|Delirante|Elegante|Fascinante|Fulminante|Incitante|Inebriante|Insinuante|Intrigante|Lancinante|Penetrante|Provocante|Radiante|Instigante|Ofuscante|Petulante|
+|03|01|Olhares_0301|F|19|4|Cativante|Cintilante|Confiante|De amante|Delirante|Elegante|Fascinante|Fulminante|Incitante|Inebriante|Insinuante|Intrigante|Lancinante|Penetrante|Provocante|Radiante|Instigante|Ofuscante|Petulante|
 |03|02|Olhares_0302|F|1|1|quando|
-|03|03|Olhares_0303|T|8|7|brinda|encanta|espia|pousa|fita|flerta|joga|mira|encara|pisca|reina|posa|fixa|enquadra|enlaça|mede|espreita|crava|criva|trava|
-|03|04|Olhares_0304|F|8|6|tão afável|inefável|indomável|agradável|insaciável|desejável|adorável|impensável|
+|03|03|Olhares_0303|T|8|2|brinda|encanta|espia|pousa|fita|flerta|joga|mira|encara|pisca|reina|posa|fixa|enquadra|enlaça|mede|espreita|crava|criva|trava|
+|03|04|Olhares_0304|F|8|2|tão afável|inefável|indomável|agradável|insaciável|desejável|adorável|impensável|
 |03|05|Olhares_0305|F|1|1|,|
-|04|01|Olhares_0401|F|15|14|atraente|confidente|conivente|de vidente|diferente|displicente|envolvente|exigente|imponente|imprudente|inocente|insistente|reticente|saliente|transparente|
+|04|01|Olhares_0401|F|15|10|atraente|confidente|conivente|de vidente|diferente|displicente|envolvente|exigente|imponente|imprudente|inocente|insistente|reticente|saliente|transparente|
 |04|02|Olhares_0402|F|1|1|quando|
-|04|03|Olhares_0403|F|16|12|acha-se|brinca de|cerra-se|despe-se|esconde-se|farta-se|mostra-se|pinta-se|sabe-se|serve-se|oculta-se|supõe-se|torna-se|turva-se|evita-me|sorve-me|
-|04|04|Olhares_0404|F|13|1|inventivo|atrativo|esquivo|evasivo|festivo|furtivo|impulsivo|passivo|afetivo|incisivo|efusivo|emotivo|altivo|
+|04|03|Olhares_0403|F|16|8|acha-se|brinca de|cerra-se|despe-se|esconde-se|farta-se|mostra-se|pinta-se|sabe-se|serve-se|oculta-se|supõe-se|torna-se|turva-se|evita-me|sorve-me|
+|04|04|Olhares_0404|F|13|10|inventivo|atrativo|esquivo|evasivo|festivo|furtivo|impulsivo|passivo|afetivo|incisivo|efusivo|emotivo|altivo|
 |04|05|Olhares_0405|F|1|1|.|
 |05|00|
-|06|01|Olhares_0601|F|19|14|Cativante|Cintilante|Confiante|De amante|Delirante|Elegante|Fascinante|Fulminante|Incitante|Inebriante|Insinuante|Intrigante|Lancinante|Penetrante|Provocante|Radiante|Instigante|Ofuscante|Petulante|
+|06|01|Olhares_0601|F|19|10|Cativante|Cintilante|Confiante|De amante|Delirante|Elegante|Fascinante|Fulminante|Incitante|Inebriante|Insinuante|Intrigante|Lancinante|Penetrante|Provocante|Radiante|Instigante|Ofuscante|Petulante|
 |06|02|Olhares_0602|F|1|1|quando|
-|06|03|Olhares_0603|F|10|6|dá de|pede o|pensa em|finge|pode|sabe|sonha|tenta|supõe|visa|
-|06|04|Olhares_0604|F|10|6|desviar-se|entregar-se|espelhar-se|enciumar-se|ocultar-se|revelar-se|revirar-se|esconder-se|adivinhar-se|aconchegar-se|
+|06|03|Olhares_0603|F|10|2|dá de|pede o|pensa em|finge|pode|sabe|sonha|tenta|supõe|visa|
+|06|04|Olhares_0604|F|10|2|desviar-se|entregar-se|espelhar-se|enciumar-se|ocultar-se|revelar-se|revirar-se|esconder-se|adivinhar-se|aconchegar-se|
 |06|05|Olhares_0605|F|1|1|,|
-|07|01|Olhares_0701|T|15|8|atraente|confidente|conivente|de vidente|diferente|displicente|envolvente|exigente|imponente|imprudente|inocente|insistente|reticente|saliente|transparente|
+|07|01|Olhares_0701|T|15|4|atraente|confidente|conivente|de vidente|diferente|displicente|envolvente|exigente|imponente|imprudente|inocente|insistente|reticente|saliente|transparente|
 |07|02|Olhares_0702|F|1|1|quando|
-|07|03|Olhares_0703|F|14|1|crava|aponta|brilha|busca|atenta|faz que é|foge|impera|orbita|paira|quer-se|rí do|criva|trava|
-|07|04|Olhares_0704|F|11|4|disponível|impassível|impossível|inatingível|indizível|infalível|intangível|intraduzível|invisível|irresistível|tão possível|
+|07|03|Olhares_0703|F|14|11|crava|aponta|brilha|busca|atenta|faz que é|foge|impera|orbita|paira|quer-se|rí do|criva|trava|
+|07|04|Olhares_0704|F|11|11|disponível|impassível|impossível|inatingível|indizível|infalível|intangível|intraduzível|invisível|irresistível|tão possível|
 |07|05|Olhares_0705|F|1|1|...|
-|08|01|Olhares_0801|T|19|13|Cativante|Cintilante|Confiante|De amante|Delirante|Elegante|Fascinante|Fulminante|Incitante|Inebriante|Insinuante|Intrigante|Lancinante|Penetrante|Provocante|Radiante|Instigante|Ofuscante|Petulante|
-|08|02|Olhares_0802|F|10|10|dá de|pede o|pensa em|finge|pode|sabe|sonha|tenta|supõe|visa|
-|08|03|Olhares_0803|F|10|7|desviar-se|entregar-se|espelhar-se|enciumar-se|ocultar-se|revelar-se|revirar-se|esconder-se|adivinhar-se|aconchegar-se|
+|08|01|Olhares_0801|T|19|11|Cativante|Cintilante|Confiante|De amante|Delirante|Elegante|Fascinante|Fulminante|Incitante|Inebriante|Insinuante|Intrigante|Lancinante|Penetrante|Provocante|Radiante|Instigante|Ofuscante|Petulante|
+|08|02|Olhares_0802|F|10|6|dá de|pede o|pensa em|finge|pode|sabe|sonha|tenta|supõe|visa|
+|08|03|Olhares_0803|F|10|3|desviar-se|entregar-se|espelhar-se|enciumar-se|ocultar-se|revelar-se|revirar-se|esconder-se|adivinhar-se|aconchegar-se|
 |08|04|Olhares_0804|F|1|1|,|
-|09|01|Olhares_0901|T|15|13|atraente|confidente|conivente|de vidente|diferente|displicente|envolvente|exigente|imponente|imprudente|inocente|insistente|reticente|saliente|transparente|
+|09|01|Olhares_0901|T|15|6|atraente|confidente|conivente|de vidente|diferente|displicente|envolvente|exigente|imponente|imprudente|inocente|insistente|reticente|saliente|transparente|
 |09|02|Olhares_0902|F|1|1|quando|
-|09|03|Olhares_0903|F|16|3|acha-se|brinca de|cerra-se|despe-se|esconde-se|farta-se|mostra-se|pinta-se|sabe-se|serve-se|oculta-se|supõe-se|torna-se|turva-se|evita-me|sorve-me|
+|09|03|Olhares_0903|F|16|15|acha-se|brinca de|cerra-se|despe-se|esconde-se|farta-se|mostra-se|pinta-se|sabe-se|serve-se|oculta-se|supõe-se|torna-se|turva-se|evita-me|sorve-me|
 |09|04|Olhares_0904|T|11|10|disponível|impassível|impossível|inatingível|indizível|infalível|intangível|intraduzível|invisível|irresistível|tão possível|
 |09|05|Olhares_0905|F|1|1|.|
 |10|00|
-|11|01|Olhares_1101|T|19|9|Cativante|Cintilante|Confiante|De amante|Delirante|Elegante|Fascinante|Fulminante|Incitante|Inebriante|Insinuante|Intrigante|Lancinante|Penetrante|Provocante|Radiante|Instigante|Ofuscante|Petulante|
+|11|01|Olhares_1101|T|19|18|Cativante|Cintilante|Confiante|De amante|Delirante|Elegante|Fascinante|Fulminante|Incitante|Inebriante|Insinuante|Intrigante|Lancinante|Penetrante|Provocante|Radiante|Instigante|Ofuscante|Petulante|
 |11|02|Olhares_1102|F|1|1|quando|
-|11|03|Olhares_1103|F|16|13|acha-se|brinca de|cerra-se|despe-se|esconde-se|farta-se|mostra-se|pinta-se|sabe-se|serve-se|oculta-se|supõe-se|torna-se|turva-se|evita-me|sorve-me|
-|11|04|Olhares_1104|T|13|6|inventivo|atrativo|esquivo|evasivo|festivo|furtivo|impulsivo|passivo|afetivo|incisivo|efusivo|emotivo|altivo|
+|11|03|Olhares_1103|F|16|9|acha-se|brinca de|cerra-se|despe-se|esconde-se|farta-se|mostra-se|pinta-se|sabe-se|serve-se|oculta-se|supõe-se|torna-se|turva-se|evita-me|sorve-me|
+|11|04|Olhares_1104|T|13|13|inventivo|atrativo|esquivo|evasivo|festivo|furtivo|impulsivo|passivo|afetivo|incisivo|efusivo|emotivo|altivo|
 |11|05|Olhares_1105|F|1|1|,|
-|12|01|Olhares_1201|T|15|10|atraente|confidente|conivente|de vidente|diferente|displicente|envolvente|exigente|imponente|imprudente|inocente|insistente|reticente|saliente|transparente|
+|12|01|Olhares_1201|T|15|3|atraente|confidente|conivente|de vidente|diferente|displicente|envolvente|exigente|imponente|imprudente|inocente|insistente|reticente|saliente|transparente|
 |12|02|Olhares_1202|F|1|1|quando|
-|12|03|Olhares_1203|F|12|14|crava|aponta|brilha|busca|atenta|faz que é|foge|impera|orbita|paira|quer-se|rí do|criva|trava|
-|12|04|Olhares_1204|T|11|5|disponível|impassível|impossível|inatingível|indizível|infalível|intangível|intraduzível|invisível|irresistível|tão possível|
+|12|03|Olhares_1203|F|12|10|crava|aponta|brilha|busca|atenta|faz que é|foge|impera|orbita|paira|quer-se|rí do|criva|trava|
+|12|04|Olhares_1204|T|11|4|disponível|impassível|impossível|inatingível|indizível|infalível|intangível|intraduzível|invisível|irresistível|tão possível|
 |12|04|Olhares_1205|F|1|1|...|
-|13|01|Olhares_1301|T|19|3|Cativante|Cintilante|Confiante|De amante|Delirante|Elegante|Fascinante|Fulminante|Incitante|Inebriante|Insinuante|Intrigante|Lancinante|Penetrante|Provocante|Radiante|Instigante|Ofuscante|Petulante|
+|13|01|Olhares_1301|T|19|6|Cativante|Cintilante|Confiante|De amante|Delirante|Elegante|Fascinante|Fulminante|Incitante|Inebriante|Insinuante|Intrigante|Lancinante|Penetrante|Provocante|Radiante|Instigante|Ofuscante|Petulante|
 |13|02|Olhares_1302|F|16|1|quando|
-|13|03|Olhares_1303|T|10|4|dá de|pede o|pensa em|finge|pode|sabe|sonha|tenta|supõe|visa|
-|13|04|Olhares_1304|T|10|2|desviar-se|entregar-se|espelhar-se|enciumar-se|ocultar-se|revelar-se|revirar-se|esconder-se|adivinhar-se|aconchegar-se|
+|13|03|Olhares_1303|T|10|8|dá de|pede o|pensa em|finge|pode|sabe|sonha|tenta|supõe|visa|
+|13|04|Olhares_1304|T|10|7|desviar-se|entregar-se|espelhar-se|enciumar-se|ocultar-se|revelar-se|revirar-se|esconder-se|adivinhar-se|aconchegar-se|
 |13|05|Olhares_1305|F|1|1|,|
-|14|01|Olhares_1401|T|15|4|atraente|confidente|conivente|de vidente|diferente|displicente|envolvente|exigente|imponente|imprudente|inocente|insistente|reticente|saliente|transparente|
+|14|01|Olhares_1401|T|15|8|atraente|confidente|conivente|de vidente|diferente|displicente|envolvente|exigente|imponente|imprudente|inocente|insistente|reticente|saliente|transparente|
 |14|02|Olhares_1402|F|16|1|quando|
-|14|03|Olhares_1403|T|16|1|acha-se|brinca de|cerra-se|sorve-me|despe-se|esconde-se|farta-se|mostra-se|pinta-se|sabe-se|serve-se|oculta-se|supõe-se|torna-se|turva-se|evita-me|
-|14|04|Olhares_1404|T|13|10|inventivo|atrativo|esquivo|evasivo|festivo|furtivo|impulsivo|passivo|afetivo|incisivo|efusivo|emotivo|altivo|
+|14|03|Olhares_1403|T|16|7|acha-se|brinca de|cerra-se|sorve-me|despe-se|esconde-se|farta-se|mostra-se|pinta-se|sabe-se|serve-se|oculta-se|supõe-se|torna-se|turva-se|evita-me|
+|14|04|Olhares_1404|T|13|9|inventivo|atrativo|esquivo|evasivo|festivo|furtivo|impulsivo|passivo|afetivo|incisivo|efusivo|emotivo|altivo|
 |14|05|Olhares_1405|F|1|1|.|
 |15|00|
 |16|01|Olhares_1601|F|2|2|E embora a gente|E por mais que a gente|
 |16|02|Olhares_1602|F|4|1|viva de|tente só|brinque de|teime em|
-|16|03|Olhares_1603|T|5|3|esquivar-se|olhar-se|encarar-se|amar-se|fundir-se|
-|17|01|Olhares_1701|F|6|3|do seu olhar mais que escravo sou cativo|sem olhar o teu olhar é que não vivo|é de olhar olhares como o teu que vivo|sem me ver em teu olhar é que não vivo|é de olhar o teu olhar que sobrevivo|sem te ver em meu olhar não sei se vivo|
+|16|03|Olhares_1603|T|5|4|esquivar-se|olhar-se|encarar-se|amar-se|fundir-se|
+|17|01|Olhares_1701|F|6|5|do seu olhar mais que escravo sou cativo|sem olhar o teu olhar é que não vivo|é de olhar olhares como o teu que vivo|sem me ver em teu olhar é que não vivo|é de olhar o teu olhar que sobrevivo|sem te ver em meu olhar não sei se vivo|
 |17|02|Olhares_1702|F|1|1|.|
 <EOF>
 Verbetes no Texto = 50
@@ -69,5 +69,5 @@ Verbetes no Texto = 50
 Total de verbetes = 192
 Qtd. de Variações = 167.249.974.512.681.215.092.510.949.376.000.000 (decilhões)
 
-build_by lay_2_ypo: 01/09/2026 - 16:43
-updated em: 01/09/2026 - 16:43
+build_by lay_2_ypo: 04/09/2026 - 18:04
+updated em: 04/09/2026 - 18:04
