@@ -4,48 +4,48 @@
 *- |01|03|Fake-News_0103|F|5|5|, no mês passado,|meses atrás|anteontem|na década de 70|durante o verão|
 *- |01|04|Fake-News_0104|F|1|1|,|
 *- 
-|01|01|Fake-News_0101|F|2|1|Pesquisa realizada em|Estudo feito em|
+|01|01|Fake-News_0101|F|2|2|Pesquisa realizada em|Estudo feito em|
 |01|02|Fake-News_0102|F|1|1|< pCity >|
-|02|02|Fake-News_0201|F|5|1|pela Universidade de|pelo Journal of|pelo University Rankings|pelo Instituto|pelo Council of|
-|02|03|Fake-News_020|F|10|6|Cambridge|Oxford|South Hampigton|Harvard|Stanford|Berkeley|Massachussetes|Columbia|Johns Hopkins|Melbourne|
-|03|01|Fake-News_0301|F|4|4|mostra|revela|explica|confirma|
-|03|02|Fake-News_0302|F|4|4|a opinião|a preferência|a divisão|a divergência|
+|02|02|Fake-News_0201|F|5|3|pela Universidade de|pelo Journal of|pelo University Rankings|pelo Instituto|pelo Council of|
+|02|03|Fake-News_020|F|10|3|Cambridge|Oxford|South Hampigton|Harvard|Stanford|Berkeley|Massachussetes|Columbia|Johns Hopkins|Melbourne|
+|03|01|Fake-News_0301|F|4|1|mostra|revela|explica|confirma|
+|03|02|Fake-News_0302|F|4|1|a opinião|a preferência|a divisão|a divergência|
 |03|03|Fake-News_0303|F|1|1|relativa|
 |04|01|Fake-News_0401|F|3|2|à capacidade de|às dificuldades para|à facilidade para|
 |04|02|Fake-News_0402|F|3|2|distinguir|perceber|identificar|
-|04|03|Fake-News_0403|F|5|4|Fake-News|notícia verdadeira|desinformação|fato verídico|informação subjetiva|
+|04|03|Fake-News_0403|F|5|1|Fake-News|notícia verdadeira|desinformação|fato verídico|informação subjetiva|
 |04|04|Fake-News_0404|F|1|1|,|
-|05|01|Fake-News_0501|F|2|2|distribuída por|segundo a|
+|05|01|Fake-News_0501|F|2|1|distribuída por|segundo a|
 |05|02|Fake-News_0502|F|1|1|opção sexual do entrevistado:|
 |06|00|
-|06|01|Fake-News_0601|T|18|18|[ h ] Homens      |[ m ] Mulheres    |[ l ] Lésbicas    |[ g ] Gays        |[ b ] Bissexuais  |[ t ] Transexuais |[ Q ] Queers      |[ q ] Questionando|[ i ] Intersexuais|[ c ] Curioso     |[ a ] Assexuais   |[ p ] Pansexuais  |[ p ] Polisexuais |[ f ] Familiares  |[ 2 ] Two-spirit  |[ k ] Kink        |[ d ] Demisexuais |[ o ] Outros      |
+|06|01|Fake-News_0601|T|18|6|[ h ] Homens      |[ m ] Mulheres    |[ l ] Lésbicas    |[ g ] Gays        |[ b ] Bissexuais  |[ t ] Transexuais |[ Q ] Queers      |[ q ] Questionando|[ i ] Intersexuais|[ c ] Curioso     |[ a ] Assexuais   |[ p ] Pansexuais  |[ p ] Polisexuais |[ f ] Familiares  |[ 2 ] Two-spirit  |[ k ] Kink        |[ d ] Demisexuais |[ o ] Outros      |
 |06|02|Fake-News_0602|F|1|1| : |
 |06|03|Fake-News_0603|K|10|2| 13,65%| 12,09%| 11,89%| 11,52%| 11,24%| 09,91%| 08,82%| 08,11%| 07,62%| 05,15%|
-|08|01|Fake-News_0801|T|18|17|[ h ] Homens      |[ m ] Mulheres    |[ l ] Lésbicas    |[ g ] Gays        |[ b ] Bissexuais  |[ t ] Transexuais |[ Q ] Queers      |[ q ] Questionando|[ i ] Intersexuais|[ c ] Curioso     |[ a ] Assexuais   |[ p ] Pansexuais  |[ p ] Polisexuais |[ f ] Familiares  |[ 2 ] Two-spirit  |[ k ] Kink        |[ d ] Demisexuais |[ o ] Outros      |
+|08|01|Fake-News_0801|T|18|8|[ h ] Homens      |[ m ] Mulheres    |[ l ] Lésbicas    |[ g ] Gays        |[ b ] Bissexuais  |[ t ] Transexuais |[ Q ] Queers      |[ q ] Questionando|[ i ] Intersexuais|[ c ] Curioso     |[ a ] Assexuais   |[ p ] Pansexuais  |[ p ] Polisexuais |[ f ] Familiares  |[ 2 ] Two-spirit  |[ k ] Kink        |[ d ] Demisexuais |[ o ] Outros      |
 |08|02|Fake-News_0802|F|1|1| : |
 |08|03|Fake-News_0803|K|10|1| 13,65%| 12,09%| 11,89%| 11,52%| 11,24%| 09,91%| 08,82%| 08,11%| 07,62%| 05,15%|
-|10|01|Fake-News_1001|T|18|1|[ h ] Homens      |[ m ] Mulheres    |[ l ] Lésbicas    |[ g ] Gays        |[ b ] Bissexuais  |[ t ] Transexuais |[ Q ] Queers      |[ q ] Questionando|[ i ] Intersexuais|[ c ] Curioso     |[ a ] Assexuais   |[ p ] Pansexuais  |[ p ] Polisexuais |[ f ] Familiares  |[ 2 ] Two-spirit  |[ k ] Kink        |[ d ] Demisexuais |[ o ] Outros      |
+|10|01|Fake-News_1001|T|18|12|[ h ] Homens      |[ m ] Mulheres    |[ l ] Lésbicas    |[ g ] Gays        |[ b ] Bissexuais  |[ t ] Transexuais |[ Q ] Queers      |[ q ] Questionando|[ i ] Intersexuais|[ c ] Curioso     |[ a ] Assexuais   |[ p ] Pansexuais  |[ p ] Polisexuais |[ f ] Familiares  |[ 2 ] Two-spirit  |[ k ] Kink        |[ d ] Demisexuais |[ o ] Outros      |
 |10|02|Fake-News_1002|F|1|1| : |
 |10|03|Fake-News_1003|K|10|10| 13,65%| 12,09%| 11,89%| 11,52%| 11,24%| 09,91%| 08,82%| 08,11%| 07,62%| 05,15%|
-|12|01|Fake-News_1201|T|18|15|[ h ] Homens      |[ m ] Mulheres    |[ l ] Lésbicas    |[ g ] Gays        |[ b ] Bissexuais  |[ t ] Transexuais |[ Q ] Queers      |[ q ] Questionando|[ i ] Intersexuais|[ c ] Curioso     |[ a ] Assexuais   |[ p ] Pansexuais  |[ p ] Polisexuais |[ f ] Familiares  |[ 2 ] Two-spirit  |[ k ] Kink        |[ d ] Demisexuais |[ o ] Outros      |
+|12|01|Fake-News_1201|T|18|17|[ h ] Homens      |[ m ] Mulheres    |[ l ] Lésbicas    |[ g ] Gays        |[ b ] Bissexuais  |[ t ] Transexuais |[ Q ] Queers      |[ q ] Questionando|[ i ] Intersexuais|[ c ] Curioso     |[ a ] Assexuais   |[ p ] Pansexuais  |[ p ] Polisexuais |[ f ] Familiares  |[ 2 ] Two-spirit  |[ k ] Kink        |[ d ] Demisexuais |[ o ] Outros      |
 |12|02|Fake-News_1202|F|1|1| : |
 |12|03|Fake-News_1203|K|10|9| 13,65%| 12,09%| 11,89%| 11,52%| 11,24%| 09,91%| 08,82%| 08,11%| 07,62%| 05,15%|
-|14|01|Fake-News_1401|T|18|6|[ h ] Homens      |[ m ] Mulheres    |[ l ] Lésbicas    |[ g ] Gays        |[ b ] Bissexuais  |[ t ] Transexuais |[ Q ] Queers      |[ q ] Questionando|[ i ] Intersexuais|[ c ] Curioso     |[ a ] Assexuais   |[ p ] Pansexuais  |[ p ] Polisexuais |[ f ] Familiares  |[ 2 ] Two-spirit  |[ k ] Kink        |[ d ] Demisexuais |[ o ] Outros      |
+|14|01|Fake-News_1401|T|18|11|[ h ] Homens      |[ m ] Mulheres    |[ l ] Lésbicas    |[ g ] Gays        |[ b ] Bissexuais  |[ t ] Transexuais |[ Q ] Queers      |[ q ] Questionando|[ i ] Intersexuais|[ c ] Curioso     |[ a ] Assexuais   |[ p ] Pansexuais  |[ p ] Polisexuais |[ f ] Familiares  |[ 2 ] Two-spirit  |[ k ] Kink        |[ d ] Demisexuais |[ o ] Outros      |
 |14|02|Fake-News_1402|F|1|1| : |
 |14|03|Fake-News_1403|K|10|8| 13,65%| 12,09%| 11,89%| 11,52%| 11,24%| 09,91%| 08,82%| 08,11%| 07,62%| 05,15%|
-|16|01|Fake-News_1601|T|18|3|[ h ] Homens      |[ m ] Mulheres    |[ l ] Lésbicas    |[ g ] Gays        |[ b ] Bissexuais  |[ t ] Transexuais |[ Q ] Queers      |[ q ] Questionando|[ i ] Intersexuais|[ c ] Curioso     |[ a ] Assexuais   |[ p ] Pansexuais  |[ p ] Polisexuais |[ f ] Familiares  |[ 2 ] Two-spirit  |[ k ] Kink        |[ d ] Demisexuais |[ o ] Outros      |
+|16|01|Fake-News_1601|T|18|15|[ h ] Homens      |[ m ] Mulheres    |[ l ] Lésbicas    |[ g ] Gays        |[ b ] Bissexuais  |[ t ] Transexuais |[ Q ] Queers      |[ q ] Questionando|[ i ] Intersexuais|[ c ] Curioso     |[ a ] Assexuais   |[ p ] Pansexuais  |[ p ] Polisexuais |[ f ] Familiares  |[ 2 ] Two-spirit  |[ k ] Kink        |[ d ] Demisexuais |[ o ] Outros      |
 |16|02|Fake-News_1602|F|1|1| : |
 |16|03|Fake-News_1603|K|10|7| 13,65%| 12,09%| 11,89%| 11,52%| 11,24%| 09,91%| 08,82%| 08,11%| 07,62%| 05,15%|
-|18|01|Fake-News_1801|T|18|4|[ h ] Homens      |[ m ] Mulheres    |[ l ] Lésbicas    |[ g ] Gays        |[ b ] Bissexuais  |[ t ] Transexuais |[ Q ] Queers      |[ q ] Questionando|[ i ] Intersexuais|[ c ] Curioso     |[ a ] Assexuais   |[ p ] Pansexuais  |[ p ] Polisexuais |[ f ] Familiares  |[ 2 ] Two-spirit  |[ k ] Kink        |[ d ] Demisexuais |[ o ] Outros      |
+|18|01|Fake-News_1801|T|18|18|[ h ] Homens      |[ m ] Mulheres    |[ l ] Lésbicas    |[ g ] Gays        |[ b ] Bissexuais  |[ t ] Transexuais |[ Q ] Queers      |[ q ] Questionando|[ i ] Intersexuais|[ c ] Curioso     |[ a ] Assexuais   |[ p ] Pansexuais  |[ p ] Polisexuais |[ f ] Familiares  |[ 2 ] Two-spirit  |[ k ] Kink        |[ d ] Demisexuais |[ o ] Outros      |
 |18|02|Fake-News_1802|F|1|1| : |
 |18|03|Fake-News_1803|K|10|6| 13,65%| 12,09%| 11,89%| 11,52%| 11,24%| 09,91%| 08,82%| 08,11%| 07,62%| 05,15%|
-|20|01|Fake-News_2001|T|18|10|[ h ] Homens      |[ m ] Mulheres    |[ l ] Lésbicas    |[ g ] Gays        |[ b ] Bissexuais  |[ t ] Transexuais |[ Q ] Queers      |[ q ] Questionando|[ i ] Intersexuais|[ c ] Curioso     |[ a ] Assexuais   |[ p ] Pansexuais  |[ p ] Polisexuais |[ f ] Familiares  |[ 2 ] Two-spirit  |[ k ] Kink        |[ d ] Demisexuais |[ o ] Outros      |
+|20|01|Fake-News_2001|T|18|2|[ h ] Homens      |[ m ] Mulheres    |[ l ] Lésbicas    |[ g ] Gays        |[ b ] Bissexuais  |[ t ] Transexuais |[ Q ] Queers      |[ q ] Questionando|[ i ] Intersexuais|[ c ] Curioso     |[ a ] Assexuais   |[ p ] Pansexuais  |[ p ] Polisexuais |[ f ] Familiares  |[ 2 ] Two-spirit  |[ k ] Kink        |[ d ] Demisexuais |[ o ] Outros      |
 |20|02|Fake-News_2002|F|1|1| : |
 |20|03|Fake-News_2003|K|10|5| 13,65%| 12,09%| 11,89%| 11,52%| 11,24%| 09,91%| 08,82%| 08,11%| 07,62%| 05,15%|
-|22|01|Fake-News_2201|T|18|12|[ h ] Homens      |[ m ] Mulheres    |[ l ] Lésbicas    |[ g ] Gays        |[ b ] Bissexuais  |[ t ] Transexuais |[ Q ] Queers      |[ q ] Questionando|[ i ] Intersexuais|[ c ] Curioso     |[ a ] Assexuais   |[ p ] Pansexuais  |[ p ] Polisexuais |[ f ] Familiares  |[ 2 ] Two-spirit  |[ k ] Kink        |[ d ] Demisexuais |[ o ] Outros      |
+|22|01|Fake-News_2201|T|18|13|[ h ] Homens      |[ m ] Mulheres    |[ l ] Lésbicas    |[ g ] Gays        |[ b ] Bissexuais  |[ t ] Transexuais |[ Q ] Queers      |[ q ] Questionando|[ i ] Intersexuais|[ c ] Curioso     |[ a ] Assexuais   |[ p ] Pansexuais  |[ p ] Polisexuais |[ f ] Familiares  |[ 2 ] Two-spirit  |[ k ] Kink        |[ d ] Demisexuais |[ o ] Outros      |
 |22|02|Fake-News_2202|F|1|1| : |
 |22|03|Fake-News_2203|K|10|4| 13,65%| 12,09%| 11,89%| 11,52%| 11,24%| 09,91%| 08,82%| 08,11%| 07,62%| 05,15%|
-|24|01|Fake-News_2401|T|18|7|[ h ] Homens      |[ m ] Mulheres    |[ l ] Lésbicas    |[ g ] Gays        |[ b ] Bissexuais  |[ t ] Transexuais |[ Q ] Queers      |[ q ] Questionando|[ i ] Intersexuais|[ c ] Curioso     |[ a ] Assexuais   |[ p ] Pansexuais  |[ p ] Polisexuais |[ f ] Familiares  |[ 2 ] Two-spirit  |[ k ] Kink        |[ d ] Demisexuais |[ o ] Outros      |
+|24|01|Fake-News_2401|T|18|3|[ h ] Homens      |[ m ] Mulheres    |[ l ] Lésbicas    |[ g ] Gays        |[ b ] Bissexuais  |[ t ] Transexuais |[ Q ] Queers      |[ q ] Questionando|[ i ] Intersexuais|[ c ] Curioso     |[ a ] Assexuais   |[ p ] Pansexuais  |[ p ] Polisexuais |[ f ] Familiares  |[ 2 ] Two-spirit  |[ k ] Kink        |[ d ] Demisexuais |[ o ] Outros      |
 |24|02|Fake-News_2401|F|1|1| : |
 |24|03|Fake-News_2403|K|10|3| 13,65%| 12,09%| 11,89%| 11,52%| 11,24%| 09,91%| 08,82%| 08,11%| 07,62%| 05,15%|
 |26|00|
@@ -57,5 +57,5 @@ Verbetes no Texto = 45
 Total de verbetes = 123
 Qtd. de Variações = 87.405.037.707.755.520.000.000.000.000 (octilhões)
 
-build_by lay_2_ypo em 22/08/2026 - 10:54
-updated em: 25/08/2026 - 17:48
+build_by lay_2_ypo: 03/09/2026 - 14:09
+updated em: 03/09/2026 - 14:09

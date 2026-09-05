@@ -1,35 +1,35 @@
 *-
 *- Mirante.ypo
 *-
-|01|01|Mirante_0101|F|7|7|Teu olhar sabe ser|Teu olhar flutua,|Teu olhar paira,|Teu olhar reluz|Teu olhar me sacia,|Teu olhar me invade|Teu olhar pousa em mim,|
-|01|02|Mirante_0102|F|16|10|invejável|sedutor|adorável|abusado|curioso|indomável|sonhador|gracioso|agradável|delicioso|insaciável|tentador|delicado|desejável|invulgar|atirado|
+|01|01|Mirante_0101|F|7|5|Teu olhar sabe ser|Teu olhar flutua,|Teu olhar paira,|Teu olhar reluz|Teu olhar me sacia,|Teu olhar me invade|Teu olhar pousa em mim,|
+|01|02|Mirante_0102|F|16|3|invejável|sedutor|adorável|abusado|curioso|indomável|sonhador|gracioso|agradável|delicioso|insaciável|tentador|delicado|desejável|invulgar|atirado|
 |01|03|Mirante_0103|F|1|1|:|
 |02|00|
-|03|01|Mirante_0301|F|19|16|Cativante|Cintilante|Confiante|De amante|Delirante|Elegante|Fascinante|Fulminante|Incitante|Inebriante|Insinuante|Intrigante|Lancinante|Penetrante|Provocante|Radiante|Ofuscante|Instigante|Petulante|
-|03|02|Mirante_0302|F|2|2|quando|onde|
+|03|01|Mirante_0301|F|19|12|Cativante|Cintilante|Confiante|De amante|Delirante|Elegante|Fascinante|Fulminante|Incitante|Inebriante|Insinuante|Intrigante|Lancinante|Penetrante|Provocante|Radiante|Ofuscante|Instigante|Petulante|
+|03|02|Mirante_0302|F|2|1|quando|onde|
 |03|03|Mirante_0303|F|23|8|brinda|encanta|espia|pousa|fita|flerta|joga|mira|encara|pisca|reina|posa|enquadra|enlaça|mede|espreita|aponta|brilha|busca|foge|impera|orbita|paira|
-|03|04|Mirante_0304|F|11|9|e rouba a cena|de pirraça|de relance|sem ter pressa|e nem disfarça|e me atravessa|e não dá chance|e oferece|sem nuance|só por graça|sem disfarce|
+|03|04|Mirante_0304|F|11|8|e rouba a cena|de pirraça|de relance|sem ter pressa|e nem disfarça|e me atravessa|e não dá chance|e oferece|sem nuance|só por graça|sem disfarce|
 |03|05|Mirante_0305|F|1|1|,|
-|04|01|Mirante_0401|F|15|5|atraente|confidente|conivente|de vidente|diferente|displicente|envolvente|exigente|imponente|imprudente|inocente|insistente|reticente|saliente|transparente|
-|04|02|Mirante_0402|F|2|1| quando| onde|
-|04|02|Mirante_0402|F|19|5|acha-se|brinca de|cerra-se|sorve-me|despe-se|esconde-se|farta-se|mostra-se|pinta-se|sabe-se|serve-se|oculta-se|supõe-se|torna-se|turva-se|evita-me|crava em mim|faz que é|atento e|
-|04|04|Mirante_0404|F|12|7|inventivo|atrativo|esquivo|evasivo|festivo|furtivo|impulsivo|afetivo|incisivo|efusivo|emotivo|impassível|
+|04|01|Mirante_0401|F|15|12|atraente|confidente|conivente|de vidente|diferente|displicente|envolvente|exigente|imponente|imprudente|inocente|insistente|reticente|saliente|transparente|
+|04|02|Mirante_0402|F|2|2| quando| onde|
+|04|02|Mirante_0402|F|19|1|acha-se|brinca de|cerra-se|sorve-me|despe-se|esconde-se|farta-se|mostra-se|pinta-se|sabe-se|serve-se|oculta-se|supõe-se|torna-se|turva-se|evita-me|crava em mim|faz que é|atento e|
+|04|04|Mirante_0404|F|12|8|inventivo|atrativo|esquivo|evasivo|festivo|furtivo|impulsivo|afetivo|incisivo|efusivo|emotivo|impassível|
 |04|05|Mirante_0405|F|1|1|.|
 |05|00|
-|06|01|Mirante_0301|T|19|12|Cativante|Cintilante|Confiante|De amante|Delirante|Elegante|Fascinante|Fulminante|Incitante|Inebriante|Insinuante|Intrigante|Lancinante|Penetrante|Provocante|Radiante|Ofuscante|Instigante|Petulante|
-|06|02|Mirante_0602|F|2|2| quando| onde|
-|06|03|Mirante_0603|F|10|5|dá de| pede o| pensa em| finge| pode| sabe| sonha| tenta| supõe| visa|
-|06|04|Mirante_0604|F|9|4|desviar-se|entregar-se|espelhar-se|enciumar-se|ocultar-se|revelar-se|revirar-se|esconder-se|rebelar-se|
+|06|01|Mirante_0301|T|19|1|Cativante|Cintilante|Confiante|De amante|Delirante|Elegante|Fascinante|Fulminante|Incitante|Inebriante|Insinuante|Intrigante|Lancinante|Penetrante|Provocante|Radiante|Ofuscante|Instigante|Petulante|
+|06|02|Mirante_0602|F|2|1| quando| onde|
+|06|03|Mirante_0603|F|10|2|dá de| pede o| pensa em| finge| pode| sabe| sonha| tenta| supõe| visa|
+|06|04|Mirante_0604|F|9|8|desviar-se|entregar-se|espelhar-se|enciumar-se|ocultar-se|revelar-se|revirar-se|esconder-se|rebelar-se|
 |06|05|Mirante_0605|F|1|1|,|
-|07|01|Mirante_0701|T|15|10|atraente|confidente|conivente|de vidente|diferente|displicente|envolvente|exigente|imponente|imprudente|inocente|insistente|reticente|saliente|transparente|
-|07|02|Mirante_0702|T|2|1|quando|onde|
-|07|03|Mirante_0703|T|12|9|acha-se|brinca de|cerra-se|sorve-me|despe-se|esconde-se|farta-se|mostra-se|pinta-se|sabe-se|serve-se|oculta-se|supõe-se|torna-se|turva-se|evita-me|crava em mim|faz que é|atento e|
-|07|04|Mirante_0704|T|12|12|inventivo|atrativo|esquivo|evasivo|festivo|furtivo|impulsivo|afetivo|incisivo|efusivo|emotivo|impassível|
+|07|01|Mirante_0701|T|15|9|atraente|confidente|conivente|de vidente|diferente|displicente|envolvente|exigente|imponente|imprudente|inocente|insistente|reticente|saliente|transparente|
+|07|02|Mirante_0702|T|2|2|quando|onde|
+|07|03|Mirante_0703|T|12|6|acha-se|brinca de|cerra-se|sorve-me|despe-se|esconde-se|farta-se|mostra-se|pinta-se|sabe-se|serve-se|oculta-se|supõe-se|torna-se|turva-se|evita-me|crava em mim|faz que é|atento e|
+|07|04|Mirante_0704|T|12|5|inventivo|atrativo|esquivo|evasivo|festivo|furtivo|impulsivo|afetivo|incisivo|efusivo|emotivo|impassível|
 |07|05|Mirante_0705|F|1|1|.|
 <EOF>
 Verbetes no Texto = 19
   Total de ítimos = 211
 Total de verbetes = 158
 Qtd. de Variações = 7.892.654.740.185.600 (quatrilhões)
-build_by lay_2_ypo em 02/08/2026 - 18:10
-updated em: 26/08/2026 - 08:59
+build_by lay_2_ypo: 30/08/2026 - 04:37
+updated em: 30/08/2026 - 04:37
