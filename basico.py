@@ -18,6 +18,8 @@ import string
 import base64
 import html
 import json
+import hashlib
+import uuid
 import unicodedata
 import urllib.request
 import urllib.parse
@@ -31,8 +33,8 @@ import streamlit.components.v1 as components
 import dna as dna_core
 # ✅
 
-APP_BUILD = "2026-08-12_YPO_RAIZ_CLEAN"
-APP_BUILD_NOTES = "ACROS integrado à Eureka como aparição; Copiar/Retrato preservam a assinatura da Machina."
+APP_BUILD = "2026-09-05_LYPO_TYPO_REATIVADO"
+APP_BUILD_NOTES = "LYPO volta a ser a autoridade do último yPoema; TYPO só nasce de tradução integral válida; rerun comum não gera outro yPoema."
 
 APP_VARIANT = "local"
 
@@ -128,10 +130,10 @@ IDIOMAS_OFICIAIS = [
 # -----------------------------------------------------------------------------
 
 def have_internet(host="1.1.1.1", port=80, timeout=3):
-    """Verifica conexão antes de ativar tradução e voz neural."""
+    """Sonda conectividade sem alterar o timeout global dos demais serviços."""
     try:
-        socket.setdefaulttimeout(timeout)
-        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
+        with socket.create_connection((host, port), timeout=timeout):
+            pass
         return True
     except OSError:
         return False
@@ -140,18 +142,22 @@ def have_internet(host="1.1.1.1", port=80, timeout=3):
 GoogleTranslator = None
 edge_tts = None
 
-if have_internet():
-    try:
-        from deep_translator import GoogleTranslator
-    except ImportError:
-        st.warning("Google Translator não encontrado no ambiente...")
+try:
+    from deep_translator import GoogleTranslator
+except ImportError:
+    st.warning("Google Translator não encontrado no ambiente...")
 
+if have_internet():
     try:
         import edge_tts
     except ImportError:
         st.warning("Motor de voz neural (edge-tts) não conectado.")
 else:
-    st.warning("Internet não conectada. Traduções e Vozes Neurais indisponíveis.")
+    st.warning("Internet não conectada. Vozes Neurais indisponíveis.")
+
+_TRANSLATION_CACHE = {}
+_TRANSLATION_CACHE_LIMIT = 512
+_TRANSLATION_BACKOFF_SECONDS = 30.0
 
 # Identificador atual usado por LYPO/TYPO.
 # Mantido neste CLEAN por preservar a persistência do último yPoema gerado.
@@ -685,6 +691,15 @@ def init_session_state():
     defaults = {
         "lang": "pt",
         "last_lang": "pt",
+        "curr_lang": "pt",
+        "translation_ui_backoff_until": 0.0,
+        "translation_content_backoff_until": 0.0,
+        "translation_last_error": "",
+        "ypo_reader_id": "",
+        "lypo_context": "",
+        "lypo_signature": "",
+        "typo_lang": "",
+        "typo_lypo_signature": "",
         "book": "todos os temas",
         "take": 0,
         "mini": 0,
@@ -847,28 +862,260 @@ def palco_status(book=None, pos=None, total=None):
         return f"🍃  {st.session_state.lang} ( {book} )"
     return f"🍃  {st.session_state.lang} ( {book} ) ( {pos} / {total} )"
 
+_TRANSLATION_PROTECTED_NAMES = (
+    "Off-Machina",
+    "yPoemas",
+    "EUREKA",
+    "ACROS",
+    "AKROS",
+    "Machina",
+    "ABOUT",
+    "Atelier",
+)
+
+
+def _translation_target():
+    """Idioma pedido pelo leitor; nunca é inferido do texto traduzido."""
+    return str(st.session_state.get("lang", "pt") or "pt").strip().lower()
+
+
+def _translation_normalize_markup(output_text):
+    """Repara somente deformações históricas do marcador de quebra de linha."""
+    output_text = str(output_text or "")
+    output_text = output_text.replace("<br>>", "<br>")
+    output_text = output_text.replace("< br>", "<br>")
+    output_text = output_text.replace("<br >", "<br>")
+    output_text = output_text.replace("<br ", "<br>")
+    output_text = output_text.replace(" br>", "<br>")
+    return output_text
+
+
+def _translation_protect(text):
+    """Protege nomes próprios e estruturas que não pertencem à tradução."""
+    protected = []
+
+    def reserve(value):
+        token = f"ZXQPH{len(protected):05d}QXZ"
+        protected.append((token, value))
+        return token
+
+    # Código Markdown, tags HTML e destinos de links são estrutura, não prosa.
+    pattern = re.compile(
+        r"```.*?```|`[^`\n]+`|<[^>]+>|(?<=\]\()[^)]+(?=\))",
+        flags=re.DOTALL,
+    )
+    safe = pattern.sub(lambda match: reserve(match.group(0)), str(text or ""))
+
+    names_pattern = re.compile(
+        r"(?<![\w-])(?:"
+        + "|".join(re.escape(name) for name in _TRANSLATION_PROTECTED_NAMES)
+        + r")(?![\w-])",
+        flags=re.IGNORECASE,
+    )
+    safe = names_pattern.sub(lambda match: reserve(match.group(0)), safe)
+    return safe, protected
+
+
+def _translation_restore(text, protected):
+    """Restaura estruturas protegidas; ausência de token invalida a tradução."""
+    restored = str(text or "")
+    for token, original in protected:
+        if token not in restored:
+            return "", False
+        restored = restored.replace(token, original)
+    return restored, True
+
+
+def _translation_chunks(text, limit=1400):
+    """Divide textos longos sem perder nenhum caractere da fonte."""
+    text = str(text or "")
+    if len(text) <= limit:
+        return [text]
+
+    chunks = []
+    start = 0
+    while start < len(text):
+        end = min(start + limit, len(text))
+        if end < len(text):
+            floor = start + (limit // 2)
+            cuts = [
+                text.rfind("\n\n", floor, end),
+                text.rfind("\n", floor, end),
+                text.rfind(". ", floor, end),
+                text.rfind(" ", floor, end),
+            ]
+            cut = max(cuts)
+            if cut > start:
+                end = cut + (2 if text[cut:cut + 2] in {"\n\n", ". "} else 1)
+
+            # Nunca divide um placeholder de estrutura protegida.
+            token_start = text.rfind("ZXQPH", start, end)
+            if token_start >= start:
+                token_end = text.find("QXZ", token_start)
+                if token_end >= end:
+                    end = token_start if token_start > start else token_end + 3
+        chunks.append(text[start:end])
+        start = end
+    return chunks
+
+
+def _translation_google_direct(input_text, target):
+    """Rota HTTP GET; independe do parser HTML do deep-translator."""
+    query = urllib.parse.urlencode(
+        {
+            "client": "gtx",
+            "sl": "pt",
+            "tl": target,
+            "dt": "t",
+            "q": input_text,
+        }
+    )
+    errors = []
+    for host in ("translate.googleapis.com", "translate.google.com"):
+        try:
+            request = urllib.request.Request(
+                f"https://{host}/translate_a/single?{query}",
+                headers={
+                    "Accept": "application/json,text/plain,*/*",
+                    "User-Agent": "Mozilla/5.0",
+                },
+                method="GET",
+            )
+            with urllib.request.urlopen(request, timeout=12) as response:
+                payload = json.loads(response.read().decode("utf-8"))
+
+            segments = payload[0] if isinstance(payload, list) and payload else []
+            output_text = "".join(
+                str(segment[0])
+                for segment in segments
+                if isinstance(segment, list) and segment and segment[0] is not None
+            )
+            if not output_text:
+                raise RuntimeError("resposta vazia")
+            return output_text
+        except Exception as exc:
+            errors.append(f"{host}: {exc}")
+
+    raise RuntimeError(" | ".join(errors))
+
+
+def _translation_unit(input_text, target):
+    """Traduz uma unidade curta por duas rotas, com cache e repetição."""
+    cache_key = (target, input_text)
+    cached = _TRANSLATION_CACHE.get(cache_key)
+    if cached is not None:
+        return cached, True
+
+    leading = re.match(r"^\s*", input_text).group(0)
+    trailing = re.search(r"\s*$", input_text).group(0)
+    core_end = len(input_text) - len(trailing) if trailing else len(input_text)
+    core = input_text[len(leading):core_end]
+    if not core:
+        return input_text, True
+
+    errors = []
+    for attempt in range(2):
+        providers = [("google-direto", _translation_google_direct)]
+        if GoogleTranslator is not None:
+            providers.append(
+                (
+                    "deep-translator",
+                    lambda text, lang: GoogleTranslator(
+                        source="pt", target=lang
+                    ).translate(text=text),
+                )
+            )
+
+        for provider_name, provider in providers:
+            try:
+                translated_core = provider(core, target)
+                if not translated_core:
+                    raise RuntimeError("tradutor devolveu resposta vazia")
+                output_text = (
+                    leading
+                    + _translation_normalize_markup(translated_core)
+                    + trailing
+                )
+                if len(_TRANSLATION_CACHE) >= _TRANSLATION_CACHE_LIMIT:
+                    _TRANSLATION_CACHE.pop(next(iter(_TRANSLATION_CACHE)))
+                _TRANSLATION_CACHE[cache_key] = output_text
+                return output_text, True
+            except Exception as exc:
+                errors.append(f"{provider_name}: {exc}")
+
+        if attempt == 0:
+            time.sleep(0.20)
+
+    st.session_state["translation_last_error"] = " | ".join(errors[-6:])
+    print(
+        "[Machina tradução] " + st.session_state["translation_last_error"],
+        flush=True,
+    )
+    return input_text, False
+
+
+def _translate_atomic(input_text, target=None, channel="ui"):
+    """Traduz tudo ou preserva tudo; nunca devolve documento pela metade."""
+    input_text = str(input_text or "")
+    target = str(target or _translation_target()).strip().lower()
+    if target == "pt" or not input_text:
+        return input_text, True
+    channel = "content" if str(channel).lower() == "content" else "ui"
+    backoff_key = f"translation_{channel}_backoff_until"
+    now = time.monotonic()
+    backoff_until = float(st.session_state.get(backoff_key, 0.0) or 0.0)
+    if now < backoff_until:
+        return input_text, False
+
+    safe_text, protected = _translation_protect(input_text)
+    translated_chunks = []
+    for chunk in _translation_chunks(safe_text):
+        if not chunk.strip():
+            translated_chunks.append(chunk)
+            continue
+        translated, success = _translation_unit(chunk, target)
+        if not success:
+            st.session_state[backoff_key] = (
+                time.monotonic() + _TRANSLATION_BACKOFF_SECONDS
+            )
+            return input_text, False
+        translated_chunks.append(translated)
+
+    restored, success = _translation_restore("".join(translated_chunks), protected)
+    if not success:
+        st.session_state["translation_last_error"] = "estrutura protegida alterada pelo tradutor"
+        st.session_state[backoff_key] = (
+            time.monotonic() + _TRANSLATION_BACKOFF_SECONDS
+        )
+        return input_text, False
+
+    st.session_state[backoff_key] = 0.0
+    st.session_state["translation_last_error"] = ""
+    return restored, True
+
+
 def translate(input_text):
-    """Traduz textos de apoio e yPoemas quando o idioma atual não é português."""
-    if st.session_state.lang == "pt":  # don't need translations here
-        return input_text
+    """Traduz prosa visível sem alterar estado interno nem idioma selecionado."""
+    translated, _success = _translate_atomic(input_text, channel="ui")
+    return translated
 
-    if not have_internet() or GoogleTranslator is None:
-        st.session_state.lang = "pt"
-        return input_text
 
-    try:
-        output_text = GoogleTranslator(
-            source="pt", target=st.session_state.lang
-        ).translate(text=input_text)
+def translate_content(input_text):
+    """Traduz conteúdo principal e registra o idioma realmente exibido."""
+    target = _translation_target()
+    translated, success = _translate_atomic(input_text, target, channel="content")
+    st.session_state["curr_lang"] = target if success else "pt"
+    if not success:
+        st.warning(
+            "Tradução temporariamente indisponível; "
+            "o original em português foi preservado."
+        )
+    return translated
 
-        output_text = output_text.replace("<br>>", "<br>")
-        output_text = output_text.replace("< br>", "<br>")
-        output_text = output_text.replace("<br >", "<br>")
-        output_text = output_text.replace("<br ", "<br>")
-        output_text = output_text.replace(" br>", "<br>")
-        return output_text
-    except Exception:
-        return "Arquivo muito grande para ser traduzido."
+
+def translate_document(input_text):
+    """Traduz documentos Markdown de modo integral e atômico."""
+    return translate_content(input_text)
 
 def pick_lang():  # lista oficial de idiomas + P.O.L.Y.
     options = []
@@ -1439,20 +1686,35 @@ def load_index():  # Load indexes numbers for all themes
 
     return index_list
 
-def load_lypo():  # Load last yPoema & replace '\n' with '<br>' for translator returned text
+def _ypo_reader_id():
+    """Identifica a sessão leitora; o IP do servidor não distingue leitores WWW."""
+    reader_id = str(st.session_state.get("ypo_reader_id", "") or "").strip()
+    if not reader_id:
+        reader_id = uuid.uuid4().hex
+        st.session_state["ypo_reader_id"] = reader_id
+    return reader_id
+
+
+def _lypo_path():
+    return _project_path("temp", "LYPO_" + _ypo_reader_id())
+
+
+def _typo_path():
+    return _project_path("temp", "TYPO_" + _ypo_reader_id())
+
+
+def load_lypo():  # Load Last YPOema & replace '\n' with '<br>'
     lypo_text = ""
-    lypo_user = "LYPO_" + ip
-    with open(os.path.join("./temp/" + lypo_user), encoding="utf-8", errors="replace") as script:
+    with open(_lypo_path(), encoding="utf-8", errors="replace") as script:
         for line in script:
             line = line.strip()
             lypo_text += line + "<br>"
 
     return lypo_text
 
-def load_typo():  # Load translated yPoema & clean translator returned bugs in text
+def load_typo():  # Load Translated YPOema & clean translator returned bugs
     typo_text = ""
-    typo_user = "TYPO_" + ip
-    with open(os.path.join("./temp/" + typo_user), encoding="utf-8", errors="replace") as script:
+    with open(_typo_path(), encoding="utf-8", errors="replace") as script:
         for line in script:  # just 1 line
             line = line.strip()
             if " >" in line:
@@ -1470,6 +1732,81 @@ def load_typo():  # Load translated yPoema & clean translator returned bugs in t
             typo_text += line + "<br>"
 
     return typo_text
+
+
+def _save_typo(typo_text):
+    """Grava TYPO somente depois de uma tradução integral bem-sucedida."""
+    os.makedirs(os.path.dirname(_typo_path()), exist_ok=True)
+    with open(_typo_path(), "w", encoding="utf-8") as save_typo:
+        save_typo.write(str(typo_text or ""))
+
+
+def _lypo_context_key(context):
+    return json.dumps(context, ensure_ascii=False, sort_keys=True, default=str)
+
+
+def _lypo_text_signature(text):
+    return hashlib.sha256(str(text or "").encode("utf-8")).hexdigest()
+
+
+def _invalidate_typo():
+    """Invalida a derivação sem tocar no LYPO, que permanece autoridade."""
+    st.session_state["typo_lang"] = ""
+    st.session_state["typo_lypo_signature"] = ""
+
+
+def resolve_lypo_typo(context, generate_lypo=None, force_generate=False):
+    """Entrega LYPO ou seu TYPO válido sem confundir rerun com geração."""
+    context_key = _lypo_context_key(context)
+    lypo_exists = os.path.isfile(_lypo_path())
+    context_changed = st.session_state.get("lypo_context", "") != context_key
+    must_generate = bool(force_generate or context_changed or not lypo_exists)
+
+    if must_generate:
+        if generate_lypo is None:
+            raise RuntimeError("gerador LYPO ausente para o contexto atual")
+        generate_lypo()
+        st.session_state["lypo_context"] = context_key
+        _invalidate_typo()
+
+    lypo_text = load_lypo()
+    lypo_signature = _lypo_text_signature(lypo_text)
+    if st.session_state.get("lypo_signature", "") != lypo_signature:
+        st.session_state["lypo_signature"] = lypo_signature
+        _invalidate_typo()
+
+    target = _translation_target()
+    if target == "pt":
+        st.session_state["curr_lang"] = "pt"
+        return lypo_text
+
+    typo_valid = (
+        os.path.isfile(_typo_path())
+        and st.session_state.get("typo_lang", "") == target
+        and st.session_state.get("typo_lypo_signature", "") == lypo_signature
+    )
+    if typo_valid:
+        st.session_state["curr_lang"] = target
+        return load_typo()
+
+    translated, success = _translate_atomic(
+        lypo_text,
+        target=target,
+        channel="content",
+    )
+    if success:
+        _save_typo(translated)
+        st.session_state["typo_lang"] = target
+        st.session_state["typo_lypo_signature"] = lypo_signature
+        st.session_state["curr_lang"] = target
+        return load_typo()
+
+    st.session_state["curr_lang"] = "pt"
+    st.warning(
+        "Tradução temporariamente indisponível; "
+        "o LYPO original em português foi preservado."
+    )
+    return lypo_text
 
 def load_all_offs():
     """Retorna a lista oficial de livros do modo off-machina."""
@@ -1556,9 +1893,8 @@ def _markdown_links_to_html(texto):
 def load_poema(nome_tema, seed_eureka):  # generate new yPoema
     script = gera_poema(nome_tema, seed_eureka)
     novo_ypoema = ""
-    lypo_user = "LYPO_" + ip
-
-    with open(os.path.join("./temp/" + lypo_user), "w", encoding="utf-8") as save_lypo:
+    os.makedirs(os.path.dirname(_lypo_path()), exist_ok=True)
+    with open(_lypo_path(), "w", encoding="utf-8") as save_lypo:
         save_lypo.write(
             nome_tema
         )  # include title of yPoema in first line for translations
@@ -1846,10 +2182,9 @@ def load_md_file(file):  # Open files for about's
             file_text = file_to_open.read()
 
         if not 'rol_' in str(file).lower():  # do not translate theme
-            file_text = translate(file_text)
+            file_text = translate_document(file_text)
     except Exception:
         file_text = translate('ooops... arquivo ( ' + str(file) + ' ) não pode ser aberto.')
-        st.session_state.lang = 'pt'
 
     return file_text
 
@@ -3501,7 +3836,7 @@ def say_number(tema):  # search index title for eureka
             analise = part_line[2]
             break
 
-    return translate(analise)
+    return translate_document(analise)
 
 def limpar_analise(texto, max_chars=MAX_ANALISE_CHARS):
     """Limpa a análise devolvida por rotina pura.
@@ -3927,9 +4262,9 @@ def _render_eureka_off(
     livros = {str(item.get("livro", "")) for item in achados}
     info_find = '"' + str(find_what) + '"'
     if len(achados) > 1:
-        info_find += " em " + str(len(achados)) + " textos"
+        info_find += translate(" em " + str(len(achados)) + " textos")
     else:
-        info_find += " em 1 texto"
+        info_find += translate(" em 1 texto")
 
     with occurrences:
         options = list(range(len(achados)))
@@ -3966,6 +4301,12 @@ def _render_eureka_off(
     if preservar_eureka and st.session_state.get("eureka_palco_xerox_text", ""):
         texto_html = st.session_state.get("eureka_palco_xerox_text", texto_html)
         texto_plain = _ypoema_html_to_text(texto_html)
+        st.session_state.curr_lang = st.session_state.lang
+    elif st.session_state.lang != "pt":
+        texto_html = translate_content(texto_html)
+        texto_plain = _ypoema_html_to_text(texto_html)
+    else:
+        st.session_state.curr_lang = "pt"
 
     eureka_expander = st.expander("", expanded=True)
     with eureka_expander:
@@ -4638,7 +4979,7 @@ def _load_md_catalog_file(file_spec):
             continue
         try:
             with open(path, encoding="utf-8-sig") as file:
-                return translate(file.read())
+                return translate_document(file.read())
         except (OSError, UnicodeError):
 
             continue
@@ -4728,21 +5069,20 @@ def page_mini():
         usou_xerox_mini = bool(preservar_mini and tuple(st.session_state.get("mini_palco_xerox_context") or ()) == mini_contexto and st.session_state.get("mini_palco_xerox_text"))
         if usou_xerox_mini:
             curr_ypoema = st.session_state.get("mini_palco_xerox_text", "")
-        elif st.session_state.lang != st.session_state.last_lang:
-            curr_ypoema = load_lypo()  # changes in lang, keep LYPO
         else:
-            curr_ypoema = load_poema(st.session_state.tema, "")
-            curr_ypoema = load_lypo()
+            lypo_contexto = (
+                "mini",
+                int(st.session_state.get("mini", 0)),
+                str(st.session_state.get("tema", "")),
+            )
+            curr_ypoema = resolve_lypo_typo(
+                lypo_contexto,
+                generate_lypo=lambda: load_poema(st.session_state.tema, ""),
+                force_generate=bool(more or rand or auto_clicked),
+            )
 
-        if st.session_state.lang != "pt" and not usou_xerox_mini:  # translate if idioma <> pt
-            curr_ypoema = translate(curr_ypoema)
-            typo_user = "TYPO_" + ip
-            with open(
-                os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
-            ) as save_typo:
-                save_typo.write(curr_ypoema)
-                save_typo.close()
-            curr_ypoema = load_typo()  # to normalize line breaks in text
+        if usou_xerox_mini:
+            st.session_state.curr_lang = st.session_state.lang
 
         update_readings(st.session_state.tema)
         LOGO_TEXTO = curr_ypoema
@@ -4789,21 +5129,16 @@ def page_mini():
                         st.session_state.mini = random.randrange(0, maxy_mini)
                         st.session_state.tema = temas[st.session_state.mini]
 
-                    if st.session_state.lang != st.session_state.last_lang:
-                        curr_ypoema = load_lypo()  # changes in lang, keep LYPO
-                    else:
-                        curr_ypoema = load_poema(st.session_state.tema, "")
-                        curr_ypoema = load_lypo()
-
-                    if st.session_state.lang != "pt":  # translate if idioma <> pt
-                        curr_ypoema = translate(curr_ypoema)
-                        typo_user = "TYPO_" + ip
-                        with open(
-                            os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
-                        ) as save_typo:
-                            save_typo.write(curr_ypoema)
-                            save_typo.close()
-                        curr_ypoema = load_typo()  # to normalize line breaks in text
+                    lypo_contexto = (
+                        "mini",
+                        int(st.session_state.get("mini", 0)),
+                        str(st.session_state.get("tema", "")),
+                    )
+                    curr_ypoema = resolve_lypo_typo(
+                        lypo_contexto,
+                        generate_lypo=lambda: load_poema(st.session_state.tema, ""),
+                        force_generate=True,
+                    )
 
                     update_readings(st.session_state.tema)
                     LOGO_TEXTO = curr_ypoema
@@ -4959,21 +5294,21 @@ def page_ypoemas():
             usou_xerox_ypo = bool(preservar_ypo and tuple(st.session_state.get("ypo_palco_xerox_context") or ()) == ypo_contexto and st.session_state.get("ypo_palco_xerox_text"))
             if usou_xerox_ypo:
                 curr_ypoema = st.session_state.get("ypo_palco_xerox_text", "")
-            elif st.session_state.lang != st.session_state.last_lang:
-                curr_ypoema = load_lypo()  # changes in lang, keep LYPO
             else:
-                curr_ypoema = load_poema(st.session_state.tema, "")
-                curr_ypoema = load_lypo()
+                lypo_contexto = (
+                    "ypo",
+                    str(_current_book()),
+                    int(st.session_state.get("take", 0)),
+                    str(st.session_state.get("tema", "")),
+                )
+                curr_ypoema = resolve_lypo_typo(
+                    lypo_contexto,
+                    generate_lypo=lambda: load_poema(st.session_state.tema, ""),
+                    force_generate=bool(more or last or rand or nest),
+                )
 
-            if st.session_state.lang != "pt" and not usou_xerox_ypo:  # translate if idioma <> pt
-                curr_ypoema = translate(curr_ypoema)
-                typo_user = "TYPO_" + ip
-                with open(
-                    os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
-                ) as save_typo:
-                    save_typo.write(curr_ypoema)
-                    save_typo.close()
-                curr_ypoema = load_typo()  # to normalize line breaks in text
+            if usou_xerox_ypo:
+                st.session_state.curr_lang = st.session_state.lang
 
             update_readings(st.session_state.tema)
 
@@ -5020,7 +5355,7 @@ def page_ypoemas():
             if manu:
                 LOGO_TEXTO = load_info(st.session_state.tema)
                 if st.session_state.lang != "pt":  # translate if idioma <> pt
-                    LOGO_TEXTO = translate(LOGO_TEXTO)
+                    LOGO_TEXTO = translate_document(LOGO_TEXTO)
 
                 LOGO_IMAGE = (
                     "./images/matrix/" + st.session_state.tema.capitalize() + ".jpg"
@@ -5284,21 +5619,20 @@ def page_eureka():
             usou_xerox_eureka = bool(preservar_eureka and st.session_state.get("eureka_palco_xerox_text", ""))
             if usou_xerox_eureka:
                 curr_ypoema = st.session_state.get("eureka_palco_xerox_text", "")
-            elif st.session_state.lang != st.session_state.last_lang:
-                curr_ypoema = load_lypo()  # changes in lang, keep LYPO
             else:
-                curr_ypoema = load_poema(seed_tema, this_seed)
-                curr_ypoema = load_lypo()
+                lypo_contexto = (
+                    "eureka",
+                    str(seed_tema),
+                    str(this_seed),
+                )
+                curr_ypoema = resolve_lypo_typo(
+                    lypo_contexto,
+                    generate_lypo=lambda: load_poema(seed_tema, this_seed),
+                    force_generate=bool(more or last or rand or nest),
+                )
 
-            if st.session_state.lang != "pt" and not usou_xerox_eureka:  # translate if idioma <> pt
-                curr_ypoema = translate(curr_ypoema)
-                typo_user = "TYPO_" + ip
-                with open(
-                    os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
-                ) as save_typo:
-                    save_typo.write(curr_ypoema)
-                    save_typo.close()
-                curr_ypoema = load_typo()  # to normalize line breaks in text
+            if usou_xerox_eureka:
+                st.session_state.curr_lang = st.session_state.lang
 
             lnew = True
             if lnew:
@@ -5327,7 +5661,7 @@ def page_eureka():
                 lnew = False
                 LOGO_TEXTO = load_info(seed_tema)
                 if st.session_state.lang != "pt":  # translate if idioma <> pt
-                    LOGO_TEXTO = translate(LOGO_TEXTO)
+                    LOGO_TEXTO = translate_document(LOGO_TEXTO)
 
                 LOGO_IMAGE = "./images/matrix/" + seed_tema.capitalize() + ".jpg"
                 write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
@@ -5530,22 +5864,38 @@ def page_off_machina():  # available off_machina_books
                 and st.session_state.get("off_palco_xerox_text")
             )
             titulo_pip = pipe_line[1] if len(pipe_line) > 1 else ""
+            off_is_ypo = str(titulo_pip).lstrip().startswith("@")
             if usou_xerox_off:
                 off_book_text = st.session_state["off_palco_xerox_text"]
-            elif str(titulo_pip).lstrip().startswith("@"):
-                if st.session_state.lang != st.session_state.last_lang:
-                    off_book_text = load_lypo()
-                else:
-                    nome_tema = str(titulo_pip).lstrip()[1:].strip()
-                    off_book_text = load_poema(nome_tema, "")
-                    off_book_text = "<br>" + load_lypo()
+            elif off_is_ypo:
+                nome_tema = str(titulo_pip).lstrip()[1:].strip()
+                lypo_contexto = (
+                    "off-ypo",
+                    str(off_book_name),
+                    int(st.session_state.get("off_take", 0)),
+                    nome_tema,
+                )
+                off_book_text = "<br>" + resolve_lypo_typo(
+                    lypo_contexto,
+                    generate_lypo=lambda: load_poema(nome_tema, ""),
+                    force_generate=bool(nav_changed),
+                )
             else:
                 off_book_text = _pip_line_to_text(this_off_book[st.session_state.off_take])
 
             capo = st.session_state.off_take == 0
 
-            if st.session_state.lang != "pt" and not capo and not usou_xerox_off:
-                off_book_text = translate(off_book_text)
+            if (
+                st.session_state.lang != "pt"
+                and not capo
+                and not usou_xerox_off
+                and not off_is_ypo
+            ):
+                off_book_text = translate_content(off_book_text)
+            elif usou_xerox_off:
+                st.session_state.curr_lang = st.session_state.lang
+            else:
+                st.session_state.curr_lang = "pt"
 
             LOGO_TEXTO = off_book_text
             off_title = off_book_pagys[st.session_state.off_take]
@@ -5690,8 +6040,6 @@ def start_machina(app_variant="local"):
 
         st.session_state.draw = True
         st.session_state.visy = False
-
-    st.session_state.last_lang = st.session_state.lang
 
     gramado = open_gramado()
 
