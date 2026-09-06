@@ -4,7 +4,6 @@ from __future__ import annotations
 from pathlib import Path
 from io import BytesIO
 import html
-import base64
 import random
 import re
 import unicodedata
@@ -156,11 +155,11 @@ def _font_key(value: str) -> str:
     return "".join(ch for ch in value if ch.isalnum() and not unicodedata.combining(ch))
 
 
-def _open_dyslexic_path(estilo: str) -> Path:
+def _pil_font(size: int, estilo: str):
     estilo_key = _font_key(estilo)
     quer_bold = "bold" in estilo_key
-    fonts_dir = ROOT / "fonts"
 
+    fonts_dir = ROOT / "fonts"
     principal = (
         fonts_dir / "OpenDyslexic-Bold.otf"
         if quer_bold
@@ -174,87 +173,9 @@ def _open_dyslexic_path(estilo: str) -> Path:
 
     for candidato in (principal, reserva):
         if candidato.is_file():
-            return candidato
+            return ImageFont.truetype(str(candidato), size=size)
 
-    raise RuntimeError(
-        "NOMY: OpenDyslexic não encontrada em /fonts."
-    )
-
-
-def _pil_font(size: int, estilo: str):
-    path = _open_dyslexic_path(estilo)
-    return ImageFont.truetype(str(path), size=size)
-
-
-def _webfont_css() -> str:
-    """Embute OpenDyslexic no HTML para LOCAL e WWW usarem o mesmo arquivo."""
-    fonts_dir = ROOT / "fonts"
-    regras = []
-
-    for nome, peso in (
-        ("OpenDyslexic-Regular.otf", 400),
-        ("OpenDyslexic-Bold.otf", 700),
-    ):
-        path = fonts_dir / nome
-        if not path.is_file():
-            continue
-        dados = base64.b64encode(path.read_bytes()).decode("ascii")
-        regras.append(
-            "@font-face{"
-            "font-family:'NomyOpenDyslexic';"
-            f"src:url(data:font/otf;base64,{dados}) format('opentype');"
-            f"font-weight:{peso};"
-            "font-style:normal;"
-            "font-display:block;"
-            "}"
-        )
-    return "".join(regras)
-
-
-def _draw_text_estilizado(
-    canvas: Image.Image,
-    xy: tuple[int, int],
-    texto: str,
-    font,
-    *,
-    estilo: str,
-):
-    """Desenha OpenDyslexic; itálico é sintetizado no PNG por inclinação."""
-    x, y = xy
-    estilo_key = _font_key(estilo)
-    italico = "italico" in estilo_key
-
-    if not italico:
-        ImageDraw.Draw(canvas).text((x, y), texto, fill="black", font=font)
-        return
-
-    bbox = font.getbbox(texto or " ")
-    largura = max(1, bbox[2] - bbox[0])
-    altura = max(1, bbox[3] - bbox[1])
-    folga = max(18, int(altura * 0.35))
-
-    layer = Image.new("RGBA", (largura + folga * 2, altura + folga * 2), (0, 0, 0, 0))
-    ld = ImageDraw.Draw(layer)
-    ld.text((folga, folga - bbox[1]), texto, fill="black", font=font)
-
-    shear = 0.22
-    nova_largura = layer.width + int(layer.height * shear)
-    inclinada = layer.transform(
-        (nova_largura, layer.height),
-        Image.Transform.AFFINE,
-        (1, -shear, layer.height * shear, 0, 1, 0),
-        resample=Image.Resampling.BICUBIC,
-    )
-    canvas.alpha_composite(inclinada, (x - folga, y - folga))
-
-
-def _retrato_html(png: bytes) -> str:
-    b64 = base64.b64encode(png).decode("ascii")
-    return (
-        "<div class='nomy-palco-imagem'>"
-        f"<img src='data:image/png;base64,{b64}' alt='Retrato NOMY'>"
-        "</div>"
-    )
+    raise RuntimeError("NOMY: OpenDyslexic não encontrada em /fonts.")
 
 
 def _wrap_text(draw, texto: str, font, max_width: int):
@@ -322,7 +243,6 @@ def _criar_retrato_png(*, preservar_imagem: bool = False) -> bytes | None:
 
     probe = Image.new("RGB", (width, 100), "white")
     probe_draw = ImageDraw.Draw(probe)
-    wrap_w = int(text_w * 0.92) if "itálico" in estilo.casefold() else text_w
 
     blocos = []
     for linha in resultado.linhas:
@@ -332,7 +252,7 @@ def _criar_retrato_png(*, preservar_imagem: bool = False) -> bytes | None:
             primeira = str(linha.entrada or "")[:1].upper()
             resto = linha.verbete[1:] if len(linha.verbete) > 1 else ""
             texto = primeira + " " + resto
-        blocos.extend(_wrap_text(probe_draw, texto, font, wrap_w))
+        blocos.extend(_wrap_text(probe_draw, texto, font, text_w))
         blocos.append("")
 
     if blocos and blocos[-1] == "":
@@ -348,7 +268,8 @@ def _criar_retrato_png(*, preservar_imagem: bool = False) -> bytes | None:
     content_h = max(image_box_h, text_h)
     height = max(1350, content_h + (margin_y * 2)) if leitura == "Poético" else 1350
 
-    img = Image.new("RGBA", (width, height), "white")
+    img = Image.new("RGB", (width, height), "white")
+    draw = ImageDraw.Draw(img)
 
     block_w = image_box_w + gap + text_w
     block_h = max(image_box_h, text_h)
@@ -389,11 +310,11 @@ def _criar_retrato_png(*, preservar_imagem: bool = False) -> bytes | None:
         if item == "":
             y += blank_gap
         else:
-            _draw_text_estilizado(img, (text_x, y), item, font, estilo=estilo)
+            draw.text((text_x, y), item, fill="black", font=font)
             y += line_h
 
     bio = BytesIO()
-    img.convert("RGB").save(bio, format="PNG", optimize=True)
+    img.save(bio, format="PNG", optimize=True)
     return bio.getvalue()
 
 
@@ -402,15 +323,14 @@ _init_state()
 resultado = st.session_state.get("nomy_resultado")
 estilo_ativo = st.session_state.get("nomy_estilo", "normal")
 corpo_ativo = int(st.session_state.get("nomy_corpo", 20))
+fonte_css = '"OpenDyslexic", sans-serif'
 estilo_key = str(estilo_ativo).casefold()
-webfont_css = _webfont_css()
 estilo_css = "italic" if "itálico" in estilo_key else "normal"
 peso_css = 700 if "bold" in estilo_key else 400
 
 st.markdown(
     f"""
     <style>
-    {webfont_css}
     #MainMenu, footer, header {{
         display:none !important;
         visibility:hidden !important;
@@ -470,7 +390,7 @@ st.markdown(
         margin-top:2px;
         padding:10px 7px 12px 7px;
         box-sizing:border-box;
-        font-family:'NomyOpenDyslexic', sans-serif;
+        font-family:{fonte_css};
         font-style:{estilo_css};
         font-weight:{peso_css};
         font-size:{corpo_ativo}px;
@@ -497,24 +417,35 @@ st.markdown(
         min-width:0;
     }}
 
-    .nomy-palco-imagem {{
-        height:525px;
-        min-height:525px;
-        max-height:525px;
-        overflow-y:auto;
-        overflow-x:hidden;
-        margin-top:2px;
-        padding:8px;
-        box-sizing:border-box;
-        contain:layout paint;
-        background:white;
+
+    .st-key-nomy_retrato_palco {{
+        height:525px !important;
+        min-height:525px !important;
+        max-height:525px !important;
+        overflow:hidden !important;
+        display:flex !important;
+        align-items:center !important;
+        justify-content:center !important;
+        margin-top:2px !important;
+        padding:8px !important;
+        box-sizing:border-box !important;
     }}
-    .nomy-palco-imagem img {{
-        display:block;
-        width:100%;
-        max-width:100%;
-        height:auto;
-        margin:0 auto;
+    .st-key-nomy_retrato_palco > div,
+    .st-key-nomy_retrato_palco div[data-testid="stVerticalBlock"],
+    .st-key-nomy_retrato_palco div[data-testid="stImage"] {{
+        width:100% !important;
+        height:100% !important;
+        display:flex !important;
+        align-items:center !important;
+        justify-content:center !important;
+    }}
+    .st-key-nomy_retrato_palco img {{
+        width:auto !important;
+        max-width:96% !important;
+        height:auto !important;
+        max-height:505px !important;
+        margin:0 auto !important;
+        object-fit:contain !important;
     }}
 
     @media (max-width:600px) {{
@@ -532,7 +463,7 @@ st.markdown(
 )
 
 # O estado do palco é autoridade.
-# Se estilo/corpo mudaram durante um Retrato,
+# Se fonte/estilo/corpo/layout mudaram durante um Retrato,
 # recompõe o PNG antes de calcular botões e palco.
 _sincronizar_retrato_do_palco()
 
@@ -716,10 +647,8 @@ resultado = st.session_state.get("nomy_resultado")
 if resultado is not None:
     if st.session_state.get("nomy_palco_view", "texto") == "imagem":
         if _retrato_valido():
-            st.markdown(
-                _retrato_html(st.session_state["nomy_retrato"]),
-                unsafe_allow_html=True,
-            )
+            with st.container(key="nomy_retrato_palco", border=False):
+                st.image(st.session_state["nomy_retrato"], width="stretch")
         else:
             # Estado continua IMAGEM; não mostra Texto como tela intermediária.
             st.markdown("<div class='nomy-palco'></div>", unsafe_allow_html=True)
