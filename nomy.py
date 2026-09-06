@@ -36,6 +36,8 @@ FONTES = {
 ESTILOS = ("normal", "itálico", "bold", "bold itálico")
 CORPOS = tuple(range(16, 37))
 RETRATO_FONTE_AJUSTE_DEFAULT = 1.60
+RETRATO_IMAGEM_PCT = 34
+RETRATO_COMPACTACAO = 100
 
 
 def _init_state():
@@ -58,9 +60,6 @@ def _init_state():
         "nomy_palco_view": "texto",
         "nomy_retrato_imagem": "",
         "nomy_retrato_fator": RETRATO_FONTE_AJUSTE_DEFAULT,
-        "nomy_retrato_imagem_pct": 34,
-        "nomy_retrato_compactacao": 100,
-        "nomy_retrato_layout_aplicado": (34, 100),
     }
     for key, value in defaults.items():
         if key not in st.session_state:
@@ -96,10 +95,6 @@ def _atualizar_retrato(*, preservar_imagem: bool) -> bool:
 
     st.session_state["nomy_retrato"] = png
     st.session_state["nomy_retrato_assinatura"] = _assinatura_retrato()
-    st.session_state["nomy_retrato_layout_aplicado"] = (
-        int(st.session_state.get("nomy_retrato_imagem_pct", 34)),
-        int(st.session_state.get("nomy_retrato_compactacao", 100)),
-    )
     return True
 
 
@@ -112,7 +107,7 @@ def _sincronizar_retrato_do_palco():
     if _retrato_valido():
         return
 
-    # Fonte/estilo/corpo/layout: preserva a imagem escolhida.
+    # Fonte/estilo/corpo: preserva a imagem escolhida.
     if not _atualizar_retrato(preservar_imagem=True):
         # Falha técnica não autoriza cruzar o estado silenciosamente.
         st.session_state["nomy_retrato"] = None
@@ -162,8 +157,6 @@ def _assinatura_retrato():
         st.session_state.get("nomy_estilo", ""),
         int(st.session_state.get("nomy_corpo", 20)),
         float(st.session_state.get("nomy_retrato_fator", RETRATO_FONTE_AJUSTE_DEFAULT)),
-        int(st.session_state.get("nomy_retrato_imagem_pct", 34)),
-        int(st.session_state.get("nomy_retrato_compactacao", 100)),
         tuple((l.entrada, l.verbete, l.markdown) for l in resultado.linhas),
     )
 
@@ -349,8 +342,8 @@ def _criar_retrato_png(*, preservar_imagem: bool = False) -> bytes | None:
     fator_retrato = float(
         st.session_state.get("nomy_retrato_fator", RETRATO_FONTE_AJUSTE_DEFAULT)
     )
-    img_pct = int(st.session_state.get("nomy_retrato_imagem_pct", 34))
-    compactacao = int(st.session_state.get("nomy_retrato_compactacao", 100))
+    img_pct = RETRATO_IMAGEM_PCT
+    compactacao = RETRATO_COMPACTACAO
 
     tamanho_retrato = max(1, round(corpo * escala * fator_retrato))
     font = _pil_font(tamanho_retrato, fonte_nome, estilo)
@@ -786,41 +779,3 @@ if resultado is not None:
         )
 else:
     st.markdown("<div class='nomy-palco'></div>", unsafe_allow_html=True)
-
-if st.session_state.get("nomy_retrato") is not None:
-    st.divider()
-    s1, s2 = st.columns(2, gap="small")
-
-    with s1:
-        st.slider(
-            "imagem / texto",
-            min_value=25,
-            max_value=40,
-            step=1,
-            key="nomy_retrato_imagem_pct",
-        )
-
-    with s2:
-        st.slider(
-            "compactação",
-            min_value=82,
-            max_value=112,
-            step=1,
-            key="nomy_retrato_compactacao",
-            help="100 = neutro",
-        )
-
-    layout_atual = (
-        int(st.session_state.get("nomy_retrato_imagem_pct", 34)),
-        int(st.session_state.get("nomy_retrato_compactacao", 100)),
-    )
-    layout_aplicado = tuple(
-        st.session_state.get("nomy_retrato_layout_aplicado", (34, 100))
-    )
-
-    if layout_atual != layout_aplicado:
-        if _atualizar_retrato(preservar_imagem=True):
-            st.session_state["nomy_palco_view"] = st.session_state.get(
-                "nomy_palco_view", "texto"
-            )
-            _rerun()
