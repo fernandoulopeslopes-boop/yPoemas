@@ -539,10 +539,9 @@ st.markdown(
         height:525px !important;
         min-height:525px !important;
         max-height:525px !important;
-        overflow:hidden !important;
-        display:flex !important;
-        align-items:center !important;
-        justify-content:center !important;
+        overflow-y:auto !important;
+        overflow-x:hidden !important;
+        display:block !important;
         margin-top:2px !important;
         padding:8px !important;
         box-sizing:border-box !important;
@@ -551,16 +550,19 @@ st.markdown(
     .st-key-nomy_retrato_palco div[data-testid="stVerticalBlock"],
     .st-key-nomy_retrato_palco div[data-testid="stImage"] {{
         width:100% !important;
-        height:100% !important;
-        display:flex !important;
-        align-items:center !important;
-        justify-content:center !important;
+        height:auto !important;
+        min-height:0 !important;
+        max-height:none !important;
+        display:block !important;
+        margin:0 !important;
+        padding:0 !important;
     }}
     .st-key-nomy_retrato_palco img {{
-        width:auto !important;
-        max-width:96% !important;
+        display:block !important;
+        width:100% !important;
+        max-width:100% !important;
         height:auto !important;
-        max-height:505px !important;
+        max-height:none !important;
         margin:0 auto !important;
         object-fit:contain !important;
     }}
