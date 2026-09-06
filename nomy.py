@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from io import BytesIO
+import base64
 import html
 import random
 import re
@@ -25,8 +26,34 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-ESTILOS = ("normal", "itálico", "bold", "bold itálico")
-CORPOS = tuple(range(16, 37))
+CORPO_NOMY = 16
+FONTES_NOMY_TXT = ROOT / "base" / "fontes_nomy.txt"
+
+
+def _carregar_fontes_nomy() -> dict[str, str]:
+    if not FONTES_NOMY_TXT.is_file():
+        raise RuntimeError(f"NOMY: lista de fontes não encontrada: {FONTES_NOMY_TXT}")
+
+    fontes: dict[str, str] = {}
+    for linha in FONTES_NOMY_TXT.read_text(encoding="utf-8").splitlines():
+        linha = linha.strip()
+        if not linha or linha.startswith("#"):
+            continue
+        if "|" not in linha:
+            continue
+
+        nome, arquivo = (parte.strip() for parte in linha.split("|", 1))
+        if nome and arquivo:
+            fontes[nome] = arquivo
+
+    if not fontes:
+        raise RuntimeError(f"NOMY: nenhuma fonte válida em {FONTES_NOMY_TXT}")
+
+    return fontes
+
+
+FONTES_NOMY = _carregar_fontes_nomy()
+FONTE_NOMY_DEFAULT = next(iter(FONTES_NOMY))
 RETRATO_FONTE_AJUSTE_DEFAULT = 1.60
 RETRATO_IMAGEM_PCT = 34
 RETRATO_COMPACTACAO = 100
@@ -37,14 +64,11 @@ def _init_state():
         "nomy_nome": "",
         "nomy_genero": "Feminino",
         "nomy_leitura": "Simples",
-        "nomy_estilo": "normal",
-        "nomy_corpo": 20,
+        "nomy_fonte": FONTE_NOMY_DEFAULT,
         "nomy_resultado": None,
         "nomy_nome_ativo": "",
         "nomy_genero_ativo": "Feminino",
         "nomy_leitura_ativa": "Simples",
-        "nomy_estilo_ativo": "normal",
-        "nomy_corpo_ativo": 20,
         "nomy_retrato": None,
         "nomy_retrato_assinatura": None,
         "nomy_palco_view": "texto",
@@ -97,7 +121,7 @@ def _sincronizar_retrato_do_palco():
     if _retrato_valido():
         return
 
-    # Fonte/estilo/corpo: preserva a imagem escolhida.
+    # Fonte: preserva a imagem escolhida.
     if not _atualizar_retrato(preservar_imagem=True):
         # Falha técnica não autoriza cruzar o estado silenciosamente.
         st.session_state["nomy_retrato"] = None
@@ -143,40 +167,38 @@ def _assinatura_retrato():
         ).strip(),
         st.session_state.get("nomy_genero_ativo", ""),
         st.session_state.get("nomy_leitura_ativa", ""),
-        st.session_state.get("nomy_estilo", ""),
-        int(st.session_state.get("nomy_corpo", 20)),
+        st.session_state.get("nomy_fonte", FONTE_NOMY_DEFAULT),
+        CORPO_NOMY,
         float(st.session_state.get("nomy_retrato_fator", RETRATO_FONTE_AJUSTE_DEFAULT)),
         tuple((l.entrada, l.verbete, l.markdown) for l in resultado.linhas),
     )
 
 
-def _font_key(value: str) -> str:
-    value = unicodedata.normalize("NFKD", str(value or "")).casefold()
-    return "".join(ch for ch in value if ch.isalnum() and not unicodedata.combining(ch))
+def _font_path(fonte_nome: str) -> Path:
+    arquivo = FONTES_NOMY[fonte_nome]
+    path = ROOT / "Fonts" / arquivo
+    if not path.is_file():
+        raise RuntimeError(f"NOMY: fonte não encontrada: {path}")
+    return path
 
 
-def _pil_font(size: int, estilo: str):
-    estilo_key = _font_key(estilo)
-    quer_bold = "bold" in estilo_key
+def _pil_font(size: int, fonte_nome: str):
+    return ImageFont.truetype(str(_font_path(fonte_nome)), size=size)
 
-    fonts_dir = ROOT / "fonts"
-    principal = (
-        fonts_dir / "OpenDyslexic-Bold.otf"
-        if quer_bold
-        else fonts_dir / "OpenDyslexic-Regular.otf"
+
+def _font_face_css(fonte_nome: str) -> str:
+    path = _font_path(fonte_nome)
+    dados = base64.b64encode(path.read_bytes()).decode("ascii")
+    formato = "truetype" if path.suffix.casefold() == ".ttf" else "opentype"
+    mime = "font/ttf" if path.suffix.casefold() == ".ttf" else "font/otf"
+    return (
+        "@font-face {"
+        "font-family:'NomySelecionada';"
+        f"src:url(data:{mime};base64,{dados}) format('{formato}');"
+        "font-style:normal;"
+        "font-weight:400;"
+        "}"
     )
-    reserva = (
-        fonts_dir / "OpenDyslexic-Regular.otf"
-        if quer_bold
-        else fonts_dir / "OpenDyslexic-Bold.otf"
-    )
-
-    for candidato in (principal, reserva):
-        if candidato.is_file():
-            return ImageFont.truetype(str(candidato), size=size)
-
-    raise RuntimeError("NOMY: OpenDyslexic não encontrada em /fonts.")
-
 
 def _wrap_text(draw, texto: str, font, max_width: int):
     palavras = texto.split()
@@ -218,8 +240,8 @@ def _criar_retrato_png(*, preservar_imagem: bool = False) -> bytes | None:
     ).strip()
     genero = st.session_state.get("nomy_genero_ativo", "Feminino")
     leitura = st.session_state.get("nomy_leitura_ativa", "Simples")
-    estilo = st.session_state.get("nomy_estilo", "normal")
-    corpo = int(st.session_state.get("nomy_corpo", 20))
+    fonte_nome = st.session_state.get("nomy_fonte", FONTE_NOMY_DEFAULT)
+    corpo = CORPO_NOMY
 
     escala = 2
     fator_retrato = float(
@@ -229,7 +251,7 @@ def _criar_retrato_png(*, preservar_imagem: bool = False) -> bytes | None:
     compactacao = RETRATO_COMPACTACAO
 
     tamanho_retrato = max(1, round(corpo * escala * fator_retrato))
-    font = _pil_font(tamanho_retrato, estilo)
+    font = _pil_font(tamanho_retrato, fonte_nome)
 
     width = 1080
     margin_x = 78
@@ -321,16 +343,15 @@ def _criar_retrato_png(*, preservar_imagem: bool = False) -> bytes | None:
 _init_state()
 
 resultado = st.session_state.get("nomy_resultado")
-estilo_ativo = st.session_state.get("nomy_estilo", "normal")
-corpo_ativo = int(st.session_state.get("nomy_corpo", 20))
-fonte_css = '"OpenDyslexic", sans-serif'
-estilo_key = str(estilo_ativo).casefold()
-estilo_css = "italic" if "itálico" in estilo_key else "normal"
-peso_css = 700 if "bold" in estilo_key else 400
+fonte_ativa = st.session_state.get("nomy_fonte", FONTE_NOMY_DEFAULT)
+corpo_ativo = CORPO_NOMY
+font_face_css = _font_face_css(fonte_ativa)
+fonte_css = '"NomySelecionada", sans-serif'
 
 st.markdown(
     f"""
     <style>
+    {font_face_css}
     #MainMenu, footer, header {{
         display:none !important;
         visibility:hidden !important;
@@ -391,8 +412,8 @@ st.markdown(
         padding:10px 7px 12px 7px;
         box-sizing:border-box;
         font-family:{fonte_css};
-        font-style:{estilo_css};
-        font-weight:{peso_css};
+        font-style:normal;
+        font-weight:400;
         font-size:{corpo_ativo}px;
         line-height:1.35;
         overflow-wrap:anywhere;
@@ -439,6 +460,13 @@ st.markdown(
         align-items:center !important;
         justify-content:center !important;
     }}
+    .st-key-nomy_retrato_palco div[data-testid="stImage"] > div {{
+        width:100% !important;
+        display:flex !important;
+        justify-content:center !important;
+        align-items:center !important;
+        margin:0 auto !important;
+    }}
     .st-key-nomy_retrato_palco img {{
         width:auto !important;
         max-width:96% !important;
@@ -463,14 +491,12 @@ st.markdown(
 )
 
 # O estado do palco é autoridade.
-# Se fonte/estilo/corpo/layout mudaram durante um Retrato,
+# Se a fonte mudou durante um Retrato,
 # recompõe o PNG antes de calcular botões e palco.
 _sincronizar_retrato_do_palco()
 
 with st.container(key="nomy_controles", border=False):
-    # A primeira faixa usa a mesma malha da faixa inferior:
-    # input ocupa exatamente as duas primeiras unidades (F + S).
-    c_nome, c_formato = st.columns([1.64, 2.80], gap="small")
+    c_nome, c_fonte = st.columns([1.64, 2.80], gap="small")
 
     with c_nome:
         st.text_input(
@@ -480,12 +506,13 @@ with st.container(key="nomy_controles", border=False):
             label_visibility="collapsed",
         )
 
-    with c_formato:
-        c_estilo, c_corpo = st.columns([2.30, 0.90], gap="small")
-        with c_estilo:
-            st.selectbox("estilo", ESTILOS, key="nomy_estilo", label_visibility="collapsed")
-        with c_corpo:
-            st.selectbox("corpo", CORPOS, key="nomy_corpo", label_visibility="collapsed")
+    with c_fonte:
+        st.selectbox(
+            "fonte",
+            tuple(FONTES_NOMY),
+            key="nomy_fonte",
+            label_visibility="collapsed",
+        )
 
     c_gen, c_leitura, c_criar, c_retrato = st.columns([0.82, 0.82, 1.40, 1.40], gap="small")
 
@@ -626,8 +653,6 @@ if criar:
             st.session_state["nomy_nome_ativo"] = nome
             st.session_state["nomy_genero_ativo"] = st.session_state["nomy_genero"]
             st.session_state["nomy_leitura_ativa"] = st.session_state["nomy_leitura"]
-            st.session_state["nomy_estilo_ativo"] = st.session_state["nomy_estilo"]
-            st.session_state["nomy_corpo_ativo"] = int(st.session_state["nomy_corpo"])
 
             if view_atual == "imagem":
                 # Novo resultado: novo Retrato; não atravessa para Texto.
