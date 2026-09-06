@@ -1,7 +1,7 @@
-|abonadora|que ampara e fortalece com carinho|traz segurança e apoio a todos ao redor|faz crescer e florescer com sua presença|ampara sem medir esforços|fortalece a alma e o coração|
+|abonadora|ampara e fortalece com carinho|traz segurança e apoio a todos ao redor|faz crescer e florescer com sua presença|ampara sem medir esforços|fortalece a alma e o coração|
 |abrasiva|que cativa sem esforço e sem querer|tem força que impressiona e fascina|deixa marca profunda e doce na alma|presença que atrai e domina suavemente|beleza que queima sem consumir|
 |abstrata|de alma profunda e pensativa|vive também no mundo das ideias e dos sonhos|tem essência sutil e única que encanta|não se explica, apenas se sente|beleza etérea e rara|
-|abusada|que tem presença marcante e forte|não passa despercebida por ninguém|tem personalidade viva e brilhante|chama atenção por onde passa|forte e destemida sempre|
+|abusada|que tem presença marcante e forte|não passa despercebida por ninguém|tem personalidade viva e radiante|chama atenção por onde passa|forte e destemida sempre|
 |acolhedora|abre o coração a todos que chegam|faz sentir-se em casa imediatamente|acolhe com carinho, calor e ternura|braços abertos para o mundo inteiro|faz do seu peito um lar aconchegante|
 |adaptável|acompanha com leveza as mudanças da vida|floresce em qualquer lugar e tempo|sabe ser e estar onde é preciso sem perder brilho|muda e se renova sem perder a essência|leve e flexível como brisa|
 |admirável|digna de toda admiração e louvor|exemplar em cada detalhe e gesto|encanta por onde passa e deixa saudade|merece ser vista e aplaudida|beleza e virtude em perfeita união|
@@ -13,7 +13,7 @@
 |aguda|de pensamento perspicaz e rápido|vê o que os outros ainda não notaram|clara e certeira em seu olhar e palavra|compreende antes mesmo de ouvir|mente brilhante e perspicaz|
 |almejável|aquela que se deseja e se admira por todos|modelo de beleza, virtude e luz|inspira todos a quererem ser melhores|alvo de olhares e desejos|rara e preciosa como estrela|
 |altiva|tem nobreza e dignidade no porte e no olhar|caminha com orgulho e elegância sem vaidade|sempre à altura do que é bom e justo|nobre e serena, rainha de si mesma|digna de respeito e admiração|
-|alucinada|que encanta e deslumbra a todos ao redor|tem brilho que deixa sem palavras e sem fala|desperta admiração e emoção profunda|beleza que atordoa de tão bela|faz perder o juízo de tão linda|
+|alucinada|que encanta e deslumbra a todos ao redor|tem luz que deixa sem palavras e sem fala|desperta admiração e emoção profunda|beleza que atordoa de tão bela|faz perder o juízo de tão linda|
 |alucinante|causa espanto e admiração em cada olhar|tem presença que hipnotiza e domina|deixa todos maravilhados e sem ar|beleza que vai além do comum|fascina e encanta sem explicação|
 |amante|que ama com toda a força do peito|vive o amor em sua essência mais pura|doa-se com coração inteiro e sem medida|amorosa e dedicada a quem ama|vive para amar e ser amada|
 |amável|trata a todos com carinho e respeito|doce e gentil em cada gesto e palavra|espalha bondade por onde passa|faz o bem sem olhar a quem|beleza que vem do coração|
@@ -21,26 +21,26 @@
 |amistosa|faz amigos com facilidade e carinho|trata a todos com afeto e respeito|cria laços sinceros e duradouros|acolhedora e gentil com cada um|abre o coração e faz amigos|
 |amorosa|transborda amor e ternura ao redor|vive com o coração aberto e cheio de luz|doce em cada palavra, gesto e olhar|ama sem medida e sem condição|amor que se espalha e aquece|
 |angelical|tem pureza nos olhos e no ar que a rodeia|leve como um anjo que passou pela terra|doce e serena, luz que irradia sem fim|parece trazida do céu para alegrar|beleza pura e sem mancha|
-|animada|cheia de vida, energia e alegria|alegra o ambiente com seu brilho natural|vive com entusiasmo e brilho próprio|faz cada dia parecer uma festa|viva e radiante sempre|
+|animada|cheia de vida, energia e alegria|alegra o ambiente com seu fulgor natural|vive com entusiasmo e clarão próprio|faz cada dia parecer uma festa|viva e radiante sempre|
 |antenada|sente antes de ver ou ouvir|percebe o que os outros ainda não notaram|intuição que guia e protege sempre|ouve com a alma e compreende antes|sabedoria que vem de dentro|
-|apaixonante|desperta paixão e encantamento profundo|tem brilho que atrai, cativa e domina|deixa lembranças e saudade por onde passa|faz o coração bater mais forte|beleza que apaixona e fascina|
+|apaixonante|desperta paixão e encantamento profundo|tem luz que atrai, cativa e domina|deixa lembranças e saudade por onde passa|faz o coração bater mais forte|beleza que apaixona e fascina|
 |apoiadora|está ao lado e dá suporte sem hesitar|acredita em você antes mesmo de você|fortalece quando o caminho é difícil e longo|segura e ampara sempre|força que sustenta e eleva|
-|apoteótica|cheia de glória, esplendor e luz|parece ter vindo de um mundo de beleza eterna|majestosa e perfeita em seu ser e brilho|rainha entre todas, brilha sem igual|glória e beleza em uma só pessoa|
+|apoteótica|cheia de glória, esplendor e luz|parece ter vindo de um mundo de beleza eterna|majestosa e perfeita em seu ser e brilho|rainha entre todas, reluz sem igual|glória e beleza em uma só pessoa|
 |apreciadora|sabe reconhecer e valorizar o bem em todos|agradece e admira com sinceridade e luz|vê o melhor em tudo e em cada pessoa|encontra beleza onde outros não veem|olhar que enobrece e valoriza|
 |arrebatadora|leva o coração de quem a vê por inteiro|tem força que não se pode explicar nem medir|encanta e domina sem esforço e sem querer|beleza que rouba o fôlego e o coração|fascina e conquista à primeira vista|
 |arteira|tem jeito próprio, encantador e único|sabe fazer com graça, leveza e doçura|tem beleza que parece obra de arte divina|cada gesto é belo e cada olhar é poesia|beleza que parece pintada à mão|
-|astuta|sábia e perspicaz no falar e no agir|vê além do que se mostra por fora|esperta sem perder a doçura e a bondade|compreende antes de ouvir|mente brilhante e doce|
+|astuta|sábia e perspicaz no falar e no agir|vê além do que se mostra por fora|esperta sem perder a doçura e a bondade|compreende antes de ouvir|mente fulgente e doce|
 |atenciosa|nota cada detalhe pequeno e importante|cuida com carinho, dedicação e amor|faz sentir-se importante e especial|não deixa passar nada|olhar atento e coração cuidadoso|
 |atenta|não deixa passar nada despercebido|presente em cada momento e palavra|ouve com o coração e com os olhos|completa e inteira em cada presença|nada escapa ao seu olhar|
 |atirada|corajosa e destemida diante do mundo|vai adiante sem medo e sem hesitar|enfrenta a vida com ousadia e fé|não recua nem se deixa abater|forte e valente sempre|
-|ativa|cheia de energia, movimento e vida|faz acontecer e não espera sentada|vive com força, determinação e brilho|transforma vontade em realidade|não para nem desiste nunca|
-|atraente|tem brilho natural que atrai todos os olhares|encanta só de estar presente e sorrir|tem magnetismo que cativa sem esforço|presença que puxa e fascina|beleza que atrai sem querer|
+|ativa|cheia de energia, movimento e vida|faz acontecer e não espera sentada|vive com força, determinação e resplendor|transforma vontade em realidade|não para nem desiste nunca|
+|atraente|tem clarão natural que atrai todos os olhares|encanta só de estar presente e sorrir|tem magnetismo que cativa sem esforço|presença que puxa e fascina|beleza que atrai sem querer|
 |atrativa|desperta interesse e admiração profunda|tem beleza que atrai sem esforço e sem alarde|traz algo especial que cativa a todos|não passa despercebida por ninguém|beleza que encanta e atrai|
 |atual|sempre em sintonia com o tempo e a vida|renova-se e cresce a cada dia que passa|não fica para trás, avança sempre|nova e brilhante a cada amanhecer|cresce e se transforma em luz|
 |austera|serena, digna e equilibrada em tudo|tem porte nobre e sem vaidade alguma|simples e grandiosa ao mesmo tempo|calma e firme, exemplo de nobreza|digna e serena sempre|
 |aventureira|ama o novo e o desconhecido com paixão|tem coragem de seguir caminhos novos|descobre beleza em cada jornada e lugar|não tem medo de ir além|vida é viagem e ela viaja|
-|bacana|simpática, leve e agradável em tudo|tem um brilho de alegria natural e contagiante|faz tudo parecer mais bonito e fácil|leve, alegre e querida por todos|beleza simples que encanta|
-|badalada|conhecida e admirada por todos ao redor|tem brilho que se espalha longe e sem fim|famosa por sua luz, virtude e bondade|nome que todos admiram e respeitam|brilho que se espalha e ilumina|
+|bacana|simpática, leve e agradável em tudo|tem um luz de alegria natural e contagiante|faz tudo parecer mais bonito e fácil|leve, alegre e querida por todos|beleza simples que encanta|
+|badalada|conhecida e admirada por todos ao redor|tem clarão que se espalha longe e sem fim|famosa por sua luz, virtude e bondade|nome que todos admiram e respeitam|resplendor que se espalha e ilumina|
 |baladeira|alegre e que gosta de viver a vida|leva alegria por onde passa e brilha|faz da vida uma festa constante e bela|sorridente e feliz sempre|alegria que contagia e ilumina|
 |balizadora|marca o caminho e guia todos com sabedoria|serve de exemplo e referência para todos|mostra o rumo certo a seguir com fé|abre caminho e aponta a direção|luz que guia e protege|
 |bambambã|tem presença que impõe respeito e admiração|forte e decidida, ninguém a domina|tem força e brilho sem igual em todo o mundo|imponente e majestosa sem esforço|não passa despercebida nunca|
@@ -51,25 +51,25 @@
 |boêmia|livre, leve e cheia de poesia e sonho|vive com alma solta e alegre como brisa|belo espírito que não se prende a nada|livre e bela como o vento|alma que canta e voa|
 |boa-de-copo|alegre e companheira em todo momento|sabe viver e partilhar a alegria com todos|faz qualquer momento especial e feliz|amiga e alegre em cada instante|leveza e brilho em cada dia|
 |boa-zinha|doce, querida e afetuosa com todos|tem um jeitinho que conquista corações|amável e carinhosa em cada gesto|doce e meiga, encanta sem esforço|jeitinho que conquista e encanta|
-|bon-vivant|que ama a vida e sabe viver com alegria|desfruta cada momento com brilho e leveza|leveza e brilho em cada dia que passa|viver bem e amar a vida|alegria de viver e brilhar|
-|boreal|fria e brilhante como a aurora no norte|tem beleza rara, serena e sem igual|luz que brilha sem se apagar nunca|serena e bela como céu estrelado|beleza rara e eterna|
+|bon-vivant|que ama a vida e sabe viver com alegria|desfruta cada momento com clarão e leveza|leveza e brilho em cada dia que passa|viver bem e amar a vida|alegria de viver e brilhar|
+|boreal|fria e radiante como a aurora no norte|tem beleza rara, serena e sem igual|luz que reluz sem se apagar nunca|serena e bela como céu estrelado|beleza rara e eterna|
 |branda|suave e calma no falar e no agir|leve como brisa que acaricia o rosto|traz paz e sossego ao coração de todos|acalma e conforta com presença|doce e suave como brisa|
 |bravia|tem força e garra no peito e no olhar|corajosa e destemida diante de tudo e todos|guerreira de alma nobre e coração forte|forte e nobre, não se curva|bravura e nobreza em uma só|
 |brava|corajosa e valente em qualquer situação|enfrenta com firmeza, fé e dignidade|não se curva diante de obstáculos e medos|forte e leal ao que é certo|coragem que inspira e eleva|
-|brilhante|irradia luz própria por onde passa|destaca-se por onde caminha e brilha|tem brilho sem igual e sem esforço|luz que não se apaga nem diminui|estrela que brilha sempre|
-|brincadora|alegre e leve como criança feliz|espalha sorrisos e alegria por onde vai|faz da vida um jogo feliz e doce|leve e sorridente sempre|alegria que contagia e encanta|
+|brilhante|irradia luz própria por onde passa|destaca-se por onde caminha e brilha|tem resplendor sem igual e sem esforço|luz que não se apaga nem diminui|estrela que reluz sempre|
+|brincadora|alegre e leve como criança feliz|espalha sorrisos e luz por onde vai|faz da vida um jogo feliz e doce|leve e sorridente sempre|alegria que contagia e encanta|
 |briosa|tem brio e dignidade naturais em seu ser|não se deixa abater nem humilhar por ninguém|alma nobre e cheia de orgulho bom e justo|digna e forte sempre|nobreza que não se vende|
 |calmíssima|serena mesmo na tempestade e no caos|mantém a paz interior sempre inabalável|tranquila e equilibrada em qualquer situação|nada a perturba nem abala|paz que irradia e acalma|
-|campeã|vence com esforço, mérito e honra|alcança o topo com fé, trabalho e brilho|brilha como a melhor de todas|conquista com esforço e lealdade|vitória merecida e brilhante|
-|candente|que brilha com calor, força e paixão|tem fogo sagrado no peito e na alma|luz que aquece, ilumina e encanta ao redor|chama que não se apaga nunca|fogo e luz em perfeita união|
-|carismática|encanta só de estar presente e sorrir|tem força e magnetismo natural sem igual|cativa olhares e corações por onde passa|presença que domina sem esforço|brilho que atrai e fascina|
+|campeã|vence com esforço, mérito e honra|alcança o topo com fé, trabalho e brilho|reluz como a melhor de todas|conquista com esforço e lealdade|vitória merecida e brilhante|
+|candente|que reluz com calor, força e paixão|tem fogo sagrado no peito e na alma|luz que aquece, ilumina e encanta ao redor|chama que não se apaga nunca|fogo e luz em perfeita união|
+|carismática|encanta só de estar presente e sorrir|tem força e magnetismo natural sem igual|cativa olhares e corações por onde passa|presença que domina sem esforço|resplendor que atrai e fascina|
 |caríssima|muito querida, estimada e amada por todos|de grande valor, afeto e importância|preciosa para todos que a conhecem|amada e insubstituível|tesouro que todos querem bem|
 |casta|pura e digna em pensamento, palavra e ato|preserva sua essência com nobreza e luz|limpa de coração, de alma e de espírito|pura e sem mancha|beleza que não se corrompe|
-|cativante|que conquista e prende a atenção de todos|tem brilho que não se esquece nem se apaga|deixa todos encantados, admirados e sem fala|beleza que prende e não se esquece|encanta e cativa sem esforço|
-|celebrante|vive com alegria, gratidão e brilho|transforma cada dia em festa e alegria|espalha alegria e leveza ao redor de si|faz da vida uma celebração constante|alegria que se vive e se espalha|
-|cerebral|inteligente e profunda no pensar e no agir|tem sabedoria que vem de dentro e brilha|mente brilhante, perspicaz e criativa|compreende antes de ouvir|sabedoria e brilho mental|
-|chamativa|se destaca e atrai todos os olhares|tem brilho que não passa despercebida nunca|chama atenção com elegância, sutileza e doçura|não precisa se exibir para brilhar|se destaca naturalmente|
-|cintilante|brilha como estrela no céu noturno|reluz com beleza, movimento e luz|tem luz que não se apaga nem se esmaece|brilha e reluz sem parar|estrela que brilha eternamente|
+|cativante|que conquista e prende a atenção de todos|tem luz que não se esquece nem se apaga|deixa todos encantados, admirados e sem fala|beleza que prende e não se esquece|encanta e cativa sem esforço|
+|celebrante|vive com alegria, gratidão e luz|transforma cada dia em festa e alegria|espalha alegria e leveza ao redor de si|faz da vida uma celebração constante|alegria que se vive e se espalha|
+|cerebral|inteligente e profunda no pensar e no agir|tem sabedoria que vem de dentro e reluz|mente fulgente, perspicaz e criativa|compreende antes de ouvir|sabedoria e clarão mental|
+|chamativa|se destaca e atrai todos os olhares|tem luz que não passa despercebida nunca|chama atenção com elegância, sutileza e doçura|não precisa se exibir para reluzir|se destaca naturalmente|
+|cintilante|reluz como estrela no céu noturno|brilha com beleza, movimento e luz|tem luz que não se apaga nem se esmaece|brilha e reluz sem parar|estrela que brilha eternamente|
 |ciosa|que zela e cuida com carinho e dedicação|preserva o que é bom, belo e valioso|guarda com amor, respeito e lealdade|protege e preserva o bem|cuidado e amor em cada gesto|
 |cobiçada|desejada por suas qualidades raras e belas|todos querem estar ao seu lado e admirá-la|rara e preciosa como joia sem preço|aquela que todos desejam e admiram|joia rara e cobiçada|
 |comedida|equilibrada e prudente em tudo o que faz|fala e age com sabedoria, calma e medida|não exagera, mantém sempre a justa medida|sábia e calma em qualquer situação|equilíbrio e sabedoria|
@@ -85,14 +85,14 @@
 |contagiante|espalha alegria, energia e brilho ao redor|quem a vê sente-se melhor e mais feliz|leva luz, entusiasmo e calor a todos|alegria que se espalha e contagia|energia que eleva e alegra|
 |contente|satisfeita e grata com a vida e com o que é|vive com alegria, gratidão e paz no peito|transmite paz, leveza e felicidade ao redor|feliz e grata sempre|paz e alegria no coração|
 |contestadora|não aceita o que é injusto e errado|questiona e busca o melhor e o mais justo|tem coragem de mudar, crescer e transformar|não se cala diante do erro|coragem de buscar o bem|
-|contida|serena e discreta em seu agir e falar|guarda sua força sem se exibir nem alardear|simples e reservada, mas brilhante e forte|não precisa se mostrar para brilhar|beleza quieta e profunda|
+|contida|serena e discreta em seu agir e falar|guarda sua força sem se exibir nem alardear|simples e reservada, mas radiante e forte|não precisa se mostrar para reluzir|beleza quieta e profunda|
 |contraditória|tem mistério e beleza em si mesma|reúne em si forças opostas e belas|complexa e única, nunca igual a ninguém|sempre nova e sempre surpreendente|beleza que se mistura e encanta|
 |cordata|sábia e prudente em suas decisões e atos|age com equilíbrio, bondade e justiça|coração e razão em perfeita harmonia e luz|sábia e justa sempre|equilíbrio entre coração e mente|
 |cordial|amável e atenciosa com todos que a rodeiam|trata com respeito, afeto e carinho|acolhedora, gentil e sincera sempre|fala com bondade e respeito|amabilidade e respeito|
 |correta|age com retidão, verdade e justiça|faz o que é certo mesmo quando difícil e custoso|honesta e digna em tudo o que faz|não se deixa levar pelo erro|verdade e retidão sempre|
 |cristalina|clara e transparente como cristal puro|não esconde nada, é pura luz e verdade|verdadeira, límpida e sem mancha|o que se vê é o que existe|clara e transparente sempre|
 |cúmplice|compreende sem precisar falar nem explicar|está junto em tudo, no bem e no mal|amiga que guarda, protege e ama|sabe sem ouvir e está sem perguntar|compreensão que não precisa de palavras|
-|curiosa|interessa-se pelo mundo, pela vida e por todos|busca aprender, descobrir e crescer sempre|mente aberta e cheia de brilho e luz|quer saber e compreender|curiosidade que enobrece e ilumina|
+|curiosa|interessa-se pelo mundo, pela vida e por todos|busca aprender, descobrir e crescer sempre|mente aberta e cheia de clarão e luz|quer saber e compreender|curiosidade que enobrece e ilumina|
 |decente|honesta e digna em tudo o que faz e diz|preserva sua dignidade, respeito e valor|age com nobreza, integridade e luz|digna e correta sempre|honra e dignidade em pessoa|
 |decidida|sabe o que quer e vai atrás sem hesitar|não hesita nem se deixa abater por nada|firme, segura e constante em seus passos|sabe o caminho e segue em frente|determinação e firmeza|
 |dedicada|entrega-se com amor, esforço e carinho|faz tudo com dedicação, empenho e luz|não mede esforços para fazer o bem|doa-se inteira ao que ama|amor e dedicação em tudo|
@@ -102,78 +102,78 @@
 |deliciosa|traz doçura, prazer e alegria em tudo|saborosa e agradável ao coração e à alma|doce presença que alegra e encanta|beleza que alimenta e deleita|doçura e prazer em cada gesto|
 |delirante|faz sonhar e perder o juízo de tão bela|beleza que encanta, deslumbra e fascina|leva a alma a voos altos, belos e infinitos|faz perder o chão e sonhar|beleza que delira e encanta|
 |dengosa|tem doçura, carinho e ternura no jeito|acarinha com palavra, gesto e olhar|jeitinho meigo e doce que conquista|doçura que domina suavemente|meiguice e carinho|
-|desafiadora|inspira a ir além dos limites e medos|faz crescer, superar-se e brilhar sempre|provoca o melhor de cada um de nós|motiva e eleva sem impor|desafio que faz crescer|
+|desafiadora|inspira a ir além dos limites e medos|faz crescer, superar-se e reluz sempre|provoca o melhor de cada um de nós|motiva e eleva sem impor|desafio que faz crescer|
 |desejável|aquela que todos admiram, querem e amam|tem beleza, virtude e luz que cativam|inspira desejo, respeito e admiração|rara e preciosa como joia|aquela que todos querem|
 |deslizante|leve e graciosa em seu caminhar e mover|passa suavemente e deixa rastro de luz|beleza que parece flutuar e passar|leve como brisa que passa|graça e leveza em movimento|
 |desmedida|sem limites em sua generosidade e amor|grande de alma, de coração e de virtude|não mede esforços para amar e fazer o bem|coração grande e generoso|generosidade sem medida|
 |desopilante|traz leveza, alegria e humor ao espírito|faz rir e ver o lado bom e belo da vida|espírito leve, descontraído e feliz|alegria que descontrai e alegra|leveza e bom humor|
-|despretensiosa|simples e verdadeira sem alarde nem vaidade|não se exibe nem se acha melhor que ninguém|beleza natural, pura e sem enfeites|não precisa se mostrar para brilhar|beleza simples e verdadeira|
-|diferente|tem brilho próprio, único e sem igual|não é igual a ninguém e não quer ser|especial, singular e bela em seu ser|única e incomparável|beleza que não se copia|
+|despretensiosa|simples e verdadeira sem alarde nem vaidade|não se exibe nem se acha melhor que ninguém|beleza natural, pura e sem enfeites|não precisa se mostrar para reluzir|beleza simples e verdadeira|
+|diferente|tem luz própria, único e sem igual|não é igual a ninguém e não quer ser|especial, singular e bela em seu ser|única e incomparável|beleza que não se copia|
 |difusa|beleza que se espalha ao redor e aquece|luz que se derrama, envolve e acalma|presença suave que envolve todos|luz que se espalha sem fim|calor e luz ao redor|
 |digna|merece respeito, honra e admiração de todos|tem valor, nobreza e virtude naturais|à altura de tudo o que é bom e belo|digna e nobre sempre|valor e respeito merecido|
-|dionisíaca|alegre, intensa e cheia de vida e brilho|ama o viver, a beleza e a alegria do mundo|festa, brilho e paixão em cada gesto|vida que se celebra e brilha|alegria e intensidade|
+|dionisíaca|alegre, intensa e cheia de vida e fulgor|ama o viver, a beleza e a alegria do mundo|festa, resplendor e paixão em cada gesto|vida que se celebra e brilha|alegria e intensidade|
 |direta|fala com franqueza, clareza e verdade|não rodeia, diz o que sente e pensa|verdadeira, sincera e sem rodeios|clara e direta sempre|verdade sem rodeios|
 |displicente|elegante sem se esforçar nem se exibir|beleza natural sem alarde nem vaidade|simples e bela sem querer ser bela|não precisa se esforçar para brilhar|beleza sem esforço|
 |disponível|presente quando se precisa de apoio|abre-se e acolhe sem reservas nem medo|sempre pronta a ajudar, ouvir e amparar|aliada e presente sempre|presença que se pode contar|
 |disposta|pronta e decidida a tudo e a todos|enfrenta com coragem, vontade e fé|não recua, avança e segue em frente|pronta e destemida sempre|coragem e vontade|
-|distante|guarda um mistério e uma beleza própria|parece vir de outro mundo e tempo|serena, reservada e brilhante sempre|beleza que se sente mas não se alcança|mistério e serenidade|
+|distante|guarda um mistério e uma beleza própria|parece vir de outro mundo e tempo|serena, reservada e radiante sempre|beleza que se sente mas não se alcança|mistério e serenidade|
 |dulcíssima|doce em grau supremo e sem igual|ternura que acalma, encanta e fascina|doçura que não se acaba nem se esgota|doce além do que se pode medir|doçura suprema e eterna|
 |educada|trata com respeito, delicadeza e bondade|gentil, atenciosa e amável com todos|boa, elegante e correta em seu agir|respeito e gentileza em cada gesto|cortesia e bondade|
-|eficaz|faz e consegue o que quer com sabedoria|age com resultado, mérito e brilho|não falha, cumpre sempre e com louvor|capaz e brilhante em tudo|eficiência e brilho|
+|eficaz|faz e consegue o que quer com sabedoria|age com resultado, mérito e brilho|não falha, cumpre sempre e com louvor|capaz e radiante em tudo|eficiência e resplendor|
 |efusiva|transborda emoção, carinho e calor|expressa-se com alegria, entusiasmo e amor|coração aberto e cheio de vida e luz|emociona-se e se doa inteira|coração que transborda|
 |elegante|tem classe, leveza e graça naturais|bonita por dentro e por fora sem esforço|destaca com sutileza, beleza e nobreza|beleza que se vê e se sente|graça e nobreza naturais|
-|eletrizante|traz energia, brilho e alegria ao redor|deixa todos com emoção, brilho e calor|presença que desperta, ilumina e alegra|energia que eleva e encanta|brilho e força em presença|
+|eletrizante|traz energia, clarão e alegria ao redor|deixa todos com emoção, luz e calor|presença que desperta, ilumina e alegra|energia que eleva e encanta|fulgor e força em presença|
 |elevada|alma nobre e pensamentos altos e belos|está acima do comum, vulgar e pequeno|coração e espírito em patamar raro e luz|nobre e elevada em essência|alma que transcende e brilha|
-|emotiva|sente com força, profundidade e ternura|vive cada momento com o coração aberto|alma sensível, profunda e cheia de brilho|sente e ama com intensidade|coração que sente e emociona|
-|empolgante|transmite entusiasmo, alegria e brilho a todos|faz todos acreditarem, sorrirem e brilharem|energia que contagia, eleva e inspira|alegria que motiva e eleva|entusiasmo e brilho|
-|encantadora|tem o dom de encantar e fascinar a todos|deixa marca por onde passa e brilha|cativa sem esforço, sem querer e sem alarde|beleza que encanta e domina|magia e brilho em presença|
-|enérgica|cheia de força, vitalidade e brilho próprio|não cansa, não desiste e não para nunca|viva, forte e brilhante em tudo o que faz|energia que não se esgota|força e vitalidade sem fim|
-|engraçada|tem dom de alegrar, fazer rir e sorrir|leveza, graça e brilho em seu falar e gesto|faz o mundo mais feliz, leve e bonito|alegria e humor que encantam|graça e alegria naturais|
-|enigmática|guarda mistérios, beleza e luz oculta|não se revela por inteiro nem de uma vez|cada dia mostra um brilho novo e belo|sempre nova e sempre misteriosa|mistério e beleza oculta|
-|enluarada|tem brilho suave, prateado e sereno|parece trazida pela luz da lua ao mundo|serena, bela e calma como noite estrelada|luz suave e prateada|beleza que a lua inspirou|
+|emotiva|sente com força, profundidade e ternura|vive cada momento com o coração aberto|alma sensível, profunda e cheia de luz|sente e ama com intensidade|coração que sente e emociona|
+|empolgante|transmite entusiasmo, alegria e luz a todos|faz todos acreditarem, sorrirem e brilharem|energia que contagia, eleva e inspira|alegria que motiva e eleva|entusiasmo e resplendor|
+|encantadora|tem o dom de encantar e fascinar a todos|deixa marca por onde passa e brilha|cativa sem esforço, sem querer e sem alarde|beleza que encanta e domina|magia e luz em presença|
+|enérgica|cheia de força, vitalidade e clarão próprio|não cansa, não desiste e não para nunca|viva, forte e radiante em tudo o que faz|energia que não se esgota|força e vitalidade sem fim|
+|engraçada|tem dom de alegrar, fazer rir e sorrir|leveza, graça e luz em seu falar e gesto|faz o mundo mais feliz, leve e bonito|alegria e humor que encantam|graça e alegria naturais|
+|enigmática|guarda mistérios, beleza e luz oculta|não se revela por inteiro nem de uma vez|cada dia mostra um clarão novo e belo|sempre nova e sempre misteriosa|mistério e beleza oculta|
+|enluarada|tem luz suave, prateada e serena|parece trazida pela luz da lua ao mundo|serena, bela e calma como noite estrelada|luz suave e prateada|beleza que a lua inspirou|
 |envolvente|abraça, acolhe e cativa sem esforço|faz todos se sentirem especiais e amados|presença que envolve, acolhe e aquece|abraço que protege e encanta|calor e acolhimento|
-|esfuziante|cheia de vida, alegria e brilho transbordante|brilha e espalha energia sem parar nem fim|alegria que não se contém nem se apaga|vida e brilho em abundância|alegria que transborda|
-|esmagadora|impressiona por sua grandeza, brilho e beleza|supera tudo em valor, luz e virtude|majestosa, grandiosa e sem igual|beleza que impressiona e domina|grandeza e brilho sem igual|
-|especial|única em seu jeito, luz e essência|tem brilho que é só dela e de mais ninguém|verdadeiramente rara, preciosa e insubstituível|não há outra igual em todo o mundo|rara e especial sempre|
-|esquiva|guarda um mistério, brilho e beleza distante|não se deixa apanhar nem definir facilmente|linda, inatingível, bela e rara|beleza que escapa e encanta|mistério e distância|
+|esfuziante|cheia de vida, alegria e clarão transbordante|reluz e espalha energia sem parar nem fim|alegria que não se contém nem se apaga|vida e resplendor em abundância|alegria que transborda|
+|esmagadora|impressiona por sua grandeza, resplendor e beleza|supera tudo em valor, luz e virtude|majestosa, grandiosa e sem igual|beleza que impressiona e domina|grandeza e fulgor sem igual|
+|especial|única em seu jeito, luz e essência|tem clarão que é só dela e de mais ninguém|verdadeiramente rara, preciosa e insubstituível|não há outra igual em todo o mundo|rara e especial sempre|
+|esquiva|guarda um mistério, luz e beleza distante|não se deixa apanhar nem definir facilmente|linda, inatingível, bela e rara|beleza que escapa e encanta|mistério e distância|
 |estonteante|tão bela que deixa sem fala e sem ar|surpreende, encanta e deslumbra a cada olhar|beleza que deslumbra, fascina e atordoa|deixa todos maravilhados e sem fala|beleza que espanta e encanta|
-|estrela|brilha com luz própria, forte e eterna|guia, ilumina e aquece por onde passa|luz que não se apaga nem se esmaece|brilha no céu e na terra|luz que guia e protege|
-|eterna|beleza, valor e luz que não passam nunca|deixa marca que dura para sempre e brilha|sua luz brilha além do tempo e da vida|não morre nem se apaga|beleza que permanece|
-|eufórica|transborda alegria, felicidade e brilho|vive com entusiasmo, brilho e gratidão|alegria que contagia, eleva e ilumina|felicidade que transborda|alegria sem medida|
+|estrela|reluz com luz própria, forte e eterna|guia, ilumina e aquece por onde passa|luz que não se apaga nem se esmaece|brilha no céu e na terra|luz que guia e protege|
+|eterna|beleza, valor e luz que não passam nunca|deixa marca que dura para sempre e brilha|sua luz reluz além do tempo e da vida|não morre nem se apaga|beleza que permanece|
+|eufórica|transborda alegria, felicidade e brilho|vive com entusiasmo, luz e gratidão|alegria que contagia, eleva e ilumina|felicidade que transborda|alegria sem medida|
 |evasiva|tem beleza que escapa, encanta e fascina|não se deixa definir, prender ou aprisionar|sempre nova, sempre bela e sempre livre|beleza livre e etérea|liberdade e beleza|
-|exagerada|generosa até o fim sem medida nem limite|não sabe fazer as coisas pela metade|intensa, grande e cheia de vida e brilho|tudo em grande e bela medida|generosidade sem limites|
+|exagerada|generosa até o fim sem medida nem limite|não sabe fazer as coisas pela metade|intensa, grande e cheia de vida e luz|tudo em grande e bela medida|generosidade sem limites|
 |exata|precisa, certa, verdadeira e perfeita|coerente em palavras, atos e pensamentos|sempre no lugar certo e no momento exato|clara e certeira sempre|precisão e verdade|
 |excepcional|acima do comum, vulgar e mediano|tem qualidades raras, admiráveis e belas|verdadeiramente única, especial e sem igual|fora do comum e sem par|rara e excepcional|
-|excitante|desperta alegria, emoção e brilho em todos|traz movimento, brilho e vida ao redor|presença que alegra, anima e encanta|emoção e brilho em presença|alegria e admiração|
-|exclusiva|tem brilho, valor e luz que só ela possui|rara, única e insubstituível em tudo|beleza que não se encontra em qualquer lugar|só dela e de mais ninguém|única e exclusiva|
+|excitante|desperta alegria, emoção e brilho em todos|traz movimento, luz e vida ao redor|presença que alegra, anima e encanta|emoção e clarão em presença|alegria e admiração|
+|exclusiva|tem clarão, valor e luz que só ela possui|rara, única e insubstituível em tudo|beleza que não se encontra em qualquer lugar|só dela e de mais ninguém|única e exclusiva|
 |exigente|busca o melhor e não aceita o mediano|sabe o que merece e o que quer da vida|padrão elevado, nobre e justo|não aceita menos que o melhor|excelência e nobreza|
-|exótica|beleza rara, diferente e fascinante|tem brilho de terras distantes e belas|rara, bela e sem igual em todo o mundo|beleza que vem de longe|rara e fascinante|
-|expansiva|abre-se, cresce e brilha sem limites|espalha luz, calor e bondade por toda parte|coração grande, generoso e sem fronteiras|cresce e brilha sem parar|generosidade e brilho sem fim|
+|exótica|beleza rara, diferente e fascinante|tem luz de terras distantes e belas|rara, bela e sem igual em todo o mundo|beleza que vem de longe|rara e fascinante|
+|expansiva|abre-se, cresce e reluz sem limites|espalha luz, calor e bondade por toda parte|coração grande, generoso e sem fronteiras|cresce e reluz sem parar|generosidade e brilho sem fim|
 |expressiva|fala com gestos, olhos e com o coração|transmite muito sem precisar palavras|alma que se mostra em cada olhar e gesto|fala sem dizer uma palavra|alma que se revela|
-|extravagante|generosa, grandiosa e sem limites em tudo|brilha com força, ousadia e beleza|não se contém, é grande, bela e brilhante|generosidade e brilho sem medida|grandeza e ousadia|
-|extrovertida|alegre, aberta e brilhante com todos|faz amigos, espalha alegria e brilho|viva, brilhante e feliz em companhia|abre-se e brilha|alegria e abertura|
-|exultante|cheia de alegria, vitória e brilho próprio|brilha com felicidade, orgulho e gratidão|alegria que transborda, ilumina e eleva|vitória e alegria sem fim|felicidade e brilho|
-|faceira|alegre, bonita e sorridente com jeitinho|leve e feliz, encanta sem esforço nem alarde|beleza simples, sorridente e doce|sorrir é seu brilho natural|beleza que sorri e encanta|
-|fascinante|hipnotiza, encanta e prende sem palavras|tem algo que prende e não se esquece nunca|beleza que atrai, fascina e não se explica|deixa todos maravilhados|magia e brilho sem palavras|
-|favorita|aquela que todos preferem, amam e admiram|brilha mais e encanta mais que todas|querida, amada e admirada por todos|escolhida e amada|preferida e querida|
+|extravagante|generosa, grandiosa e sem limites em tudo|reluz com força, ousadia e beleza|não se contém, é grande, bela e radiante|generosidade e luz sem medida|grandeza e ousadia|
+|extrovertida|alegre, aberta e radiante com todos|faz amigos, espalha alegria e brilho|viva, reluzente e feliz em companhia|abre-se e reluz|alegria e abertura|
+|exultante|cheia de alegria, vitória e luz própria|reluz com felicidade, orgulho e gratidão|alegria que transborda, ilumina e eleva|vitória e alegria sem fim|felicidade e resplendor|
+|faceira|alegre, bonita e sorridente com jeitinho|leve e feliz, encanta sem esforço nem alarde|beleza simples, sorridente e doce|sorrir é seu clarão natural|beleza que sorri e encanta|
+|fascinante|hipnotiza, encanta e prende sem palavras|tem algo que prende e não se esquece nunca|beleza que atrai, fascina e não se explica|deixa todos maravilhados|magia e clarão sem palavras|
+|favorita|aquela que todos preferem, amam e admiram|reluz mais e encanta mais que todas|querida, amada e admirada por todos|escolhida e amada|preferida e querida|
 |fecunda|gera beleza, bondade, vida e luz ao redor|faz crescer, florescer e dar frutos|fertilidade de alma, coração e espírito|faz brotar o bem e a beleza|crescimento e luz|
-|festejadora|alegra, celebra e brilha com todos|transforma cada dia em festa e alegria|espalha alegria, boa vontade e luz|faz da vida uma celebração|alegria e festa|
-|festiva|alegre, sorridente e brilhante sempre|leva alegria por onde passa e brilha|faz da vida um momento feliz e belo|alegria que se espalha e ilumina|brilho e alegria|
+|festejadora|alegra, celebra e reluz com todos|transforma cada dia em festa e alegria|espalha alegria, boa vontade e luz|faz da vida uma celebração|alegria e festa|
+|festiva|alegre, sorridente e radiante sempre|leva alegria por onde passa e brilha|faz da vida um momento feliz e belo|alegria que se espalha e ilumina|luz e alegria|
 |firme|segura, inabalável e constante em seus princípios|não se deixa abater, dobrar nem mudar|forte, leal e verdadeira ao que é certo|não treme nem se curva|força e firmeza|
-|flexível|acomoda-se sem perder brilho nem essência|sabe adaptar-se e continuar brilhando sempre|leve e forte ao mesmo tempo, sem perder nada|muda mas continua sendo ela mesma|leveza e força unidas|
+|flexível|acomoda-se sem perder luz nem essência|sabe adaptar-se e continuar reluzindo sempre|leve e forte ao mesmo tempo, sem perder nada|muda mas continua sendo ela mesma|leveza e força unidas|
 |flutuante|leve como bruma ao amanhecer e ao entardecer|parece flutuar entre o céu e a terra|beleza suave, etérea e quase invisível|leveza que encanta e fascina|beleza que flutua|
-|fogosa|cheia de paixão, fogo e energia vital|vive com força, intensidade e brilho|fogo que aquece, ilumina e não queima|paixão e brilho em cada gesto|fogo e luz em harmonia|
-|formidável|admirável, impressionante e grandiosa em tudo|merece todo respeito, louvor e admiração|grande, nobre e brilhante em seu ser|exemplo de beleza e virtude|grandeza e admiração|
+|fogosa|cheia de paixão, fogo e energia vital|vive com força, intensidade e luz|fogo que aquece, ilumina e não queima|paixão e clarão em cada gesto|fogo e luz em harmonia|
+|formidável|admirável, impressionante e grandiosa em tudo|merece todo respeito, louvor e admiração|grande, nobre e radiante em seu ser|exemplo de beleza e virtude|grandeza e admiração|
 |fotográfica|deixa imagem gravada na memória e no coração|beleza que não se esquece nem se apaga nunca|fica para sempre na mente e no olhar|inesquecível e bela sempre|memória e beleza eterna|
 |franca|fala a verdade com coragem, bondade e luz|não esconde, não disfarça e não mente|transparente, leal e verdadeira sempre|o que diz é o que sente|verdade e coragem|
 |fraternal|ama, cuida e protege como irmã de alma|laço de afeto que não se desfaz nem se rompe|amor puro, sincero e sem interesse|irmã de coração e de alma|amor e lealdade fraterna|
-|frugal|simples, sem vaidades e sem excessos|vive com o essencial, belo e puro|encontra beleza no simples, no humilde e no verdadeiro|não precisa de muito para brilhar|beleza na simplicidade|
-|fugaz|passa rápido mas deixa brilho eterno|beleza breve mas inesquecível e bela|como estrela cadente que brilha e vai-se embora|deixa rastro de luz e saudade|beleza breve e brilhante|
-|fulminante|tão bela que deixa sem fala e sem ar|encanta, impressiona e domina de uma só vez|força, beleza e brilho sem medida|deixa todos maravilhados|beleza que atordoa e encanta|
-|furtiva|passa suave, silenciosa e deixa rastro de luz|beleza que aparece, encanta e vai-se|sutil, delicada e sem ruído nem alarde|beleza que passa e brilha|beleza suave e silenciosa|
+|frugal|simples, sem vaidades e sem excessos|vive com o essencial, belo e puro|encontra beleza no simples, no humilde e no verdadeiro|não precisa de muito para reluzir|beleza na simplicidade|
+|fugaz|passa rápido mas deixa clarão eterno|beleza breve mas inesquecível e bela|como estrela cadente que reluz e vai-se embora|deixa rastro de luz e saudade|beleza breve e radiante|
+|fulminante|tão bela que deixa sem fala e sem ar|encanta, impressiona e domina de uma só vez|força, beleza e luz sem medida|deixa todos maravilhados|beleza que atordoa e encanta|
+|furtiva|passa suave, silenciosa e deixa rastro de luz|beleza que aparece, encanta e vai-se|sutil, delicada e sem ruído nem alarde|beleza que passa e reluz|beleza suave e silenciosa|
 |galante|elegante, nobre e cortês no trato com todos|trata com respeito, delicadeza e carinho|cortês, bela e nobre em seu agir e falar|gentileza e nobreza|elegância e respeito|
-|garbosa|tem porte elegante, nobre e imponente|caminha com graça, altivez e brilho|beleza que impõe respeito, admiração e luz|majestosa e elegante sempre|porte e nobreza|
-|genial|mente brilhante, criativa e iluminada|tem luz que vem de dentro e brilha sem fim|intelecto e coração em perfeita união e luz|brilhante por dentro e por fora|sabedoria e brilho|
+|garbosa|tem porte elegante, nobre e imponente|caminha com graça, altivez e luz|beleza que impõe respeito, admiração e clarão|majestosa e elegante sempre|porte e nobreza|
+|genial|mente fulgente, criativa e iluminada|tem luz que vem de dentro e reluz sem fim|intelecto e coração em perfeita união e luz|radiante por dentro e por fora|sabedoria e clarão|
 |geniosa|tem vontade, força e caráter próprios|não se deixa dominar, guiar nem mudar|forte, dona de si mesma e de seu destino|quer o que quer e sabe por quê|força e vontade próprias|
 |gentil|trata com delicadeza, bondade e carinho|fala com calma, respeito e afeto|alma suave, acolhedora e doce|bondade e delicadeza em cada gesto|doçura e respeito|
 |genuína|verdadeira, autêntica e pura em tudo|não finge, não dissimula e não mente|pura, real e sem máscara alguma|é ela mesma sempre e sem alarde|verdade e autenticidade|

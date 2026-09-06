@@ -1,79 +1,79 @@
 |abonador|que ampara, protege e fortalece com força e carinho|traz segurança, apoio e firmeza a todos ao redor|faz crescer, florescer e crescer ainda mais|ampara sem medir esforço nem limite|fortalece a alma e o coração com lealdade|
-|abrasivo|que cativa sem esforço e sem alarde algum|tem força, presença e brilho que impressionam|deixa marca profunda, nobre e doce na alma|beleza forte que atrai e domina suavemente|fogo que aquece sem consumir nem ferir|
-|abstrato|de alma profunda, pensativa e serena|vive também no mundo das ideias e dos sonhos|tem essência sutil, única e cheia de luz|não se explica, apenas se sente e se admira|espírito elevado e raro entre todos|
-|abusado|que tem presença marcante, forte e nobre|não passa despercebido por ninguém em lugar algum|tem personalidade viva, brilhante e destemida|chama atenção por onde caminha e brilha|forte, digno e dono de si mesmo|
+|abrasivo|que cativa sem esforço e sem alarde algum|tem força, presença e luz que impressionam|deixa marca profunda, nobre e doce na alma|beleza forte que atrai e domina suavemente|fogo que aquece sem consumir nem ferir|
+|abstrato|de alma profunda, pensativa e serena|vive também no mundo das ideias e dos sonhos|tem essência sutil, única e cheia de resplendor|não se explica, apenas se sente e se admira|espírito elevado e raro entre todos|
+|abusado|que tem presença marcante, forte e nobre|não passa despercebido por ninguém em lugar algum|tem personalidade viva, radiante e destemida|chama atenção por onde caminha e reluz|forte, digno e dono de si mesmo|
 |acolhedor|abre o coração, os braços e o lar a todos|faz sentir-se em casa, seguro e amado|acolhe com carinho, calor e proteção|braços fortes que abrigam e confortam|faz do seu peito um porto seguro|
-|adaptável|acompanha as mudanças sem perder brilho nem essência|floresce em qualquer lugar, tempo e circunstância|sabe ser e estar onde é preciso sem hesitar|muda e se renova sem perder o que é seu|forte e flexível como rocha que dobra mas não quebra|
-|admirável|digno de toda admiração, respeito e louvor|exemplar em cada gesto, palavra e atitude|encanta por onde passa e deixa saudade e exemplo|merece ser visto, seguido e aplaudido|virtude e brilho em perfeita harmonia|
+|adaptável|acompanha as mudanças sem perder fulgor nem essência|floresce em qualquer lugar, tempo e circunstância|sabe ser e estar onde é preciso sem hesitar|muda e se renova sem perder o que é seu|forte e flexível como rocha que dobra mas não quebra|
+|admirável|digno de toda admiração, respeito e louvor|exemplar em cada gesto, palavra e atitude|encanta por onde passa e deixa saudade e exemplo|merece ser visto, seguido e aplaudido|virtude e esplendor em perfeita harmonia|
 |adorável|traz doçura, leveza e bondade por onde vai|amável, gentil e atencioso em todo momento|querido, respeitado e amado por todos|faz o mundo mais bonito só de estar presente|bondade que encanta sem esforço|
 |afável|doce no trato, calmo na fala e nobre no agir|gentil com todos, humilde consigo e leal|sorridente, calmo e sempre acolhedor|fala com bondade e ouve com respeito|presença que acalma, alegra e inspira confiança|
 |afetivo|transborda carinho, ternura e lealdade ao redor|sente com força, profundidade e coração nobre|faz laços verdadeiros, profundos e eternos|ama e cuida com inteireza e dedicação|coração que sente, protege e ama|
-|agregador|reúne, aproxima e fortalece pessoas com sabedoria|faz o bem crescer, somar e multiplicar ao redor|junta forças, brilho e virtude em um só lugar|une sem dominar e fortalece sem impor|presença que soma, multiplica e eleva|
+|agregador|reúne, aproxima e fortalece pessoas com sabedoria|faz o bem crescer, somar e multiplicar ao redor|junta forças, clarão e virtude em um só lugar|une sem dominar e fortalece sem impor|presença que soma, multiplica e eleva|
 |agudo|de pensamento perspicaz, rápido e profundo|vê o que os outros ainda não perceberam|claro, certeiro e firme em seu olhar e palavra|compreende antes de ouvir e ensina sem impor|mente brilhante, perspicaz e sábia|
 |almejável|aquele que se deseja, se admira e se quer como exemplo|modelo de virtude, força, nobreza e luz|inspira todos a quererem ser melhores e mais nobres|alvo de olhares, respeito e confiança|raro, precioso e guia para todos|
 |altivo|tem nobreza, dignidade e porte de rei|caminha com orgulho justo, elegância e firmeza|sempre à altura do que é bom, justo e nobre|nobre, sereno e dono de si mesmo|digno de respeito, admiração e louvor|
-|alucinado|que encanta, deslumbra e fascina a todos ao redor|tem brilho, presença e força que deixam sem fala|desperta admiração, respeito e emoção profunda|beleza forte que atordoa de tão bela e nobre|faz perder o fôlego e admirar em silêncio|
-|alucinante|causa espanto, respeito e admiração em cada olhar|tem presença que hipnotiza, guia e domina|deixa todos maravilhados, respeitosos e sem ar|força, brilho e nobreza sem igual|beleza que fascina e inspira devoção|
+|alucinado|que encanta, deslumbra e fascina a todos ao redor|tem luz, presença e força que deixam sem fala|desperta admiração, respeito e emoção profunda|beleza forte que atordoa de tão bela e nobre|faz perder o fôlego e admirar em silêncio|
+|alucinante|causa espanto, respeito e admiração em cada olhar|tem presença que hipnotiza, guia e domina|deixa todos maravilhados, respeitosos e sem ar|força, resplendor e nobreza sem igual|beleza que fascina e inspira devoção|
 |amante|que ama com toda a força, fogo e lealdade do peito|vive o amor em sua essência mais pura e nobre|doa-se inteiro, sem medida e sem receio|amoroso, fiel e dedicado a quem ama|vive para amar, proteger e honrar|
 |amável|trata a todos com respeito, carinho e bondade|doce, gentil e atencioso em cada gesto e palavra|espalha bondade, lealdade e luz por onde passa|faz o bem sem olhar a quem e sem esperar retorno|bondade que vem do coração e se espalha|
 |amigo|leal, presente e fiel até o fim dos tempos|confidente, apoio e abrigo em todos os momentos|está ao lado nas alegrias, dificuldades e provações|não abandona, não trai e não se afasta|irmão de alma e de coração para sempre|
 |amistoso|faz amigos com facilidade, respeito e carinho|trata todos com afeto, igualdade e nobreza|cria laços sinceros, duradouros e leais|abre o coração e acolhe sem distinção|amizade que nasce e cresce com nobreza|
 |amoroso|transborda amor, ternura e proteção ao redor|vive com o coração aberto, forte e leal|doce em cada palavra, gesto e olhar protetor|ama sem medida, sem condição e sem fim|amor que aquece, protege e eterniza|
 |angelical|tem pureza nos olhos, na alma e no coração|leve, nobre e sereno como anjo guardião|doce, calmo e luz que irradia sem fim|parece trazido do céu para proteger e guiar|pureza, nobreza e luz em um só ser|
-|animado|cheio de vida, energia e alegria contagiante|alegra o ambiente com seu brilho e força|vive com entusiasmo, coragem e brilho próprio|faz cada dia valer a pena e brilhar|vida, força e alegria sem fim|
+|animado|cheio de vida, energia e alegria contagiante|alegra o ambiente com seu fulgor e força|vive com entusiasmo, coragem e clarão próprio|faz cada dia valer a pena e reluz|vida, força e alegria sem fim|
 |antenado|sente antes de ver, ouvir e compreender|percebe o que os outros ainda não notaram|intuição que guia, protege e ilumina sempre|ouve com a alma e compreende antes de falar|sabedoria que vem de dentro e guia|
-|apaixonante|desperta admiração, respeito e emoção profunda|tem brilho, força e presença que cativam|deixa lembranças, saudade e exemplo por onde passa|faz o coração bater mais forte e com mais respeito|força, brilho e nobreza que apaixonam|
+|apaixonante|desperta admiração, respeito e emoção profunda|tem luz, força e presença que cativam|deixa lembranças, saudade e exemplo por onde passa|faz o coração bater mais forte e com mais respeito|força, esplendor e nobreza que apaixonam|
 |apoiador|está ao lado, dá suporte e firmeza sem hesitar|acredita em você antes mesmo de você|fortalece, ampara e guia quando o caminho é difícil|apoio firme e leal em todos os momentos|força que sustenta, guia e eleva|
-|apoteótico|cheio de glória, esplendor e luz sem igual|parece ter vindo de um mundo de nobreza e luz|majestoso, perfeito e brilhante em seu ser|rei entre todos, brilha sem par e sem fim|glória, força e nobreza em uma só pessoa|
+|apoteótico|cheio de glória, esplendor e luz sem igual|parece ter vindo de um mundo de nobreza e luz|majestoso, perfeito e radiante em seu ser|rei entre todos, reluz sem par e sem fim|glória, força e nobreza em uma só pessoa|
 |apreciador|sabe reconhecer, valorizar e admirar o bem em todos|agradece, respeita e admira com sinceridade e nobreza|vê o melhor em tudo e em cada pessoa|encontra virtude onde outros não veem|olhar que enobrece, valoriza e respeita|
-|arrebatador|leva o coração, a admiração e o respeito de todos|tem força, brilho e nobreza que não se explicam|encanta, domina e guia sem esforço nem alarde|presença que rouba o fôlego e ganha o coração|força que conquista e brilha eternamente|
+|arrebatador|leva o coração, a admiração e o respeito de todos|tem força, resplendor e nobreza que não se explicam|encanta, domina e guia sem esforço nem alarde|presença que rouba o fôlego e ganha o coração|força que conquista e brilha eternamente|
 |arteiro|tem jeito próprio, nobre e encantador de ser|sabe fazer com graça, força e leveza|tem beleza que parece obra-prima esculpida|cada gesto é nobre e cada olhar é poesia|beleza, força e graça em perfeita união|
-|astuto|sábio, perspicaz e firme no pensar e no agir|vê além do que se mostra por fora e aos olhos|esperto sem perder bondade, nobreza e lealdade|compreende antes de ouvir e age com sabedoria|mente brilhante, perspicaz e nobre|
+|astuto|sábio, perspicaz e firme no pensar e no agir|vê além do que se mostra por fora e aos olhos|esperto sem perder bondade, nobreza e lealdade|compreende antes de ouvir e age com sabedoria|mente fulgente, perspicaz e nobre|
 |atencioso|nota cada detalhe importante, pequeno e nobre|cuida, protege e zela com carinho e dedicação|faz sentir-se importante, seguro e amado|não deixa passar nada e não esquece ninguém|olhar atento e coração cuidadoso|
 |atento|não deixa passar nada, nem ninguém nem detalhe|presente, inteiro e firme em cada momento|ouve com o coração e observa com sabedoria|nada escapa ao seu olhar e ao seu cuidado|presença, atenção e lealdade|
 |atirado|corajoso, destemido e ousado diante do mundo|vai adiante sem medo, sem hesitar e sem receio|enfrenta tudo com fé, firmeza e nobreza|não recua, não se curva e não se rende|coragem, ousadia e firmeza|
-|ativo|cheio de energia, força e movimento constante|faz acontecer e não espera sentado|vive com determinação, coragem e brilho|transforma vontade em realidade e sonho em fato|força, ação e brilho sem parar|
-|atraente|tem brilho, força e presença que atraem todos os olhares|encanta só de estar presente e firme|tem magnetismo, nobreza e luz natural|presença que puxa, guia e fascina|força que atrai e brilha sem esforço|
-|atrativo|desperta interesse, admiração e respeito em todos|tem beleza, força e nobreza que cativam|traz algo especial, raro e inspirador|não passa despercebido nem ignorado|virtude e brilho que atraem|
-|atual|sempre em sintonia com o tempo e a vida|renova-se, cresce e evolui a cada dia|não fica para trás, avança e brilha sempre|nova luz e sabedoria a cada amanhecer|crescimento, renovação e brilho|
+|ativo|cheio de energia, força e movimento constante|faz acontecer e não espera sentado|vive com determinação, coragem e resplendor|transforma vontade em realidade e sonho em fato|força, ação e luz sem parar|
+|atraente|tem clarão, força e presença que atraem todos os olhares|encanta só de estar presente e firme|tem magnetismo, nobreza e luz natural|presença que puxa, guia e fascina|força que atrai e reluz sem esforço|
+|atrativo|desperta interesse, admiração e respeito em todos|tem beleza, força e nobreza que cativam|traz algo especial, raro e inspirador|não passa despercebido nem ignorado|virtude e fulgor que atraem|
+|atual|sempre em sintonia com o tempo e a vida|renova-se, cresce e evolui a cada dia|não fica para trás, avança e reluz sempre|nova luz e sabedoria a cada amanhecer|crescimento, renovação e esplendor|
 |austero|sereno, digno e equilibrado em tudo o que faz|tem porte nobre, sem vaidade e sem alarde|simples e grandioso ao mesmo tempo e lugar|calmo, firme e exemplo de nobreza|dignidade, simplicidade e força|
-|aventureiro|ama o novo, o desconhecido e o desafio|tem coragem de seguir caminhos nunca antes trilhados|descobre beleza, força e virtude em cada jornada|não tem medo de ir além e crescer|coragem, descoberta e brilho|
-|bacana|simpático, leve e agradável em todo momento|tem brilho, alegria e nobreza naturais|faz tudo parecer mais fácil, leve e bonito|querido, respeitado e admirado por todos|leveza, bondade e brilho|
-|badalado|conhecido, admirado e respeitado por todos|tem brilho, nome e virtudes que se espalham longe|famoso por sua luz, nobreza e lealdade|nome que todos admiram, confiam e seguem|reconhecimento, brilho e virtude|
-|baladeiro|alegre, leve e que ama viver a vida com brilho|leva alegria, força e bom humor por onde passa|faz da vida uma festa, uma alegria e um brilho|sorridente, amigo e sempre de bem com a vida|alegria, leveza e brilho|
+|aventureiro|ama o novo, o desconhecido e o desafio|tem coragem de seguir caminhos nunca antes trilhados|descobre beleza, força e virtude em cada jornada|não tem medo de ir além e crescer|coragem, descoberta e fulgor|
+|bacana|simpático, leve e agradável em todo momento|tem luz, alegria e nobreza naturais|faz tudo parecer mais fácil, leve e bonito|querido, respeitado e admirado por todos|leveza, bondade e resplendor|
+|badalado|conhecido, admirado e respeitado por todos|tem clarão, nome e virtudes que se espalham longe|famoso por sua luz, nobreza e lealdade|nome que todos admiram, confiam e seguem|reconhecimento, resplendor e virtude|
+|baladeiro|alegre, leve e que ama viver a vida com luz|leva alegria, força e bom humor por onde passa|faz da vida uma festa, uma alegria e um clarão|sorridente, amigo e sempre de bem com a vida|alegria, leveza e fulgor|
 |balizador|marca o caminho, guia e mostra o rumo certo|serve de exemplo, referência e luz para todos|aponta a direção com sabedoria, firmeza e nobreza|abre caminho e ilumina a passagem|luz, guia e exemplo|
-|bambambã|tem presença, força e porte que impõem respeito|forte, nobre e dono de si mesmo|não passa despercebido nem ignorado|se destaca naturalmente e com brilho|força, porte e nobreza|
+|bambambã|tem presença, força e porte que impõem respeito|forte, nobre e dono de si mesmo|não passa despercebido nem ignorado|se destaca naturalmente e com fulgor|força, porte e nobreza|
 |bárbaro|forte, guerreiro e destemido diante de tudo|tem coragem de quem não tem medo nem receio|luta com bravura, honra e nobreza de alma|guerreiro de coração, leal e destemido|bravura, honra e força|
 |batalhador|não desiste nunca, por mais difícil que seja|enfrenta tudo com fé, coragem e perseverança|conquista tudo com esforço, honra e mérito|vence porque não se rende nem se curva|luta, perseverança e vitória|
 |benfazejo|faz o bem por natureza, sem esforço e sem alarde|traz felicidade, prosperidade e luz por onde vai|abençoado em tudo o que faz e toca|o bem o segue por onde caminha|bondade, luz e prosperidade|
 |benquisto|querido, estimado e respeitado por todos|tem afeição, o respeito e a confiança de cada um|conquista corações sem esforço e sem domínio|amado, respeitado e insubstituível|afeição, respeito e carinho|
-|boêmio|livre, leve e cheio de poesia e sonho|vive com alma solta, coração nobre e brilhante|espírito livre que não se prende a nada|livre como o vento e brilhante como o sol|liberdade, poesia e brilho|
+|boêmio|livre, leve e cheio de poesia e sonho|vive com alma solta, coração nobre e radiante|espírito livre que não se prende a nada|livre como o vento e brilhante como o sol|liberdade, poesia e luz|
 |bom-de-copo|alegre, companheiro e leal em todo momento|sabe viver, partilhar e alegrar os amigos|faz qualquer momento especial, leve e feliz|amigo, fiel e sempre de bem com a vida|alegria, companheirismo e lealdade|
 |bom-zinho|doce, querido e afetuoso com todos|tem um jeitinho nobre que conquista e encanta|amável, gentil e atencioso sempre|jeitinho que ganha corações e respeito|doçura, gentileza e carinho|
-|bon-vivant|que ama a vida, sabe viver e brilhar com alegria|desfruta cada momento com gratidão e brilho|leveza, nobreza e alegria em cada dia|viver bem, amar a vida e brilhar|alegria, gratidão e vida|
-|boreal|frio, brilhante e sereno como a aurora do norte|tem beleza rara, nobre e sem igual|luz que brilha sem se apagar nem se esmaecer|sereno, forte e brilhante como céu estrelado|beleza rara, serenidade e força|
+|bon-vivant|que ama a vida, sabe viver e reluz com alegria|desfruta cada momento com gratidão e clarão|leveza, nobreza e alegria em cada dia|viver bem, amar a vida e brilhar|alegria, gratidão e vida|
+|boreal|frio, radiante e sereno como a aurora do norte|tem beleza rara, nobre e sem igual|luz que reluz sem se apagar nem se esmaecer|sereno, forte e brilhante como céu estrelado|beleza rara, serenidade e força|
 |brando|suave, calmo e nobre no falar e no agir|leve como brisa que acaricia e consola|traz paz, sossego e segurança ao coração|acalma, guia e protege com presença suave|calma, suavidade e força nobre|
 |bravo|forte, corajoso e valente em qualquer situação|enfrenta com firmeza, fé e nobreza de alma|não se curva diante de obstáculos nem medos|forte, leal e destemido sempre|coragem, firmeza e bravura|
-|brilhante|irradia luz própria por onde caminha e vai|se destaca naturalmente e com nobreza|tem brilho sem igual e sem esforço algum|luz que não se apaga nem se esmaece|estrela que brilha e guia|
-|brincalhão|alegre, leve e sorridente como criança|espalha sorrisos, bom humor e alegria por onde vai|faz da vida um jogo feliz, leve e nobre|alegria que contagia e encanta|leveza, alegria e brilho|
+|brilhante|irradia luz própria por onde caminha e vai|se destaca naturalmente e com nobreza|tem resplendor sem igual e sem esforço algum|luz que não se apaga nem se esmaece|estrela que reluz e guia|
+|brincalhão|alegre, leve e sorridente como criança|espalha sorrisos, bom humor e luz por onde vai|faz da vida um jogo feliz, leve e nobre|alegria que contagia e encanta|leveza, alegria e fulgor|
 |brioso|tem brio, dignidade e nobreza naturais|não se deixa abater, humilhar nem dobrar|alma nobre, forte e cheia de orgulho justo|digno, firme e nobre sempre|brio, dignidade e força|
 |calmíssimo|sereno mesmo na tempestade e no caos|mantém a paz interior inabalável e firme|tranquilo, equilibrado e forte em qualquer situação|nada o perturba, abala ou dobra|paz interior, força e serenidade|
-|campeão|vence com esforço, mérito e honra|alcança o topo com trabalho, fé e lealdade|brilha como o melhor, exemplo e vitória|conquista com mérito e não com sorte|vitória, honra e brilho|
-|candente|que brilha com calor, força e paixão nobre|tem fogo sagrado no peito e na alma|luz que aquece, ilumina e guia sem queimar|chama que não se apaga nem consome|fogo, luz e brilho eterno|
-|carismático|encanta só de estar presente e firme|tem força, magnetismo e nobreza naturais|cativa olhares, corações e respeito por onde passa|presença que domina sem esforço e sem impor|magnetismo, brilho e liderança|
+|campeão|vence com esforço, mérito e honra|alcança o topo com trabalho, fé e lealdade|reluz como o melhor, exemplo e vitória|conquista com mérito e não com sorte|vitória, honra e esplendor|
+|candente|que reluz com calor, força e paixão nobre|tem fogo sagrado no peito e na alma|luz que aquece, ilumina e guia sem queimar|chama que não se apaga nem consome|fogo, luz e fulgor eterno|
+|carismático|encanta só de estar presente e firme|tem força, magnetismo e nobreza naturais|cativa olhares, corações e respeito por onde passa|presença que domina sem esforço e sem impor|magnetismo, resplendor e liderança|
 |caríssimo|muito querido, estimado e amado por todos|de grande valor, nobreza e importância|precioso para todos que o conhecem e amam|insubstituível, querido e leal|valor, carinho e respeito|
 |casto|puro, digno e nobre em pensamento, palavra e ato|preserva sua essência com honra, luz e virtude|limpo de coração, alma e espírito|puro, íntegro e sem mancha|pureza, honra e virtude|
-|cativante|que conquista, prende e inspira admiração|tem brilho, força e nobreza que não se esquece|deixa todos encantados, respeitosos e admirados|presença que cativa e não se esquece|força, brilho e encanto|
-|celebrante|vive com alegria, gratidão e brilho constante|transforma cada dia em festa, gratidão e luz|espalha alegria, nobreza e bom humor ao redor|faz da vida uma celebração eterna|alegria, gratidão e brilho|
-|cerebral|inteligente, profundo e sábio no pensar e no agir|tem sabedoria que vem de dentro e brilha|mente brilhante, perspicaz e criativa|compreende antes de ouvir e guia com luz|sabedoria, inteligência e brilho|
-|chamativo|se destaca, atrai olhares e admiração|tem brilho que não passa despercebido por ninguém|chama atenção com elegância, força e nobreza|não precisa se exibir para brilhar|força, brilho e presença|
-|cintilante|brilha como estrela no céu noturno e profundo|reluz com beleza, força e movimento nobre|tem luz que não se apaga nem se esmaece|brilha e reluz sem parar nem fim|luz, brilho e esplendor|
+|cativante|que conquista, prende e inspira admiração|tem luz, força e nobreza que não se esquece|deixa todos encantados, respeitosos e admirados|presença que cativa e não se esquece|força, resplendor e encanto|
+|celebrante|vive com alegria, gratidão e luz constante|transforma cada dia em festa, gratidão e luz|espalha alegria, nobreza e bom humor ao redor|faz da vida uma celebração eterna|alegria, gratidão e fulgor|
+|cerebral|inteligente, profundo e sábio no pensar e no agir|tem sabedoria que vem de dentro e reluz|mente fulgente, perspicaz e criativa|compreende antes de ouvir e guia com luz|sabedoria, inteligência e clarão|
+|chamativo|se destaca, atrai olhares e admiração|tem luz que não passa despercebido por ninguém|chama atenção com elegância, força e nobreza|não precisa se exibir para reluzir|força, clarão e presença|
+|cintilante|reluz como estrela no céu noturno e profundo|brilha com beleza, força e movimento nobre|tem luz que não se apaga nem se esmaece|reluz sem parar nem fim|luz, resplendor e esplendor|
 |cioso|que zela, protege e preserva com carinho e lealdade|guarda o que é bom, nobre e valioso|preserva com honra, dedicação e amor|protege e cuida como tesouro|cuidado, lealdade e proteção|
-|cobiçado|desejado por suas virtudes, força e brilho|todos querem estar ao seu lado e admirá-lo|raro, precioso e nobre como joia rara|aquele que todos admiram e querem|valor, virtude e desejo|
+|cobiçado|desejado por suas virtudes, força e fulgor|todos querem estar ao seu lado e admirá-lo|raro, precioso e nobre como joia rara|aquele que todos admiram e querem|valor, virtude e desejo|
 |comedido|equilibrado, prudente e sábio em tudo o que faz|fala e age com sabedoria, calma e medida|não exagera, não se perde e não se entrega|mantém a justa medida e a nobreza|equilíbrio, sabedoria e nobreza|
-|comadre|amigo fiel, confidente e leal até o fim|partilha segredos, sonhos e momentos|está presente em todos os momentos da vida|irmão de alma e de coração|confiança, lealdade e amizade|
+|compadre|amigo fiel, confidente e leal até o fim|partilha segredos, sonhos e momentos|está presente em todos os momentos da vida|irmão de alma e de coração|confiança, lealdade e amizade|
 |companheiro|está ao lado em todas as horas e dias|partilha alegrias, dificuldades e caminhos|leal, fiel e presente sempre|não abandona, não trai e não se afasta|presença, lealdade e amizade eterna|
-|competitivo|busca o melhor com lealdade, mérito e honra|quer vencer com esforço, justiça e nobreza|esforça-se, cresce e brilha a cada dia|vence porque merece e luta com honra|mérito, esforço e vitória nobre|
+|competitivo|busca o melhor com lealdade, mérito e honra|quer vencer com esforço, justiça e nobreza|esforça-se, cresce e reluz a cada dia|vence porque merece e luta com honra|mérito, esforço e vitória nobre|
 |confiante|acredita em si mesmo, no bem e no futuro|seguro, firme e nobre em seu caminho|transmite fé, confiança e força a todos|crê em si e inspira confiança|fé, segurança e firmeza|
 |confiável|em quem se pode confiar sempre e sem medo|palavra é firme, verdadeira e leal|não trai, não falta e não se esquece|pode-se contar com ele em qualquer dia|verdade, lealdade e confiança|
 |confidente|fala com franqueza, coragem e nobreza|seguro de si, de seus passos e de sua palavra|crê em si e transmite segurança a todos|sem medo, sem hesitar e sem dúvida|coragem, segurança e verdade|
@@ -83,97 +83,97 @@
 |contagiante|espalha alegria, força e boa energia ao redor|quem o vê sente-se melhor e mais forte|leva luz, entusiasmo e coragem a todos|alegria que se espalha e fortalece|energia, alegria e força|
 |contente|satisfeito, grato e feliz com o que é e tem|vive com gratidão, alegria e paz no peito|transmite calma, força e confiança ao redor|pleno, grato e feliz sempre|gratidão, paz e alegria|
 |contestador|não aceita o que é injusto, falso e errado|questiona, luta e busca o que é justo e nobre|tem coragem de mudar, crescer e transformar|não se cala diante do erro e da injustiça|coragem, justiça e mudança|
-|contido|sereno, discreto e nobre em seu agir e falar|guarda sua força sem se exibir nem alardear|simples, reservado e brilhante sem se mostrar|não precisa se impor para brilhar|força quieta e nobreza|
+|contido|sereno, discreto e nobre em seu agir e falar|guarda sua força sem se exibir nem alardear|simples, reservado e radiante sem se mostrar|não precisa se impor para reluzir|força quieta e nobreza|
 |contraditório|tem mistério, força e beleza em si mesmo|reúne em si forças opostas e belas|complexo, único e sempre surpreendente|sempre novo e sempre fascinante|mistério, força e singularidade|
 |cordato|sábio, prudente e equilibrado em decisões|age com equilíbrio, bondade e justiça|coração e razão em perfeita harmonia e luz|sábio, justo e nobre sempre|sabedoria, equilíbrio e justiça|
 |cordial|amável, atencioso e gentil com todos|trata com respeito, afeto e nobreza|acolhedor, gentil e sincero sempre|fala com bondade e ouve com respeito|amabilidade, respeito e nobreza|
 |correto|age com retidão, honra e verdade sempre|faz o que é certo mesmo quando difícil e custoso|honesto, digno e leal em tudo|não se deixa levar pelo erro nem pelo mal|verdade, honra e retidão|
 |cristalino|claro, transparente e puro como cristal|não esconde nada, é verdade e luz|límpido, íntegro e sem mancha|o que se vê é o que existe|clareza, verdade e pureza|
 |cúmplice|compreende sem precisar falar nem explicar|está junto em tudo, no bem e no mal|amigo que guarda, protege e ama|sabe sem ouvir e está sem perguntar|compreensão, lealdade e amizade|
-|curioso|interessa-se pelo mundo, pela vida e pelo saber|busca aprender, descobrir e crescer sempre|mente aberta e cheia de brilho e luz|quer saber, compreender e evoluir|curiosidade, crescimento e luz|
+|curioso|interessa-se pelo mundo, pela vida e pelo saber|busca aprender, descobrir e crescer sempre|mente aberta e cheia de clarão e luz|quer saber, compreender e evoluir|curiosidade, crescimento e luz|
 |decente|honesto, digno e correto em tudo o que faz|preserva sua dignidade, honra e valor|age com nobreza, integridade e luz|digno, correto e leal sempre|honestidade, dignidade e integridade|
 |decidido|sabe o que quer e vai atrás sem hesitar|não duvida, não recua e não se rende|firme, seguro e constante em seus passos|sabe o caminho e segue em frente|determinação, firmeza e coragem|
-|dedicado|entrega-se com amor, esforço e lealdade|faz tudo com dedicação, empenho e brilho|não mede esforços para o bem e para os seus|doa-se inteiro ao que ama e ao que faz|dedicação, esforço e amor|
+|dedicado|entrega-se com amor, esforço e lealdade|faz tudo com dedicação, empenho e resplendor|não mede esforços para o bem e para os seus|doa-se inteiro ao que ama e ao que faz|dedicação, esforço e amor|
 |defensivo|protege o que ama com coragem e firmeza|guarda com força, lealdade e devoção|defende os seus, seus valores e sua honra|forte, protetor e leal sempre|proteção, lealdade e força|
 |definido|sabe quem é e o que quer da vida|tem caráter firme, claro e imutável|não se deixa levar por ventos nem opiniões|dono de si mesmo e de seu destino|clareza, firmeza e caráter|
-|deleitável|que traz prazer, admiração e alegria|encanta, deleita e inspira a todos|beleza e força que deleitam e encantam|presença que alegra e inspira|prazer, admiração e brilho|
-|delicioso|traz alegria, prazer e brilho em tudo|presença agradável, nobre e encantadora|alegria que se sente e se admira|beleza que encanta e alegra|prazer, alegria e brilho|
-|delirante|faz sonhar, admirar e perder o fôlego|força, brilho e nobreza que encantam e deslumbram|leva a alma a voos altos e nobres|beleza que faz sonhar e admirar|encanto, brilho e admiração|
+|deleitável|que traz prazer, admiração e alegria|encanta, deleita e inspira a todos|beleza e força que deleitam e encantam|presença que alegra e inspira|prazer, admiração e fulgor|
+|delicioso|traz alegria, prazer e luz em tudo|presença agradável, nobre e encantadora|alegria que se sente e se admira|beleza que encanta e alegra|prazer, alegria e clarão|
+|delirante|faz sonhar, admirar e perder o fôlego|força, fulgor e nobreza que encantam e deslumbram|leva a alma a voos altos e nobres|beleza que faz sonhar e admirar|encanto, resplendor e admiração|
 |dengoso|tem jeitinho meigo, carinhoso e nobre|acarinha com palavra, gesto e olhar|jeitinho que conquista, encanta e ganha corações|doce, forte e carinhoso|doçura, carinho e força|
-|desafiador|inspira a ir além dos limites e medos|faz crescer, superar-se e brilhar sempre|provoca o melhor de cada um de nós|motiva, guia e eleva sem impor|desafio, crescimento e brilho|
-|desejável|aquele que todos admiram, respeitam e querem|tem virtudes, força e brilho que cativam|inspira desejo, respeito e admiração|raro, nobre e precioso|virtude, brilho e desejo|
-|deslizante|leve, gracioso e nobre em seu caminhar|passa suavemente e deixa rastro de luz e força|presença que parece flutuar e brilhar|leve como brisa e forte como rocha|graça, leveza e força|
+|desafiador|inspira a ir além dos limites e medos|faz crescer, superar-se e reluz sempre|provoca o melhor de cada um de nós|motiva, guia e eleva sem impor|desafio, crescimento e esplendor|
+|desejável|aquele que todos admiram, respeitam e querem|tem virtudes, força e clarão que cativam|inspira desejo, respeito e admiração|raro, nobre e precioso|virtude, fulgor e desejo|
+|deslizante|leve, gracioso e nobre em seu caminhar|passa suavemente e deixa rastro de luz e força|presença que parece flutuar e reluz|leve como brisa e forte como rocha|graça, leveza e força|
 |desmedido|sem limites em generosidade, bondade e amor|grande de alma, coração e virtude|não mede esforços para amar, proteger e fazer o bem|coração grande, generoso e nobre|generosidade sem medida|
 |desopilante|traz leveza, alegria e bom humor ao espírito|faz rir, sorrir e ver o lado bom da vida|espírito leve, nobre e descontraído|alegria que descontrai e fortalece|leveza, alegria e bom humor|
-|despretensioso|simples, verdadeiro e sem vaidade nem alarde|não se exibe, não se acha e não se vangloria|grande justamente por ser simples e humilde|não precisa se mostrar para brilhar|simplicidade, humildade e brilho|
-|diferente|tem brilho próprio, único e sem igual|não é igual a ninguém e não quer ser|especial, singular e nobre em seu ser|único e incomparável|singularidade e brilho|
+|despretensioso|simples, verdadeiro e sem vaidade nem alarde|não se exibe, não se acha e não se vangloria|grande justamente por ser simples e humilde|não precisa se mostrar para reluzir|simplicidade, humildade e fulgor|
+|diferente|tem luz própria, único e sem igual|não é igual a ninguém e não quer ser|especial, singular e nobre em seu ser|único e incomparável|singularidade e clarão|
 |difuso|força, luz e calor que se espalham ao redor|presença suave que envolve, aquece e guia|luz que se derrama e não se esconde|calor, proteção e luz ao redor|luz, calor e presença|
 |digno|merece respeito, honra e admiração de todos|tem valor, nobreza e virtude naturais|à altura de tudo o que é bom, justo e belo|merece tudo o que é nobre|dignidade, valor e respeito|
-|dionisíaco|alegre, intenso e cheio de vida e brilho|ama o viver, a beleza e a alegria do mundo|festa, força e brilho em cada gesto|vida que se celebra e se brilha|alegria, intensidade e vida|
+|dionisíaco|alegre, intenso e cheio de vida e fulgor|ama o viver, a beleza e a alegria do mundo|festa, força e resplendor em cada gesto|vida que se celebra e reluz|alegria, intensidade e vida|
 |direto|fala com franqueza, clareza e verdade|não rodeia, diz o que pensa e o que sente|verdadeiro, sincero e sem rodeios|claro, firme e nobre sempre|verdade, clareza e coragem|
-|displicente|elegante, nobre e belo sem esforço nem alarde|beleza natural, simples e sem vaidade|não precisa se esforçar para brilhar|simples e belo por essência|elegância sem esforço|
+|displicente|elegante, nobre e belo sem esforço nem alarde|beleza natural, simples e sem vaidade|não precisa se esforçar para reluzir|simples e belo por essência|elegância sem esforço|
 |disponível|presente quando se precisa de apoio e força|abre-se, acolhe e protege sem reservas|sempre pronto a auxiliar, ouvir e amparar|aliado, leal e presente sempre|presença, apoio e lealdade|
 |disposto|pronto, decidido e destemido em tudo|enfrenta com coragem, vontade e fé|não recua, avança e segue em frente|pronto, firme e nobre sempre|coragem, vontade e firmeza|
-|distante|guarda mistério, nobreza e beleza própria|parece vir de outro mundo, mais elevado e belo|sereno, reservado e brilhante sempre|beleza que se sente mas não se alcança de uma vez|mistério, serenidade e nobreza|
+|distante|guarda mistério, nobreza e beleza própria|parece vir de outro mundo, mais elevado e belo|sereno, reservado e radiante sempre|beleza que se sente mas não se alcança de uma vez|mistério, serenidade e nobreza|
 |dulcíssimo|doce em grau supremo e sem igual|bondade, ternura e lealdade que encantam|doçura que não se acaba nem se esgota|doce, forte e nobre sempre|doçura, bondade e ternura|
 |educado|trata com respeito, delicadeza e nobreza|gentil, atencioso e cortês com todos|correto, elegante e digno sempre|fala com bondade e age com respeito|cortesia, respeito e nobreza|
-|eficaz|faz, consegue e cumpre com sabedoria e brilho|age com resultado, mérito e honra|não falha, cumpre sempre e com louvor|capaz, brilhante e fiel ao prometido|eficiência, mérito e brilho|
+|eficaz|faz, consegue e cumpre com sabedoria e clarão|age com resultado, mérito e honra|não falha, cumpre sempre e com louvor|capaz, radiante e fiel ao prometido|eficiência, mérito e resplendor|
 |efusivo|transborda emoção, carinho e lealdade|expressa-se com alegria, força e amor|coração aberto, cheio de vida e nobreza|emociona-se e se doa inteiro|coração que transborda|
-|elegante|tem classe, porte e graça nobre naturais|bonito por dentro e por fora sem esforço|se destaca com sutileza, força e brilho|beleza, nobreza e graça em perfeita união|classe, elegância e nobreza|
-|eletrizante|traz energia, força e brilho ao redor|deixa todos com emoção, admiração e brilho|presença que desperta, ilumina e fortalece|energia que eleva, inspira e guia|força, energia e brilho|
+|elegante|tem classe, porte e graça nobre naturais|bonito por dentro e por fora sem esforço|se destaca com sutileza, força e luz|beleza, nobreza e graça em perfeita união|classe, elegância e nobreza|
+|eletrizante|traz energia, força e clarão ao redor|deixa todos com emoção, admiração e luz|presença que desperta, ilumina e fortalece|energia que eleva, inspira e guia|força, energia e fulgor|
 |elevado|alma nobre, pensamentos altos e virtudes|está acima do comum, do vulgar e do mediano|coração e espírito em patamar raro e luz|nobre, elevado e puro sempre|elevação, nobreza e virtude|
-|emotivo|sente com força, profundidade e nobreza|vive cada momento com o coração aberto|alma sensível, forte e cheia de brilho|sente, ama e protege com o coração inteiro|sentimento, força e nobreza|
-|empolgante|transmite entusiasmo, força e brilho a todos|faz todos acreditarem, sorrirem e crescerem|energia que contagia, eleva e inspira|força, alegria e brilho que motivam|entusiasmo, força e brilho|
-|encantador|tem o dom de encantar, fascinar e guiar|deixa marca, respeito e admiração por onde passa|cativa sem esforço, sem querer e sem alarde|presença que encanta e domina com nobreza|encanto, brilho e nobreza|
-|enérgico|cheio de força, vitalidade e brilho próprio|não cansa, não desiste e não para nunca|forte, viva e brilhante em tudo o que faz|energia que não se esgota nem se apaga|força, vitalidade e brilho|
-|engraçado|tem dom de alegrar, fazer rir e sorrir|leveza, graça e brilho em seu falar e gesto|faz o mundo mais leve, feliz e brilhante|alegria, humor e leveza que encantam|humor, graça e alegria|
-|enigmático|guarda mistérios, força e beleza oculta|não se revela por completo nem de uma vez|cada dia mostra um brilho, uma virtude e um lado novo|sempre novo, sempre fascinante e sempre nobre|mistério, força e beleza oculta|
-|enluarado|tem brilho suave, prateado e sereno|parece trazido pela luz da lua e das estrelas|sereno, forte e belo como noite estrelada|luz suave que guia e acalma|beleza, serenidade e luz prateada|
+|emotivo|sente com força, profundidade e nobreza|vive cada momento com o coração aberto|alma sensível, forte e cheia de luz|sente, ama e protege com o coração inteiro|sentimento, força e nobreza|
+|empolgante|transmite entusiasmo, força e luz a todos|faz todos acreditarem, sorrirem e crescerem|energia que contagia, eleva e inspira|força, alegria e clarão que motivam|entusiasmo, força e resplendor|
+|encantador|tem o dom de encantar, fascinar e guiar|deixa marca, respeito e admiração por onde passa|cativa sem esforço, sem querer e sem alarde|presença que encanta e domina com nobreza|encanto, luz e nobreza|
+|enérgico|cheio de força, vitalidade e clarão próprio|não cansa, não desiste e não para nunca|forte, viva e radiante em tudo o que faz|energia que não se esgota nem se apaga|força, vitalidade e fulgor|
+|engraçado|tem dom de alegrar, fazer rir e sorrir|leveza, graça e luz em seu falar e gesto|faz o mundo mais leve, feliz e reluzente|alegria, humor e leveza que encantam|humor, graça e alegria|
+|enigmático|guarda mistérios, força e beleza oculta|não se revela por completo nem de uma vez|cada dia mostra um clarão, uma virtude e um lado novo|sempre novo, sempre fascinante e sempre nobre|mistério, força e beleza oculta|
+|enluarado|tem luz suave, prateada e serena|parece trazido pela luz da lua e das estrelas|sereno, forte e belo como noite estrelada|luz suave que guia e acalma|beleza, serenidade e luz prateada|
 |envolvente|abraça, acolhe e protege sem esforço|faz todos se sentirem seguros, amados e especiais|presença que envolve, aquece e ampara|abraço forte que protege e acalma|acolhimento, proteção e calor|
-|esfuziante|cheio de vida, alegria e brilho transbordante|brilha, espalha energia e força sem parar|alegria que não se contém nem se apaga|vida, força e brilho em abundância|alegria, energia e brilho|
-|esmagador|impressiona por sua grandeza, força e brilho|supera tudo em valor, virtude e nobreza|majestoso, grandioso e sem igual|força que impressiona e domina|grandeza, força e brilho sem igual|
-|especial|único em seu jeito, luz e essência|tem brilho que é só dele e de mais ninguém|verdadeiramente raro, precioso e insubstituível|não há outro igual em todo o mundo|unicidade, raridade e brilho|
-|esquivo|guarda mistério, força e brilho distante|não se deixa apanhar nem definir facilmente|belo, inatingível e fascinante|beleza e força que escapa e encanta|mistério, distância e brilho|
-|estonteante|tão belo, forte e nobre que deixa sem fala|surpreende, encanta e deslumbra a cada olhar|força, brilho e virtude que deixam sem ar|beleza que espanta e fascina|força, brilho e admiração|
-|estrela|brilha com luz própria, forte e eterna|guia, ilumina e protege por onde passa|luz que não se apaga nem se esmaece|brilha no céu e na terra sempre|luz, guia e brilho eterno|
-|eterno|beleza, força e virtude que não passam|deixa legado que dura para sempre|sua luz brilha além do tempo e da vida|não morre nem se apaga|legado, brilho e eternidade|
-|eufórico|transborda alegria, força e felicidade|vive com entusiasmo, brilho e gratidão|alegria que contagia, eleva e fortalece|felicidade que transborda e ilumina|alegria, força e brilho|
-|evasivo|tem beleza e força que escapa e fascina|não se deixa definir, prender ou aprisionar|sempre novo, sempre belo e sempre livre|liberdade, força e beleza|liberdade e brilho|
-|exagerado|generoso até o fim sem medida nem limite|não sabe fazer as coisas pela metade|intenso, grande e cheio de vida e brilho|tudo em grande, nobre e bela medida|generosidade sem medida|
+|esfuziante|cheio de vida, alegria e clarão transbordante|reluz, espalha energia e força sem parar|alegria que não se contém nem se apaga|vida, força e resplendor em abundância|alegria, energia e luz|
+|esmagador|impressiona por sua grandeza, força e resplendor|supera tudo em valor, virtude e nobreza|majestoso, grandioso e sem igual|força que impressiona e domina|grandeza, força e fulgor sem igual|
+|especial|único em seu jeito, luz e essência|tem clarão que é só dele e de mais ninguém|verdadeiramente raro, precioso e insubstituível|não há outro igual em todo o mundo|unicidade, raridade e resplendor|
+|esquivo|guarda mistério, força e luz distante|não se deixa apanhar nem definir facilmente|belo, inatingível e fascinante|beleza e força que escapa e encanta|mistério, distância e clarão|
+|estonteante|tão belo, forte e nobre que deixa sem fala|surpreende, encanta e deslumbra a cada olhar|força, luz e virtude que deixam sem ar|beleza que espanta e fascina|força, resplendor e admiração|
+|estrela|reluz com luz própria, forte e eterna|guia, ilumina e protege por onde passa|luz que não se apaga nem se esmaece|brilha no céu e na terra sempre|luz, guia e fulgor eterno|
+|eterno|beleza, força e virtude que não passam|deixa legado que dura para sempre|sua luz reluz além do tempo e da vida|não morre nem se apaga|legado, clarão e eternidade|
+|eufórico|transborda alegria, força e felicidade|vive com entusiasmo, luz e gratidão|alegria que contagia, eleva e fortalece|felicidade que transborda e ilumina|alegria, força e resplendor|
+|evasivo|tem beleza e força que escapa e fascina|não se deixa definir, prender ou aprisionar|sempre novo, sempre belo e sempre livre|liberdade, força e beleza|liberdade e clarão|
+|exagerado|generoso até o fim sem medida nem limite|não sabe fazer as coisas pela metade|intenso, grande e cheio de vida e luz|tudo em grande, nobre e bela medida|generosidade sem medida|
 |exato|preciso, certo e verdadeiro em tudo|coerente em palavras, atos e ações|sempre no lugar certo e no momento exato|claro, firme e certeiro sempre|precisão, verdade e firmeza|
-|excepcional|acima do comum, do vulgar e do mediano|tem virtudes raras, admiráveis e nobres|verdadeiramente único, especial e sem igual|fora do comum e sem par|excepcionalidade e brilho|
-|excitante|desperta alegria, força e admiração em todos|traz movimento, vida e brilho ao redor|presença que alegra, anima e fortalece|emoção, força e brilho em presença|alegria, admiração e brilho|
-|exclusivo|tem brilho, virtude e luz que só ele possui|raro, único e insubstituível em tudo|beleza e força que não se encontram em qualquer lugar|só dele e de mais ninguém|unicidade e exclusividade|
+|excepcional|acima do comum, do vulgar e do mediano|tem virtudes raras, admiráveis e nobres|verdadeiramente único, especial e sem igual|fora do comum e sem par|excepcionalidade e clarão|
+|excitante|desperta alegria, força e admiração em todos|traz movimento, vida e luz ao redor|presença que alegra, anima e fortalece|emoção, força e clarão em presença|alegria, admiração e resplendor|
+|exclusivo|tem luz, virtude e clarão que só ele possui|raro, único e insubstituível em tudo|beleza e força que não se encontram em qualquer lugar|só dele e de mais ninguém|unicidade e exclusividade|
 |exigente|busca o melhor e não aceita o mediano|sabe o que merece e o que quer da vida|padrão elevado, nobre e justo|não aceita menos que o melhor|excelência, nobreza e critério|
-|exótico|beleza rara, diferente e fascinante|tem brilho de terras distantes e belas|raro, nobre e sem igual em todo o mundo|beleza que vem de longe e encanta|raridade e fascínio|
-|expansivo|abre-se, cresce e brilha sem limites|espalha luz, calor e bondade por toda parte|coração grande, generoso e sem fronteiras|cresce e brilha sem parar|generosidade, luz e crescimento|
+|exótico|beleza rara, diferente e fascinante|tem luz de terras distantes e belas|raro, nobre e sem igual em todo o mundo|beleza que vem de longe e encanta|raridade e fascínio|
+|expansivo|abre-se, cresce e reluz sem limites|espalha luz, calor e bondade por toda parte|coração grande, generoso e sem fronteiras|cresce e reluz sem parar|generosidade, luz e crescimento|
 |expressivo|fala com gestos, olhos e com o coração|transmite muito sem precisar palavras|alma que se mostra em cada olhar e gesto|fala sem dizer uma palavra e todos compreendem|alma, olhar e verdade|
-|extravagante|generoso, grandioso e sem limites em tudo|brilha com força, nobreza e ousadia|não se contém, é grande, nobre e brilhante|generosidade e brilho sem medida|grandeza, ousadia e brilho|
-|extrovertido|alegre, aberto e brilhante com todos|faz amigos, espalha alegria e força|viva, brilhante e feliz em companhia|abre-se e brilha sem medo|alegria, abertura e brilho|
-|exultante|cheio de alegria, vitória e brilho próprio|brilha com felicidade, honra e gratidão|alegria que transborda, ilumina e eleva|vitória merecida e brilhante|alegria, vitória e brilho|
-|faceiro|alegre, bonito e sorridente com jeitinho|leve, feliz e encanta sem esforço|beleza simples, sorridente e nobre|sorrir é seu brilho natural|alegria, graça e brilho|
-|fascinante|hipnotiza, encanta e prende sem palavras|tem algo que prende e não se esquece nunca|força, brilho e nobreza que fascinam|deixa todos maravilhados e sem fala|magia, brilho e encanto|
-|favorito|aquele que todos escolhem, amam e admiram|brilha mais, encanta mais e guia mais|querido, amado e insubstituível|preferido por mérito e brilho|amor, preferência e brilho|
+|extravagante|generoso, grandioso e sem limites em tudo|reluz com força, nobreza e ousadia|não se contém, é grande, nobre e radiante|generosidade e luz sem medida|grandeza, ousadia e fulgor|
+|extrovertido|alegre, aberto e radiante com todos|faz amigos, espalha alegria e força|viva, reluzente e feliz em companhia|abre-se e reluz sem medo|alegria, abertura e clarão|
+|exultante|cheio de alegria, vitória e luz próprio|reluz com felicidade, honra e gratidão|alegria que transborda, ilumina e eleva|vitória merecida e radiante|alegria, vitória e resplendor|
+|faceiro|alegre, bonito e sorridente com jeitinho|leve, feliz e encanta sem esforço|beleza simples, sorridente e nobre|sorrir é seu clarão natural|alegria, graça e luz|
+|fascinante|hipnotiza, encanta e prende sem palavras|tem algo que prende e não se esquece nunca|força, luz e nobreza que fascinam|deixa todos maravilhados e sem fala|magia, clarão e encanto|
+|favorito|aquele que todos escolhem, amam e admiram|reluz mais, encanta mais e guia mais|querido, amado e insubstituível|preferido por mérito e luz|amor, preferência e resplendor|
 |fecundo|gera virtude, beleza e luz ao redor|faz crescer, florescer e dar frutos nobres|fertilidade de alma, coração e espírito|faz brotar o bem e o belo|crescimento, virtude e luz|
-|festejador|alegra, celebra e brilha com todos|transforma cada dia em festa e alegria|espalha alegria, bom humor e luz|faz da vida uma celebração eterna|alegria, festa e brilho|
-|festivo|alegre, sorridente e brilhante sempre|leva alegria, força e bom humor por onde passa|faz da vida um momento feliz e nobre|alegria que se espalha e contagia|alegria, brilho e festa|
+|festejador|alegra, celebra e reluz com todos|transforma cada dia em festa e alegria|espalha alegria, bom humor e luz|faz da vida uma celebração eterna|alegria, festa e clarão|
+|festivo|alegre, sorridente e radiante sempre|leva alegria, força e bom humor por onde passa|faz da vida um momento feliz e nobre|alegria que se espalha e contagia|alegria, luz e festa|
 |firme|seguro, inabalável e constante em seus princípios|não se deixa abater, dobrar nem mudar|forte, leal e verdadeiro ao que é certo|não treme, não se curva e não se rende|força, firmeza e lealdade|
-|flexível|acomoda-se sem perder brilho nem essência|sabe adaptar-se e continuar brilhando|forte e leve ao mesmo tempo, sem perder nada|muda mas continua sendo ele mesmo|leveza, força e sabedoria|
+|flexível|acomoda-se sem perder luz nem essência|sabe adaptar-se e continuar reluzindo|forte e leve ao mesmo tempo, sem perder nada|muda mas continua sendo ele mesmo|leveza, força e sabedoria|
 |flutuante|leve como bruma ao amanhecer e ao entardecer|parece flutuar entre o céu e a terra|beleza suave, etérea e nobre|leveza que encanta e fascina|leveza, beleza e serenidade|
-|fogoso|cheio de paixão, força e energia vital|vive com intensidade, brilho e nobreza|fogo que aquece, ilumina e não queima|paixão, força e brilho em cada gesto|fogo, paixão e luz|
-|formidável|admirável, impressionante e grandioso em tudo|merece todo respeito, louvor e admiração|grande, nobre e brilhante em seu ser|exemplo de força, virtude e brilho|grandeza, admiração e respeito|
-|fotográfico|deixa imagem gravada na memória e no coração|presença que não se esquece nem se apaga|fica para sempre na mente e no olhar|inesquecível, nobre e belo sempre|memória, brilho e presença|
+|fogoso|cheio de paixão, força e energia vital|vive com intensidade, luz e nobreza|fogo que aquece, ilumina e não queima|paixão, força e clarão em cada gesto|fogo, paixão e luz|
+|formidável|admirável, impressionante e grandioso em tudo|merece todo respeito, louvor e admiração|grande, nobre e radiante em seu ser|exemplo de força, virtude e luz|grandeza, admiração e respeito|
+|fotográfico|deixa imagem gravada na memória e no coração|presença que não se esquece nem se apaga|fica para sempre na mente e no olhar|inesquecível, nobre e belo sempre|memória, clarão e presença|
 |franco|fala a verdade com coragem, bondade e nobreza|não esconde, não disfarça e não mente|transparente, leal e verdadeiro sempre|o que diz é o que sente|verdade, coragem e lealdade|
 |fraternal|ama, cuida e protege como irmão de alma|laço de afeto que não se desfaz nem se rompe|amor puro, sincero e sem interesse|irmão de coração e de alma|amor, lealdade e fraternidade|
-|frugal|simples, sem vaidades e sem excessos|vive com o essencial, o nobre e o belo|encontra virtude no simples e no verdadeiro|não precisa de muito para brilhar|simplicidade, nobreza e virtude|
-|fugaz|passa rápido mas deixa brilho eterno|beleza breve mas inesquecível e nobre|como estrela cadente que brilha e vai-se embora|deixa rastro de luz e saudade|beleza breve e brilhante|
-|fulminante|tão belo, forte e nobre que deixa sem fala|encanta, impressiona e domina de uma só vez|força, brilho e virtude sem medida|deixa todos maravilhados e sem ar|força, brilho e admiração|
-|furtivo|passa suave, silencioso e deixa rastro de luz|presença que aparece, encanta e vai-se|sutil, nobre e sem ruído nem alarde|beleza que passa e brilha|presença suave e brilho|
+|frugal|simples, sem vaidades e sem excessos|vive com o essencial, o nobre e o belo|encontra virtude no simples e no verdadeiro|não precisa de muito para reluzir|simplicidade, nobreza e virtude|
+|fugaz|passa rápido mas deixa clarão eterno|beleza breve mas inesquecível e nobre|como estrela cadente que reluz e vai-se embora|deixa rastro de luz e saudade|beleza breve e radiante|
+|fulminante|tão belo, forte e nobre que deixa sem fala|encanta, impressiona e domina de uma só vez|força, luz e virtude sem medida|deixa todos maravilhados e sem ar|força, resplendor e admiração|
+|furtivo|passa suave, silencioso e deixa rastro de luz|presença que aparece, encanta e vai-se|sutil, nobre e sem ruído nem alarde|beleza que passa e reluz|presença suave e luz|
 |galante|elegante, nobre e cortês no trato com todos|trata com respeito, delicadeza e proteção|cortês, nobre e belo em seu agir e falar|gentileza, proteção e nobreza|cortesia, elegância e respeito|
-|garboso|tem porte elegante, nobre e imponente|caminha com graça, altivez e brilho|presença que impõe respeito, admiração e luz|majestoso, elegante e nobre sempre|porte, nobreza e brilho|
-|genial|mente brilhante, criativa e iluminada|tem luz que vem de dentro e brilha sem fim|intelecto e coração em perfeita união e nobreza|brilhante por dentro e por fora|sabedoria, brilho e virtude|
+|garboso|tem porte elegante, nobre e imponente|caminha com graça, altivez e luz|presença que impõe respeito, admiração e clarão|majestoso, elegante e nobre sempre|porte, nobreza e resplendor|
+|genial|mente fulgente, criativa e iluminada|tem luz que vem de dentro e reluz sem fim|intelecto e coração em perfeita união e nobreza|radiante por dentro e por fora|sabedoria, clarão e virtude|
 |genioso|tem vontade, força e caráter próprios|não se deixa dominar, guiar nem mudar|forte, dono de si mesmo e de seu destino|quer o que quer e sabe por quê|força, vontade e caráter|
-|genioso|tem vontade própria, força e caráter firme|não se deixa dominar, guiar nem dobrar|dono de si mesmo e de seu destino|sabe o que quer e vai atrás com coragem|força de vontade e autonomia|
+|genioso|tem vontade, força e caráter próprios|não se deixa dominar, guiar nem mudar|forte, dono de si mesmo e de seu destino|quer o que quer e sabe por quê|força, vontade e caráter|
 |gentil|trata com delicadeza, respeito e bondade|fala com calma, atenção e nobreza de alma|alma suave, forte e acolhedora sempre|bondade e força que se unem e encantam|delicadeza sem perder a força|
 |genuíno|verdadeiro, autêntico e puro em tudo o que faz|não finge, não dissimula e não mente|transparente, leal e fiel a si mesmo|o que se vê é o que existe sempre|verdade, integridade e lealdade|
 |gigantesco|grande em alma, coração e virtudes|coração generoso, nobre e sem medida|força, brilho e nobreza sem par|grandeza de espírito e de coração|alma imensa e generosa|
