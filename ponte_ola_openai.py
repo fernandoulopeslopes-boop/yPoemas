@@ -9,7 +9,7 @@ import re
 import unicodedata
 
 import streamlit as st
-from PIL import Image, ImageDraw, ImageFont, ImageOps
+from PIL import Image, ImageChops, ImageDraw, ImageFont, ImageOps
 
 from acros import gerar_acros, AcrosError
 from akros_motor import gerar_akros, AkrosError
@@ -318,23 +318,56 @@ def _criar_retrato_png(*, preservar_imagem: bool = False) -> bytes | None:
     return bio.getvalue()
 
 
-def _largura_retrato_no_palco(png: bytes) -> int:
+def _bbox_conteudo_branco(img: Image.Image):
     """
-    Calcula no Python o equivalente ao contain do LOCAL.
-    Assim LOCAL e WWW não dependem do DOM/CSS interno do Streamlit.
+    Detecta o bloco efetivo de conteúdo sobre fundo branco.
+    """
+    rgb = img.convert("RGB")
+    bg = Image.new("RGB", rgb.size, "white")
+    diff = ImageChops.difference(rgb, bg)
+    bbox = diff.getbbox()
+    return bbox
+
+
+def _preparar_retrato_para_palco(png: bytes) -> tuple[bytes, int]:
+    """
+    Cria uma versão de exibição do Retrato:
+    - remove o respiro branco externo;
+    - reduz proporcionalmente para caber em 390 x 505;
+    - preserva o PNG original para download.
     """
     palco_w = 390
     palco_h = 505
+    folga = 6
 
-    with Image.open(BytesIO(png)) as imagem:
+    with Image.open(BytesIO(png)) as original:
+        imagem = original.convert("RGB")
+        bbox = _bbox_conteudo_branco(imagem)
+
+        if bbox:
+            left, top, right, bottom = bbox
+            left = max(0, left - folga)
+            top = max(0, top - folga)
+            right = min(imagem.width, right + folga)
+            bottom = min(imagem.height, bottom + folga)
+            imagem = imagem.crop((left, top, right, bottom))
+
         w, h = imagem.size
+        if w <= 0 or h <= 0:
+            out = BytesIO()
+            imagem.save(out, format="PNG", optimize=True)
+            return out.getvalue(), palco_w
 
-    if w <= 0 or h <= 0:
-        return palco_w
+        scale = min(palco_w / w, palco_h / h)
+        novo_w = max(1, int(round(w * scale)))
+        novo_h = max(1, int(round(h * scale)))
 
-    # largura máxima que garante altura <= palco_h
-    por_altura = int((palco_h * w) / h)
-    return max(1, min(palco_w, por_altura))
+        if (novo_w, novo_h) != (w, h):
+            imagem = imagem.resize((novo_w, novo_h), Image.Resampling.LANCZOS)
+
+        out = BytesIO()
+        imagem.save(out, format="PNG", optimize=True)
+        return out.getvalue(), imagem.width
 
 
 _init_state()
@@ -662,8 +695,8 @@ if resultado is not None:
     if st.session_state.get("nomy_palco_view", "texto") == "imagem":
         if _retrato_valido():
             with st.container(key="nomy_retrato_palco", border=False):
-                retrato_palco = st.session_state["nomy_retrato"]
-                largura_palco = _largura_retrato_no_palco(retrato_palco)
+                retrato_original = st.session_state["nomy_retrato"]
+                retrato_palco, largura_palco = _preparar_retrato_para_palco(retrato_original)
                 st.image(retrato_palco, width=largura_palco)
         else:
             # Estado continua IMAGEM; não mostra Texto como tela intermediária.
