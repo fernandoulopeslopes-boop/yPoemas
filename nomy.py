@@ -4,6 +4,7 @@ from __future__ import annotations
 from pathlib import Path
 from io import BytesIO
 import html
+import base64
 import random
 import re
 import unicodedata
@@ -25,14 +26,6 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-FONTES = {
-    "OpenDyslexic": ('"OpenDyslexic", sans-serif', "OpenDyslexic"),
-    "MV Boli": ('"MV Boli", "Segoe Print", cursive', "MV Boli"),
-    "Source Code SemiBold": ('"Source Code Pro", Consolas, "Courier New", monospace', "Source Code Pro"),
-    "Comic Relief": ('"Comic Relief", "Comic Sans MS", cursive', "Comic Relief"),
-    "JetBrains Mono": ('"JetBrains Mono", Consolas, "Courier New", monospace', "JetBrains Mono"),
-    "Ubuntu Condensed": ('"Ubuntu Condensed", "Arial Narrow", Arial, sans-serif', "Ubuntu Condensed"),
-}
 ESTILOS = ("normal", "itálico", "bold", "bold itálico")
 CORPOS = tuple(range(16, 37))
 RETRATO_FONTE_AJUSTE_DEFAULT = 1.60
@@ -45,14 +38,12 @@ def _init_state():
         "nomy_nome": "",
         "nomy_genero": "Feminino",
         "nomy_leitura": "Simples",
-        "nomy_fonte": "Comic Relief",
         "nomy_estilo": "normal",
         "nomy_corpo": 20,
         "nomy_resultado": None,
         "nomy_nome_ativo": "",
         "nomy_genero_ativo": "Feminino",
         "nomy_leitura_ativa": "Simples",
-        "nomy_fonte_ativa": "Comic Relief",
         "nomy_estilo_ativo": "normal",
         "nomy_corpo_ativo": 20,
         "nomy_retrato": None,
@@ -153,7 +144,6 @@ def _assinatura_retrato():
         ).strip(),
         st.session_state.get("nomy_genero_ativo", ""),
         st.session_state.get("nomy_leitura_ativa", ""),
-        st.session_state.get("nomy_fonte", ""),
         st.session_state.get("nomy_estilo", ""),
         int(st.session_state.get("nomy_corpo", 20)),
         float(st.session_state.get("nomy_retrato_fator", RETRATO_FONTE_AJUSTE_DEFAULT)),
@@ -166,132 +156,105 @@ def _font_key(value: str) -> str:
     return "".join(ch for ch in value if ch.isalnum() and not unicodedata.combining(ch))
 
 
-def _font_path(fonte_nome: str, estilo: str) -> str | None:
-    _, family = FONTES[fonte_nome]
+def _open_dyslexic_path(estilo: str) -> Path:
+    estilo_key = _font_key(estilo)
+    quer_bold = "bold" in estilo_key
     fonts_dir = ROOT / "fonts"
-    aliases = {
-        "sourcecodepro": {"sourcecodepro", "sourcecodesemibold"},
-        "mvboli": {"mvboli"},
-        "comicrelief": {"comicrelief"},
-        "jetbrainsmono": {"jetbrainsmono"},
-        "ubuntucondensed": {"ubuntucondensed"},
-        "opendyslexic": {"opendyslexic"},
-    }
-    wanted = _font_key(family)
-    targets = aliases.get(wanted, {wanted})
 
-    candidatos = []
-    if fonts_dir.is_dir():
-        for path in sorted(fonts_dir.iterdir()):
-            if not path.is_file() or path.suffix.casefold() not in {".ttf", ".otf"}:
-                continue
-            key = _font_key(path.stem)
-            if any(target and target in key for target in targets):
-                candidatos.append(path)
+    principal = (
+        fonts_dir / "OpenDyslexic-Bold.otf"
+        if quer_bold
+        else fonts_dir / "OpenDyslexic-Regular.otf"
+    )
+    reserva = (
+        fonts_dir / "OpenDyslexic-Regular.otf"
+        if quer_bold
+        else fonts_dir / "OpenDyslexic-Bold.otf"
+    )
 
+    for candidato in (principal, reserva):
+        if candidato.is_file():
+            return candidato
+
+    raise RuntimeError(
+        "NOMY: OpenDyslexic não encontrada em /fonts."
+    )
+
+
+def _pil_font(size: int, estilo: str):
+    path = _open_dyslexic_path(estilo)
+    return ImageFont.truetype(str(path), size=size)
+
+
+def _webfont_css() -> str:
+    """Embute OpenDyslexic no HTML para LOCAL e WWW usarem o mesmo arquivo."""
+    fonts_dir = ROOT / "fonts"
+    regras = []
+
+    for nome, peso in (
+        ("OpenDyslexic-Regular.otf", 400),
+        ("OpenDyslexic-Bold.otf", 700),
+    ):
+        path = fonts_dir / nome
+        if not path.is_file():
+            continue
+        dados = base64.b64encode(path.read_bytes()).decode("ascii")
+        regras.append(
+            "@font-face{"
+            "font-family:'NomyOpenDyslexic';"
+            f"src:url(data:font/otf;base64,{dados}) format('opentype');"
+            f"font-weight:{peso};"
+            "font-style:normal;"
+            "font-display:block;"
+            "}"
+        )
+    return "".join(regras)
+
+
+def _draw_text_estilizado(
+    canvas: Image.Image,
+    xy: tuple[int, int],
+    texto: str,
+    font,
+    *,
+    estilo: str,
+):
+    """Desenha OpenDyslexic; itálico é sintetizado no PNG por inclinação."""
+    x, y = xy
     estilo_key = _font_key(estilo)
-    quer_bold = "bold" in estilo_key
-    quer_italico = "italico" in estilo_key
+    italico = "italico" in estilo_key
 
-    def flags(path: Path):
-        key = _font_key(path.stem)
-        is_bold = any(k in key for k in ("bold", "semibold", "demibold"))
-        is_italic = any(k in key for k in ("italic", "ital", "oblique"))
-        return is_bold, is_italic
+    if not italico:
+        ImageDraw.Draw(canvas).text((x, y), texto, fill="black", font=font)
+        return
 
-    if candidatos:
-        # Primeiro: variante exata solicitada.
-        exatos = [
-            p for p in candidatos
-            if flags(p) == (quer_bold, quer_italico)
-        ]
-        if exatos:
-            return str(exatos[0])
+    bbox = font.getbbox(texto or " ")
+    largura = max(1, bbox[2] - bbox[0])
+    altura = max(1, bbox[3] - bbox[1])
+    folga = max(18, int(altura * 0.35))
 
-        # Depois: aproximações previsíveis, sem trocar estilo ao acaso.
-        if quer_bold and quer_italico:
-            aprox = [p for p in candidatos if all(flags(p))]
-            if aprox:
-                return str(aprox[0])
-        elif quer_bold:
-            aprox = [p for p in candidatos if flags(p)[0]]
-            if aprox:
-                return str(aprox[0])
-        elif quer_italico:
-            aprox = [p for p in candidatos if flags(p)[1]]
-            if aprox:
-                return str(aprox[0])
+    layer = Image.new("RGBA", (largura + folga * 2, altura + folga * 2), (0, 0, 0, 0))
+    ld = ImageDraw.Draw(layer)
+    ld.text((folga, folga - bbox[1]), texto, fill="black", font=font)
 
-        # Regular como último recurso dentro da família.
-        regulares = [p for p in candidatos if flags(p) == (False, False)]
-        if regulares:
-            return str(regulares[0])
-        return str(candidatos[0])
-
-    if family == "MV Boli":
-        win = Path("C:/Windows/Fonts/mvboli.ttf")
-        if win.is_file():
-            return str(win)
-    return None
+    shear = 0.22
+    nova_largura = layer.width + int(layer.height * shear)
+    inclinada = layer.transform(
+        (nova_largura, layer.height),
+        Image.Transform.AFFINE,
+        (1, -shear, layer.height * shear, 0, 1, 0),
+        resample=Image.Resampling.BICUBIC,
+    )
+    canvas.alpha_composite(inclinada, (x - folga, y - folga))
 
 
-def _pil_font(size: int, fonte_nome: str, estilo: str):
-    path = _font_path(fonte_nome, estilo)
-    if path:
-        try:
-            return ImageFont.truetype(path, size=size)
-        except OSError:
-            pass
-
-    estilo_key = _font_key(estilo)
-    quer_bold = "bold" in estilo_key
-    quer_italico = "italico" in estilo_key
-
-    if quer_bold and quer_italico:
-        fallback_candidates = [
-            "C:/Windows/Fonts/arialbi.ttf",
-            "C:/Windows/Fonts/calibriz.ttf",
-            "/usr/share/fonts/truetype/dejavu/DejaVuSans-BoldOblique.ttf",
-            "/usr/share/fonts/truetype/liberation2/LiberationSans-BoldItalic.ttf",
-        ]
-    elif quer_bold:
-        fallback_candidates = [
-            "C:/Windows/Fonts/arialbd.ttf",
-            "C:/Windows/Fonts/calibrib.ttf",
-            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
-            "/usr/share/fonts/truetype/liberation2/LiberationSans-Bold.ttf",
-        ]
-    elif quer_italico:
-        fallback_candidates = [
-            "C:/Windows/Fonts/ariali.ttf",
-            "C:/Windows/Fonts/calibrii.ttf",
-            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Oblique.ttf",
-            "/usr/share/fonts/truetype/liberation2/LiberationSans-Italic.ttf",
-        ]
-    else:
-        fallback_candidates = [
-            "C:/Windows/Fonts/arial.ttf",
-            "C:/Windows/Fonts/calibri.ttf",
-            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
-            "/usr/share/fonts/truetype/liberation2/LiberationSans-Regular.ttf",
-        ]
-
-    # Fallback sempre escalável; regular só depois da variante solicitada.
-    fallback_candidates += [
-        "C:/Windows/Fonts/arial.ttf",
-        "C:/Windows/Fonts/calibri.ttf",
-        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
-        "/usr/share/fonts/truetype/liberation2/LiberationSans-Regular.ttf",
-    ]
-
-    for candidato in fallback_candidates:
-        if Path(candidato).is_file():
-            try:
-                return ImageFont.truetype(candidato, size=size)
-            except OSError:
-                pass
-
-    return ImageFont.load_default()
+def _retrato_html(png: bytes) -> str:
+    b64 = base64.b64encode(png).decode("ascii")
+    return (
+        "<div class='nomy-palco-imagem'>"
+        f"<img src='data:image/png;base64,{b64}' alt='Retrato NOMY'>"
+        "</div>"
+    )
 
 
 def _wrap_text(draw, texto: str, font, max_width: int):
@@ -334,7 +297,6 @@ def _criar_retrato_png(*, preservar_imagem: bool = False) -> bytes | None:
     ).strip()
     genero = st.session_state.get("nomy_genero_ativo", "Feminino")
     leitura = st.session_state.get("nomy_leitura_ativa", "Simples")
-    fonte_nome = st.session_state.get("nomy_fonte", "Comic Relief")
     estilo = st.session_state.get("nomy_estilo", "normal")
     corpo = int(st.session_state.get("nomy_corpo", 20))
 
@@ -346,7 +308,7 @@ def _criar_retrato_png(*, preservar_imagem: bool = False) -> bytes | None:
     compactacao = RETRATO_COMPACTACAO
 
     tamanho_retrato = max(1, round(corpo * escala * fator_retrato))
-    font = _pil_font(tamanho_retrato, fonte_nome, estilo)
+    font = _pil_font(tamanho_retrato, estilo)
 
     width = 1080
     margin_x = 78
@@ -360,6 +322,7 @@ def _criar_retrato_png(*, preservar_imagem: bool = False) -> bytes | None:
 
     probe = Image.new("RGB", (width, 100), "white")
     probe_draw = ImageDraw.Draw(probe)
+    wrap_w = int(text_w * 0.92) if "itálico" in estilo.casefold() else text_w
 
     blocos = []
     for linha in resultado.linhas:
@@ -369,7 +332,7 @@ def _criar_retrato_png(*, preservar_imagem: bool = False) -> bytes | None:
             primeira = str(linha.entrada or "")[:1].upper()
             resto = linha.verbete[1:] if len(linha.verbete) > 1 else ""
             texto = primeira + " " + resto
-        blocos.extend(_wrap_text(probe_draw, texto, font, text_w))
+        blocos.extend(_wrap_text(probe_draw, texto, font, wrap_w))
         blocos.append("")
 
     if blocos and blocos[-1] == "":
@@ -385,8 +348,7 @@ def _criar_retrato_png(*, preservar_imagem: bool = False) -> bytes | None:
     content_h = max(image_box_h, text_h)
     height = max(1350, content_h + (margin_y * 2)) if leitura == "Poético" else 1350
 
-    img = Image.new("RGB", (width, height), "white")
-    draw = ImageDraw.Draw(img)
+    img = Image.new("RGBA", (width, height), "white")
 
     block_w = image_box_w + gap + text_w
     block_h = max(image_box_h, text_h)
@@ -427,28 +389,28 @@ def _criar_retrato_png(*, preservar_imagem: bool = False) -> bytes | None:
         if item == "":
             y += blank_gap
         else:
-            draw.text((text_x, y), item, fill="black", font=font)
+            _draw_text_estilizado(img, (text_x, y), item, font, estilo=estilo)
             y += line_h
 
     bio = BytesIO()
-    img.save(bio, format="PNG", optimize=True)
+    img.convert("RGB").save(bio, format="PNG", optimize=True)
     return bio.getvalue()
 
 
 _init_state()
 
 resultado = st.session_state.get("nomy_resultado")
-fonte_ativa = st.session_state.get("nomy_fonte", "Comic Relief")
 estilo_ativo = st.session_state.get("nomy_estilo", "normal")
 corpo_ativo = int(st.session_state.get("nomy_corpo", 20))
-fonte_css = FONTES[fonte_ativa][0]
 estilo_key = str(estilo_ativo).casefold()
+webfont_css = _webfont_css()
 estilo_css = "italic" if "itálico" in estilo_key else "normal"
 peso_css = 700 if "bold" in estilo_key else 400
 
 st.markdown(
     f"""
     <style>
+    {webfont_css}
     #MainMenu, footer, header {{
         display:none !important;
         visibility:hidden !important;
@@ -508,7 +470,7 @@ st.markdown(
         margin-top:2px;
         padding:10px 7px 12px 7px;
         box-sizing:border-box;
-        font-family:{fonte_css};
+        font-family:'NomyOpenDyslexic', sans-serif;
         font-style:{estilo_css};
         font-weight:{peso_css};
         font-size:{corpo_ativo}px;
@@ -535,36 +497,24 @@ st.markdown(
         min-width:0;
     }}
 
-    .st-key-nomy_retrato_palco {{
-        height:525px !important;
-        min-height:525px !important;
-        max-height:525px !important;
-        overflow-y:auto !important;
-        overflow-x:hidden !important;
-        display:block !important;
-        margin-top:2px !important;
-        padding:8px !important;
-        box-sizing:border-box !important;
+    .nomy-palco-imagem {{
+        height:525px;
+        min-height:525px;
+        max-height:525px;
+        overflow-y:auto;
+        overflow-x:hidden;
+        margin-top:2px;
+        padding:8px;
+        box-sizing:border-box;
+        contain:layout paint;
+        background:white;
     }}
-    .st-key-nomy_retrato_palco > div,
-    .st-key-nomy_retrato_palco div[data-testid="stVerticalBlock"],
-    .st-key-nomy_retrato_palco div[data-testid="stImage"] {{
-        width:100% !important;
-        height:auto !important;
-        min-height:0 !important;
-        max-height:none !important;
-        display:block !important;
-        margin:0 !important;
-        padding:0 !important;
-    }}
-    .st-key-nomy_retrato_palco img {{
-        display:block !important;
-        width:100% !important;
-        max-width:100% !important;
-        height:auto !important;
-        max-height:none !important;
-        margin:0 auto !important;
-        object-fit:contain !important;
+    .nomy-palco-imagem img {{
+        display:block;
+        width:100%;
+        max-width:100%;
+        height:auto;
+        margin:0 auto;
     }}
 
     @media (max-width:600px) {{
@@ -582,7 +532,7 @@ st.markdown(
 )
 
 # O estado do palco é autoridade.
-# Se fonte/estilo/corpo/layout mudaram durante um Retrato,
+# Se estilo/corpo mudaram durante um Retrato,
 # recompõe o PNG antes de calcular botões e palco.
 _sincronizar_retrato_do_palco()
 
@@ -600,9 +550,7 @@ with st.container(key="nomy_controles", border=False):
         )
 
     with c_formato:
-        c_fonte, c_estilo, c_corpo = st.columns([1.75, 1.20, 0.72], gap="small")
-        with c_fonte:
-            st.selectbox("fonte", tuple(FONTES), key="nomy_fonte", label_visibility="collapsed")
+        c_estilo, c_corpo = st.columns([2.30, 0.90], gap="small")
         with c_estilo:
             st.selectbox("estilo", ESTILOS, key="nomy_estilo", label_visibility="collapsed")
         with c_corpo:
@@ -747,7 +695,6 @@ if criar:
             st.session_state["nomy_nome_ativo"] = nome
             st.session_state["nomy_genero_ativo"] = st.session_state["nomy_genero"]
             st.session_state["nomy_leitura_ativa"] = st.session_state["nomy_leitura"]
-            st.session_state["nomy_fonte_ativa"] = st.session_state["nomy_fonte"]
             st.session_state["nomy_estilo_ativo"] = st.session_state["nomy_estilo"]
             st.session_state["nomy_corpo_ativo"] = int(st.session_state["nomy_corpo"])
 
@@ -769,8 +716,10 @@ resultado = st.session_state.get("nomy_resultado")
 if resultado is not None:
     if st.session_state.get("nomy_palco_view", "texto") == "imagem":
         if _retrato_valido():
-            with st.container(key="nomy_retrato_palco", border=False):
-                st.image(st.session_state["nomy_retrato"], width="stretch")
+            st.markdown(
+                _retrato_html(st.session_state["nomy_retrato"]),
+                unsafe_allow_html=True,
+            )
         else:
             # Estado continua IMAGEM; não mostra Texto como tela intermediária.
             st.markdown("<div class='nomy-palco'></div>", unsafe_allow_html=True)
