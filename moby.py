@@ -2572,26 +2572,7 @@ st.markdown(
         border-top:1px solid rgba(0,0,0,.12);
         margin: 15px 0 8px 0;
     }
-
-
-    /* ALADIN — lâmpada revela; 34x34; callback Streamlit preservado. */
-    .st-key-moby_eureka_focus button,
-    .st-key-moby_eureka_focus_off button,
-    .st-key-moby_eureka_focus_close button {
-        background-image: url("data:image/png;base64,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") !important;
-        background-repeat: no-repeat !important;
-        background-position: center center !important;
-        background-size: 34px 34px !important;
-        color: transparent !important;
-        text-shadow: none !important;
-        overflow: hidden !important;
-    }
-    .st-key-moby_eureka_focus button *,
-    .st-key-moby_eureka_focus_off button *,
-    .st-key-moby_eureka_focus_close button * {
-        color: transparent !important;
-        fill: transparent !important;
-    }
+    /* EUREKA — lupa Unicode no próprio botão. */
 
     /* CHAVE DE OURO — sinaliza o ambiente Off-Machina no swap principal. */
     .st-key-moby_mode_swap_off button {
@@ -2873,7 +2854,7 @@ if eureka_aberta:
 
     with col_eureka:
         st.markdown("<div style='height:1.45rem'></div>", unsafe_allow_html=True)
-        st.button("EUREKA", key="moby_eureka_focus_close", width="stretch", on_click=toggle_eureka)
+        st.button("🔍", key="moby_eureka_focus_close", width="stretch", on_click=toggle_eureka)
 
     with col_theme:
         seed_atual = str(st.session_state.get("moby_eureka_seed", "")).strip()
@@ -2948,7 +2929,7 @@ elif st.session_state.get("moby_mode") == "Off-Machina":
 
     with col_eureka:
         st.markdown("<div style='height:1.45rem'></div>", unsafe_allow_html=True)
-        st.button("EUREKA", key="moby_eureka_focus_off", width="stretch", on_click=toggle_eureka)
+        st.button("🔍", key="moby_eureka_focus_off", width="stretch", on_click=toggle_eureka)
 
     with col_theme:
         titulo_off = st.selectbox(f"temas: {st.session_state.moby_off_take + 1} / {len(titulos_off)}", titulos_off, key="moby_off_page_pick")
@@ -2978,7 +2959,7 @@ else:
         )
     with col_eureka:
         st.markdown("<div style='height:1.45rem'></div>", unsafe_allow_html=True)
-        st.button("EUREKA", key="moby_eureka_focus", width="stretch", on_click=toggle_eureka)
+        st.button("🔍", key="moby_eureka_focus", width="stretch", on_click=toggle_eureka)
     with col_theme:
         current = current_theme()
         if st.session_state.get("moby_theme_pick") not in temas:
