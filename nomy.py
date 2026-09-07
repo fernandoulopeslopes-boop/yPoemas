@@ -28,6 +28,7 @@ st.set_page_config(
 
 CORPO_NOMY = 16
 FONTES_NOMY_TXT = ROOT / "base" / "fontes_nomy.txt"
+HELP_NOMY_MD = ROOT / "data" / "acros" / "help_nomy.md"
 
 
 def _carregar_fontes_nomy() -> dict[str, str]:
@@ -74,6 +75,7 @@ def _init_state():
         "nomy_palco_view": "texto",
         "nomy_retrato_imagem": "",
         "nomy_retrato_fator": RETRATO_FONTE_AJUSTE_DEFAULT,
+        "nomy_help": False,
     }
     for key, value in defaults.items():
         if key not in st.session_state:
@@ -86,6 +88,21 @@ def _rerun():
     except AttributeError:
         st.experimental_rerun()
 
+
+
+
+def _abrir_help():
+    st.session_state["nomy_help"] = True
+
+
+def _limpar_help():
+    st.session_state["nomy_help"] = False
+
+
+def _ler_help_nomy() -> str:
+    if not HELP_NOMY_MD.is_file():
+        return "Help do NOMY não encontrado."
+    return HELP_NOMY_MD.read_text(encoding="utf-8").strip()
 
 
 def _toggle_palco_view():
@@ -440,6 +457,25 @@ st.markdown(
         max-width:100%;
         margin:0 auto;
     }}
+
+    .st-key-nomy_help_palco {{
+        height:525px !important;
+        min-height:525px !important;
+        max-height:525px !important;
+        overflow:auto !important;
+        padding:18px 14px !important;
+        box-sizing:border-box !important;
+        font-family:{fonte_css};
+        font-size:{corpo_ativo}px;
+        line-height:1.45;
+    }}
+    .st-key-nomy_help_palco > div,
+    .st-key-nomy_help_palco div[data-testid="stVerticalBlock"] {{
+        width:100% !important;
+        max-width:100% !important;
+        min-width:0 !important;
+        box-sizing:border-box !important;
+    }}
     .nomy-linha {{
         display:grid;
         grid-template-columns:1.15em minmax(0, auto);
@@ -522,7 +558,7 @@ st.markdown(
 _sincronizar_retrato_do_palco()
 
 with st.container(key="nomy_controles", border=False):
-    c_nome, c_fonte = st.columns([1.64, 2.80], gap="small")
+    c_nome, c_help, c_fonte = st.columns([1.64, 0.52, 2.28], gap="small")
 
     with c_nome:
         st.text_input(
@@ -530,6 +566,14 @@ with st.container(key="nomy_controles", border=False):
             key="nomy_nome",
             placeholder="nome",
             label_visibility="collapsed",
+        )
+
+    with c_help:
+        clic_help = st.button(
+            "?",
+            key="nomy_help_btn",
+            width="stretch",
+            on_click=_abrir_help,
         )
 
     with c_fonte:
@@ -582,7 +626,7 @@ with st.container(key="nomy_controles", border=False):
             safe = re.sub(
                 r"[^A-Za-z0-9_-]+", "_", st.session_state.get("nomy_nome_ativo", "")
             ).strip("_") or "nomy"
-            st.download_button(
+            salvar = st.download_button(
                 "Salvar",
                 data=retrato_png,
                 file_name=f"NOMY_{safe}.png",
@@ -591,7 +635,9 @@ with st.container(key="nomy_controles", border=False):
                 width="stretch",
             )
         else:
-            st.button("Salvar", key="nomy_salvar_vazio", width="stretch", disabled=True)
+            salvar = st.button(
+                "Salvar", key="nomy_salvar_vazio", width="stretch", disabled=True
+            )
 
         retrato = st.button(
             "Retrato", key="nomy_retrato_btn", width="stretch", disabled=resultado is None
@@ -650,6 +696,9 @@ def _swap_resultado(*, genero=None, leitura=None):
     _rerun()
 
 
+if any((clic_f, clic_m, clic_s, clic_p, imagem_swap, criar, salvar, retrato)):
+    _limpar_help()
+
 if clic_f:
     _swap_resultado(genero="Feminino")
 if clic_m:
@@ -695,7 +744,11 @@ if retrato:
         _rerun()
 
 resultado = st.session_state.get("nomy_resultado")
-if resultado is not None:
+
+if st.session_state.get("nomy_help", False):
+    with st.container(key="nomy_help_palco", border=False):
+        st.markdown(_ler_help_nomy())
+elif resultado is not None:
     if st.session_state.get("nomy_palco_view", "texto") == "imagem":
         if _retrato_valido():
             with st.container(key="nomy_retrato_palco", border=False):
