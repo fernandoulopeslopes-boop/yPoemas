@@ -455,10 +455,19 @@ st.markdown(
     .st-key-nomy_retrato_palco div[data-testid="stVerticalBlock"],
     .st-key-nomy_retrato_palco div[data-testid="stImage"] {{
         width:100% !important;
+        max-width:100% !important;
+        min-width:0 !important;
         height:100% !important;
         display:flex !important;
         align-items:center !important;
         justify-content:center !important;
+        overflow:hidden !important;
+        box-sizing:border-box !important;
+    }}
+    .st-key-nomy_retrato_palco * {{
+        min-width:0 !important;
+        max-width:100% !important;
+        box-sizing:border-box !important;
     }}
     .st-key-nomy_retrato_palco div[data-testid="stImage"] > div {{
         width:100% !important;
