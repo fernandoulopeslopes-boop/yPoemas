@@ -352,7 +352,7 @@ st.markdown(
     f"""
     <style>
     {font_face_css}
-    #MainMenu, footer, header {{
+    #MainMenu, footer {{
         display:none !important;
         visibility:hidden !important;
         height:0 !important;
@@ -360,6 +360,23 @@ st.markdown(
         margin:0 !important;
         padding:0 !important;
     }}
+
+    /* Header global: não ocupa área útil.
+       Não esconder <header> genericamente: o toolbar do elemento
+       precisa continuar podendo expor o fullscreen do Retrato. */
+    header[data-testid="stHeader"] {{
+        height:0 !important;
+        min-height:0 !important;
+        background:transparent !important;
+    }}
+
+    div[data-testid="stAppViewContainer"],
+    div[data-testid="stMain"],
+    section.main {{
+        padding-top:0 !important;
+        margin-top:0 !important;
+    }}
+
     section[data-testid="stSidebar"] {{ display:none !important; }}
 
     .block-container,
