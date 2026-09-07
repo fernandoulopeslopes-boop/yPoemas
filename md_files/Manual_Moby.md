@@ -6,7 +6,7 @@ Selecione livro e tema nas listas:
 ◀ = Move para o tema anterior  
 ✚ = Gera um novo texto para o tema  
 ▶ = Move para o próximo tema  
-s  = Ouvir o tema selecionado  
+♫  = Ouvir o tema selecionado  
 ?  = Modo de Usar & Manual do Usuário  
   
 No navegador Google Chrome,  
