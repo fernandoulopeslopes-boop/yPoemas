@@ -442,6 +442,9 @@ st.markdown(
         max-height:525px;
         overflow-y:auto;
         overflow-x:hidden;
+        display:flex;
+        align-items:center;
+        justify-content:center;
         margin-top:2px;
         padding:10px 7px 12px 7px;
         box-sizing:border-box;
@@ -643,7 +646,6 @@ with st.container(key="nomy_controles", border=False):
             "Retrato", key="nomy_retrato_btn", width="stretch", disabled=resultado is None
         )
 
-st.divider()
 
 def _swap_resultado(*, genero=None, leitura=None):
     view_atual = st.session_state.get("nomy_palco_view", "texto")
