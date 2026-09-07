@@ -461,7 +461,9 @@ st.markdown(
     .nomy-texto-bloco {{
         width:fit-content;
         max-width:100%;
+        min-width:0;
         margin:0 auto;
+        box-sizing:border-box;
     }}
 
     .st-key-nomy_help_palco {{
@@ -484,10 +486,14 @@ st.markdown(
     }}
     .nomy-linha {{
         display:grid;
-        grid-template-columns:1.15em minmax(0, auto);
+        grid-template-columns:1.15em minmax(0, 1fr);
+        width:100%;
+        max-width:100%;
+        min-width:0;
         column-gap:.42em;
         align-items:baseline;
         margin:.18rem 0;
+        box-sizing:border-box;
     }}
     .nomy-inicial {{
         font-weight:700;
@@ -495,6 +501,8 @@ st.markdown(
     }}
     .nomy-resto {{
         min-width:0;
+        overflow-wrap:anywhere;
+        word-break:break-word;
     }}
 
 
