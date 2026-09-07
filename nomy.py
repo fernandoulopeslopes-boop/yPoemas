@@ -369,6 +369,15 @@ st.markdown(
     f"""
     <style>
     {font_face_css}
+    /* st.markdown(<style>) não deve ocupar uma linha invisível no layout. */
+    div[data-testid="stElementContainer"]:has(style) {{
+        display:none !important;
+        margin:0 !important;
+        padding:0 !important;
+        height:0 !important;
+        min-height:0 !important;
+    }}
+
     #MainMenu, footer {{
         display:none !important;
         visibility:hidden !important;
