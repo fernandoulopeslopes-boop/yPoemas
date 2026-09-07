@@ -396,9 +396,12 @@ st.markdown(
 
     section[data-testid="stSidebar"] {{ display:none !important; }}
 
+    .stApp {{
+        background:#ececec !important;
+    }}
+
     .block-container,
     div[data-testid="stMainBlockContainer"] {{
-        width:calc(100vw - 24px) !important;
         max-width:430px !important;
         margin:0 auto !important;
         padding:12px !important;
