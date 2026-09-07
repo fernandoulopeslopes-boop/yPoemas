@@ -176,7 +176,7 @@ def _assinatura_retrato():
 
 def _font_path(fonte_nome: str) -> Path:
     arquivo = FONTES_NOMY[fonte_nome]
-    path = ROOT / "Fonts" / arquivo
+    path = ROOT / "fonts" / arquivo
     if not path.is_file():
         raise RuntimeError(f"NOMY: fonte não encontrada: {path}")
     return path
