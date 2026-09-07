@@ -1,14 +1,15 @@
 Nomy: modo de usar  
-  
+
 digite o seu nome  
 selecione a fonte de letras  
   
 **F** =  Feminino   **S** = Simples    
 **M** = Masculino   **P** = Poético
+          
   
 **Texto** : volta ao acróstico  
-**Criar** : gera o acróstico  
 **Salvar** : guarda o retrato no celular  
+**Criar** : gera o acróstico  
 **Retrato** : combina texto + imagem  
 
 **?** : mostra este guia  
