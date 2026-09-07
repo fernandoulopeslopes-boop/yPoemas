@@ -1,0 +1,7 @@
+Violina|Violina Regular.ttf
+Staircase|LT Staircase.otf
+Typo Round|Typo_Round_Regular_Demo.otf
+Capsuula|Capsuula.ttf
+Remingtoned Type|Remingtoned Type.ttf
+Magnolia Script|Magnolia Script.otf
+Crooked|Crooked.ttf
