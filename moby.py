@@ -1191,6 +1191,11 @@ def invalidate_ola():
     st.session_state.moby_ola_text = ""
 
 
+def ypo_at_to_html(texto):
+    """Regra autoral dos .ypo/.Pip: cada @ representa uma linha em branco."""
+    return str(texto or "").replace("@", "<br>")
+
+
 def ypoema_html_to_text(ypoema_html):
     texto = str(ypoema_html or "")
     texto = texto.replace("<br/>", "\n").replace("<br />", "\n").replace("<br>", "\n")
@@ -1515,29 +1520,53 @@ def swap_machina_off():
 
 
 def prepare_portrait():
-    """Gera novo Retrato com o texto atual e uma nova dupla de imagens."""
+    """Mantém o texto atual; usa a imagem esquerda visível e, depois, só renova as imagens."""
     dismiss_help()
 
-    if str(st.session_state.get("moby_mode", "Machina")) == "Off-Machina":
+    modo_off = str(st.session_state.get("moby_mode", "Machina")) == "Off-Machina"
+    if modo_off:
         path = current_off_book_path()
         assinatura = ("Off-Machina", str(path or ""), int(st.session_state.get("moby_off_take", 0)))
-        tema = current_off_page()[0]
+        tema, corpo_off = current_off_page()
     else:
         tema = current_theme()
         assinatura = ("Machina", tema, int(st.session_state.get("moby_reading_n", 1)))
 
-    img1, img2 = imagens_do_tema(DNA_ROWS, tema)
-    chosen = str(img1) if img1 else ""
+    # Primeiro Retrato: exatamente a imagem que o usuário está vendo à esquerda.
+    # Retratos seguintes: mantém o texto e renova somente a dupla de imagens.
+    chosen = str(st.session_state.get("moby_image_path", "")).strip()
+    if st.session_state.get("moby_footer_view", "images") == "portrait":
+        img1, img2 = imagens_do_tema(DNA_ROWS, tema)
+        chosen = str(img1) if img1 else ""
+        st.session_state.moby_image_path = chosen
+        st.session_state.moby_image_path_2 = str(img2) if img2 else ""
+        st.session_state.moby_image_theme = assinatura
+
+    if not chosen or not Path(chosen).is_file():
+        img1, img2 = imagens_do_tema(DNA_ROWS, tema)
+        chosen = str(img1) if img1 else ""
+        st.session_state.moby_image_path = chosen
+        st.session_state.moby_image_path_2 = str(img2) if img2 else ""
+        st.session_state.moby_image_theme = assinatura
+
     if not chosen or not Path(chosen).is_file():
         return
 
-    st.session_state.moby_image_theme = assinatura
-    st.session_state.moby_image_path = chosen
-    st.session_state.moby_image_path_2 = str(img2) if img2 else ""
     st.session_state.moby_portrait_image = chosen
 
-    title = st.session_state.get("moby_current_title", "retrato")
-    poem_html = st.session_state.get("moby_current_poem_html", "")
+    if modo_off:
+        title = str(tema or "retrato")
+        # O callback roda antes do rerun: usa o texto congelado do palco somente
+        # quando ele pertence à página Off-Machina atual; caso contrário, recompõe
+        # diretamente a página corrente.
+        if str(st.session_state.get("moby_current_title", "")) == title:
+            poem_html = str(st.session_state.get("moby_current_poem_html", ""))
+        else:
+            poem_html = ypo_at_to_html(html.escape(str(corpo_off))).replace("\n", "<br>")
+    else:
+        title = st.session_state.get("moby_current_title", "retrato")
+        poem_html = st.session_state.get("moby_current_poem_html", "")
+
     png = create_moby_portrait_png(poem_html, chosen, title)
     if png:
         st.session_state.moby_portrait_png = png
@@ -1626,7 +1655,7 @@ def update_real_poem():
                     if re.fullmatch(r"</?mark>", parte, flags=re.IGNORECASE):
                         seguro.append(parte.lower())
                     else:
-                        seguro.append(html.escape(parte))
+                        seguro.append(ypo_at_to_html(html.escape(parte)))
                 linhas.append("".join(seguro))
 
     st.session_state.moby_poem_html = "<br>".join(linhas)
@@ -2876,7 +2905,7 @@ corpo_palco = int(st.session_state.get("moby_font_size", 20))
 
 if st.session_state.get("moby_mode") == "Off-Machina":
     titulo_palco, corpo_off = current_off_page()
-    poema_html_original = html.escape(str(corpo_off)).replace("\n", "<br>")
+    poema_html_original = ypo_at_to_html(html.escape(str(corpo_off))).replace("\n", "<br>")
 else:
     update_real_poem()
     titulo_palco = current_theme()
