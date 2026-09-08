@@ -2678,20 +2678,8 @@ st.markdown(
             padding-right: .18rem !important;
         }
 
-        .st-key-moby_images_stage,
-        .st-key-moby_images_stage > div,
-        .st-key-moby_images_stage div[data-testid="stElementContainer"],
-        .st-key-moby_images_stage div[data-testid="stMarkdownContainer"] {
-            min-width: 0 !important;
-            max-width: 100% !important;
-            width: 100% !important;
-            box-sizing: border-box !important;
-            overflow: hidden !important;
-        }
-
-        .st-key-moby_images_stage .moby-footer-image {
-            max-height: 118px !important;
-            max-width: 82% !important;
+        .st-key-moby_images_stage .moby-footer-images-flex {
+            grid-template-columns: .35fr minmax(0, 1fr) .35fr minmax(0, 1fr) .35fr;
         }
     }
     </style>
