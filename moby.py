@@ -3128,7 +3128,7 @@ with st.container(key="moby_footer_zone", border=False):
         c1, c2, c3 = st.columns(3, gap="small")
 
         with c1:
-            with st.popover("Copiar", help="copiar texto", use_container_width=True):
+            with st.popover("Copiar", use_container_width=True):
                 st.code(ypoema_html_to_text(poema_html), language=None, wrap_lines=True)
 
         with c2:
@@ -3140,14 +3140,13 @@ with st.container(key="moby_footer_zone", border=False):
     if footer_view == "portrait" and st.session_state.get("moby_portrait_png", b""):
         portrait_png = st.session_state.get("moby_portrait_png", b"")
         with st.container(key="moby_portrait_stage", border=False):
-            portrait_view, portrait_actions = st.columns([2.25, 1.0], gap="small")
+            portrait_view, portrait_actions = st.columns([2.0, 1.0], gap="small")
             with portrait_view:
                 st.image(portrait_png, width="content")
             with portrait_actions:
                 if st.button(
                     "Ampliar",
                     key="moby_portrait_ampliar",
-                    help="ampliar",
                     width="stretch",
                 ):
                     ampliar_retrato_moby(portrait_png)
@@ -3157,7 +3156,6 @@ with st.container(key="moby_footer_zone", border=False):
                     file_name=f"{st.session_state.get('moby_portrait_name', 'retrato')}.png",
                     mime="image/png",
                     key="moby_portrait_save",
-                    help="salvar",
                     width="stretch",
                 )
 
