@@ -3,6 +3,7 @@ Capsuula|Capsuula.ttf
 Crooked|Crooked.ttf
 Magnolia Script|Magnolia Script.otf
 Remingtoned Type|Remingtoned Type.ttf
+Dyslexic|OpenDyslexic-Regular.otf
 Staircase|LT Staircase.otf
 Snidane|Snidane.ttf
 Tomato|Tomato Pasta.otf
