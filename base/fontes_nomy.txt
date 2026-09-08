@@ -1,9 +1,9 @@
 Violina|Violina Regular.ttf
-Bistrot|Le Bistrot des Amoureux.ttf
 Capsuula|Capsuula.ttf
 Crooked|Crooked.ttf
 Magnolia Script|Magnolia Script.otf
 Remingtoned Type|Remingtoned Type.ttf
 Staircase|LT Staircase.otf
+Snidane|Snidane.ttf
 Tomato|Tomato Pasta.otf
 Typo Round|Typo_Round_Regular_Demo.otf
