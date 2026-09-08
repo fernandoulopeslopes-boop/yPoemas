@@ -10,4 +10,4 @@ st.set_page_config(
 
 from basico import start_machina
 
-start_machina("mobile")
+start_machina("local")
