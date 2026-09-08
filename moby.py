@@ -1,4 +1,4 @@
-# moby_v063.py
+# moby_v063.py 
 # Etapa 063: EUREKA substitui OLA no Moby; usa listas existentes e preserva o palco.
 # MACHINA — Mobile ultra-light
 # Blindagem HTML preservada; não altera basico.py, DNA, .ypo, .pip ou conteúdo autoral.
