@@ -1,4 +1,4 @@
-# moby_v063.py 
+# moby_v063.py
 # Etapa 063: EUREKA substitui OLA no Moby; usa listas existentes e preserva o palco.
 # MACHINA — Mobile ultra-light
 # Blindagem HTML preservada; não altera basico.py, DNA, .ypo, .pip ou conteúdo autoral.
@@ -2906,7 +2906,7 @@ elif st.session_state.get("moby_mode") == "Off-Machina":
     with col_book:
         if str(st.session_state.get("moby_off_book_pick", "")) not in nomes_off:
             st.session_state["moby_off_book_pick"] = nomes_off[idx_off]
-        livro_off = st.selectbox(f"livros: {idx_off + 1} / {len(nomes_off)}", nomes_off, key="moby_off_book_pick")
+        livro_off = st.selectbox(f"livro: {idx_off + 1}/{len(nomes_off)}", nomes_off, key="moby_off_book_pick")
         novo_idx = nomes_off.index(livro_off)
         if novo_idx != st.session_state.moby_off_book_index:
             st.session_state.moby_off_plus_help = False
@@ -2932,7 +2932,7 @@ elif st.session_state.get("moby_mode") == "Off-Machina":
         st.button("🔍", key="moby_eureka_focus_off", width="stretch", on_click=toggle_eureka)
 
     with col_theme:
-        titulo_off = st.selectbox(f"temas: {st.session_state.moby_off_take + 1} / {len(titulos_off)}", titulos_off, key="moby_off_page_pick")
+        titulo_off = st.selectbox(f"tema: {st.session_state.moby_off_take + 1}/{len(titulos_off)}", titulos_off, key="moby_off_page_pick")
         novo_take = titulos_off.index(titulo_off)
         if novo_take != st.session_state.moby_off_take:
             st.session_state.moby_off_plus_help = False
@@ -2951,7 +2951,7 @@ else:
     col_book, col_eureka, col_theme = st.columns([3, 1.25, 3], gap="small")
     with col_book:
         st.selectbox(
-            f"livros: {livro_atual_idx + 1} / {len(MOBY_BOOKS)}",
+            f"livro: {livro_atual_idx + 1}/{len(MOBY_BOOKS)}",
             MOBY_BOOKS,
             index=livro_atual_idx,
             key="moby_book_pick",
@@ -2965,7 +2965,7 @@ else:
         if st.session_state.get("moby_theme_pick") not in temas:
             st.session_state["moby_theme_pick"] = current
         st.selectbox(
-            f"temas: {tema_atual_idx + 1} / {len(temas)}",
+            f"tema: {tema_atual_idx + 1}/{len(temas)}",
             temas,
             key="moby_theme_pick",
             on_change=theme_picked,
