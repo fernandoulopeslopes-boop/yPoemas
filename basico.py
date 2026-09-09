@@ -31,8 +31,8 @@ import streamlit.components.v1 as components
 import dna as dna_core
 # ✅
 
-APP_BUILD = "2026-09-08_FONTES_YPOEMAS_ARQUIVOS_LOCAIS"
-APP_BUILD_NOTES = "fontes_ypoemas.txt aponta para arquivos .ttf/.otf locais; palco e Retrato usam a mesma fonte física."
+APP_BUILD = "2026-09-08_FONTES_YPOEMAS_START_MACHINA_COMPAT"
+APP_BUILD_NOTES = "fontes_ypoemas local preservado; compatibilidade start_machina restaurada como porta histórica para main()."
 
 APP_VARIANT = "local"
 
@@ -5751,3 +5751,8 @@ def main(app_variant="local"):
                     )
 
                 render_sidebar_context_image(chosen_id)
+
+
+# Compatibilidade das portas históricas ypo_*.py / yPoemas.py.
+def start_machina(app_variant="local"):
+    return main(app_variant)
