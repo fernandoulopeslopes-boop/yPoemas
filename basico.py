@@ -18,8 +18,6 @@ import string
 import base64
 import html
 import json
-import hashlib
-import uuid
 import unicodedata
 import urllib.request
 import urllib.parse
@@ -33,8 +31,8 @@ import streamlit.components.v1 as components
 import dna as dna_core
 # ✅
 
-APP_BUILD = "2026-09-05_LYPO_TYPO_REATIVADO"
-APP_BUILD_NOTES = "LYPO volta a ser a autoridade do último yPoema; TYPO só nasce de tradução integral válida; rerun comum não gera outro yPoema."
+APP_BUILD = "2026-09-08_FONTES_YPOEMAS_EXTERNAS"
+APP_BUILD_NOTES = "Fontes da porta WWW yPoemas governadas por base/fontes_ypoemas.txt; lista fixa removida do basico.py."
 
 APP_VARIANT = "local"
 
@@ -55,7 +53,7 @@ livros_list = [
 ]
 
 # Constantes usadas pelo Build Rimas em tools.py.
-# tools_mod.show_tools(globals()) transfere este namespace ao módulo Tools.
+# tools_mod.render_page(globals()) transfere este namespace ao módulo Tools.
 BUILD_RIMAS_WORD_RE = re.compile(
     r"[^\W\d_]+(?:[-'][^\W\d_]+)*",
     re.UNICODE,
@@ -130,10 +128,10 @@ IDIOMAS_OFICIAIS = [
 # -----------------------------------------------------------------------------
 
 def have_internet(host="1.1.1.1", port=80, timeout=3):
-    """Sonda conectividade sem alterar o timeout global dos demais serviços."""
+    """Verifica conexão antes de ativar tradução e voz neural."""
     try:
-        with socket.create_connection((host, port), timeout=timeout):
-            pass
+        socket.setdefaulttimeout(timeout)
+        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
         return True
     except OSError:
         return False
@@ -142,22 +140,18 @@ def have_internet(host="1.1.1.1", port=80, timeout=3):
 GoogleTranslator = None
 edge_tts = None
 
-try:
-    from deep_translator import GoogleTranslator
-except ImportError:
-    st.warning("Google Translator não encontrado no ambiente...")
-
 if have_internet():
+    try:
+        from deep_translator import GoogleTranslator
+    except ImportError:
+        st.warning("Google Translator não encontrado no ambiente...")
+
     try:
         import edge_tts
     except ImportError:
         st.warning("Motor de voz neural (edge-tts) não conectado.")
 else:
-    st.warning("Internet não conectada. Vozes Neurais indisponíveis.")
-
-_TRANSLATION_CACHE = {}
-_TRANSLATION_CACHE_LIMIT = 512
-_TRANSLATION_BACKOFF_SECONDS = 30.0
+    st.warning("Internet não conectada. Traduções e Vozes Neurais indisponíveis.")
 
 # Identificador atual usado por LYPO/TYPO.
 # Mantido neste CLEAN por preservar a persistência do último yPoema gerado.
@@ -691,15 +685,6 @@ def init_session_state():
     defaults = {
         "lang": "pt",
         "last_lang": "pt",
-        "curr_lang": "pt",
-        "translation_ui_backoff_until": 0.0,
-        "translation_content_backoff_until": 0.0,
-        "translation_last_error": "",
-        "ypo_reader_id": "",
-        "lypo_context": "",
-        "lypo_signature": "",
-        "typo_lang": "",
-        "typo_lypo_signature": "",
         "book": "todos os temas",
         "take": 0,
         "mini": 0,
@@ -719,8 +704,7 @@ def init_session_state():
         "auto": False,
         "rand": False,
 
-        "fonte_palco": "OpenDyslexic",
-        "estilo_palco": "normal",
+        "fonte_palco": "Trebuchet MS",
         "corpo_palco": 21,
         "sidebar_panel": "Machina",
 
@@ -797,50 +781,48 @@ def natural_keys(text):
 # ALA 2 — PALCO / LEITOR / NAVEGAÇÃO
 # Tudo que governa leitura, seleção e circulação no palco.
 # =============================================================================
-FONTES_MACHINA = [
-    ("OpenDyslexic", "OpenDyslexic"),
-    ("MV Boli", "MV Boli"),
-    ("Source Code SemiBold", "Source Code Pro"),
-    ("Comic Relief", "Comic Relief"),
-    ("JetBrains Mono", "JetBrains Mono"),
-    ("Ubuntu Condensed", "Ubuntu Condensed"),
-]
+FONTES_YPOEMAS_ARQUIVO = _project_path("base", "fontes_ypoemas.txt")
 
-# Uma lista única de estilo para as seis famílias.
-# É um território de teste visual no palco; a curadoria final continua autoral.
-ESTILOS_MACHINA = [
-    "normal",
-    "itálico",
-    "bold",
-    "bold itálico",
-]
+def _load_fontes_ypoemas():
+    """Lê a autoridade externa de fontes da porta WWW yPoemas."""
+    fontes = []
+    try:
+        with open(FONTES_YPOEMAS_ARQUIVO, "r", encoding="utf-8-sig") as arquivo:
+            for linha in arquivo:
+                linha = linha.strip()
+                if not linha or linha.startswith("#"):
+                    continue
+                partes = [parte.strip() for parte in linha.split("|", 1)]
+                if len(partes) != 2 or not partes[0] or not partes[1]:
+                    continue
+                fontes.append((partes[0], partes[1]))
+    except OSError:
+        return []
+    return fontes
 
-# Peso-base faz parte da identidade da família escolhida.
-FONTES_PESO_BASE = {
-    "OpenDyslexic": 400,
-    "MV Boli": 400,
-    "Source Code Pro": 600,
-    "Comic Relief": 400,
-    "JetBrains Mono": 400,
-    "Ubuntu Condensed": 400,
-}
 
 GOOGLE_FONTS_CSS = (
     "https://fonts.googleapis.com/css2?"
     "family=Comic+Relief:wght@400;700&"
-    "family=JetBrains+Mono:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&"
-    "family=Source+Code+Pro:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&"
-    "family=Ubuntu+Condensed&"
+    "family=Cormorant+Garamond:wght@400;600;700&"
+    "family=IBM+Plex+Sans:wght@400;600;700&"
+    "family=JetBrains+Mono:wght@400;600;700&"
+    "family=Saira:wght@400;600;700&"
     "display=swap"
 )
 
 FONTES_PALCO_CSS = {
+    "Courier New": '"Courier New", Courier, monospace',
     "OpenDyslexic": '"OpenDyslexic", sans-serif',
-    "MV Boli": '"MV Boli", "Segoe Print", cursive',
-    "Source Code Pro": '"Source Code Pro", Consolas, "Courier New", monospace',
-    "Comic Relief": '"Comic Relief", "Comic Sans MS", cursive',
+    "Trebuchet MS": '"Trebuchet MS", Trebuchet, Arial, sans-serif',
+    "Cormorant Garamond": '"Cormorant Garamond", Georgia, serif',
+    "Palatino Linotype": '"Palatino Linotype", Palatino, "Book Antiqua", serif',
+    "Georgia": 'Georgia, "Times New Roman", serif',
     "JetBrains Mono": '"JetBrains Mono", Consolas, "Courier New", monospace',
-    "Ubuntu Condensed": '"Ubuntu Condensed", "Arial Narrow", Arial, sans-serif',
+    "IBM Plex Sans": '"IBM Plex Sans", Arial, sans-serif',
+    "Saira": 'Saira, Arial, sans-serif',
+    "Comic Relief": '"Comic Relief", "Comic Sans MS", cursive',
+    "Hand Writing": '"Segoe Print", "Bradley Hand", cursive',
 }
 
 def open_gramado():
@@ -862,260 +844,28 @@ def palco_status(book=None, pos=None, total=None):
         return f"🍃  {st.session_state.lang} ( {book} )"
     return f"🍃  {st.session_state.lang} ( {book} ) ( {pos} / {total} )"
 
-_TRANSLATION_PROTECTED_NAMES = (
-    "Off-Machina",
-    "yPoemas",
-    "EUREKA",
-    "ACROS",
-    "AKROS",
-    "Machina",
-    "ABOUT",
-    "Atelier",
-)
-
-
-def _translation_target():
-    """Idioma pedido pelo leitor; nunca é inferido do texto traduzido."""
-    return str(st.session_state.get("lang", "pt") or "pt").strip().lower()
-
-
-def _translation_normalize_markup(output_text):
-    """Repara somente deformações históricas do marcador de quebra de linha."""
-    output_text = str(output_text or "")
-    output_text = output_text.replace("<br>>", "<br>")
-    output_text = output_text.replace("< br>", "<br>")
-    output_text = output_text.replace("<br >", "<br>")
-    output_text = output_text.replace("<br ", "<br>")
-    output_text = output_text.replace(" br>", "<br>")
-    return output_text
-
-
-def _translation_protect(text):
-    """Protege nomes próprios e estruturas que não pertencem à tradução."""
-    protected = []
-
-    def reserve(value):
-        token = f"ZXQPH{len(protected):05d}QXZ"
-        protected.append((token, value))
-        return token
-
-    # Código Markdown, tags HTML e destinos de links são estrutura, não prosa.
-    pattern = re.compile(
-        r"```.*?```|`[^`\n]+`|<[^>]+>|(?<=\]\()[^)]+(?=\))",
-        flags=re.DOTALL,
-    )
-    safe = pattern.sub(lambda match: reserve(match.group(0)), str(text or ""))
-
-    names_pattern = re.compile(
-        r"(?<![\w-])(?:"
-        + "|".join(re.escape(name) for name in _TRANSLATION_PROTECTED_NAMES)
-        + r")(?![\w-])",
-        flags=re.IGNORECASE,
-    )
-    safe = names_pattern.sub(lambda match: reserve(match.group(0)), safe)
-    return safe, protected
-
-
-def _translation_restore(text, protected):
-    """Restaura estruturas protegidas; ausência de token invalida a tradução."""
-    restored = str(text or "")
-    for token, original in protected:
-        if token not in restored:
-            return "", False
-        restored = restored.replace(token, original)
-    return restored, True
-
-
-def _translation_chunks(text, limit=1400):
-    """Divide textos longos sem perder nenhum caractere da fonte."""
-    text = str(text or "")
-    if len(text) <= limit:
-        return [text]
-
-    chunks = []
-    start = 0
-    while start < len(text):
-        end = min(start + limit, len(text))
-        if end < len(text):
-            floor = start + (limit // 2)
-            cuts = [
-                text.rfind("\n\n", floor, end),
-                text.rfind("\n", floor, end),
-                text.rfind(". ", floor, end),
-                text.rfind(" ", floor, end),
-            ]
-            cut = max(cuts)
-            if cut > start:
-                end = cut + (2 if text[cut:cut + 2] in {"\n\n", ". "} else 1)
-
-            # Nunca divide um placeholder de estrutura protegida.
-            token_start = text.rfind("ZXQPH", start, end)
-            if token_start >= start:
-                token_end = text.find("QXZ", token_start)
-                if token_end >= end:
-                    end = token_start if token_start > start else token_end + 3
-        chunks.append(text[start:end])
-        start = end
-    return chunks
-
-
-def _translation_google_direct(input_text, target):
-    """Rota HTTP GET; independe do parser HTML do deep-translator."""
-    query = urllib.parse.urlencode(
-        {
-            "client": "gtx",
-            "sl": "pt",
-            "tl": target,
-            "dt": "t",
-            "q": input_text,
-        }
-    )
-    errors = []
-    for host in ("translate.googleapis.com", "translate.google.com"):
-        try:
-            request = urllib.request.Request(
-                f"https://{host}/translate_a/single?{query}",
-                headers={
-                    "Accept": "application/json,text/plain,*/*",
-                    "User-Agent": "Mozilla/5.0",
-                },
-                method="GET",
-            )
-            with urllib.request.urlopen(request, timeout=12) as response:
-                payload = json.loads(response.read().decode("utf-8"))
-
-            segments = payload[0] if isinstance(payload, list) and payload else []
-            output_text = "".join(
-                str(segment[0])
-                for segment in segments
-                if isinstance(segment, list) and segment and segment[0] is not None
-            )
-            if not output_text:
-                raise RuntimeError("resposta vazia")
-            return output_text
-        except Exception as exc:
-            errors.append(f"{host}: {exc}")
-
-    raise RuntimeError(" | ".join(errors))
-
-
-def _translation_unit(input_text, target):
-    """Traduz uma unidade curta por duas rotas, com cache e repetição."""
-    cache_key = (target, input_text)
-    cached = _TRANSLATION_CACHE.get(cache_key)
-    if cached is not None:
-        return cached, True
-
-    leading = re.match(r"^\s*", input_text).group(0)
-    trailing = re.search(r"\s*$", input_text).group(0)
-    core_end = len(input_text) - len(trailing) if trailing else len(input_text)
-    core = input_text[len(leading):core_end]
-    if not core:
-        return input_text, True
-
-    errors = []
-    for attempt in range(2):
-        providers = [("google-direto", _translation_google_direct)]
-        if GoogleTranslator is not None:
-            providers.append(
-                (
-                    "deep-translator",
-                    lambda text, lang: GoogleTranslator(
-                        source="pt", target=lang
-                    ).translate(text=text),
-                )
-            )
-
-        for provider_name, provider in providers:
-            try:
-                translated_core = provider(core, target)
-                if not translated_core:
-                    raise RuntimeError("tradutor devolveu resposta vazia")
-                output_text = (
-                    leading
-                    + _translation_normalize_markup(translated_core)
-                    + trailing
-                )
-                if len(_TRANSLATION_CACHE) >= _TRANSLATION_CACHE_LIMIT:
-                    _TRANSLATION_CACHE.pop(next(iter(_TRANSLATION_CACHE)))
-                _TRANSLATION_CACHE[cache_key] = output_text
-                return output_text, True
-            except Exception as exc:
-                errors.append(f"{provider_name}: {exc}")
-
-        if attempt == 0:
-            time.sleep(0.20)
-
-    st.session_state["translation_last_error"] = " | ".join(errors[-6:])
-    print(
-        "[Machina tradução] " + st.session_state["translation_last_error"],
-        flush=True,
-    )
-    return input_text, False
-
-
-def _translate_atomic(input_text, target=None, channel="ui"):
-    """Traduz tudo ou preserva tudo; nunca devolve documento pela metade."""
-    input_text = str(input_text or "")
-    target = str(target or _translation_target()).strip().lower()
-    if target == "pt" or not input_text:
-        return input_text, True
-    channel = "content" if str(channel).lower() == "content" else "ui"
-    backoff_key = f"translation_{channel}_backoff_until"
-    now = time.monotonic()
-    backoff_until = float(st.session_state.get(backoff_key, 0.0) or 0.0)
-    if now < backoff_until:
-        return input_text, False
-
-    safe_text, protected = _translation_protect(input_text)
-    translated_chunks = []
-    for chunk in _translation_chunks(safe_text):
-        if not chunk.strip():
-            translated_chunks.append(chunk)
-            continue
-        translated, success = _translation_unit(chunk, target)
-        if not success:
-            st.session_state[backoff_key] = (
-                time.monotonic() + _TRANSLATION_BACKOFF_SECONDS
-            )
-            return input_text, False
-        translated_chunks.append(translated)
-
-    restored, success = _translation_restore("".join(translated_chunks), protected)
-    if not success:
-        st.session_state["translation_last_error"] = "estrutura protegida alterada pelo tradutor"
-        st.session_state[backoff_key] = (
-            time.monotonic() + _TRANSLATION_BACKOFF_SECONDS
-        )
-        return input_text, False
-
-    st.session_state[backoff_key] = 0.0
-    st.session_state["translation_last_error"] = ""
-    return restored, True
-
-
 def translate(input_text):
-    """Traduz prosa visível sem alterar estado interno nem idioma selecionado."""
-    translated, _success = _translate_atomic(input_text, channel="ui")
-    return translated
+    """Traduz textos de apoio e yPoemas quando o idioma atual não é português."""
+    if st.session_state.lang == "pt":  # don't need translations here
+        return input_text
 
+    if not have_internet() or GoogleTranslator is None:
+        st.session_state.lang = "pt"
+        return input_text
 
-def translate_content(input_text):
-    """Traduz conteúdo principal e registra o idioma realmente exibido."""
-    target = _translation_target()
-    translated, success = _translate_atomic(input_text, target, channel="content")
-    st.session_state["curr_lang"] = target if success else "pt"
-    if not success:
-        st.warning(
-            "Tradução temporariamente indisponível; "
-            "o original em português foi preservado."
-        )
-    return translated
+    try:
+        output_text = GoogleTranslator(
+            source="pt", target=st.session_state.lang
+        ).translate(text=input_text)
 
-
-def translate_document(input_text):
-    """Traduz documentos Markdown de modo integral e atômico."""
-    return translate_content(input_text)
+        output_text = output_text.replace("<br>>", "<br>")
+        output_text = output_text.replace("< br>", "<br>")
+        output_text = output_text.replace("<br >", "<br>")
+        output_text = output_text.replace("<br ", "<br>")
+        output_text = output_text.replace(" br>", "<br>")
+        return output_text
+    except Exception:
+        return "Arquivo muito grande para ser traduzido."
 
 def pick_lang():  # lista oficial de idiomas + P.O.L.Y.
     options = []
@@ -1160,24 +910,10 @@ def pick_lang():  # lista oficial de idiomas + P.O.L.Y.
 
 def _fonte_palco_css(family=None):
     """Retorna a pilha CSS efetiva da fonte escolhida pelo leitor."""
-    family = str(family or st.session_state.get("fonte_palco", "OpenDyslexic")).strip()
+    family = str(family or st.session_state.get("fonte_palco", "Trebuchet MS")).strip()
+    if family == "Trebuchet":
+        family = "Trebuchet MS"
     return FONTES_PALCO_CSS.get(family, f'"{family}", sans-serif')
-
-
-def _estilo_palco_leitor():
-    """Estilo tipográfico escolhido pelo leitor para o palco."""
-    estilo = str(st.session_state.get("estilo_palco", "normal")).strip().casefold()
-    return estilo if estilo in ESTILOS_MACHINA else "normal"
-
-
-def _estilo_palco_css(family=None, estilo=None):
-    """Converte o estilo comum da Machina em peso + inclinação CSS."""
-    family = str(family or st.session_state.get("fonte_palco", "OpenDyslexic")).strip()
-    estilo = str(estilo or _estilo_palco_leitor()).strip().casefold()
-    peso_base = int(FONTES_PESO_BASE.get(family, 400))
-    peso = 700 if "bold" in estilo else peso_base
-    inclinacao = "italic" if "itálico" in estilo else "normal"
-    return peso, inclinacao
 
 def _open_dyslexic_font_face():
     """Monta @font-face somente para a OpenDyslexic existente em ./fonts."""
@@ -1378,38 +1114,37 @@ def pick_tema_palco():
     )
 
 def pick_fonte_palco():
-    """Escolhe fonte, estilo e corpo de leitura do Palco."""
-    labels = [label for label, fonte in FONTES_MACHINA]
-    lookup = {label: fonte for label, fonte in FONTES_MACHINA}
+    """Escolhe fonte e corpo de leitura do Palco."""
+    fontes_ypoemas = _load_fontes_ypoemas()
+    if not fontes_ypoemas:
+        st.sidebar.warning("base/fontes_ypoemas.txt vazio ou não encontrado")
+        return
 
-    current_font = st.session_state.get("fonte_palco", "OpenDyslexic")
+    labels = [label for label, fonte in fontes_ypoemas]
+    lookup = {label: fonte for label, fonte in fontes_ypoemas}
+
+    current_font = st.session_state.get("fonte_palco", "Trebuchet MS")
     current_label = next(
-        (label for label, fonte in FONTES_MACHINA if fonte == current_font),
+        (label for label, fonte in fontes_ypoemas if fonte == current_font),
         labels[0],
     )
 
-    current_style = _estilo_palco_leitor()
     corpos = list(range(14, 35, 2))
     current_size = st.session_state.get("corpo_palco", 22)
     if current_size not in corpos:
         current_size = 22
 
-    # Fonte ocupa a largura inteira; estilo e corpo dividem a linha abaixo.
-    choice = st.sidebar.selectbox(
-        translate("fonte"),
-        labels,
-        index=labels.index(current_label),
-        key="sidebar_font_select",
-    )
+    # Mesmo eixo visual da lista de idiomas: duas listas nativas lado a lado.
+    # A soma das duas ocupa a largura útil da sidebar; corpo fica largo o
+    # suficiente para exibir dois dígitos sem esmagar o título.
+    col_font, col_corpo = st.sidebar.columns([2.78, 1.32])
 
-    col_estilo, col_corpo = st.sidebar.columns([1.65, 1.15])
-
-    with col_estilo:
-        estilo = st.selectbox(
-            translate("estilo"),
-            ESTILOS_MACHINA,
-            index=ESTILOS_MACHINA.index(current_style),
-            key="sidebar_style_select",
+    with col_font:
+        choice = st.selectbox(
+            translate("fontes & letras"),
+            labels,
+            index=labels.index(current_label),
+            key="sidebar_font_select",
         )
 
     with col_corpo:
@@ -1421,9 +1156,19 @@ def pick_fonte_palco():
         )
 
     st.session_state.fonte_palco = lookup[choice]
-    st.session_state.estilo_palco = estilo
     st.session_state.corpo_palco = size
 
+def load_help(idiom):
+    returns = []
+    returns.append(translate("tema anterior"))
+    returns.append(translate("escolhe tema ao acaso"))
+    returns.append(translate("próximo tema"))
+    returns.append(translate("mais lidos..."))
+    returns.append(translate("gera nova versão do tema"))
+    returns.append("")  # posição histórica removida: antigo botão arte
+    returns.append(translate("voz"))
+
+    return returns
 
 def draw_check_buttons():
     """Botão arte removido: a sidebar já mostra/oculta a arte pela lógica de contexto."""
@@ -1458,7 +1203,10 @@ def _palco_titulo_centralizado(LOGO_TEXTO):
 
 def _fonte_palco_leitor():
     """Fonte escolhida pelo leitor para o yPoema."""
-    return st.session_state.get("fonte_palco", "OpenDyslexic")
+    fonte = st.session_state.get("fonte_palco", "Trebuchet MS")
+    if fonte == "Trebuchet":
+        fonte = "Trebuchet MS"
+    return fonte
 
 def _corpo_palco_leitor():
     """Corpo escolhido pelo leitor para o yPoema."""
@@ -1473,14 +1221,12 @@ def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
 
     fonte_palco = _fonte_palco_leitor()
     fonte_palco_css = _fonte_palco_css(fonte_palco)
-    peso_palco, estilo_css = _estilo_palco_css(fonte_palco)
     corpo_palco = _corpo_palco_leitor()
 
     logo_css = f"""
         <style>
         .logo-text {{
-            font-weight: {peso_palco} !important;
-            font-style: {estilo_css} !important;
+            font-weight: 600 !important;
             font-size: {corpo_palco}px !important;
             font-family: {fonte_palco_css} !important;
             color: #000000 !important;
@@ -1639,12 +1385,12 @@ def list_readings():
 # =============================================================================
 def load_temas(book):  # List of themes inside a Book
     """DNA ÚNICO: lista temas do livro sem consultar rol_*.txt."""
-    return dna_core.get_temas_livro(book, include_testes=True)
+    return dna_core.temas_do_livro(book, include_testes=True)
 
 @st.cache_data
 def load_info(nome_tema):
     """Compatibilidade de apresentação: lê exclusivamente o DNA."""
-    row = dna_core.get_registro(nome_tema)
+    row = dna_core.registro(nome_tema)
     if not row:
         return "nonono"
     linhas = [
@@ -1686,35 +1432,20 @@ def load_index():  # Load indexes numbers for all themes
 
     return index_list
 
-def _ypo_reader_id():
-    """Identifica a sessão leitora; o IP do servidor não distingue leitores WWW."""
-    reader_id = str(st.session_state.get("ypo_reader_id", "") or "").strip()
-    if not reader_id:
-        reader_id = uuid.uuid4().hex
-        st.session_state["ypo_reader_id"] = reader_id
-    return reader_id
-
-
-def _lypo_path():
-    return _project_path("temp", "LYPO_" + _ypo_reader_id())
-
-
-def _typo_path():
-    return _project_path("temp", "TYPO_" + _ypo_reader_id())
-
-
-def load_lypo():  # Load Last YPOema & replace '\n' with '<br>'
+def load_lypo():  # Load last yPoema & replace '\n' with '<br>' for translator returned text
     lypo_text = ""
-    with open(_lypo_path(), encoding="utf-8", errors="replace") as script:
+    lypo_user = "LYPO_" + ip
+    with open(os.path.join("./temp/" + lypo_user), encoding="utf-8", errors="replace") as script:
         for line in script:
             line = line.strip()
             lypo_text += line + "<br>"
 
     return lypo_text
 
-def load_typo():  # Load Translated YPOema & clean translator returned bugs
+def load_typo():  # Load translated yPoema & clean translator returned bugs in text
     typo_text = ""
-    with open(_typo_path(), encoding="utf-8", errors="replace") as script:
+    typo_user = "TYPO_" + ip
+    with open(os.path.join("./temp/" + typo_user), encoding="utf-8", errors="replace") as script:
         for line in script:  # just 1 line
             line = line.strip()
             if " >" in line:
@@ -1732,81 +1463,6 @@ def load_typo():  # Load Translated YPOema & clean translator returned bugs
             typo_text += line + "<br>"
 
     return typo_text
-
-
-def _save_typo(typo_text):
-    """Grava TYPO somente depois de uma tradução integral bem-sucedida."""
-    os.makedirs(os.path.dirname(_typo_path()), exist_ok=True)
-    with open(_typo_path(), "w", encoding="utf-8") as save_typo:
-        save_typo.write(str(typo_text or ""))
-
-
-def _lypo_context_key(context):
-    return json.dumps(context, ensure_ascii=False, sort_keys=True, default=str)
-
-
-def _lypo_text_signature(text):
-    return hashlib.sha256(str(text or "").encode("utf-8")).hexdigest()
-
-
-def _invalidate_typo():
-    """Invalida a derivação sem tocar no LYPO, que permanece autoridade."""
-    st.session_state["typo_lang"] = ""
-    st.session_state["typo_lypo_signature"] = ""
-
-
-def resolve_lypo_typo(context, generate_lypo=None, force_generate=False):
-    """Entrega LYPO ou seu TYPO válido sem confundir rerun com geração."""
-    context_key = _lypo_context_key(context)
-    lypo_exists = os.path.isfile(_lypo_path())
-    context_changed = st.session_state.get("lypo_context", "") != context_key
-    must_generate = bool(force_generate or context_changed or not lypo_exists)
-
-    if must_generate:
-        if generate_lypo is None:
-            raise RuntimeError("gerador LYPO ausente para o contexto atual")
-        generate_lypo()
-        st.session_state["lypo_context"] = context_key
-        _invalidate_typo()
-
-    lypo_text = load_lypo()
-    lypo_signature = _lypo_text_signature(lypo_text)
-    if st.session_state.get("lypo_signature", "") != lypo_signature:
-        st.session_state["lypo_signature"] = lypo_signature
-        _invalidate_typo()
-
-    target = _translation_target()
-    if target == "pt":
-        st.session_state["curr_lang"] = "pt"
-        return lypo_text
-
-    typo_valid = (
-        os.path.isfile(_typo_path())
-        and st.session_state.get("typo_lang", "") == target
-        and st.session_state.get("typo_lypo_signature", "") == lypo_signature
-    )
-    if typo_valid:
-        st.session_state["curr_lang"] = target
-        return load_typo()
-
-    translated, success = _translate_atomic(
-        lypo_text,
-        target=target,
-        channel="content",
-    )
-    if success:
-        _save_typo(translated)
-        st.session_state["typo_lang"] = target
-        st.session_state["typo_lypo_signature"] = lypo_signature
-        st.session_state["curr_lang"] = target
-        return load_typo()
-
-    st.session_state["curr_lang"] = "pt"
-    st.warning(
-        "Tradução temporariamente indisponível; "
-        "o LYPO original em português foi preservado."
-    )
-    return lypo_text
 
 def load_all_offs():
     """Retorna a lista oficial de livros do modo off-machina."""
@@ -1893,8 +1549,9 @@ def _markdown_links_to_html(texto):
 def load_poema(nome_tema, seed_eureka):  # generate new yPoema
     script = gera_poema(nome_tema, seed_eureka)
     novo_ypoema = ""
-    os.makedirs(os.path.dirname(_lypo_path()), exist_ok=True)
-    with open(_lypo_path(), "w", encoding="utf-8") as save_lypo:
+    lypo_user = "LYPO_" + ip
+
+    with open(os.path.join("./temp/" + lypo_user), "w", encoding="utf-8") as save_lypo:
         save_lypo.write(
             nome_tema
         )  # include title of yPoema in first line for translations
@@ -1975,7 +1632,6 @@ def _off_machina_css():
     """CSS próprio do Off-Machina: obedece fonte/corpo do leitor."""
     fonte_palco = _fonte_palco_leitor()
     fonte_palco_css = _fonte_palco_css(fonte_palco)
-    peso_palco, estilo_css = _estilo_palco_css(fonte_palco)
     corpo_palco = _corpo_palco_leitor()
     return f"""
         <style>
@@ -1988,8 +1644,7 @@ def _off_machina_css():
             line-height: 1.35 !important;
             color: #000000 !important;
             text-align: left !important;
-            font-weight: {peso_palco} !important;
-            font-style: {estilo_css} !important;
+            font-weight: 600 !important;
         }}
         .machina-off-text {{
             display: block !important;
@@ -2182,9 +1837,10 @@ def load_md_file(file):  # Open files for about's
             file_text = file_to_open.read()
 
         if not 'rol_' in str(file).lower():  # do not translate theme
-            file_text = translate_document(file_text)
+            file_text = translate(file_text)
     except Exception:
         file_text = translate('ooops... arquivo ( ' + str(file) + ' ) não pode ser aberto.')
+        st.session_state.lang = 'pt'
 
     return file_text
 
@@ -2262,10 +1918,10 @@ def _manual_ypoemas_texto():
 ___
 Selecione um livro na lista de Livros
 ___
-- * = Escolhe um tema aleatoriamente
-- < = Move para o tema anterior
-- + = Gera um novo texto para o tema
-- > = Move para o próximo tema
+- ✚ = Gera um novo texto para o tema
+- ◀ = Move para o tema anterior
+- ✻ = Escolhe um tema aleatoriamente
+- ▶ = Move para o próximo tema
 - ♫ = ouvir a leitura do texto
 - ? = Modo de Usar & Manual do Usuário
 ___
@@ -2369,9 +2025,9 @@ def _help_find_ypo_file(nome_tema):
                 return os.path.join(data_dir, nome)
     return ""
 
-def _ficha_info_estavel(nome_tema):
+def _help_info_estavel(nome_tema):
     """Ficha cadastral: autoridade permanente = base/DNA.TXT."""
-    row = dna_core.get_registro(nome_tema)
+    row = dna_core.registro(nome_tema)
     if not row:
         return {"titulo": str(nome_tema or "").strip()}
     return {
@@ -2500,74 +2156,6 @@ def _qtd_variacoes_index(nome_tema):
 
     return _qtd_variacoes_rodape_ypo(nome_tema)
 
-
-def _numero_por_extenso_pt(valor):
-    """Leitura humana de número inteiro em português."""
-    texto = str(valor or "").strip()
-    digitos = re.sub(r"[^0-9]", "", texto)
-    if not digitos:
-        return ""
-    numero = int(digitos)
-    if numero == 0:
-        return "zero"
-
-    unidades = ["", "um", "dois", "três", "quatro", "cinco", "seis", "sete", "oito", "nove"]
-    especiais = {10:"dez",11:"onze",12:"doze",13:"treze",14:"quatorze",15:"quinze",16:"dezesseis",17:"dezessete",18:"dezoito",19:"dezenove"}
-    dezenas = ["", "", "vinte", "trinta", "quarenta", "cinquenta", "sessenta", "setenta", "oitenta", "noventa"]
-    centenas = ["", "cento", "duzentos", "trezentos", "quatrocentos", "quinhentos", "seiscentos", "setecentos", "oitocentos", "novecentos"]
-
-    def bloco_999(n):
-        if n == 0: return ""
-        if n == 100: return "cem"
-        partes = []
-        c, r = divmod(n, 100)
-        if c: partes.append(centenas[c])
-        if r:
-            if r < 10: partes.append(unidades[r])
-            elif r < 20: partes.append(especiais[r])
-            else:
-                d, u = divmod(r, 10)
-                trecho = dezenas[d] + ((" e " + unidades[u]) if u else "")
-                partes.append(trecho)
-        return " e ".join(partes)
-
-    escalas = [
-        ("", ""), ("mil", "mil"), ("milhão", "milhões"), ("bilhão", "bilhões"),
-        ("trilhão", "trilhões"), ("quadrilhão", "quadrilhões"), ("quintilhão", "quintilhões"),
-        ("sextilhão", "sextilhões"), ("septilhão", "septilhões"), ("octilhão", "octilhões"),
-        ("nonilhão", "nonilhões"), ("decilhão", "decilhões"), ("undecilhão", "undecilhões"),
-        ("duodecilhão", "duodecilhões"), ("tredecilhão", "tredecilhões"),
-        ("quatuordecilhão", "quatuordecilhões"), ("quindecilhão", "quindecilhões"),
-        ("sexdecilhão", "sexdecilhões"), ("septendecilhão", "septendecilhões"),
-        ("octodecilhão", "octodecilhões"), ("novendecilhão", "novendecilhões"),
-        ("vigintilhão", "vigintilhões"),
-    ]
-    grupos=[]; n=numero
-    while n:
-        grupos.append(n%1000); n//=1000
-    if len(grupos) > len(escalas):
-        return f"{numero} (10 elevado a {len(str(numero))-1})"
-    partes=[]
-    for i in range(len(grupos)-1,-1,-1):
-        g=grupos[i]
-        if not g: continue
-        if i==0:
-            partes.append(bloco_999(g)); continue
-        singular, plural=escalas[i]
-        if i==1:
-            partes.append("mil" if g==1 else f"{bloco_999(g)} mil")
-        else:
-            partes.append(f"{'um' if g==1 else bloco_999(g)} {singular if g==1 else plural}")
-    if len(partes)==1: return partes[0]
-    return ", ".join(partes[:-1]) + " e " + partes[-1]
-
-
-def _variacoes_humano(valor):
-    texto = str(valor or "").strip()
-    match = re.search(r"[0-9][0-9.,]*", texto)
-    return _numero_por_extenso_pt(match.group(0)) if match else ""
-
-
 def _build_seal_from_ypo(nome_tema):
     """Lê o selo build_by real do tema, sem inventar assinatura paralela."""
     path = os.path.join("./data", str(nome_tema or "").strip() + ".ypo")
@@ -2581,9 +2169,9 @@ def _build_seal_from_ypo(nome_tema):
     except (OSError, UnicodeError):
         return ""
 
-def update_ficha_info(nome_tema):
+def update_help_info(nome_tema):
     """Ficha Técnica é uma visão do DNA; não recalcula cadastro em paralelo."""
-    info = _ficha_info_estavel(nome_tema)
+    info = _help_info_estavel(nome_tema)
     if not info or not info.get("titulo"):
         return []
     linhas = [f"Título: {info.get('titulo') or nome_tema}"]
@@ -2601,9 +2189,6 @@ def update_ficha_info(nome_tema):
         linhas.append(f"Total de ítimos: {_fmt_numero_leitor(info['total_de_itimos'])}")
     if info.get("qtd_de_variacoes"):
         linhas.append(f"Qtd. de Variações: {_fmt_numero_leitor(info['qtd_de_variacoes'])}")
-        humano = _variacoes_humano(info["qtd_de_variacoes"])
-        if humano:
-            linhas.append(humano)
     selo = _build_seal_from_ypo(nome_tema)
     if selo:
         linhas.append(selo)
@@ -2615,7 +2200,7 @@ def render_matrix_ficha_tecnica_ypoemas(tema):
     if not tema:
         return
 
-    linhas_info = update_ficha_info(tema)
+    linhas_info = update_help_info(tema)
     if st.session_state.lang != "pt":
         linhas_info = [translate(linha) for linha in linhas_info]
 
@@ -2694,10 +2279,10 @@ def _manual_talk_intro():
     return translate("♫ ouvir a leitura do texto")
 
 def _manual_inserir_talk_entre_botoes(raw_text):
-    """Insere a legenda da voz entre > e ? no manual dos botões.
+    """Insere a legenda da voz entre ▶ e ? no manual dos botões.
 
     Regra visual pedida:
-    - > = Move para o próximo tema
+    - ▶ = Move para o próximo tema
     - ♫ ouvir a leitura do texto
     - ?  = Modo de Usar & Manual do Usuário
     """
@@ -2716,9 +2301,9 @@ def _manual_inserir_talk_entre_botoes(raw_text):
             linhas.insert(idx, talk_line)
             return "\n".join(linhas)
 
-    # Fallback: inserir logo após a linha do botão seguinte.
+    # Fallback: inserir logo após a linha do botão ▶.
     for idx, line in enumerate(linhas):
-        if "▶" in line or re.match(r"^\s*(?:[-*]\s*)?>\s*=", line):
+        if "▶" in line:
             linhas.insert(idx + 1, talk_line)
             return "\n".join(linhas)
 
@@ -2752,28 +2337,6 @@ def _manual_off_machina_texto():
         manual = padrao.sub(bloco_listas + r"\1", manual, count=1)
     elif bloco_listas not in manual:
         manual = bloco_listas + manual
-
-    # A faixa Off mantém os mesmos lugares da navegação comum, sem inventar
-    # função para +. Reordena somente as linhas dos botões já documentados.
-    linhas = manual.splitlines()
-    padrao_botao = re.compile(r"^\s*(?:[-*]\s*)?(?:✻|◀|✚|▶|\*|<|\+|>|♫|\?)\s*(?:=|\b)")
-    indices = [
-        idx for idx, linha in enumerate(linhas)
-        if padrao_botao.search(linha)
-        or re.match(r"^\s*(?:[-*]\s*)?s\s*=", linha, flags=re.IGNORECASE)
-    ]
-    if indices:
-        inserir_em = indices[0]
-        linhas = [linha for idx, linha in enumerate(linhas) if idx not in set(indices)]
-        botoes = [
-            "* = Escolhe um tema aleatoriamente",
-            "< = Move para o tema anterior",
-            "> = Move para o próximo tema",
-            _manual_talk_intro(),
-            "? = Modo de Usar & Manual do Usuário",
-        ]
-        linhas[inserir_em:inserir_em] = botoes
-        manual = "\n".join(linhas)
 
     return manual
 
@@ -2862,27 +2425,17 @@ def render_manual_mini():
 
 def _manual_eureka_texto():
     """Manual padrão da página Eureka em formato de lista avaliável."""
-    botoes = [
-        "- * = Escolhe uma ocorrência aleatoriamente",
-        "- < = Move para a ocorrência anterior",
-    ]
-    if str(st.session_state.get("eureka_scope", "ypo")).lower() != "off":
-        botoes.append("- + = Gera novo texto para o tema")
-    botoes.extend([
-        "- > = Move para a próxima ocorrência",
-        "- ♫ ouvir a leitura do texto",
-        "- ? = Modo de Usar & Manual do Usuário",
-    ])
-    return "\n".join([
-        "eureka: modo de usar",
-        "___",
-        "Digite pelo menos 3 letras para buscar uma palavra que você goste...",
-        "___",
-        *botoes,
-        "___",
-        "A lista mostra palavras/verbetes encontrados no léxico da Machina.",
-        "___",
-    ])
+    return """eureka: modo de usar
+___
+Digite pelo menos 3 letras para buscar uma palavra que você goste...
+___
+- ✚ = Gera novo texto para o tema
+- ✻ = Escolhe uma palavra aleatoriamente
+- ♫ ouvir a leitura do texto
+- ? = Modo de Usar & Manual do Usuário
+___
+A lista mostra palavras/verbetes encontrados no léxico da Machina.
+___"""
 
 def render_manual_eureka():
     """Help padrão da página Eureka."""
@@ -3078,10 +2631,11 @@ RETRATO_SELO_RESPIRO = 30
 RETRATO_YP_B64 = "AAABAAEAQEAAAAEAIAAoQgAAFgAAACgAAABAAAAAgAAAAAEAIAAAAAAAAEAAAIy4AACMuAAAAAAAAAAAAAD///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7//v////7///////7////+/////v////7////9/v////7//////v/+//3//v7///7+/f/+/v3//P7+//7+/v/7/v3//f79//3+/v///v////////7////+/////////////////v///P////7//v///////v////7////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+/////P////7////+//7////+//3//v/9//7///79//79/P/++/z//vv9//77/f/////////////////////////////////9/////Pz8//79/P/9/Pv///39//7//v/8//////7///z////8//7///////3////+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////v////z////+//////7///z+/f/9/Pz//vz9//////////////////7////8////8+7v//Do6P/x6en/8erp//Hq6f/w5ub/9/n4///////////////////////8/////Pz8//79+//8//z/+v/////+///9//7//v/+//7////+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7//v/+/f7//fz+//36/P/////////////////3+ff/6NjU/9mqpP/Ndm//03lx/79IRP+1PTn/tUA6/7k+Of+5QTf/tjwz/8lbVP/VeHP/0oF9/9y8t//w5eP//f7//////////////v3///v6+//+/f3//f/+/////v/+/////f/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9/f3/+vv7////////////9vPw/9+3tf/Jgn7/xFJL/8A2Lv+2MSr/vUU//7pDP//RdW7/1YJ7/9OAeP/TgHj/0396/9SEf//FY13/uEA7/7lCOv+2Lib/wD42/8ViWv/Ok43/5s3L//z//v/////////+//77+//7/////f/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+/Pz////////////v6ub/3ayn/8NRTP+9LCf/uzw1/8FnYP/Vl5P/58fG//Xu7v/z7u///f//////////////////////////////+fz7//Pv7f/x5uP/5bi2/8mFgP+/WVL/vTIr/7oxLP/LbGj/3bCs//f69v///////v7///z9/P/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9/////f/////9/v/9+/z///////v8/P/UmJX/vUU7/7YwJ/+/VlL/2aSj/+7g3f/8//////////////////////////7+/v/+/Pz//vz9//78/f/+/f3//vz8/////////////////////////////fr8/+XNzf/RjYj/vEE7/7guJ//EW1T/3bq0//3//////////fz6//7+/f/9//7///////7////9/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////f////z+/P/9/////////+bJxv/DY1n/vyso/8VmYv/ixMD/9/X1///////+/////f39///7/P/+/Pz///7+///+/v////////////////////////////////////7///7+//7+/v/+/Pz//v38//////////////////Dp5P/XqKL/wEpH/70uJv/Ne3T/7+Dh///////8/P3//P39/////v/9/v///f7////////////////////////////////////////////////////////////////////////////////////////////////////////////////+//78+v//////+/z8/9CXkv+6NzD/vEI7/9aemv/7///////////////4+/v//Pz8///9/v/6/////f///////v///////////////////////////////////////////////////////f////7//////v7/+/z8//77/f////////////Ty8P/OioT/vTQs/7lBN//gvrf///////v////+/fz//v/+///+//////////////////////////////////////////////////////////////////////////////////////////////////////////////38+///////9/L0/8dnZP+8KSL/ynp1//Dq5////////P38//z7/P/8/v7//f/////+///7////+v/////+///+//7///////////////////////////////////////////////////////3////+/////v/+//7//f/9//7///z+//76/P/+/////////+fMy//AWVL/uTUq/9OWkv/+//////////v8+//9//////////////////////////////////////////////////////////////////////////////////////////////////////////77/P//////6tXU/8FbV/+5Myr/1J+X//3//////////////////////f7//Pv8//z////+/////v/////+/////v///f///////////////////////////////////////////////////////////v///P////z////+//7//f/9//3//v/9//7/+/77///8/P//////9/b4/8p0cP+4KyX/xnFt//n49v///////f38///////////////////////////////////////////////////////////////////////////////////////+/////v////38+///////69vX/75FPv++Qzr/3L24///////8/f3/3dzd/8rLy//X2Nj////////////+/v7//v7+///////+/////f////7///////////////////////////////////////////////////////////////7//////v////7///7+///+/////f/+//3+/////v//+/v6///////6+vr/0pGL/74wJ//Cc2z/+/38///////9/f3///////7////+//////////////////////////////////////////////////////////////////7//v7///38/P//////7uLe/8FMRf+/Pzn/59DM///////+/P3/+fn5/ygoJ/8AAAD/Dw8P/z8/P/+tra3////////////9/f3////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+/f3//v/////////QmpL/vS0k/8x6eP/9/////v7+//z8/f/8/v7//f7///3////+//////////////////////////////////////////////////////////v9/P/+////9+/x/8BTUf+7OzX/5MfC///////5+fr///////v7+/8eHh7/AAAA/wMDA/8AAAD/AAAA/3d3d///////+/v7/////////////////////////////////////////////v7+//z8/P/8/Pz//Pz8//v7+//8/Pz///////////////////////////////////////////////////////z9/v/7/fz//////9GNjv+8KyX/y4uE///////5+/z//f/6///+/v/9/v///v/////////////////////////////////////////////////////+///8/vz//v///9CHhP+6MCj/37u2///////8+/v//v7+///////5+/v/Hh4e/wAAAP8BAQH/BQUF/wYGBv8AAAD/oqKi///////7+/v//////////////////////////////////v7+//////////////////////////////////7+/v///////////////////////////////////////////////////v///f39//78/v/+////zn94/7o0Kf/iwb7///////z8+v/+/v/////////////////////////////////////////////////////////////++vz//////9y7tf+4LiX/zIJ5///////+/f7//f////3+/v/9////+vr6/yYmJv8AAAD/DQ0N/wQEBP8CAgL/AAAA/w4ODv/Hx8f///////z8/P/+/v7//////////////////v7+///////u7u7/vr6+/7a2tv+2trb/srKy/8TExP///////v7+//////////////////////////////////////////////////7////3/fn///////Hp6f++UUn/u0I6/+3d3f///////Pz9//3////////////////////////////////////////////////////+/v7///////bx7v+7TUb/xmFc//r+/P///////f79///+///9/////v////z+/f/m5ub/5eXl/9LS0v88PDz/AAAA/wcHB/8AAAD/Wlpa///////8/Pz//v7+//////////////////39/f//////z8/P/wAAAP8AAAD/AAAA/wAAAP8nJyf///////7+/v////////////////////////////7+/v////////////3////+//7//v/+//r7+v//////6NXT/7k5MP/Icmz////////+/v/+/v////////////////////////////////////////3////+//7///v9///////SjIX/vC8o/9+9vv///////fv6///////+////////////////////////////////////3t7e/wsLC/8AAAD/AgIC/wwMDP/CwsL///////z8/P/+/v7//v7+///////9/f3//////9LS0v8AAAD/BAQE/wYGBv8AAAD/Kioq///////+/v7////////////////////////////+/v7////////////9///////+///+///9////+/z7///////UlJL/uTEo/9q0sv///////fv7/////////////////////////////f////7////+/////Pz8///////lzc3/ujYu/8t7c///////+v38//7+/v////////////////////////////7+/v/+/v7/+Pj4//////+IiIj/AAAA/wgICP8AAAD/h4eH///////6+vr//v7+//7+/v///////f39///////R0dH/AAAA/wEBAf8CAgL/AAAA/ygoKP///////v7+///////////////////////////////////////////////////////////////////+/v//////8+zq/75HQP/DWFL/9/r2///////+/v7///////////////////////v////9//////7///78+//8////0Hdz/74xLP/l0c3///////v7+v///v7///////////////////////////////////////z8/P//////x8fH/wAAAP8FBQX/AAAA/zY2Nv///////f39//////////////////39/f//////0NDQ/wAAAP8BAQH/AgIC/wAAAP8tLS3///////7+/v/+/v7//////////////////////////////////////////////////////////////////vz7///////brqv/ty8n/+C0sv///////fz8//////////////////////////7//v/+//79/f//////79jV/783Mf/Pgnz//v/////9/f////7////////////////////////////////////////////9/f3//////9DQ0P8BAQH/AAAA/wMDA/8AAAD/uLi4///////8/Pz////////////9/f3//////9DQ0P8AAAD/AQEB/wMDA/8AAAD/MDAw///////+/v7///////////////////////////////////////////////////////z8/P/+/v7///////z+/v/+////+Pb3/8JUSf/IYF7//P///////v///////////////////////v///////v/9+/z//////9alnP+6Miv/59DM///////9/Pz//P///////v///////////////////////////////////////f39///////Z2dn/BwcH/wAAAP8EBAT/AAAA/1ZWVv//////+/v7/////////////f39///////R0dH/AAAA/wEBAf8CAgL/AAAA/ycnJ//////////////////////////////////////////////////////////////////+/v7////////////6//7//Pr7///////TjYf/ujky/+3Z1v///////v39//////////////////3///////7//v7////////IaGD/vU9J//j29f////7//P78//z///////7///////////////////////////////////////z8/P//////x8fH/wAAAP8BAQH/AgIC/wAAAP8UFBT/7e3t///////+/v7///////39/f//////0dHR/wAAAP8BAQH/AgIC/wAAAP8pKSn///////v7+//8/Pz//f39//v7+//8/Pz//v7+/////////////////////////////////////////////v////38/P//////6trX/7w2LP/PkI3///////78/P///////////////////v///P79///////v49//vjsz/9Sbmf///////vz7//z//v/+///////////////////////////////////////////////8/Pz//////5WVlf8AAAD/AgIC/wAAAP8CAgL/AAAA/8jIyP///////Pz8///////9/f3//////9HR0f8AAAD/AQEB/wICAv8AAAD/Jycn///////////////////////////////////////6+vr//Pz8//7+/v///////////////////////////////////v7///////z+/v/CYVn/x1pT//z+/f////////79//3////+/////v////v9/P//////16qn/7YyKv/qx8f///////37+//+///////////////////////////////////////////////+/v7///////r6+v8nJyf/AAAA/wICAv8AAAD/BAQE/wAAAP9oaGj///////v7+////////f39///////R0dH/AAAA/wEBAf8BAQH/AAAA/xQUFP/Y2Nj/lpaW/0dHR/+Dg4P/l5eX/6qqqv/z8/P////////////7+/v//////////////////////////////v///v/+//v8/P//////yYeA/7w/Nv/v5eP///////39+//+//////7///3////8/Pz//////9aEgv+9QDr/8+3r///////+/f3///////7////+/////////////////////f39//7+/v///////Pz8//////+mpqb/AAAA/wMDA/8AAAD/AAAA/wICAv8AAAD/Gxsb//f39////////v7+//39/f//////0dHR/wAAAP8BAQH/AQEB/wAAAP8LCwv/NTU1/wAAAP8AAAD/AAAA/wAAAP8AAAD/Hh4e/2dnZ//c3Nz///////v7+////////////////////////v////7////+/P3//////+i8uP+4MCr/38G////////6/Pr///7///7////9/v7//v////r/+//EYVv/ymhj//v////+///////////////+/////f////////////////////////////////////v7+///////YGBg/wAAAP8EBAT/AAAA/wAAAP8AAAD/AgIC/wAAAP+urq7///////z8/P/9/f3//////9HR0f8AAAD/AQEB/wAAAP8BAQH/AAAA/wAAAP8EBAT/AwMD/wEBAf8DAwP/AwMD/wAAAP8AAAD/GRkZ/9vb2///////+/v7///////////////////////+/////f7+///////z7ur/vEM7/9aMh////////fz7//7////+//7//v79///////5+fb/uUlB/897dv///////vz8//7////+/////v////7///////////////////////////////39/f//////5OTk/x8fH/8AAAD/AgIC/wEBAf8CAgL/AAAA/wMDA/8AAAD/R0dH///////8/Pz//f39///////R0dH/AAAA/wEBAf8AAAD/AAAA/wAAAP8CAgL/AAAA/wAAAP8CAgL/AQEB/wAAAP8BAQH/BwcH/wAAAP8UFBT/tLS0///////7+/v//////////////////f////3+/v//////8/Hy/7pEPP/Zhn////////37+//+/////v/+//79/f//////79/c/7w+Nv/WnZj///////79/P/+/////f////7////////////////////////////////////7+/v//////5OTk/8AAAD/BQUF/wEBAf8AAAD/AAAA/wEBAf8BAQH/AAAA/xsbG//x8fH///////z8/P//////0dHR/wAAAP8BAQH/AAAA/wAAAP8AAAD/AAAA/wEBAf8CAgL/AAAA/wAAAP8DAwP/AQEB/wAAAP8FBQX/AAAA/x8fH//w8PD///////39/f////////////3////9//7//v39///////Pc2r/vlZO//f6+//+/////v7+/////v/+/Pz//////+bDwf+4Lyb/48XB///////+/Pz//////////////////////////////////////////////////Pz8//////89PT3/AAAA/wQEBP8AAAD/QUFB/zU1Nf8AAAD/AwMD/wQEBP8AAAD/lZWV///////5+fn//////9HR0f8AAAD/AQEB/wAAAP8AAAD/AAAA/wICAv8BAQH/AAAA/x0dHf8ODg7/AAAA/wAAAP8BAQH/AAAA/wICAv8AAAD/X19f//z8/P///////v7+///////9/////v/+//78/f//////0394/7tJQv/39vf///////7+/v///////fz8///////rxsX/tzIo/96/u////////vz8/////////////////////////////////////////////Pz8///////BwcH/AAAA/wEBAf8AAAD/AAAA/6ysrP+np6f/AAAA/wUFBf8CAgL/AAAA/yYmJv/t7e3////////////Q0ND/AAAA/wEBAf8AAAD/AAAA/wEBAf8CAgL/AAAA/5OTk//+/v7/6enp/3d3d/8HBwf/AQEB/wAAAP8BAQH/AAAA/wAAAP+ysrL///////z8/P///////f///////v/+/f3//////9J8df+8TET/+Pf4///////+/v7///////38/P//////7MXE/7gxKP/dwbz///////78/P////////////////////////////////////////////z8/P//////R0dH/wAAAP8FBQX/AAAA/wsLC//IyMj//////zg4OP8AAAD/BAQE/wAAAP8FBQX/0tLS////////////0NDQ/wAAAP8BAQH/AAAA/wAAAP8CAgL/AAAA/5GRkf//////////////////////tLS0/xgYGP8AAAD/AQEB/wMDA/8AAAD/X19f///////8/Pz///////3///////7//vz8///////SfHX/vEtE//j29////////v7+///////+/Pz//////+nHxf+5MSj/38C7///////+/fz//////////////////////////////////v7+//v7+///////1dXV/wEBAf8BAQH/AwMD/wAAAP8mJib/7e3t//////+dnZ3/AAAA/wUFBf8DAwP/AAAA/4+Pj////////////9HR0f8AAAD/AQEB/wAAAP8DAwP/AAAA/1hYWP///////Pz8//7+/v/9/f3/+vr6//////+Ghob/AgIC/wICAv8EBAT/AAAA/yQkJP/w8PD///////39/f/9///////+//78/P//////03t1/71MRf/49/j///////7+/v///////fv8///////jxsP/tjAm/+XAvf///////vz8///////////////////////////////////////6+vr//////2VlZf8AAAD/BQUF/wQEBP8AAAD/eXl5///////+/v7/9PT0/yAgIP8AAAD/BQUF/wAAAP8oKCj/9fX1///////Q0ND/AAAA/wEBAf8AAAD/BQUF/wAAAP95eXn///////r6+v////////////z8/P//////7u7u/ycnJ/8AAAD/BAQE/wICAv8BAQH/ycnJ///////8/Pz//f///////v/++/v//////9d9eP+7R0D/9/X2///////+/v7///////z9/v//////9ezr/71GPf/SiYb////////9/P////7//P////3////////////////////8/Pz//////8LCwv8AAAD/AgIC/wEBAf8CAgL/AAAA/8XFxf//////+Pj4//////+pqan/AAAA/wQEBP8EBAT/AAAA/56env//////zc3N/wAAAP8BAQH/AAAA/wQEBP8AAAD/hISE///////7+/v/////////////////+vr6//////+AgID/AAAA/wQEBP8CAgL/AAAA/8DAwP///////Pz8///////8/v7///////X19v+/Ukz/y2li//r////+//7///7+///////9/v7///////f3+P+2SUD/1X12///////7/fz//v////7////+/////////////////////v7+//////8zMzP/AAAA/wcHB/8FBQX/AAAA/x8fH//z8/P///////7+/v/9/f3//////ysrK/8AAAD/BgYG/wAAAP9KSkr//////87Ozv8AAAD/AQEB/wAAAP8EBAT/AAAA/4uLi///////+/v7//////////////////v7+///////k5OT/wAAAP8FBQX/AAAA/wYGBv/R0dH///////39/P/+////+v7+///////18vH/t0Q6/9WHgP//////+/v5///+/////v////7////+/v/9////znFp/75aUv/6/Pz//v////z+/////v///v///////////////v7+///////39/f/Dw8P/wAAAP8AAAD/AAAA/wAAAP9WVlb///////z8/P//////+/v7//////+dnZ3/AAAA/wcHB/8FBQX/AAAA/6enp//h4eH/AAAA/wEBAf8AAAD/AwMD/wAAAP+QkJD///////v7+//////////////////7+/v//////6CgoP8AAAD/BAQE/wMDA/8AAAD/ubm5///////8/Pv//f////39/f//////8eXh/7k/N//YmZX///////78+v///v///f/////////9/Pz//////9aKhv+6PDT/7+Ph///////9/P3/+/////3////+////////////////////+vr6/3p6ev8+Pj7/TExM/05OTv9CQkL/y8vL///////9/f3///////39/f//////7u7u/x0dHf8AAAD/AAAA/wAAAP9wcHD/zs7O/wAAAP8BAQH/AAAA/wQEBP8AAAD/d3d3///////7+/v/////////////////+/v7//////+bm5v/AAAA/wQEBP8DAwP/AAAA/7q6uv///////Pv8//3////9/P3//////92rpv+3MCr/5MzJ///////8/Pr///7///3////9//7//fz8///////fvLv/uS8p/+TAu////////vn6///+/////v///v////////////////////7+/v/////////////////////////////////+/v7//////////////////f39///////BwcH/kJCQ/5OTk/+SkpL/0dHR/87Ozv8DAwP/AQEB/wAAAP8EBAT/AAAA/3h4eP//////+vr6//////////////////v7+///////kZGR/wAAAP8FBQX/AwMD/wAAAP+5ubn///////v7+//9/////vz9///////HfHX/xUM+//Xu7f/8////+/78///+///+//7//P/+///9/v//////9e7t/8JEP//RgoH//P////z9/P/+/v////////////////////////7+/v/+/v7//Pz8//v7+//7+/v//Pz8//v7+//8/Pz////////////////////////////9/f3////////////////////////////T09P/CwsL/wAAAP8BAQH/AwMD/wAAAP9GRkb///////39/f/////////////////7+/v//////5SUlP8AAAD/BQUF/wICAv8AAAD/u7u7///////8/Pz///79///////3+ff/w1FN/8hpYv/9/////v79//7+/f///v///P/+///+///9/////v39///////JeXL/ukI7//Pv7//+/////v78///+///+//7///////////////////////////////////////////////////////////////////////////////////////z8/P/7+/v/+/v7//n5+f//////z8/P/woKCv8CAgL/AAAA/wICAv8AAAD/ICAg//39/f//////////////////////+/v7//////+ZmZn/AAAA/wUFBf8CAgL/AAAA/7+/v///////+/z7//38+///////48TA/7wyK//hu7b///////78/P////////////7////+/v///f/+//77/P//////3rWv/74uKP/drq3///////z7+////v///v/+///////////////////////////////////////////////////////////////////////////////////////////////////////9/f3//////9HR0f8BAQH/AQEB/wAAAP8AAAD/AgIC/wAAAP+/v7////////n5+f/+/v7///////j4+P//////goKC/wAAAP8EBAT/AwMD/wAAAP+6u7v///////j7+v/8+fz//////858dP/APzr/9Ono///////+/v7//////////////////f////3////9/f7///////Hn5P/CRUD/x1xU//n5+f/+/////f/+/////v///////////////////////////////////////////////////////////////////////////////////////////////////////f39///////Q0ND/AAAA/wICAv8AAAD/AAAA/wQEBP8AAAD/QEBA////////////////////////////3d3d/w0NDf8AAAD/AgIC/wAAAP8NDQ3/5OTk///////9+/v//////+zm4P++RTv/zHVz//7////+/v7///////////////////////3////9/v///v7///77/P//////0JSQ/7cwJv/huLj///////v7+v/9/v7///////////////////////////////////////////////////////////////////////////////////////////////////////39/f//////0dHR/wICAv8BAQH/AQEB/wEBAf8BAQH/AQEB/wAAAP8sLCz/uLi4//j4+P/5+fn/1dXV/x0dHf8AAAD/AwMD/wMDA/8AAAD/OTk5///////+/v7//fv8///////Le3b/vjEr/+fNy////////f39///////////////////////////////////////+/v7//v////b28/++T0j/xVxX//n69////////v39///////////////////////////////////////////////////////////////////////////////////////////////////////9/f3//////9PT0/8LCwv/AQEB/wEBAf8CAgL/AQEB/wAAAP8CAgL/AAAA/w4ODv8zMzP/JSUl/wUFBf8AAAD/AwMD/wAAAP8EBAT/AAAA/1xcXP//////+/n5///////q29b/wjg0/815dP/9/////P39//7///////////////////////////////3////7/////v/+//78/P//////2qun/7otI//RnZr///////38/P/+///////////////+/////////////////////////////////////////////////////////////////////////////////////f39///////R0dH/AQEB/wEBAf8BAQH/AwMD/wQEBP8AAAD/AAAA/wQEBP8AAAD/AAAA/wAAAP8AAAD/AwMD/wAAAP8AAAD/BQYG/wAAAP9ra2v///////r6+v//////y3Vu/7o6M//t4N7///////78/P/////////////////////////////////+/////v///////////////f7+//3////Ea2X/vDw1/+zc2f//////+/z8/////////v///v7///////////////////////////////////////////////////////////////////////////////////39/f//////0NDQ/wAAAP8BAQH/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AQEB/wICAv8CAgL/AQEB/wAAAP8AAAD/AgEB/wAAAP8AAAD/0s/Q///////+////3bGt/7kvJf/QlIv///////37/f/+//3///////////////////////////////////////////////////////z8/P//////6djV/7s8Nv/DX1n/+v37///////+/fz//P////7+///+/v/////////////////////////////////////////////////////////////////////////////9/f3//////9LS0v8HBwf/AQEB/wEBAf8AAAD/AQEB/wQEBP8CAgL/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AgIC/wQDA/8AAAD/goOA///////+////5s/N/7o4Mv/CXFn/9fTy///////7/v3//P/////////////////////////////////////////////////////////9/////Pv7///////Zran/uS0k/9OSi////////P3+//z9/v/9/////f///////////////////////////////////////////////////////////////////////////////f39///////Pz8//AAAA/wQEBP8AAAD/AwMD/wAAAP8AAAD/AAAA/wUFBf8CAgL/AgIC/wICAv8DAwP/BQUF/wAAAP8AAAD/cnBx///////8////9PPu/8VcVv+7Qzn/7+Ti///////7/fn//f/+///+/////////////////////////////////////////////////////////v7///3+/f/+/////f///8d6df+8LSX/1ZqU/////////f///f35//7+/f////////////////////////////////////////////////////////////////////////////39/f//////zc3N/wAAAP8AAAD/BQUF/wAAAP8oKCj/j4+P/ysrK/8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8UFBT/hoeH//z8/P//////9vbz/8lmX//AMCn/2bOr///////8+/v////+//3+///+//7////+///////////////////////////////////////////////////+/////v//+/39///////8/fv/ym9t/7svKv/Yop3//////////v/9+/v////////////////////////////////////////////////////////////////////////////9/f3//////9nZ2f9OTk7/JCQk/zo6Ov8qKir/gICA///////p6Oj/YmJi/x4eHv8qKir/HBwc/z4+Pv+ampr/5eXl////////////+fv4/8Ruav+7Lij/2aii///////9+/v//P77//3+///+/////v/+///////////////////////////////////////////////////////9//7//f7////+///9/fz///////j49//CaWP/wCwh/8x5dv/7//////////38+////v7//f/+//////////////////////////////////7////////////////////////////////////+/v7///////7+/v/6+vr//v7+///+///5+vv////////////7+/v//f3+//r4+f///////////////v//////697b/8BhW//ALSb/05+Y///////9+/7//v79//7//f/////////+//////////////////////////////////////////////////////////////////////////////////79/f//////+ff1/9CLhP+8Lif/yGtm/+/g3/////////7+//v8/P/+/////v7///3////8//7//f/+///////+//////////////////////////////////////////7+/v////////////////////7//v/+//39/v/7+/v///////7//v/+//7/9/r6//v9/v//////4L66/8JIQf+6Ozb/37e0///////8/v3//P78/////////////////////////////////////////////////////////////////////////////////////////////////////////////fz9////////////zpmP/743LP/BQz//27Sy//3//////////fz9//z9/P///vz//f/+//7//v///v////7///7//////////////////////////////////////////v7+//7+/v///v///f/9//3//v/+/////v7///3+/v/9+/v//P39///////07+3/1JqY/7w2MP++TEP/4sXD///////9/Pz//f36///+/f////////////////////////////////////////////////////////////////////////////////////////////////////////////7////6/f3//v79///////lyMf/w1VL/7ouJf/HbGj/7uLg/////////////f////v7/P/+/P7//P7///z//v////7////////////////////////////////////////////////////////9///9/P///Pz8//j8+v////////////7////fvbv/wE1F/7ksI//Kd3L/8+vq///////8+/n////9//3////9/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////f/+//7//v/7+/z///////Pw7v/Rlo7/vjYv/8A+Nf/IeXL/5czL//n8/P////////////r//v/9+/r//vv7//78/P///v7///7+///+/v///v7///7+///+/v/+/f3//vz8//79/f/+/Pz//////////////////fz5/9qwrf/IY1v/vDMq/7pOSP/duLf//v/////////++/v////9//z+///+/v/////+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////3//////v///P/+//z7+v///////////+TKx//RgHr/vD03/8EwKv/CX1j/3rKs//Hm4v/7/v7///////////////////////////////////////////////////////////////////////b39v/u2NX/1ZmU/8JXUP+5Lyf/vUlA/9OKhf/v6Of///////78/f/8/fz///////z+///8//////7///7//v////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7//////////v79//78/f///////////+zc1//Ri4b/wlBL/7kwKv+4PTf/xWJc/9WSjv/ixcH/4MPB//Xv7f/7+fn/+fb3//n39//49vb//Pv5/+ve3P/fwr//4bm2/9OAe//AU03/uDYx/70zMP/FX1r/1aef//Xw7v////////////38+//+//7////+//////////////////7////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9/////f39//38/P////////////f08//iwcL/04J//8JYUf+3ODD/ti8n/7UvJv/ESED/xk5I/8RMRv/GTUX/xU1F/8hPR/+/Pjb/tCwk/7kzKf+4QDb/ymdg/9SWkP/o2dT//f/9/////////////v39//7+/v////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7///3////8/////vz9//77+v/////////////////4+/j/7drZ/9+urf/isK7/yHV0/79oY//AbGb/w2pl/8RsZv/AZWH/04yJ/+WysP/it7b/8ejo//r///////////////z////7+/z///7+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7///////////7///3+///8//////79//38/P/8/P3///////////////////////////////////////7//////////v/////////////////////////9//7//fz8//77/f/9/f///f7//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////v////7//////////v7///7////9//////7////9/v/7/f3/+/z7//77+//+/v3///79///9/v/+/f7///7+//7+/v/9/f3//vz7//78+v/8/v3///7+//7//v/8//7//f/+//7//v////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7//////////////v////7//////v///v///////v/+//7/+//////+///+/v//+/////3+///+/v///f/+//7//////v////////3////6/////v////7+/////////f////7+/v/+/v7/////////////////////////////////////////////////////////////////////////////////////////////////////////////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
 
 RETRATO_WEBFONT_FAMILIES = {
+    "Cormorant Garamond",
     "JetBrains Mono",
-    "Source Code Pro",
+    "IBM Plex Sans",
+    "Saira",
     "Comic Relief",
-    "Ubuntu Condensed",
 }
 
 def limpar_retrato(prefixo):
@@ -3206,35 +2760,33 @@ def show_retrato_no_topo(prefixo):
         focar_retrato_no_palco(anchor)
     return True
 
-def _copiar_popover_sem_seta():
-    """Mantém a função do popover Copiar, sem exibir a seta visual do componente."""
-    st.markdown(
-        """
-        <style>
-        [data-testid="stPopover"] button [data-testid="stIconMaterial"],
-        [data-testid="stPopover"] button span[aria-hidden="true"] {
-            display: none !important;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
-
+def _toggle_sidebar_image():
+    """Liga/desliga somente a imagem contextual da sidebar."""
+    st.session_state["draw"] = not bool(st.session_state.get("draw", True))
 
 def show_copy_retrato_xerox(prefixo, texto_copia):
-    """Copiar/Retrato com o mesmo comportamento em todas as páginas."""
-    _copiar_popover_sem_seta()
+    """Copy/Imagem/Retrato com o mesmo comportamento em todas as páginas."""
     st.markdown("<br>", unsafe_allow_html=True)
-    left, copy_col, retrato_col, right = st.columns([3.6, 2.0, 2.0, 3.6])
+    left, copy_col, image_col, retrato_col, right = st.columns([2.6, 2.0, 2.0, 2.0, 2.6])
 
     with copy_col:
-        with st.popover("Copiar", use_container_width=True):
+        with st.popover("Copy", help="copiar texto", use_container_width=True):
             st.code(str(texto_copia or ""), language=None, wrap_lines=True)
+
+    with image_col:
+        st.button(
+            "Imagem",
+            key=f"{prefixo}_imagem_btn",
+            help="ligar/desligar imagem",
+            use_container_width=True,
+            on_click=_toggle_sidebar_image,
+        )
 
     with retrato_col:
         st.button(
             "Retrato",
             key=f"{prefixo}_retrato_btn",
+            help="mostrar Retrato",
             use_container_width=True,
             on_click=make_retrato_xerox,
             args=(prefixo,),
@@ -3242,9 +2794,10 @@ def show_copy_retrato_xerox(prefixo, texto_copia):
 
     png = st.session_state.get(f"{prefixo}_imagem_retrato")
     if png:
-        with retrato_col:
+        col_left, col_save, col_right = st.columns([1, 1, 1])
+        with col_save:
             st.download_button(
-                "Salvar",
+                "salvar Retrato",
                 data=png,
                 file_name=f"{st.session_state.get(f'{prefixo}_nome_retrato', 'retrato')}.png",
                 mime="image/png",
@@ -3387,7 +2940,6 @@ def _retrato_font(size, bold=False, family=None):
         "Palatino Linotype": ("palab.ttf", "pala.ttf"),
         "Georgia": ("georgiab.ttf", "georgia.ttf"),
         "Hand Writing": ("segoeprb.ttf", "segoepr.ttf"),
-        "MV Boli": ("mvboli.ttf", "mvboli.ttf"),
     }
     if family in windows_names:
         bold_name, regular_name = windows_names[family]
@@ -3401,14 +2953,6 @@ def _retrato_font(size, bold=False, family=None):
     webfont = _retrato_webfont_cache(family, bold=bold)
     if webfont:
         candidates.append(webfont)
-
-    # Fallback canônico da Machina: se a família escolhida ainda não estiver
-    # empacotada em ./fonts, tenta OpenDyslexic antes das fontes do sistema.
-    open_fallback = _project_path(
-        "fonts",
-        "OpenDyslexic-Bold.otf" if bold else "OpenDyslexic-Regular.otf",
-    )
-    candidates.append(open_fallback)
 
     # Fallback seguro para não impedir o Retrato.
     candidates.extend([
@@ -3428,11 +2972,7 @@ def _retrato_font(size, bold=False, family=None):
         except Exception:
             pass
 
-    # Último recurso: o Retrato nunca derruba a Machina por falta de fonte.
-    try:
-        return ImageFont.load_default(size=int(size))
-    except TypeError:
-        return ImageFont.load_default()
+    raise RuntimeError("Fonte Unicode não encontrada para gerar o Retrato.")
 
 def _retrato_wrap(draw, texto, font, largura):
     """Quebra o texto preservando o recuo autoral com espaços ASCII."""
@@ -3606,7 +3146,7 @@ def load_images():
 def load_arts(nome_tema):  # Select image for arts
     """Banco visual do tema vem exclusivamente do DNA."""
     nome_tema = str(nome_tema or "").strip()
-    grupo = dna_core.get_banco_tema(nome_tema) or "machina"
+    grupo = dna_core.banco_do_tema(nome_tema) or "machina"
     path = "./images/" + grupo + "/"
     if not os.path.isdir(path):
         return None
@@ -3754,6 +3294,9 @@ def render_sidebar_context_image(chosen_id):
     ):
         return
 
+    if not bool(st.session_state.get("draw", True)):
+        return
+
     image_path = ""
 
     if str(chosen_id) in {"1", "2", "3"}:
@@ -3762,10 +3305,13 @@ def render_sidebar_context_image(chosen_id):
 
         image_path = st.session_state.get("off_machina_images_pasta", "")
 
-    elif str(chosen_id) == "5":
+    elif str(chosen_id) in {"5", "6", "7", "8"}:
         image_path = st.session_state.get("about_image", "") or _set_about_image_next()
-    elif str(chosen_id) == "6" and APP_VARIANT == "local":
-        image_path = st.session_state.get("atelier_image", "") or _set_atelier_image_next()
+    elif str(chosen_id) == "9":
+        if APP_VARIANT == "local":
+            image_path = st.session_state.get("atelier_image", "") or _set_atelier_image_next()
+        else:
+            image_path = st.session_state.get("about_image", "") or _set_about_image_next()
 
     if image_path and os.path.exists(image_path):
         # Autoridade do que o leitor realmente viu. O clique em Retrato usa
@@ -3836,7 +3382,7 @@ def say_number(tema):  # search index title for eureka
             analise = part_line[2]
             break
 
-    return translate_document(analise)
+    return translate(analise)
 
 def limpar_analise(texto, max_chars=MAX_ANALISE_CHARS):
     """Limpa a análise devolvida por rotina pura.
@@ -3932,7 +3478,6 @@ def render_analise_palco(texto):
     """Renderiza análise no palco direito, com cabeçalho padrão."""
     fonte_palco = _fonte_palco_leitor()
     fonte_palco_css = _fonte_palco_css(fonte_palco)
-    peso_palco, estilo_css = _estilo_palco_css(fonte_palco)
     corpo_palco = max(14, min(30, int(st.session_state.get("corpo_palco", 21)) - 1))
 
     voice = str(st.session_state.get("voz_analise", "OLA")).upper()
@@ -3958,8 +3503,7 @@ def render_analise_palco(texto):
             font-size:{corpo_palco}px;
             line-height:1.42;
             color:#000000;
-            font-weight:{peso_palco};
-            font-style:{estilo_css};
+            font-weight:500;
         ">
             <div style="
                 text-align:center;
@@ -3969,8 +3513,7 @@ def render_analise_palco(texto):
             ">{safe_title}</div>
             <div style="
                 text-align:center;
-                font-weight:{peso_palco};
-            font-style:{estilo_css};
+                font-weight:500;
                 opacity:0.88;
                 margin:0 0 0.75rem 0;
                 line-height:1.22;
@@ -4193,16 +3736,7 @@ def _eureka_off_texto_html(texto, seed):
     linhas = str(texto or "").splitlines()
     return "<br>".join(_eureka_off_mark_text(linha, seed) for linha in linhas)
 
-def _render_eureka_off(
-    find_what,
-    occurrences,
-    last,
-    rand,
-    nest,
-    manu,
-    eureka_voz_slot,
-    show_help_eureka,
-):
+def _render_eureka_off(find_what, occurrences, more, rand, manu, eureka_voz_slot, show_help_eureka):
     """Mesmo EUREKA, segundo território: pesquisa direta nos .pip."""
     achados = ler_pip(find_what)
 
@@ -4238,9 +3772,9 @@ def _render_eureka_off(
             atual = 0
         st.session_state["eureka"] = max(0, min(atual, len(achados) - 1))
 
-    if last:
+    if more:
         atual = int(st.session_state.get("eureka", 0))
-        st.session_state["eureka"] = (atual - 1) % len(achados)
+        st.session_state["eureka"] = (atual + 1) % len(achados)
         st.session_state["opt_ocur_key"] = st.session_state["eureka"]
 
     if rand:
@@ -4254,17 +3788,12 @@ def _render_eureka_off(
             st.session_state["eureka"] = 0
         st.session_state["opt_ocur_key"] = st.session_state["eureka"]
 
-    if nest:
-        atual = int(st.session_state.get("eureka", 0))
-        st.session_state["eureka"] = (atual + 1) % len(achados)
-        st.session_state["opt_ocur_key"] = st.session_state["eureka"]
-
     livros = {str(item.get("livro", "")) for item in achados}
     info_find = '"' + str(find_what) + '"'
     if len(achados) > 1:
-        info_find += translate(" em " + str(len(achados)) + " textos")
+        info_find += " em " + str(len(achados)) + " textos"
     else:
-        info_find += translate(" em 1 texto")
+        info_find += " em 1 texto"
 
     with occurrences:
         options = list(range(len(achados)))
@@ -4284,7 +3813,7 @@ def _render_eureka_off(
         _hide_eureka_help()
         show_help_eureka = False
     st.session_state["eureka_last_ocur"] = opt_ocur_key
-    if not (last or rand or nest):
+    if not rand:
         st.session_state["eureka"] = opt_ocur_key
 
     if show_help_eureka:
@@ -4301,12 +3830,6 @@ def _render_eureka_off(
     if preservar_eureka and st.session_state.get("eureka_palco_xerox_text", ""):
         texto_html = st.session_state.get("eureka_palco_xerox_text", texto_html)
         texto_plain = _ypoema_html_to_text(texto_html)
-        st.session_state.curr_lang = st.session_state.lang
-    elif st.session_state.lang != "pt":
-        texto_html = translate_content(texto_html)
-        texto_plain = _ypoema_html_to_text(texto_html)
-    else:
-        st.session_state.curr_lang = "pt"
 
     eureka_expander = st.expander("", expanded=True)
     with eureka_expander:
@@ -4413,6 +3936,7 @@ def _render_acros_cereja():
     st.button(
         "🍒",
         key="acros_cereja",
+        help="acrósticos",
         use_container_width=True,
         on_click=_acros_abrir,
     )
@@ -4576,6 +4100,7 @@ def _render_acros_painel_eureka():
                 gerar = st.button(
                     "✅",
                     key="acros_gerar",
+                    help="gerar acróstico",
                     use_container_width=True,
                 )
             with sair_col:
@@ -4617,7 +4142,6 @@ def _render_acros_painel_eureka():
                 poetico = leitura == "Poético"
 
             with acao1_col:
-                _copiar_popover_sem_seta()
                 if tem_resultado:
                     with st.popover("Copiar", use_container_width=True):
                         st.code(str(acros_texto or ""), language=None, wrap_lines=True)
@@ -4769,10 +4293,9 @@ def _render_eureka_registro(texto_html, texto_copia, tema, imagem, key_prefix, s
     show_copy_retrato_xerox(prefixo, texto_copia)
 
 def _render_acros_texto(acros_html):
-    """Renderiza ACROS/AKROS com fonte, estilo e corpo escolhidos pelo leitor."""
+    """Renderiza ACROS/AKROS com a mesma fonte escolhida para o Palco."""
     fonte_palco = _fonte_palco_leitor()
     fonte_css = _fonte_palco_css(fonte_palco)
-    peso_palco, estilo_css = _estilo_palco_css(fonte_palco)
     corpo_palco = _corpo_palco_leitor()
 
     # ACROS/AKROS usam <strong> na inicial destacada.
@@ -4780,10 +4303,7 @@ def _render_acros_texto(acros_html):
     conteudo = str(acros_html or "")
     conteudo = conteudo.replace(
         "<strong>",
-        (
-            f'<strong style="font-family:{fonte_css} !important;'
-            f'font-style:{estilo_css} !important;font-weight:700 !important;">'
-        ),
+        f'<strong style="font-family:{fonte_css} !important;">',
     )
 
     st.markdown(
@@ -4792,8 +4312,7 @@ def _render_acros_texto(acros_html):
             font-family:{fonte_css} !important;
             font-size:{corpo_palco}px;
             line-height:1.35;
-            font-weight:{peso_palco};
-            font-style:{estilo_css};
+            font-weight:400;
             color:#000;
             width:fit-content;
             max-width:min(96ch,94%);
@@ -4874,32 +4393,102 @@ def load_about_md(title):
     expected = "ABOUT_" + title + ".md"
     return translate("ooops... arquivo ( " + expected + " ) não pode ser aberto.")
 
-def load_about_catalog():
-    """Carrega o ABOUT único pela mesma lista plana usada no Moby.
+def load_md_files_catalog():
+    """Carrega o catálogo externo da página ABOUT.
+                                                     
+                                 
+                                     
+               
+                            
+                                                  
+                                             
 
-    Autoridade: ./base/lista_abouts.txt
-    Formato: título|arquivo.md
-    Leitura até <EOF>, preservando a ordem autoral.
+                      
+                                                          
+                                             
+                                   
+                               
+                                                    
+                                                         
+                        
+
+                            
+                                                   
+                                       
+                            
+                               
+               
+
+
+                                  
+                                  
+                  
+                                             
+                                             
+     
+                           
+                                
+                       
+                        
+
+
+                          
+              
+                                                     
+                                                     
+                        
+                                   
+                                 
+                        
+                                                    
+                    
+                                                                   
+                
+
+
+    Formato obrigatório de cada linha:
+        texto_na_pagina_About|nome_exato_do_arquivo_em_md_files
+
+    O primeiro campo é apenas o rótulo exibido. O segundo é usado literalmente
+    para abrir o arquivo; não há filtro ABOUT_, dedução, tradução ou renomeação.
     """
-    path = _project_path("base", "lista_abouts.txt")
+    candidates = [
+
+        _project_path("md_files.txt"),
+
+        _project_path("base", "md_files.txt"),
+
+    ]
     catalog = []
-    if not os.path.isfile(path):
-        return catalog
+    for path in candidates:
 
-    with open(path, encoding="utf-8-sig") as file:
-        for raw in file:
-            line = raw.strip()
-            if not line or line.startswith("#"):
-                continue
-            if line.upper() == "<EOF>":
-                break
-            label, sep, file_name = line.partition("|")
-            label = label.strip()
-            file_name = file_name.strip().strip(chr(34)).strip(chr(39))
-            if sep and label and file_name:
+        if not os.path.isfile(path):
+            continue
+
+        with open(path, encoding="utf-8") as file:
+
+            for raw in file:
+                line = raw.rstrip("\r\n")
+                if not line.strip() or line.lstrip().startswith("#"):
+                    continue
+
+                if line.strip().upper() == "<EOF>":
+                    break
+                label, sep, file_name = line.partition("|")
+                label = label.strip()
+                file_name = file_name.strip()
+                if not sep or not label or not file_name:
+                    continue
+
+                # O segundo campo pode conter alternativas separadas por vírgula.
+                # O catálogo continua sendo a autoridade; o leitor tentará cada
+                # nome na ordem informada, sem concatená-los.
+                file_name = file_name.strip()
+                if not file_name:
+                    continue
                 catalog.append((label, file_name))
+        return catalog
     return catalog
-
 
 def _md_catalog_name_candidates(file_spec):
     """Expande uma entrada do catálogo em nomes de arquivo tentáveis.
@@ -4979,7 +4568,7 @@ def _load_md_catalog_file(file_spec):
             continue
         try:
             with open(path, encoding="utf-8-sig") as file:
-                return translate_document(file.read())
+                return translate(file.read())
         except (OSError, UnicodeError):
 
             continue
@@ -4989,6 +4578,90 @@ def _load_md_catalog_file(file_spec):
 
     )
 
+def _abouts_catalog_section(section):
+    """Lê md_files/<LETRA>/abouts_<LETRA>.txt.
+
+    Aceita:
+      arquivo.md
+      rótulo público|arquivo.md
+    """
+    section = str(section or "").strip().upper()
+    if section not in {"A", "B", "C", "D", "H"}:
+        return []
+
+    list_path = _project_path("md_files", section, f"abouts_{section}.txt")
+    if not os.path.isfile(list_path):
+        return []
+
+    catalog = []
+    with open(list_path, encoding="utf-8-sig") as file:
+        for raw in file:
+            line = raw.strip()
+            if not line or line.startswith("#"):
+                continue
+            if line.upper() == "<EOF>":
+                break
+
+            label, sep, file_name = line.partition("|")
+            if sep:
+                label = label.strip()
+                file_name = file_name.strip()
+            else:
+                file_name = line
+                label = os.path.splitext(os.path.basename(file_name))[0]
+                if label.casefold().startswith("about_"):
+                    label = label[6:]
+
+            if label and file_name:
+                catalog.append((label, file_name))
+    return catalog
+
+def _about_section_exact_path(section, file_name):
+    """Localiza um MD somente dentro de md_files/<LETRA>/."""
+    section = str(section or "").strip().upper()
+    requested = os.path.basename(str(file_name or "").strip())
+    if section not in {"A", "B", "C", "D", "H"} or not requested:
+        return ""
+
+    folder = _project_path("md_files", section)
+    if not os.path.isdir(folder):
+        return ""
+
+    candidates = [requested]
+    if not os.path.splitext(requested)[1]:
+        candidates.append(requested + ".md")
+
+    for candidate in candidates:
+        direct = os.path.join(folder, candidate)
+        if os.path.isfile(direct):
+            return direct
+
+    wanted = {unicodedata.normalize("NFC", x).casefold() for x in candidates}
+    for real_name in os.listdir(folder):
+        real_path = os.path.join(folder, real_name)
+        if not os.path.isfile(real_path):
+            continue
+        if unicodedata.normalize("NFC", real_name).casefold() in wanted:
+            return real_path
+    return ""
+
+def _load_about_section_file(section, file_spec):
+    """Abre a primeira alternativa existente no quadrado da letra."""
+    attempted = []
+    for file_name in _md_catalog_name_candidates(file_spec):
+        attempted.append(file_name)
+        path = _about_section_exact_path(section, file_name)
+        if not path:
+            continue
+        try:
+            with open(path, encoding="utf-8-sig") as file:
+                return translate(file.read())
+        except (OSError, UnicodeError):
+            continue
+
+    return translate(
+        "ooops... arquivo ( " + str(file_spec) + " ) não pode ser aberto."
+    )
 
 
 # =============================================================================
@@ -5010,28 +4683,34 @@ def page_mini():
     # ✚ = nova variação | ✻ = tema ao acaso | 🔀 = automático | ♫ = voz | ? = help
     foo1, more_col, rand_col, auto_col, voz_col, help_col, foo2 = st.columns([2.35, 1.0, 1.0, 1.35, 1.0, 1.0, 2.35])
 
+    help_tips = load_help(st.session_state.lang)
+    help_rand = help_tips[1]
+    help_more = help_tips[4]
+    help_talk = help_tips[6]
+
     with more_col:
-        more = st.button("✚", key="mini_more_btn", use_container_width=True)
+        more = st.button("✚", key="mini_more_btn", help=help_more, use_container_width=True)
 
     with rand_col:
-        rand = st.button("✻", key="mini_rand_btn", use_container_width=True)
+        rand = st.button("✻", key="mini_rand_btn", help=help_rand, use_container_width=True)
 
     with auto_col:
         auto_clicked = st.button(
             "🔀",
             key="mini_auto_button",
+            help="modo automático",
             use_container_width=True,
         )
         if auto_clicked:
             st.session_state.auto = not st.session_state.auto
 
     with voz_col:
-        if st.button("♫", key="mini_voz_btn", use_container_width=True):
+        if st.button("♫", key="mini_voz_btn", help=help_talk, use_container_width=True):
             st.session_state.talk = not st.session_state.talk
 
     # Pedido: o botão ? deve existir como botão real logo após o ♫.
     with help_col:
-        manu = st.button("?", key="mini_help_btn", use_container_width=True)
+        manu = st.button("?", key="mini_help_btn", help="Modo de Usar & Manual do Usuário", use_container_width=True)
 
     mini_voz_slot = render_voz_slot()
 
@@ -5041,7 +4720,6 @@ def page_mini():
     if st.session_state.auto:
         st.session_state.talk = False
         with st.sidebar:
-            st.markdown("<div style='height:0.85rem'></div>", unsafe_allow_html=True)
             wait_time = st.slider(translate("tempo de exibição (em segundos): "), 5, 60, label_visibility="collapsed")
 
     if rand:
@@ -5069,20 +4747,21 @@ def page_mini():
         usou_xerox_mini = bool(preservar_mini and tuple(st.session_state.get("mini_palco_xerox_context") or ()) == mini_contexto and st.session_state.get("mini_palco_xerox_text"))
         if usou_xerox_mini:
             curr_ypoema = st.session_state.get("mini_palco_xerox_text", "")
+        elif st.session_state.lang != st.session_state.last_lang:
+            curr_ypoema = load_lypo()  # changes in lang, keep LYPO
         else:
-            lypo_contexto = (
-                "mini",
-                int(st.session_state.get("mini", 0)),
-                str(st.session_state.get("tema", "")),
-            )
-            curr_ypoema = resolve_lypo_typo(
-                lypo_contexto,
-                generate_lypo=lambda: load_poema(st.session_state.tema, ""),
-                force_generate=bool(more or rand or auto_clicked),
-            )
+            curr_ypoema = load_poema(st.session_state.tema, "")
+            curr_ypoema = load_lypo()
 
-        if usou_xerox_mini:
-            st.session_state.curr_lang = st.session_state.lang
+        if st.session_state.lang != "pt" and not usou_xerox_mini:  # translate if idioma <> pt
+            curr_ypoema = translate(curr_ypoema)
+            typo_user = "TYPO_" + ip
+            with open(
+                os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
+            ) as save_typo:
+                save_typo.write(curr_ypoema)
+                save_typo.close()
+            curr_ypoema = load_typo()  # to normalize line breaks in text
 
         update_readings(st.session_state.tema)
         LOGO_TEXTO = curr_ypoema
@@ -5129,16 +4808,21 @@ def page_mini():
                         st.session_state.mini = random.randrange(0, maxy_mini)
                         st.session_state.tema = temas[st.session_state.mini]
 
-                    lypo_contexto = (
-                        "mini",
-                        int(st.session_state.get("mini", 0)),
-                        str(st.session_state.get("tema", "")),
-                    )
-                    curr_ypoema = resolve_lypo_typo(
-                        lypo_contexto,
-                        generate_lypo=lambda: load_poema(st.session_state.tema, ""),
-                        force_generate=True,
-                    )
+                    if st.session_state.lang != st.session_state.last_lang:
+                        curr_ypoema = load_lypo()  # changes in lang, keep LYPO
+                    else:
+                        curr_ypoema = load_poema(st.session_state.tema, "")
+                        curr_ypoema = load_lypo()
+
+                    if st.session_state.lang != "pt":  # translate if idioma <> pt
+                        curr_ypoema = translate(curr_ypoema)
+                        typo_user = "TYPO_" + ip
+                        with open(
+                            os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
+                        ) as save_typo:
+                            save_typo.write(curr_ypoema)
+                            save_typo.close()
+                        curr_ypoema = load_typo()  # to normalize line breaks in text
 
                     update_readings(st.session_state.tema)
                     LOGO_TEXTO = curr_ypoema
@@ -5179,6 +4863,11 @@ def page_ypoemas():
         pick_livro_palco()
 
     with col_nav:
+        help_tips = load_help(st.session_state.lang)
+        help_last = help_tips[0]
+        help_rand = help_tips[1]
+        help_nest = help_tips[2]
+        help_more = help_tips[4]
 
         if machina_nav_needs_spacer:
             st.markdown(
@@ -5186,13 +4875,13 @@ def page_ypoemas():
                 unsafe_allow_html=True,
             )
         nav_cols = st.columns([1, 1, 1, 1, 1, 1])
-        rand = nav_cols[0].button("*", use_container_width=True)
-        last = nav_cols[1].button("<", use_container_width=True)
-        more = nav_cols[2].button("+", use_container_width=True)
-        nest = nav_cols[3].button(">", use_container_width=True)
-        if nav_cols[4].button("♫", key="ypoemas_voz_btn", use_container_width=True):
+        more = nav_cols[0].button("✚", help=help_more, use_container_width=True)
+        last = nav_cols[1].button("◀", help=help_last, use_container_width=True)
+        rand = nav_cols[2].button("✻", help=help_rand, use_container_width=True)
+        nest = nav_cols[3].button("▶", help=help_nest, use_container_width=True)
+        if nav_cols[4].button("♫", help=help_tips[6], key="ypoemas_voz_btn", use_container_width=True):
             st.session_state.talk = not st.session_state.talk
-        manu = nav_cols[5].button("?", use_container_width=True)
+        manu = nav_cols[5].button("?", help="help !!!", use_container_width=True)
 
         ypoemas_voz_slot = render_voz_slot()
 
@@ -5204,7 +4893,7 @@ def page_ypoemas():
     if st.session_state.take > maxy_ypoemas or st.session_state.take < 0:
         st.session_state.take = 0
 
-    # Âncora estável: usada pelo + para evitar que qualquer callback de lista
+    # Âncora estável: usada pelo ✚ para evitar que qualquer callback de lista
     # troque tema antes da geração de "mais uma versão do mesmo tema".
     if not st.session_state.get("ypo_keep_book"):
         st.session_state["ypo_keep_book"] = _current_book()
@@ -5212,7 +4901,7 @@ def page_ypoemas():
         st.session_state["ypo_keep_tema"] = st.session_state.get("tema", "")
 
     if more:
-        # + = recarregar / mais uma versão do mesmo tema.
+        # ✚ = recarregar / mais uma versão do mesmo tema.
         # Usa a última âncora estável, não o eventual valor alterado por callback.
         frozen_book = st.session_state.get("ypo_keep_book", _current_book())
         frozen_take = int(st.session_state.get("ypo_keep_take", st.session_state.get("take", 0)))
@@ -5294,21 +4983,21 @@ def page_ypoemas():
             usou_xerox_ypo = bool(preservar_ypo and tuple(st.session_state.get("ypo_palco_xerox_context") or ()) == ypo_contexto and st.session_state.get("ypo_palco_xerox_text"))
             if usou_xerox_ypo:
                 curr_ypoema = st.session_state.get("ypo_palco_xerox_text", "")
+            elif st.session_state.lang != st.session_state.last_lang:
+                curr_ypoema = load_lypo()  # changes in lang, keep LYPO
             else:
-                lypo_contexto = (
-                    "ypo",
-                    str(_current_book()),
-                    int(st.session_state.get("take", 0)),
-                    str(st.session_state.get("tema", "")),
-                )
-                curr_ypoema = resolve_lypo_typo(
-                    lypo_contexto,
-                    generate_lypo=lambda: load_poema(st.session_state.tema, ""),
-                    force_generate=bool(more or last or rand or nest),
-                )
+                curr_ypoema = load_poema(st.session_state.tema, "")
+                curr_ypoema = load_lypo()
 
-            if usou_xerox_ypo:
-                st.session_state.curr_lang = st.session_state.lang
+            if st.session_state.lang != "pt" and not usou_xerox_ypo:  # translate if idioma <> pt
+                curr_ypoema = translate(curr_ypoema)
+                typo_user = "TYPO_" + ip
+                with open(
+                    os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
+                ) as save_typo:
+                    save_typo.write(curr_ypoema)
+                    save_typo.close()
+                curr_ypoema = load_typo()  # to normalize line breaks in text
 
             update_readings(st.session_state.tema)
 
@@ -5355,7 +5044,7 @@ def page_ypoemas():
             if manu:
                 LOGO_TEXTO = load_info(st.session_state.tema)
                 if st.session_state.lang != "pt":  # translate if idioma <> pt
-                    LOGO_TEXTO = translate_document(LOGO_TEXTO)
+                    LOGO_TEXTO = translate(LOGO_TEXTO)
 
                 LOGO_IMAGE = (
                     "./images/matrix/" + st.session_state.tema.capitalize() + ".jpg"
@@ -5371,6 +5060,7 @@ def page_ypoemas():
 # < PAGE > 3 — EUREKA / ACROS
 # =============================================================================
 def page_eureka():
+    help_tips = load_help(st.session_state.lang)
     acros_visitando = bool(
         st.session_state.get("acros_open", False)
         or st.session_state.get("acros_on", False)
@@ -5382,6 +5072,10 @@ def page_eureka():
         _hide_eureka_help()
         _render_acros_painel_eureka()
         return
+
+    help_rand = help_tips[1]
+    help_more = help_tips[4]
+    help_talk = help_tips[6]
 
     # Mesmo desenho de yPoemas/off-Machina:
     # [ busca ] [ nav_buttons + player compacto ] [ lista de ocorrências ]
@@ -5399,13 +5093,14 @@ def page_eureka():
     with seed:
         # "o quê" + "onde buscar": input + bloco compacto com 2 chaves.
         try:
-            busca_col, scope_col = st.columns([3.25, 1.15], vertical_alignment="bottom")
+            busca_col, scope_col = st.columns([3.55, 0.85], vertical_alignment="bottom")
         except TypeError:
-            busca_col, scope_col = st.columns([3.25, 1.15])
+            busca_col, scope_col = st.columns([3.55, 0.85])
 
         with busca_col:
             find_what = st.text_input(
                 label=translate("buscar por..."),
+                help=translate("digite pelo menos 3 letras para buscar uma palavra que você goste..."),
                 key="eureka_find",
                 on_change=_on_eureka_find_change,
                 disabled=acros_visitando,
@@ -5417,12 +5112,13 @@ def page_eureka():
             st.session_state["eureka_scope"] = "ypo"
 
         with scope_col:
-            ypo_col, off_col, acros_col = st.columns([1, 1, 1], gap="small")
+            ypo_col, off_col = st.columns([1, 1], gap="small")
 
             with ypo_col:
                 st.button(
                     "💡",
                     key="eureka_scope_ypo_btn",
+                    help="buscar nos yPoemas",
                     use_container_width=True,
                     on_click=_set_eureka_scope,
                     args=("ypo",),
@@ -5433,14 +5129,12 @@ def page_eureka():
                 st.button(
                     "✒️",
                     key="eureka_scope_off_btn",
+                    help="buscar no Off-Machina",
                     use_container_width=True,
                     on_click=_set_eureka_scope,
                     args=("off",),
                     disabled=acros_visitando,
                 )
-
-            with acros_col:
-                _render_acros_cereja()
 
             # Marca apenas estes dois botões no DOM para o CSS acima.
             components.html(
@@ -5465,39 +5159,31 @@ def page_eureka():
                 unsafe_allow_html=True,
             )
 
-        nav_cols = st.columns([1, 1, 1, 1, 1, 1])
-        rand = nav_cols[0].button(
-            "*", key="eureka_rand_btn", use_container_width=True, disabled=acros_visitando
-        )
-        last = nav_cols[1].button(
-            "<", key="eureka_prev_btn", use_container_width=True, disabled=acros_visitando
-        )
-        with nav_cols[2]:
-            if eureka_scope == "off":
-                more = False
-            else:
-                more = st.button(
-                    "+", key="eureka_more_btn", use_container_width=True, disabled=acros_visitando
-                )
-        nest = nav_cols[3].button(
-            ">", key="eureka_next_btn", use_container_width=True, disabled=acros_visitando
-        )
+        nav_cols = st.columns([1, 1, 1, 1, 1])
+        more = nav_cols[0].button("✚", help=help_more, use_container_width=True, disabled=acros_visitando)
+        rand = nav_cols[1].button("✻", help=help_rand, use_container_width=True, disabled=acros_visitando)
 
-        if nav_cols[4].button("♫", key="eureka_voz_btn", use_container_width=True, disabled=acros_visitando):
+        with nav_cols[2]:
+            if acros_visitando:
+                st.button("🍒", key="acros_cereja_congelada", help="acrósticos", use_container_width=True, disabled=True)
+            else:
+                _render_acros_cereja()
+
+        if nav_cols[3].button("♫", key="eureka_voz_btn", help=help_talk, use_container_width=True, disabled=acros_visitando):
             _hide_eureka_help()
             st.session_state.talk = not st.session_state.talk
 
-        manu = nav_cols[5].button("?", use_container_width=True, disabled=acros_visitando)
+        manu = nav_cols[4].button("?", help="help !!!", use_container_width=True, disabled=acros_visitando)
 
         eureka_voz_slot = render_voz_slot()
 
-    if more or last or rand or nest or manu:
+    if more or rand or manu:
         limpar_retrato("eureka")
 
     if manu:
         st.session_state["help_eureka_open"] = True
 
-    if more or last or rand or nest:
+    if more or rand:
         _hide_eureka_help()
 
     show_help_eureka = bool(st.session_state.get("help_eureka_open", False))
@@ -5512,9 +5198,8 @@ def page_eureka():
             _render_eureka_off(
                 find_what,
                 occurrences,
-                last,
+                more,
                 rand,
-                nest,
                 manu,
                 eureka_voz_slot,
                 show_help_eureka,
@@ -5538,7 +5223,7 @@ def page_eureka():
                 if not seed_tema in soma_tema:
                     soma_tema.append(seed_tema)
 
-        if not any((more, last, rand, nest, manu)) and not st.session_state.get("eureka_retrato_keep_palco", False):
+        if (not more) and (not manu) and not st.session_state.get("eureka_retrato_keep_palco", False):
             st.session_state.eureka = 0
 
         if len(seed_list) == 0:
@@ -5561,11 +5246,6 @@ def page_eureka():
             else:
                 info_find += '"'
 
-            if last:
-                atual = int(st.session_state.get("eureka", 0))
-                st.session_state.eureka = (atual - 1) % len(seed_list)
-                st.session_state["opt_ocur_key"] = st.session_state.eureka
-
             if rand:
                 old_eureka = st.session_state.get("eureka", 0)
                 if len(seed_list) > 1:
@@ -5577,11 +5257,6 @@ def page_eureka():
                     st.session_state.eureka = 0
 
                 # O selectbox precisa refletir a ocorrência sorteada.
-                st.session_state["opt_ocur_key"] = st.session_state.eureka
-
-            if nest:
-                atual = int(st.session_state.get("eureka", 0))
-                st.session_state.eureka = (atual + 1) % len(seed_list)
                 st.session_state["opt_ocur_key"] = st.session_state.eureka
 
             with occurrences:
@@ -5601,7 +5276,7 @@ def page_eureka():
                 show_help_eureka = False
             st.session_state["eureka_last_ocur"] = opt_ocur_key
 
-            if not (last or rand or nest):
+            if not rand:
                 st.session_state.eureka = opt_ocur_key
 
             if show_help_eureka:
@@ -5619,20 +5294,21 @@ def page_eureka():
             usou_xerox_eureka = bool(preservar_eureka and st.session_state.get("eureka_palco_xerox_text", ""))
             if usou_xerox_eureka:
                 curr_ypoema = st.session_state.get("eureka_palco_xerox_text", "")
+            elif st.session_state.lang != st.session_state.last_lang:
+                curr_ypoema = load_lypo()  # changes in lang, keep LYPO
             else:
-                lypo_contexto = (
-                    "eureka",
-                    str(seed_tema),
-                    str(this_seed),
-                )
-                curr_ypoema = resolve_lypo_typo(
-                    lypo_contexto,
-                    generate_lypo=lambda: load_poema(seed_tema, this_seed),
-                    force_generate=bool(more or last or rand or nest),
-                )
+                curr_ypoema = load_poema(seed_tema, this_seed)
+                curr_ypoema = load_lypo()
 
-            if usou_xerox_eureka:
-                st.session_state.curr_lang = st.session_state.lang
+            if st.session_state.lang != "pt" and not usou_xerox_eureka:  # translate if idioma <> pt
+                curr_ypoema = translate(curr_ypoema)
+                typo_user = "TYPO_" + ip
+                with open(
+                    os.path.join("./temp/" + typo_user), "w", encoding="utf-8"
+                ) as save_typo:
+                    save_typo.write(curr_ypoema)
+                    save_typo.close()
+                curr_ypoema = load_typo()  # to normalize line breaks in text
 
             lnew = True
             if lnew:
@@ -5661,7 +5337,7 @@ def page_eureka():
                 lnew = False
                 LOGO_TEXTO = load_info(seed_tema)
                 if st.session_state.lang != "pt":  # translate if idioma <> pt
-                    LOGO_TEXTO = translate_document(LOGO_TEXTO)
+                    LOGO_TEXTO = translate(LOGO_TEXTO)
 
                 LOGO_IMAGE = "./images/matrix/" + seed_tema.capitalize() + ".jpg"
                 write_ypoema(LOGO_TEXTO, LOGO_IMAGE)
@@ -5690,7 +5366,7 @@ def page_off_machina():  # available off_machina_books
         st.session_state.off_take = 0
 
     # Header limpo, herdado do palco yPoemas:
-    # [ lista_livros ] [ * < (sem +) > ♫ ? ] [ lista_temas ]
+    # [ lista_livros ] [ ◀ ✻ ▶ ? ] [ lista_temas ]
     try:
         col_livros, col_nav, col_temas = st.columns(
             [3, 4, 3],
@@ -5733,23 +5409,23 @@ def page_off_machina():  # available off_machina_books
         st.session_state.off_take = 0
 
     with col_nav:
+        help_tips = load_help(st.session_state.lang)
+        help_last = help_tips[0]
+        help_rand = help_tips[1]
+        help_nest = help_tips[2]
 
         if off_nav_needs_spacer:
             st.markdown(
                 "<div style='height:1.95rem; min-height:1.95rem;'></div>",
                 unsafe_allow_html=True,
             )
-        nav_cols = st.columns([1, 1, 1, 1, 1, 1])
-        rand = nav_cols[0].button("*", use_container_width=True)
-        last = nav_cols[1].button("<", use_container_width=True)
-        # A terceira posição pertence ao + nas páginas que geram variações.
-        # Off-Machina não gera variações: o botão simplesmente não nasce.
-        with nav_cols[2]:
-            pass
-        nest = nav_cols[3].button(">", use_container_width=True)
-        if nav_cols[4].button("♫", key="off_voz_btn", use_container_width=True):
+        nav_cols = st.columns([1, 1, 1, 1, 1])
+        last = nav_cols[0].button("◀", help=help_last, use_container_width=True)
+        rand = nav_cols[1].button("✻", help=help_rand, use_container_width=True)
+        nest = nav_cols[2].button("▶", help=help_nest, use_container_width=True)
+        if nav_cols[3].button("♫", help=help_tips[6], key="off_voz_btn", use_container_width=True):
             st.session_state.talk = not st.session_state.talk
-        manu = nav_cols[5].button("?", use_container_width=True)
+        manu = nav_cols[4].button("?", help="help !!!", use_container_width=True)
 
         off_voz_slot = render_voz_slot()
 
@@ -5778,7 +5454,7 @@ def page_off_machina():  # available off_machina_books
     if st.session_state.off_take > maxy_off_machina:  # just in case...
         st.session_state.off_take = 0
 
-    # Mantém a lista_temas sincronizada com os botões < * >,
+    # Mantém a lista_temas sincronizada com os botões ◀ ✻ ▶,
     # sem escrever diretamente na key interna do widget.
     if nav_changed:
         st.session_state["off_take_widget_token"] = int(
@@ -5864,38 +5540,22 @@ def page_off_machina():  # available off_machina_books
                 and st.session_state.get("off_palco_xerox_text")
             )
             titulo_pip = pipe_line[1] if len(pipe_line) > 1 else ""
-            off_is_ypo = str(titulo_pip).lstrip().startswith("@")
             if usou_xerox_off:
                 off_book_text = st.session_state["off_palco_xerox_text"]
-            elif off_is_ypo:
-                nome_tema = str(titulo_pip).lstrip()[1:].strip()
-                lypo_contexto = (
-                    "off-ypo",
-                    str(off_book_name),
-                    int(st.session_state.get("off_take", 0)),
-                    nome_tema,
-                )
-                off_book_text = "<br>" + resolve_lypo_typo(
-                    lypo_contexto,
-                    generate_lypo=lambda: load_poema(nome_tema, ""),
-                    force_generate=bool(nav_changed),
-                )
+            elif str(titulo_pip).lstrip().startswith("@"):
+                if st.session_state.lang != st.session_state.last_lang:
+                    off_book_text = load_lypo()
+                else:
+                    nome_tema = str(titulo_pip).lstrip()[1:].strip()
+                    off_book_text = load_poema(nome_tema, "")
+                    off_book_text = "<br>" + load_lypo()
             else:
                 off_book_text = _pip_line_to_text(this_off_book[st.session_state.off_take])
 
             capo = st.session_state.off_take == 0
 
-            if (
-                st.session_state.lang != "pt"
-                and not capo
-                and not usou_xerox_off
-                and not off_is_ypo
-            ):
-                off_book_text = translate_content(off_book_text)
-            elif usou_xerox_off:
-                st.session_state.curr_lang = st.session_state.lang
-            else:
-                st.session_state.curr_lang = "pt"
+            if st.session_state.lang != "pt" and not capo and not usou_xerox_off:
+                off_book_text = translate(off_book_text)
 
             LOGO_TEXTO = off_book_text
             off_title = off_book_pagys[st.session_state.off_take]
@@ -5939,67 +5599,38 @@ def page_off_machina():  # available off_machina_books
                 talk(off_book_text)
 
 
-def render_about_document(texto):
-    """Renderiza ABOUT em Markdown usando fonte + estilo + corpo do leitor."""
-    fonte = _fonte_palco_leitor()
-    fonte_css = _fonte_palco_css(fonte)
-    corpo = _corpo_palco_leitor()
-    peso, estilo_css = _estilo_palco_css(fonte)
-
-    st.markdown(
-        f"""
-        <style>
-        .st-key-machina_about_text,
-        .st-key-machina_about_text [data-testid="stMarkdownContainer"],
-        .st-key-machina_about_text [data-testid="stMarkdownContainer"] p,
-        .st-key-machina_about_text [data-testid="stMarkdownContainer"] li {{
-            font-family: {fonte_css} !important;
-            font-size: {corpo}px !important;
-            font-weight: {peso} !important;
-            font-style: {estilo_css} !important;
-            line-height: 1.45 !important;
-        }}
-        .st-key-machina_about_text [data-testid="stMarkdownContainer"] h1,
-        .st-key-machina_about_text [data-testid="stMarkdownContainer"] h2,
-        .st-key-machina_about_text [data-testid="stMarkdownContainer"] h3,
-        .st-key-machina_about_text [data-testid="stMarkdownContainer"] h4 {{
-            font-family: {fonte_css} !important;
-            font-style: {estilo_css} !important;
-        }}
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
-    with st.container(key="machina_about_text"):
-        st.markdown(str(texto or ""))
-
-
 # =============================================================================
 # < PAGE > 5 — ABOUT
 # =============================================================================
-def page_about():
-    """ABOUT único e editável, governado por base/lista_abouts.txt."""
-    catalog = load_about_catalog()
+def page_abouts(section="A"):
+    """Página documental ABCDH, cada letra no seu próprio quadrado."""
+    section = str(section or "A").strip().upper()
+    catalog = _abouts_catalog_section(section)
+
     if not catalog:
-        st.warning(translate("base/lista_abouts.txt vazio ou não encontrado"))
+        st.warning(
+            translate(
+                f"md_files/{section}/abouts_{section}.txt vazio ou não encontrado"
+            )
+        )
         return
 
     if not st.session_state.get("about_image"):
         _set_about_image_next()
 
     options = list(range(len(catalog)))
-    opt_about = st.selectbox(
+    opt_abouts = st.selectbox(
         "↓  " + translate("sobre"),
         options,
         format_func=lambda x: catalog[x][0],
-        key="opt_about",
+        key=f"opt_abouts_{section}",
         on_change=_set_about_image_next,
     )
 
-    _label, file_name = catalog[opt_about]
+    _label, file_name = catalog[opt_abouts]
     about_expander = st.expander("", True)
     with about_expander:
-        render_about_document(_load_md_catalog_file(file_name))
+        st.subheader(_load_about_section_file(section, file_name))
 
 
 # =============================================================================
@@ -6011,14 +5642,14 @@ def page_atelier():
 
     if not st.session_state.get("atelier_image"):
         _set_atelier_image_next()
-    tools_mod.show_tools(globals())
+    tools_mod.render_page(globals())
 
 
 # =============================================================================
 # SAÍDA / ROTEAMENTO
 # Entrada comum para LOCAL e MOBILE.
 # =============================================================================
-def start_machina(app_variant="local"):
+def main(app_variant="local"):
     global APP_VARIANT
     APP_VARIANT = "mobile" if str(app_variant).strip().lower() == "mobile" else "local"
 
@@ -6041,42 +5672,58 @@ def start_machina(app_variant="local"):
         st.session_state.draw = True
         st.session_state.visy = False
 
+    st.session_state.last_lang = st.session_state.lang
+
     gramado = open_gramado()
 
     with gramado:
         if APP_VARIANT == "local":
-            page_labels = ["mini", "yPoemas", "eureka", "off-Machina", "ABOUT", "atelier"]
+            page_labels = ["mini", "yPoemas", "eureka", "off-Machina", "A", "B", "C", "D", "atelier"]
             page_ids = {
                 "mini": "1",
                 "yPoemas": "2",
                 "eureka": "3",
                 "off-Machina": "4",
-                "ABOUT": "5",
-                "atelier": "6",
+                "A": "5",
+                "B": "6",
+                "C": "7",
+                "D": "8",
+                "atelier": "9",
             }
             nav_items = [
                 ("mini", "mini", 1.0),
                 ("yPoemas", "yPoemas", 1.0),
                 ("eureka", "eureka", 1.0),
                 ("off-Mach", "off-Machina", 1.0),
-                ("ABOUT", "ABOUT", 0.8),
+                ("A", "A", 0.5),
+                ("B", "B", 0.5),
+                ("C", "C", 0.5),
+                ("D", "D", 0.5),
                 ("Z", "atelier", 0.5),
             ]
         else:
-            page_labels = ["mini", "yPoemas", "eureka", "off-Machina", "ABOUT"]
+            page_labels = ["mini", "yPoemas", "eureka", "off-Machina", "A", "B", "C", "D", "H"]
             page_ids = {
                 "mini": "1",
                 "yPoemas": "2",
                 "eureka": "3",
                 "off-Machina": "4",
-                "ABOUT": "5",
+                "A": "5",
+                "B": "6",
+                "C": "7",
+                "D": "8",
+                "H": "9",
             }
             nav_items = [
                 ("mini", "mini", 1.0),
                 ("yPoemas", "yPoemas", 1.0),
                 ("eureka", "eureka", 1.0),
                 ("off-Mach", "off-Machina", 1.0),
-                ("ABOUT", "ABOUT", 0.8),
+                ("A", "A", 0.5),
+                ("B", "B", 0.5),
+                ("C", "C", 0.5),
+                ("D", "D", 0.5),
+                ("H", "H", 0.5),
             ]
 
         _sync_machina_page_state(page_labels, page_ids)
@@ -6138,12 +5785,16 @@ def start_machina(app_variant="local"):
                 elif chosen_id == "4":
                     page_off_machina()
                     status = palco_status("off-machina")
-                elif chosen_id == "5":
-                    page_about()
-                    status = palco_status("ABOUT")
-                elif chosen_id == "6" and APP_VARIANT == "local":
-                    page_atelier()
-                    status = palco_status("atelier")
+                elif chosen_id in {"5", "6", "7", "8"}:
+                    page_abouts(chosen_label)
+                    status = palco_status(chosen_label)
+                elif chosen_id == "9":
+                    if APP_VARIANT == "local":
+                        page_atelier()
+                        status = palco_status("atelier")
+                    else:
+                        page_abouts("H")
+                        status = palco_status("H")
                 else:
                     page_ypoemas()
                     current_book = _current_book()
