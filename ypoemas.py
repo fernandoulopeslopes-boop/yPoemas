@@ -1,4 +1,4 @@
-# ypo_mobile.py — porta MOBILE da Machina
+# ypoemas.py — porta tops da Machina
 import streamlit as st
 
 st.set_page_config(
@@ -10,4 +10,4 @@ st.set_page_config(
 
 from basico import start_machina
 
-start_machina("local")
+start_machina("mobile")
