@@ -31,8 +31,8 @@ import streamlit.components.v1 as components
 import dna as dna_core
 # ✅
 
-APP_BUILD = "2026-09-08_FONTES_YPOEMAS_EXTERNAS"
-APP_BUILD_NOTES = "Fontes da porta WWW yPoemas governadas por base/fontes_ypoemas.txt; lista fixa removida do basico.py."
+APP_BUILD = "2026-09-08_FONTES_YPOEMAS_ARQUIVOS_LOCAIS"
+APP_BUILD_NOTES = "fontes_ypoemas.txt aponta para arquivos .ttf/.otf locais; palco e Retrato usam a mesma fonte física."
 
 APP_VARIANT = "local"
 
@@ -800,6 +800,23 @@ def _load_fontes_ypoemas():
         return []
     return fontes
 
+FONTES_YPOEMAS_ALIASES = {
+    "Courier New": "Courier",
+    "Trebuchet MS": "Trebuchet",
+    "JetBrains Mono": "Jet_Brains",
+}
+
+def _fontes_ypoemas_dict():
+    return {label: arquivo for label, arquivo in _load_fontes_ypoemas()}
+
+def _fonte_ypoemas_normaliza(nome):
+    nome = str(nome or "Trebuchet").strip()
+    return FONTES_YPOEMAS_ALIASES.get(nome, nome)
+
+def _fonte_ypoemas_arquivo(family=None):
+    family = _fonte_ypoemas_normaliza(family or st.session_state.get("fonte_palco", "Trebuchet"))
+    return _fontes_ypoemas_dict().get(family, "")
+
 
 GOOGLE_FONTS_CSS = (
     "https://fonts.googleapis.com/css2?"
@@ -909,72 +926,37 @@ def pick_lang():  # lista oficial de idiomas + P.O.L.Y.
         st.session_state.lang = selected["lang"]
 
 def _fonte_palco_css(family=None):
-    """Retorna a pilha CSS efetiva da fonte escolhida pelo leitor."""
-    family = str(family or st.session_state.get("fonte_palco", "Trebuchet MS")).strip()
-    if family == "Trebuchet":
-        family = "Trebuchet MS"
-    return FONTES_PALCO_CSS.get(family, f'"{family}", sans-serif')
+    """Retorna a família local escolhida pelo leitor."""
+    family = _fonte_ypoemas_normaliza(family or st.session_state.get("fonte_palco", "Trebuchet"))
+    return f'"{family}", sans-serif'
 
-def _open_dyslexic_font_face():
-    """Monta @font-face somente para a OpenDyslexic existente em ./fonts."""
-    fonts_dir = _project_path("fonts")
-    if not os.path.isdir(fonts_dir):
-        return ""
-
-    arquivos = []
-    try:
-        arquivos = sorted(os.listdir(fonts_dir))
-    except Exception:
-        return ""
-
-    regular = None
-    bold = None
-    for nome in arquivos:
-        low = nome.casefold()
-        if "opendyslexic" not in low or not low.endswith((".ttf", ".otf")):
-            continue
-        if "bold" in low:
-            bold = bold or nome
-        else:
-            regular = regular or nome
-
+def _fontes_palco_bootstrap():
+    """Embute no navegador as fontes locais governadas por fontes_ypoemas.txt."""
     regras = []
-    for nome, peso in ((regular, 400), (bold, 700)):
-        if not nome:
+    for family, arquivo in _load_fontes_ypoemas():
+        ext = Path(arquivo).suffix.casefold()
+        if ext not in (".ttf", ".otf"):
             continue
-        caminho = os.path.join(fonts_dir, nome)
+        caminho = _project_path("fonts", arquivo)
+        if not os.path.isfile(caminho):
+            continue
         try:
-            payload = base64.b64encode(open(caminho, "rb").read()).decode("ascii")
+            payload = base64.b64encode(Path(caminho).read_bytes()).decode("ascii")
         except Exception:
             continue
-
-        ext = os.path.splitext(nome)[1].casefold()
         mime = "font/otf" if ext == ".otf" else "font/ttf"
         formato = "opentype" if ext == ".otf" else "truetype"
+        family_css = str(family).replace("'", "\'")
         regras.append(
             "@font-face {"
-            "font-family:'OpenDyslexic';"
+            f"font-family:'{family_css}';"
             f"src:url(data:{mime};base64,{payload}) format('{formato}');"
-            f"font-weight:{peso};"
+            "font-weight:100 900;"
             "font-style:normal;"
             "font-display:swap;"
             "}"
         )
-
-    return "".join(regras)
-
-def _fontes_palco_bootstrap():
-    """Disponibiliza ao navegador as famílias usadas por Fontes & Letras."""
-    local_open = _open_dyslexic_font_face()
-    st.markdown(
-        f"""
-        <style>
-        @import url('{GOOGLE_FONTS_CSS}');
-        {local_open}
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
+    st.markdown("<style>" + "".join(regras) + "</style>", unsafe_allow_html=True)
 
 def fix_take(take, temas):
     """Converte diferentes formas de seleção de tema para índice inteiro válido."""
@@ -1120,14 +1102,10 @@ def pick_fonte_palco():
         st.sidebar.warning("base/fontes_ypoemas.txt vazio ou não encontrado")
         return
 
-    labels = [label for label, fonte in fontes_ypoemas]
-    lookup = {label: fonte for label, fonte in fontes_ypoemas}
+    labels = [label for label, arquivo in fontes_ypoemas]
 
-    current_font = st.session_state.get("fonte_palco", "Trebuchet MS")
-    current_label = next(
-        (label for label, fonte in fontes_ypoemas if fonte == current_font),
-        labels[0],
-    )
+    current_font = _fonte_ypoemas_normaliza(st.session_state.get("fonte_palco", "Trebuchet"))
+    current_label = current_font if current_font in labels else labels[0]
 
     corpos = list(range(14, 35, 2))
     current_size = st.session_state.get("corpo_palco", 22)
@@ -1155,7 +1133,7 @@ def pick_fonte_palco():
             key="sidebar_size_select",
         )
 
-    st.session_state.fonte_palco = lookup[choice]
+    st.session_state.fonte_palco = choice
     st.session_state.corpo_palco = size
 
 def load_help(idiom):
@@ -1203,10 +1181,7 @@ def _palco_titulo_centralizado(LOGO_TEXTO):
 
 def _fonte_palco_leitor():
     """Fonte escolhida pelo leitor para o yPoema."""
-    fonte = st.session_state.get("fonte_palco", "Trebuchet MS")
-    if fonte == "Trebuchet":
-        fonte = "Trebuchet MS"
-    return fonte
+    return _fonte_ypoemas_normaliza(st.session_state.get("fonte_palco", "Trebuchet"))
 
 def _corpo_palco_leitor():
     """Corpo escolhido pelo leitor para o yPoema."""
@@ -2921,47 +2896,19 @@ def _retrato_webfont_cache(family, bold=False):
     return ""
 
 def _retrato_font(size, bold=False, family=None):
-    """Carrega no PNG a mesma família escolhida em Fontes & Letras."""
-    family = str(family or "Trebuchet MS").strip()
-    if family == "Trebuchet":
-        family = "Trebuchet MS"
-
+    """Carrega no PNG o mesmo arquivo local selecionado em Fontes & Letras."""
+    family = _fonte_ypoemas_normaliza(family or "Trebuchet")
+    arquivo = _fonte_ypoemas_arquivo(family)
     candidates = []
+    if arquivo:
+        candidates.append(_project_path("fonts", arquivo))
 
-    # OpenDyslexic: única família lida da pasta ./fonts.
-    if family == "OpenDyslexic":
-        filename = "OpenDyslexic-Bold.otf" if bold else "OpenDyslexic-Regular.otf"
-        candidates.append(_project_path("fonts", filename))
-
-    # Famílias nativas do Windows.
-    windows_names = {
-        "Courier New": ("courbd.ttf", "cour.ttf"),
-        "Trebuchet MS": ("trebucbd.ttf", "trebuc.ttf"),
-        "Palatino Linotype": ("palab.ttf", "pala.ttf"),
-        "Georgia": ("georgiab.ttf", "georgia.ttf"),
-        "Hand Writing": ("segoeprb.ttf", "segoepr.ttf"),
-    }
-    if family in windows_names:
-        bold_name, regular_name = windows_names[family]
-        filename = bold_name if bold else regular_name
-        candidates.extend([
-            os.path.join("C:/Windows/Fonts", filename),
-            filename,
-        ])
-
-    # Famílias web já usadas no palco: TTF em cache temporário só para Pillow.
-    webfont = _retrato_webfont_cache(family, bold=bold)
-    if webfont:
-        candidates.append(webfont)
-
-    # Fallback seguro para não impedir o Retrato.
     candidates.extend([
         "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" if bold else "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
         "/usr/share/fonts/truetype/liberation2/LiberationSans-Bold.ttf" if bold else "/usr/share/fonts/truetype/liberation2/LiberationSans-Regular.ttf",
         "C:/Windows/Fonts/arialbd.ttf" if bold else "C:/Windows/Fonts/arial.ttf",
         "DejaVuSans-Bold.ttf" if bold else "DejaVuSans.ttf",
     ])
-
     for candidate in candidates:
         try:
             if not candidate:
@@ -2971,7 +2918,6 @@ def _retrato_font(size, bold=False, family=None):
             return ImageFont.truetype(candidate, size=int(size))
         except Exception:
             pass
-
     raise RuntimeError("Fonte Unicode não encontrada para gerar o Retrato.")
 
 def _retrato_wrap(draw, texto, font, largura):
