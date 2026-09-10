@@ -1,0 +1,10 @@
+Courier|Courier New.ttf
+Dyslexic|OpenDyslexic-Regular.otf
+Trebuchet|Trebuchet MS.ttf
+Cormorant|Cormorant Garamond.ttf
+Palatino|Palatino Linotype.ttf
+Georgia|Georgia.ttf
+Jet_Brains|JetBrains Mono.ttf
+IBM Plex Sans|IBM Plex Sans.ttf
+Saira|Saira.ttf
+Comic Relief|Comic Relief.tt
