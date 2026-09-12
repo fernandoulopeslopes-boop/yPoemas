@@ -1,10 +1,13 @@
 Violina|Violina Regular.ttf
+Capsuula|Capsuula.ttf
 Courier|Courier New.ttf
-Trebuchet|Trebuchet MS.ttf
-Cormorant|Cormorant Garamond.ttf
-Palatino|Palatino Linotype.ttf
-Georgia|Georgia.ttf
-Jet_Brains|JetBrains Mono.ttf
-IBM Plex Sans|IBM Plex Sans.ttf
-Saira|Saira.ttf
 Comic Relief|Comic Relief.tt
+Dyslexic|OpenDyslexic-Regular.otf
+Jambo|DK Jambo.otf
+Magnolia Script|Magnolia Script.otf
+Remingtoned Type|Remingtoned Type.ttf
+Staircase|LT Staircase.otf
+Saira|Saira.ttf
+Snidane|Snidane.ttf
+Tomato|Tomato Pasta.otf
+Crooked|Crooked.ttf
