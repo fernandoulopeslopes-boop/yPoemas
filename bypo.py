@@ -1,6 +1,6 @@
 # =============================================================================
 # bypo.py — BASIC YPO / MACHINA HORIZONTAL
-# Build 2026-09-11_038 — base 029 preservada; retrato em 1 clique
+# Build 2026-09-12_045 — contrato @: cada marcador vira um espaço autoral
 #
 # BASE / PROVENIÊNCIA
 # - Base funcional: basico.py GitHub de 08/09/2026, copiado para isolamento.
@@ -21,6 +21,13 @@
 # - 028 DOC_BUILD: cabeçalho passa a documentar a linhagem recente e o build corrente.
 # - 029 RETRATO_TIPOGRAFIA_CAPTURADA: retrato recebe fonte/arquivo/estilo exatos do clique; corpo continua próprio.
 # - 038 BASE_029_1CLIQUE: preservado o motor visual da 029; removido rerun em callback e retrato materializado em 1 clique.
+# - 039 GEOMETRIA_FIXA: moldura 24 px; sidebar/gramado iguais; palco ocupa o restante.
+# - 040 PALCO_FLUXO: scroll no conteúdo interno sem corte; retrato contido no palco e retorno ao texto.
+# - 041 ALTURA_CONTEUDO_COMPLETO: overflow passa a considerar texto + respiro + ações como um único bloco.
+# - 042 SCROLL_ACOES_RETRATO: palco usa altura real da viewport para overflow; copiar/retrato/salvar permanecem após o retrato.
+# - 043 LINKS_RETRATO_RANDOM: sidebar adota cards visuais do Moby; cada clique em retrato mantém texto e sorteia outra imagem.
+# - 044 LINKS_APOS_MACHINA_OLA: botão links reposicionado abaixo de Machina/OLA e cards reforçados visualmente.
+# - 045 RECUO_AUTORAL_AT: cada @ autoral vira exatamente um espaço, preservando recuos sucessivos.
 # =============================================================================
 # Leitura da casa:
 # terreno/configuração -> funções/estado/componentes comuns
@@ -61,10 +68,9 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-APP_BUILD = "2026-09-11_BYPO_038_BASE_029_1CLIQUE"
+APP_BUILD = "2026-09-12_BYPO_045_RECUO_AUTORAL_AT"
 APP_BUILD_NOTES = (
-    "Base visual 029 preservada; callback tipográfico sem rerun explícito; "
-    "Retrato materializado em um único clique."
+    "Botão links abaixo de Machina/OLA; cards sociais com moldura, fundo e contraste reforçados."
 )
 
 APP_VARIANT = "local"
@@ -607,18 +613,159 @@ def apply_bypo_styles():
         """
         <style>
         header[data-testid="stHeader"] { display:none !important; }
+        html, body, [data-testid="stAppViewContainer"], [data-testid="stApp"] {
+            height:100dvh !important;
+            min-height:100dvh !important;
+            overflow:hidden !important;
+        }
         div[data-testid="stMainBlockContainer"] {
             width:100% !important;
             max-width:100% !important;
-            padding:0.25rem !important;
+            height:100dvh !important;
+            min-height:100dvh !important;
+            max-height:100dvh !important;
+            padding:24px !important;
+            margin:0 !important;
+            box-sizing:border-box !important;
+            overflow:hidden !important;
         }
         .st-key-bypo_sidebar_frame,
         .st-key-bypo_palco_frame,
         .st-key-bypo_palco_full {
+            height:calc(100dvh - 48px) !important;
+            min-height:calc(100dvh - 48px) !important;
+            max-height:calc(100dvh - 48px) !important;
             box-sizing:border-box !important;
+            overflow:hidden !important;
+        }
+        .st-key-bypo_sidebar_frame > div[data-testid="stVerticalBlock"],
+        .st-key-bypo_palco_frame > div[data-testid="stVerticalBlock"],
+        .st-key-bypo_palco_full > div[data-testid="stVerticalBlock"] {
+            height:100% !important;
+            min-height:0 !important;
+            max-height:100% !important;
+            overflow:hidden !important;
         }
         .st-key-bypo_sidebar_frame div[data-testid="stVerticalBlock"] {
             gap:0.28rem !important;
+        }
+        .bypo-social-stage {
+            margin-top:.18rem;
+            padding:.42rem;
+            background:rgba(248,248,248,.96);
+            border:1px solid rgba(0,0,0,.10);
+            border-radius:14px;
+            box-sizing:border-box;
+        }
+        .bypo-social-grid {
+            display:grid;
+            grid-template-columns:repeat(2,minmax(0,1fr));
+            gap:.55rem;
+        }
+        .bypo-social-card {
+            min-height:72px;
+            border:1px solid rgba(0,0,0,.16);
+            border-radius:13px;
+            background:#fff;
+            text-decoration:none !important;
+            color:#202124 !important;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            flex-direction:column;
+            gap:.34rem;
+            padding:.58rem .42rem;
+            box-shadow:0 4px 12px rgba(0,0,0,.08);
+            transition:transform .13s ease, box-shadow .13s ease, border-color .13s ease;
+        }
+        .bypo-social-card:hover {
+            transform:translateY(-2px);
+            box-shadow:0 7px 17px rgba(0,0,0,.11);
+            border-color:rgba(0,0,0,.25);
+        }
+        .bypo-social-icons {
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            gap:.30rem;
+            min-height:24px;
+        }
+        .bypo-social-icons img {
+            width:26px;
+            height:26px;
+            object-fit:contain;
+            display:block;
+        }
+        .bypo-social-label {
+            font-size:.84rem;
+            font-weight:650;
+            line-height:1.1;
+            text-align:center;
+        }
+        .st-key-bypo_palco_frame > div[data-testid="stVerticalBlock"],
+        .st-key-bypo_palco_full > div[data-testid="stVerticalBlock"] {
+            gap:0 !important;
+        }
+        .st-key-bypo_page_menu {
+            height:48px !important;
+            min-height:48px !important;
+            max-height:48px !important;
+            overflow:hidden !important;
+            flex:0 0 48px !important;
+        }
+        .st-key-bypo_real_stage,
+        .st-key-bypo_real_stage_full {
+            height:calc(100% - 48px) !important;
+            min-height:0 !important;
+            max-height:calc(100% - 48px) !important;
+            overflow:hidden !important;
+            flex:1 1 auto !important;
+            box-sizing:border-box !important;
+        }
+        .st-key-bypo_real_stage > div[data-testid="stVerticalBlock"],
+        .st-key-bypo_real_stage_full > div[data-testid="stVerticalBlock"] {
+            height:100% !important;
+            min-height:0 !important;
+            overflow:hidden !important;
+        }
+        .st-key-bypo_stage_content,
+        .st-key-bypo_stage_content_full {
+            height:calc(100dvh - 96px) !important;
+            min-height:0 !important;
+            max-height:calc(100dvh - 96px) !important;
+            overflow-y:auto !important;
+            overflow-x:hidden !important;
+            overscroll-behavior:contain !important;
+            scrollbar-gutter:stable !important;
+            box-sizing:border-box !important;
+        }
+        .st-key-bypo_stage_content > div[data-testid="stVerticalBlock"],
+        .st-key-bypo_stage_content_full > div[data-testid="stVerticalBlock"] {
+            height:auto !important;
+            min-height:100% !important;
+            max-height:none !important;
+            overflow:visible !important;
+            justify-content:safe center !important;
+            box-sizing:border-box !important;
+            padding-bottom:0.35rem !important;
+        }
+        [class*="st-key-bypo_portrait_view_"] {
+            width:100% !important;
+            max-width:100% !important;
+            overflow:hidden !important;
+            display:flex !important;
+            align-items:center !important;
+            justify-content:center !important;
+            box-sizing:border-box !important;
+        }
+        [class*="st-key-bypo_portrait_view_"] img {
+            display:block !important;
+            width:auto !important;
+            height:auto !important;
+            max-width:100% !important;
+            max-height:calc(100dvh - 170px) !important;
+            object-fit:contain !important;
+            margin:0 auto !important;
         }
         .st-key-bypo_sidebar_frame .machina-sidebar-image-frame {
             width:100% !important;
@@ -1526,17 +1673,28 @@ def write_ypoema(LOGO_TEXTO, LOGO_IMAGE):  # ver save_img.py
             unsafe_allow_html=True,
         )
 
+BYPO_OUTLOOK_ICON_DATA = "data:image/svg+xml;base64," + base64.b64encode(
+    b"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+<rect x="10" y="12" width="44" height="40" rx="5" fill="#0A64C9"/>
+<path d="M14 20h36v26H14z" fill="#1B78D0"/>
+<path d="M14 21l18 14 18-14" fill="none" stroke="white" stroke-width="4" stroke-linejoin="round"/>
+<rect x="6" y="16" width="25" height="32" rx="3" fill="#075FB5"/>
+<circle cx="18.5" cy="32" r="8.5" fill="none" stroke="white" stroke-width="4"/>
+</svg>"""
+).decode("ascii")
+
 BYPO_LINKS = [
-    ("Facebook", "https://www.facebook.com/nandoulopes"),
-    ("Instagram", "https://www.instagram.com/fernando.lopes.942/"),
-    ("Outlook", "mailto:lopes.fernando@hotmail.com"),
-    ("Gmail", "mailto:lopes.fernando@gmail.com"),
-    ("Buy Me a Coffee", "https://www.buymeacoffee.com/yPoemas"),
-    ("WhatsApp / Pix", "https://wa.me/5512991368181"),
+    {"label": "Facebook", "url": "https://www.facebook.com/nandoulopes", "icon": "https://cdn.simpleicons.org/facebook/1877F2", "kind": "facebook"},
+    {"label": "Instagram", "url": "https://www.instagram.com/fernando.lopes.942/", "icon": "https://cdn.simpleicons.org/instagram/E4405F", "kind": "instagram"},
+    {"label": "Outlook", "url": "mailto:lopes.fernando@hotmail.com", "icon": BYPO_OUTLOOK_ICON_DATA, "kind": "outlook"},
+    {"label": "Gmail", "url": "mailto:lopes.fernando@gmail.com", "icon": "https://cdn.simpleicons.org/gmail/EA4335", "kind": "gmail"},
+    {"label": "Buy Me a Coffee", "url": "https://www.buymeacoffee.com/yPoemas", "icon": "https://cdn.simpleicons.org/buymeacoffee/FFDD00", "kind": "coffee"},
+    {"label": "WhatsApp / Pix", "url": "https://wa.me/5512991368181", "icon": "https://cdn.simpleicons.org/whatsapp/25D366", "icon_2": "https://cdn.simpleicons.org/pix/32BCAD", "kind": "whatsapp"},
 ]
 
 BYPO_SIDEBAR_WIDTH_PX = 320
-BYPO_PALCO_HEIGHT_PX = 500
+BYPO_OUTER_FRAME_PX = 24
+BYPO_PAGE_MENU_HEIGHT_PX = 48
 
 
 def _bypo_toggle_links():
@@ -1545,8 +1703,30 @@ def _bypo_toggle_links():
 
 
 def _bypo_render_links():
-    for label, url in BYPO_LINKS:
-        st.link_button(label, url, use_container_width=True)
+    """Painel visual de redes sociais, na solução já bem resolvida do Moby."""
+    cards = []
+    for item in BYPO_LINKS:
+        label = html.escape(str(item.get("label", "")))
+        url = html.escape(str(item.get("url", "")), quote=True)
+        icon = html.escape(str(item.get("icon", "")), quote=True)
+        icon_2 = html.escape(str(item.get("icon_2", "")), quote=True)
+        kind = html.escape(str(item.get("kind", "")))
+        icons = f"<img src='{icon}' alt='' loading='lazy'>"
+        if icon_2:
+            icons += f"<img src='{icon_2}' alt='' loading='lazy'>"
+        external = "" if url.startswith("mailto:") else " target='_blank' rel='noopener noreferrer'"
+        cards.append(
+            f"<a class='bypo-social-card {kind}' href='{url}'{external}>"
+            f"<span class='bypo-social-icons'>{icons}</span>"
+            f"<span class='bypo-social-label'>{label}</span>"
+            "</a>"
+        )
+    st.markdown(
+        "<div class='bypo-social-stage'><div class='bypo-social-grid'>"
+        + "".join(cards)
+        + "</div></div>",
+        unsafe_allow_html=True,
+    )
 
 
 def _bypo_context_image_path(chosen_id):
@@ -1586,15 +1766,15 @@ def render_sidebar_for_page(chosen_id):
     pick_lang()
     pick_fonte_palco()
 
+    # Machina / OLA precedem o acesso aos links.
+    render_analysis_sidebar_block()
+
     _sidebar_host().button(
         "links",
         key="bypo_links_btn",
         on_click=_bypo_toggle_links,
         use_container_width=True,
     )
-
-    # Machina / OLA imediatamente abaixo de links, como no gabarito aprovado.
-    render_analysis_sidebar_block()
 
     # O slot fica nesta posição; é preenchido depois da página real atualizar
     # imagem/estado, sem empurrar conteúdo para fora da sidebar.
@@ -1934,6 +2114,10 @@ def load_book_pages(book):  # Load Book pages for off_book
 
     return book_pages
 
+def _recuo_autoral_at(texto):
+    """Contrato autoral: cada @ representa exatamente um espaço de recuo."""
+    return str(texto or "").replace("@", " ")
+
 def _pip_line_to_text(line):
     """Converte uma linha .Pip em texto de leitura.
 
@@ -1947,6 +2131,7 @@ def _pip_line_to_text(line):
         texto = texto[1:]
     if texto.endswith("|"):
         texto = texto[:-1]
+    texto = _recuo_autoral_at(texto)
     return _trim_blank_edges_preservando_recuo(texto.split("|"))
 
 def _markdown_links_to_html(texto):
@@ -1985,8 +2170,9 @@ def load_poema(nome_tema, seed_eureka):  # generate new yPoema
                 save_lypo.write("\n")
                 novo_ypoema += "<br>"
             else:
-                save_lypo.write(line + "\n")
-                novo_ypoema += line + "<br>"
+                linha_autoral = _recuo_autoral_at(line)
+                save_lypo.write(linha_autoral + "\n")
+                novo_ypoema += linha_autoral + "<br>"
 
     save_lypo.close()  # save last generated in LYPO
 
@@ -2013,6 +2199,7 @@ def _ypoema_html_to_text(ypoema_html):
     texto = texto.replace("<br/>", "\n").replace("<br />", "\n").replace("<br>", "\n")
     texto = re.sub(r"<[^>]+>", "", texto)
     texto = html.unescape(texto)
+    texto = _recuo_autoral_at(texto)
     return _trim_blank_edges_preservando_recuo(texto.splitlines())
 
 def _off_machina_texto_limpo(texto):
@@ -2121,8 +2308,8 @@ def _gerar_ypoema_texto_cru(nome_tema):
         if line == "\n":
             linhas.append("")
         else:
-            # Preserva recuos autorais do |$|: &emsp; vira espaço largo real.
-            linhas.append(html.unescape(str(line).rstrip("\n")))
+            # Preserva recuos autorais: entidades HTML e @ autoral viram espaços reais.
+            linhas.append(_recuo_autoral_at(html.unescape(str(line).rstrip("\n"))))
     return _trim_blank_edges_preservando_recuo(linhas)
 
 def _remover_titulo_inicial_duplicado(texto, nome_tema):
@@ -3207,27 +3394,42 @@ def focar_retrato_no_palco(anchor_id):
     )
 
 def make_retrato_xerox(prefixo):
-    """Retrata exatamente o que o leitor vê; só depois renova a imagem da sidebar."""
+    """Mantém o texto atual e sorteia outra imagem a cada clique em Retrato."""
     texto = st.session_state.get(f"{prefixo}_palco_xerox_text", "")
     titulo = st.session_state.get(f"{prefixo}_palco_xerox_title", "")
     contexto = _retrato_assinatura_contexto(st.session_state.get(f"{prefixo}_palco_xerox_context"))
+    imagem_anterior = st.session_state.get(f"{prefixo}_retrato_origem_image", "")
 
-    # Fidelidade visual do clique: usa a ÚLTIMA imagem efetivamente renderizada
-    # na sidebar, não uma variável de estado que já possa ter sido renovada.
-    # Essa chave é gravada por render_sidebar_context_image() no fim de cada rerun.
-    imagem = st.session_state.get("sidebar_image_visible_path", "")
+    if prefixo == "off":
+        try:
+            book_pos = int(st.session_state.get("off_book", 0))
+            book_name = load_off_livros_list()[book_pos]
+        except (TypeError, ValueError, IndexError):
+            book_name = ""
+        grupo = _off_book_image_group(book_name)
+        images = _images_from_group(grupo) if grupo else _images_from_group("anima")
+        disponiveis = [img for img in images if img != imagem_anterior]
+        imagem = random.choice(disponiveis or images) if images else ""
+        if imagem:
+            st.session_state["off_machina_images_pasta"] = imagem
+            st.session_state["off_retrato_sidebar_renovada"] = True
+    else:
+        tema_contexto = titulo or st.session_state.get("tema", "Fatos") or "Fatos"
+        grupo = dna_core.get_banco_tema(str(tema_contexto).strip()) or "machina"
+        images = _images_from_group(grupo)
+        disponiveis = [img for img in images if img != imagem_anterior]
+        imagem = random.choice(disponiveis or images) if images else ""
+        if not imagem:
+            imagem = load_arts(tema_contexto) or ""
+        if imagem:
+            st.session_state["save_image_tema"] = imagem
+            st.session_state[f"{prefixo}_retrato_sidebar_renovada"] = True
 
-    # Fallback defensivo para a primeira execução/estado antigo.
     if not imagem:
-        if prefixo == "off":
-            imagem = st.session_state.get("off_machina_images_pasta", "")
-        else:
-            imagem = st.session_state.get("save_image_tema", "")
+        imagem = st.session_state.get("sidebar_image_visible_path", "")
     if not imagem:
         imagem = st.session_state.get(f"{prefixo}_palco_xerox_image", "")
 
-    # Tipografia do Retrato é capturada NO CLIQUE.
-    # Não é redescoberta durante a montagem do PNG.
     fonte_retrato = _fonte_palco_leitor()
     estilo_retrato = _estilo_palco_leitor()
     arquivo_fonte_retrato = _fonte_ypoemas_arquivo(fonte_retrato)
@@ -3246,51 +3448,26 @@ def make_retrato_xerox(prefixo):
 
     st.session_state[f"{prefixo}_imagem_retrato"] = png
     st.session_state[f"{prefixo}_retrato_origem_image"] = imagem
-
     nome_retrato = re.sub(
         r"[^A-Za-z0-9_-]+",
         "_",
         str(titulo or "retrato"),
     ).strip("_") or "retrato"
-
     st.session_state[f"{prefixo}_nome_retrato"] = nome_retrato
     st.session_state[f"{prefixo}_contexto_retrato"] = contexto
     st.session_state[f"{prefixo}_retrato_focus"] = True
-
-    # Só depois da captura fiel: prepara uma nova imagem para a sidebar.
-    if prefixo == "off":
-        try:
-            book_pos = int(st.session_state.get("off_book", 0))
-            book_name = load_off_livros_list()[book_pos]
-        except (TypeError, ValueError, IndexError):
-            book_name = ""
-        grupo = _off_book_image_group(book_name)
-        images = _images_from_group(grupo) if grupo else _images_from_group("anima")
-        if images:
-            disponiveis = [img for img in images if img != imagem]
-            st.session_state["off_machina_images_pasta"] = random.choice(disponiveis or images)
-            st.session_state["off_retrato_sidebar_renovada"] = True
-    else:
-        tema_contexto = titulo or st.session_state.get("tema", "Fatos") or "Fatos"
-        imagem_nova = load_arts(tema_contexto)
-        if imagem_nova:
-            st.session_state["save_image_tema"] = imagem_nova
-            st.session_state[f"{prefixo}_retrato_sidebar_renovada"] = True
-
-    # O rerun preserva o texto retratado; a imagem da sidebar já pode mudar.
     st.session_state[f"{prefixo}_retrato_keep_palco"] = True
 
 def show_retrato_no_topo(prefixo):
-    """Mostra o Retrato como resultado principal no topo do palco."""
+    """Mostra o Retrato contido no palco, sem retirar o leitor do ambiente."""
     png = st.session_state.get(f"{prefixo}_imagem_retrato")
     if not png:
         return False
 
-    anchor = f"retrato_{prefixo}_gerado"
-    st.markdown(f'<div id="{anchor}"></div>', unsafe_allow_html=True)
-    st.image(png, use_container_width=True)
-    if st.session_state.pop(f"{prefixo}_retrato_focus", False):
-        focar_retrato_no_palco(anchor)
+    # O Retrato pertence ao quadrado do palco; nunca toma a viewport inteira.
+    with st.container(key=f"bypo_portrait_view_{prefixo}", border=False):
+        st.image(png)
+    st.session_state.pop(f"{prefixo}_retrato_focus", None)
     return True
 
 def _copiar_popover_sem_seta():
@@ -5878,10 +6055,10 @@ def start_machina(app_variant="bypo"):
                 chosen_id = str(st.session_state.get("pagina", page_ids.get(chosen_label, "2")))
                 with st.container(
                     key="bypo_real_stage",
-                    height=BYPO_PALCO_HEIGHT_PX,
                     border=False,
                 ):
-                    _bypo_render_real_page(chosen_id)
+                    with st.container(key="bypo_stage_content", border=False):
+                        _bypo_render_real_page(chosen_id)
     else:
         _SIDEBAR_HOST = None
         with st.container(key="bypo_palco_full", width="stretch", border=True):
@@ -5890,10 +6067,10 @@ def start_machina(app_variant="bypo"):
             chosen_id = str(st.session_state.get("pagina", page_ids.get(chosen_label, "2")))
             with st.container(
                 key="bypo_real_stage_full",
-                height=BYPO_PALCO_HEIGHT_PX,
                 border=False,
             ):
-                _bypo_render_real_page(chosen_id)
+                with st.container(key="bypo_stage_content_full", border=False):
+                    _bypo_render_real_page(chosen_id)
 
     if sidebar_open and sidebar_slot is not None:
         with sidebar_slot.container():
