@@ -1,5 +1,5 @@
+Violina|Violina Regular.ttf
 Courier|Courier New.ttf
-Dyslexic|OpenDyslexic-Regular.otf
 Trebuchet|Trebuchet MS.ttf
 Cormorant|Cormorant Garamond.ttf
 Palatino|Palatino Linotype.ttf
