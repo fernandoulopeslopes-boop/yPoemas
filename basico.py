@@ -34,8 +34,8 @@ import streamlit.components.v1 as components
 import dna as dna_core
 # ✅
 
-APP_BUILD = "2026-09-08_DUAS_CASAS_ZERO_HINTS_FONTES_EXTERNAS"
-APP_BUILD_NOTES = "baseline limpa preservada; recuperada arquitetura das duas casas; zero hints; fontes yPoemas externas mantidas."
+APP_BUILD = "2026-09-11_MATEMATICA_BASICA_3_7_FRAME24"
+APP_BUILD_NOTES = "Matemática básica: main = sidebar + palco; moldura externa visual 24px fora da soma; sem filhos extras; alturas stretch nativas; scroll nativo somente no palco."
 
 APP_VARIANT = "local"
 
@@ -237,12 +237,13 @@ def apply_styles():
     st.markdown(
         """
         <style>
-        .reportview-container .main .block-container{
-            padding-top: 0rem;
-            padding-right: 0.04rem;
-            padding-left: 0.04rem;
-            padding-bottom: 0rem;
-            max-width: 100vw;
+        /* Moldura visual externa. Não participa da soma interna MAIN = SIDEBAR + PALCO. */
+        [data-testid="stMainBlockContainer"] {
+            padding: 24px !important;
+            box-sizing: border-box !important;
+                                  
+                                 
+                             
         }
         </style>
         """,
@@ -308,10 +309,10 @@ def apply_styles():
         }
 
 
-        /* Palco :: ajuste fino de área útil */
-        div[data-testid="stVerticalBlock"] {
-            gap: 0.18rem;
-        }
+                                                 
+                                            
+                         
+         
 
         div[data-testid="stExpander"] {
             margin-top: 0rem;
@@ -326,71 +327,74 @@ def apply_styles():
         }
 
 
-        /* CASAS PRÓPRIAS — sem largura/altura que provoque scroll global. */
-        [data-testid="stSidebar"],
-        [data-testid="stExpandSidebarButton"] {
-            display: none !important;
-        }
-
-        .st-key-machina_duas_casas {
-            width: 100% !important;
-            max-width: 100% !important;
-            min-width: 0 !important;
-            box-sizing: border-box !important;
-        }
-
-        .st-key-machina_duas_casas div[data-testid="stHorizontalBlock"],
-        .st-key-machina_duas_casas div[data-testid="stColumn"] {
-            min-width: 0 !important;
-            box-sizing: border-box !important;
-        }
-
-        html,
-        body,
-        [data-testid="stAppViewContainer"],
-        [data-testid="stAppViewContainer"] main {
-            height: 100dvh !important;
-            max-height: 100dvh !important;
-            overflow: hidden !important;
-        }
-
-        .st-key-machina_duas_casas {
-            height: 100dvh !important;
-            max-height: 100dvh !important;
-            overflow: hidden !important;
-        }
-
-        .st-key-machina_sidebar_house {
+        /* MACHINA :: aparência dos containers.
+           Estrutura, medidas e scroll pertencem ao Streamlit/Python. */
+        .st-key-machina_sidebar_container {
             background-color: #eef6fb !important;
-            border-top: 1px solid rgba(49, 51, 63, 0.18) !important;
-            border-bottom: 1px solid rgba(49, 51, 63, 0.18) !important;
-            border-right: 3px double rgba(49, 51, 63, 0.28) !important;
-            padding: 0.42rem 0.80rem 0.82rem 0.58rem !important;
-            box-sizing: border-box !important;
-            max-height: calc(100dvh - 0.45rem) !important;
-            overflow-y: auto !important;
-            overflow-x: clip !important;
+            border: 1px solid rgba(49, 51, 63, 0.18) !important;
+            border-radius: 18px !important;
         }
 
-        .st-key-machina_palco_house {
-            border-top: 1px solid rgba(49, 51, 63, 0.18) !important;
-            border-bottom: 1px solid rgba(49, 51, 63, 0.18) !important;
-            padding: 0.42rem 0.35rem 0.82rem 0.55rem !important;
-            min-width: 0 !important;
-            max-height: calc(100dvh - 0.45rem) !important;
-            overflow: hidden !important;
-            box-sizing: border-box !important;
+        .st-key-machina_palco_container {
+            border: 1px solid rgba(49, 51, 63, 0.18) !important;
+                                       
+                                    
+            border-radius: 18px !important;
         }
 
-        .st-key-machina_palco_scroll {
-            max-height: calc(100dvh - 5.65rem) !important;
-            overflow-y: auto !important;
-            overflow-x: clip !important;
-            min-width: 0 !important;
-            box-sizing: border-box !important;
+        .st-key-machina_sidebar_container .machina-sidebar-space {
+                                                                
+            display: block !important;
+                                              
         }
 
-        .st-key-machina_sidebar_house .machina-sidebar-title {
+        .st-key-machina_sidebar_container .stButton button {
+             
+                                           
+                                                 
+            white-space: nowrap !important;
+            word-break: keep-all !important;
+                                        
+        }
+
+        /* Botão de retorno da lateral recolhida pertence ao topo do palco. */
+        .st-key-machina_sidebar_reopen {
+                                      
+                                          
+            margin-bottom: 0.30rem !important;
+        }
+
+        .st-key-machina_sidebar_reopen div[data-testid="stButton"] button {
+                                                 
+            width: auto !important;
+            min-width: 2.35rem !important;
+                                                                       
+            padding-left: 0.42rem !important;
+                                              
+                                                          
+                                        
+            padding-right: 0.42rem !important;
+        }
+
+                                     
+                                                                    
+                                                                       
+                                                                
+                                    
+                                                          
+                                        
+                                              
+         
+
+                                      
+                                                          
+                                        
+                                        
+                                    
+                                              
+         
+
+        .st-key-machina_sidebar_container .machina-sidebar-title {
             text-align: center;
             font-family: 'Trebuchet MS';
             font-size: 1.04rem;
@@ -400,7 +404,7 @@ def apply_styles():
             opacity: 0.88;
         }
 
-        .st-key-machina_sidebar_house .stButton button {
+        .st-key-machina_sidebar_container .stButton button {
             white-space: nowrap !important;
             word-break: keep-all !important;
             width: 100% !important;
@@ -408,18 +412,18 @@ def apply_styles():
             padding: 0.16rem 0.32rem !important;
         }
 
-        .st-key-machina_sidebar_house div[data-testid="stSelectbox"] {
+        .st-key-machina_sidebar_container div[data-testid="stSelectbox"] {
             width: 100% !important;
             max-width: 100% !important;
             margin-left: 0 !important;
             margin-right: 0 !important;
         }
 
-        .st-key-machina_sidebar_house > div[data-testid="stVerticalBlock"] {
-            gap: 0.88rem !important;
-        }
+        .st-key-machina_sidebar_container .machina-sidebar-space {
+                                    
+         
 
-        .st-key-machina_sidebar_house .machina-sidebar-space {
+                                                              
             display: block !important;
             width: 100% !important;
         }
@@ -471,12 +475,12 @@ def apply_styles():
             margin-top: 0 !important;
         }
 
-        section.main > div.block-container {
-            max-width: 100vw !important;
-            width: 100% !important;
-            padding-left: 0.00rem !important;
-            padding-right: 0.00rem !important;
-        }
+                                            
+                                        
+                                   
+                                             
+                                              
+         
 
 
         /* Centralização óptica dos títulos markdown */
@@ -497,34 +501,34 @@ def apply_styles():
             margin-bottom: 0.30rem !important;
         }
 
-/* Gramado :: território principal */
-        .main .block-container {
-            padding-top: 0.00rem !important;
-            padding-left: 0.00rem !important;
-            padding-right: 0.00rem !important;
-            padding-bottom: 0.16rem !important;
-            max-width: 100vw !important;
-            width: 100% !important;
-        }
+                                      
+                                
+                                            
+                                             
+                                              
+                                               
+                                        
+                                   
+         
 
-        .machina-gramado {
-            background: #eef8ee;
-            border-radius: 18px;
-            padding: 0.04rem 0.10rem 0.20rem 0.10rem;
-            min-height: 78vh;
-            overflow-x: hidden;
-            overflow-y: auto;
-        }
+                          
+                                
+                                
+                                                     
+                             
+                               
+                             
+         
 
-        /* Gramado real: primeiro container criado no main */
-        div[data-testid="stAppViewContainer"] main
-        div[data-testid="stVerticalBlock"] > div[data-testid="stVerticalBlockBorderWrapper"]:first-child,
-        div[data-testid="stAppViewContainer"] main
-        div[data-testid="stVerticalBlock"] > div[data-testid="stVerticalBlock"]:first-child {
-            background: #eef8ee !important;
-            border-radius: 18px !important;
-            padding: 0.00rem 0.00rem 0.22rem 0.00rem !important;
-        }
+                                                             
+                                                  
+                                                                                                         
+                                                  
+                                                                                             
+                                           
+                                           
+                                                                
+         
 
 
         div[data-testid="stExpander"] {
@@ -557,8 +561,8 @@ def apply_styles():
             background: rgba(255, 255, 255, 0.72);
             border-radius: 18px;
             padding: 0.08rem 0.00rem 0.16rem 0.00rem;
-            min-height: 61vh;
-            overflow-x: hidden;
+                             
+                               
             width: 100% !important;
             max-width: 100% !important;
             margin-left: auto !important;
@@ -642,9 +646,9 @@ def apply_styles():
             line-height: 1.72rem !important;
         }
 
-        .machina-moldura-lateral {
-            min-height: 61vh;
-        }
+                                  
+                             
+         
 
         .machina-rodape-palco {
             font-size: 0.82rem;
@@ -656,19 +660,19 @@ def apply_styles():
 
         /* Celular :: leitura antes de painel */
         @media (max-width: 700px) {
-            .main .block-container,
-            section.main > div.block-container {
-                padding-left: 0.18rem !important;
-                padding-right: 0.18rem !important;
-                max-width: 100vw !important;
-            }
+                                   
+                                                
+                                                 
+                                                  
+                                            
+             
 
-            .machina-gramado {
-                border-radius: 12px !important;
-                padding-left: 0.08rem !important;
-                padding-right: 0.08rem !important;
-                overflow-x: hidden !important;
-            }
+                              
+                                               
+                                                 
+                                                  
+                                              
+             
 
             .machina-palco-central {
                 border-radius: 12px !important;
@@ -5602,29 +5606,71 @@ def start_machina(app_variant="local"):
         global _SIDEBAR_HOST
         sidebar_open = _sidebar_house_open()
 
-        with st.container(key="machina_duas_casas"):
+        # Geometria histórica: Streamlit governa os territórios.
+        # Conta horizontal fechada: MAIN = SIDEBAR + PALCO. Nada além disso.
+        MACHINA_SIDEBAR_WIDTH_PX = 320
+
+        chosen_label = st.session_state["pick_pagina"]
+        chosen_id = st.session_state.get("pagina", page_ids.get(chosen_label, "2"))
+
+        with st.container(
+            key="machina_main_container",
+            horizontal=True,
+            height="stretch",
+            gap=None,
+            vertical_alignment="top",
+        ):
             if sidebar_open:
-                sidebar_col, palco_col = st.columns([1.0, 3.0], gap="small")
+                _SIDEBAR_HOST = st.container(
+                    key="machina_sidebar_container",
+                    width=MACHINA_SIDEBAR_WIDTH_PX,
+                    height="stretch",
+                    border=False,
+                    gap=None,
+                )
+                with _SIDEBAR_HOST:
+                    st.button(
+                        "◀",
+                        key="sidebar_house_close",
+                        on_click=_sidebar_house_toggle,
+                        use_container_width=True,
+                    )
+                    _sidebar_space(0.90)
+                    render_sidebar_for_page(chosen_id)
+                    render_sidebar_context_image(chosen_id)
 
-                with sidebar_col:
-                    _SIDEBAR_HOST = st.container(key="machina_sidebar_house")
-                    with _SIDEBAR_HOST:
-                        st.button(
-                            "◀",
-                            key="sidebar_house_close",
-                            on_click=_sidebar_house_toggle,
-                            use_container_width=True,
-                        )
-                        _sidebar_space(0.90)
-                        render_sidebar_for_page(st.session_state.get("pagina", "2"))
+                                 
+                                                                             
+                                       
+                                  
+                                  
+                                                      
+                                                           
+                                                     
+                         
+                                            
+                                                                                    
 
-                palco_target = palco_col
+                                        
             else:
                 _SIDEBAR_HOST = None
-                palco_target = st.container()
+
+            palco_target = st.container(
+                key="machina_palco_container",
+                width="stretch",
+                height="stretch",
+                border=False,
+                gap=None,
+            )
 
             with palco_target:
-                with st.container(key="machina_palco_house"):
+                # Topo com altura natural: nunca cria scroll próprio.
+                with st.container(
+                    key="machina_top_container",
+                    height="content",
+                    border=False,
+                    gap=None,
+                ):
                     if not sidebar_open:
                         with st.container(key="machina_sidebar_reopen"):
                             st.button(
@@ -5663,42 +5709,47 @@ def start_machina(app_variant="local"):
 
                     st.divider()
 
-                    palco = st.container(key="machina_palco_scroll")
-                    with palco:
-                        palco_container = open_palco()
-                        with palco_container:
-                            if chosen_id == "1":
-                                page_mini()
-                                status = f"🍃  {st.session_state.lang} - {st.session_state.tema} ( {st.session_state.mini + 1} / {len(load_temas('todos os temas'))} )"
-                            elif chosen_id == "2":
-                                page_ypoemas()
-                                current_book = _current_book()
-                                status = palco_status(
-                                    current_book,
-                                    st.session_state.get("take", 0) + 1,
-                                    len(load_temas(current_book)),
-                                )
-                            elif chosen_id == "3":
-                                page_eureka()
-                                status = palco_status("eureka")
-                            elif chosen_id == "4":
-                                page_off_machina()
-                                status = palco_status("off-machina")
-                            elif chosen_id == "5":
-                                page_about()
-                                status = palco_status("ABOUT")
-                            elif chosen_id == "6" and APP_VARIANT == "local":
-                                page_atelier()
-                                status = palco_status("atelier")
-                            else:
-                                page_ypoemas()
-                                current_book = _current_book()
-                                status = palco_status(
-                                    current_book,
-                                    st.session_state.get("take", 0) + 1,
-                                    len(load_temas(current_book)),
-                                )
+                # ÚNICO território autorizado a consumir o restante e rolar: o palco.
+                with st.container(
+                    key="machina_palco_scroll",
+                    height="stretch",
+                    border=False,
+                    gap=None,
+                ):
+                    palco_container = open_palco()
+                    with palco_container:
+                        if chosen_id == "1":
+                            page_mini()
+                            status = f"🍃  {st.session_state.lang} - {st.session_state.tema} ( {st.session_state.mini + 1} / {len(load_temas('todos os temas'))} )"
+                        elif chosen_id == "2":
+                            page_ypoemas()
+                            current_book = _current_book()
+                            status = palco_status(
+                                current_book,
+                                st.session_state.get("take", 0) + 1,
+                                len(load_temas(current_book)),
+                            )
+                        elif chosen_id == "3":
+                            page_eureka()
+                            status = palco_status("eureka")
+                        elif chosen_id == "4":
+                            page_off_machina()
+                            status = palco_status("off-machina")
+                        elif chosen_id == "5":
+                            page_about()
+                            status = palco_status("ABOUT")
+                        elif chosen_id == "6" and APP_VARIANT == "local":
+                            page_atelier()
+                            status = palco_status("atelier")
+                        else:
+                            page_ypoemas()
+                            current_book = _current_book()
+                            status = palco_status(
+                                current_book,
+                                st.session_state.get("take", 0) + 1,
+                                len(load_temas(current_book)),
+                            )
 
-                        if sidebar_open:
-                            render_sidebar_context_image(chosen_id)
+                                        
+                                                                   
 
