@@ -1,3 +1,14 @@
+# =============================================================================
+# tools.py — MACHINA / PÁGINA Z / TOOLS
+# Build 2026-09-13_002 — PAGINA_Z_GRUPOS_TOOLS
+#
+# - Página Z reorganizada em quatro grupos identificados: temas, construtores, padronização e ferramentas.
+# - build_utf-8 retirado da Página Z; rotina local descartada.
+# - Autoridade absoluta dos TOOLS: C:\\ypo.
+# - Nenhuma ação de TOOLS usa cwd, /mount/src, deploy, www ou cópia do repo como raiz.
+# - Ao entrar em TOOLS, o cwd operacional é temporariamente C:\\ypo.
+# - Se C:\\ypo não estiver fisicamente acessível, a ação é bloqueada explicitamente.
+# =============================================================================
 """Tools — central local de ferramentas e garantias da Machina.
 
 
@@ -16,6 +27,7 @@ import io
 import json
 import csv
 from dataclasses import dataclass
+from contextlib import contextmanager
 import builders
 import streamlit as st
 # Constantes próprias das ferramentas locais da Machina.
@@ -54,6 +66,43 @@ try:
     import make_ola_tools
 except Exception:
     make_ola_tools = None
+
+TOOLS_ROOT = r"C:\ypo"
+
+
+def _tools_root():
+    """Raiz física soberana de TODAS as operações da página Z / TOOLS."""
+    return os.path.normpath(TOOLS_ROOT)
+
+
+def _tools_require_root():
+    """Bloqueia TOOLS quando a raiz física C:\\ypo não está acessível."""
+    root = _tools_root()
+    if not os.path.isdir(root):
+        raise FileNotFoundError(
+            "TOOLS exige a raiz física local C:\\ypo; "
+            "o ambiente atual não tem acesso a essa autoridade. "
+            "Nenhuma ação será redirecionada para /mount/src, deploy, www ou cópia do repositório."
+        )
+    return root
+
+
+def _tools_path(*parts):
+    """Resolve exclusivamente dentro da autoridade física C:\\ypo."""
+    return os.path.join(_tools_root(), *parts)
+
+
+@contextmanager
+def _tools_working_root():
+    """Executa a página/ação TOOLS com cwd temporário na raiz física C:\\ypo."""
+    root = _tools_require_root()
+    anterior = os.getcwd()
+    os.chdir(root)
+    try:
+        yield root
+    finally:
+        os.chdir(anterior)
+
 
 def _bind_host(host_globals):
     """Disponibiliza à página Tools as funções comuns da base ypo_mobile."""
@@ -313,7 +362,7 @@ def _tools_backup_path(path):
     """Cria backup local antes de qualquer gravação derivada/cadastral."""
     if not os.path.exists(path):
         return ""
-    backup_dir = _project_path("backups", "local_tools")
+    backup_dir = _tools_path("backups", "local_tools")
     os.makedirs(backup_dir, exist_ok=True)
     stamp = time.strftime("%Y%m%d_%H%M%S")
     base = os.path.basename(path)
@@ -381,37 +430,14 @@ def _tools_add_ativo_line(path, line, key, livro):
 
 
 def _tools_resolve_ypo_path(tema):
-    """Resolve o arquivo sem rebatizar uma extensão informada pelo autor.
-
-    Um nome sem extensão continua sob o contrato histórico ``tema -> tema.ypo``.
-    Quando o nome já traz uma extensão (por exemplo ``Design.new``), essa
-    assinatura é preservada integralmente e nunca vira ``Design.new.ypo``.
-    """
     tema = str(tema or "").strip()
-    nome = tema.replace("\\", "/").rsplit("/", 1)[-1]
-    extensao_explicita = bool(os.path.splitext(nome)[1])
-
-    if extensao_explicita:
-        candidatos = [_project_path("data", nome)]
-    else:
-        candidatos = [
-            _project_path("data", nome + ".ypo"),
-            _project_path("data", nome + ".YPO"),
-        ]
-
+    candidatos = [
+        _tools_path("data", tema + ".ypo"),
+        _tools_path("data", tema + ".YPO"),
+    ]
     for path in candidatos:
         if os.path.exists(path):
             return path
-
-    # Windows não distingue caixa; este fallback conserva a mesma autoridade
-    # também em ambientes case-sensitive usados no CAE/deploy.
-    data_dir = _project_path("data")
-    if os.path.isdir(data_dir):
-        nomes_esperados = {os.path.basename(path).casefold() for path in candidatos}
-        for existente in os.listdir(data_dir):
-            if existente.casefold() in nomes_esperados:
-                return os.path.join(data_dir, existente)
-
     return candidatos[0]
 
 
@@ -427,7 +453,7 @@ DNA_LIVROS_PRINCIPAIS = [
 
 
 def _tools_dna_path():
-    return _project_path("base", "DNA.TXT")
+    return _tools_path("base", "DNA.TXT")
 
 
 def _tools_dna_ler():
@@ -479,7 +505,7 @@ def _tools_mapa_pares(path):
 def _tools_livros_por_tema():
     out = {}
     for livro in DNA_LIVROS_PRINCIPAIS:
-        path = _project_path("base", "rol_" + livro + ".txt")
+        path = _tools_path("base", "rol_" + livro + ".txt")
         for tema in _tools_lista_simples(path):
             chave = tema.replace(" ", "").casefold()
             out.setdefault(chave, []).append(livro)
@@ -510,7 +536,7 @@ def _tools_temas_ativos():
     """Temas ativos vêm sempre da autoridade base/ativos.txt."""
     temas = []
     vistos = set()
-    ativos_path = _project_path("base", "ativos.txt")
+    ativos_path = _tools_path("base", "ativos.txt")
     if not os.path.exists(ativos_path):
         raise FileNotFoundError(f"autoridade de temas não encontrada: {ativos_path}")
     with open(ativos_path, encoding="utf-8-sig") as file:
@@ -545,7 +571,7 @@ def _tools_temas_para_remover():
     except Exception:
         pass
     # 2) Todos os rol_*.txt, para capturar livros específicos.
-    base_dir = _project_path("base")
+    base_dir = _tools_path("base")
     if os.path.isdir(base_dir):
         for file_name in sorted(os.listdir(base_dir)):
             if not (file_name.lower().startswith("rol_") and file_name.lower().endswith(".txt")):
@@ -564,7 +590,7 @@ def _tools_temas_para_remover():
         pass
     # 4) Arquivos em ./data, para permitir remover clone recém-criado mesmo
     #    quando as listas ficaram desencontradas.
-    data_dir = _project_path("data")
+    data_dir = _tools_path("data")
     if os.path.isdir(data_dir):
         for file_name in sorted(os.listdir(data_dir), key=natural_keys):
             if file_name.lower().endswith(".ypo"):
@@ -708,7 +734,7 @@ def build_ficha_lexica():
         f"Total de Ítimos únicos: {_tools_fmt_int(len(itimos_unicos))}\n\n"
         f"Total de Temas: {_tools_fmt_int(total_temas_ficha)}\n"
     )
-    md_dir = _project_path("md_files")
+    md_dir = _tools_path("md_files")
     index_path = os.path.join(md_dir, "INDEX.txt")
     texto = ""
     if os.path.exists(index_path):
@@ -931,7 +957,7 @@ TOOLS_BOOKS = [
 
 def _tools_bancos_tematicos():
     valores = {"Machina"}
-    path = _project_path("base", "images.txt")
+    path = _tools_path("base", "images.txt")
     if os.path.exists(path):
         with open(path, encoding="utf-8-sig") as file:
             for raw in file:
@@ -1004,15 +1030,15 @@ def novo_tema(tema, livro, banco_tematico="Machina"):
         raise FileNotFoundError(f"novo_tema: crie antes ./data/{tema}.ypo")
     original = _tools_validar_quantidades_tema(ypo_path)
     alteracoes = []
-    if _tools_add_ativo_line(_project_path("base", "ativos.txt"), f"{tema} : {livro}", tema, livro):
+    if _tools_add_ativo_line(_tools_path("base", "ativos.txt"), f"{tema} : {livro}", tema, livro):
         alteracoes.append("base/ativos.txt")
-    if _tools_add_unique_line(_project_path("base", "images.txt"), f"{tema} : {banco_tematico}", tema):
+    if _tools_add_unique_line(_tools_path("base", "images.txt"), f"{tema} : {banco_tematico}", tema):
         alteracoes.append("base/images.txt")
-    if _tools_add_unique_line(_project_path("temp", "read_list.txt"), f"|{tema}|0|", tema):
+    if _tools_add_unique_line(_tools_path("temp", "read_list.txt"), f"|{tema}|0|", tema):
         alteracoes.append("temp/read_list.txt")
-    if _tools_add_unique_sorted_line(_project_path("base", "rol_todos os temas.txt"), tema, tema):
+    if _tools_add_unique_sorted_line(_tools_path("base", "rol_todos os temas.txt"), tema, tema):
         alteracoes.append("base/rol_todos os temas.txt")
-    if _tools_add_unique_sorted_line(_project_path("base", f"rol_{livro}.txt"), tema, tema):
+    if _tools_add_unique_sorted_line(_tools_path("base", f"rol_{livro}.txt"), tema, tema):
         alteracoes.append(f"base/rol_{livro}.txt")
 
     resultados = [
@@ -1072,14 +1098,14 @@ def remove_tema(tema):
         raise ValueError("remove_tema: escolha um tema")
     removidos = []
     arquivos_lista = [
-        _project_path("base", "ativos.txt"),
-        _project_path("base", "images.txt"),
-        _project_path("temp", "read_list.txt"),
-        _project_path("temp", "readings.txt"),  # legado: limpa se existir; não recebe novas gravações
-        _project_path("base", "itimos.txt"),
-        _project_path("base", "versos.txt"),
+        _tools_path("base", "ativos.txt"),
+        _tools_path("base", "images.txt"),
+        _tools_path("temp", "read_list.txt"),
+        _tools_path("temp", "readings.txt"),  # legado: limpa se existir; não recebe novas gravações
+        _tools_path("base", "itimos.txt"),
+        _tools_path("base", "versos.txt"),
     ]
-    base_dir = _project_path("base")
+    base_dir = _tools_path("base")
     if os.path.isdir(base_dir):
         for name in sorted(os.listdir(base_dir)):
             if name.lower().startswith("rol_") and name.lower().endswith(".txt"):
@@ -1087,12 +1113,12 @@ def remove_tema(tema):
     for path in dict.fromkeys(arquivos_lista):
         qtd = _tools_remove_linhas_por_tema(path, tema)
         if qtd:
-            removidos.append(f"{os.path.relpath(path, _project_path())}: {qtd} linha(s)")
-    matrix_dir = _project_path("images", "matrix")
+            removidos.append(f"{os.path.relpath(path, _tools_path())}: {qtd} linha(s)")
+    matrix_dir = _tools_path("images", "matrix")
     for nome in {tema + ".jpg", tema.capitalize() + ".jpg", tema + ".JPG", tema.capitalize() + ".JPG"}:
         candidate = os.path.join(matrix_dir, nome)
         if _tools_remover_arquivo_derivado(candidate):
-            removidos.append(f"{os.path.relpath(candidate, _project_path())}: removido")
+            removidos.append(f"{os.path.relpath(candidate, _tools_path())}: removido")
     resultados = [f"remove_tema: {tema}", "Alterações:\n" + ("\n".join(removidos) if removidos else "nenhuma")]
     resultados.append("Arquivo autoral .ypo preservado.")
     resultados.append(_tools_tentar_derivado("DNA", builders.build_dna))
@@ -1107,7 +1133,7 @@ def remove_tema(tema):
 
 def build_off_lex():
     start_time = time.time()
-    off_dir = _project_path("off_machina")
+    off_dir = _tools_path("off_machina")
     if not os.path.isdir(off_dir):
         return "Build_Off_Lex: pasta ./off_machina não encontrada."
     list_lexico = []
@@ -1426,7 +1452,7 @@ def render_make_pip_tool():
         st.caption("entrada externa convertida de " + encoding + " para UTF-8")
     if st.button("make_pip", use_container_width=True, key="make_pip_button"):
         resultado = make_pip_texto(texto)
-        destino = _project_path("off_machina", nome)
+        destino = _tools_path("off_machina", nome)
         os.makedirs(os.path.dirname(destino), exist_ok=True)
         with open(destino, "w", encoding="utf-8", newline="\n") as arquivo:
             arquivo.write(resultado + "\n")
@@ -2037,7 +2063,7 @@ def _make_md_output_path(uploaded_name):
     """Define ./md_files/arquivo.md; usa arquivo_new.md quando necessário."""
     base = os.path.splitext(os.path.basename(str(uploaded_name or "arquivo")))[0].strip()
     base = base or "arquivo"
-    md_dir = _project_path("md_files")
+    md_dir = _tools_path("md_files")
     os.makedirs(md_dir, exist_ok=True)
     destino = os.path.join(md_dir, base + ".md")
     if os.path.exists(destino):
@@ -2114,7 +2140,7 @@ def render_make_md_tool():
             with open(destino, "w", encoding="utf-8", newline="\n") as file:
                 file.write(resultado)
             st.success("make_md concluído.")
-            st.text(os.path.relpath(destino, _project_path()).replace("\\", "/"))
+            st.text(os.path.relpath(destino, _tools_path()).replace("\\", "/"))
         except Exception as exc:
             st.error(f"make_md falhou: {exc}")
 
@@ -2258,8 +2284,8 @@ def render_resize_images_tool():
         value="white",
         key="resize_images_fundo",
     )
-    origem = origem_rel if os.path.isabs(origem_rel) else _project_path(*origem_rel.replace("\\", "/").split("/"))
-    destino = destino_rel if os.path.isabs(destino_rel) else _project_path(*destino_rel.replace("\\", "/").split("/"))
+    origem = origem_rel if os.path.isabs(origem_rel) else _tools_path(*origem_rel.replace("\\", "/").split("/"))
+    destino = destino_rel if os.path.isabs(destino_rel) else _tools_path(*destino_rel.replace("\\", "/").split("/"))
     st.caption("origem: " + origem)
     st.caption("destino: " + destino)
     if st.button("resize_images", use_container_width=True):
@@ -2269,7 +2295,7 @@ def render_resize_images_tool():
             )
             st.success(f"resize_images concluído: {len(processadas)} imagem(ns).")
             removidos = [(nome, px) for nome, px in processadas if px]
-            st.text(os.path.relpath(destino, _project_path()).replace("\\", "/"))
+            st.text(os.path.relpath(destino, _tools_path()).replace("\\", "/"))
             if removidos:
                 st.caption("rodapés removidos: " + ", ".join(f"{nome} ({px}px)" for nome, px in removidos))
             if falhas:
@@ -2281,54 +2307,46 @@ def render_resize_images_tool():
 def _tools_help_text():
     return """help_? — Tools da Machina
 
+[ temas ]
 novo_tema
   Cadastra um tema autoral já existente em ./data. Exige livro e banco temático,
   valida real == declarado antes de qualquer cadastro e nunca altera o corpo .ypo.
 
-remove_tema
-  Retira o tema do ambiente local e reconstrói derivados. O arquivo autoral .ypo
-  é sempre preservado; somente referências cadastrais e Matrix derivada são removidas.
-
 update_tema
   Valida real == declarado, atualiza Matrix, léxico, Indexy e DNA e depois chama
-  update_rodape. O corpo do .ypo precisa permanecer integralmente preservado.
+  update_rodape. O corpo do .ypo permanece integralmente preservado.
+
+remove_tema
+  Retira o tema do ambiente local e reconstrói derivados. O arquivo autoral .ypo
+  é preservado; referências cadastrais e Matrix derivada são removidas.
 
 update_rodape
   Recalcula e reescreve toda a Ficha Técnica. Preserva a linha Build By existente
   e tudo que estiver abaixo dela como nota de oficina com assinatura '#- '.
 
-build_indexy
-  Atualiza ./md_files/ABOUT_index.MD com as variações combinatórias por tema.
+[ construtores ]
+ficha_lexico
+  Atualiza o bloco “Ambiente Léxico da Machina” em ./md_files/INDEX.txt.
 
 build_lexico
   Regera ./base/lexico_pt.txt e ./base/verbetes.txt.
 
+build_indexy
+  Atualiza ./md_files/ABOUT_index.MD com as variações combinatórias por tema.
+
 build_off-lex
   Regera ./off_machina/off_lexico.txt e ./off_machina/off_verbet.txt.
-
-build_rimas
-  Off Sina: extrai palavras únicas e gera mapa de rimas para curadoria.
-
-atelier
-  Classifica verbetes por classe gramatical e usa o mapa de rimas da Machina.
 
 build_matrix
   Gera Matrix 3D e atualiza ./base/itimos.txt e ./base/versos.txt.
 
-build_dna
+build_DNA
   Constrói ./base/DNA.TXT sem depender de info.txt.
 
-build_all
+build_ALL
   Executor da fila consolidada. Mostra barra de andamento e dá STOP no primeiro erro.
 
-ficha_lexico
-  Atualiza o bloco “Ambiente Léxico da Machina” em ./md_files/INDEX.txt.
-
-build_utf-8
-  Normaliza os arquivos autorizados da pasta escolhida para UTF-8.
-  A autoridade de extensões é ./base/build_utf8.txt. Não percorre subpastas.
-  O original fica ao lado como arquivo_old.ext; a estrutura permanece AS IS.
-
+[ padronização ]
 make_md
   Converte arquivo textual UTF-8 para Markdown de duas quebras.
 
@@ -2338,105 +2356,67 @@ make_pip
 make_ola
   Envia um arquivo textual UTF-8 para uma análise sintática da OLA.
 
+[ ferramentas ]
+atelier
+  Classifica verbetes por classe gramatical e usa o mapa de rimas da Machina.
+
 resize_images
   Padroniza imagens sem cortar/deformar e sem sobrescrever originais.
+
+build_rimas
+  Off Sina: extrai palavras únicas e gera mapa de rimas para curadoria.
 """
-
-def _build_utf8_extensoes_exibicao():
-    """Mostra a autoridade de extensões do build_utf-8."""
-    path = os.path.join("./base", "build_utf8.txt")
-    try:
-        with open(path, encoding="utf-8-sig") as file:
-            itens = []
-            for raw in file:
-                item = raw.strip()
-                if not item or item.startswith("#"):
-                    continue
-                if not item.startswith("."):
-                    item = "." + item
-                if item.casefold() not in [x.casefold() for x in itens]:
-                    itens.append(item)
-            return itens
-    except OSError:
-        return []
-
-
-def render_build_utf8_tool():
-    """Interface LOCAL da família build_utf-8."""
-    st.caption("pasta escolhida • extensões autorizadas • estrutura AS IS")
-
-    pasta = st.text_input(
-        "pasta",
-        value="./data/acros",
-        key="build_utf8_pasta",
-        help="Somente os arquivos desta pasta. Subpastas não são percorridas.",
-    )
-
-    extensoes = _build_utf8_extensoes_exibicao()
-    if extensoes:
-        st.caption("autorizadas: " + "  ".join(extensoes))
-    else:
-        st.warning("Lista ./base/build_utf8.txt ausente ou vazia.")
-
-    if not st.button("build_utf-8", use_container_width=True):
-        return
-
-    progress = st.progress(0, text="pre-flight...")
-    status = st.empty()
-
-    def progress_callback(indice, total):
-        pct = 100 if total <= 0 else int(indice * 100 / total)
-        progress.progress(
-            min(100, pct),
-            text=f"{min(100, pct)}%  •  {indice}/{total}",
-        )
-
-    def status_callback(mensagem):
-        status.text(mensagem)
-
-    try:
-        resultado = builders.build_utf8(
-            pasta,
-            progress_callback=progress_callback,
-            status_callback=status_callback,
-        )
-    except Exception as exc:
-        status.error(f"build_utf-8 STOP: {exc}")
-        return
-
-    progress.progress(100, text="100%  •  DONE")
-    status.success("build_utf-8 concluído")
-    st.text(resultado)
 
 
 def page_tools():
     st.subheader("Tools")
-#    st.caption("LOCAL. Lista funcional simples. Lê temas; não altera poesia.")
-    tools_items = [
-        "novo_tema",
-        "remove_tema",
-        "update_rodape",
-        "update_tema",
-        "---",
-        "atelier",
-        "build_rimas",
-        "build_unicos",
-        "make_md",
-        "make_ola",
-        "make_pip",
-        "resize_images",
-        "---",
-        "build_all",
-        "build_dna",
-        "build_indexy",
-        "build_lexico",
-        "build_matrix",
-        "build_off-lex",
-        "build_utf-8",
-        "ficha_lexico",
-        "---",
-        "help_?",
-    ]
+
+    grupos = {
+        "temas": [
+            ("novo_tema", "novo_tema"),
+            ("update_tema", "update_tema"),
+            ("remove_tema", "remove_tema"),
+            ("update_rodape", "update_rodape"),
+        ],
+        "construtores": [
+            ("ficha_lexico", "ficha_lexico"),
+            ("build_lexico", "build_lexico"),
+            ("build_indexy", "build_indexy"),
+            ("build_off-lex", "build_off-lex"),
+            ("build_matrix", "build_matrix"),
+            ("build_DNA", "build_dna"),
+            ("build_ALL", "build_all"),
+        ],
+        "padronização": [
+            ("make_md", "make_md"),
+            ("make_pip", "make_pip"),
+            ("make_ola", "make_ola"),
+        ],
+        "ferramentas": [
+            ("atelier", "atelier"),
+            ("resize_images", "resize_images"),
+            ("build_rimas", "build_rimas"),
+        ],
+    }
+
+    grupo = st.selectbox(
+        "grupo",
+        list(grupos),
+        key="tools_grupo_funcional",
+    )
+    pares = grupos[grupo]
+    rotulos = [rotulo for rotulo, _chave in pares]
+    chave_por_rotulo = {rotulo: chave for rotulo, chave in pares}
+    rotulo_escolhido = st.selectbox(
+        "ferramenta",
+        rotulos,
+        key="tools_ferramenta_funcional",
+    )
+    escolha = chave_por_rotulo[rotulo_escolhido]
+
+    with st.expander("help_?"):
+        st.text(_tools_help_text())
+
     try:
         temas_local = [tema for tema, path in _tools_temas_ativos()]
     except Exception:
@@ -2445,21 +2425,14 @@ def page_tools():
         temas_remocao = _tools_temas_para_remover()
     except Exception:
         temas_remocao = temas_local
-    escolha = st.selectbox(
-        "tools",
-        tools_items,
-        index=tools_items.index("help_?"),
-        key="tools_lista_funcional",
-    )
-    if escolha == "---":
-        st.info("separador")
-        return
+
     tema_update = None
     tema_remove = None
     tema_rodape = None
     novo_tema_nome = ""
     novo_tema_livro = TOOLS_BOOKS[0]
     novo_tema_banco = "Machina"
+
     if escolha == "update_tema":
         if temas_local:
             tema_update = st.selectbox(
@@ -2503,6 +2476,7 @@ def page_tools():
             index=bancos.index("Machina") if "Machina" in bancos else 0,
             key="tools_novo_tema_banco",
         )
+
     if escolha == "build_rimas":
         render_build_rimas_tool()
         return
@@ -2511,9 +2485,6 @@ def page_tools():
         return
     if escolha == "atelier":
         render_build_atelier_tool()
-        return
-    if escolha == "build_unicos":
-        render_build_unicos_tool()
         return
     if escolha == "make_md":
         render_make_md_tool()
@@ -2527,12 +2498,7 @@ def page_tools():
     if escolha == "resize_images":
         render_resize_images_tool()
         return
-    if escolha == "build_utf-8":
-        render_build_utf8_tool()
-        return
-    if escolha == "help_?":
-        st.text(_tools_help_text())
-        return
+
     mapa = {
         "novo_tema": (novo_tema, (novo_tema_nome, novo_tema_livro, novo_tema_banco)),
         "remove_tema": (remove_tema, (tema_remove,)),
@@ -2547,19 +2513,24 @@ def page_tools():
         "ficha_lexico": (build_ficha_lexica, ()),
     }
     func, args = mapa[escolha]
-    if st.button(escolha, use_container_width=True):
-        with st.spinner(escolha + "..."):
+    if st.button(rotulo_escolhido, use_container_width=True):
+        with st.spinner(rotulo_escolhido + "..."):
             try:
                 resultado = func(*args)
-                st.success(escolha + " concluído.")
+                st.success(rotulo_escolhido + " concluído.")
                 st.text(resultado)
             except Exception as exc:
-                st.error(f"{escolha} falhou: {exc}")
+                st.error(f"{rotulo_escolhido} falhou: {exc}")
 
 def show_tools(host_globals=None):
-    """Entrada pública canônica chamada por basico.py no Atelier LOCAL."""
+    """Entrada pública dos TOOLS; toda operação ocorre exclusivamente em C:\\ypo."""
     _bind_host(host_globals)
-    return page_tools()
+    try:
+        with _tools_working_root():
+            return page_tools()
+    except FileNotFoundError as exc:
+        st.error(str(exc))
+        return None
 
 
 def render_page(host_globals=None):
