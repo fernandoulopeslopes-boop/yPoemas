@@ -1,6 +1,6 @@
 # =============================================================================
 # bypo.py — BASIC YPO / MACHINA HORIZONTAL
-# Build 2026-09-12_045 — contrato @: cada marcador vira um espaço autoral
+# Build 2026-09-12_050 — retrato com caixa fixa de imagem em destaque
 #
 # BASE / PROVENIÊNCIA
 # - Base funcional: basico.py GitHub de 08/09/2026, copiado para isolamento.
@@ -28,6 +28,11 @@
 # - 043 LINKS_RETRATO_RANDOM: sidebar adota cards visuais do Moby; cada clique em retrato mantém texto e sorteia outra imagem.
 # - 044 LINKS_APOS_MACHINA_OLA: botão links reposicionado abaixo de Machina/OLA e cards reforçados visualmente.
 # - 045 RECUO_AUTORAL_AT: cada @ autoral vira exatamente um espaço, preservando recuos sucessivos.
+# - 046 SIDEBAR_RETRATO_2_3: imagens contextuais da sidebar preservam proporção 2:3, sem alargamento lateral.
+# - 047 SIDEBAR_PROXIMA_IMAGEM: quadro 2:3 mais compacto/sem corte; Retrato usa a imagem visível e a sidebar avança para outra candidata.
+# - 048 RETRATO_IMAGEM_DOBRADA: imagem do retrato volta a ganhar protagonismo; largura-base da arte foi dobrada.
+# - 049 RETRATO_IMAGEM_FIXA: área do retrato passa a usar largura fixa de texto; a imagem não muda de escala aparente conforme o texto.
+# - 050 RETRATO_IMAGEM_CAIXA_FIXA: imagem do retrato ganha caixa fixa e destacada; o texto se adapta ao espaço restante.
 # =============================================================================
 # Leitura da casa:
 # terreno/configuração -> funções/estado/componentes comuns
@@ -392,10 +397,11 @@ def apply_styles():
         }
 
         .machina-sidebar-image-frame {
-            width: 100% !important;
-            max-width: 100% !important;
-            height: 330px !important;
-            margin: 0.20rem auto 0 auto !important;
+            width: min(200px, 100%) !important;
+            max-width: 200px !important;
+            aspect-ratio: 2 / 3 !important;
+            height: auto !important;
+            margin: 0 auto !important;
             padding: 0 !important;
             overflow: hidden !important;
             border-radius: 8px !important;
@@ -408,7 +414,7 @@ def apply_styles():
             display: block !important;
             width: 100% !important;
             height: 100% !important;
-            object-fit: cover !important;
+            object-fit: contain !important;
             object-position: center center !important;
             margin: 0 !important;
             padding: 0 !important;
@@ -768,10 +774,11 @@ def apply_bypo_styles():
             margin:0 auto !important;
         }
         .st-key-bypo_sidebar_frame .machina-sidebar-image-frame {
-            width:100% !important;
-            max-width:100% !important;
-            height:330px !important;
-            margin:0.20rem auto 0 auto !important;
+            width:min(200px, 100%) !important;
+            max-width:200px !important;
+            aspect-ratio:2 / 3 !important;
+            height:auto !important;
+            margin:0 auto !important;
         }
         .st-key-bypo_page_menu div[data-testid="stButton"] button {
             min-height:2.25rem !important;
@@ -3394,39 +3401,20 @@ def focar_retrato_no_palco(anchor_id):
     )
 
 def make_retrato_xerox(prefixo):
-    """Mantém o texto atual e sorteia outra imagem a cada clique em Retrato."""
+    """Usa a imagem visível no Retrato e deixa outra candidata na sidebar."""
     texto = st.session_state.get(f"{prefixo}_palco_xerox_text", "")
     titulo = st.session_state.get(f"{prefixo}_palco_xerox_title", "")
     contexto = _retrato_assinatura_contexto(st.session_state.get(f"{prefixo}_palco_xerox_context"))
-    imagem_anterior = st.session_state.get(f"{prefixo}_retrato_origem_image", "")
 
-    if prefixo == "off":
-        try:
-            book_pos = int(st.session_state.get("off_book", 0))
-            book_name = load_off_livros_list()[book_pos]
-        except (TypeError, ValueError, IndexError):
-            book_name = ""
-        grupo = _off_book_image_group(book_name)
-        images = _images_from_group(grupo) if grupo else _images_from_group("anima")
-        disponiveis = [img for img in images if img != imagem_anterior]
-        imagem = random.choice(disponiveis or images) if images else ""
-        if imagem:
-            st.session_state["off_machina_images_pasta"] = imagem
-            st.session_state["off_retrato_sidebar_renovada"] = True
-    else:
-        tema_contexto = titulo or st.session_state.get("tema", "Fatos") or "Fatos"
-        grupo = dna_core.get_banco_tema(str(tema_contexto).strip()) or "machina"
-        images = _images_from_group(grupo)
-        disponiveis = [img for img in images if img != imagem_anterior]
-        imagem = random.choice(disponiveis or images) if images else ""
-        if not imagem:
-            imagem = load_arts(tema_contexto) or ""
-        if imagem:
-            st.session_state["save_image_tema"] = imagem
-            st.session_state[f"{prefixo}_retrato_sidebar_renovada"] = True
-
+    # Contrato visual: o Retrato captura exatamente a imagem que o leitor
+    # está vendo na sidebar. Só depois da captura a sidebar avança para outra
+    # candidata, preparando um eventual próximo Retrato.
+    imagem = st.session_state.get("sidebar_image_visible_path", "")
     if not imagem:
-        imagem = st.session_state.get("sidebar_image_visible_path", "")
+        if prefixo == "off":
+            imagem = st.session_state.get("off_machina_images_pasta", "")
+        else:
+            imagem = st.session_state.get("save_image_tema", "")
     if not imagem:
         imagem = st.session_state.get(f"{prefixo}_palco_xerox_image", "")
 
@@ -3443,13 +3431,11 @@ def make_retrato_xerox(prefixo):
         estilo_retrato=estilo_retrato,
         arquivo_fonte_retrato=arquivo_fonte_retrato,
     )
-    if not png:
-        return
 
     st.session_state[f"{prefixo}_imagem_retrato"] = png
     st.session_state[f"{prefixo}_retrato_origem_image"] = imagem
     nome_retrato = re.sub(
-        r"[^A-Za-z0-9_-]+",
+        r"[^0-9A-Za-zÀ-ÖØ-öø-ÿ_-]+",
         "_",
         str(titulo or "retrato"),
     ).strip("_") or "retrato"
@@ -3457,6 +3443,31 @@ def make_retrato_xerox(prefixo):
     st.session_state[f"{prefixo}_contexto_retrato"] = contexto
     st.session_state[f"{prefixo}_retrato_focus"] = True
     st.session_state[f"{prefixo}_retrato_keep_palco"] = True
+
+    # Depois de gerar o Retrato, oferece outra imagem na sidebar.
+    if prefixo == "off":
+        try:
+            book_pos = int(st.session_state.get("off_book", 0))
+            book_name = load_off_livros_list()[book_pos]
+        except (TypeError, ValueError, IndexError):
+            book_name = ""
+        grupo = _off_book_image_group(book_name)
+        images = _images_from_group(grupo) if grupo else _images_from_group("anima")
+        disponiveis = [img for img in images if img != imagem]
+        proxima = random.choice(disponiveis or images) if images else ""
+        if proxima:
+            st.session_state["off_machina_images_pasta"] = proxima
+            st.session_state["off_retrato_sidebar_renovada"] = True
+    else:
+        tema_contexto = titulo or st.session_state.get("tema", "Fatos") or "Fatos"
+        grupo = dna_core.get_banco_tema(str(tema_contexto).strip()) or "machina"
+        images = _images_from_group(grupo)
+        disponiveis = [img for img in images if img != imagem]
+        proxima = random.choice(disponiveis or images) if images else ""
+        if proxima:
+            st.session_state["save_image_tema"] = proxima
+            st.session_state[f"{prefixo}_retrato_sidebar_renovada"] = True
+
 
 def show_retrato_no_topo(prefixo):
     """Mostra o Retrato contido no palco, sem retirar o leitor do ambiente."""
@@ -3896,8 +3907,11 @@ def criar_retrato_png(ypoema_html, image_path, tema, selo_size=24, fonte_retrato
     with Image.open(image_path) as source:
         art = ImageOps.exif_transpose(source).convert("RGB")
         original_w, original_h = art.size
-        image_w_max = 360
-        escala = min(1.0, image_w_max / max(1, original_w))
+        # A imagem é parte estável da composição visual do Retrato:
+        # usa uma caixa fixa 2:3, independente do texto.
+        image_box_w = 360
+        image_box_h = 540
+        escala = min(image_box_w / max(1, original_w), image_box_h / max(1, original_h))
         image_w = max(1, int(round(original_w * escala)))
         image_h = max(1, int(round(original_h * escala)))
         if (image_w, image_h) != art.size:
@@ -3909,12 +3923,9 @@ def criar_retrato_png(ypoema_html, image_path, tema, selo_size=24, fonte_retrato
     line_h = max(1, ag_h) + line_gap
     altura_texto = max(line_h, len(linhas) * line_h)
 
-    larguras_linhas = []
-    for linha in linhas:
-        if linha:
-            line_w, _line_h = _retrato_text_size(linha, body_font, estilo=estilo_retrato)
-            larguras_linhas.append(max(1, line_w))
-    largura_texto_real = max(larguras_linhas or [1])
+    # Retrato com geometria estável: o texto se adapta à caixa,
+    # e a imagem não ganha/perde escala aparente conforme a largura do tema.
+    text_area_w = text_w_max
 
     selo_real = max(1, int(round(int(selo_size) * 0.60)))
     footer_font = _retrato_font(max(16, int(round(selo_real * 0.72))), family=fonte_retrato, estilo=estilo_retrato, filename=arquivo_fonte_retrato)
@@ -3924,8 +3935,7 @@ def criar_retrato_png(ypoema_html, image_path, tema, selo_size=24, fonte_retrato
     footer_h = selo_real
     footer_gap_y = 34
 
-    text_area_w = max(largura_texto_real, 420)
-    top_content_w = image_w + gap + text_area_w
+    top_content_w = image_box_w + gap + text_area_w
     largura_conteudo = margin + top_content_w + margin
     largura_rodape = margin + footer_group_w + margin
     canvas_w = max(700, largura_conteudo, largura_rodape)
@@ -3935,7 +3945,7 @@ def criar_retrato_png(ypoema_html, image_path, tema, selo_size=24, fonte_retrato
     if titulo:
         _title_w, title_h = _retrato_text_size(titulo, title_font, estilo=estilo_retrato)
         title_h = max(1, title_h)
-    content_h = max(image_h, altura_texto)
+    content_h = max(image_box_h, altura_texto)
     content_top = margin + (title_h + title_gap if titulo else 0)
     canvas_h = max(520, content_top + content_h + footer_gap_y + footer_h + margin)
 
@@ -3945,9 +3955,11 @@ def criar_retrato_png(ypoema_html, image_path, tema, selo_size=24, fonte_retrato
         title_w, _title_h = _retrato_text_size(titulo, title_font, estilo=estilo_retrato)
         _retrato_draw_text(canvas, ((canvas_w - title_w) // 2, margin), titulo, title_font, estilo=estilo_retrato)
 
-    image_y = content_top + max(0, (content_h - image_h) // 2)
-    canvas.paste(art, (margin, image_y))
-    text_area_x = margin + image_w + gap
+    image_box_y = content_top + max(0, (content_h - image_box_h) // 2)
+    image_x = margin + max(0, (image_box_w - image_w) // 2)
+    image_y = image_box_y + max(0, (image_box_h - image_h) // 2)
+    canvas.paste(art, (image_x, image_y))
+    text_area_x = margin + image_box_w + gap
     pos_y = content_top + max(0, (content_h - altura_texto) // 2)
     for linha in linhas:
         if linha:
