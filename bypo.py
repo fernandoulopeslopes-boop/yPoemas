@@ -1,6 +1,6 @@
 # =============================================================================
 # bypo.py — BASIC YPO / MACHINA HORIZONTAL
-# Build 2026-09-12_050 — retrato com caixa fixa de imagem em destaque
+# Build 2026-09-13_048 — BYPO público + suporte isolado a BYPO_CFG / Página Z
 #
 # BASE / PROVENIÊNCIA
 # - Base funcional: basico.py GitHub de 08/09/2026, copiado para isolamento.
@@ -30,9 +30,8 @@
 # - 045 RECUO_AUTORAL_AT: cada @ autoral vira exatamente um espaço, preservando recuos sucessivos.
 # - 046 SIDEBAR_RETRATO_2_3: imagens contextuais da sidebar preservam proporção 2:3, sem alargamento lateral.
 # - 047 SIDEBAR_PROXIMA_IMAGEM: quadro 2:3 mais compacto/sem corte; Retrato usa a imagem visível e a sidebar avança para outra candidata.
-# - 048 RETRATO_IMAGEM_DOBRADA: imagem do retrato volta a ganhar protagonismo; largura-base da arte foi dobrada.
-# - 049 RETRATO_IMAGEM_FIXA: área do retrato passa a usar largura fixa de texto; a imagem não muda de escala aparente conforme o texto.
-# - 050 RETRATO_IMAGEM_CAIXA_FIXA: imagem do retrato ganha caixa fixa e destacada; o texto se adapta ao espaço restante.
+# - 048 BYPO_CFG_PAGINA_Z: BYPO público mantém 5 páginas; variante bypo_cfg acrescenta Página Z / TOOLS.
+# - 049 FONTES_POR_VERSAO: BYPO lê exclusivamente /base/fontes_bypo.txt; removido catálogo nominal residual do Retrato.
 # =============================================================================
 # Leitura da casa:
 # terreno/configuração -> funções/estado/componentes comuns
@@ -66,16 +65,19 @@ import streamlit.components.v1 as components
 import dna as dna_core
 # ✅
 
+_BOOT_VARIANT = os.environ.get("BYPO_APP_VARIANT", "bypo").strip().casefold()
+_BOOT_IS_CFG = _BOOT_VARIANT in {"bypo_cfg", "cfg"}
+
 st.set_page_config(
-    page_title="BYPO",
-    page_icon=":cyclone:",
+    page_title="BYPO_CFG" if _BOOT_IS_CFG else "BYPO",
+    page_icon=":construction:" if _BOOT_IS_CFG else ":cyclone:",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
 
-APP_BUILD = "2026-09-12_BYPO_045_RECUO_AUTORAL_AT"
+APP_BUILD = "2026-09-13_BYPO_050_CFG_CURADORIA_ABOUT"
 APP_BUILD_NOTES = (
-    "Botão links abaixo de Machina/OLA; cards sociais com moldura, fundo e contraste reforçados."
+    "BYPO público preservado; BYPO_CFG usa :construction: e lista diretamente todos os /md_files/*.md para curadoria ABOUT."
 )
 
 APP_VARIANT = "local"
@@ -920,9 +922,9 @@ ESTILOS_MACHINA = [
 
 FONTES_PESO_BASE = {}
 
-def _load_fontes_ypoemas():
-    """Lê base/fontes_ypoemas.txt no formato rótulo|arquivo.ttf/otf."""
-    path = _project_path("base", "fontes_ypoemas.txt")
+def _load_fontes_bypo():
+    """Lê base/fontes_bypo.txt no formato rótulo|arquivo.ttf/otf."""
+    path = _project_path("base", "fontes_bypo.txt")
     fontes = []
     try:
         with open(path, encoding="utf-8-sig") as arquivo:
@@ -942,46 +944,46 @@ def _load_fontes_ypoemas():
         pass
     return fontes
 
-def _fontes_ypoemas_dict():
-    return {label: filename for label, filename in _load_fontes_ypoemas()}
+def _fontes_bypo_dict():
+    return {label: filename for label, filename in _load_fontes_bypo()}
 
-def _fonte_ypoemas_padrao():
+def _fonte_bypo_padrao():
     """Primeira fonte publicada na lista externa; sem fonte autoral hardcoded."""
-    fontes = _load_fontes_ypoemas()
+    fontes = _load_fontes_bypo()
     return fontes[0][0] if fontes else "Sistema"
 
-def _fonte_ypoemas_normaliza(nome):
+def _fonte_bypo_normaliza(nome):
     """Nome publicado pela lista externa, sem mapa de aliases no código."""
-    return str(nome or _fonte_ypoemas_padrao()).strip()
+    return str(nome or _fonte_bypo_padrao()).strip()
 
-def _fonte_ypoemas_rotulo(nome):
+def _fonte_bypo_rotulo(nome):
     """Retorna o rótulo REAL publicado na lista de fontes, sem fonte preferencial interna."""
-    nome = str(nome or _fonte_ypoemas_padrao()).strip()
-    fontes = _load_fontes_ypoemas()
+    nome = str(nome or _fonte_bypo_padrao()).strip()
+    fontes = _load_fontes_bypo()
     labels = [label for label, _filename in fontes]
     if nome in labels:
         return nome
-    normalizado = _fonte_ypoemas_normaliza(nome)
+    normalizado = _fonte_bypo_normaliza(nome)
     for label in labels:
-        if _fonte_ypoemas_normaliza(label) == normalizado:
+        if _fonte_bypo_normaliza(label) == normalizado:
             return label
     return labels[0] if labels else "Sistema"
 
-def _fonte_ypoemas_arquivo(family=None):
+def _fonte_bypo_arquivo(family=None):
     """Resolve o arquivo físico mesmo quando o rótulo foi normalizado."""
-    family = _fonte_ypoemas_normaliza(
-        family or st.session_state.get("fonte_palco", _fonte_ypoemas_padrao())
+    family = _fonte_bypo_normaliza(
+        family or st.session_state.get("fonte_palco", _fonte_bypo_padrao())
     )
-    fontes = _load_fontes_ypoemas()
+    fontes = _load_fontes_bypo()
 
-    # Primeiro: rótulo exato publicado em fontes_ypoemas.txt.
+    # Primeiro: rótulo exato publicado em fontes_bypo.txt.
     for label, filename in fontes:
         if str(label).strip() == family:
             return filename
 
     # Depois: equivalência entre rótulo da sidebar e nome interno normalizado.
     for label, filename in fontes:
-        if _fonte_ypoemas_normaliza(label) == family:
+        if _fonte_bypo_normaliza(label) == family:
             return filename
 
     return ""
@@ -1327,8 +1329,8 @@ def pick_lang():  # lista oficial de idiomas + P.O.L.Y.
 
 def _fonte_palco_css(family=None):
     """Retorna o rótulo real da família publicada no navegador."""
-    family = _fonte_ypoemas_rotulo(
-        family or st.session_state.get("fonte_palco", _fonte_ypoemas_padrao())
+    family = _fonte_bypo_rotulo(
+        family or st.session_state.get("fonte_palco", _fonte_bypo_padrao())
     )
     return f'"{family}", sans-serif'
 
@@ -1341,8 +1343,8 @@ def _estilo_palco_leitor():
 
 def _estilo_palco_css(family=None, estilo=None):
     """Converte o estilo comum da Machina em peso + inclinação CSS."""
-    family = _fonte_ypoemas_normaliza(
-        family or st.session_state.get("fonte_palco", _fonte_ypoemas_padrao())
+    family = _fonte_bypo_normaliza(
+        family or st.session_state.get("fonte_palco", _fonte_bypo_padrao())
     )
     estilo = str(estilo or _estilo_palco_leitor()).strip().casefold()
     peso_base = int(FONTES_PESO_BASE.get(family, 400))
@@ -1351,9 +1353,9 @@ def _estilo_palco_css(family=None, estilo=None):
     return peso, inclinacao
 
 def _fontes_palco_bootstrap():
-    """Embute no navegador as fontes físicas publicadas em fontes_ypoemas.txt."""
+    """Embute no navegador as fontes físicas publicadas em fontes_bypo.txt."""
     regras = []
-    for label, filename in _load_fontes_ypoemas():
+    for label, filename in _load_fontes_bypo():
         caminho = _project_path("fonts", filename)
         if not os.path.isfile(caminho):
             continue
@@ -1549,10 +1551,10 @@ def _sidebar_tipografia_rerun():
 
 def pick_fonte_palco():
     """Escolhe fonte, estilo e corpo de leitura do Palco."""
-    fontes = _load_fontes_ypoemas()
+    fontes = _load_fontes_bypo()
     labels = [label for label, _filename in fontes] or ["Sistema"]
-    current_font = _fonte_ypoemas_rotulo(
-        st.session_state.get("fonte_palco", _fonte_ypoemas_padrao())
+    current_font = _fonte_bypo_rotulo(
+        st.session_state.get("fonte_palco", _fonte_bypo_padrao())
     )
     if current_font not in labels:
         current_font = labels[0]
@@ -1622,8 +1624,8 @@ def _palco_titulo_centralizado(LOGO_TEXTO):
 
 def _fonte_palco_leitor():
     """Fonte escolhida pelo leitor para o yPoema, no rótulo real da sidebar."""
-    return _fonte_ypoemas_rotulo(
-        st.session_state.get("fonte_palco", _fonte_ypoemas_padrao())
+    return _fonte_bypo_rotulo(
+        st.session_state.get("fonte_palco", _fonte_bypo_padrao())
     )
 
 def _corpo_palco_leitor():
@@ -3351,13 +3353,6 @@ RETRATO_SELO_RESPIRO = 30
 
 RETRATO_YP_B64 = "AAABAAEAQEAAAAEAIAAoQgAAFgAAACgAAABAAAAAgAAAAAEAIAAAAAAAAEAAAIy4AACMuAAAAAAAAAAAAAD///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7//v////7///////7////+/////v////7////9/v////7//////v/+//3//v7///7+/f/+/v3//P7+//7+/v/7/v3//f79//3+/v///v////////7////+/////////////////v///P////7//v///////v////7////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+/////P////7////+//7////+//3//v/9//7///79//79/P/++/z//vv9//77/f/////////////////////////////////9/////Pz8//79/P/9/Pv///39//7//v/8//////7///z////8//7///////3////+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////v////z////+//////7///z+/f/9/Pz//vz9//////////////////7////8////8+7v//Do6P/x6en/8erp//Hq6f/w5ub/9/n4///////////////////////8/////Pz8//79+//8//z/+v/////+///9//7//v/+//7////+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7//v/+/f7//fz+//36/P/////////////////3+ff/6NjU/9mqpP/Ndm//03lx/79IRP+1PTn/tUA6/7k+Of+5QTf/tjwz/8lbVP/VeHP/0oF9/9y8t//w5eP//f7//////////////v3///v6+//+/f3//f/+/////v/+/////f/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9/f3/+vv7////////////9vPw/9+3tf/Jgn7/xFJL/8A2Lv+2MSr/vUU//7pDP//RdW7/1YJ7/9OAeP/TgHj/0396/9SEf//FY13/uEA7/7lCOv+2Lib/wD42/8ViWv/Ok43/5s3L//z//v/////////+//77+//7/////f/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+/Pz////////////v6ub/3ayn/8NRTP+9LCf/uzw1/8FnYP/Vl5P/58fG//Xu7v/z7u///f//////////////////////////////+fz7//Pv7f/x5uP/5bi2/8mFgP+/WVL/vTIr/7oxLP/LbGj/3bCs//f69v///////v7///z9/P/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9/////f/////9/v/9+/z///////v8/P/UmJX/vUU7/7YwJ/+/VlL/2aSj/+7g3f/8//////////////////////////7+/v/+/Pz//vz9//78/f/+/f3//vz8/////////////////////////////fr8/+XNzf/RjYj/vEE7/7guJ//EW1T/3bq0//3//////////fz6//7+/f/9//7///////7////9/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////f////z+/P/9/////////+bJxv/DY1n/vyso/8VmYv/ixMD/9/X1///////+/////f39///7/P/+/Pz///7+///+/v////////////////////////////////////7///7+//7+/v/+/Pz//v38//////////////////Dp5P/XqKL/wEpH/70uJv/Ne3T/7+Dh///////8/P3//P39/////v/9/v///f7////////////////////////////////////////////////////////////////////////////////////////////////////////////////+//78+v//////+/z8/9CXkv+6NzD/vEI7/9aemv/7///////////////4+/v//Pz8///9/v/6/////f///////v///////////////////////////////////////////////////////f////7//////v7/+/z8//77/f////////////Ty8P/OioT/vTQs/7lBN//gvrf///////v////+/fz//v/+///+//////////////////////////////////////////////////////////////////////////////////////////////////////////////38+///////9/L0/8dnZP+8KSL/ynp1//Dq5////////P38//z7/P/8/v7//f/////+///7////+v/////+///+//7///////////////////////////////////////////////////////3////+/////v/+//7//f/9//7///z+//76/P/+/////////+fMy//AWVL/uTUq/9OWkv/+//////////v8+//9//////////////////////////////////////////////////////////////////////////////////////////////////////////77/P//////6tXU/8FbV/+5Myr/1J+X//3//////////////////////f7//Pv8//z////+/////v/////+/////v///f///////////////////////////////////////////////////////////v///P////z////+//7//f/9//3//v/9//7/+/77///8/P//////9/b4/8p0cP+4KyX/xnFt//n49v///////f38///////////////////////////////////////////////////////////////////////////////////////+/////v////38+///////69vX/75FPv++Qzr/3L24///////8/f3/3dzd/8rLy//X2Nj////////////+/v7//v7+///////+/////f////7///////////////////////////////////////////////////////////////7//////v////7///7+///+/////f/+//3+/////v//+/v6///////6+vr/0pGL/74wJ//Cc2z/+/38///////9/f3///////7////+//////////////////////////////////////////////////////////////////7//v7///38/P//////7uLe/8FMRf+/Pzn/59DM///////+/P3/+fn5/ygoJ/8AAAD/Dw8P/z8/P/+tra3////////////9/f3////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+/f3//v/////////QmpL/vS0k/8x6eP/9/////v7+//z8/f/8/v7//f7///3////+//////////////////////////////////////////////////////////v9/P/+////9+/x/8BTUf+7OzX/5MfC///////5+fr///////v7+/8eHh7/AAAA/wMDA/8AAAD/AAAA/3d3d///////+/v7/////////////////////////////////////////////v7+//z8/P/8/Pz//Pz8//v7+//8/Pz///////////////////////////////////////////////////////z9/v/7/fz//////9GNjv+8KyX/y4uE///////5+/z//f/6///+/v/9/v///v/////////////////////////////////////////////////////+///8/vz//v///9CHhP+6MCj/37u2///////8+/v//v7+///////5+/v/Hh4e/wAAAP8BAQH/BQUF/wYGBv8AAAD/oqKi///////7+/v//////////////////////////////////v7+//////////////////////////////////7+/v///////////////////////////////////////////////////v///f39//78/v/+////zn94/7o0Kf/iwb7///////z8+v/+/v/////////////////////////////////////////////////////////////++vz//////9y7tf+4LiX/zIJ5///////+/f7//f////3+/v/9////+vr6/yYmJv8AAAD/DQ0N/wQEBP8CAgL/AAAA/w4ODv/Hx8f///////z8/P/+/v7//////////////////v7+///////u7u7/vr6+/7a2tv+2trb/srKy/8TExP///////v7+//////////////////////////////////////////////////7////3/fn///////Hp6f++UUn/u0I6/+3d3f///////Pz9//3////////////////////////////////////////////////////+/v7///////bx7v+7TUb/xmFc//r+/P///////f79///+///9/////v////z+/f/m5ub/5eXl/9LS0v88PDz/AAAA/wcHB/8AAAD/Wlpa///////8/Pz//v7+//////////////////39/f//////z8/P/wAAAP8AAAD/AAAA/wAAAP8nJyf///////7+/v////////////////////////////7+/v////////////3////+//7//v/+//r7+v//////6NXT/7k5MP/Icmz////////+/v/+/v////////////////////////////////////////3////+//7///v9///////SjIX/vC8o/9+9vv///////fv6///////+////////////////////////////////////3t7e/wsLC/8AAAD/AgIC/wwMDP/CwsL///////z8/P/+/v7//v7+///////9/f3//////9LS0v8AAAD/BAQE/wYGBv8AAAD/Kioq///////+/v7////////////////////////////+/v7////////////9///////+///+///9////+/z7///////UlJL/uTEo/9q0sv///////fv7/////////////////////////////f////7////+/////Pz8///////lzc3/ujYu/8t7c///////+v38//7+/v////////////////////////////7+/v/+/v7/+Pj4//////+IiIj/AAAA/wgICP8AAAD/h4eH///////6+vr//v7+//7+/v///////f39///////R0dH/AAAA/wEBAf8CAgL/AAAA/ygoKP///////v7+///////////////////////////////////////////////////////////////////+/v//////8+zq/75HQP/DWFL/9/r2///////+/v7///////////////////////v////9//////7///78+//8////0Hdz/74xLP/l0c3///////v7+v///v7///////////////////////////////////////z8/P//////x8fH/wAAAP8FBQX/AAAA/zY2Nv///////f39//////////////////39/f//////0NDQ/wAAAP8BAQH/AgIC/wAAAP8tLS3///////7+/v/+/v7//////////////////////////////////////////////////////////////////vz7///////brqv/ty8n/+C0sv///////fz8//////////////////////////7//v/+//79/f//////79jV/783Mf/Pgnz//v/////9/f////7////////////////////////////////////////////9/f3//////9DQ0P8BAQH/AAAA/wMDA/8AAAD/uLi4///////8/Pz////////////9/f3//////9DQ0P8AAAD/AQEB/wMDA/8AAAD/MDAw///////+/v7///////////////////////////////////////////////////////z8/P/+/v7///////z+/v/+////+Pb3/8JUSf/IYF7//P///////v///////////////////////v///////v/9+/z//////9alnP+6Miv/59DM///////9/Pz//P///////v///////////////////////////////////////f39///////Z2dn/BwcH/wAAAP8EBAT/AAAA/1ZWVv//////+/v7/////////////f39///////R0dH/AAAA/wEBAf8CAgL/AAAA/ycnJ//////////////////////////////////////////////////////////////////+/v7////////////6//7//Pr7///////TjYf/ujky/+3Z1v///////v39//////////////////3///////7//v7////////IaGD/vU9J//j29f////7//P78//z///////7///////////////////////////////////////z8/P//////x8fH/wAAAP8BAQH/AgIC/wAAAP8UFBT/7e3t///////+/v7///////39/f//////0dHR/wAAAP8BAQH/AgIC/wAAAP8pKSn///////v7+//8/Pz//f39//v7+//8/Pz//v7+/////////////////////////////////////////////v////38/P//////6trX/7w2LP/PkI3///////78/P///////////////////v///P79///////v49//vjsz/9Sbmf///////vz7//z//v/+///////////////////////////////////////////////8/Pz//////5WVlf8AAAD/AgIC/wAAAP8CAgL/AAAA/8jIyP///////Pz8///////9/f3//////9HR0f8AAAD/AQEB/wICAv8AAAD/Jycn///////////////////////////////////////6+vr//Pz8//7+/v///////////////////////////////////v7///////z+/v/CYVn/x1pT//z+/f////////79//3////+/////v////v9/P//////16qn/7YyKv/qx8f///////37+//+///////////////////////////////////////////////+/v7///////r6+v8nJyf/AAAA/wICAv8AAAD/BAQE/wAAAP9oaGj///////v7+////////f39///////R0dH/AAAA/wEBAf8BAQH/AAAA/xQUFP/Y2Nj/lpaW/0dHR/+Dg4P/l5eX/6qqqv/z8/P////////////7+/v//////////////////////////////v///v/+//v8/P//////yYeA/7w/Nv/v5eP///////39+//+//////7///3////8/Pz//////9aEgv+9QDr/8+3r///////+/f3///////7////+/////////////////////f39//7+/v///////Pz8//////+mpqb/AAAA/wMDA/8AAAD/AAAA/wICAv8AAAD/Gxsb//f39////////v7+//39/f//////0dHR/wAAAP8BAQH/AQEB/wAAAP8LCwv/NTU1/wAAAP8AAAD/AAAA/wAAAP8AAAD/Hh4e/2dnZ//c3Nz///////v7+////////////////////////v////7////+/P3//////+i8uP+4MCr/38G////////6/Pr///7///7////9/v7//v////r/+//EYVv/ymhj//v////+///////////////+/////f////////////////////////////////////v7+///////YGBg/wAAAP8EBAT/AAAA/wAAAP8AAAD/AgIC/wAAAP+urq7///////z8/P/9/f3//////9HR0f8AAAD/AQEB/wAAAP8BAQH/AAAA/wAAAP8EBAT/AwMD/wEBAf8DAwP/AwMD/wAAAP8AAAD/GRkZ/9vb2///////+/v7///////////////////////+/////f7+///////z7ur/vEM7/9aMh////////fz7//7////+//7//v79///////5+fb/uUlB/897dv///////vz8//7////+/////v////7///////////////////////////////39/f//////5OTk/x8fH/8AAAD/AgIC/wEBAf8CAgL/AAAA/wMDA/8AAAD/R0dH///////8/Pz//f39///////R0dH/AAAA/wEBAf8AAAD/AAAA/wAAAP8CAgL/AAAA/wAAAP8CAgL/AQEB/wAAAP8BAQH/BwcH/wAAAP8UFBT/tLS0///////7+/v//////////////////f////3+/v//////8/Hy/7pEPP/Zhn////////37+//+/////v/+//79/f//////79/c/7w+Nv/WnZj///////79/P/+/////f////7////////////////////////////////////7+/v//////5OTk/8AAAD/BQUF/wEBAf8AAAD/AAAA/wEBAf8BAQH/AAAA/xsbG//x8fH///////z8/P//////0dHR/wAAAP8BAQH/AAAA/wAAAP8AAAD/AAAA/wEBAf8CAgL/AAAA/wAAAP8DAwP/AQEB/wAAAP8FBQX/AAAA/x8fH//w8PD///////39/f////////////3////9//7//v39///////Pc2r/vlZO//f6+//+/////v7+/////v/+/Pz//////+bDwf+4Lyb/48XB///////+/Pz//////////////////////////////////////////////////Pz8//////89PT3/AAAA/wQEBP8AAAD/QUFB/zU1Nf8AAAD/AwMD/wQEBP8AAAD/lZWV///////5+fn//////9HR0f8AAAD/AQEB/wAAAP8AAAD/AAAA/wICAv8BAQH/AAAA/x0dHf8ODg7/AAAA/wAAAP8BAQH/AAAA/wICAv8AAAD/X19f//z8/P///////v7+///////9/////v/+//78/f//////0394/7tJQv/39vf///////7+/v///////fz8///////rxsX/tzIo/96/u////////vz8/////////////////////////////////////////////Pz8///////BwcH/AAAA/wEBAf8AAAD/AAAA/6ysrP+np6f/AAAA/wUFBf8CAgL/AAAA/yYmJv/t7e3////////////Q0ND/AAAA/wEBAf8AAAD/AAAA/wEBAf8CAgL/AAAA/5OTk//+/v7/6enp/3d3d/8HBwf/AQEB/wAAAP8BAQH/AAAA/wAAAP+ysrL///////z8/P///////f///////v/+/f3//////9J8df+8TET/+Pf4///////+/v7///////38/P//////7MXE/7gxKP/dwbz///////78/P////////////////////////////////////////////z8/P//////R0dH/wAAAP8FBQX/AAAA/wsLC//IyMj//////zg4OP8AAAD/BAQE/wAAAP8FBQX/0tLS////////////0NDQ/wAAAP8BAQH/AAAA/wAAAP8CAgL/AAAA/5GRkf//////////////////////tLS0/xgYGP8AAAD/AQEB/wMDA/8AAAD/X19f///////8/Pz///////3///////7//vz8///////SfHX/vEtE//j29////////v7+///////+/Pz//////+nHxf+5MSj/38C7///////+/fz//////////////////////////////////v7+//v7+///////1dXV/wEBAf8BAQH/AwMD/wAAAP8mJib/7e3t//////+dnZ3/AAAA/wUFBf8DAwP/AAAA/4+Pj////////////9HR0f8AAAD/AQEB/wAAAP8DAwP/AAAA/1hYWP///////Pz8//7+/v/9/f3/+vr6//////+Ghob/AgIC/wICAv8EBAT/AAAA/yQkJP/w8PD///////39/f/9///////+//78/P//////03t1/71MRf/49/j///////7+/v///////fv8///////jxsP/tjAm/+XAvf///////vz8///////////////////////////////////////6+vr//////2VlZf8AAAD/BQUF/wQEBP8AAAD/eXl5///////+/v7/9PT0/yAgIP8AAAD/BQUF/wAAAP8oKCj/9fX1///////Q0ND/AAAA/wEBAf8AAAD/BQUF/wAAAP95eXn///////r6+v////////////z8/P//////7u7u/ycnJ/8AAAD/BAQE/wICAv8BAQH/ycnJ///////8/Pz//f///////v/++/v//////9d9eP+7R0D/9/X2///////+/v7///////z9/v//////9ezr/71GPf/SiYb////////9/P////7//P////3////////////////////8/Pz//////8LCwv8AAAD/AgIC/wEBAf8CAgL/AAAA/8XFxf//////+Pj4//////+pqan/AAAA/wQEBP8EBAT/AAAA/56env//////zc3N/wAAAP8BAQH/AAAA/wQEBP8AAAD/hISE///////7+/v/////////////////+vr6//////+AgID/AAAA/wQEBP8CAgL/AAAA/8DAwP///////Pz8///////8/v7///////X19v+/Ukz/y2li//r////+//7///7+///////9/v7///////f3+P+2SUD/1X12///////7/fz//v////7////+/////////////////////v7+//////8zMzP/AAAA/wcHB/8FBQX/AAAA/x8fH//z8/P///////7+/v/9/f3//////ysrK/8AAAD/BgYG/wAAAP9KSkr//////87Ozv8AAAD/AQEB/wAAAP8EBAT/AAAA/4uLi///////+/v7//////////////////v7+///////k5OT/wAAAP8FBQX/AAAA/wYGBv/R0dH///////39/P/+////+v7+///////18vH/t0Q6/9WHgP//////+/v5///+/////v////7////+/v/9////znFp/75aUv/6/Pz//v////z+/////v///v///////////////v7+///////39/f/Dw8P/wAAAP8AAAD/AAAA/wAAAP9WVlb///////z8/P//////+/v7//////+dnZ3/AAAA/wcHB/8FBQX/AAAA/6enp//h4eH/AAAA/wEBAf8AAAD/AwMD/wAAAP+QkJD///////v7+//////////////////7+/v//////6CgoP8AAAD/BAQE/wMDA/8AAAD/ubm5///////8/Pv//f////39/f//////8eXh/7k/N//YmZX///////78+v///v///f/////////9/Pz//////9aKhv+6PDT/7+Ph///////9/P3/+/////3////+////////////////////+vr6/3p6ev8+Pj7/TExM/05OTv9CQkL/y8vL///////9/f3///////39/f//////7u7u/x0dHf8AAAD/AAAA/wAAAP9wcHD/zs7O/wAAAP8BAQH/AAAA/wQEBP8AAAD/d3d3///////7+/v/////////////////+/v7//////+bm5v/AAAA/wQEBP8DAwP/AAAA/7q6uv///////Pv8//3////9/P3//////92rpv+3MCr/5MzJ///////8/Pr///7///3////9//7//fz8///////fvLv/uS8p/+TAu////////vn6///+/////v///v////////////////////7+/v/////////////////////////////////+/v7//////////////////f39///////BwcH/kJCQ/5OTk/+SkpL/0dHR/87Ozv8DAwP/AQEB/wAAAP8EBAT/AAAA/3h4eP//////+vr6//////////////////v7+///////kZGR/wAAAP8FBQX/AwMD/wAAAP+5ubn///////v7+//9/////vz9///////HfHX/xUM+//Xu7f/8////+/78///+///+//7//P/+///9/v//////9e7t/8JEP//RgoH//P////z9/P/+/v////////////////////////7+/v/+/v7//Pz8//v7+//7+/v//Pz8//v7+//8/Pz////////////////////////////9/f3////////////////////////////T09P/CwsL/wAAAP8BAQH/AwMD/wAAAP9GRkb///////39/f/////////////////7+/v//////5SUlP8AAAD/BQUF/wICAv8AAAD/u7u7///////8/Pz///79///////3+ff/w1FN/8hpYv/9/////v79//7+/f///v///P/+///+///9/////v39///////JeXL/ukI7//Pv7//+/////v78///+///+//7///////////////////////////////////////////////////////////////////////////////////////z8/P/7+/v/+/v7//n5+f//////z8/P/woKCv8CAgL/AAAA/wICAv8AAAD/ICAg//39/f//////////////////////+/v7//////+ZmZn/AAAA/wUFBf8CAgL/AAAA/7+/v///////+/z7//38+///////48TA/7wyK//hu7b///////78/P////////////7////+/v///f/+//77/P//////3rWv/74uKP/drq3///////z7+////v///v/+///////////////////////////////////////////////////////////////////////////////////////////////////////9/f3//////9HR0f8BAQH/AQEB/wAAAP8AAAD/AgIC/wAAAP+/v7////////n5+f/+/v7///////j4+P//////goKC/wAAAP8EBAT/AwMD/wAAAP+6u7v///////j7+v/8+fz//////858dP/APzr/9Ono///////+/v7//////////////////f////3////9/f7///////Hn5P/CRUD/x1xU//n5+f/+/////f/+/////v///////////////////////////////////////////////////////////////////////////////////////////////////////f39///////Q0ND/AAAA/wICAv8AAAD/AAAA/wQEBP8AAAD/QEBA////////////////////////////3d3d/w0NDf8AAAD/AgIC/wAAAP8NDQ3/5OTk///////9+/v//////+zm4P++RTv/zHVz//7////+/v7///////////////////////3////9/v///v7///77/P//////0JSQ/7cwJv/huLj///////v7+v/9/v7///////////////////////////////////////////////////////////////////////////////////////////////////////39/f//////0dHR/wICAv8BAQH/AQEB/wEBAf8BAQH/AQEB/wAAAP8sLCz/uLi4//j4+P/5+fn/1dXV/x0dHf8AAAD/AwMD/wMDA/8AAAD/OTk5///////+/v7//fv8///////Le3b/vjEr/+fNy////////f39///////////////////////////////////////+/v7//v////b28/++T0j/xVxX//n69////////v39///////////////////////////////////////////////////////////////////////////////////////////////////////9/f3//////9PT0/8LCwv/AQEB/wEBAf8CAgL/AQEB/wAAAP8CAgL/AAAA/w4ODv8zMzP/JSUl/wUFBf8AAAD/AwMD/wAAAP8EBAT/AAAA/1xcXP//////+/n5///////q29b/wjg0/815dP/9/////P39//7///////////////////////////////3////7/////v/+//78/P//////2qun/7otI//RnZr///////38/P/+///////////////+/////////////////////////////////////////////////////////////////////////////////////f39///////R0dH/AQEB/wEBAf8BAQH/AwMD/wQEBP8AAAD/AAAA/wQEBP8AAAD/AAAA/wAAAP8AAAD/AwMD/wAAAP8AAAD/BQYG/wAAAP9ra2v///////r6+v//////y3Vu/7o6M//t4N7///////78/P/////////////////////////////////+/////v///////////////f7+//3////Ea2X/vDw1/+zc2f//////+/z8/////////v///v7///////////////////////////////////////////////////////////////////////////////////39/f//////0NDQ/wAAAP8BAQH/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AQEB/wICAv8CAgL/AQEB/wAAAP8AAAD/AgEB/wAAAP8AAAD/0s/Q///////+////3bGt/7kvJf/QlIv///////37/f/+//3///////////////////////////////////////////////////////z8/P//////6djV/7s8Nv/DX1n/+v37///////+/fz//P////7+///+/v/////////////////////////////////////////////////////////////////////////////9/f3//////9LS0v8HBwf/AQEB/wEBAf8AAAD/AQEB/wQEBP8CAgL/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AgIC/wQDA/8AAAD/goOA///////+////5s/N/7o4Mv/CXFn/9fTy///////7/v3//P/////////////////////////////////////////////////////////9/////Pv7///////Zran/uS0k/9OSi////////P3+//z9/v/9/////f///////////////////////////////////////////////////////////////////////////////f39///////Pz8//AAAA/wQEBP8AAAD/AwMD/wAAAP8AAAD/AAAA/wUFBf8CAgL/AgIC/wICAv8DAwP/BQUF/wAAAP8AAAD/cnBx///////8////9PPu/8VcVv+7Qzn/7+Ti///////7/fn//f/+///+/////////////////////////////////////////////////////////v7///3+/f/+/////f///8d6df+8LSX/1ZqU/////////f///f35//7+/f////////////////////////////////////////////////////////////////////////////39/f//////zc3N/wAAAP8AAAD/BQUF/wAAAP8oKCj/j4+P/ysrK/8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8UFBT/hoeH//z8/P//////9vbz/8lmX//AMCn/2bOr///////8+/v////+//3+///+//7////+///////////////////////////////////////////////////+/////v//+/39///////8/fv/ym9t/7svKv/Yop3//////////v/9+/v////////////////////////////////////////////////////////////////////////////9/f3//////9nZ2f9OTk7/JCQk/zo6Ov8qKir/gICA///////p6Oj/YmJi/x4eHv8qKir/HBwc/z4+Pv+ampr/5eXl////////////+fv4/8Ruav+7Lij/2aii///////9+/v//P77//3+///+/////v/+///////////////////////////////////////////////////////9//7//f7////+///9/fz///////j49//CaWP/wCwh/8x5dv/7//////////38+////v7//f/+//////////////////////////////////7////////////////////////////////////+/v7///////7+/v/6+vr//v7+///+///5+vv////////////7+/v//f3+//r4+f///////////////v//////697b/8BhW//ALSb/05+Y///////9+/7//v79//7//f/////////+//////////////////////////////////////////////////////////////////////////////////79/f//////+ff1/9CLhP+8Lif/yGtm/+/g3/////////7+//v8/P/+/////v7///3////8//7//f/+///////+//////////////////////////////////////////7+/v////////////////////7//v/+//39/v/7+/v///////7//v/+//7/9/r6//v9/v//////4L66/8JIQf+6Ozb/37e0///////8/v3//P78/////////////////////////////////////////////////////////////////////////////////////////////////////////////fz9////////////zpmP/743LP/BQz//27Sy//3//////////fz9//z9/P///vz//f/+//7//v///v////7///7//////////////////////////////////////////v7+//7+/v///v///f/9//3//v/+/////v7///3+/v/9+/v//P39///////07+3/1JqY/7w2MP++TEP/4sXD///////9/Pz//f36///+/f////////////////////////////////////////////////////////////////////////////////////////////////////////////7////6/f3//v79///////lyMf/w1VL/7ouJf/HbGj/7uLg/////////////f////v7/P/+/P7//P7///z//v////7////////////////////////////////////////////////////////9///9/P///Pz8//j8+v////////////7////fvbv/wE1F/7ksI//Kd3L/8+vq///////8+/n////9//3////9/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////f/+//7//v/7+/z///////Pw7v/Rlo7/vjYv/8A+Nf/IeXL/5czL//n8/P////////////r//v/9+/r//vv7//78/P///v7///7+///+/v///v7///7+///+/v/+/f3//vz8//79/f/+/Pz//////////////////fz5/9qwrf/IY1v/vDMq/7pOSP/duLf//v/////////++/v////9//z+///+/v/////+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////3//////v///P/+//z7+v///////////+TKx//RgHr/vD03/8EwKv/CX1j/3rKs//Hm4v/7/v7///////////////////////////////////////////////////////////////////////b39v/u2NX/1ZmU/8JXUP+5Lyf/vUlA/9OKhf/v6Of///////78/f/8/fz///////z+///8//////7///7//v////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7//////////v79//78/f///////////+zc1//Ri4b/wlBL/7kwKv+4PTf/xWJc/9WSjv/ixcH/4MPB//Xv7f/7+fn/+fb3//n39//49vb//Pv5/+ve3P/fwr//4bm2/9OAe//AU03/uDYx/70zMP/FX1r/1aef//Xw7v////////////38+//+//7////+//////////////////7////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9/////f39//38/P////////////f08//iwcL/04J//8JYUf+3ODD/ti8n/7UvJv/ESED/xk5I/8RMRv/GTUX/xU1F/8hPR/+/Pjb/tCwk/7kzKf+4QDb/ymdg/9SWkP/o2dT//f/9/////////////v39//7+/v////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7///3////8/////vz9//77+v/////////////////4+/j/7drZ/9+urf/isK7/yHV0/79oY//AbGb/w2pl/8RsZv/AZWH/04yJ/+WysP/it7b/8ejo//r///////////////z////7+/z///7+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7///////////7///3+///8//////79//38/P/8/P3///////////////////////////////////////7//////////v/////////////////////////9//7//fz8//77/f/9/f///f7//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////v////7//////////v7///7////9//////7////9/v/7/f3/+/z7//77+//+/v3///79///9/v/+/f7///7+//7+/v/9/f3//vz7//78+v/8/v3///7+//7//v/8//7//f/+//7//v////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7//////////////v////7//////v///v///////v/+//7/+//////+///+/v//+/////3+///+/v///f/+//7//////v////////3////6/////v////7+/////////f////7+/v/+/v7/////////////////////////////////////////////////////////////////////////////////////////////////////////////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
 
-RETRATO_WEBFONT_FAMILIES = {
-    "JetBrains Mono",
-    "Source Code Pro",
-    "Comic Relief",
-    "Ubuntu Condensed",
-}
-
 def limpar_retrato(prefixo):
     """Apaga o Retrato da página indicada sem alterar o conteúdo do palco."""
     for nome in (
@@ -3420,7 +3415,7 @@ def make_retrato_xerox(prefixo):
 
     fonte_retrato = _fonte_palco_leitor()
     estilo_retrato = _estilo_palco_leitor()
-    arquivo_fonte_retrato = _fonte_ypoemas_arquivo(fonte_retrato)
+    arquivo_fonte_retrato = _fonte_bypo_arquivo(fonte_retrato)
 
     png = criar_retrato_png(
         texto,
@@ -3568,90 +3563,9 @@ def _aplicar_selo_origem(canvas, size, respiro=RETRATO_SELO_RESPIRO, family=None
     _retrato_draw_text(canvas, (pos_x + size + gap, text_y), url, url_font, estilo=estilo, fill=(45, 45, 45, 255))
     return canvas
 
-def _retrato_google_font_urls(family, bold=False):
-    """Obtém do Google Fonts as URLs da mesma família usada no Palco."""
-    family = str(family or "").strip()
-    if family not in RETRATO_WEBFONT_FAMILIES:
-        return []
-
-    peso = 700 if bold else 400
-    query_family = urllib.parse.quote_plus(family)
-    css_url = (
-        "https://fonts.googleapis.com/css2?"
-        f"family={query_family}:wght@{peso}&display=swap"
-    )
-
-    try:
-        req = urllib.request.Request(
-            css_url,
-            headers={
-                # Solicita formato web moderno; FreeType/Pillow lê WOFF/WOFF2.
-                "User-Agent": (
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                    "AppleWebKit/537.36 (KHTML, like Gecko) "
-                    "Chrome/151 Safari/537.36"
-                )
-            },
-        )
-        with urllib.request.urlopen(req, timeout=8) as response:
-            css = response.read().decode("utf-8", errors="replace")
-    except Exception:
-        return []
-
-    # O CSS pode trazer vários subsets; o latino costuma ser o último.
-    urls = re.findall(r"url\((https://[^)]+)\)", css)
-    return list(dict.fromkeys(reversed(urls)))
-
-def _retrato_webfont_cache(family, bold=False):
-    """Cache temporário da mesma webfont do Palco para uso pelo Pillow."""
-    urls = _retrato_google_font_urls(family, bold=bold)
-    if not urls:
-        return ""
-
-    cache_dir = _project_path("temp", "font_cache")
-    try:
-        os.makedirs(cache_dir, exist_ok=True)
-    except Exception:
-        return ""
-
-    peso = "700" if bold else "400"
-    safe = re.sub(r"[^A-Za-z0-9_-]+", "_", str(family)).strip("_") or "font"
-
-    # Tenta cada subset/URL até achar um arquivo que o FreeType consiga abrir.
-    for indice, url in enumerate(urls):
-        ext = ".woff2" if ".woff2" in url.casefold() else ".woff"
-        destino = os.path.join(cache_dir, f"{safe}_{peso}_{indice}{ext}")
-
-        try:
-            if not (os.path.isfile(destino) and os.path.getsize(destino) > 1024):
-                req = urllib.request.Request(
-                    url,
-                    headers={"User-Agent": "Mozilla/5.0 Machina-yPoemas"},
-                )
-                with urllib.request.urlopen(req, timeout=8) as response:
-                    data = response.read()
-                if len(data) <= 1024:
-                    continue
-                with open(destino, "wb") as out:
-                    out.write(data)
-
-            # CAE em tempo de execução: só devolve arquivo que Pillow abre.
-            teste = ImageFont.truetype(destino, size=18)
-            del teste
-            return destino
-        except Exception:
-            try:
-                if os.path.isfile(destino):
-                    os.remove(destino)
-            except Exception:
-                pass
-            continue
-
-    return ""
-
 def _retrato_font(size, bold=False, family=None, estilo=None, filename=None):
     """Carrega a fonte do Retrato respeitando família/estilo antes do fallback."""
-    family = _fonte_ypoemas_normaliza(family or _fonte_ypoemas_padrao())
+    family = _fonte_bypo_normaliza(family or _fonte_bypo_padrao())
     estilo = str(estilo or _estilo_palco_leitor()).strip().casefold()
     want_bold = bool(bold or "bold" in estilo)
     want_italic = "itálico" in estilo or "italic" in estilo
@@ -3707,7 +3621,7 @@ def _retrato_font(size, bold=False, family=None, estilo=None, filename=None):
             return None
 
     # 1) Arquivo físico EXATO da família escolhida, incluindo variante de estilo.
-    filename = str(filename or _fonte_ypoemas_arquivo(family) or "").strip()
+    filename = str(filename or _fonte_bypo_arquivo(family) or "").strip()
     if filename:
         for variant in _style_variants(filename, bold=want_bold, italic=want_italic):
             loaded = _try_font(_project_path("fonts", variant))
@@ -3888,7 +3802,7 @@ def criar_retrato_png(ypoema_html, image_path, tema, selo_size=24, fonte_retrato
     gap = 58
     fonte_retrato = str(fonte_retrato or _fonte_palco_leitor()).strip()
     estilo_retrato = str(estilo_retrato or _estilo_palco_leitor()).strip().casefold()
-    arquivo_fonte_retrato = str(arquivo_fonte_retrato or _fonte_ypoemas_arquivo(fonte_retrato) or "").strip()
+    arquivo_fonte_retrato = str(arquivo_fonte_retrato or _fonte_bypo_arquivo(fonte_retrato) or "").strip()
 
     # Corpo do Retrato continua soberano: é calculado/definido pelo próprio Retrato.
     corpo_png = 42
@@ -3907,11 +3821,8 @@ def criar_retrato_png(ypoema_html, image_path, tema, selo_size=24, fonte_retrato
     with Image.open(image_path) as source:
         art = ImageOps.exif_transpose(source).convert("RGB")
         original_w, original_h = art.size
-        # A imagem é parte estável da composição visual do Retrato:
-        # usa uma caixa fixa 2:3, independente do texto.
-        image_box_w = 360
-        image_box_h = 540
-        escala = min(image_box_w / max(1, original_w), image_box_h / max(1, original_h))
+        image_w_max = 360
+        escala = min(1.0, image_w_max / max(1, original_w))
         image_w = max(1, int(round(original_w * escala)))
         image_h = max(1, int(round(original_h * escala)))
         if (image_w, image_h) != art.size:
@@ -3923,9 +3834,12 @@ def criar_retrato_png(ypoema_html, image_path, tema, selo_size=24, fonte_retrato
     line_h = max(1, ag_h) + line_gap
     altura_texto = max(line_h, len(linhas) * line_h)
 
-    # Retrato com geometria estável: o texto se adapta à caixa,
-    # e a imagem não ganha/perde escala aparente conforme a largura do tema.
-    text_area_w = text_w_max
+    larguras_linhas = []
+    for linha in linhas:
+        if linha:
+            line_w, _line_h = _retrato_text_size(linha, body_font, estilo=estilo_retrato)
+            larguras_linhas.append(max(1, line_w))
+    largura_texto_real = max(larguras_linhas or [1])
 
     selo_real = max(1, int(round(int(selo_size) * 0.60)))
     footer_font = _retrato_font(max(16, int(round(selo_real * 0.72))), family=fonte_retrato, estilo=estilo_retrato, filename=arquivo_fonte_retrato)
@@ -3935,7 +3849,8 @@ def criar_retrato_png(ypoema_html, image_path, tema, selo_size=24, fonte_retrato
     footer_h = selo_real
     footer_gap_y = 34
 
-    top_content_w = image_box_w + gap + text_area_w
+    text_area_w = max(largura_texto_real, 420)
+    top_content_w = image_w + gap + text_area_w
     largura_conteudo = margin + top_content_w + margin
     largura_rodape = margin + footer_group_w + margin
     canvas_w = max(700, largura_conteudo, largura_rodape)
@@ -3945,7 +3860,7 @@ def criar_retrato_png(ypoema_html, image_path, tema, selo_size=24, fonte_retrato
     if titulo:
         _title_w, title_h = _retrato_text_size(titulo, title_font, estilo=estilo_retrato)
         title_h = max(1, title_h)
-    content_h = max(image_box_h, altura_texto)
+    content_h = max(image_h, altura_texto)
     content_top = margin + (title_h + title_gap if titulo else 0)
     canvas_h = max(520, content_top + content_h + footer_gap_y + footer_h + margin)
 
@@ -3955,11 +3870,9 @@ def criar_retrato_png(ypoema_html, image_path, tema, selo_size=24, fonte_retrato
         title_w, _title_h = _retrato_text_size(titulo, title_font, estilo=estilo_retrato)
         _retrato_draw_text(canvas, ((canvas_w - title_w) // 2, margin), titulo, title_font, estilo=estilo_retrato)
 
-    image_box_y = content_top + max(0, (content_h - image_box_h) // 2)
-    image_x = margin + max(0, (image_box_w - image_w) // 2)
-    image_y = image_box_y + max(0, (image_box_h - image_h) // 2)
-    canvas.paste(art, (image_x, image_y))
-    text_area_x = margin + image_box_w + gap
+    image_y = content_top + max(0, (content_h - image_h) // 2)
+    canvas.paste(art, (margin, image_y))
+    text_area_x = margin + image_w + gap
     pos_y = content_top + max(0, (content_h - altura_texto) // 2)
     for linha in linhas:
         if linha:
@@ -4147,8 +4060,8 @@ def render_sidebar_context_image(chosen_id):
 
     elif str(chosen_id) == "5":
         image_path = st.session_state.get("about_image", "") or _set_about_image_next()
-    elif str(chosen_id) == "6" and APP_VARIANT == "local":
-        image_path = st.session_state.get("atelier_image", "") or _set_atelier_image_next()
+    elif str(chosen_id) == "6" and APP_VARIANT == "bypo_cfg":
+        image_path = ""
 
     if image_path and os.path.exists(image_path):
         # Autoridade do que o leitor realmente viu. O clique em Retrato usa
@@ -4819,12 +4732,34 @@ def load_about_md(title):
     return translate("ooops... arquivo ( " + expected + " ) não pode ser aberto.")
 
 def load_about_catalog():
-    """Carrega o ABOUT único pela mesma lista plana usada no Moby.
+    """Catálogo ABOUT conforme a variante em execução.
 
-    Autoridade: ./base/lista_abouts.txt
-    Formato: título|arquivo.md
-    Leitura até <EOF>, preservando a ordem autoral.
+    BYPO público:
+    - autoridade curada: ./base/lista_abouts.txt
+    - formato: título|arquivo.md
+    - leitura até <EOF>, preservando a ordem autoral.
+
+    BYPO_CFG:
+    - território de curadoria: ./md_files/*.md
+    - mostra todos os Markdown reais, sem catálogo intermediário;
+    - ordenação alfabética por nome de arquivo.
     """
+    if APP_VARIANT == "bypo_cfg":
+        md_dir = _project_path("md_files")
+        catalog = []
+        try:
+            nomes = sorted(
+                (nome for nome in os.listdir(md_dir) if nome.casefold().endswith(".md")),
+                key=str.casefold,
+            )
+        except OSError:
+            return catalog
+
+        for file_name in nomes:
+            label = os.path.splitext(file_name)[0]
+            catalog.append((label, file_name))
+        return catalog
+
     path = _project_path("base", "lista_abouts.txt")
     catalog = []
     if not os.path.isfile(path):
@@ -4843,7 +4778,6 @@ def load_about_catalog():
             if sep and label and file_name:
                 catalog.append((label, file_name))
     return catalog
-
 
 def _md_catalog_name_candidates(file_spec):
     """Expande uma entrada do catálogo em nomes de arquivo tentáveis.
@@ -5905,10 +5839,13 @@ def render_about_document(texto):
 # < PAGE > 5 — ABOUT
 # =============================================================================
 def page_about():
-    """ABOUT único e editável, governado por base/lista_abouts.txt."""
+    """ABOUT público curado; no BYPO_CFG, bancada de curadoria de /md_files/*.md."""
     catalog = load_about_catalog()
     if not catalog:
-        st.warning(translate("base/lista_abouts.txt vazio ou não encontrado"))
+        if APP_VARIANT == "bypo_cfg":
+            st.warning(translate("md_files não contém arquivos .md"))
+        else:
+            st.warning(translate("base/lista_abouts.txt vazio ou não encontrado"))
         return
 
     if not st.session_state.get("about_image"):
@@ -5930,15 +5867,17 @@ def page_about():
 
 
 # =============================================================================
-# < PAGE > 6 — ATELIER
+# < PAGE > Z — TOOLS
 # =============================================================================
-def page_atelier():
-    """Atelier — exclusivo da entrada LOCAL."""
+def page_tools_z():
+    """Página Z — porta visual exclusiva do BYPO_CFG para TOOLS."""
     import tools as tools_mod
-
-    if not st.session_state.get("atelier_image"):
-        _set_atelier_image_next()
     tools_mod.show_tools(globals())
+
+
+def page_atelier():
+    """Alias histórico preservado; encaminha para a Página Z / TOOLS."""
+    return page_tools_z()
 
 
 # =============================================================================
@@ -5995,15 +5934,19 @@ def _bypo_render_real_page(chosen_id):
     if chosen_id == "5":
         page_about()
         return palco_status("ABOUT")
+    if chosen_id == "6" and APP_VARIANT == "bypo_cfg":
+        page_tools_z()
+        return palco_status("TOOLS")
     page_ypoemas()
     current_book = _current_book()
     return palco_status(current_book, st.session_state.get("take", 0) + 1, len(load_temas(current_book)))
 
 
 def start_machina(app_variant="bypo"):
-    """BYPO real: conteúdo histórico em arquitetura horizontal isolada."""
+    """BYPO público; BYPO_CFG acrescenta exclusivamente a Página Z / TOOLS."""
     global APP_VARIANT, _SIDEBAR_HOST
-    APP_VARIANT = "mobile"  # BYPO usa as cinco páginas públicas, sem Atelier.
+    variante = str(app_variant or "bypo").strip().casefold()
+    APP_VARIANT = "bypo_cfg" if variante in {"bypo_cfg", "cfg"} else "bypo"
 
     apply_styles()
     apply_bypo_styles()
@@ -6037,6 +5980,11 @@ def start_machina(app_variant="bypo"):
         ("off-mach", "off-Machina", 1.0),
         ("ABOUT", "ABOUT", 1.0),
     ]
+
+    if APP_VARIANT == "bypo_cfg":
+        page_labels.append("TOOLS")
+        page_ids["TOOLS"] = "6"
+        nav_items.append(("Z", "TOOLS", 0.5))
     _sync_machina_page_state(page_labels, page_ids)
 
     sidebar_open = _sidebar_house_open()
