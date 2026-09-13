@@ -1,12 +1,11 @@
 # =============================================================================
 # bypo_cfg.py — BYPO_CFG / MACHINA HORIZONTAL + PÁGINA Z / TOOLS
-# Build 2026-09-13_002 — curadoria ABOUT + ícone construction
+# Build 2026-09-13_002 — launcher dedicado / ícone próprio
 #
-# - Reusa integralmente bypo.py.
+# - Define a variante antes de importar bypo.py.
+# - Reusa integralmente o BYPO build 048.
 # - Acrescenta exclusivamente a Página Z / TOOLS.
-# - ABOUT de curadoria: lista todos os /ypo/md_files/*.md.
-# - Ícone próprio: :construction:.
-# - Uso LOCAL ou WWW não público.
+# - page_icon do CFG = :construction:.
 # =============================================================================
 
 import os
