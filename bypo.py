@@ -923,26 +923,24 @@ ESTILOS_MACHINA = [
 FONTES_PESO_BASE = {}
 
 def _load_fontes_ypoemas():
-    """Lê base/fontes_ypoemas.txt no formato rótulo|arquivo.ttf/otf."""
-    path = _project_path("base", "fontes_ypoemas.txt")
+    """Lista de fontes = arquivos físicos .ttf/.otf existentes em /fonts."""
+    fontes_dir = _project_path("fonts")
     fontes = []
     try:
-        with open(path, encoding="utf-8-sig") as arquivo:
-            for raw in arquivo:
-                line = raw.strip()
-                if not line or line.startswith("#"):
-                    continue
-                label, sep, filename = line.partition("|")
-                label = label.strip()
-                filename = filename.strip()
-                if not sep or not label or not filename:
-                    continue
-                if os.path.splitext(filename)[1].casefold() not in {".ttf", ".otf"}:
-                    continue
+        for filename in os.listdir(fontes_dir):
+            caminho = os.path.join(fontes_dir, filename)
+            if not os.path.isfile(caminho):
+                continue
+            stem, ext = os.path.splitext(filename)
+            if ext.casefold() not in {".ttf", ".otf"}:
+                continue
+            label = stem.strip()
+            if label:
                 fontes.append((label, filename))
-    except (OSError, UnicodeError):
-        pass
-    return fontes
+    except OSError:
+        return []
+    return sorted(fontes, key=lambda item: item[0].casefold())
+
 
 def _fontes_ypoemas_dict():
     return {label: filename for label, filename in _load_fontes_ypoemas()}

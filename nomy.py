@@ -27,30 +27,26 @@ st.set_page_config(
 )
 
 CORPO_NOMY = 16
-FONTES_NOMY_TXT = ROOT / "base" / "fontes_nomy.txt"
+FONTES_DIR = ROOT / "fonts"
 HELP_NOMY_MD = ROOT / "data" / "acros" / "help_nomy.md"
 
 
 def _carregar_fontes_nomy() -> dict[str, str]:
-    if not FONTES_NOMY_TXT.is_file():
-        raise RuntimeError(f"NOMY: lista de fontes não encontrada: {FONTES_NOMY_TXT}")
+    if not FONTES_DIR.is_dir():
+        raise RuntimeError(f"NOMY: pasta de fontes não encontrada: {FONTES_DIR}")
 
-    fontes: dict[str, str] = {}
-    for linha in FONTES_NOMY_TXT.read_text(encoding="utf-8").splitlines():
-        linha = linha.strip()
-        if not linha or linha.startswith("#"):
-            continue
-        if "|" not in linha:
-            continue
+    arquivos = sorted(
+        (
+            p for p in FONTES_DIR.iterdir()
+            if p.is_file() and p.suffix.casefold() in {".ttf", ".otf"}
+        ),
+        key=lambda p: p.name.casefold(),
+    )
 
-        nome, arquivo = (parte.strip() for parte in linha.split("|", 1))
-        if nome and arquivo:
-            fontes[nome] = arquivo
+    if not arquivos:
+        raise RuntimeError(f"NOMY: nenhuma fonte encontrada em {FONTES_DIR}")
 
-    if not fontes:
-        raise RuntimeError(f"NOMY: nenhuma fonte válida em {FONTES_NOMY_TXT}")
-
-    return fontes
+    return {p.stem: p.name for p in arquivos}
 
 
 FONTES_NOMY = _carregar_fontes_nomy()
