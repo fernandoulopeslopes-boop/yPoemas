@@ -1,0 +1,25 @@
+name: export corrected files
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/export-corrected-files.yml'
+
+permissions:
+  contents: read
+
+actions:
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Package corrected files
+        run: zip corrected-font-files.zip nomy.py bypo.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: corrected-font-files
+          path: corrected-font-files.zip
+          if-no-files-found: error
