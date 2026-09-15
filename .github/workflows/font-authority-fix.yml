@@ -1,3 +1,4 @@
+# one-shot trigger
 name: one-shot font authority migration
 
 on:
@@ -24,7 +25,6 @@ jobs:
           from pathlib import Path
           import re
 
-          # NOMY: remove o catálogo TXT e deriva a lista diretamente de /fonts.
           p = Path('nomy.py')
           s = p.read_text(encoding='utf-8')
           old = '''CORPO_NOMY = 16
@@ -77,11 +77,8 @@ def _carregar_fontes_nomy() -> dict[str, str]:
 '''
           if old not in s:
               raise SystemExit('NOMY: bloco esperado não encontrado; abortando sem alterar.')
-          s = s.replace(old, new, 1)
-          p.write_text(s, encoding='utf-8')
+          p.write_text(s.replace(old, new, 1), encoding='utf-8')
 
-          # BYPO: preserva a API existente [(label, filename)], mas a autoridade
-          # passa a ser cada .ttf/.otf físico existente em /fonts.
           p = Path('bypo.py')
           s = p.read_text(encoding='utf-8')
           pattern = re.compile(
