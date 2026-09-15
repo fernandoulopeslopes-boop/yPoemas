@@ -130,7 +130,7 @@ IDIOMAS_MACHINA = [
     ("Magyar", "Hungria", "hu"),
 ]
 
-FONTES_DIR = ROOT / "Fonts"
+FONTES_DIR = ROOT / "fonts"
 
 
 def _carregar_fontes_moby():
