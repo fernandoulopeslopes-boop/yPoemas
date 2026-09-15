@@ -1,17 +1,31 @@
-# moby_v063.py
-# Etapa 063: EUREKA substitui OLA no Moby; usa listas existentes e preserva o palco.
+# moby_v074.py
+# Etapa 074 PÚBLICA: restaura LYPO/TYPO com Google direto e tradutor reserva.
 # MACHINA — Mobile ultra-light
-# Blindagem HTML preservada; não altera basico.py, DNA, .ypo, .pip ou conteúdo autoral.
+# 2026-09-14: C:\\ypo como raiz física, /Fonts como autoridade única; sem bootstrap Streamlit Cloud.
+# 2026-09-15 / 067: tentativas 065/066 descartadas; as duas imagens usam 72% da altura disponível.
+# 2026-09-15 / 068: tentativa local descartada; ROOT/downloads salvaria no servidor.
+# 2026-09-15 / 069: salvar usa download HTTP do PNG pelo navegador do leitor.
+# 2026-09-15 / 070: as duas imagens viram áreas clicáveis; não existe seleção intermediária.
+# 2026-09-15 / 071: descartada para deploy; fallback estava no ponto errado do fluxo.
+# 2026-09-15 / 072: smoke test PT→EN roda uma vez por sessão, antes da tradução do yPoema.
+# 2026-09-15 / 073: confirmado 429 no deep_translator; segundo teste isola Google direto.
+# 2026-09-15 / 074: remove diagnóstico e recupera a salvaguarda LYPO/TYPO moderna do BYPO.
+# Blindagem HTML preservada; não altera DNA, .ypo, .pip, conteúdo autoral nem layout do WWW.
 
 from pathlib import Path
 import asyncio
 import base64
+import hashlib
 import html
 import importlib.util
-import os
+import json
 import random
 import re
+import time
 import unicodedata
+import urllib.parse
+import urllib.request
+import uuid
 from io import BytesIO
 
 from PIL import Image, ImageDraw, ImageFont, ImageOps
@@ -30,28 +44,18 @@ except Exception:
 from lay_2_ypo import gera_poema
 
 
-def _bootstrap_openai_key():
-    """No Streamlit Cloud, expõe a secret também ao bridge OLA legado."""
-    if os.getenv("OPENAI_API_KEY", "").strip():
-        return
-    try:
-        key = str(st.secrets.get("OPENAI_API_KEY", "")).strip()
-    except Exception:
-        key = ""
-    if key:
-        os.environ["OPENAI_API_KEY"] = key
+ROOT = Path(__file__).resolve().parent
 
 
 def _load_ola_bridge():
-    """Aceita a ponte na raiz ou em ./md_files, como no repositório atual."""
-    _bootstrap_openai_key()
+    """LOCAL: aceita a ponte em C:\\ypo ou C:\\ypo\\md_files."""
     try:
         from ponte_ola_openai import gerar_analise_ola
         return gerar_analise_ola
     except Exception:
         pass
 
-    bridge_path = Path("./md_files/ponte_ola_openai.py")
+    bridge_path = ROOT / "md_files" / "ponte_ola_openai.py"
     if not bridge_path.is_file():
         return None
     try:
@@ -79,11 +83,11 @@ _gerar_analise_ola_real = _load_ola_bridge()
 # =============================================================================
 # DNA — autoridade das listas do Moby
 # =============================================================================
-DNA_PATH = Path("./base/DNA.TXT")
-LINKS_PATH = Path("./base/links.txt")
-IMAGES_ROOT = Path("./images")
-IMAGES_MAP_PATH = Path("./base/images.txt")
-OFF_DIR = Path("./off_machina")
+DNA_PATH = ROOT / "base" / "DNA.TXT"
+LINKS_PATH = ROOT / "base" / "links.txt"
+IMAGES_ROOT = ROOT / "images"
+IMAGES_MAP_PATH = ROOT / "base" / "images.txt"
+OFF_DIR = ROOT / "off_machina"
 
 # Autoridade autoral do Off-Machina: existir como .pip não publica um livro.
 OFF_BOOKS_LIST = [
@@ -126,32 +130,29 @@ IDIOMAS_MACHINA = [
     ("Magyar", "Hungria", "hu"),
 ]
 
-ROOT = Path(__file__).resolve().parent
-FONTES_MOBY_TXT = ROOT / "base" / "fontes_moby.txt"
+FONTES_DIR = ROOT / "Fonts"
 
 
 def _carregar_fontes_moby():
-    if not FONTES_MOBY_TXT.is_file():
-        raise RuntimeError(f"Moby: lista de fontes não encontrada: {FONTES_MOBY_TXT}")
+    """LOCAL: /ypo/Fonts é a autoridade única e a lista deriva dos arquivos físicos."""
+    if not FONTES_DIR.is_dir():
+        raise RuntimeError(f"Moby LOCAL: pasta de fontes não encontrada: {FONTES_DIR}")
 
     fontes = {}
-    for linha in FONTES_MOBY_TXT.read_text(encoding="utf-8").splitlines():
-        linha = linha.strip()
-        if not linha or linha.startswith("#") or "|" not in linha:
+    for path in sorted(FONTES_DIR.iterdir(), key=lambda item: item.name.casefold()):
+        if not path.is_file() or path.suffix.casefold() not in {".ttf", ".otf"}:
             continue
-        nome, arquivo = (parte.strip() for parte in linha.split("|", 1))
-        if nome and arquivo:
-            fontes[nome] = arquivo
+        fontes[path.stem] = path.name
 
     if not fontes:
-        raise RuntimeError(f"Moby: nenhuma fonte válida em {FONTES_MOBY_TXT}")
+        raise RuntimeError(f"Moby LOCAL: nenhuma fonte .ttf/.otf em {FONTES_DIR}")
     return fontes
 
 
 FONTES_MOBY = _carregar_fontes_moby()
 FONTE_MOBY_DEFAULT = next(iter(FONTES_MOBY))
 
-# Conjunto único de variantes. O arquivo físico da família vem de fontes_moby.txt.
+# Conjunto único de variantes. O arquivo físico da família vem diretamente de /Fonts.
 ESTILOS_MACHINA = [
     "normal",
     "itálico",
@@ -166,7 +167,7 @@ def _moby_font_path(family):
     if not arquivo:
         family = FONTE_MOBY_DEFAULT
         arquivo = FONTES_MOBY[family]
-    path = ROOT / "fonts" / arquivo
+    path = FONTES_DIR / arquivo
     if not path.is_file():
         raise RuntimeError(f"Moby: fonte não encontrada: {path}")
     return path
@@ -194,7 +195,7 @@ def estilo_palco_css(family=None, estilo=None):
 def _moby_font_faces_css():
     regras = []
     for family, arquivo in FONTES_MOBY.items():
-        path = ROOT / "fonts" / arquivo
+        path = FONTES_DIR / arquivo
         if not path.is_file():
             continue
         try:
@@ -354,7 +355,7 @@ ABOUTS_FALLBACK = [
 ]
 
 
-def load_about_catalog(path=Path("./base/lista_abouts.txt")):
+def load_about_catalog(path=ROOT / "base" / "lista_abouts.txt"):
     """A lista autoral em base/lista_abouts.txt é a autoridade do ABOUT."""
     rows = []
     if path.is_file():
@@ -459,7 +460,7 @@ def _about_candidates(title):
 
 
 def load_manual_moby():
-    path = Path("./md_files/Manual_Moby.md")
+    path = ROOT / "md_files" / "Manual_Moby.md"
     try:
         return path.read_text(encoding="utf-8-sig")
     except OSError:
@@ -467,7 +468,7 @@ def load_manual_moby():
 
 
 def load_about_text(title):
-    roots = [Path("./md_files"), Path(".")]
+    roots = [ROOT / "md_files", ROOT]
     candidates = _about_candidates(title)
     candidate_keys = {_doc_key(Path(name).stem) for name in candidates}
     title_keys = {_doc_key(title), _doc_key("ABOUT_" + title)}
@@ -495,31 +496,348 @@ def load_about_text(title):
     return f'ooops... documentação "{title}" não encontrada.'
 
 
-def translate_poem_html(poem_html):
-    """Mesmo mecanismo histórico da Machina: traduz o yPoema, preservando <br>."""
-    lang = str(st.session_state.get("moby_lang", "pt"))
-    source = str(poem_html or "")
-    if lang == "pt" or not source.strip() or GoogleTranslator is None:
-        return source
+_TRANSLATION_PROTECTED_NAMES = (
+    "Off-Machina",
+    "yPoemas",
+    "EUREKA",
+    "Machina",
+    "Moby",
+    "OLA",
+)
+_TRANSLATION_CACHE = {}
+_TRANSLATION_CACHE_LIMIT = 512
+_TRANSLATION_BACKOFF_SECONDS = 30.0
 
-    signature = (lang, source)
-    if st.session_state.get("moby_translation_signature") == signature:
-        return st.session_state.get("moby_translation_html", source)
 
-    try:
-        translated = GoogleTranslator(source="pt", target=lang).translate(text=source)
-        translated = str(translated or source)
-        translated = translated.replace("<br>>", "<br>")
-        translated = translated.replace("< br>", "<br>")
-        translated = translated.replace("<br >", "<br>")
-        translated = translated.replace("<br ", "<br>")
-        translated = translated.replace(" br>", "<br>")
-    except Exception:
-        translated = source
+def _translation_target():
+    """Idioma pedido pelo leitor; nunca é inferido do texto traduzido."""
+    return str(st.session_state.get("moby_lang", "pt") or "pt").strip().lower()
 
-    st.session_state.moby_translation_signature = signature
-    st.session_state.moby_translation_html = translated
-    return translated
+
+def _translation_normalize_markup(output_text):
+    """Repara somente deformações históricas do marcador de quebra de linha."""
+    output_text = str(output_text or "")
+    output_text = output_text.replace("<br>>", "<br>")
+    output_text = output_text.replace("< br>", "<br>")
+    output_text = output_text.replace("<br >", "<br>")
+    output_text = output_text.replace("<br ", "<br>")
+    output_text = output_text.replace(" br>", "<br>")
+    return output_text
+
+
+def _translation_protect(text):
+    """Protege nomes próprios e estruturas que não pertencem à tradução."""
+    protected = []
+
+    def reserve(value):
+        token = f"ZXQPH{len(protected):05d}QXZ"
+        protected.append((token, value))
+        return token
+
+    pattern = re.compile(
+        r"```.*?```|`[^`\n]+`|<[^>]+>|(?<=\]\()[^)]+(?=\))",
+        flags=re.DOTALL,
+    )
+    safe = pattern.sub(lambda match: reserve(match.group(0)), str(text or ""))
+
+    names_pattern = re.compile(
+        r"(?<![\w-])(?:"
+        + "|".join(re.escape(name) for name in _TRANSLATION_PROTECTED_NAMES)
+        + r")(?![\w-])",
+        flags=re.IGNORECASE,
+    )
+    safe = names_pattern.sub(lambda match: reserve(match.group(0)), safe)
+    return safe, protected
+
+
+def _translation_restore(text, protected):
+    """Restaura estruturas protegidas; ausência de token invalida a tradução."""
+    restored = str(text or "")
+    for token, original in protected:
+        if token not in restored:
+            return "", False
+        restored = restored.replace(token, original)
+    return restored, True
+
+
+def _translation_chunks(text, limit=1400):
+    """Divide textos longos sem perder nenhum caractere da fonte."""
+    text = str(text or "")
+    if len(text) <= limit:
+        return [text]
+
+    chunks = []
+    start = 0
+    while start < len(text):
+        end = min(start + limit, len(text))
+        if end < len(text):
+            floor = start + (limit // 2)
+            cuts = [
+                text.rfind("\n\n", floor, end),
+                text.rfind("\n", floor, end),
+                text.rfind(". ", floor, end),
+                text.rfind(" ", floor, end),
+            ]
+            cut = max(cuts)
+            if cut > start:
+                end = cut + (2 if text[cut:cut + 2] in {"\n\n", ". "} else 1)
+
+            token_start = text.rfind("ZXQPH", start, end)
+            if token_start >= start:
+                token_end = text.find("QXZ", token_start)
+                if token_end >= end:
+                    end = token_start if token_start > start else token_end + 3
+        chunks.append(text[start:end])
+        start = end
+    return chunks
+
+
+def _translation_google_direct(input_text, target):
+    """Rota HTTP GET do BYPO; independe do parser HTML do deep_translator."""
+    query = urllib.parse.urlencode(
+        {
+            "client": "gtx",
+            "sl": "pt",
+            "tl": target,
+            "dt": "t",
+            "q": input_text,
+        }
+    )
+    errors = []
+    for host in ("translate.googleapis.com", "translate.google.com"):
+        try:
+            request = urllib.request.Request(
+                f"https://{host}/translate_a/single?{query}",
+                headers={
+                    "Accept": "application/json,text/plain,*/*",
+                    "User-Agent": "Mozilla/5.0",
+                },
+                method="GET",
+            )
+            with urllib.request.urlopen(request, timeout=12) as response:
+                payload = json.loads(response.read().decode("utf-8"))
+
+            segments = payload[0] if isinstance(payload, list) and payload else []
+            output_text = "".join(
+                str(segment[0])
+                for segment in segments
+                if isinstance(segment, list) and segment and segment[0] is not None
+            )
+            if not output_text:
+                raise RuntimeError("resposta vazia")
+            return output_text
+        except Exception as exc:
+            errors.append(f"{host}: {exc}")
+
+    raise RuntimeError(" | ".join(errors))
+
+
+def _translation_unit(input_text, target):
+    """Traduz uma unidade curta por duas rotas, com cache e repetição."""
+    cache_key = (target, input_text)
+    cached = _TRANSLATION_CACHE.get(cache_key)
+    if cached is not None:
+        return cached, True
+
+    leading = re.match(r"^\s*", input_text).group(0)
+    trailing = re.search(r"\s*$", input_text).group(0)
+    core_end = len(input_text) - len(trailing) if trailing else len(input_text)
+    core = input_text[len(leading):core_end]
+    if not core:
+        return input_text, True
+
+    errors = []
+    for attempt in range(2):
+        providers = [("google-direto", _translation_google_direct)]
+        if GoogleTranslator is not None:
+            providers.append(
+                (
+                    "deep-translator",
+                    lambda text, lang: GoogleTranslator(
+                        source="pt", target=lang
+                    ).translate(text=text),
+                )
+            )
+
+        for provider_name, provider in providers:
+            try:
+                translated_core = provider(core, target)
+                if not translated_core:
+                    raise RuntimeError("tradutor devolveu resposta vazia")
+                output_text = (
+                    leading
+                    + _translation_normalize_markup(translated_core)
+                    + trailing
+                )
+                if len(_TRANSLATION_CACHE) >= _TRANSLATION_CACHE_LIMIT:
+                    _TRANSLATION_CACHE.pop(next(iter(_TRANSLATION_CACHE)))
+                _TRANSLATION_CACHE[cache_key] = output_text
+                return output_text, True
+            except Exception as exc:
+                errors.append(f"{provider_name}: {exc}")
+
+        if attempt == 0:
+            time.sleep(0.20)
+
+    st.session_state.moby_translation_last_error = " | ".join(errors[-6:])
+    print(
+        "[MOBY/TRADUÇÃO] " + st.session_state.moby_translation_last_error,
+        flush=True,
+    )
+    return input_text, False
+
+
+def _translate_atomic(input_text, target=None):
+    """Traduz tudo ou preserva tudo; nunca devolve yPoema pela metade."""
+    input_text = str(input_text or "")
+    target = str(target or _translation_target()).strip().lower()
+    if target == "pt" or not input_text:
+        return input_text, True
+
+    now = time.monotonic()
+    backoff_until = float(
+        st.session_state.get("moby_translation_backoff_until", 0.0) or 0.0
+    )
+    if now < backoff_until:
+        return input_text, False
+
+    safe_text, protected = _translation_protect(input_text)
+    translated_chunks = []
+    for chunk in _translation_chunks(safe_text):
+        if not chunk.strip():
+            translated_chunks.append(chunk)
+            continue
+        translated, success = _translation_unit(chunk, target)
+        if not success:
+            st.session_state.moby_translation_backoff_until = (
+                time.monotonic() + _TRANSLATION_BACKOFF_SECONDS
+            )
+            return input_text, False
+        translated_chunks.append(translated)
+
+    restored, success = _translation_restore("".join(translated_chunks), protected)
+    if not success:
+        st.session_state.moby_translation_last_error = (
+            "estrutura protegida alterada pelo tradutor"
+        )
+        st.session_state.moby_translation_backoff_until = (
+            time.monotonic() + _TRANSLATION_BACKOFF_SECONDS
+        )
+        return input_text, False
+
+    st.session_state.moby_translation_backoff_until = 0.0
+    st.session_state.moby_translation_last_error = ""
+    return restored, True
+
+
+def _moby_reader_id():
+    """Identifica a sessão leitora sem usar o IP compartilhado do servidor."""
+    reader_id = str(st.session_state.get("moby_reader_id", "") or "").strip()
+    if not reader_id:
+        reader_id = uuid.uuid4().hex
+        st.session_state.moby_reader_id = reader_id
+    return reader_id
+
+
+def _lypo_path():
+    return ROOT / "temp" / ("LYPO_" + _moby_reader_id())
+
+
+def _typo_path():
+    return ROOT / "temp" / ("TYPO_" + _moby_reader_id())
+
+
+def load_lypo():
+    """Carrega integralmente o Last YPOema da sessão leitora."""
+    return _lypo_path().read_text(encoding="utf-8", errors="replace")
+
+
+def _save_lypo(lypo_text):
+    """Grava o original atual sem alterar recuos, tags ou quebras."""
+    path = _lypo_path()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(str(lypo_text or ""), encoding="utf-8")
+
+
+def load_typo():
+    """Carrega integralmente o Translated YPOema válido da sessão."""
+    return _typo_path().read_text(encoding="utf-8", errors="replace")
+
+
+def _save_typo(typo_text):
+    """Grava TYPO somente depois de uma tradução integral bem-sucedida."""
+    path = _typo_path()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(str(typo_text or ""), encoding="utf-8")
+
+
+def _lypo_context_key(context):
+    return json.dumps(context, ensure_ascii=False, sort_keys=True, default=str)
+
+
+def _lypo_text_signature(text):
+    return hashlib.sha256(str(text or "").encode("utf-8")).hexdigest()
+
+
+def _invalidate_typo():
+    """Invalida a derivação sem tocar no LYPO, que permanece autoridade."""
+    st.session_state.moby_typo_lang = ""
+    st.session_state.moby_typo_lypo_signature = ""
+
+
+def resolve_lypo_typo(context, source_html):
+    """Entrega LYPO ou seu TYPO válido sem confundir rerun com geração."""
+    source_html = str(source_html or "")
+    context_key = _lypo_context_key(context)
+    lypo_exists = _lypo_path().is_file()
+    context_changed = (
+        st.session_state.get("moby_lypo_context", "") != context_key
+    )
+
+    if context_changed or not lypo_exists:
+        _save_lypo(source_html)
+        st.session_state.moby_lypo_context = context_key
+        _invalidate_typo()
+
+    lypo_text = load_lypo()
+    if lypo_text != source_html:
+        _save_lypo(source_html)
+        lypo_text = source_html
+        _invalidate_typo()
+
+    lypo_signature = _lypo_text_signature(lypo_text)
+    if st.session_state.get("moby_lypo_signature", "") != lypo_signature:
+        st.session_state.moby_lypo_signature = lypo_signature
+        _invalidate_typo()
+
+    target = _translation_target()
+    if target == "pt":
+        st.session_state.moby_curr_lang = "pt"
+        st.session_state.moby_translation_failed = False
+        return lypo_text
+
+    typo_valid = (
+        _typo_path().is_file()
+        and st.session_state.get("moby_typo_lang", "") == target
+        and st.session_state.get("moby_typo_lypo_signature", "") == lypo_signature
+    )
+    if typo_valid:
+        st.session_state.moby_curr_lang = target
+        st.session_state.moby_translation_failed = False
+        return load_typo()
+
+    translated, success = _translate_atomic(lypo_text, target=target)
+    if success:
+        _save_typo(translated)
+        st.session_state.moby_typo_lang = target
+        st.session_state.moby_typo_lypo_signature = lypo_signature
+        st.session_state.moby_curr_lang = target
+        st.session_state.moby_translation_failed = False
+        return load_typo()
+
+    st.session_state.moby_curr_lang = "pt"
+    st.session_state.moby_translation_failed = True
+    return lypo_text
 
 def _moby_eureka_mark_html(texto_html, termo):
     """Destaca TODAS as aparições da ocorrência EUREKA no texto visível."""
@@ -600,7 +918,10 @@ def _generate_sound_bytes(text):
     clean = re.sub(r"\s+", " ", str(text or "")).strip()
     if not clean:
         return b""
-    voice = VOICES_EDGE_TTS.get(st.session_state.get("moby_lang", "pt"), "pt-BR-FranciscaNeural")
+    voice = VOICES_EDGE_TTS.get(
+        st.session_state.get("moby_curr_lang", "pt"),
+        "pt-BR-FranciscaNeural",
+    )
     async def _run():
         audio = bytearray()
         communicate = edge_tts.Communicate(clean, voice)
@@ -618,7 +939,7 @@ def _generate_sound_bytes(text):
 def update_sound_audio(title, poem_html):
     """A voz lê somente o conteúdo; o título dá lugar ao player."""
     body = ypoema_html_to_text(poem_html)
-    signature = (st.session_state.get("moby_lang", "pt"), str(title), body)
+    signature = (st.session_state.get("moby_curr_lang", "pt"), str(title), body)
     if st.session_state.get("moby_sound_signature") == signature:
         return st.session_state.get("moby_sound_audio", b"")
     try:
@@ -681,7 +1002,7 @@ def load_dna(path=DNA_PATH):
 
 def _rol_temas(livro):
     """Lê a ordem autoral do livro em base/rol_<livro>.txt."""
-    path = Path("./base") / f"rol_{livro}.txt"
+    path = ROOT / "base" / f"rol_{livro}.txt"
     if not path.is_file():
         return []
     temas = []
@@ -912,9 +1233,6 @@ if "moby_image_path" not in st.session_state:
 if "moby_image_path_2" not in st.session_state:
     st.session_state.moby_image_path_2 = ""
 
-if "moby_image_visible" not in st.session_state:
-    st.session_state.moby_image_visible = True
-
 if "moby_footer_view" not in st.session_state:
     st.session_state.moby_footer_view = "images"
 
@@ -999,10 +1317,24 @@ if "moby_current_title" not in st.session_state:
     st.session_state.moby_current_title = ""
 if "moby_current_poem_html" not in st.session_state:
     st.session_state.moby_current_poem_html = ""
-if "moby_translation_signature" not in st.session_state:
-    st.session_state.moby_translation_signature = None
-if "moby_translation_html" not in st.session_state:
-    st.session_state.moby_translation_html = ""
+if "moby_reader_id" not in st.session_state:
+    st.session_state.moby_reader_id = ""
+if "moby_curr_lang" not in st.session_state:
+    st.session_state.moby_curr_lang = "pt"
+if "moby_translation_backoff_until" not in st.session_state:
+    st.session_state.moby_translation_backoff_until = 0.0
+if "moby_translation_last_error" not in st.session_state:
+    st.session_state.moby_translation_last_error = ""
+if "moby_translation_failed" not in st.session_state:
+    st.session_state.moby_translation_failed = False
+if "moby_lypo_context" not in st.session_state:
+    st.session_state.moby_lypo_context = ""
+if "moby_lypo_signature" not in st.session_state:
+    st.session_state.moby_lypo_signature = ""
+if "moby_typo_lang" not in st.session_state:
+    st.session_state.moby_typo_lang = ""
+if "moby_typo_lypo_signature" not in st.session_state:
+    st.session_state.moby_typo_lypo_signature = ""
 if "moby_sidebar_panel" not in st.session_state:
     st.session_state.moby_sidebar_panel = "about"
 if "moby_about_pick" not in st.session_state:
@@ -1161,7 +1493,7 @@ def invalidate_real_image():
 
 def random_seal_path():
     """Escolhe um ex-libris RANDOM de ./images/selos, sem alterar o arquivo."""
-    pasta = Path("./images/selos")
+    pasta = ROOT / "images" / "selos"
     if not pasta.is_dir():
         return None
     arquivos = [
@@ -1271,7 +1603,7 @@ def _moby_eureka_ypo_results(seed):
     if len(seed) < 3:
         return []
 
-    path = Path("./base/lexico_pt.txt")
+    path = ROOT / "base" / "lexico_pt.txt"
     if not path.is_file():
         return []
 
@@ -1519,8 +1851,8 @@ def swap_machina_off():
     invalidate_ola()
 
 
-def prepare_portrait():
-    """Mantém o texto atual; usa a imagem esquerda visível e, depois, só renova as imagens."""
+def prepare_portrait(chosen_path=None):
+    """Gera o Retrato com a imagem clicada; sem escolha explícita, usa a esquerda."""
     dismiss_help()
 
     modo_off = str(st.session_state.get("moby_mode", "Machina")) == "Off-Machina"
@@ -1534,8 +1866,9 @@ def prepare_portrait():
 
     # Primeiro Retrato: exatamente a imagem que o usuário está vendo à esquerda.
     # Retratos seguintes: mantém o texto e renova somente a dupla de imagens.
-    chosen = str(st.session_state.get("moby_image_path", "")).strip()
-    if st.session_state.get("moby_footer_view", "images") == "portrait":
+    chosen_explicit = str(chosen_path or "").strip()
+    chosen = chosen_explicit or str(st.session_state.get("moby_image_path", "")).strip()
+    if not chosen_explicit and st.session_state.get("moby_footer_view", "images") == "portrait":
         img1, img2 = imagens_do_tema(DNA_ROWS, tema)
         chosen = str(img1) if img1 else ""
         st.session_state.moby_image_path = chosen
@@ -1571,7 +1904,6 @@ def prepare_portrait():
     if png:
         st.session_state.moby_portrait_png = png
         st.session_state.moby_footer_view = "portrait"
-        st.session_state.moby_image_visible = False
         safe = re.sub(r"[^A-Za-z0-9_-]+", "_", str(title or "retrato")).strip("_") or "retrato"
         st.session_state.moby_portrait_name = safe
 
@@ -1675,8 +2007,10 @@ def sidebar_language_changed():
     for nome, pais, code in IDIOMAS_MACHINA:
         if escolha == f"{nome} — {pais}":
             st.session_state.moby_lang = code
-            st.session_state.moby_translation_signature = None
-            st.session_state.moby_translation_html = ""
+            st.session_state.moby_translation_backoff_until = 0.0
+            st.session_state.moby_translation_last_error = ""
+            st.session_state.moby_translation_failed = False
+            _invalidate_typo()
             st.session_state.moby_sound_signature = None
             st.session_state.moby_sound_audio = b""
             return
@@ -1745,7 +2079,7 @@ def _matrix_image_path_for_theme(nome_tema):
     if not tema:
         return None
 
-    matrix_dir = Path("./images/matrix")
+    matrix_dir = ROOT / "images" / "matrix"
     if not matrix_dir.is_dir():
         return None
 
@@ -1842,7 +2176,7 @@ def _variacoes_humano(valor):
 
 
 def _build_seal_from_ypo(nome_tema):
-    path = Path("./data") / f"{str(nome_tema or '').strip()}.ypo"
+    path = ROOT / "data" / f"{str(nome_tema or '').strip()}.ypo"
     selo = ""
     try:
         for raw in path.read_text(encoding="utf-8-sig").splitlines():
@@ -1894,17 +2228,6 @@ def toggle_help():
 
 def dismiss_help():
     st.session_state.moby_help_open = False
-
-
-def toggle_image():
-    """Imagem recolhe/abre a ilustração; o espaço liberado volta ao palco."""
-    dismiss_help()
-    if st.session_state.get("moby_footer_view", "images") == "images":
-        st.session_state.moby_footer_view = "none"
-        st.session_state.moby_image_visible = False
-    else:
-        st.session_state.moby_footer_view = "images"
-        st.session_state.moby_image_visible = True
 
 
 def new_reading():
@@ -2282,33 +2605,50 @@ st.markdown(
         box-sizing: border-box !important;
     }
 
-    .st-key-moby_images_stage .moby-footer-images-flex {
-        width: 100%;
-        height: 142px;
-        display: grid;
-        grid-template-columns: 1fr 2fr 1fr 2fr 1fr;
-        align-items: center;
-        gap: 0;
-        overflow: hidden;
+    .st-key-moby_images_stage div[data-testid="stHorizontalBlock"] {
+        width: 100% !important;
+        height: 142px !important;
+        min-height: 142px !important;
+        max-height: 142px !important;
+        align-items: flex-start !important;
+        gap: 0 !important;
+        overflow: hidden !important;
     }
 
-    .st-key-moby_images_stage .moby-footer-image-cell {
-        min-width: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden;
+    .st-key-moby_images_stage div[data-testid="stColumn"] {
+        min-width: 0 !important;
+        height: 142px !important;
+        min-height: 142px !important;
+        max-height: 142px !important;
+        overflow: hidden !important;
     }
 
-    .st-key-moby_images_stage .moby-footer-image {
-        display: block;
-        max-height: 142px;
-        max-width: 100%;
-        width: auto;
-        height: auto;
-        object-fit: contain;
-        border-radius: 8px;
-        margin: 0 auto;
+    [class*="st-key-moby_footer_pick_"] button {
+        display: block !important;
+        width: 100% !important;
+        height: 102px !important;
+        min-height: 102px !important;
+        max-height: 102px !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border: 0 !important;
+        border-radius: 8px !important;
+        background-color: transparent !important;
+        background-repeat: no-repeat !important;
+        background-position: center top !important;
+        background-size: contain !important;
+        color: transparent !important;
+        font-size: 0 !important;
+        line-height: 0 !important;
+        overflow: hidden !important;
+        box-shadow: none !important;
+        cursor: pointer !important;
+    }
+
+    [class*="st-key-moby_footer_pick_"] button:hover,
+    [class*="st-key-moby_footer_pick_"] button:focus-visible {
+        border: 1px solid rgba(0,0,0,.36) !important;
+        box-shadow: 0 0 0 2px rgba(0,0,0,.08) !important;
     }
 
     .st-key-moby_portrait_stage img {
@@ -2477,6 +2817,19 @@ st.markdown(
         padding-bottom: 0 !important;
         margin: 0 !important;
     }
+
+    /* Copiar permanece funcional como popover, sem o chevron visual. */
+    .st-key-moby_footer_controls div[data-testid="stPopover"] button [data-testid="stIconMaterial"],
+    .st-key-moby_footer_controls div[data-testid="stPopover"] button span[aria-hidden="true"],
+    .st-key-moby_footer_controls div[data-testid="stPopover"] button svg {
+        display: none !important;
+        visibility: hidden !important;
+        width: 0 !important;
+        height: 0 !important;
+        min-width: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
     /* Fullscreen nativo fora do Moby: Retrato usa apenas Ampliar/Salvar. */
     button[title*="fullscreen" i],
     button[aria-label*="fullscreen" i],
@@ -2543,9 +2896,6 @@ st.markdown(
             padding-right: .18rem !important;
         }
 
-        .st-key-moby_images_stage .moby-footer-images-flex {
-            grid-template-columns: .35fr minmax(0, 1fr) .35fr minmax(0, 1fr) .35fr;
-        }
     }
     </style>
     """,
@@ -2906,12 +3256,24 @@ corpo_palco = int(st.session_state.get("moby_font_size", 20))
 if st.session_state.get("moby_mode") == "Off-Machina":
     titulo_palco, corpo_off = current_off_page()
     poema_html_original = ypo_at_to_html(html.escape(str(corpo_off))).replace("\n", "<br>")
+    contexto_traducao = {
+        "modo": "Off-Machina",
+        "livro": str(current_off_book_path() or ""),
+        "pagina": int(st.session_state.get("moby_off_take", 0)),
+        "titulo": str(titulo_palco),
+    }
 else:
     update_real_poem()
     titulo_palco = current_theme()
     poema_html_original = str(st.session_state.get("moby_poem_html", ""))
+    contexto_traducao = {
+        "modo": "EUREKA" if st.session_state.get("moby_eureka_open", False) else "Machina",
+        "livro": str(st.session_state.get("moby_book", "")),
+        "titulo": str(titulo_palco),
+        "leitura": st.session_state.get("moby_poem_signature"),
+    }
 
-poema_html = translate_poem_html(poema_html_original)
+poema_html = resolve_lypo_typo(contexto_traducao, poema_html_original)
 
 if st.session_state.get("moby_eureka_open", False):
     termo_eureka = st.session_state.get(
@@ -2924,6 +3286,15 @@ st.session_state.moby_current_title = str(titulo_palco)
 st.session_state.moby_current_poem_html = str(poema_html)
 
 with st.container(key="moby_stage_scroll", border=False):
+    if (
+        st.session_state.get("moby_translation_failed", False)
+        and st.session_state.get("moby_lang", "pt") != "pt"
+    ):
+        st.warning(
+            "Tradução temporariamente indisponível; "
+            "o LYPO original em português foi preservado."
+        )
+
     if (
         st.session_state.get("moby_mode") == "Off-Machina"
         and st.session_state.get("moby_off_plus_help", False)
@@ -2964,46 +3335,47 @@ with st.container(key="moby_stage_scroll", border=False):
         )
 
 # =============================================================================
-# RODAPÉ — bloco físico fixo: controles + ilustração dispensável
+# RODAPÉ — bloco físico fixo: copiar + retrato + salvar / dupla de imagens
 # =============================================================================
 update_real_image()
 imagem_1 = str(st.session_state.get("moby_image_path", "")).strip()
 imagem_2 = str(st.session_state.get("moby_image_path_2", "")).strip()
 footer_view = str(st.session_state.get("moby_footer_view", "images"))
-
-# Quando a ilustração é dispensada, apenas a faixa dos controles permanece;
-# o espaço liberado volta ao palco.
-if footer_view == "none":
-    st.markdown(
-        """
-        <style>
-        .st-key-moby_stage_scroll {
-            height: 525px; min-height: 525px; max-height: 525px;
-        }
-        .st-key-moby_footer_zone {
-            height: 40px; min-height: 40px; max-height: 40px; padding-bottom: 0;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
+portrait_png = st.session_state.get("moby_portrait_png", b"")
+if footer_view not in {"images", "portrait"}:
+    footer_view = "images"
+    st.session_state.moby_footer_view = "images"
 
 with st.container(key="moby_footer_zone", border=False):
     with st.container(key="moby_footer_controls", border=False):
         c1, c2, c3 = st.columns(3, gap="small")
 
         with c1:
-            with st.popover("Copiar", use_container_width=True):
+            with st.popover("copiar", use_container_width=True):
                 st.code(ypoema_html_to_text(poema_html), language=None, wrap_lines=True)
 
         with c2:
-            st.button("Imagem", key="moby_image", width="stretch", on_click=toggle_image)
+            st.button("retrato", key="moby_portrait", width="stretch", on_click=prepare_portrait)
 
         with c3:
-            st.button("Retrato", key="moby_portrait", width="stretch", on_click=prepare_portrait)
+            if portrait_png:
+                st.download_button(
+                    "salvar",
+                    data=portrait_png,
+                    file_name=f"{st.session_state.get('moby_portrait_name', 'retrato')}.png",
+                    mime="image/png",
+                    key="moby_save_mobile",
+                    width="stretch",
+                )
+            else:
+                st.button(
+                    "salvar",
+                    key="moby_save_mobile_wait",
+                    width="stretch",
+                    disabled=True,
+                )
 
-    if footer_view == "portrait" and st.session_state.get("moby_portrait_png", b""):
-        portrait_png = st.session_state.get("moby_portrait_png", b"")
+    if footer_view == "portrait" and portrait_png:
         with st.container(key="moby_portrait_stage", border=False):
             portrait_view, portrait_actions = st.columns([2.0, 1.0], gap="small")
             with portrait_view:
@@ -3015,34 +3387,55 @@ with st.container(key="moby_footer_zone", border=False):
                     width="stretch",
                 ):
                     ampliar_retrato_moby(portrait_png)
-                st.download_button(
-                    "Salvar",
-                    data=portrait_png,
-                    file_name=f"{st.session_state.get('moby_portrait_name', 'retrato')}.png",
-                    mime="image/png",
-                    key="moby_portrait_save",
-                    width="stretch",
-                )
 
-    elif footer_view != "none":
+    else:
         st.session_state.moby_footer_view = "images"
-        st.session_state.moby_image_visible = True
         with st.container(key="moby_images_stage", border=False):
-            imagem_1_html = (
-                f'<img class="moby-footer-image" src="{image_path_to_data_uri(imagem_1)}" alt="">'
-                if imagem_1 and Path(imagem_1).is_file() else ""
+            margem_1, imagem_col_1, meio, imagem_col_2, margem_2 = st.columns(
+                [1, 2, 1, 2, 1],
+                gap="small",
             )
-            imagem_2_html = (
-                f'<img class="moby-footer-image" src="{image_path_to_data_uri(imagem_2)}" alt="">'
-                if imagem_2 and Path(imagem_2).is_file() else ""
-            )
-            st.markdown(
-                '<div class="moby-footer-images-flex">'
-                '<div></div>'
-                f'<div class="moby-footer-image-cell">{imagem_1_html}</div>'
-                '<div></div>'
-                f'<div class="moby-footer-image-cell">{imagem_2_html}</div>'
-                '<div></div>'
-                '</div>',
-                unsafe_allow_html=True,
-            )
+
+            if imagem_1 and Path(imagem_1).is_file():
+                imagem_1_uri = image_path_to_data_uri(imagem_1)
+                with imagem_col_1:
+                    st.markdown(
+                        f"""
+                        <style>
+                        .st-key-moby_footer_pick_1 button {{
+                            background-image: url("{imagem_1_uri}") !important;
+                        }}
+                        </style>
+                        """,
+                        unsafe_allow_html=True,
+                    )
+                    st.button(
+                        "usar imagem esquerda no retrato",
+                        key="moby_footer_pick_1",
+                        on_click=prepare_portrait,
+                        args=(imagem_1,),
+                        help="usar esta imagem no retrato",
+                        width="stretch",
+                    )
+
+            if imagem_2 and Path(imagem_2).is_file():
+                imagem_2_uri = image_path_to_data_uri(imagem_2)
+                with imagem_col_2:
+                    st.markdown(
+                        f"""
+                        <style>
+                        .st-key-moby_footer_pick_2 button {{
+                            background-image: url("{imagem_2_uri}") !important;
+                        }}
+                        </style>
+                        """,
+                        unsafe_allow_html=True,
+                    )
+                    st.button(
+                        "usar imagem direita no retrato",
+                        key="moby_footer_pick_2",
+                        on_click=prepare_portrait,
+                        args=(imagem_2,),
+                        help="usar esta imagem no retrato",
+                        width="stretch",
+                    )
