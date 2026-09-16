@@ -70,7 +70,7 @@ def _load_ola_bridge():
 
 
 st.set_page_config(
-    page_title="Moby — a Machina Mobile",
+    page_title="mobyle — Ꭹᕈᗢᗴᗰᗩᔕ",
     page_icon="❓",
     layout="wide",
     initial_sidebar_state="collapsed",
