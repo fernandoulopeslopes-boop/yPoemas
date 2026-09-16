@@ -20,7 +20,7 @@ BASE_DIR = ROOT / "data" / "acros"
 IMAGES_ROOT = ROOT / "images"
 
 st.set_page_config(
-    page_title="NOMY",
+    page_title="nomy — Ꭹᕈᗢᗴᗰᗩᔕ",
     page_icon="🍒",
     layout="wide",
     initial_sidebar_state="collapsed",
