@@ -69,7 +69,7 @@ _BOOT_VARIANT = os.environ.get("BYPO_APP_VARIANT", "bypo").strip().casefold()
 _BOOT_IS_CFG = _BOOT_VARIANT in {"bypo_cfg", "cfg"}
 
 st.set_page_config(
-    page_title="BYPO_CFG" if _BOOT_IS_CFG else "BYPO",
+    page_title="bypo_cfg" if _BOOT_IS_CFG else "bypo - Ꭹᕈᗢᗴᗰᗩᔕ",
     page_icon=":construction:" if _BOOT_IS_CFG else ":cyclone:",
     layout="wide",
     initial_sidebar_state="collapsed",
