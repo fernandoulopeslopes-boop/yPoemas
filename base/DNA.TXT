@@ -36,9 +36,9 @@
 |Clarice|S|livro vivo;poemas;outros autores|persona|8|25|122|85|54432000000|5.44e+10|
 |Conto|S|livro vivo;poemas|anima|10|21|257|154|132723360000000|1.33e+14|
 |Cordel|S|metalinguagem|joco|3|12|190|138|1048110000|1.05e+09|
-|Cromossomo|S|livro vivo;jocosos;sociais|joco|9|24|203|134|2779486617600|2.78e+12|
-|Críticas|S|todos os temas|joco|17|49|327|331|871906910318166999564288000000|8.72e+29|
+|Críticas|S|todos os temas|joco|17|49|327|328|581271273545444666376192000000|5.81e+29|
 |Crítico|S|todos os temas|author|11|31|141|91|734664038400|7.35e+11|
+|Cromossomo|S|livro vivo;jocosos;sociais|joco|9|24|203|134|2779486617600|2.78e+12|
 |Cuores|S|livro vivo;poemas|persona|9|36|169|250|3779971000565760000000|3.78e+21|
 |Demo|S|ensaios|joco|4|10|128|211|6429196800|6.43e+09|
 |Design|N|||3|6|620|3720|56800235584000000|5.68e+16|
@@ -111,7 +111,7 @@
 |Ocio|S|livro vivo;jocosos|joco|12|46|504|385|29717837074855467417600000000000|2.97e+31|
 |Oco|S|poemas|anima|4|12|216|160|26606361600|2.66e+10|
 |Oculto|S|variações|ex-libris|3|13|203|267|305101209600|3.05e+11|
-|Oficia|S|todos os temas|joco|15|44|523|526|5933583529929761087878594560000000|5.93e+33|
+|Oficia|S|todos os temas|joco|15|44|522|524|4450187647447320815908945920000000|4.45e+33|
 |Oficio|S|livro vivo;jocosos|author|15|44|536|475|57110137135498442550804480000000|5.71e+31|
 |Ogiva|S|poemas;variações|beauty|5|24|253|232|1624147132608000|1.62e+15|
 |OLA|S|metalinguagem|machina|1|3|35|35|1248|1.25e+03|
