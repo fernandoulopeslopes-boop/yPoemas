@@ -1,0 +1,8 @@
+PONTOS_DE_VISTA = {
+    "Poeta consagrado / Leitor eventual": ["rimas, aliterações, concordâncias, erudição", "gosto simples, rimas fáceis, cotidiano, descomplicado"],
+    "Cientista / Místico": ["ciência, profundidade, precisão, relatividade", "místico, sentimento, fluidez, espírito, alma"],
+    "Dia / Noite": ["luz do sol, claro, exposto, quente, clareza", "madrugada, silêncio, sonhos, segredo"],
+    "Mar / Montanha": ["mar, ondas, movimento, acolhimento, ressacas", "horizontes, contemplação, paisagem, silêncio, imensidão"],
+    "Criança / Idoso": ["descoberta, curiosidade, frases curtas, novidade", "experiência, histórias de vida, memórias, sabedoria"],
+    "Urgente / Eterno": ["agora, já, falta ar, pressa", "sempre, devagar, pedra, eternidade, infinito"],
+}
