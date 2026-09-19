@@ -1,3 +1,8 @@
+# =============================================================================
+# ponte_ola_openai.py — OLA / ponte OpenAI Responses
+# Build 2026-09-19_001 — remove temperature, incompatível com o modelo atual.
+# =============================================================================
+
 from __future__ import annotations
 
 import json
@@ -109,7 +114,6 @@ def ponte_ola_openai(
         "instructions": OLA_INSTRUCTIONS,
         "input": _build_input(tipo, tema, ypoema_texto),
         "max_output_tokens": 260,
-        "temperature": 0.85,
         "store": False,
     }
 
@@ -145,4 +149,3 @@ def gerar_analise_ola(tipo: str, tema: str, ypoema_texto: str) -> str:
     Esta funcao e apenas a ponte OLA.
     """
     return ponte_ola_openai(tipo, tema, ypoema_texto)
-
