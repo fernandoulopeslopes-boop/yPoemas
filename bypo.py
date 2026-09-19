@@ -40,6 +40,7 @@
 # - 057 LAX_CABECALHO: os dois pontos de vista ocupam diretamente o cabeçalho.
 # - 058 IFRAME_ATUAL: substitui componentes HTML descontinuados.
 # - 059 GEOMETRIA_SEM_COMPONENTES: remove iframes da estrutura visual do BYPO.
+# - 061 XEROX_LAX: yPoema original seguido das duas leituras LAX.
 # =============================================================================
 # Leitura da casa:
 # terreno/configuração -> funções/estado/componentes comuns
@@ -83,9 +84,9 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-APP_BUILD = "2026-09-19_BYPO_059_GEOMETRIA_SEM_COMPONENTES"
+APP_BUILD = "2026-09-19_BYPO_061_XEROX_LAX_ORIGINAL_PRIMEIRO"
 APP_BUILD_NOTES = (
-    "Base 051 preservada; palco e sidebar não recebem componentes ou iframes."
+    "Base 051 preservada; Xerox LAX mostra o yPoema e, em seguida, duas leituras."
 )
 
 APP_VARIANT = "local"
@@ -3450,17 +3451,39 @@ if hasattr(st, "dialog"):
 else:
     ampliar_retrato = _ampliar_retrato_conteudo
 
+def _xerox_lax_texto(texto_original):
+    """Edição comentada: yPoema original seguido das duas leituras LAX."""
+    resultado = st.session_state.get("lax_result", {})
+    if not isinstance(resultado, dict) or not resultado.get("a") or not resultado.get("b"):
+        return ""
+    leituras = "\n\n".join(
+        (
+            str(resultado.get("a_nome", "A")),
+            str(resultado.get("a", "")),
+            str(resultado.get("b_nome", "B")),
+            str(resultado.get("b", "")),
+        )
+    )
+    return str(texto_original or "") + "\n\n___\n\n" + leituras
+
 
 def show_copy_retrato_xerox(prefixo, texto_copia):
-    """Rodapé compacto do texto: copiar | retrato | ampliar | salvar."""
+    """Rodapé do texto; Xerox aparece apenas com resultado LAX válido."""
     _copiar_popover_sem_seta()
     png = st.session_state.get(f"{prefixo}_imagem_retrato")
+    xerox = _xerox_lax_texto(texto_copia) if str(st.session_state.get("voz_analise", "")).upper() == "LAX" else ""
 
     with st.container(key=f"bypo_text_actions_{prefixo}", border=False):
         st.markdown("<div style='height:0.35rem'></div>", unsafe_allow_html=True)
-        margem_esq, bloco_acoes, margem_dir = st.columns([1.8, 6.4, 1.8], gap="small")
+        margem_esq, bloco_acoes, margem_dir = st.columns([1.4, 7.2, 1.4], gap="small")
         with bloco_acoes:
-            copy_col, retrato_col, ampliar_col, salvar_col = st.columns(4, gap="small")
+            acoes = st.columns(5 if xerox else 4, gap="small")
+            if xerox:
+                with acoes[0]:
+                    with st.popover("xerox", use_container_width=True):
+                        st.code(xerox, language=None, wrap_lines=True)
+            deslocamento = 1 if xerox else 0
+            copy_col, retrato_col, ampliar_col, salvar_col = acoes[deslocamento:deslocamento + 4]
             with copy_col:
                 with st.popover("copiar", use_container_width=True):
                     st.code(str(texto_copia or ""), language=None, wrap_lines=True)
