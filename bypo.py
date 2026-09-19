@@ -32,6 +32,8 @@
 # - 047 SIDEBAR_PROXIMA_IMAGEM: quadro 2:3 mais compacto/sem corte; Retrato usa a imagem visível e a sidebar avança para outra candidata.
 # - 048 BYPO_CFG_PAGINA_Z: BYPO público mantém 5 páginas; variante bypo_cfg acrescenta Página Z / TOOLS.
 # - 051 CFG_ABOUT_MD_FILES: BYPO_CFG lista diretamente /md_files/*.md; ABOUT público continua em base/lista_abouts.txt.
+# - 052 LAX_CFG_PRESERVADO: LAX externo, ampliar retrato e H/W informativo sobre a base 051.
+# - 053 LAX_QUEBRAS_REAIS: normaliza sequências literais de quebra de linha no LAX.
 # =============================================================================
 # Leitura da casa:
 # terreno/configuração -> funções/estado/componentes comuns
@@ -43,6 +45,7 @@
 # =============================================================================
 
 import os
+import ast
 import re
 import time
 import random
@@ -75,9 +78,9 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-APP_BUILD = "2026-09-13_BYPO_051_CFG_ABOUT_MD_FILES"
+APP_BUILD = "2026-09-19_BYPO_053_LAX_QUEBRAS_REAIS"
 APP_BUILD_NOTES = (
-    "BYPO público preserva lista_abouts; BYPO_CFG usa diretamente /md_files/*.md para curadoria ABOUT."
+    "Base 051 preservada; LAX lê /base e converte quebras escapadas em linhas reais."
 )
 
 APP_VARIANT = "local"
@@ -874,6 +877,16 @@ def init_session_state():
         # análise :: Machina / OLA
         "voz_analise": "Machina",
         "tipo_analise": "Sintática",
+        "ola_result": "",
+        "ola_signature": None,
+        "ola_error": "",
+        "lax_pair": "",
+        "lax_pct_original": 45,
+        "lax_result": {},
+        "lax_signature": None,
+        "lax_error": "",
+        "lax_catalog_error": "",
+        "analysis_translation_notice": False,
 
     }
 
@@ -1766,6 +1779,33 @@ def _bypo_render_context_image(chosen_id):
         """,
         unsafe_allow_html=True,
     )
+
+def render_hw_spy(host=None):
+    """H/W reais no topo direito da sidebar; somente leitura."""
+    target = host if host is not None else _sidebar_host()
+    with target:
+        components.html(
+            """
+            <div id="machina-hw-spy">H=--- · W=---</div>
+            <style>
+            html, body { margin:0; padding:0; overflow:hidden; background:transparent; }
+            #machina-hw-spy { width:100%; text-align:right; color:#4b4b4b;
+              font:600 11px/20px ui-monospace, SFMono-Regular, Consolas, monospace;
+              font-variant-numeric:tabular-nums; user-select:none; white-space:nowrap; }
+            </style>
+            <script>
+            (() => {
+              const pw = window.parent, spy = document.getElementById('machina-hw-spy');
+              const update = () => { spy.textContent = `H=${Math.round(pw.innerHeight)} · W=${Math.round(pw.innerWidth)}`; };
+              if (typeof pw.__machinaHwSpyCleanup === 'function') pw.__machinaHwSpyCleanup();
+              update(); pw.addEventListener('resize', update, {passive:true});
+              pw.__machinaHwSpyCleanup = () => pw.removeEventListener('resize', update);
+            })();
+            </script>
+            """,
+            height=22,
+            scrolling=False,
+        )
 
 
 def render_sidebar_for_page(chosen_id):
@@ -3495,17 +3535,25 @@ def _copiar_popover_sem_seta():
         unsafe_allow_html=True,
     )
 
+def _ampliar_retrato_conteudo(png):
+    st.image(png, use_container_width=True)
+
+if hasattr(st, "dialog"):
+    ampliar_retrato = st.dialog("Retrato", width="large")(_ampliar_retrato_conteudo)
+else:
+    ampliar_retrato = _ampliar_retrato_conteudo
+
 
 def show_copy_retrato_xerox(prefixo, texto_copia):
-    """Rodapé compacto do texto: copiar | retrato | salvar."""
+    """Rodapé compacto do texto: copiar | retrato | ampliar | salvar."""
     _copiar_popover_sem_seta()
     png = st.session_state.get(f"{prefixo}_imagem_retrato")
 
     with st.container(key=f"bypo_text_actions_{prefixo}", border=False):
         st.markdown("<div style='height:0.35rem'></div>", unsafe_allow_html=True)
-        margem_esq, bloco_acoes, margem_dir = st.columns([2.6, 4.8, 2.6], gap="small")
+        margem_esq, bloco_acoes, margem_dir = st.columns([1.8, 6.4, 1.8], gap="small")
         with bloco_acoes:
-            copy_col, retrato_col, salvar_col = st.columns(3, gap="small")
+            copy_col, retrato_col, ampliar_col, salvar_col = st.columns(4, gap="small")
             with copy_col:
                 with st.popover("copiar", use_container_width=True):
                     st.code(str(texto_copia or ""), language=None, wrap_lines=True)
@@ -3518,6 +3566,12 @@ def show_copy_retrato_xerox(prefixo, texto_copia):
                 if retrato_clicked:
                     make_retrato_xerox(prefixo)
                     st.rerun()
+            with ampliar_col:
+                if png:
+                    if st.button("ampliar", key=f"{prefixo}_retrato_ampliar", use_container_width=True):
+                        ampliar_retrato(png)
+                else:
+                    st.button("ampliar", key=f"{prefixo}_retrato_ampliar_wait", use_container_width=True, disabled=True)
             with salvar_col:
                 if png:
                     st.download_button(
@@ -3975,16 +4029,6 @@ def criar_retrato_png(ypoema_html, image_path, tema, selo_size=24, fonte_retrato
     canvas.save(output, format="PNG", optimize=True)
     return output.getvalue()
 
-def load_images():
-    """Compatibilidade exclusiva do Off-Machina; temas não consultam images.txt."""
-    images_list = []
-    path = os.path.join("./base", "images.txt")
-    if not os.path.exists(path):
-        return images_list
-    with open(path, encoding="utf-8-sig") as lista:
-        images_list.extend(lista.readlines())
-    return images_list
-
 def load_arts(nome_tema):  # Select image for arts
     """Banco visual do tema vem exclusivamente do DNA."""
     nome_tema = str(nome_tema or "").strip()
@@ -4066,41 +4110,18 @@ def _set_group_sidebar_image_next(group_name, state_key):
     st.session_state[state_key] = chosen
     return chosen
 
-def _image_group_for_entity(entity_name, fallback="machina"):
-    """Resolve entidade -> banco visual em base/images.txt, com fallback saudável."""
-    wanted = str(entity_name or "").strip().casefold()
-    for raw in load_images():
-        left, sep, right = str(raw or "").strip().partition(" : ")
-        if sep and left.strip().casefold() == wanted and right.strip():
-            return right.strip()
-    return str(fallback or "machina").strip() or "machina"
-
 def _set_about_image_next():
-    grupo = _image_group_for_entity("ABOUT", "author")
-    return _set_group_sidebar_image_next(grupo, "about_image")
+    return _set_group_sidebar_image_next("author", "about_image")
 
 def _set_atelier_image_next():
-    grupo = _image_group_for_entity("Atelier", "machina")
-    return _set_group_sidebar_image_next(grupo, "atelier_image")
+    return _set_group_sidebar_image_next("machina", "atelier_image")
 
 def _set_off_anima_image_next():
     return _set_group_sidebar_image_next("anima", "off_machina_images_pasta")
 
-def _off_book_image_group(book_name):
-    wanted = str(book_name or "").strip()
-    for raw in load_images():
-        line = str(raw or "").strip()
-        left, sep, right = line.partition(" : ")
-        if sep and left.strip().casefold() == wanted.casefold() and right.strip():
-            return right.strip()
-    return ""
-
 def _set_off_book_group_image_next(book_name):
-    grupo = _off_book_image_group(book_name)
-    if not grupo:
-        st.session_state["off_machina_images_pasta"] = ""
-        return ""
-    return _set_group_sidebar_image_next(grupo, "off_machina_images_pasta")
+    st.session_state["off_machina_images_pasta"] = ""
+    return ""
 
 def render_sidebar_image_fit(image_path):
     """Renderiza imagem contextual da sidebar em quadro fixo 240x360, sem faixa branca."""
@@ -4295,10 +4316,129 @@ def gerar_analise_ola(tipo, tema, ypoema_texto):
     return limpar_analise(gerar_analise_ola_real(tipo, tema, ypoema_texto))
 
 def gerar_analise_atual(ypoema_html, tema):
-    """Envia o yPoema atual para a ponte OLA, sem simulação local."""
+    """Gera OLA uma vez por conteúdo, tema, tipo e idioma."""
     kind = st.session_state.get("tipo_analise", "Sintática")
     ypoema_texto = _analise_texto_cru_do_ypoema(ypoema_html)
-    return gerar_analise_ola(kind, tema, ypoema_texto)
+    idioma = str(st.session_state.get("lang", "pt"))
+    signature = (ypoema_texto, str(tema or ""), str(kind), idioma)
+    if st.session_state.get("ola_signature") == signature:
+        return st.session_state.get("ola_result", "")
+    try:
+        resultado = gerar_analise_ola(kind, tema, ypoema_texto)
+        resultado, success = _translate_atomic(resultado, idioma, channel="content")
+        if not success:
+            st.session_state["analysis_translation_notice"] = True
+        st.session_state["ola_result"] = resultado
+        st.session_state["ola_error"] = ""
+    except Exception:
+        st.session_state["ola_result"] = ""
+        st.session_state["ola_error"] = "OLA temporariamente indisponível."
+    st.session_state["ola_signature"] = signature
+    return st.session_state.get("ola_result", "")
+
+LAX_PONTOS_DE_VISTA_FILE = ("base", "PONTOS_DE_VISTA.txt")
+
+def load_lax_pontos_de_vista():
+    """Lê a única autoridade autoral do LAX em /base."""
+    try:
+        with open(_project_path(*LAX_PONTOS_DE_VISTA_FILE), encoding="utf-8-sig") as arquivo:
+            nome, igual, literal = arquivo.read().strip().partition("=")
+        if not igual or nome.strip() != "PONTOS_DE_VISTA":
+            raise ValueError("coleção inválida")
+        dados = ast.literal_eval(literal.strip())
+        if not isinstance(dados, dict) or not dados:
+            raise ValueError("coleção vazia")
+        pontos = {}
+        for par, vistas in dados.items():
+            if not isinstance(par, str) or not isinstance(vistas, (list, tuple)) or len(vistas) != 2:
+                raise ValueError("par inválido")
+            pontos[par] = [str(vistas[0]), str(vistas[1])]
+        st.session_state["lax_catalog_error"] = ""
+        return pontos
+    except (OSError, UnicodeError, SyntaxError, ValueError):
+        st.session_state["lax_catalog_error"] = "LAX indisponível: base/PONTOS_DE_VISTA.txt não pôde ser lido."
+        return {}
+
+def _lax_api_key():
+    valor = str(os.environ.get("OPENAI_API_KEY", "") or "").strip()
+    if valor:
+        return valor
+    try:
+        return str(st.secrets.get("OPENAI_API_KEY", "") or "").strip()
+    except Exception:
+        return ""
+
+def _lax_output(payload):
+    if isinstance(payload, dict) and isinstance(payload.get("output_text"), str):
+        return payload["output_text"].strip()
+    partes = []
+    for item in (payload.get("output", []) if isinstance(payload, dict) else []):
+        for content in item.get("content", []):
+            texto = content.get("text", "") if isinstance(content, dict) else ""
+            if isinstance(texto, dict):
+                texto = texto.get("value", "")
+            if isinstance(texto, str) and texto.strip():
+                partes.append(texto.strip())
+    return "\n".join(partes)
+
+def _lax_json(texto):
+    bruto = re.sub(r"^```(?:json)?\s*|\s*```$", "", str(texto or "").strip(), flags=re.I)
+    inicio, fim = bruto.find("{"), bruto.rfind("}")
+    return json.loads(bruto[inicio:fim + 1] if inicio >= 0 and fim > inicio else bruto)
+
+def _normalizar_quebras_lax(texto):
+    """Converte quebras escapadas do retorno LAX em quebras reais."""
+    return str(texto or "").replace("\\r\\n", "\n").replace("\\n", "\n").replace("\\r", "\n")
+
+def _traduzir_blocos_lax(blocos, idioma):
+    originais = [_normalizar_quebras_lax(bloco) for bloco in blocos]
+    if idioma == "pt":
+        return originais
+    marcador = "[[[MACHINA_LAX_SEPARADOR]]]"
+    traducao, success = _translate_atomic(("\n" + marcador + "\n").join(originais), idioma, channel="content")
+    partes = str(traducao or "").split(marcador) if success else []
+    if len(partes) != len(originais):
+        st.session_state["analysis_translation_notice"] = True
+        return originais
+    return [_normalizar_quebras_lax(parte).strip() for parte in partes]
+
+def gerar_analise_lax(ypoema_html, tema):
+    """Relê o mesmo yPoema por dois pontos de vista autorais."""
+    fonte = _analise_texto_cru_do_ypoema(ypoema_html)
+    pontos = load_lax_pontos_de_vista()
+    idioma, pct = str(st.session_state.get("lang", "pt")), int(st.session_state.get("lax_pct_original", 45))
+    if not pontos:
+        st.session_state["lax_error"] = st.session_state.get("lax_catalog_error", "LAX indisponível.")
+        return {}
+    par = st.session_state.get("lax_pair") or next(iter(pontos))
+    st.session_state["lax_pair"] = par
+    assinatura = (fonte, str(tema or ""), par, pct, idioma, tuple(pontos.items()))
+    if st.session_state.get("lax_signature") == assinatura:
+        return st.session_state.get("lax_result", {})
+    chave = _lax_api_key()
+    if not chave:
+        st.session_state["lax_error"] = "LAX temporariamente indisponível."
+        st.session_state["lax_result"], st.session_state["lax_signature"] = {}, assinatura
+        return {}
+    nome_a, nome_b = [parte.strip() for parte in par.split("/", 1)]
+    vista_a, vista_b = pontos[par]
+    prompt = f"""Tema/contexto: {tema}\n\nYPOEMA ORIGINAL:\n{fonte}\n\nPONTO A — {nome_a}: {vista_a}\nPONTO B — {nome_b}: {vista_b}\n\nPRESERVAÇÃO LITERAL MÍNIMA: {pct}%\nRetorne apenas JSON: {{\"a\":\"releitura A\",\"b\":\"releitura B\",\"distancia\":\"frase curta\"}}"""
+    body = {"model": os.environ.get("OPENAI_MODEL_LAX", os.environ.get("OLA_OPENAI_MODEL", "gpt-5-mini")), "instructions": "Você é LAX/PARALAXE da Machina. Releia o mesmo yPoema por duas perspectivas. Preserve sua identidade; não explique o processo.", "input": prompt, "max_output_tokens": 1200, "store": False}
+    request = urllib.request.Request("https://api.openai.com/v1/responses", data=json.dumps(body, ensure_ascii=False).encode("utf-8"), headers={"Content-Type": "application/json", "Authorization": "Bearer " + chave}, method="POST")
+    try:
+        with urllib.request.urlopen(request, timeout=45) as response:
+            dados = _lax_json(_lax_output(json.loads(response.read().decode("utf-8", errors="replace"))))
+        blocos = [nome_a, nome_b, limpar_analise(_normalizar_quebras_lax(dados.get("a", "")), 900), limpar_analise(_normalizar_quebras_lax(dados.get("b", "")), 900), limpar_analise(_normalizar_quebras_lax(dados.get("distancia", "")), 360)]
+        a_nome, b_nome, a, b, distancia = _traduzir_blocos_lax(blocos, idioma)
+        if not a or not b:
+            raise ValueError("LAX incompleta")
+        st.session_state["lax_result"] = {"a_nome": a_nome, "b_nome": b_nome, "a": a, "b": b, "distancia": distancia}
+        st.session_state["lax_error"] = ""
+    except Exception:
+        st.session_state["lax_result"] = {}
+        st.session_state["lax_error"] = "LAX temporariamente indisponível."
+    st.session_state["lax_signature"] = assinatura
+    return st.session_state.get("lax_result", {})
 
 def _analysis_voice_title(voice):
     """Expande OLA com o mesmo gerador randômico usado pelo marcador < nome_ola >."""
@@ -4363,24 +4503,67 @@ def render_analise_palco(texto):
         unsafe_allow_html=True,
     )
 
+def render_lax_palco(resultado):
+    """Apresenta as duas releituras LAX e sua distância."""
+    if not resultado:
+        st.warning(st.session_state.get("lax_error", "LAX temporariamente indisponível."))
+        return
+    st.markdown("<div style='text-align:center;font-weight:650;margin-bottom:.55rem'>LAX</div>", unsafe_allow_html=True)
+    col_a, col_b = st.columns(2, gap="medium")
+    with col_a:
+        st.markdown("**" + str(resultado.get("a_nome", "A")) + "**")
+        st.write(resultado.get("a", ""))
+    with col_b:
+        st.markdown("**" + str(resultado.get("b_nome", "B")) + "**")
+        st.write(resultado.get("b", ""))
+    if resultado.get("distancia"):
+        st.caption(resultado["distancia"])
+
+def render_conteudo_palco(prefixo, texto, tema, fonte_original=None, render_texto=None):
+    """Contrato único de Retrato, Machina, OLA e LAX."""
+    if show_retrato_no_topo(prefixo):
+        return
+    fonte = fonte_original if fonte_original is not None else texto
+    desenhar = render_texto or (lambda: write_ypoema(texto, None))
+    voz = str(st.session_state.get("voz_analise", "Machina")).upper()
+    if voz not in {"OLA", "LAX"}:
+        desenhar()
+        return
+    col_texto, col_analise = st.columns([1.05, 0.95], gap="large")
+    with col_texto:
+        desenhar()
+    with col_analise:
+        if voz == "OLA":
+            resultado = gerar_analise_atual(fonte, tema)
+            if resultado:
+                render_analise_palco(resultado)
+            else:
+                st.warning(st.session_state.get("ola_error", "OLA temporariamente indisponível."))
+        else:
+            render_lax_palco(gerar_analise_lax(fonte, tema))
+    if st.session_state.pop("analysis_translation_notice", False):
+        st.caption("o texto original foi preservado")
+
 def _analysis_options_for_voice(voice):
     """Retorna as análises disponíveis para a OLA."""
     return OLA_ANALYSIS_OPTIONS if str(voice or "").upper() == "OLA" else []
 
 def _set_analysis_voice(voice):
-    """Seleciona Machina ou OLA e ajusta a lista única."""
+    """Seleção exclusiva: Machina desliga; OLA ou LAX ligam uma análise."""
     voice_key = str(voice or "Machina").strip().upper()
     if voice_key == "OLA":
         st.session_state["voz_analise"] = "OLA"
-        st.session_state["tipo_analise"] = OLA_ANALYSIS_OPTIONS[0]
+        if st.session_state.get("tipo_analise") not in OLA_ANALYSIS_OPTIONS:
+            st.session_state["tipo_analise"] = OLA_ANALYSIS_OPTIONS[0]
+    elif voice_key == "LAX":
+        st.session_state["voz_analise"] = "LAX"
     else:
         st.session_state["voz_analise"] = "Machina"
-        st.session_state["tipo_analise"] = ""
 
 def render_analysis_sidebar_block():
-    """Bloco centralizado: Machina / OLA, somente com a OLA."""
+    """Bloco centralizado e exclusivo: Machina / OLA / LAX."""
     current_key = str(st.session_state.get("voz_analise", "Machina")).upper()
-    if current_key not in {"MACHINA", "OLA"}:
+    if current_key not in {"MACHINA", "OLA", "LAX"}:
         current_key = "MACHINA"
         st.session_state["voz_analise"] = "Machina"
 
@@ -4391,7 +4574,7 @@ def render_analysis_sidebar_block():
         st.session_state["tipo_analise"] = current_kind
 
     _sidebar_host().markdown("<div style='height:1.85rem;'></div>", unsafe_allow_html=True)
-    col_machina, col_ola = _sidebar_host().columns(2)
+    col_machina, col_ola, col_lax = _sidebar_host().columns(3)
 
     with col_machina:
         if st.button(
@@ -4419,6 +4602,14 @@ def render_analysis_sidebar_block():
             except AttributeError:
                 st.experimental_rerun()
 
+    with col_lax:
+        if st.button("LAX", key="analysis_voice_lax_btn", use_container_width=True, type="primary" if current_key == "LAX" else "secondary"):
+            _set_analysis_voice("LAX")
+            try:
+                st.rerun()
+            except AttributeError:
+                st.experimental_rerun()
+
     if options:
         _sidebar_host().markdown("<div style='height:1.42rem;'></div>", unsafe_allow_html=True)
         choice = _sidebar_host().selectbox(
@@ -4429,6 +4620,15 @@ def render_analysis_sidebar_block():
             label_visibility="collapsed",
         )
         st.session_state["tipo_analise"] = choice
+
+    if current_key == "LAX":
+        pares = list(load_lax_pontos_de_vista())
+        if not pares:
+            _sidebar_host().warning(st.session_state.get("lax_catalog_error", "LAX indisponível."))
+            return
+        atual = st.session_state.get("lax_pair") or pares[0]
+        st.session_state["lax_pair"] = _sidebar_host().selectbox("pontos de vista", pares, index=pares.index(atual) if atual in pares else 0, key="lax_pair_select", label_visibility="collapsed")
+        st.session_state["lax_pct_original"] = _sidebar_host().slider("% mínimo original", 20, 80, int(st.session_state.get("lax_pct_original", 45)), 5, key="lax_pct_select")
 
 
 # =============================================================================
@@ -4697,8 +4897,7 @@ def _render_eureka_off(
             # exatamente a imagem visível, como nas demais aparições.
             pass
 
-        if not show_retrato_no_topo("eureka"):
-            write_ypoema(texto_html, None)
+        render_conteudo_palco("eureka", texto_html, nome_tema, fonte_original=texto_plain)
 
     _render_eureka_registro(
         texto_html,
@@ -5066,9 +5265,8 @@ def page_mini():
             st.write("")
 
             if st.session_state.auto == False:
-                if not show_retrato_no_topo("mini"):
-                    with mini_place_holder:
-                        write_ypoema(LOGO_TEXTO, None)
+                with mini_place_holder:
+                    render_conteudo_palco("mini", LOGO_TEXTO, st.session_state.tema, fonte_original=load_lypo())
 
                 st.session_state["mini_palco_xerox_text"] = LOGO_TEXTO
                 st.session_state["mini_palco_xerox_title"] = st.session_state.tema
@@ -5288,20 +5486,7 @@ def page_ypoemas():
             if not st.session_state.pop("ypo_retrato_sidebar_renovada", False):
                 load_image_tema(st.session_state.tema)
 
-            analysis_voice_atual = str(st.session_state.get("voz_analise", "Machina")).upper()
-
-            if show_retrato_no_topo("ypo"):
-                pass
-            elif analysis_voice_atual == "OLA":
-                analise_texto = gerar_analise_atual(LOGO_TEXTO, st.session_state.tema)
-
-                col_poema, col_analise = st.columns([1.05, 0.95], gap="large")
-                with col_poema:
-                    write_ypoema(LOGO_TEXTO, None)
-                with col_analise:
-                    render_analise_palco(analise_texto)
-            else:
-                write_ypoema(LOGO_TEXTO, None)
+            render_conteudo_palco("ypo", LOGO_TEXTO, st.session_state.tema, fonte_original=load_lypo())
 
             st.session_state["ypo_palco_xerox_text"] = LOGO_TEXTO
             st.session_state["ypo_palco_xerox_title"] = st.session_state.get("tema", "")
@@ -5584,8 +5769,7 @@ def page_eureka():
                     if not st.session_state.pop("eureka_retrato_sidebar_renovada", False):
                         load_image_tema(seed_tema)
 
-                    if not show_retrato_no_topo("eureka"):
-                        write_ypoema(LOGO_TEXTO, None)
+                    render_conteudo_palco("eureka", LOGO_TEXTO, seed_tema, fonte_original=load_lypo())
                     update_readings(seed_tema)
 
                 _render_eureka_registro(
@@ -5851,18 +6035,7 @@ def page_off_machina():  # available off_machina_books
             def render_off_texto():
                 write_off_machina_texto(LOGO_TEXTO)
 
-            analysis_voice_atual = str(st.session_state.get("voz_analise", "Machina")).upper()
-            if show_retrato_no_topo("off"):
-                pass
-            elif analysis_voice_atual == "OLA":
-                analise_texto = gerar_analise_atual(LOGO_TEXTO, off_title)
-                col_texto, col_analise = st.columns([1.05, 0.95], gap="large")
-                with col_texto:
-                    render_off_texto()
-                with col_analise:
-                    render_analise_palco(analise_texto)
-            else:
-                render_off_texto()
+            render_conteudo_palco("off", LOGO_TEXTO, off_title, fonte_original=LOGO_TEXTO, render_texto=render_off_texto)
 
             update_readings(off_book_name)
 
@@ -6082,12 +6255,10 @@ def start_machina(app_variant="bypo"):
             ):
                 _SIDEBAR_HOST = st.container(border=False)
                 with _SIDEBAR_HOST:
-                    st.button(
-                        "☰",
-                        key="bypo_menu_close",
-                        on_click=_sidebar_house_toggle,
-                        use_container_width=False,
-                    )
+                    menu_col, hw_col = st.columns([1, 3], gap="small")
+                    with menu_col:
+                        st.button("☰", key="bypo_menu_close", on_click=_sidebar_house_toggle, use_container_width=False)
+                    render_hw_spy(hw_col)
                 sidebar_slot = render_sidebar_for_page(chosen_id)
 
             with st.container(key="bypo_palco_frame", width="stretch", border=True):
@@ -6123,4 +6294,3 @@ def start_machina(app_variant="bypo"):
 
 if __name__ == "__main__":
     start_machina("bypo")
-

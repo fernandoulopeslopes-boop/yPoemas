@@ -1,11 +1,10 @@
 # =============================================================================
-# bypo_cfg.py — BYPO_CFG / MACHINA HORIZONTAL + PÁGINA Z / TOOLS
-# Build 2026-09-13_002 — launcher dedicado / ícone próprio
+# bypo_cfg.py — BYPO_CFG / oficina privada + página Z / TOOLS
+# Build 2026-09-19_005 — entrada CFG do motor BYPO 053
 #
-# - Define a variante antes de importar bypo.py.
-# - Reusa integralmente o BYPO build 048.
-# - Acrescenta exclusivamente a Página Z / TOOLS.
-# - page_icon do CFG = :construction:.
+# - Porta de trabalho LOCAL: importa o motor irmão bypo.py.
+# - Solicita explicitamente a variante bypo_cfg (com Z/TOOLS).
+# - Não publica a página Z na entrada pública bypo.py.
 # =============================================================================
 
 import os
