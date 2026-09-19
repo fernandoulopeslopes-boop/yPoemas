@@ -34,6 +34,7 @@
 # - 051 CFG_ABOUT_MD_FILES: BYPO_CFG lista diretamente /md_files/*.md; ABOUT público continua em base/lista_abouts.txt.
 # - 052 LAX_CFG_PRESERVADO: LAX externo, ampliar retrato e H/W informativo sobre a base 051.
 # - 053 LAX_QUEBRAS_REAIS: normaliza sequências literais de quebra de linha no LAX.
+# - 054 LAX_SECRETS_COMPATIVEIS: aceita formatos simples e aninhados de segredo no www.
 # =============================================================================
 # Leitura da casa:
 # terreno/configuração -> funções/estado/componentes comuns
@@ -78,9 +79,9 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-APP_BUILD = "2026-09-19_BYPO_053_LAX_QUEBRAS_REAIS"
+APP_BUILD = "2026-09-19_BYPO_054_LAX_SECRETS_COMPATIVEIS"
 APP_BUILD_NOTES = (
-    "Base 051 preservada; LAX lê /base e converte quebras escapadas em linhas reais."
+    "Base 051 preservada; LAX lê /base, normaliza linhas e aceita segredos www compatíveis."
 )
 
 APP_VARIANT = "local"
@@ -4360,13 +4361,21 @@ def load_lax_pontos_de_vista():
         return {}
 
 def _lax_api_key():
+    """Lê a chave do ambiente ou dos formatos de secrets já usados pela Machina."""
     valor = str(os.environ.get("OPENAI_API_KEY", "") or "").strip()
     if valor:
         return valor
     try:
-        return str(st.secrets.get("OPENAI_API_KEY", "") or "").strip()
+        valor = str(st.secrets.get("OPENAI_API_KEY", "") or "").strip()
+        if valor:
+            return valor
+        for grupo, nome in (("openai", "api_key"), ("OPENAI", "API_KEY")):
+            valor = str(st.secrets.get(grupo, {}).get(nome, "") or "").strip()
+            if valor:
+                return valor
     except Exception:
-        return ""
+        pass
+    return ""
 
 def _lax_output(payload):
     if isinstance(payload, dict) and isinstance(payload.get("output_text"), str):
