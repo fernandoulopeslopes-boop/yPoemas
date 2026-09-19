@@ -36,6 +36,10 @@
 # - 053 LAX_QUEBRAS_REAIS: normaliza sequências literais de quebra de linha no LAX.
 # - 054 LAX_SECRETS_COMPATIVEIS: aceita formatos simples e aninhados de segredo no www.
 # - 055 LAX_MODELO_OLA: fallback do LAX alinhado ao modelo da ponte OLA no www.
+# - 056 EUREKA_INDICES: busca e lista exibem contagem e posição corrente.
+# - 057 LAX_CABECALHO: os dois pontos de vista ocupam diretamente o cabeçalho.
+# - 058 IFRAME_ATUAL: substitui componentes HTML descontinuados.
+# - 059 GEOMETRIA_SEM_COMPONENTES: remove iframes da estrutura visual do BYPO.
 # =============================================================================
 # Leitura da casa:
 # terreno/configuração -> funções/estado/componentes comuns
@@ -66,7 +70,6 @@ from datetime import datetime
 from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 import streamlit as st
-import streamlit.components.v1 as components
 import dna as dna_core
 # ✅
 
@@ -80,9 +83,9 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-APP_BUILD = "2026-09-19_BYPO_055_LAX_MODELO_OLA"
+APP_BUILD = "2026-09-19_BYPO_059_GEOMETRIA_SEM_COMPONENTES"
 APP_BUILD_NOTES = (
-    "Base 051 preservada; LAX usa o mesmo fallback de modelo da OLA no www."
+    "Base 051 preservada; palco e sidebar não recebem componentes ou iframes."
 )
 
 APP_VARIANT = "local"
@@ -1783,31 +1786,10 @@ def _bypo_render_context_image(chosen_id):
     )
 
 def render_hw_spy(host=None):
-    """H/W reais no topo direito da sidebar; somente leitura."""
+    """Marcador H/W no topo direito, sem componente externo na geometria."""
     target = host if host is not None else _sidebar_host()
     with target:
-        components.html(
-            """
-            <div id="machina-hw-spy">H=--- · W=---</div>
-            <style>
-            html, body { margin:0; padding:0; overflow:hidden; background:transparent; }
-            #machina-hw-spy { width:100%; text-align:right; color:#4b4b4b;
-              font:600 11px/20px ui-monospace, SFMono-Regular, Consolas, monospace;
-              font-variant-numeric:tabular-nums; user-select:none; white-space:nowrap; }
-            </style>
-            <script>
-            (() => {
-              const pw = window.parent, spy = document.getElementById('machina-hw-spy');
-              const update = () => { spy.textContent = `H=${Math.round(pw.innerHeight)} · W=${Math.round(pw.innerWidth)}`; };
-              if (typeof pw.__machinaHwSpyCleanup === 'function') pw.__machinaHwSpyCleanup();
-              update(); pw.addEventListener('resize', update, {passive:true});
-              pw.__machinaHwSpyCleanup = () => pw.removeEventListener('resize', update);
-            })();
-            </script>
-            """,
-            height=22,
-            scrolling=False,
-        )
+        st.markdown("<div style='text-align:right; color:#4b4b4b; font:600 11px/20px monospace;'>H/W</div>", unsafe_allow_html=True)
 
 
 def render_sidebar_for_page(chosen_id):
@@ -3288,73 +3270,9 @@ def count_pacote_copias(texto, qtd_real=None):
     return total_blocos
 
 def copy_pacote_button(texto, token):
-    """Botão HTML/JS: copia de verdade e troca o próprio texto para 'copiado'."""
-    import json
-
-    texto = str(texto or "")
-    js_text = json.dumps(texto, ensure_ascii=False)
-
-    components.html(
-        f"""
-        <div style="font-family:system-ui, sans-serif; padding:0; margin-top:-5px;">
-            <button id="copy_btn_{token}" style="
-                width:100%;
-                min-height:38px;
-                border:1px solid rgba(49,51,63,.22);
-                border-radius:8px;
-                padding:7px 12px;
-                cursor:pointer;
-                background:white;
-                color:rgb(49,51,63);
-                font-size:14px;
-                line-height:1.2;
-                white-space:nowrap;" title="variações">
-                copiar
-            </button>
-        </div>
-        <script>
-        const txt_{token} = {js_text};
-        const btn_{token} = document.getElementById("copy_btn_{token}");
-
-        async function fallbackCopy_{token}(text) {{
-            const ta = document.createElement("textarea");
-            ta.value = text;
-            ta.setAttribute("readonly", "");
-            ta.style.position = "fixed";
-            ta.style.left = "-9999px";
-            ta.style.top = "0";
-            document.body.appendChild(ta);
-            ta.focus();
-            ta.select();
-            const ok = document.execCommand("copy");
-            document.body.removeChild(ta);
-            return ok;
-        }}
-
-        if (btn_{token}) {{
-            btn_{token}.addEventListener("click", async function() {{
-                try {{
-                    if (navigator.clipboard && window.isSecureContext) {{
-                        await navigator.clipboard.writeText(txt_{token});
-                    }} else {{
-                        const ok = await fallbackCopy_{token}(txt_{token});
-                        if (!ok) throw new Error("fallback copy failed");
-                    }}
-                    btn_{token}.innerText = "copiado";
-                }} catch (e) {{
-                    try {{
-                        const ok = await fallbackCopy_{token}(txt_{token});
-                        btn_{token}.innerText = ok ? "copiado" : "copiar";
-                    }} catch (e2) {{
-                        btn_{token}.innerText = "copiar";
-                    }}
-                }}
-            }});
-        }}
-        </script>
-        """,
-        height=48,
-    )
+    """Compatibilidade: mostra o pacote em um popover copiável nativo."""
+    with st.popover("copiar", use_container_width=True):
+        st.code(str(texto or ""), language=None, wrap_lines=True)
 
 def show_pacote_copias(texto, token, qtd_real=None):
     """Mostra o pacote completo para conferência e fallback de cópia."""
@@ -3426,21 +3344,8 @@ def _limpar_retrato_contextual(prefixo):
     limpar_retrato(prefixo)
 
 def focar_retrato_no_palco(anchor_id):
-    """Move o foco visual para o Retrato recém-gerado."""
-    anchor_id = re.sub(r"[^A-Za-z0-9_-]+", "_", str(anchor_id or "retrato_gerado"))
-    components.html(
-        f"""
-        <script>
-        setTimeout(function() {{
-            const alvo = window.parent.document.getElementById({anchor_id!r});
-            if (alvo) {{
-                alvo.scrollIntoView({{behavior: 'smooth', block: 'start'}});
-            }}
-        }}, 80);
-        </script>
-        """,
-        height=0,
-    )
+    """Compatibilidade: o Retrato já permanece no fluxo rolável do palco."""
+    return None
 
 def make_retrato_xerox(prefixo):
     """Usa a imagem visível no Retrato e deixa outra candidata na sidebar."""
@@ -4518,7 +4423,6 @@ def render_lax_palco(resultado):
     if not resultado:
         st.warning(st.session_state.get("lax_error", "LAX temporariamente indisponível."))
         return
-    st.markdown("<div style='text-align:center;font-weight:650;margin-bottom:.55rem'>LAX</div>", unsafe_allow_html=True)
     col_a, col_b = st.columns(2, gap="medium")
     with col_a:
         st.markdown("**" + str(resultado.get("a_nome", "A")) + "**")
@@ -4863,7 +4767,7 @@ def _render_eureka_off(
         indice = int(st.session_state.get("eureka", 0))
         indice = max(0, min(indice, len(options) - 1))
         opt_ocur_key = st.selectbox(
-            "↓  " + str(len(achados)) + " " + info_find,
+            f"tema {indice + 1} / {len(achados)}",
             options,
             index=indice,
             format_func=lambda y: seed_list[y],
@@ -5524,6 +5428,15 @@ def page_ypoemas():
 # =============================================================================
 # < PAGE > 3 — EUREKA
 # =============================================================================
+def _eureka_busca_label(busca, territorio):
+    """Rótulo do campo de busca após o leitor iniciar uma pesquisa."""
+    busca = str(busca or "").strip()
+    if len(busca) < 3:
+        return translate("buscar por...")
+    quantidade = len(ler_pip(busca)) if str(territorio).lower() == "off" else len(load_eureka(busca))
+    return f'↓ {quantidade} "{busca}" em {quantidade} textos'
+
+
 def page_eureka():
     # Mesmo desenho de yPoemas/off-Machina:
     # [ busca ] [ nav_buttons + player compacto ] [ lista de ocorrências ]
@@ -5538,6 +5451,12 @@ def page_eureka():
         seed, nav_area, occurrences = st.columns([3, 4, 3])
         eureka_nav_needs_spacer = True
 
+    eureka_scope = str(st.session_state.get("eureka_scope", "ypo")).lower()
+    if eureka_scope not in ("ypo", "off"):
+        eureka_scope = "ypo"
+        st.session_state["eureka_scope"] = "ypo"
+    busca_label = _eureka_busca_label(st.session_state.get("eureka_find", ""), eureka_scope)
+
     with seed:
         # "o quê" + "onde buscar": input + bloco compacto com 2 chaves.
         try:
@@ -5547,15 +5466,10 @@ def page_eureka():
 
         with busca_col:
             find_what = st.text_input(
-                label=translate("buscar por..."),
+                label=busca_label,
                 key="eureka_find",
                 on_change=_on_eureka_find_change,
             )
-
-        eureka_scope = str(st.session_state.get("eureka_scope", "ypo")).lower()
-        if eureka_scope not in ("ypo", "off"):
-            eureka_scope = "ypo"
-            st.session_state["eureka_scope"] = "ypo"
 
         with scope_col:
             ypo_col, off_col = st.columns([1, 1], gap="small")
@@ -5577,24 +5491,6 @@ def page_eureka():
                     on_click=_set_eureka_scope,
                     args=("off",),
                 )
-
-
-            # Marca apenas estes dois botões no DOM para o CSS acima.
-            components.html(
-                """
-                <script>
-                const doc = window.parent.document;
-                const labels = new Set(["💡", "✒️"]);
-                doc.querySelectorAll('div[data-testid="stButton"] button').forEach((b) => {
-                    if (labels.has((b.innerText || "").trim())) {
-                        b.setAttribute("kind", "eureka-scope");
-                    }
-                });
-                </script>
-                """,
-                height=0,
-            )
-
     with nav_area:
         if eureka_nav_needs_spacer:
             st.markdown(
@@ -5723,10 +5619,12 @@ def page_eureka():
 
             with occurrences:
                 options = list(range(len(seed_list)))
+                indice = int(st.session_state.get("eureka", 0))
+                indice = max(0, min(indice, len(options) - 1))
                 opt_ocur_key = st.selectbox(
-                    "↓  " + str(len(seed_list)) + " " + info_find,
+                    f"tema {indice + 1} / {len(seed_list)}",
                     options,
-                    index=st.session_state.eureka,
+                    index=indice,
                     format_func=lambda y: seed_list[y],
                     key="opt_ocur_key",
                     on_change=_on_eureka_occurrence_change,
