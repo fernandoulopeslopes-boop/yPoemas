@@ -35,6 +35,7 @@
 # - 052 LAX_CFG_PRESERVADO: LAX externo, ampliar retrato e H/W informativo sobre a base 051.
 # - 053 LAX_QUEBRAS_REAIS: normaliza sequências literais de quebra de linha no LAX.
 # - 054 LAX_SECRETS_COMPATIVEIS: aceita formatos simples e aninhados de segredo no www.
+# - 055 LAX_MODELO_OLA: fallback do LAX alinhado ao modelo da ponte OLA no www.
 # =============================================================================
 # Leitura da casa:
 # terreno/configuração -> funções/estado/componentes comuns
@@ -79,9 +80,9 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-APP_BUILD = "2026-09-19_BYPO_054_LAX_SECRETS_COMPATIVEIS"
+APP_BUILD = "2026-09-19_BYPO_055_LAX_MODELO_OLA"
 APP_BUILD_NOTES = (
-    "Base 051 preservada; LAX lê /base, normaliza linhas e aceita segredos www compatíveis."
+    "Base 051 preservada; LAX usa o mesmo fallback de modelo da OLA no www."
 )
 
 APP_VARIANT = "local"
@@ -4432,7 +4433,7 @@ def gerar_analise_lax(ypoema_html, tema):
     nome_a, nome_b = [parte.strip() for parte in par.split("/", 1)]
     vista_a, vista_b = pontos[par]
     prompt = f"""Tema/contexto: {tema}\n\nYPOEMA ORIGINAL:\n{fonte}\n\nPONTO A — {nome_a}: {vista_a}\nPONTO B — {nome_b}: {vista_b}\n\nPRESERVAÇÃO LITERAL MÍNIMA: {pct}%\nRetorne apenas JSON: {{\"a\":\"releitura A\",\"b\":\"releitura B\",\"distancia\":\"frase curta\"}}"""
-    body = {"model": os.environ.get("OPENAI_MODEL_LAX", os.environ.get("OLA_OPENAI_MODEL", "gpt-5-mini")), "instructions": "Você é LAX/PARALAXE da Machina. Releia o mesmo yPoema por duas perspectivas. Preserve sua identidade; não explique o processo.", "input": prompt, "max_output_tokens": 1200, "store": False}
+    body = {"model": os.environ.get("OPENAI_MODEL_LAX", os.environ.get("OLA_OPENAI_MODEL", "gpt-5.6-terra")), "instructions": "Você é LAX/PARALAXE da Machina. Releia o mesmo yPoema por duas perspectivas. Preserve sua identidade; não explique o processo.", "input": prompt, "max_output_tokens": 1200, "store": False}
     request = urllib.request.Request("https://api.openai.com/v1/responses", data=json.dumps(body, ensure_ascii=False).encode("utf-8"), headers={"Content-Type": "application/json", "Authorization": "Bearer " + chave}, method="POST")
     try:
         with urllib.request.urlopen(request, timeout=45) as response:
