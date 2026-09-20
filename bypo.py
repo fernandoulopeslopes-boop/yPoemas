@@ -41,6 +41,7 @@
 # - 058 IFRAME_ATUAL: substitui componentes HTML descontinuados.
 # - 059 GEOMETRIA_SEM_COMPONENTES: remove iframes da estrutura visual do BYPO.
 # - 061 XEROX_LAX: yPoema original seguido das duas leituras LAX.
+# - 062 OFF_MACH_IMAGENS: retrato Off usa somente imagens curadas em /images/off-mach.
 # =============================================================================
 # Leitura da casa:
 # terreno/configuração -> funções/estado/componentes comuns
@@ -84,9 +85,9 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-APP_BUILD = "2026-09-19_BYPO_061_XEROX_LAX_ORIGINAL_PRIMEIRO"
+APP_BUILD = "2026-09-20_BYPO_062_OFF_MACH_IMAGENS"
 APP_BUILD_NOTES = (
-    "Base 051 preservada; Xerox LAX mostra o yPoema e, em seguida, duas leituras."
+    "Base 051 preservada; Xerox LAX e imagens curadas de Off-Machina."
 )
 
 APP_VARIANT = "local"
@@ -3394,17 +3395,8 @@ def make_retrato_xerox(prefixo):
 
     # Depois de gerar o Retrato, oferece outra imagem na sidebar.
     if prefixo == "off":
-        try:
-            book_pos = int(st.session_state.get("off_book", 0))
-            book_name = load_off_livros_list()[book_pos]
-        except (TypeError, ValueError, IndexError):
-            book_name = ""
-        grupo = _off_book_image_group(book_name)
-        images = _images_from_group(grupo) if grupo else _images_from_group("anima")
-        disponiveis = [img for img in images if img != imagem]
-        proxima = random.choice(disponiveis or images) if images else ""
+        proxima = _set_group_sidebar_image_next("off-mach", "off_machina_images_pasta")
         if proxima:
-            st.session_state["off_machina_images_pasta"] = proxima
             st.session_state["off_retrato_sidebar_renovada"] = True
     else:
         tema_contexto = titulo or st.session_state.get("tema", "Fatos") or "Fatos"
@@ -3996,17 +3988,7 @@ def _resolve_off_machina_book_image(book_name):
         return ""
 
     wanted = ("capa_" + info_book + ".jpg").casefold()
-    dirs = [
-
-        _project_path("images", "anima"),
-        _project_path("images"),
-        _project_path("off_machina"),
-        _project_path("off-machina"),
-        _project_path("images", "off_machina"),
-        _project_path("images", "off-machina"),
-        _project_path("images", "livros"),
-        _project_path("images", "books"),
-    ]
+    dirs = [_project_path("images", "off-mach")]
     for folder in dirs:
         if not os.path.isdir(folder):
             continue
@@ -4050,8 +4032,8 @@ def _set_off_anima_image_next():
     return _set_group_sidebar_image_next("anima", "off_machina_images_pasta")
 
 def _set_off_book_group_image_next(book_name):
-    st.session_state["off_machina_images_pasta"] = ""
-    return ""
+    """Imagem contextual do Off: apenas curadoria física de /images/off-mach."""
+    return _set_group_sidebar_image_next("off-mach", "off_machina_images_pasta")
 
 def render_sidebar_image_fit(image_path):
     """Renderiza imagem contextual da sidebar em quadro fixo 240x360, sem faixa branca."""
@@ -5867,9 +5849,6 @@ def page_off_machina():  # available off_machina_books
     if st.session_state.get("off_retrato_keep_palco", False):
         # Retrato já capturou a imagem anterior e preparou a próxima para a sidebar.
         st.session_state.pop("off_retrato_sidebar_renovada", None)
-    elif st.session_state.off_take == 0:
-        st.session_state["off_machina_images_pasta"] = _resolve_off_machina_book_image(off_book_name)
-        st.session_state["off_sidebar_image_context"] = off_sidebar_contexto
     elif (
         tuple(st.session_state.get("off_sidebar_image_context") or ()) != off_sidebar_contexto
         or not st.session_state.get("off_machina_images_pasta")
