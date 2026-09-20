@@ -1,6 +1,6 @@
 # =============================================================================
 # tools.py — MACHINA / PÁGINA Z / TOOLS
-# Build 2026-09-13_002 — PAGINA_Z_GRUPOS_TOOLS
+# Build 2026-09-20_005 — BUILD_BOOKS_LISTA_INTEIRA
 #
 # - Página Z reorganizada em quatro grupos identificados: temas, construtores, padronização e ferramentas.
 # - build_utf-8 retirado da Página Z; rotina local descartada.
@@ -8,6 +8,7 @@
 # - Nenhuma ação de TOOLS usa cwd, /mount/src, deploy, www ou cópia do repo como raiz.
 # - Ao entrar em TOOLS, o cwd operacional é temporariamente C:\\ypo.
 # - Se C:\\ypo não estiver fisicamente acessível, a ação é bloqueada explicitamente.
+# - build_books cria cópias TXT locais a partir de listas .doc em C:\\ypo\\books.
 # =============================================================================
 """Tools — central local de ferramentas e garantias da Machina.
 
@@ -2304,6 +2305,103 @@ def render_resize_images_tool():
         except Exception as exc:
             st.error(f"resize_images falhou: {exc}")
 
+
+def _books_dir():
+    """Diretório físico exclusivo dos livros preparados para leitura."""
+    _tools_require_root()
+    pasta = _tools_path("books")
+    if not os.path.isdir(pasta):
+        raise FileNotFoundError("build_books exige a pasta local C:\\ypo\\books")
+    return pasta
+
+
+def _books_listas():
+    """Cada arquivo .doc em /books é a lista autoral de uma edição."""
+    pasta = _books_dir()
+    listas = []
+    for nome in os.listdir(pasta):
+        nome_livro, extensao = os.path.splitext(nome)
+        caminho = os.path.join(pasta, nome)
+        if extensao.casefold() == ".doc" and nome_livro.strip() and os.path.isfile(caminho):
+            listas.append((nome_livro.strip(), caminho))
+    return sorted(listas, key=lambda item: item[0].casefold())
+
+
+def _books_temas(caminho_lista):
+    """Preserva a ordem do .doc; somente linhas vazias são ignoradas."""
+    with open(caminho_lista, encoding="utf-8-sig") as arquivo:
+        return [linha.strip() for linha in arquivo if linha.strip()]
+
+
+def _books_proxima_copia(pasta, nome_livro):
+    padrao = re.compile(r"^" + re.escape(nome_livro) + r"_(\d+)\.txt$", re.IGNORECASE)
+    copias = []
+    for nome in os.listdir(pasta):
+        achou = padrao.match(nome)
+        if achou:
+            copias.append(int(achou.group(1)))
+    return max(copias, default=0) + 1
+
+
+def _books_pagina(nome_tema, numero_pagina):
+    gerar = globals().get("_gerar_ypoema_texto_cru")
+    remover_titulo = globals().get("_remover_titulo_inicial_duplicado")
+    if not callable(gerar) or not callable(remover_titulo):
+        raise RuntimeError("build_books não recebeu o motor de yPoemas")
+    poema = remover_titulo(gerar(nome_tema), nome_tema)
+    return "\n\n".join((str(nome_tema), poema, f"=----------< {numero_pagina} >----------="))
+
+
+def write_livro(nome_do_livro):
+    """Gera cópia TXT local sem alterar a lista .doc nem qualquer tema."""
+    nome_do_livro = str(nome_do_livro or "").strip()
+    listas = dict(_books_listas())
+    caminho_lista = listas.get(nome_do_livro)
+    if not caminho_lista:
+        raise FileNotFoundError("lista .doc do livro não encontrada em C:\\ypo\\books")
+    temas = _books_temas(caminho_lista)
+    if not temas:
+        raise ValueError("a lista .doc não contém temas")
+
+    paginas = [_books_pagina(tema, pagina) for pagina, tema in enumerate(temas, start=1)]
+    pasta = _books_dir()
+    numero_copia = _books_proxima_copia(pasta, nome_do_livro)
+    destino = os.path.join(pasta, f"{nome_do_livro}_{numero_copia}.txt")
+    temporario = destino + ".tmp"
+    try:
+        with open(temporario, "w", encoding="utf-8", newline="\n") as arquivo:
+            arquivo.write("\n\n".join(paginas))
+        os.replace(temporario, destino)
+    except Exception:
+        try:
+            if os.path.exists(temporario):
+                os.remove(temporario)
+        finally:
+            raise
+    return destino, len(paginas)
+
+
+def render_build_books_tool():
+    """Interface única de build_books dentro do grupo ferramentas."""
+    try:
+        listas = _books_listas()
+    except OSError as erro:
+        st.error(str(erro))
+        return
+    if not listas:
+        st.info("Inclua em C:\\ypo\\books uma lista .doc com um tema por linha.")
+        return
+
+    nomes = [nome for nome, _caminho in listas]
+    nome_livro = st.selectbox("livro", nomes, key="build_books_livro")
+    if st.button("build_books", use_container_width=True):
+        try:
+            destino, paginas = write_livro(nome_livro)
+            st.success(f"{paginas} página(s) gravada(s).")
+            st.caption(os.path.relpath(destino, _tools_root()).replace("\\", "/"))
+        except Exception as erro:
+            st.error(f"build_books falhou: {erro}")
+
 def _tools_help_text():
     return """help_? — Tools da Machina
 
@@ -2365,6 +2463,10 @@ resize_images
 
 build_rimas
   Off Sina: extrai palavras únicas e gera mapa de rimas para curadoria.
+
+build_books
+  Gera em C:\\ypo\\books uma cópia TXT integral, na ordem da lista .doc do
+  livro. O último divisor numerado informa o total de páginas.
 """
 
 
@@ -2396,6 +2498,7 @@ def page_tools():
             ("atelier", "atelier"),
             ("resize_images", "resize_images"),
             ("build_rimas", "build_rimas"),
+            ("build_books", "build_books"),
         ],
     }
 
@@ -2479,6 +2582,9 @@ def page_tools():
 
     if escolha == "build_rimas":
         render_build_rimas_tool()
+        return
+    if escolha == "build_books":
+        render_build_books_tool()
         return
     if escolha == "make_pip":
         render_make_pip_tool()
