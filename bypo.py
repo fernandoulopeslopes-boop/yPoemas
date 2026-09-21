@@ -42,6 +42,19 @@
 # - 059 GEOMETRIA_SEM_COMPONENTES: remove iframes da estrutura visual do BYPO.
 # - 061 XEROX_LAX: yPoema original seguido das duas leituras LAX.
 # - 062 OFF_MACH_IMAGENS: retrato Off usa somente imagens curadas em /images/off-mach.
+# - 063 GRAFICA_OFF_MEM: caneta baixa livro Off em TXT; MÉM passa a guiar o CAE.
+# - 064 GRAFICA_LICENSE_MD_FILES: licença autoral lida de /md_files.
+# - 065 GRAFICA_LICENSE_RESOLVE: licença resolve pelo localizador físico de md_files.
+# - 068 GRAFICA_RESOLVEDOR_ABOUT: Gráfica reutiliza o resolvedor físico da página ABOUT.
+# - 069 GRAFICA_LEITURA_COMPARTILHADA: ABOUT e Gráfica usam a mesma abertura crua de MD.
+# - 070 GRAFICA_PIP_CORINGA: |@ Tema| usa o motor normal da Machina na impressão Off.
+# - 071 OFF_MACH_CAPA: ficha catalográfica abre com a capa física do livro.
+# - 073 OFF_MACH_CAPA_STEM: capa substitui somente .Pip por .JPG.
+# - 074 OFF_MACH_CAPA_MESMA_PASTA: capa é buscada na pasta física do próprio .Pip.
+# - 075 HW_REAL_RESPIRO_SIDEBAR: H/W lê a viewport em slot isolado; imagem lateral respira no rodapé.
+# - 076 RETRATO_ENDERECO_CERTO: ações do palco viram régua fixa à esquerda do texto.
+# - 077 GRAFICA_ESCOLHA_DO_LEITOR: caneta Off mostra o livro; salvar é decisão explícita.
+# - 078 GRAFICA_PRINT_ATUAL: livro-vivo congelado reutiliza a régua e a navegação o cancela.
 # =============================================================================
 # Leitura da casa:
 # terreno/configuração -> funções/estado/componentes comuns
@@ -72,6 +85,7 @@ from datetime import datetime
 from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 import streamlit as st
+from streamlit.components import v1 as components
 import dna as dna_core
 # ✅
 
@@ -85,9 +99,10 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-APP_BUILD = "2026-09-20_BYPO_062_OFF_MACH_IMAGENS"
+APP_BUILD = "2026-09-21_BYPO_078_GRAFICA_PRINT_ATUAL"
 APP_BUILD_NOTES = (
-    "Base 051 preservada; Xerox LAX e imagens curadas de Off-Machina."
+    "Base 051 preservada; print_atual Off reutiliza a régua e congela o livro-vivo; "
+    "navegação cancela o print."
 )
 
 APP_VARIANT = "local"
@@ -413,7 +428,7 @@ def apply_styles():
             max-width: 200px !important;
             aspect-ratio: 2 / 3 !important;
             height: auto !important;
-            margin: 0 auto !important;
+            margin: 0 auto 0.35rem auto !important;
             padding: 0 !important;
             overflow: hidden !important;
             border-radius: 8px !important;
@@ -783,14 +798,14 @@ def apply_bypo_styles():
             max-width:100% !important;
             max-height:calc(100dvh - 170px) !important;
             object-fit:contain !important;
-            margin:0 auto !important;
+            margin:0 auto 0.35rem auto !important;
         }
         .st-key-bypo_sidebar_frame .machina-sidebar-image-frame {
             width:min(200px, 100%) !important;
             max-width:200px !important;
             aspect-ratio:2 / 3 !important;
             height:auto !important;
-            margin:0 auto !important;
+            margin:0 auto 0.35rem auto !important;
         }
         .st-key-bypo_page_menu div[data-testid="stButton"] button {
             min-height:2.25rem !important;
@@ -801,18 +816,27 @@ def apply_bypo_styles():
             padding-left:0.45rem !important;
             padding-right:0.45rem !important;
         }
-        [class*="st-key-bypo_text_actions_"] button {
-            background:transparent !important;
-            border:0 !important;
-            box-shadow:none !important;
-            min-height:1.6rem !important;
-            padding:0.05rem 0.20rem !important;
-            font-weight:400 !important;
+        [class*="st-key-bypo_action_rail_"] {
+            position:sticky !important;
+            top:0 !important;
+            align-self:start !important;
+            z-index:2 !important;
+            padding-top:0.02rem !important;
         }
-        [class*="st-key-bypo_text_actions_"] [data-testid="stPopover"] button,
-        [class*="st-key-bypo_text_actions_"] [data-testid="stDownloadButton"] button {
-            background:transparent !important;
-            border:0 !important;
+        [class*="st-key-bypo_action_rail_"] button {
+            min-height:1.55rem !important;
+            padding:0.05rem 0.30rem !important;
+            font-size:0.76rem !important;
+            font-weight:400 !important;
+            color:#303030 !important;
+            background:rgba(255,255,255,.86) !important;
+            border:1px solid rgba(0,0,0,.28) !important;
+            border-radius:3px !important;
+            box-shadow:none !important;
+        }
+        [class*="st-key-bypo_action_rail_"] [data-testid="stPopover"] button,
+        [class*="st-key-bypo_action_rail_"] [data-testid="stDownloadButton"] button {
+            border:1px solid rgba(0,0,0,.28) !important;
             box-shadow:none !important;
         }
         </style>
@@ -841,6 +865,8 @@ def init_session_state():
         "tema": "Fatos",
         "off_book": 0,
         "off_take": 0,
+        "off_print_current": None,
+        "off_print_error": "",
         "eureka": 0,
         "eureka_scope": "ypo",
         "poly_lang": "ca",
@@ -1279,12 +1305,19 @@ def translate_document(input_text):
     return translate_content(input_text)
 
 _SIDEBAR_HOST = None
+_STAGE_ACTION_HOST = None
 
 
 def _sidebar_host():
     if _SIDEBAR_HOST is None:
         raise RuntimeError("casa da sidebar ainda não foi montada")
     return _SIDEBAR_HOST
+
+
+def _stage_action_host():
+    if _STAGE_ACTION_HOST is None:
+        raise RuntimeError("régua de ações do palco ainda não foi montada")
+    return _STAGE_ACTION_HOST
 
 
 def _sidebar_house_toggle():
@@ -1788,10 +1821,39 @@ def _bypo_render_context_image(chosen_id):
     )
 
 def render_hw_spy(host=None):
-    """Marcador H/W no topo direito, sem componente externo na geometria."""
+    """Mostra H/W reais do navegador em um slot fixo, sem alterar a geometria."""
     target = host if host is not None else _sidebar_host()
     with target:
-        st.markdown("<div style='text-align:right; color:#4b4b4b; font:600 11px/20px monospace;'>H/W</div>", unsafe_allow_html=True)
+        components.html(
+            """
+            <div id="machina-hw-spy">H=--- · W=---</div>
+            <style>
+            html, body { margin:0; padding:0; overflow:hidden; background:transparent; }
+            #machina-hw-spy {
+                width:100%; text-align:right; color:#4b4b4b;
+                font:600 11px/20px ui-monospace, SFMono-Regular, Consolas, monospace;
+                font-variant-numeric:tabular-nums; user-select:none; white-space:nowrap;
+            }
+            </style>
+            <script>
+            (() => {
+                const parentWindow = window.parent;
+                const spy = document.getElementById('machina-hw-spy');
+                const update = () => {
+                    spy.textContent = `H=${Math.round(parentWindow.innerHeight)} · W=${Math.round(parentWindow.innerWidth)}`;
+                };
+                if (typeof parentWindow.__machinaHwSpyCleanup === 'function') {
+                    parentWindow.__machinaHwSpyCleanup();
+                }
+                update();
+                parentWindow.addEventListener('resize', update, {passive:true});
+                parentWindow.__machinaHwSpyCleanup = () => parentWindow.removeEventListener('resize', update);
+            })();
+            </script>
+            """,
+            height=22,
+            scrolling=False,
+        )
 
 
 def render_sidebar_for_page(chosen_id):
@@ -2166,6 +2228,98 @@ def _pip_line_to_text(line):
         texto = texto[:-1]
     texto = _recuo_autoral_at(texto)
     return _trim_blank_edges_preservando_recuo(texto.split("|"))
+
+
+def _pip_coringa_tema(line):
+    """Retorna o tema de |@ Tema|; demais linhas .Pip permanecem literais."""
+    cells = str(line or "").rstrip("\n").split("|")
+    primeiro = cells[1] if len(cells) > 1 else ""
+    marker = primeiro.lstrip()
+    return marker[1:].strip() if marker.startswith("@") else ""
+
+
+def _off_book_print_payload(book):
+    """Monta o TXT do livro Off selecionado, sem criar arquivo no servidor."""
+    registros = []
+    for line in load_off_book(book):
+        tema_coringa = _pip_coringa_tema(line)
+        registros.append(
+            _gerar_ypoema_texto_cru(tema_coringa)
+            if tema_coringa else _pip_line_to_text(line)
+        )
+    registros = [texto for texto in registros if str(texto).strip()]
+    if not registros:
+        return b"", "livro Off sem registros imprimíveis"
+
+    license_text = _read_md_catalog_file_raw("ABOUT_license.md")
+    if license_text is None:
+        return b"", "ABOUT_license.md não pode ser aberto"
+    license_text = license_text.strip()
+    if not license_text:
+        return b"", "ABOUT_license.md está vazio"
+
+    texto_livro = "\n\n___\n\n".join(registros)
+    texto_final = texto_livro + "\n\n___\n\n" + license_text + "\n"
+    return texto_final.encode("utf-8"), ""
+
+
+def _off_book_print_filename(book):
+    """Nome seguro para o download; o título autoral do livro permanece no TXT."""
+    base_name = re.sub(r"[^\w.-]+", "_", str(book or "livro_off"), flags=re.UNICODE).strip("._")
+    return (base_name or "livro_off") + ".txt"
+
+
+def _clear_off_print_current():
+    """Encerra o print temporário ao leitor retomar a navegação Off."""
+    st.session_state["off_print_current"] = None
+    st.session_state["off_print_error"] = ""
+    limpar_retrato("off_print")
+
+
+def _open_off_print_current(book):
+    """Gera uma vez o livro-vivo que a régua Off irá copiar, retratar ou salvar."""
+    payload, error = _off_book_print_payload(book)
+    if not payload:
+        st.session_state["off_print_current"] = None
+        st.session_state["off_print_error"] = str(error or "livro indisponível")
+        return False
+
+    linhas = load_off_book(book)
+    catalogacao = _pip_line_to_text(linhas[0]) if linhas else ""
+    st.session_state["off_print_current"] = {
+        "book": str(book),
+        "payload": payload,
+        "text": payload.decode("utf-8", errors="replace"),
+        "filename": _off_book_print_filename(book),
+        "catalogacao": catalogacao,
+    }
+    st.session_state["off_print_error"] = ""
+    limpar_retrato("off_print")
+    return True
+
+
+def _make_off_print_cover_retrato():
+    """Coloca a capa física e a catalogação do print_atual dentro do palco."""
+    current = st.session_state.get("off_print_current") or {}
+    book = str(current.get("book", "")).strip()
+    cover_path = _resolve_off_machina_book_image(book)
+    if not cover_path:
+        st.session_state["off_print_error"] = "capa do livro indisponível"
+        return False
+    try:
+        with open(cover_path, "rb") as file:
+            cover = file.read()
+    except OSError:
+        st.session_state["off_print_error"] = "capa do livro indisponível"
+        return False
+
+    st.session_state["off_print_imagem_retrato"] = cover
+    st.session_state["off_print_nome_retrato"] = _off_book_print_filename(book).rsplit(".", 1)[0]
+    st.session_state["off_print_catalogacao"] = str(current.get("catalogacao", ""))
+    st.session_state["off_print_contexto_retrato"] = (book, str(current.get("filename", "")))
+    st.session_state["off_print_retrato_focus"] = True
+    st.session_state["off_print_retrato_keep_palco"] = True
+    return True
 
 def _markdown_links_to_html(texto):
     """Preserva links markdown [texto](url) dentro do HTML seguro do Off-Machina."""
@@ -3329,6 +3483,7 @@ def limpar_retrato(prefixo):
         "contexto_retrato",
         "retrato_keep_palco",
         "retrato_origem_image",
+        "catalogacao",
     ):
         st.session_state.pop(f"{prefixo}_{nome}", None)
 
@@ -3417,6 +3572,9 @@ def show_retrato_no_topo(prefixo):
 
     # O Retrato pertence ao quadrado do palco; nunca toma a viewport inteira.
     with st.container(key=f"bypo_portrait_view_{prefixo}", border=False):
+        catalogacao = str(st.session_state.get(f"{prefixo}_catalogacao", "")).strip()
+        if catalogacao:
+            st.caption(catalogacao)
         st.image(png)
     st.session_state.pop(f"{prefixo}_retrato_focus", None)
     return True
@@ -3459,60 +3617,64 @@ def _xerox_lax_texto(texto_original):
     return str(texto_original or "") + "\n\n___\n\n" + leituras
 
 
-def show_copy_retrato_xerox(prefixo, texto_copia):
-    """Rodapé do texto; Xerox aparece apenas com resultado LAX válido."""
+def show_copy_retrato_xerox(
+    prefixo,
+    texto_copia,
+    retrato_callback=None,
+    permitir_ampliar=True,
+    salvar_data=None,
+    salvar_nome=None,
+    incluir_xerox=True,
+):
+    """Régua fixa do texto; Xerox aparece apenas com resultado LAX válido."""
     _copiar_popover_sem_seta()
     png = st.session_state.get(f"{prefixo}_imagem_retrato")
-    xerox = _xerox_lax_texto(texto_copia) if str(st.session_state.get("voz_analise", "")).upper() == "LAX" else ""
+    xerox = _xerox_lax_texto(texto_copia) if incluir_xerox and str(st.session_state.get("voz_analise", "")).upper() == "LAX" else ""
 
-    with st.container(key=f"bypo_text_actions_{prefixo}", border=False):
-        st.markdown("<div style='height:0.35rem'></div>", unsafe_allow_html=True)
-        margem_esq, bloco_acoes, margem_dir = st.columns([1.4, 7.2, 1.4], gap="small")
-        with bloco_acoes:
-            acoes = st.columns(5 if xerox else 4, gap="small")
-            if xerox:
-                with acoes[0]:
-                    with st.popover("xerox", use_container_width=True):
-                        st.code(xerox, language=None, wrap_lines=True)
-            deslocamento = 1 if xerox else 0
-            copy_col, retrato_col, ampliar_col, salvar_col = acoes[deslocamento:deslocamento + 4]
-            with copy_col:
-                with st.popover("copiar", use_container_width=True):
-                    st.code(str(texto_copia or ""), language=None, wrap_lines=True)
-            with retrato_col:
-                retrato_clicked = st.button(
-                    "retrato",
-                    key=f"{prefixo}_retrato_btn",
-                    use_container_width=True,
-                )
-                if retrato_clicked:
-                    make_retrato_xerox(prefixo)
-                    st.rerun()
-            with ampliar_col:
-                if png:
-                    if st.button("ampliar", key=f"{prefixo}_retrato_ampliar", use_container_width=True):
-                        ampliar_retrato(png)
-                else:
-                    st.button("ampliar", key=f"{prefixo}_retrato_ampliar_wait", use_container_width=True, disabled=True)
-            with salvar_col:
-                if png:
-                    st.download_button(
-                        "salvar",
-                        data=png,
-                        file_name=f"{st.session_state.get(f'{prefixo}_nome_retrato', 'retrato')}.png",
-                        mime="image/png",
-                        key=f"{prefixo}_retrato_save",
-                        use_container_width=True,
-                        on_click="ignore",
-                    )
-                else:
-                    st.button(
-                        "salvar",
-                        key=f"{prefixo}_retrato_save_wait",
-                        use_container_width=True,
-                        disabled=True,
-                    )
-        st.markdown("<div style='height:0.25rem'></div>", unsafe_allow_html=True)
+    with _stage_action_host().container(key=f"bypo_action_rail_{prefixo}", border=False):
+        # A ordem destas quatro linhas é a régua do leitor: título, branco,
+        # primeiro verso e segundo verso. Xerox não desloca essa referência.
+        with st.popover("copiar", use_container_width=True):
+            st.code(str(texto_copia or ""), language=None, wrap_lines=True)
+        retrato_clicked = st.button(
+            "retrato",
+            key=f"{prefixo}_retrato_btn",
+            use_container_width=True,
+        )
+        if retrato_clicked:
+            if retrato_callback is not None:
+                retrato_callback()
+            else:
+                make_retrato_xerox(prefixo)
+            st.rerun()
+        if png and permitir_ampliar:
+            if st.button("ampliar", key=f"{prefixo}_retrato_ampliar", use_container_width=True):
+                ampliar_retrato(png)
+        else:
+            st.button("ampliar", key=f"{prefixo}_retrato_ampliar_wait", use_container_width=True, disabled=True)
+        dados_para_salvar = salvar_data if salvar_data is not None else png
+        nome_para_salvar = salvar_nome or f"{st.session_state.get(f'{prefixo}_nome_retrato', 'retrato')}.png"
+        mime_para_salvar = "text/plain;charset=utf-8" if salvar_data is not None else "image/png"
+        if dados_para_salvar:
+            st.download_button(
+                "salvar",
+                data=dados_para_salvar,
+                file_name=nome_para_salvar,
+                mime=mime_para_salvar,
+                key=f"{prefixo}_retrato_save",
+                use_container_width=True,
+                on_click="ignore",
+            )
+        else:
+            st.button(
+                "salvar",
+                key=f"{prefixo}_retrato_save_wait",
+                use_container_width=True,
+                disabled=True,
+            )
+        if xerox:
+            with st.popover("xerox", use_container_width=True):
+                st.code(xerox, language=None, wrap_lines=True)
 
 def _retrato_logo_yp(size):
     """Retorna o yP original no tamanho de teste, sem suavizar seus pixels."""
@@ -3982,21 +4144,21 @@ def load_image_tema(nome_tema):
     return logo or ""
 
 def _resolve_off_machina_book_image(book_name):
-    """Localiza capa_<info_book>.jpg com comparação segura de caixa/Unicode."""
-    info_book = os.path.splitext(os.path.basename(str(book_name or "").strip()))[0]
-    if not info_book:
+    """Localiza capa_<livro>.jpg na mesma pasta física do arquivo .Pip."""
+    pip_path = _off_book_path(book_name)
+    pip_dir = os.path.dirname(pip_path)
+    info_book = str(book_name or "").strip()
+    if not pip_dir or not info_book:
         return ""
 
-    wanted = ("capa_" + info_book + ".jpg").casefold()
-    dirs = [_project_path("images", "off-mach")]
-    for folder in dirs:
-        if not os.path.isdir(folder):
-            continue
-        for real_name in os.listdir(folder):
-            if real_name.casefold() == wanted:
-                path = os.path.join(folder, real_name)
-                if os.path.isfile(path):
-                    return path
+    wanted = ("capa_" + info_book + ".JPG").casefold()
+    if not os.path.isdir(pip_dir):
+        return ""
+    for real_name in os.listdir(pip_dir):
+        if real_name.casefold() == wanted:
+            path = os.path.join(pip_dir, real_name)
+            if os.path.isfile(path):
+                return path
     return ""
 
 def _images_from_group(group_name):
@@ -4438,30 +4600,35 @@ def render_lax_palco(resultado):
     if resultado.get("distancia"):
         st.caption(resultado["distancia"])
 
-def render_conteudo_palco(prefixo, texto, tema, fonte_original=None, render_texto=None):
+def render_conteudo_palco(prefixo, texto, tema, fonte_original=None, render_texto=None, permitir_analise=True):
     """Contrato único de Retrato, Machina, OLA e LAX."""
-    if show_retrato_no_topo(prefixo):
-        return
-    fonte = fonte_original if fonte_original is not None else texto
-    desenhar = render_texto or (lambda: write_ypoema(texto, None))
-    voz = str(st.session_state.get("voz_analise", "Machina")).upper()
-    if voz not in {"OLA", "LAX"}:
-        desenhar()
-        return
-    col_texto, col_analise = st.columns([1.05, 0.95], gap="large")
-    with col_texto:
-        desenhar()
-    with col_analise:
-        if voz == "OLA":
-            resultado = gerar_analise_atual(fonte, tema)
-            if resultado:
-                render_analise_palco(resultado)
+    global _STAGE_ACTION_HOST
+    col_acoes, col_conteudo = st.columns([1.25, 8.75], gap="small", vertical_alignment="top")
+    with col_acoes:
+        _STAGE_ACTION_HOST = st.container(border=False)
+    with col_conteudo:
+        if show_retrato_no_topo(prefixo):
+            return
+        fonte = fonte_original if fonte_original is not None else texto
+        desenhar = render_texto or (lambda: write_ypoema(texto, None))
+        voz = str(st.session_state.get("voz_analise", "Machina")).upper()
+        if not permitir_analise or voz not in {"OLA", "LAX"}:
+            desenhar()
+            return
+        col_texto, col_analise = st.columns([1.05, 0.95], gap="large")
+        with col_texto:
+            desenhar()
+        with col_analise:
+            if voz == "OLA":
+                resultado = gerar_analise_atual(fonte, tema)
+                if resultado:
+                    render_analise_palco(resultado)
+                else:
+                    st.warning(st.session_state.get("ola_error", "OLA temporariamente indisponível."))
             else:
-                st.warning(st.session_state.get("ola_error", "OLA temporariamente indisponível."))
-        else:
-            render_lax_palco(gerar_analise_lax(fonte, tema))
-    if st.session_state.pop("analysis_translation_notice", False):
-        st.caption("o texto original foi preservado")
+                render_lax_palco(gerar_analise_lax(fonte, tema))
+        if st.session_state.pop("analysis_translation_notice", False):
+            st.caption("o texto original foi preservado")
 
 def _analysis_options_for_voice(voice):
     """Retorna as análises disponíveis para a OLA."""
@@ -5046,20 +5213,25 @@ def _md_catalog_exact_path(file_name):
         return matches[0]
     return ""
 
-def _load_md_catalog_file(file_spec):
-    """Abre a primeira alternativa existente indicada por md_files.txt."""
-    attempted = []
+def _read_md_catalog_file_raw(file_spec):
+    """Abre MD do catálogo uma vez, sem traduzir nem criar bloqueio paralelo."""
     for file_name in _md_catalog_name_candidates(file_spec):
-        attempted.append(file_name)
         path = _md_catalog_exact_path(file_name)
         if not path:
             continue
         try:
             with open(path, encoding="utf-8-sig") as file:
-                return translate_document(file.read())
+                return file.read()
         except (OSError, UnicodeError):
-
             continue
+    return None
+
+
+def _load_md_catalog_file(file_spec):
+    """Abre a primeira alternativa existente indicada por md_files.txt."""
+    file_text = _read_md_catalog_file_raw(file_spec)
+    if file_text is not None:
+        return translate_document(file_text)
 
     return translate(
         "ooops... arquivo ( " + str(file_spec) + " ) não pode ser aberto."
@@ -5752,6 +5924,7 @@ def page_off_machina():  # available off_machina_books
         )
 
     if opt_off_book != st.session_state.off_book:
+        _clear_off_print_current()
         limpar_retrato_off()
         st.session_state.off_book = opt_off_book
         st.session_state.off_take = 0
@@ -5782,15 +5955,28 @@ def page_off_machina():  # available off_machina_books
         rand = nav_cols[0].button("*", use_container_width=True)
         last = nav_cols[1].button("<", use_container_width=True)
         # A terceira posição pertence ao + nas páginas que geram variações.
-        # Off-Machina não gera variações: o botão simplesmente não nasce.
+        # Off-Machina usa esse quadrado para a Gráfica: abre o print_atual.
         with nav_cols[2]:
-            pass
+            abrir_print = st.button(
+                "✒️",
+                key="off_print_book_btn",
+                help="livro",
+                use_container_width=True,
+            )
         nest = nav_cols[3].button(">", use_container_width=True)
-        if nav_cols[4].button("♫", key="off_voz_btn", use_container_width=True):
+        voz_clicked = nav_cols[4].button("♫", key="off_voz_btn", use_container_width=True)
+        if voz_clicked:
             st.session_state.talk = not st.session_state.talk
         manu = nav_cols[5].button("?", use_container_width=True)
 
         off_voz_slot = render_voz_slot()
+
+    if abrir_print:
+        if _open_off_print_current(off_book_name):
+            st.rerun()
+
+    if any((last, rand, nest, voz_clicked, manu)):
+        _clear_off_print_current()
 
     if manu:
         limpar_retrato_off()
@@ -5839,8 +6025,42 @@ def page_off_machina():  # available off_machina_books
         )
 
     if opt_off_take != st.session_state.off_take:
+        _clear_off_print_current()
         limpar_retrato_off()
         st.session_state.off_take = opt_off_take
+
+    print_atual = st.session_state.get("off_print_current") or {}
+    if print_atual:
+        texto_livro = str(print_atual.get("text", ""))
+        nome_livro = str(print_atual.get("book", off_book_name))
+        payload_livro = print_atual.get("payload", b"")
+
+        def render_print_atual():
+            write_livro_vivo_texto(texto_livro)
+
+        render_conteudo_palco(
+            "off_print",
+            texto_livro,
+            nome_livro,
+            fonte_original=texto_livro,
+            render_texto=render_print_atual,
+            permitir_analise=False,
+        )
+        show_copy_retrato_xerox(
+            "off_print",
+            texto_livro,
+            retrato_callback=_make_off_print_cover_retrato,
+            permitir_ampliar=False,
+            salvar_data=payload_livro,
+            salvar_nome=str(print_atual.get("filename", _off_book_print_filename(nome_livro))),
+            incluir_xerox=False,
+        )
+        if st.session_state.get("off_print_error"):
+            st.warning(st.session_state["off_print_error"])
+        return
+
+    if st.session_state.get("off_print_error"):
+        st.warning(st.session_state["off_print_error"])
 
     off_sidebar_contexto = (
         int(st.session_state.get("off_book", 0)),
@@ -5853,7 +6073,10 @@ def page_off_machina():  # available off_machina_books
         tuple(st.session_state.get("off_sidebar_image_context") or ()) != off_sidebar_contexto
         or not st.session_state.get("off_machina_images_pasta")
     ):
-        _set_off_book_group_image_next(off_book_name)
+        if st.session_state.off_take == 0:
+            st.session_state["off_machina_images_pasta"] = _resolve_off_machina_book_image(off_book_name)
+        else:
+            _set_off_book_group_image_next(off_book_name)
         st.session_state["off_sidebar_image_context"] = off_sidebar_contexto
 
     off_retrato_contexto_atual = (
@@ -5888,7 +6111,6 @@ def page_off_machina():  # available off_machina_books
         off_machina_expander = st.expander(what_book, True)
         with off_machina_expander:
             off_book_text = ""
-            pipe_line = this_off_book[st.session_state.off_take].split("|")
             off_xerox_contexto = (
                 int(st.session_state.get("off_book", 0)),
                 int(st.session_state.get("off_take", 0)),
@@ -5899,12 +6121,11 @@ def page_off_machina():  # available off_machina_books
                 and tuple(st.session_state.get("off_palco_xerox_context") or ()) == off_xerox_contexto
                 and st.session_state.get("off_palco_xerox_text")
             )
-            titulo_pip = pipe_line[1] if len(pipe_line) > 1 else ""
-            off_is_ypo = str(titulo_pip).lstrip().startswith("@")
+            nome_tema = _pip_coringa_tema(this_off_book[st.session_state.off_take])
+            off_is_ypo = bool(nome_tema)
             if usou_xerox_off:
                 off_book_text = st.session_state["off_palco_xerox_text"]
             elif off_is_ypo:
-                nome_tema = str(titulo_pip).lstrip()[1:].strip()
                 lypo_contexto = (
                     "off-ypo",
                     str(off_book_name),
@@ -6060,6 +6281,7 @@ def _bypo_render_page_menu(nav_items, page_ids, sidebar_open):
                     use_container_width=True,
                     type="primary" if selected else "secondary",
                 ):
+                    _clear_off_print_current()
                     limpar_retratos()
                     _set_machina_page(target_label, page_ids[target_label])
                     st.rerun()
