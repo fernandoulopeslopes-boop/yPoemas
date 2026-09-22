@@ -1,6 +1,6 @@
 # =============================================================================
 # bypo.py — BASIC YPO / MACHINA HORIZONTAL
-# Build 2026-09-13_048 — BYPO público + suporte isolado a BYPO_CFG / Página Z
+# Build 2026-09-22_089 — OFF_LAYOUT_COMUM / ULTIMA_LINHA_INTEGRA
 #
 # BASE / PROVENIÊNCIA
 # - Base funcional: basico.py GitHub de 08/09/2026, copiado para isolamento.
@@ -55,6 +55,13 @@
 # - 076 RETRATO_ENDERECO_CERTO: ações do palco viram régua fixa à esquerda do texto.
 # - 077 GRAFICA_ESCOLHA_DO_LEITOR: caneta Off mostra o livro; salvar é decisão explícita.
 # - 078 GRAFICA_PRINT_ATUAL: livro-vivo congelado reutiliza a régua e a navegação o cancela.
+# - 079 PALCO_VIEWPORT: controles fixos; scroll exclusivo da exibição variável.
+# - 080 EUREKA_SEED_DUPLO: experiência revertida; runtime vigente usa seed única.
+# - 085 PALCO_BASELINE_GITHUB: restaura a cadeia única `bypo_real_stage` →
+#   `bypo_stage_content`; remove viewport, observer e decisão paralela de scroll.
+# - 086 COPIAR_SEM_QUEBRA: popover Copiar segue a régua de ações em qualquer zoom.
+# - 087 REGUA_THIN_UNICA: os quatro controles recebem a mesma moldura thin.
+# - 089 OFF_LAYOUT_COMUM: texto Off adota a caixa natural do yPoema no palco.
 # =============================================================================
 # Leitura da casa:
 # terreno/configuração -> funções/estado/componentes comuns
@@ -99,10 +106,10 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-APP_BUILD = "2026-09-21_BYPO_078_GRAFICA_PRINT_ATUAL"
+APP_BUILD = "2026-09-22_BYPO_084_AUTORIDADE_UNICA"
 APP_BUILD_NOTES = (
-    "Base 051 preservada; print_atual Off reutiliza a régua e congela o livro-vivo; "
-    "navegação cancela o print."
+    "Base 051 preservada; todas as páginas usam uma única viewport; "
+    "uma única sonda do navegador decide o scroll pelo excedente real."
 )
 
 APP_VARIANT = "local"
@@ -428,7 +435,7 @@ def apply_styles():
             max-width: 200px !important;
             aspect-ratio: 2 / 3 !important;
             height: auto !important;
-            margin: 0 auto 0.35rem auto !important;
+            margin: 0 auto 0.90rem auto !important;
             padding: 0 !important;
             overflow: hidden !important;
             border-radius: 8px !important;
@@ -446,6 +453,24 @@ def apply_styles():
             margin: 0 !important;
             padding: 0 !important;
             border: 0 !important;
+        }
+        .machina-sidebar-image-respiro {
+            display:block !important;
+            height:0.80rem !important;
+            min-height:0.80rem !important;
+            width:100% !important;
+        }
+        .bypo-palco-linha-em-branco {
+            display:block !important;
+            height:1.35em !important;
+            min-height:1.35em !important;
+            width:100% !important;
+        }
+
+        .eureka-seed-1 {
+            background: #fff3a0 !important;
+            color: inherit !important;
+            padding: 0 !important;
         }
 
         .machina-voz-slot {
@@ -785,11 +810,12 @@ def apply_bypo_styles():
         [class*="st-key-bypo_portrait_view_"] {
             width:100% !important;
             max-width:100% !important;
-            overflow:hidden !important;
+            overflow:visible !important;
             display:flex !important;
             align-items:center !important;
             justify-content:center !important;
             box-sizing:border-box !important;
+            padding-bottom:0.90rem !important;
         }
         [class*="st-key-bypo_portrait_view_"] img {
             display:block !important;
@@ -805,7 +831,7 @@ def apply_bypo_styles():
             max-width:200px !important;
             aspect-ratio:2 / 3 !important;
             height:auto !important;
-            margin:0 auto 0.35rem auto !important;
+            margin:0 auto 0.90rem auto !important;
         }
         .st-key-bypo_page_menu div[data-testid="stButton"] button {
             min-height:2.25rem !important;
@@ -823,7 +849,9 @@ def apply_bypo_styles():
             z-index:2 !important;
             padding-top:0.02rem !important;
         }
-        [class*="st-key-bypo_action_rail_"] button {
+        [class*="st-key-bypo_action_rail_"] div[data-testid="stButton"] > button,
+        [class*="st-key-bypo_action_rail_"] [data-testid="stPopover"] button,
+        [class*="st-key-bypo_action_rail_"] [data-testid="stDownloadButton"] button {
             min-height:1.55rem !important;
             padding:0.05rem 0.30rem !important;
             font-size:0.76rem !important;
@@ -834,10 +862,10 @@ def apply_bypo_styles():
             border-radius:3px !important;
             box-shadow:none !important;
         }
-        [class*="st-key-bypo_action_rail_"] [data-testid="stPopover"] button,
-        [class*="st-key-bypo_action_rail_"] [data-testid="stDownloadButton"] button {
-            border:1px solid rgba(0,0,0,.28) !important;
-            box-shadow:none !important;
+        [class*="st-key-bypo_action_rail_"] [data-testid="stPopover"] button {
+            white-space:nowrap !important;
+            word-break:keep-all !important;
+            overflow-wrap:normal !important;
         }
         </style>
         """,
@@ -1816,6 +1844,7 @@ def _bypo_render_context_image(chosen_id):
         <div class="machina-sidebar-image-frame">
             <img src="data:image/{mime};base64,{img_b64}" />
         </div>
+        <div class="machina-sidebar-image-respiro">&nbsp;</div>
         """,
         unsafe_allow_html=True,
     )
@@ -1854,7 +1883,6 @@ def render_hw_spy(host=None):
             height=22,
             scrolling=False,
         )
-
 
 def render_sidebar_for_page(chosen_id):
     """CONFIG real do BYPO; imagem/links ocupam o mesmo território."""
@@ -2446,14 +2474,13 @@ def _off_machina_css():
             font-style: {estilo_css} !important;
         }}
         .machina-off-text {{
-            display: block !important;
-            width: fit-content !important;
+            display: table !important;
             max-width: min(96ch, 94%) !important;
             margin-left: auto !important;
             margin-right: auto !important;
             box-sizing: border-box !important;
+            padding-top: 0px !important;
             padding-left: 8px !important;
-            padding-right: 8px !important;
             text-align: left !important;
         }}
         </style>
@@ -2464,7 +2491,7 @@ def _off_machina_html(LOGO_TEXTO):
 
     texto = _off_machina_texto_limpo(LOGO_TEXTO)
     safe = _markdown_links_to_html(texto).replace("\n", "<br>")
-    return f"{_off_machina_css()}<div class='machina-off-text'>{safe}</div>"
+    return f"{_off_machina_css()}<p class='machina-off-text'>{safe}</p>"
 
 def write_off_machina_texto(LOGO_TEXTO):
     """Renderiza Off-Machina com fonte/corpo próprios, sem cair na classe logo-text."""
@@ -4190,68 +4217,9 @@ def _set_about_image_next():
 def _set_atelier_image_next():
     return _set_group_sidebar_image_next("machina", "atelier_image")
 
-def _set_off_anima_image_next():
-    return _set_group_sidebar_image_next("anima", "off_machina_images_pasta")
-
 def _set_off_book_group_image_next(book_name):
     """Imagem contextual do Off: apenas curadoria física de /images/off-mach."""
     return _set_group_sidebar_image_next("off-mach", "off_machina_images_pasta")
-
-def render_sidebar_image_fit(image_path):
-    """Renderiza imagem contextual da sidebar em quadro fixo 240x360, sem faixa branca."""
-    if not image_path or not os.path.exists(image_path):
-        return
-
-    with open(image_path, "rb") as img_file:
-        img_b64 = base64.b64encode(img_file.read()).decode()
-
-    ext = os.path.splitext(image_path)[1].lower().replace(".", "")
-    mime = "jpeg" if ext in {"jpg", "jpeg"} else ext or "jpeg"
-
-    with _sidebar_host():
-        st.markdown(
-            f"""
-            <div class="machina-sidebar-image-frame">
-                <img src="data:image/{mime};base64,{img_b64}" />
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-def render_sidebar_context_image(chosen_id):
-    """Renderiza a imagem contextual adequada na sidebar.
-
-    - páginas que geram yPoemas: imagem Machina do tema em foco;
-    - Off-Machina: imagem do livro em foco;
-    - About/atelier: imagem própria da página.
-    """
-    if (
-        str(chosen_id) != "4"
-        and str(st.session_state.get("voz_analise", "Machina")).upper() == "OLA"
-    ):
-        return
-
-    image_path = ""
-
-    if str(chosen_id) in {"1", "2", "3"}:
-        image_path = st.session_state.get("save_image_tema", "")
-    elif str(chosen_id) == "4":
-
-        image_path = st.session_state.get("off_machina_images_pasta", "")
-
-    elif str(chosen_id) == "5":
-        image_path = st.session_state.get("about_image", "") or _set_about_image_next()
-    elif str(chosen_id) == "6" and APP_VARIANT == "bypo_cfg":
-        image_path = ""
-
-    if image_path and os.path.exists(image_path):
-        # Autoridade do que o leitor realmente viu. O clique em Retrato usa
-        # esta cópia estável antes de qualquer renovação da imagem contextual.
-        st.session_state["sidebar_image_visible_path"] = image_path
-        render_sidebar_image_fit(image_path)
-    else:
-        st.session_state["sidebar_image_visible_path"] = ""
-
 
 # =============================================================================
 # ALA 8 — VOZ / OLA / ANÁLISE
@@ -4721,6 +4689,18 @@ def render_analysis_sidebar_block():
 # ALA 9 — EUREKA / OFF-EUREKA — SERVIÇOS
 # Motores e apoios da descoberta; a página fica limpa no fim da casa.
 # =============================================================================
+def _eureka_search_terms(busca):
+    """EUREKA corrente aceita somente uma seed literal."""
+    raw = str(busca or "").strip()
+    return (raw,) if raw else ()
+
+
+def _eureka_query_valid(busca):
+    """A busca corrente exige uma seed com pelo menos três caracteres."""
+    terms = _eureka_search_terms(busca)
+    return bool(terms) and len(terms[0]) >= 3
+
+
 def load_eureka(part_of_word):
     lexico_list = []
     with open(os.path.join("./base/lexico_pt.txt"), encoding="utf-8") as lista:
@@ -4728,7 +4708,7 @@ def load_eureka(part_of_word):
             this_line = line.strip("\n")
             part_line = this_line.partition(" : ")
             palas = part_line[0]
-            if part_of_word.lower() in palas.lower():
+            if str(part_of_word).casefold() in palas.casefold():
                 lexico_list.append(line)
 
     return lexico_list
@@ -4755,8 +4735,8 @@ def ler_pip(seed):
     - || = linha em branco
     - busca: seed in linha_pip, sem granularidade de posição interna
     """
-    seed = str(seed or "").strip()
-    if not seed:
+    terms = _eureka_search_terms(seed)
+    if not terms:
         return []
 
     off_dir = _project_path("off_machina")
@@ -4774,7 +4754,7 @@ def ler_pip(seed):
         key=lambda value: value.casefold(),
     )
 
-    seed_fold = seed.casefold()
+    terms_fold = tuple(term.casefold() for term in terms)
 
     for nome_arquivo in arquivos:
         caminho = os.path.join(off_dir, nome_arquivo)
@@ -4799,7 +4779,7 @@ def ler_pip(seed):
             linha_pip = str(linha or "")
             if not linha_pip.startswith("|"):
                 continue
-            if seed_fold not in linha_pip.casefold():
+            if not all(term_fold in linha_pip.casefold() for term_fold in terms_fold):
                 continue
 
             colunas = linha_pip.split("|")[1:-1] if linha_pip.endswith("|") else linha_pip.split("|")[1:]
@@ -4813,15 +4793,16 @@ def ler_pip(seed):
             # Lista de ocorrências: mostra somente a palavra que contém a seed.
             # A busca continua sendo "seed in linha_pip"; não há stemming nem
             # endereçamento interno de múltiplas ocorrências.
-            verbete = seed
-            for token in re.findall(
-                r"[^\W\d_]+(?:[-'][^\W\d_]+)*",
-                linha_pip,
-                flags=re.UNICODE,
-            ):
-                if seed_fold in token.casefold():
-                    verbete = token
-                    break
+            verbete = " / ".join(terms)
+            if len(terms) == 1:
+                for token in re.findall(
+                    r"[^\W\d_]+(?:[-'][^\W\d_]+)*",
+                    linha_pip,
+                    flags=re.UNICODE,
+                ):
+                    if terms_fold[0] in token.casefold():
+                        verbete = token
+                        break
 
             texto = _pip_line_to_text(linha_pip)
 
@@ -4839,22 +4820,39 @@ def ler_pip(seed):
 
     return resultados
 
-def _eureka_off_mark_text(texto, seed):
-    """Escapa texto e destaca todas as aparições da seed, preservando caixa."""
+def _eureka_mark_text(texto, seed, escapar=True):
+    """Marca todas as ocorrências da seed única, preservando caixa."""
     texto = str(texto or "")
-    seed = str(seed or "")
-    if not seed:
-        return html.escape(texto)
-
-    pattern = re.compile(re.escape(seed), flags=re.IGNORECASE)
+    terms = _eureka_search_terms(seed)
+    if not terms:
+        return html.escape(texto) if escapar else texto
+    ocorrencias = list(re.finditer(re.escape(terms[0]), texto, flags=re.IGNORECASE))
+    if not ocorrencias:
+        return html.escape(texto) if escapar else texto
     partes = []
     pos = 0
-    for match in pattern.finditer(texto):
-        partes.append(html.escape(texto[pos:match.start()]))
-        partes.append("<mark>" + html.escape(match.group(0)) + "</mark>")
+    for match in ocorrencias:
+        partes.append(html.escape(texto[pos:match.start()]) if escapar else texto[pos:match.start()])
+        trecho = texto[match.start():match.end()]
+        seguro = html.escape(trecho) if escapar else trecho
+        partes.append("<mark class='eureka-seed-1'>" + seguro + "</mark>")
         pos = match.end()
-    partes.append(html.escape(texto[pos:]))
+    partes.append(html.escape(texto[pos:]) if escapar else texto[pos:])
     return "".join(partes)
+
+
+def _eureka_off_mark_text(texto, seed):
+    """Texto Off seguro: seed única marcada."""
+    return _eureka_mark_text(texto, seed, escapar=True)
+
+
+def _eureka_mark_html(texto_html, seed):
+    """Marca apenas os nós de texto do yPoema, preservando <br> e HTML existente."""
+    partes = re.split(r"(<[^>]+>)", str(texto_html or ""))
+    return "".join(
+        parte if parte.startswith("<") and parte.endswith(">") else _eureka_mark_text(parte, seed, escapar=False)
+        for parte in partes
+    )
 
 def _eureka_off_texto_html(texto, seed):
     """Texto completo do .pip para o palco, com seed destacado."""
@@ -5608,9 +5606,10 @@ def page_ypoemas():
 def _eureka_busca_label(busca, territorio):
     """Rótulo do campo de busca após o leitor iniciar uma pesquisa."""
     busca = str(busca or "").strip()
-    if len(busca) < 3:
+    terms = _eureka_search_terms(busca)
+    if not _eureka_query_valid(terms):
         return translate("buscar por...")
-    quantidade = len(ler_pip(busca)) if str(territorio).lower() == "off" else len(load_eureka(busca))
+    quantidade = len(ler_pip(terms[0])) if str(territorio).lower() == "off" else len(load_eureka(terms[0]))
     return f'↓ {quantidade} "{busca}" em {quantidade} textos'
 
 
@@ -5712,7 +5711,8 @@ def page_eureka():
 
     show_help_eureka = bool(st.session_state.get("help_eureka_open", False))
 
-    if len(find_what) < 3:
+    eureka_terms = _eureka_search_terms(find_what)
+    if not _eureka_query_valid(eureka_terms):
         if show_help_eureka:
             render_manual_eureka()
         st.warning(translate("comece com pelo menos 3 letras..."))
@@ -5734,7 +5734,7 @@ def page_eureka():
         seed_list = []
         soma_tema = []
 
-        eureka_list = load_eureka(find_what)
+        eureka_list = load_eureka(eureka_terms[0])
         for line in eureka_list:
             this_line = line.strip("\n")
             part_line = this_line.partition(" : ")
@@ -5850,7 +5850,7 @@ def page_eureka():
             if lnew:
                 eureka_expander = st.expander("", expanded=True)
                 with eureka_expander:
-                    LOGO_TEXTO = curr_ypoema
+                    LOGO_TEXTO = curr_ypoema if usou_xerox_eureka else _eureka_mark_html(curr_ypoema, find_what)
                     if not st.session_state.pop("eureka_retrato_sidebar_renovada", False):
                         load_image_tema(seed_tema)
 
