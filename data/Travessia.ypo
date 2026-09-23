@@ -1,27 +1,27 @@
 *- 
 *- travessia.ypo
 *- 
-|01|01|travessia_0101|F|3|2|A travessia da|A caminhada pela|A passagem pela|
+|01|01|travessia_0101|F|3|1|A travessia da|A caminhada pela|A passagem pela|
 |01|02|travessia_0102|F|1|1|existência|
 |02|01|travessia_0201|F|1|1|é uma viagem solo entre viajantes|
 |03|01|travessia_0301|F|1|1|que atravessam a mesma trilha|
 |04|01|travessia_0401|F|1|1|e cada um |
-|04|02|travessia_0402|F|3|2|compartilha|reparte|divide|
-|04|03|travessia_0403|F|2|1|com os outros|com o próximo|
+|04|02|travessia_0402|F|3|1|compartilha|reparte|divide|
+|04|03|travessia_0403|F|2|2|com os outros|com o próximo|
 |05|01|travessia_0501|F|1|1|onde há|
-|05|02|travessia_0502|T|15|3|encruzilhadas|atoleiros|pousadas|mirantes|abismos|estaleiros|aclives|encostas|neblinas|perigos|fontes de água|declives|abrigos|frutas silvestres|desvios|
+|05|02|travessia_0502|T|15|12|encruzilhadas|atoleiros|pousadas|mirantes|abismos|estaleiros|aclives|encostas|neblinas|perigos|fontes de água|declives|abrigos|frutas silvestres|desvios|
 |05|03|travessia_0503|F|1|1|,|
-|05|04|travessia_0502|T|15|7|encruzilhadas|atoleiros|pousadas|mirantes|abismos|estaleiros|aclives|encostas|neblinas|perigos|fontes de água|declives|abrigos|frutas silvestres|desvios|
+|05|04|travessia_0502|T|15|2|encruzilhadas|atoleiros|pousadas|mirantes|abismos|estaleiros|aclives|encostas|neblinas|perigos|fontes de água|declives|abrigos|frutas silvestres|desvios|
 |05|05|travessia_0505|F|1|1|,|
-|05|05|travessia_0502|T|15|10|encruzilhadas|atoleiros|pousadas|mirantes|abismos|estaleiros|aclives|encostas|neblinas|perigos|fontes de água|declives|abrigos|frutas silvestres|desvios|
+|05|05|travessia_0502|T|15|4|encruzilhadas|atoleiros|pousadas|mirantes|abismos|estaleiros|aclives|encostas|neblinas|perigos|fontes de água|declives|abrigos|frutas silvestres|desvios|
 |05|06|travessia_0506|F|1|1|...|
-|06|01|travessia_0601|F|1|1|sem se dar conta de que afinal|sem sequer perceber|
-|07|01|travessia_0701|F|1|3|todos buscam o mesmo ponto de chegada.|que o destino final é o mesmo.|que o final do passeio é igual.|
+|06|01|travessia_0601|F|1|2|sem se dar conta de que afinal|sem sequer perceber|
+|07|01|travessia_0701|F|1|2|todos buscam o mesmo ponto de chegada.|que o destino final é o mesmo.|que o final do passeio é igual.|
 <EOF>
 Verbetes no Texto = 16
   Total de ítimos = 63
 Total de verbetes = 58
 Qtd. de Variações = 49.140 (mil)
-build_by lay_2_ypo: 04/09/2026 - 18:03
-updated em: 04/09/2026 - 18:03
+build_by lay_2_ypo: 22/09/2026 - 09:39
+updated em: 22/09/2026 - 09:39
 
