@@ -1,6 +1,6 @@
 # =============================================================================
 # bypo.py — BASIC YPO / MACHINA HORIZONTAL
-# Build 2026-09-22_089 — OFF_LAYOUT_COMUM / ULTIMA_LINHA_INTEGRA
+# Build 2026-09-23_109 — SIDEBAR_SLOT_NO_PAI
 #
 # BASE / PROVENIÊNCIA
 # - Base funcional: basico.py GitHub de 08/09/2026, copiado para isolamento.
@@ -62,6 +62,15 @@
 # - 086 COPIAR_SEM_QUEBRA: popover Copiar segue a régua de ações em qualquer zoom.
 # - 087 REGUA_THIN_UNICA: os quatro controles recebem a mesma moldura thin.
 # - 089 OFF_LAYOUT_COMUM: texto Off adota a caixa natural do yPoema no palco.
+# - 090 STREAMLIT_WARNINGS_ZERO: H/W usa `st.iframe`; EUREKA não combina
+#   default do selectbox com Session State.
+# - 091 XEROX_OLA: Xerox reutiliza o mesmo fluxo para análise OLA válida.
+# - 092 IMAGEM_SIDEBAR_MOLDURA: imagem ocupa a altura útil da moldura com
+#   respiro interno e proporção preservada.
+# - 093 IMAGEM_SIDEBAR_RESPIRO_EXPLICITO: a altura da imagem exclui
+#   fisicamente o espaço inferior da moldura.
+# - 094 IMAGEM_SIDEBAR_CENTRALIZADA: a moldura usa todo o espaço restante
+#   abaixo de Links; imagem proporcional fica centralizada nela.
 # =============================================================================
 # Leitura da casa:
 # terreno/configuração -> funções/estado/componentes comuns
@@ -92,7 +101,6 @@ from datetime import datetime
 from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 import streamlit as st
-from streamlit.components import v1 as components
 import dna as dna_core
 # ✅
 
@@ -430,35 +438,53 @@ def apply_styles():
             display: none !important;
         }
 
-        .machina-sidebar-image-frame {
-            width: min(200px, 100%) !important;
-            max-width: 200px !important;
-            aspect-ratio: 2 / 3 !important;
-            height: auto !important;
-            margin: 0 auto 0.90rem auto !important;
-            padding: 0 !important;
-            overflow: hidden !important;
-            border-radius: 8px !important;
-            background: transparent !important;
-            line-height: 0 !important;
-            box-sizing: border-box !important;
-        }
+                                      
+                                   
+                                       
+                                    
+                                     
+                                        
+                                      
+                                              
+                                     
+                                        
+                                                         
+                                                         
+                                           
+                                      
+                                              
+                                     
+                                           
+                                               
+                                   
+         
+
+                                      
+                                   
+                                       
+                                    
+                                     
+                                        
+                                      
+                                 
+                                  
+                                        
+                                          
+                                               
+                                      
+                                              
+         
 
         .machina-sidebar-image-frame img {
             display: block !important;
             width: 100% !important;
+                                       
             height: 100% !important;
             object-fit: contain !important;
             object-position: center center !important;
             margin: 0 !important;
             padding: 0 !important;
             border: 0 !important;
-        }
-        .machina-sidebar-image-respiro {
-            display:block !important;
-            height:0.80rem !important;
-            min-height:0.80rem !important;
-            width:100% !important;
         }
         .bypo-palco-linha-em-branco {
             display:block !important;
@@ -703,6 +729,58 @@ def apply_bypo_styles():
             min-height:0 !important;
             max-height:100% !important;
             overflow:hidden !important;
+         
+                                                                        
+                                     
+                                                                           
+                                    
+                                             
+         
+                                      
+                                   
+                                    
+                                     
+         
+                                                                           
+                                   
+                                    
+         
+                                         
+                                                                               
+                                   
+                                    
+                                     
+                                       
+         
+                                                                               
+                                    
+                                             
+         
+                                                                        
+                                                                           
+                                                                            
+                                                                                            
+                                
+                                    
+                                  
+                                       
+                                    
+                                             
+         
+                                                                                    
+                                                                       
+                                                                                 
+                                   
+                                    
+                                     
+                                       
+                                    
+                                             
+        }
+        .st-key-bypo_links_btn {
+            position:relative !important;
+            z-index:2 !important;
+                                     
         }
         .st-key-bypo_sidebar_frame div[data-testid="stVerticalBlock"] {
             gap:0.28rem !important;
@@ -714,6 +792,20 @@ def apply_bypo_styles():
             border:1px solid rgba(0,0,0,.10);
             border-radius:14px;
             box-sizing:border-box;
+        }
+        .bypo-image-stage {
+            padding-top:.28rem !important;
+            padding-bottom:.62rem !important;
+            display:flex !important;
+            justify-content:center !important;
+        }
+        .st-key-bypo_sidebar_frame .machina-sidebar-image-frame {
+            width:auto !important;
+            height:auto !important;
+            max-width:200px !important;
+            max-height:min(300px, 34vh) !important;
+            aspect-ratio:2 / 3 !important;
+            margin:0 auto !important;
         }
         .bypo-social-grid {
             display:grid;
@@ -803,9 +895,8 @@ def apply_bypo_styles():
             min-height:100% !important;
             max-height:none !important;
             overflow:visible !important;
-            justify-content:safe center !important;
             box-sizing:border-box !important;
-            padding-bottom:0.35rem !important;
+            padding-bottom:calc(1.35em + .50rem) !important;
         }
         [class*="st-key-bypo_portrait_view_"] {
             width:100% !important;
@@ -825,13 +916,6 @@ def apply_bypo_styles():
             max-height:calc(100dvh - 170px) !important;
             object-fit:contain !important;
             margin:0 auto 0.35rem auto !important;
-        }
-        .st-key-bypo_sidebar_frame .machina-sidebar-image-frame {
-            width:min(200px, 100%) !important;
-            max-width:200px !important;
-            aspect-ratio:2 / 3 !important;
-            height:auto !important;
-            margin:0 auto 0.90rem auto !important;
         }
         .st-key-bypo_page_menu div[data-testid="stButton"] button {
             min-height:2.25rem !important;
@@ -941,7 +1025,9 @@ def init_session_state():
         "ola_result": "",
         "ola_signature": None,
         "ola_error": "",
-        "lax_pair": "",
+        "lax_ponto_a": "",
+        "lax_ponto_b": "",
+        "lax_par_inicial_definido": False,
         "lax_pct_original": 45,
         "lax_result": {},
         "lax_signature": None,
@@ -1790,6 +1876,11 @@ def _bypo_toggle_links():
     st.session_state["bypo_sidebar_panel"] = "links" if atual != "links" else "image"
 
 
+def _bypo_restore_sidebar_image():
+    """Toda navegação devolve a moldura contextual da imagem à sidebar."""
+    st.session_state["bypo_sidebar_panel"] = "image"
+
+
 def _bypo_render_links():
     """Painel visual de redes sociais, na solução já bem resolvida do Moby."""
     cards = []
@@ -1841,10 +1932,11 @@ def _bypo_render_context_image(chosen_id):
     mime = "jpeg" if ext in {"jpg", "jpeg"} else ext or "jpeg"
     st.markdown(
         f"""
-        <div class="machina-sidebar-image-frame">
-            <img src="data:image/{mime};base64,{img_b64}" />
+        <div class="bypo-social-stage bypo-image-stage">
+            <div class="machina-sidebar-image-frame">
+                <img src="data:image/{mime};base64,{img_b64}" />
+            </div>
         </div>
-        <div class="machina-sidebar-image-respiro">&nbsp;</div>
         """,
         unsafe_allow_html=True,
     )
@@ -1853,7 +1945,7 @@ def render_hw_spy(host=None):
     """Mostra H/W reais do navegador em um slot fixo, sem alterar a geometria."""
     target = host if host is not None else _sidebar_host()
     with target:
-        components.html(
+        st.iframe(
             """
             <div id="machina-hw-spy">H=--- · W=---</div>
             <style>
@@ -1881,7 +1973,7 @@ def render_hw_spy(host=None):
             </script>
             """,
             height=22,
-            scrolling=False,
+            tab_index=-1,
         )
 
 def render_sidebar_for_page(chosen_id):
@@ -1892,16 +1984,20 @@ def render_sidebar_for_page(chosen_id):
     # Machina / OLA precedem o acesso aos links.
     render_analysis_sidebar_block()
 
-    _sidebar_host().button(
-        "links",
-        key="bypo_links_btn",
-        on_click=_bypo_toggle_links,
-        use_container_width=True,
-    )
+    # Um único ocupante para o território inferior da sidebar.
+    # Links é recurso exclusivo da Machina; OLA e LAX usam o próprio bloco.
+    current_key = str(st.session_state.get("voz_analise", "Machina")).upper()
+    if current_key == "MACHINA":
+        _sidebar_host().button(
+            "links",
+            key="bypo_links_btn",
+            on_click=_bypo_toggle_links,
+            use_container_width=True,
+        )
 
     # O slot fica nesta posição; é preenchido depois da página real atualizar
     # imagem/estado, sem empurrar conteúdo para fora da sidebar.
-    return _sidebar_host().empty()
+    return _sidebar_host().empty() if current_key == "MACHINA" else None
 
 def _set_machina_page(page_label, page_id):
     """Fixa a página ativa em estado explícito.
@@ -1909,22 +2005,25 @@ def _set_machina_page(page_label, page_id):
     Evita que cliques internos de uma página, especialmente a navegação
     da Off-Machina, caiam de volta no foco inicial yPoemas.
     """
+    _bypo_restore_sidebar_image()
     st.session_state["pick_pagina"] = page_label
     st.session_state["pagina"] = str(page_id)
 
 def _sync_machina_page_state(page_labels, page_ids):
-    """Mantém label e id coerentes sem resetar indevidamente para yPoemas."""
+    """Mantém label e id coerentes sem alterar o painel contextual da sidebar."""
     ids_to_labels = {str(page_id): label for label, page_id in page_ids.items()}
 
     saved_id = str(st.session_state.get("pagina", "")).strip()
     saved_label = st.session_state.get("pick_pagina", "")
 
     if saved_id in ids_to_labels:
-        _set_machina_page(ids_to_labels[saved_id], saved_id)
+        st.session_state["pick_pagina"] = ids_to_labels[saved_id]
+        st.session_state["pagina"] = saved_id
         return
 
     if saved_label in page_labels:
-        _set_machina_page(saved_label, page_ids[saved_label])
+        st.session_state["pick_pagina"] = saved_label
+        st.session_state["pagina"] = str(page_ids[saved_label])
         return
 
     _set_machina_page("yPoemas", page_ids["yPoemas"])
@@ -2703,10 +2802,10 @@ def render_help_pacote_centralizado(texto, key="help_pacote"):
             <div class="machina-help-pacote" style="
                 display:block;
                 text-align:left;
-                width:fit-content;
-                max-width:min(78ch, 100%);
-                margin:0 auto;
-                padding:0.40rem 0.80rem;
+                width:100%;
+                max-width:100%;
+                margin:0;
+                padding:0.40rem 0;
                 font-family:'Trebuchet MS', system-ui, sans-serif;
                 font-size:0.98rem;
                 line-height:1.42;
@@ -2734,32 +2833,8 @@ def render_help_pacote_centralizado(texto, key="help_pacote"):
     )
 
 def _manual_ypoemas_texto():
-    """Manual padrão da página yPoemas.
-
-    Mantido no código para não depender do .md durante estes ajustes finos
-    de Help. A Ficha Técnica/Matrix entram depois deste bloco.
-    """
-    return """yPoemas: modo de usar
-___
-Selecione um livro na lista de Livros
-___
-- * = Escolhe um tema aleatoriamente
-- < = Move para o tema anterior
-- + = Gera um novo texto para o tema
-- > = Move para o próximo tema
-- ♫ = ouvir a leitura do texto
-- ? = Modo de Usar & Manual do Usuário
-___
-Selecione um tema na lista de Temas
-___
-No navegador Google Chrome:
-- Use as setas Ctrl + ou Ctrl -  para aumentar ou diminuir o tamanho da tela.
-- Você pode usar Ctrl C e Ctrl V  para copiar e colar textos da tela.
-- Use o botão direito do mouse para salvar um texto
-  ou para pesquisar a palavra selecionada no Google.
-
-- Para buscar palavras de sua escolha use a página eureka do menu.
-___"""
+    """Manual autoral externo; Matrix e ficha técnica continuam dinâmicas."""
+    return load_md_file("MANUAL_YPOEMAS.md")
 
 def render_help_ypoemas_mesma_fonte():
     """Renderiza o Help yPoemas no padrão visual centralizado."""
@@ -3628,20 +3703,33 @@ if hasattr(st, "dialog"):
 else:
     ampliar_retrato = _ampliar_retrato_conteudo
 
-def _xerox_lax_texto(texto_original):
-    """Edição comentada: yPoema original seguido das duas leituras LAX."""
-    resultado = st.session_state.get("lax_result", {})
-    if not isinstance(resultado, dict) or not resultado.get("a") or not resultado.get("b"):
-        return ""
-    leituras = "\n\n".join(
-        (
-            str(resultado.get("a_nome", "A")),
-            str(resultado.get("a", "")),
-            str(resultado.get("b_nome", "B")),
-            str(resultado.get("b", "")),
+def _xerox_analise_texto(texto_original):
+    """Edição comentada: yPoema original seguido da análise ativa válida."""
+    voz = str(st.session_state.get("voz_analise", "")).upper()
+    if voz == "LAX":
+        resultado = st.session_state.get("lax_result", {})
+        if not isinstance(resultado, dict) or not resultado.get("a") or not resultado.get("b"):
+            return ""
+        leitura = "\n\n".join(
+            (
+                str(resultado.get("a_nome", "A")),
+                str(resultado.get("a", "")),
+                "___",
+                str(resultado.get("b_nome", "B")),
+                str(resultado.get("b", "")),
+            )
         )
-    )
-    return str(texto_original or "") + "\n\n___\n\n" + leituras
+    elif voz == "OLA":
+        resultado = str(st.session_state.get("ola_result", "")).strip()
+        if not resultado:
+            return ""
+        titulo = str(st.session_state.get("ola_xerox_title", "OLA")).strip() or "OLA"
+        subtitulo = _analysis_kind_label(st.session_state.get("tipo_analise", ""))
+        cabecalho = titulo + (f"\n( {subtitulo} )" if subtitulo else "")
+        leitura = cabecalho + "\n\n" + resultado
+    else:
+        return ""
+    return str(texto_original or "") + "\n\n___\n\n" + leitura
 
 
 def show_copy_retrato_xerox(
@@ -3653,10 +3741,12 @@ def show_copy_retrato_xerox(
     salvar_nome=None,
     incluir_xerox=True,
 ):
-    """Régua fixa do texto; Xerox aparece apenas com resultado LAX válido."""
+    """Régua fixa do texto; Xerox aparece apenas com análise ativa válida."""
     _copiar_popover_sem_seta()
     png = st.session_state.get(f"{prefixo}_imagem_retrato")
-    xerox = _xerox_lax_texto(texto_copia) if incluir_xerox and str(st.session_state.get("voz_analise", "")).upper() == "LAX" else ""
+    xerox = _xerox_analise_texto(texto_copia) if incluir_xerox else ""
+    voz_analise = str(st.session_state.get("voz_analise", "")).upper()
+    mostrar_xerox = bool(incluir_xerox and (xerox or voz_analise == "OLA"))
 
     with _stage_action_host().container(key=f"bypo_action_rail_{prefixo}", border=False):
         # A ordem destas quatro linhas é a régua do leitor: título, branco,
@@ -3699,9 +3789,12 @@ def show_copy_retrato_xerox(
                 use_container_width=True,
                 disabled=True,
             )
-        if xerox:
+        if mostrar_xerox:
             with st.popover("xerox", use_container_width=True):
-                st.code(xerox, language=None, wrap_lines=True)
+                if xerox:
+                    st.code(xerox, language=None, wrap_lines=True)
+                else:
+                    st.caption(st.session_state.get("ola_error", "OLA temporariamente indisponível."))
 
 def _retrato_logo_yp(size):
     """Retorna o yP original no tamanho de teste, sem suavizar seus pixels."""
@@ -4221,6 +4314,50 @@ def _set_off_book_group_image_next(book_name):
     """Imagem contextual do Off: apenas curadoria física de /images/off-mach."""
     return _set_group_sidebar_image_next("off-mach", "off_machina_images_pasta")
 
+
+def _sync_off_sidebar_image_before_render(chosen_id):
+    """Única autoridade da imagem Off, sempre antes da sidebar e do texto."""
+    if str(chosen_id) != "4":
+        return
+
+    # O Retrato conserva a imagem que o leitor acabou de capturar.
+    if st.session_state.get("off_retrato_keep_palco", False):
+        return
+
+    livros = load_all_offs()
+    if not livros:
+        return
+
+    livro_idx = int(st.session_state.get("off_book", 0))
+    take = int(st.session_state.get("off_take", 0))
+    if livro_idx < 0 or livro_idx >= len(livros):
+        return
+
+    contexto = (livro_idx, take)
+    if (
+        tuple(st.session_state.get("off_sidebar_image_context") or ()) == contexto
+        and st.session_state.get("off_machina_images_pasta")
+    ):
+        return
+
+    livro = livros[livro_idx]
+    if take == 0:
+        st.session_state["off_machina_images_pasta"] = _resolve_off_machina_book_image(livro)
+    else:
+        linhas = load_off_book(livro)
+        linha = linhas[take] if take < len(linhas) else ""
+        tema_machina = _pip_coringa_tema(linha)
+        if tema_machina:
+            # |@ Tema| é um yPoema vivo: usa o banco oficial daquele tema.
+            imagem = load_image_tema(tema_machina)
+            if imagem:
+                st.session_state["off_machina_images_pasta"] = imagem
+            else:
+                _set_off_book_group_image_next(livro)
+        else:
+            _set_off_book_group_image_next(livro)
+    st.session_state["off_sidebar_image_context"] = contexto
+
 # =============================================================================
 # ALA 8 — VOZ / OLA / ANÁLISE
 # Voz e leitura analítica, separadas do corpo das páginas.
@@ -4235,6 +4372,8 @@ OLA_ANALYSIS_OPTIONS = [
     "Aparição",
     "Completa",
 ]
+
+LAX_PRESERVACAO_LITERAL = "MÁXIMA"
 
 def talk(text):
     """Lê o yPoema no idioma atual usando edge-tts, quando disponível."""
@@ -4391,10 +4530,10 @@ def load_lax_pontos_de_vista():
         if not isinstance(dados, dict) or not dados:
             raise ValueError("coleção vazia")
         pontos = {}
-        for par, vistas in dados.items():
-            if not isinstance(par, str) or not isinstance(vistas, (list, tuple)) or len(vistas) != 2:
-                raise ValueError("par inválido")
-            pontos[par] = [str(vistas[0]), str(vistas[1])]
+        for nome_ponto, vista in dados.items():
+            if not isinstance(nome_ponto, str) or not isinstance(vista, str) or not nome_ponto.strip() or not vista.strip():
+                raise ValueError("ponto de vista inválido")
+            pontos[nome_ponto.strip()] = vista.strip()
         st.session_state["lax_catalog_error"] = ""
         return pontos
     except (OSError, UnicodeError, SyntaxError, ValueError):
@@ -4452,6 +4591,20 @@ def _traduzir_blocos_lax(blocos, idioma):
         return originais
     return [_normalizar_quebras_lax(parte).strip() for parte in partes]
 
+
+def _lax_sem_titulo_repetido(texto, tema):
+    """Remove somente o título do yPoema quando o LAX o repete na releitura."""
+    linhas = str(texto or "").splitlines()
+    while linhas and not linhas[0].strip():
+        linhas.pop(0)
+    if not linhas:
+        return ""
+    titulo = str(tema or "").strip().casefold()
+    primeira = linhas[0].strip().strip("-–—: ").casefold()
+    if titulo and primeira == titulo:
+        linhas.pop(0)
+    return "\n".join(linhas).strip()
+
 def gerar_analise_lax(ypoema_html, tema):
     """Relê o mesmo yPoema por dois pontos de vista autorais."""
     fonte = _analise_texto_cru_do_ypoema(ypoema_html)
@@ -4460,9 +4613,16 @@ def gerar_analise_lax(ypoema_html, tema):
     if not pontos:
         st.session_state["lax_error"] = st.session_state.get("lax_catalog_error", "LAX indisponível.")
         return {}
-    par = st.session_state.get("lax_pair") or next(iter(pontos))
-    st.session_state["lax_pair"] = par
-    assinatura = (fonte, str(tema or ""), par, pct, idioma, tuple(pontos.items()))
+    nomes = list(pontos)
+    nome_a = str(st.session_state.get("lax_ponto_a") or nomes[0])
+    nome_b = str(st.session_state.get("lax_ponto_b") or (nomes[1] if len(nomes) > 1 else nomes[0]))
+    if nome_a not in pontos:
+        nome_a = nomes[0]
+    if nome_b not in pontos:
+        nome_b = nomes[1] if len(nomes) > 1 else nomes[0]
+    st.session_state["lax_ponto_a"] = nome_a
+    st.session_state["lax_ponto_b"] = nome_b
+    assinatura = (fonte, str(tema or ""), nome_a, nome_b, LAX_PRESERVACAO_LITERAL, pct, idioma, tuple(pontos.items()))
     if st.session_state.get("lax_signature") == assinatura:
         return st.session_state.get("lax_result", {})
     chave = _lax_api_key()
@@ -4470,16 +4630,33 @@ def gerar_analise_lax(ypoema_html, tema):
         st.session_state["lax_error"] = "LAX temporariamente indisponível."
         st.session_state["lax_result"], st.session_state["lax_signature"] = {}, assinatura
         return {}
-    nome_a, nome_b = [parte.strip() for parte in par.split("/", 1)]
-    vista_a, vista_b = pontos[par]
-    prompt = f"""Tema/contexto: {tema}\n\nYPOEMA ORIGINAL:\n{fonte}\n\nPONTO A — {nome_a}: {vista_a}\nPONTO B — {nome_b}: {vista_b}\n\nPRESERVAÇÃO LITERAL MÍNIMA: {pct}%\nRetorne apenas JSON: {{\"a\":\"releitura A\",\"b\":\"releitura B\",\"distancia\":\"frase curta\"}}"""
-    body = {"model": os.environ.get("OPENAI_MODEL_LAX", os.environ.get("OLA_OPENAI_MODEL", "gpt-5.6-terra")), "instructions": "Você é LAX/PARALAXE da Machina. Releia o mesmo yPoema por duas perspectivas. Preserve sua identidade; não explique o processo.", "input": prompt, "max_output_tokens": 1200, "store": False}
-    request = urllib.request.Request("https://api.openai.com/v1/responses", data=json.dumps(body, ensure_ascii=False).encode("utf-8"), headers={"Content-Type": "application/json", "Authorization": "Bearer " + chave}, method="POST")
-    try:
+    vista_a, vista_b = pontos[nome_a], pontos[nome_b]
+
+    def releitura_independente(nome, vista):
+        prompt = f"""Tema/contexto: {tema}\n\nYPOEMA ORIGINAL:\n{fonte}\n\nPONTO DE VISTA — {nome}: {vista}\n\nPRESERVAÇÃO LITERAL {LAX_PRESERVACAO_LITERAL}: {pct}%\nEscreva somente uma releitura poética, sem título e sem explicar o processo."""
+        body = {
+            "model": os.environ.get("OPENAI_MODEL_LAX", os.environ.get("OLA_OPENAI_MODEL", "gpt-5.6-terra")),
+            "instructions": "Você é LAX/PARALAXE da Machina. Releia o mesmo yPoema por uma única perspectiva. Preserve sua identidade.",
+            "input": prompt,
+            "max_output_tokens": 700,
+            "store": False,
+        }
+        request = urllib.request.Request(
+            "https://api.openai.com/v1/responses",
+            data=json.dumps(body, ensure_ascii=False).encode("utf-8"),
+            headers={"Content-Type": "application/json", "Authorization": "Bearer " + chave},
+            method="POST",
+        )
         with urllib.request.urlopen(request, timeout=45) as response:
-            dados = _lax_json(_lax_output(json.loads(response.read().decode("utf-8", errors="replace"))))
-        blocos = [nome_a, nome_b, limpar_analise(_normalizar_quebras_lax(dados.get("a", "")), 900), limpar_analise(_normalizar_quebras_lax(dados.get("b", "")), 900), limpar_analise(_normalizar_quebras_lax(dados.get("distancia", "")), 360)]
+            return limpar_analise(_normalizar_quebras_lax(_lax_output(json.loads(response.read().decode("utf-8", errors="replace")))), 900)
+
+    try:
+        leitura_a = releitura_independente(nome_a, vista_a)
+        leitura_b = releitura_independente(nome_b, vista_b)
+        blocos = [nome_a, nome_b, leitura_a, leitura_b, ""]
         a_nome, b_nome, a, b, distancia = _traduzir_blocos_lax(blocos, idioma)
+        a = _lax_sem_titulo_repetido(a, tema)
+        b = _lax_sem_titulo_repetido(b, tema)
         if not a or not b:
             raise ValueError("LAX incompleta")
         st.session_state["lax_result"] = {"a_nome": a_nome, "b_nome": b_nome, "a": a, "b": b, "distancia": distancia}
@@ -4511,6 +4688,8 @@ def render_analise_palco(texto):
     kind = st.session_state.get("tipo_analise", "")
     titulo = _analysis_voice_title(voice)
     subtitulo = _analysis_kind_label(kind)
+    if voice == "OLA":
+        st.session_state["ola_xerox_title"] = titulo
 
     safe_text = html.escape(str(texto or "")).replace("\n", "<br>")
     safe_title = html.escape(titulo)
@@ -4553,17 +4732,37 @@ def render_analise_palco(texto):
         unsafe_allow_html=True,
     )
 
-def render_lax_palco(resultado):
-    """Apresenta as duas releituras LAX e sua distância."""
+def render_lax_palco(ypoema_html, tema):
+    """Mantém os dois seletores LAX no cabeçalho das próprias releituras."""
+    pontos = load_lax_pontos_de_vista()
+    if not pontos:
+        st.warning(st.session_state.get("lax_catalog_error", "LAX indisponível."))
+        return
+    nomes = list(pontos)
+    atual_a = str(st.session_state.get("lax_ponto_a") or nomes[0])
+    atual_b = str(st.session_state.get("lax_ponto_b") or (nomes[1] if len(nomes) > 1 else nomes[0]))
+    if atual_a not in pontos:
+        atual_a = nomes[0]
+    if atual_b not in pontos:
+        atual_b = nomes[1] if len(nomes) > 1 else nomes[0]
+    col_a, col_b = st.columns(2, gap="medium")
+    with col_a:
+        st.session_state["lax_ponto_a"] = st.selectbox(
+            "analista A", nomes, index=nomes.index(atual_a),
+            key="lax_ponto_a_select", label_visibility="collapsed",
+        )
+    with col_b:
+        st.session_state["lax_ponto_b"] = st.selectbox(
+            "analista B", nomes, index=nomes.index(atual_b),
+            key="lax_ponto_b_select", label_visibility="collapsed",
+        )
+    resultado = gerar_analise_lax(ypoema_html, tema)
     if not resultado:
         st.warning(st.session_state.get("lax_error", "LAX temporariamente indisponível."))
         return
-    col_a, col_b = st.columns(2, gap="medium")
     with col_a:
-        st.markdown("**" + str(resultado.get("a_nome", "A")) + "**")
         st.write(resultado.get("a", ""))
     with col_b:
-        st.markdown("**" + str(resultado.get("b_nome", "B")) + "**")
         st.write(resultado.get("b", ""))
     if resultado.get("distancia"):
         st.caption(resultado["distancia"])
@@ -4594,7 +4793,7 @@ def render_conteudo_palco(prefixo, texto, tema, fonte_original=None, render_text
                 else:
                     st.warning(st.session_state.get("ola_error", "OLA temporariamente indisponível."))
             else:
-                render_lax_palco(gerar_analise_lax(fonte, tema))
+                render_lax_palco(fonte, tema)
         if st.session_state.pop("analysis_translation_notice", False):
             st.caption("o texto original foi preservado")
 
@@ -4610,6 +4809,15 @@ def _set_analysis_voice(voice):
         if st.session_state.get("tipo_analise") not in OLA_ANALYSIS_OPTIONS:
             st.session_state["tipo_analise"] = OLA_ANALYSIS_OPTIONS[0]
     elif voice_key == "LAX":
+        if not st.session_state.get("lax_par_inicial_definido", False):
+            pontos = load_lax_pontos_de_vista()
+            nomes = list(pontos)
+            if nomes:
+                st.session_state["lax_ponto_a"] = random.choice(nomes)
+                st.session_state["lax_ponto_b"] = random.choice(nomes)
+                st.session_state.pop("lax_ponto_a_select", None)
+                st.session_state.pop("lax_ponto_b_select", None)
+                st.session_state["lax_par_inicial_definido"] = True
         st.session_state["voz_analise"] = "LAX"
     else:
         st.session_state["voz_analise"] = "Machina"
@@ -4676,13 +4884,7 @@ def render_analysis_sidebar_block():
         st.session_state["tipo_analise"] = choice
 
     if current_key == "LAX":
-        pares = list(load_lax_pontos_de_vista())
-        if not pares:
-            _sidebar_host().warning(st.session_state.get("lax_catalog_error", "LAX indisponível."))
-            return
-        atual = st.session_state.get("lax_pair") or pares[0]
-        st.session_state["lax_pair"] = _sidebar_host().selectbox("pontos de vista", pares, index=pares.index(atual) if atual in pares else 0, key="lax_pair_select", label_visibility="collapsed")
-        st.session_state["lax_pct_original"] = _sidebar_host().slider("% mínimo original", 20, 80, int(st.session_state.get("lax_pct_original", 45)), 5, key="lax_pct_select")
+        st.session_state["lax_pct_original"] = _sidebar_host().slider("% máximo original", 20, 80, int(st.session_state.get("lax_pct_original", 45)), 5, key="lax_pct_select")
 
 
 # =============================================================================
@@ -4939,7 +5141,6 @@ def _render_eureka_off(
         opt_ocur_key = st.selectbox(
             f"tema {indice + 1} / {len(achados)}",
             options,
-            index=indice,
             format_func=lambda y: seed_list[y],
             key="opt_ocur_key",
             on_change=_on_eureka_occurrence_change,
@@ -5003,6 +5204,9 @@ def _on_eureka_find_change():
     """Nova busca limpa Help e Retrato anteriores."""
     _hide_eureka_help()
     limpar_retrato("eureka")
+    st.session_state["eureka"] = 0
+    st.session_state.pop("opt_ocur_key", None)
+    st.session_state.pop("eureka_last_ocur", None)
 
 def _on_eureka_occurrence_change():
     """Selecionar outra ocorrência limpa Help e Retrato anteriores."""
@@ -5273,7 +5477,8 @@ def page_mini():
             st.session_state.auto = not st.session_state.auto
 
     with voz_col:
-        if st.button("♫", key="mini_voz_btn", use_container_width=True):
+        voz_clicked = st.button("♫", key="mini_voz_btn", use_container_width=True)
+        if voz_clicked:
             st.session_state.talk = not st.session_state.talk
 
     # Pedido: o botão ? deve existir como botão real logo após o ♫.
@@ -5282,7 +5487,8 @@ def page_mini():
 
     mini_voz_slot = render_voz_slot()
 
-    if more or rand or auto_clicked or manu:
+    if more or rand or auto_clicked or voz_clicked or manu:
+        _bypo_restore_sidebar_image()
         limpar_retrato("mini")
 
     if st.session_state.auto:
@@ -5436,13 +5642,15 @@ def page_ypoemas():
         last = nav_cols[1].button("<", use_container_width=True)
         more = nav_cols[2].button("+", use_container_width=True)
         nest = nav_cols[3].button(">", use_container_width=True)
-        if nav_cols[4].button("♫", key="ypoemas_voz_btn", use_container_width=True):
+        voz_clicked = nav_cols[4].button("♫", key="ypoemas_voz_btn", use_container_width=True)
+        if voz_clicked:
             st.session_state.talk = not st.session_state.talk
         manu = nav_cols[5].button("?", use_container_width=True)
 
         ypoemas_voz_slot = render_voz_slot()
 
-    if more or last or rand or nest or manu:
+    if more or last or rand or nest or voz_clicked or manu:
+        _bypo_restore_sidebar_image()
         limpar_retrato("ypo")
 
     temas = load_temas(_current_book())
@@ -5692,7 +5900,8 @@ def page_eureka():
             ">", key="eureka_next_btn", use_container_width=True
         )
 
-        if nav_cols[4].button("♫", key="eureka_voz_btn", use_container_width=True):
+        voz_clicked = nav_cols[4].button("♫", key="eureka_voz_btn", use_container_width=True)
+        if voz_clicked:
             _hide_eureka_help()
             st.session_state.talk = not st.session_state.talk
 
@@ -5700,7 +5909,8 @@ def page_eureka():
 
         eureka_voz_slot = render_voz_slot()
 
-    if more or last or rand or nest or manu:
+    if more or last or rand or nest or voz_clicked or manu:
+        _bypo_restore_sidebar_image()
         limpar_retrato("eureka")
 
     if manu:
@@ -5801,7 +6011,6 @@ def page_eureka():
                 opt_ocur_key = st.selectbox(
                     f"tema {indice + 1} / {len(seed_list)}",
                     options,
-                    index=indice,
                     format_func=lambda y: seed_list[y],
                     key="opt_ocur_key",
                     on_change=_on_eureka_occurrence_change,
@@ -5931,6 +6140,7 @@ def page_off_machina():  # available off_machina_books
         st.session_state["off_take_widget_token"] = int(
             st.session_state.get("off_take_widget_token", 0)
         ) + 1
+        st.rerun()
 
     off_book_name = off_books_list[st.session_state.off_book]
     this_off_book = load_off_book(off_book_name)
@@ -5972,10 +6182,12 @@ def page_off_machina():  # available off_machina_books
         off_voz_slot = render_voz_slot()
 
     if abrir_print:
+        _bypo_restore_sidebar_image()
         if _open_off_print_current(off_book_name):
             st.rerun()
 
     if any((last, rand, nest, voz_clicked, manu)):
+        _bypo_restore_sidebar_image()
         _clear_off_print_current()
 
     if manu:
@@ -6009,6 +6221,7 @@ def page_off_machina():  # available off_machina_books
         st.session_state["off_take_widget_token"] = int(
             st.session_state.get("off_take_widget_token", 0)
         ) + 1
+        st.rerun()
 
     with col_temas:
         options = list(range(len(off_book_pagys)))
@@ -6028,6 +6241,7 @@ def page_off_machina():  # available off_machina_books
         _clear_off_print_current()
         limpar_retrato_off()
         st.session_state.off_take = opt_off_take
+        st.rerun()
 
     print_atual = st.session_state.get("off_print_current") or {}
     if print_atual:
@@ -6061,23 +6275,6 @@ def page_off_machina():  # available off_machina_books
 
     if st.session_state.get("off_print_error"):
         st.warning(st.session_state["off_print_error"])
-
-    off_sidebar_contexto = (
-        int(st.session_state.get("off_book", 0)),
-        int(st.session_state.get("off_take", 0)),
-    )
-    if st.session_state.get("off_retrato_keep_palco", False):
-        # Retrato já capturou a imagem anterior e preparou a próxima para a sidebar.
-        st.session_state.pop("off_retrato_sidebar_renovada", None)
-    elif (
-        tuple(st.session_state.get("off_sidebar_image_context") or ()) != off_sidebar_contexto
-        or not st.session_state.get("off_machina_images_pasta")
-    ):
-        if st.session_state.off_take == 0:
-            st.session_state["off_machina_images_pasta"] = _resolve_off_machina_book_image(off_book_name)
-        else:
-            _set_off_book_group_image_next(off_book_name)
-        st.session_state["off_sidebar_image_context"] = off_sidebar_contexto
 
     off_retrato_contexto_atual = (
         int(st.session_state.get("off_book", 0)),
@@ -6376,6 +6573,7 @@ def start_machina(app_variant="bypo"):
     sidebar_open = _sidebar_house_open()
     chosen_label = st.session_state["pick_pagina"]
     chosen_id = str(st.session_state.get("pagina", page_ids.get(chosen_label, "2")))
+    _sync_off_sidebar_image_before_render(chosen_id)
     sidebar_slot = None
 
     if sidebar_open:
@@ -6392,6 +6590,12 @@ def start_machina(app_variant="bypo"):
                         st.button("☰", key="bypo_menu_close", on_click=_sidebar_house_toggle, use_container_width=False)
                     render_hw_spy(hw_col)
                 sidebar_slot = render_sidebar_for_page(chosen_id)
+                if sidebar_slot is not None:
+                    with sidebar_slot.container():
+                        if st.session_state.get("bypo_sidebar_panel", "image") == "links":
+                            _bypo_render_links()
+                        else:
+                            _bypo_render_context_image(chosen_id)
 
             with st.container(key="bypo_palco_frame", width="stretch", border=True):
                 _bypo_render_page_menu(nav_items, page_ids, sidebar_open=True)
@@ -6416,12 +6620,6 @@ def start_machina(app_variant="bypo"):
                 with st.container(key="bypo_stage_content_full", border=False):
                     _bypo_render_real_page(chosen_id)
 
-    if sidebar_open and sidebar_slot is not None:
-        with sidebar_slot.container():
-            if st.session_state.get("bypo_sidebar_panel", "image") == "links":
-                _bypo_render_links()
-            else:
-                _bypo_render_context_image(chosen_id)
 
 
 if __name__ == "__main__":
