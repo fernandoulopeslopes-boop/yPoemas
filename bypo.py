@@ -1,6 +1,6 @@
 # =============================================================================
 # bypo.py — BASIC YPO / MACHINA HORIZONTAL
-# Build 2026-09-23_109 — SIDEBAR_SLOT_NO_PAI
+# Build 2026-09-24_123 — TAG_READ_IDLE
 #
 # BASE / PROVENIÊNCIA
 # - Base funcional: basico.py GitHub de 08/09/2026, copiado para isolamento.
@@ -71,6 +71,27 @@
 #   fisicamente o espaço inferior da moldura.
 # - 094 IMAGEM_SIDEBAR_CENTRALIZADA: a moldura usa todo o espaço restante
 #   abaixo de Links; imagem proporcional fica centralizada nela.
+# - 110 NUMB3RS_VISUAL_REVERSIVEL: modo 123 troca apenas letras visíveis por
+#   números, com dose estável; não altera .ypo, LYPO, TYPO, OLA nem LAX.
+# - 111 NUMB3RS_NIVEIS_PROGRESSIVOS: quase óbvio → médio → difícil; cada
+#   nível inclui o anterior e o slider inicia com dose leve.
+# - 112 MANUAIS_AUTORAIS_HTML_CENTRALIZADOS: MANUAL_*.md é fonte única;
+#   código apenas lê e apresenta o Help em HTML centralizado no palco.
+# - 113 HINTS_HELPERS_LOCAIS: nav_buttons recuperam HINTs de base/helpers.txt;
+#   idiomas ausentes usam translate() como fallback.
+# - 114 HINTS_UP: altera somente a posição visual dos tooltips dos botões para cima.
+# - 115 HINTS_UP_FIX: corrige o alvo CSS; desloca o popover do HINT para cima
+#   sem sobrescrever o transform de ancoragem do Streamlit.
+# - 116 HINTS_UP_ROLE_TOOLTIP: corrige o seletor para o tooltip atual do Streamlit;
+#   somente HINTs posicionados embaixo são deslocados para cima.
+# - 117 TAG_CLOUD_MEM: idle visual com temas autorais de base/rol_todos os temas.txt;
+# - 118 TAG_CLOUD_IDLE_TEST: reduz TAG_IDLE_TIME para 10s apenas para teste visual.
+# - 119 COLOR_TAG: aumenta o corpo e aplica paleta fixa curta aos temas do TAG.
+# - 120 COLOR_CENTER_FIX: preserva as cores dos itens e baixa levemente o centro do TAG.
+# - 121 TAG_CLICK_TEXT: clique no TAG aplica o tema antes do render e força novo yPoema.
+# - 122 TAG_CLICK_CLOSE: clique em tema fecha o overlay TAG antes de entregar o tema à Machina.
+# - 123 TAG_READ_IDLE: yPoemas usa idle de leitura próprio; atividade/scroll reiniciam o tempo ativo.
+#   sem controles visíveis; clique no tema abre yPoemas; atividade normal encerra o TAG.
 # =============================================================================
 # Leitura da casa:
 # terreno/configuração -> funções/estado/componentes comuns
@@ -121,6 +142,13 @@ APP_BUILD_NOTES = (
 )
 
 APP_VARIANT = "local"
+
+# TAG_CLOUD :: parâmetros internos; nenhum controle é exposto ao leitor.
+TAG_IDLE_TIME = 10          # TESTE: idle geral da Machina
+TAG_READ_TIME = 30          # TESTE: idle durante leitura de yPoemas
+TAG_CLOUD_VISIBLE = 18      # temas simultâneos no palco
+TAG_CLOUD_RENEW_TIME = 8    # segundos para renovar uma célula
+TAG_CLOUD_JS = "https://cdn.jsdelivr.net/npm/TagCloud@2.5.0/dist/TagCloud.min.js"
 
 from lay_2_ypo import gera_poema, fala_nome_OLA
 
@@ -327,6 +355,11 @@ def apply_styles():
             margin: 0 auto 0 auto;
         }
 
+
+        .tagcloud--item {
+            font-size: 1.35rem !important;
+            font-weight: 600;
+        }
 </style>
         """,
         unsafe_allow_html=True,
@@ -1022,6 +1055,8 @@ def init_session_state():
         # análise :: Machina / OLA
         "voz_analise": "Machina",
         "tipo_analise": "Sintática",
+        "numb3rs_pct": 20,
+        "numb3rs_nivel": "quase óbvio",
         "ola_result": "",
         "ola_signature": None,
         "ola_error": "",
@@ -1417,6 +1452,44 @@ def translate_content(input_text):
 def translate_document(input_text):
     """Traduz documentos Markdown de modo integral e atômico."""
     return translate_content(input_text)
+
+
+def load_help_tips():
+    """Lê HINTs locais de base/helpers.txt no formato |idioma_chave|texto|."""
+    path = _project_path("base", "helpers.txt")
+    tips = {}
+    try:
+        with open(path, encoding="utf-8-sig") as file:
+            for raw_line in file:
+                line = raw_line.strip()
+                if not line.startswith("|"):
+                    continue
+                parts = line.split("|")
+                if len(parts) < 4:
+                    continue
+                key = parts[1].strip()
+                value = parts[2].strip()
+                if key and value:
+                    tips[key] = value
+    except (OSError, UnicodeError):
+        return {}
+    return tips
+
+
+def help_tip(chave, texto_pt):
+    """HINT local no idioma atual; se o idioma não existir, usa translate()."""
+    idioma = str(st.session_state.get("lang", "pt") or "pt").strip().lower()
+    tips = load_help_tips()
+    prefixo = idioma + "_"
+
+    # A regra é por idioma: se ele existe no helpers.txt, usa sua entrada local.
+    idioma_existe = any(key.startswith(prefixo) for key in tips)
+    if idioma_existe:
+        local = tips.get(prefixo + str(chave).strip())
+        if local:
+            return local
+
+    return translate(texto_pt)
 
 _SIDEBAR_HOST = None
 _STAGE_ACTION_HOST = None
@@ -1987,7 +2060,7 @@ def render_sidebar_for_page(chosen_id):
     # Um único ocupante para o território inferior da sidebar.
     # Links é recurso exclusivo da Machina; OLA e LAX usam o próprio bloco.
     current_key = str(st.session_state.get("voz_analise", "Machina")).upper()
-    if current_key == "MACHINA":
+    if current_key in {"MACHINA", "NUMB3RS"}:
         _sidebar_host().button(
             "links",
             key="bypo_links_btn",
@@ -2516,6 +2589,76 @@ def _ypoema_html_to_text(ypoema_html):
     texto = _recuo_autoral_at(texto)
     return _trim_blank_edges_preservando_recuo(texto.splitlines())
 
+
+# NUMB3RS é apresentação, não geração: a fonte autoral permanece intocada.
+NUMB3RS_NIVEIS = {
+    "quase óbvio": {
+        "A": "4", "Á": "4", "À": "4", "Â": "4", "Ã": "4",
+        "E": "3", "É": "3", "È": "3", "Ê": "3",
+        "I": "1", "Í": "1", "L": "1", "O": "0", "Ó": "0",
+        "Ô": "0", "Õ": "0", "S": "5",
+    },
+    "médio": {
+        "B": "8", "G": "6", "T": "7", "Z": "2",
+    },
+    "difícil": {
+        "P": "9", "R": "2",
+    },
+}
+
+
+def _numb3rs_digitos_ativos():
+    """Cada nível inclui o anterior; a dificuldade nunca é sorteada."""
+    nivel = str(st.session_state.get("numb3rs_nivel", "quase óbvio"))
+    ordem = list(NUMB3RS_NIVEIS)
+    limite = ordem.index(nivel) if nivel in ordem else 0
+    digitos = {}
+    for chave in ordem[:limite + 1]:
+        digitos.update(NUMB3RS_NIVEIS[chave])
+    return digitos
+
+
+def _numb3rs_ativo():
+    return str(st.session_state.get("voz_analise", "MACHINA")).upper() == "NUMB3RS"
+
+
+def _numb3rs_texto_exibido(texto):
+    """Aplica dose estável só aos nós de texto; HTML e entidades ficam intactos."""
+    if not _numb3rs_ativo():
+        return str(texto or "")
+
+    dose = max(0, min(100, int(st.session_state.get("numb3rs_pct", 35))))
+    digitos = _numb3rs_digitos_ativos()
+    origem = str(texto or "")
+    partes = re.split(
+        r"(\[[^\]]*\]\([^)]*\)|<[^>]*>|&(?:#\d+|#x[0-9a-fA-F]+|[a-zA-Z]+);)",
+        origem,
+    )
+    contador = 0
+    saida = []
+    for parte in partes:
+        if (
+            not parte
+            or parte.startswith("[")
+            or parte.startswith("<")
+            or (parte.startswith("&") and parte.endswith(";"))
+        ):
+            saida.append(parte)
+            continue
+        candidatos = [idx for idx, letra in enumerate(parte) if letra.upper() in digitos]
+        qtd = round(len(candidatos) * dose / 100)
+        if qtd:
+            chave = f"{origem}|{dose}|{contador}".encode("utf-8")
+            sorteio = random.Random(int(hashlib.sha256(chave).hexdigest(), 16))
+            escolhidas = set(sorteio.sample(candidatos, min(qtd, len(candidatos))))
+            parte = "".join(
+                digitos.get(letra.upper(), letra) if idx in escolhidas else letra
+                for idx, letra in enumerate(parte)
+            )
+        saida.append(parte)
+        contador += 1
+    return "".join(saida)
+
 def _off_machina_texto_limpo(texto):
     """Texto Off-Machina para leitura direta.
 
@@ -2769,20 +2912,11 @@ def load_md_file(file):  # Open files for about's
     return file_text
 
 def render_help_pacote_centralizado(texto, key="help_pacote"):
-    """Centraliza o pacote HELP mantendo cada item em linha própria.
-
-    Importante: não usar <pre> aqui. Em alguns temas/versões do Streamlit,
-    CSS global pode achatar o bloco visualmente. Renderizamos linha a linha
-    dentro de um pacote centralizado, preservando o alinhamento interno.
-    """
+    """Apresenta o MANUAL_*.md literal em uma moldura HTML única, centrada no palco."""
     linhas_html = []
     for line in str(texto or "").splitlines():
-        # Help não deve carregar rodapé/copyright dentro do pacote de uso.
-        if "copyright" in str(line or "").casefold():
-            continue
-
         safe_line = html.escape(line)
-        if safe_line.strip():
+        if safe_line:
             linhas_html.append(f"<div class='machina-help-line'>{safe_line}</div>")
         else:
             linhas_html.append("<div class='machina-help-blank'>&nbsp;</div>")
@@ -2792,20 +2926,21 @@ def render_help_pacote_centralizado(texto, key="help_pacote"):
         f"""
         <div class="machina-help-pacote-wrap" style="
             width:100%;
-            max-width:100%;
+            min-height:calc(100dvh - 150px);
             display:flex;
             justify-content:center;
-            align-items:flex-start;
-            margin:0.25rem auto 0.75rem auto;
+            align-items:center;
+            margin:0 auto;
+            padding:0.60rem 1rem;
             box-sizing:border-box;
         ">
             <div class="machina-help-pacote" style="
                 display:block;
+                width:fit-content;
+                max-width:min(78ch, 100%);
+                margin:auto;
+                padding:0.40rem 0.80rem;
                 text-align:left;
-                width:100%;
-                max-width:100%;
-                margin:0;
-                padding:0.40rem 0;
                 font-family:'Trebuchet MS', system-ui, sans-serif;
                 font-size:0.98rem;
                 line-height:1.42;
@@ -2817,7 +2952,7 @@ def render_help_pacote_centralizado(texto, key="help_pacote"):
                 .machina-help-pacote .machina-help-line {{
                     margin:0 0 0.55rem 0;
                     padding:0;
-                    white-space:normal;
+                    white-space:pre-wrap;
                 }}
                 .machina-help-pacote .machina-help-blank {{
                     height:0.20rem;
@@ -2832,13 +2967,12 @@ def render_help_pacote_centralizado(texto, key="help_pacote"):
         unsafe_allow_html=True,
     )
 
-def _manual_ypoemas_texto():
-    """Manual autoral externo; Matrix e ficha técnica continuam dinâmicas."""
-    return load_md_file("MANUAL_YPOEMAS.md")
-
 def render_help_ypoemas_mesma_fonte():
-    """Renderiza o Help yPoemas no padrão visual centralizado."""
-    render_help_pacote_centralizado(_manual_ypoemas_texto(), key="help_ypoemas")
+    """Help yPoemas: fonte autoral única = MANUAL_YPOEMAS.md."""
+    render_help_pacote_centralizado(
+        load_md_file("MANUAL_YPOEMAS.md"),
+        key="help_ypoemas",
+    )
 
 def _matrix_image_for_theme(nome_tema):
     """Localiza o gráfico Matrix do tema sem depender só de .capitalize()."""
@@ -3243,210 +3377,26 @@ def render_help_ypoemas_com_ficha():
     render_help_ypoemas_mesma_fonte()
     render_matrix_ficha_tecnica_ypoemas(st.session_state.get("tema", ""))
 
-@st.cache_data
-
-def _manual_talk_intro():
-    """Linha padrão dos Helps: legenda da voz dentro da lista de botões."""
-    return translate("♫ ouvir a leitura do texto")
-
-def _manual_inserir_talk_entre_botoes(raw_text):
-    """Insere a legenda da voz entre > e ? no manual dos botões.
-
-    Regra visual pedida:
-    - > = Move para o próximo tema
-    - ♫ ouvir a leitura do texto
-    - ?  = Modo de Usar & Manual do Usuário
-    """
-    linhas = []
-    for line in str(raw_text or "").splitlines():
-        if "ouvir a leitura do texto" in line.casefold():
-            continue
-        linhas.append(line)
-
-    talk_line = _manual_talk_intro()
-
-    # Preferência: inserir imediatamente antes da linha do botão ?.
-    for idx, line in enumerate(linhas):
-        clean = line.strip()
-        if clean.startswith("?") and "=" in clean:
-            linhas.insert(idx, talk_line)
-            return "\n".join(linhas)
-
-    # Fallback: inserir logo após a linha do botão seguinte.
-    for idx, line in enumerate(linhas):
-        if "▶" in line or re.match(r"^\s*(?:[-*]\s*)?>\s*=", line):
-            linhas.insert(idx + 1, talk_line)
-            return "\n".join(linhas)
-
-    # Último fallback: não joga no topo; coloca no fim.
-    linhas.append(talk_line)
-    return "\n".join(linhas)
-
-def _manual_text_sem_linha(raw_text, trecho):
-    """Remove linhas de manual que contenham determinado trecho."""
-    linhas = []
-    trecho = str(trecho or "").casefold()
-    for line in str(raw_text or "").splitlines():
-        if trecho and trecho in line.casefold():
-            continue
-        linhas.append(line)
-    return "\n".join(linhas)
-
-def _manual_off_machina_texto():
-    """Manual Off-Machina com ajuste fino pedido para o item 4."""
-    manual = load_md_file("MANUAL_OFF-MACHINA.md")
-    manual = _manual_text_sem_linha(manual, "selecione um livro da lista para ler")
-
-    bloco_listas = (
-        '- selecione o livro na "lista de livros";\n'
-        '- selecione o tema na "lista de temas".\n\n'
+def render_manual_mini():
+    """Help Mini: fonte autoral única = MANUAL_MINI.md."""
+    render_help_pacote_centralizado(
+        load_md_file("MANUAL_MINI.md"),
+        key="help_mini",
     )
 
-    # Insere antes da seção dos nav_buttons quando ela existir.
-    padrao = re.compile(r"(?im)^(\s*help.*nav_buttons.*|\s*nav_buttons.*)$")
-    if padrao.search(manual) and bloco_listas not in manual:
-        manual = padrao.sub(bloco_listas + r"\1", manual, count=1)
-    elif bloco_listas not in manual:
-        manual = bloco_listas + manual
-
-    # A faixa Off mantém os mesmos lugares da navegação comum, sem inventar
-    # função para +. Reordena somente as linhas dos botões já documentados.
-    linhas = manual.splitlines()
-    padrao_botao = re.compile(r"^\s*(?:[-*]\s*)?(?:✻|◀|✚|▶|\*|<|\+|>|♫|\?)\s*(?:=|\b)")
-    indices = [
-        idx for idx, linha in enumerate(linhas)
-        if padrao_botao.search(linha)
-        or re.match(r"^\s*(?:[-*]\s*)?s\s*=", linha, flags=re.IGNORECASE)
-    ]
-    if indices:
-        inserir_em = indices[0]
-        linhas = [linha for idx, linha in enumerate(linhas) if idx not in set(indices)]
-        botoes = [
-            "* = Escolhe um tema aleatoriamente",
-            "< = Move para o tema anterior",
-            "> = Move para o próximo tema",
-            _manual_talk_intro(),
-            "? = Modo de Usar & Manual do Usuário",
-        ]
-        linhas[inserir_em:inserir_em] = botoes
-        manual = "\n".join(linhas)
-
-    return manual
-
-def _manual_mini_texto():
-    """Manual Mini limpo: mantém a sequência visual dos botões.
-
-    Ordem desejada no Help da página Mini:
-    mini: modo de usar / ___ / ✚ / ✻ / 🔀 / ♫ / ?
-    """
-    manual = load_md_file("MANUAL_MINI.md")
-    linhas = []
-
-    for line in str(manual or "").splitlines():
-        clean = line.strip()
-        clean_fold = clean.casefold()
-
-        # Mini: esta linha deixa o Help poluído e já não entra no manual.
-        if "tempo de exibição" in clean_fold or "ajuste o tempo" in clean_fold:
-            continue
-
-        # Cabeçalho será inserido de forma padronizada no topo.
-        if clean_fold in {"mini: modo de usar", "___"}:
-            continue
-
-        # Padrão visual: Help abre e fecha com ___, não com ---.
-        if clean == "---":
-            line = "___"
-
-        # Remove qualquer sobra antiga da legenda de voz antes de reposicionar.
-        if "ouvir a leitura do texto" in clean_fold:
-            continue
-
-        # Remove marcação markdown que transformava linhas em H1/H2.
-        line = re.sub(r"^\s*#{1,6}\s+", "", line)
-        line = line.replace("**", "")
-
-        # Pedido: substituir o marcador antigo/palavra auto por ícone tipo random.
-        line = line.replace("☐", "🔀")
-        line = re.sub(r"\bauto\b", "🔀", line, flags=re.IGNORECASE)
-
-        linhas.append(line)
-
-    talk_line = _manual_talk_intro()
-    help_line = translate("?  Modo de Usar & Manual do Usuário")
-
-    # Remove duplicatas antigas do botão ? para reposicionar no fim do bloco dos botões.
-    linhas_sem_help = []
-    for line in linhas:
-        clean = line.strip()
-        if clean.startswith("?") and ("modo de usar" in clean.casefold() or "manual" in clean.casefold()):
-            continue
-        linhas_sem_help.append(line)
-    linhas = linhas_sem_help
-
-    # Regra específica da Mini: bloco dos botões deve ficar:
-    # ✚ / ✻ / 🔀 / ♫ / ?
-    inserted = False
-    for idx, line in enumerate(linhas):
-        fold = line.casefold()
-        if "exibe temas automaticamente" in fold or line.strip().startswith("🔀"):
-            linhas.insert(idx + 1, talk_line)
-            linhas.insert(idx + 2, help_line)
-            inserted = True
-            break
-
-    if not inserted:
-        # Fallback: antes do Copyright, nunca depois dele.
-        for idx, line in enumerate(linhas):
-            if "copyright" in line.casefold():
-                linhas.insert(idx, talk_line)
-                linhas.insert(idx + 1, help_line)
-                inserted = True
-                break
-
-    if not inserted:
-        linhas.append(talk_line)
-        linhas.append(help_line)
-
-    # Cabeçalho padrão do Help da página Mini.
-    header = [translate("mini: modo de usar"), "___"]
-    return "\n".join(header + linhas)
-
-def render_manual_mini():
-    """Help padrão da página Mini."""
-    render_help_pacote_centralizado(_manual_mini_texto(), key="help_mini")
-
-def _manual_eureka_texto():
-    """Manual padrão da página Eureka em formato de lista avaliável."""
-    botoes = [
-        "- * = Escolhe uma ocorrência aleatoriamente",
-        "- < = Move para a ocorrência anterior",
-    ]
-    if str(st.session_state.get("eureka_scope", "ypo")).lower() != "off":
-        botoes.append("- + = Gera novo texto para o tema")
-    botoes.extend([
-        "- > = Move para a próxima ocorrência",
-        "- ♫ ouvir a leitura do texto",
-        "- ? = Modo de Usar & Manual do Usuário",
-    ])
-    return "\n".join([
-        "eureka: modo de usar",
-        "___",
-        "Digite pelo menos 3 letras para buscar uma palavra que você goste...",
-        "___",
-        *botoes,
-        "___",
-        "A lista mostra palavras/verbetes encontrados no léxico da Machina.",
-        "___",
-    ])
-
 def render_manual_eureka():
-    """Help padrão da página Eureka."""
-    render_help_pacote_centralizado(_manual_eureka_texto(), key="help_eureka")
+    """Help Eureka: fonte autoral única = MANUAL_EUREKA.md."""
+    render_help_pacote_centralizado(
+        load_md_file("MANUAL_EUREKA.md"),
+        key="help_eureka",
+    )
 
 def render_manual_off_machina():
-    """Help padrão da página Off-Machina."""
-    render_help_pacote_centralizado(_manual_inserir_talk_entre_botoes(_manual_off_machina_texto()), key="help_off_machina")
+    """Help Off-Machina: fonte autoral única = MANUAL_OFF-MACHINA.md."""
+    render_help_pacote_centralizado(
+        load_md_file("MANUAL_OFF-MACHINA.md"),
+        key="help_off_machina",
+    )
 
 
 # =============================================================================
@@ -3615,7 +3565,9 @@ def make_retrato_xerox(prefixo):
     # Contrato visual: o Retrato captura exatamente a imagem que o leitor
     # está vendo na sidebar. Só depois da captura a sidebar avança para outra
     # candidata, preparando um eventual próximo Retrato.
-    imagem = st.session_state.get("sidebar_image_visible_path", "")
+    imagem = st.session_state.pop(f"{prefixo}_imagem_focada", "")
+    if not imagem:
+        imagem = st.session_state.get("sidebar_image_visible_path", "")
     if not imagem:
         if prefixo == "off":
             imagem = st.session_state.get("off_machina_images_pasta", "")
@@ -3664,6 +3616,13 @@ def make_retrato_xerox(prefixo):
         if proxima:
             st.session_state["save_image_tema"] = proxima
             st.session_state[f"{prefixo}_retrato_sidebar_renovada"] = True
+
+
+def _capturar_imagem_focada_para_retrato(prefixo):
+    """Registra a imagem exposta ao leitor antes do rerun do botão Retrato."""
+    imagem = st.session_state.get("sidebar_image_visible_path", "")
+    if imagem:
+        st.session_state[f"{prefixo}_imagem_focada"] = imagem
 
 
 def show_retrato_no_topo(prefixo):
@@ -3757,6 +3716,8 @@ def show_copy_retrato_xerox(
             "retrato",
             key=f"{prefixo}_retrato_btn",
             use_container_width=True,
+            on_click=_capturar_imagem_focada_para_retrato,
+            args=(prefixo,),
         )
         if retrato_clicked:
             if retrato_callback is not None:
@@ -4263,6 +4224,55 @@ def load_image_tema(nome_tema):
     st.session_state["save_image_tema"] = logo or ""
     return logo or ""
 
+
+def _sync_tema_imagem_antes_do_palco(page_id, tema):
+    """Autoridade única para o par tema/imagem exibido ao leitor.
+
+    A imagem é preparada antes da sidebar. Se uma ação interna trocar o tema
+    durante o rerun, a página reinicia antes de produzir o texto: nunca há
+    texto novo ao lado da imagem anterior.
+    """
+    tema = str(tema or "").strip()
+    if not tema:
+        return False
+
+    contexto = (str(page_id), tema, str(st.session_state.get("lang", "pt")))
+    if (
+        tuple(st.session_state.get("bypo_tema_imagem_context") or ()) == contexto
+        and st.session_state.get("save_image_tema")
+    ):
+        return False
+
+    load_image_tema(tema)
+    st.session_state["bypo_tema_imagem_context"] = contexto
+    return True
+
+
+def _sync_sidebar_context_before_render(chosen_id):
+    """Prepara a imagem do contexto ativo antes de renderizar a sidebar."""
+    chosen_id = str(chosen_id)
+    if chosen_id == "4":
+        _sync_off_sidebar_image_before_render(chosen_id)
+        return
+
+    if chosen_id == "1":
+        temas = load_temas("todos os temas")
+        if temas:
+            indice = max(0, min(int(st.session_state.get("mini", 0)), len(temas) - 1))
+            st.session_state["mini"] = indice
+            tema = temas[indice]
+            st.session_state["tema"] = tema
+            _sync_tema_imagem_antes_do_palco(chosen_id, tema)
+        return
+
+    if chosen_id == "2":
+        sync_livro_tema()
+        _sync_tema_imagem_antes_do_palco(chosen_id, st.session_state.get("tema", ""))
+        return
+
+    if chosen_id == "3":
+        _sync_tema_imagem_antes_do_palco(chosen_id, st.session_state.get("tema", ""))
+
 def _resolve_off_machina_book_image(book_name):
     """Localiza capa_<livro>.jpg na mesma pasta física do arquivo .Pip."""
     pip_path = _off_book_path(book_name)
@@ -4768,7 +4778,7 @@ def render_lax_palco(ypoema_html, tema):
         st.caption(resultado["distancia"])
 
 def render_conteudo_palco(prefixo, texto, tema, fonte_original=None, render_texto=None, permitir_analise=True):
-    """Contrato único de Retrato, Machina, OLA e LAX."""
+    """Contrato único de Machina, NUMB3RS, OLA, LAX e Retrato."""
     global _STAGE_ACTION_HOST
     col_acoes, col_conteudo = st.columns([1.25, 8.75], gap="small", vertical_alignment="top")
     with col_acoes:
@@ -4777,7 +4787,12 @@ def render_conteudo_palco(prefixo, texto, tema, fonte_original=None, render_text
         if show_retrato_no_topo(prefixo):
             return
         fonte = fonte_original if fonte_original is not None else texto
-        desenhar = render_texto or (lambda: write_ypoema(texto, None))
+        texto_exibido = _numb3rs_texto_exibido(texto)
+        desenhar = (
+            (lambda: render_texto(texto_exibido))
+            if render_texto is not None
+            else (lambda: write_ypoema(texto_exibido, None))
+        )
         voz = str(st.session_state.get("voz_analise", "Machina")).upper()
         if not permitir_analise or voz not in {"OLA", "LAX"}:
             desenhar()
@@ -4802,7 +4817,7 @@ def _analysis_options_for_voice(voice):
     return OLA_ANALYSIS_OPTIONS if str(voice or "").upper() == "OLA" else []
 
 def _set_analysis_voice(voice):
-    """Seleção exclusiva: Machina desliga; OLA ou LAX ligam uma análise."""
+    """Seleção exclusiva: MACH, NUMB3RS, OLA ou LAX."""
     voice_key = str(voice or "Machina").strip().upper()
     if voice_key == "OLA":
         st.session_state["voz_analise"] = "OLA"
@@ -4819,13 +4834,15 @@ def _set_analysis_voice(voice):
                 st.session_state.pop("lax_ponto_b_select", None)
                 st.session_state["lax_par_inicial_definido"] = True
         st.session_state["voz_analise"] = "LAX"
+    elif voice_key == "NUMB3RS":
+        st.session_state["voz_analise"] = "NUMB3RS"
     else:
         st.session_state["voz_analise"] = "Machina"
 
 def render_analysis_sidebar_block():
-    """Bloco centralizado e exclusivo: Machina / OLA / LAX."""
+    """Bloco centralizado e exclusivo: MACH / 123 / OLA / LAX."""
     current_key = str(st.session_state.get("voz_analise", "Machina")).upper()
-    if current_key not in {"MACHINA", "OLA", "LAX"}:
+    if current_key not in {"MACHINA", "NUMB3RS", "OLA", "LAX"}:
         current_key = "MACHINA"
         st.session_state["voz_analise"] = "Machina"
 
@@ -4836,16 +4853,29 @@ def render_analysis_sidebar_block():
         st.session_state["tipo_analise"] = current_kind
 
     _sidebar_host().markdown("<div style='height:1.85rem;'></div>", unsafe_allow_html=True)
-    col_machina, col_ola, col_lax = _sidebar_host().columns(3)
+    col_machina, col_numb3rs, col_ola, col_lax = _sidebar_host().columns(4)
 
     with col_machina:
         if st.button(
-            "MACHINA",
+            "MACH",
             key="analysis_voice_machina_btn",
             use_container_width=True,
             type="primary" if current_key == "MACHINA" else "secondary",
         ):
             _set_analysis_voice("Machina")
+            try:
+                st.rerun()
+            except AttributeError:
+                st.experimental_rerun()
+
+    with col_numb3rs:
+        if st.button(
+            "123",
+            key="analysis_voice_numb3rs_btn",
+            use_container_width=True,
+            type="primary" if current_key == "NUMB3RS" else "secondary",
+        ):
+            _set_analysis_voice("NUMB3RS")
             try:
                 st.rerun()
             except AttributeError:
@@ -4885,6 +4915,19 @@ def render_analysis_sidebar_block():
 
     if current_key == "LAX":
         st.session_state["lax_pct_original"] = _sidebar_host().slider("% máximo original", 20, 80, int(st.session_state.get("lax_pct_original", 45)), 5, key="lax_pct_select")
+    elif current_key == "NUMB3RS":
+        niveis = list(NUMB3RS_NIVEIS)
+        nivel_atual = str(st.session_state.get("numb3rs_nivel", niveis[0]))
+        st.session_state["numb3rs_nivel"] = _sidebar_host().selectbox(
+            "dificuldade",
+            niveis,
+            index=niveis.index(nivel_atual) if nivel_atual in niveis else 0,
+            key="numb3rs_nivel_select",
+        )
+        st.session_state["numb3rs_pct"] = _sidebar_host().slider(
+            "% trocas", 0, 100, int(st.session_state.get("numb3rs_pct", 20)), 5,
+            key="numb3rs_pct_select",
+        )
 
 
 # =============================================================================
@@ -5462,28 +5505,29 @@ def page_mini():
     foo1, more_col, rand_col, auto_col, voz_col, help_col, foo2 = st.columns([2.35, 1.0, 1.0, 1.35, 1.0, 1.0, 2.35])
 
     with more_col:
-        more = st.button("✚", key="mini_more_btn", use_container_width=True)
+        more = st.button("✚", key="mini_more_btn", help=help_tip("more", "gera nova versão do tema"), use_container_width=True)
 
     with rand_col:
-        rand = st.button("✻", key="mini_rand_btn", use_container_width=True)
+        rand = st.button("✻", key="mini_rand_btn", help=help_tip("rand", "escolhe tema ao acaso"), use_container_width=True)
 
     with auto_col:
         auto_clicked = st.button(
             "🔀",
             key="mini_auto_button",
+            help=translate("modo automático"),
             use_container_width=True,
         )
         if auto_clicked:
             st.session_state.auto = not st.session_state.auto
 
     with voz_col:
-        voz_clicked = st.button("♫", key="mini_voz_btn", use_container_width=True)
+        voz_clicked = st.button("♫", key="mini_voz_btn", help=help_tip("talk", "voz"), use_container_width=True)
         if voz_clicked:
             st.session_state.talk = not st.session_state.talk
 
     # Pedido: o botão ? deve existir como botão real logo após o ♫.
     with help_col:
-        manu = st.button("?", key="mini_help_btn", use_container_width=True)
+        manu = st.button("?", key="mini_help_btn", help=translate("Modo de Usar & Manual do Usuário"), use_container_width=True)
 
     mini_voz_slot = render_voz_slot()
 
@@ -5539,8 +5583,8 @@ def page_mini():
 
         update_readings(st.session_state.tema)
         LOGO_TEXTO = curr_ypoema
-        if not st.session_state.pop("mini_retrato_sidebar_renovada", False):
-            load_image_tema(st.session_state.tema)
+        if _sync_tema_imagem_antes_do_palco("1", st.session_state.tema):
+            st.rerun()
 
         mini_status = (
             "🍃  "
@@ -5594,7 +5638,8 @@ def page_mini():
 
                     update_readings(st.session_state.tema)
                     LOGO_TEXTO = curr_ypoema
-                    load_image_tema(st.session_state.tema)
+                    if _sync_tema_imagem_antes_do_palco("1", st.session_state.tema):
+                        st.rerun()
 
                     with mini_place_holder:
                         mini_place_holder.empty()
@@ -5638,14 +5683,14 @@ def page_ypoemas():
                 unsafe_allow_html=True,
             )
         nav_cols = st.columns([1, 1, 1, 1, 1, 1])
-        rand = nav_cols[0].button("*", use_container_width=True)
-        last = nav_cols[1].button("<", use_container_width=True)
-        more = nav_cols[2].button("+", use_container_width=True)
-        nest = nav_cols[3].button(">", use_container_width=True)
-        voz_clicked = nav_cols[4].button("♫", key="ypoemas_voz_btn", use_container_width=True)
+        rand = nav_cols[0].button("*", help=help_tip("rand", "escolhe tema ao acaso"), use_container_width=True)
+        last = nav_cols[1].button("<", help=help_tip("last", "tema anterior"), use_container_width=True)
+        more = nav_cols[2].button("+", help=help_tip("more", "gera nova versão do tema"), use_container_width=True)
+        nest = nav_cols[3].button(">", help=help_tip("nest", "próximo tema"), use_container_width=True)
+        voz_clicked = nav_cols[4].button("♫", key="ypoemas_voz_btn", help=help_tip("talk", "voz"), use_container_width=True)
         if voz_clicked:
             st.session_state.talk = not st.session_state.talk
-        manu = nav_cols[5].button("?", use_container_width=True)
+        manu = nav_cols[5].button("?", help=translate("Modo de Usar & Manual do Usuário"), use_container_width=True)
 
         ypoemas_voz_slot = render_voz_slot()
 
@@ -5755,10 +5800,11 @@ def page_ypoemas():
                     int(st.session_state.get("take", 0)),
                     str(st.session_state.get("tema", "")),
                 )
+                tagcloud_force = bool(st.session_state.pop("tagcloud_force_generate", False))
                 curr_ypoema = resolve_lypo_typo(
                     lypo_contexto,
                     generate_lypo=lambda: load_poema(st.session_state.tema, ""),
-                    force_generate=bool(more or last or rand or nest),
+                    force_generate=bool(more or last or rand or nest or tagcloud_force),
                 )
 
             if usou_xerox_ypo:
@@ -5780,8 +5826,8 @@ def page_ypoemas():
             st.session_state["ypo_keep_tema"] = st.session_state.get("tema", "")
 
             LOGO_TEXTO = curr_ypoema
-            if not st.session_state.pop("ypo_retrato_sidebar_renovada", False):
-                load_image_tema(st.session_state.tema)
+            if _sync_tema_imagem_antes_do_palco("2", st.session_state.tema):
+                st.rerun()
 
             render_conteudo_palco("ypo", LOGO_TEXTO, st.session_state.tema, fonte_original=load_lypo())
 
@@ -5884,28 +5930,28 @@ def page_eureka():
 
         nav_cols = st.columns([1, 1, 1, 1, 1, 1])
         rand = nav_cols[0].button(
-            "*", key="eureka_rand_btn", use_container_width=True
+            "*", key="eureka_rand_btn", help=help_tip("rand", "escolhe tema ao acaso"), use_container_width=True
         )
         last = nav_cols[1].button(
-            "<", key="eureka_prev_btn", use_container_width=True
+            "<", key="eureka_prev_btn", help=help_tip("last", "tema anterior"), use_container_width=True
         )
         with nav_cols[2]:
             if eureka_scope == "off":
                 more = False
             else:
                 more = st.button(
-                    "+", key="eureka_more_btn", use_container_width=True
+                    "+", key="eureka_more_btn", help=help_tip("more", "gera nova versão do tema"), use_container_width=True
                 )
         nest = nav_cols[3].button(
-            ">", key="eureka_next_btn", use_container_width=True
+            ">", key="eureka_next_btn", help=help_tip("nest", "próximo tema"), use_container_width=True
         )
 
-        voz_clicked = nav_cols[4].button("♫", key="eureka_voz_btn", use_container_width=True)
+        voz_clicked = nav_cols[4].button("♫", key="eureka_voz_btn", help=help_tip("talk", "voz"), use_container_width=True)
         if voz_clicked:
             _hide_eureka_help()
             st.session_state.talk = not st.session_state.talk
 
-        manu = nav_cols[5].button("?", use_container_width=True)
+        manu = nav_cols[5].button("?", help=translate("Modo de Usar & Manual do Usuário"), use_container_width=True)
 
         eureka_voz_slot = render_voz_slot()
 
@@ -6060,8 +6106,8 @@ def page_eureka():
                 eureka_expander = st.expander("", expanded=True)
                 with eureka_expander:
                     LOGO_TEXTO = curr_ypoema if usou_xerox_eureka else _eureka_mark_html(curr_ypoema, find_what)
-                    if not st.session_state.pop("eureka_retrato_sidebar_renovada", False):
-                        load_image_tema(seed_tema)
+                    if _sync_tema_imagem_antes_do_palco("3", seed_tema):
+                        st.rerun()
 
                     render_conteudo_palco("eureka", LOGO_TEXTO, seed_tema, fonte_original=load_lypo())
                     update_readings(seed_tema)
@@ -6162,8 +6208,8 @@ def page_off_machina():  # available off_machina_books
                 unsafe_allow_html=True,
             )
         nav_cols = st.columns([1, 1, 1, 1, 1, 1])
-        rand = nav_cols[0].button("*", use_container_width=True)
-        last = nav_cols[1].button("<", use_container_width=True)
+        rand = nav_cols[0].button("*", help=help_tip("rand", "escolhe tema ao acaso"), use_container_width=True)
+        last = nav_cols[1].button("<", help=help_tip("last", "tema anterior"), use_container_width=True)
         # A terceira posição pertence ao + nas páginas que geram variações.
         # Off-Machina usa esse quadrado para a Gráfica: abre o print_atual.
         with nav_cols[2]:
@@ -6173,11 +6219,11 @@ def page_off_machina():  # available off_machina_books
                 help="livro",
                 use_container_width=True,
             )
-        nest = nav_cols[3].button(">", use_container_width=True)
-        voz_clicked = nav_cols[4].button("♫", key="off_voz_btn", use_container_width=True)
+        nest = nav_cols[3].button(">", help=help_tip("nest", "próximo tema"), use_container_width=True)
+        voz_clicked = nav_cols[4].button("♫", key="off_voz_btn", help=help_tip("talk", "voz"), use_container_width=True)
         if voz_clicked:
             st.session_state.talk = not st.session_state.talk
-        manu = nav_cols[5].button("?", use_container_width=True)
+        manu = nav_cols[5].button("?", help=translate("Modo de Usar & Manual do Usuário"), use_container_width=True)
 
         off_voz_slot = render_voz_slot()
 
@@ -6249,8 +6295,8 @@ def page_off_machina():  # available off_machina_books
         nome_livro = str(print_atual.get("book", off_book_name))
         payload_livro = print_atual.get("payload", b"")
 
-        def render_print_atual():
-            write_livro_vivo_texto(texto_livro)
+        def render_print_atual(texto_exibido):
+            write_livro_vivo_texto(texto_exibido)
 
         render_conteudo_palco(
             "off_print",
@@ -6360,8 +6406,8 @@ def page_off_machina():  # available off_machina_books
             st.session_state.take_analise = st.session_state.off_take
             st.session_state.lang_analise = st.session_state.lang
 
-            def render_off_texto():
-                write_off_machina_texto(LOGO_TEXTO)
+            def render_off_texto(texto_exibido):
+                write_off_machina_texto(texto_exibido)
 
             render_conteudo_palco("off", LOGO_TEXTO, off_title, fonte_original=LOGO_TEXTO, render_texto=render_off_texto)
 
@@ -6460,6 +6506,318 @@ def page_tools_z():
 def page_atelier():
     """Alias histórico preservado; encaminha para a Página Z / TOOLS."""
     return page_tools_z()
+
+
+# =============================================================================
+# TAG CLOUD — IDLE / PALCO TEMPORÁRIO
+# Fonte única: base/rol_todos os temas.txt
+# =============================================================================
+_TAG_CLOUD_COMPONENT_JS = r"""
+export default function(component) {
+    const { data, setTriggerValue } = component;
+    const pool = Array.isArray(data?.temas) ? data.temas : [];
+    const idleMs = Number(data?.idle_ms || 90000);
+    const readMs = Number(data?.read_ms || idleMs);
+    const readMode = Boolean(data?.read_mode);
+    const activeIdleMs = readMode ? readMs : idleMs;
+    const renewMs = Number(data?.renew_ms || 8000);
+    const visible = Math.max(2, Math.min(Number(data?.visible || 18), pool.length));
+    const src = String(data?.src || '');
+
+    let idleTimer = null;
+    let renewTimer = null;
+    let instance = null;
+    let overlay = null;
+    let cloudRoot = null;
+    let active = false;
+    let current = [];
+    let destroyed = false;
+    const listeners = [];
+
+    const on = (target, type, fn, opts) => {
+        target.addEventListener(type, fn, opts);
+        listeners.push([target, type, fn, opts]);
+    };
+
+    const shuffled = () => {
+        const arr = pool.slice();
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    };
+
+    const stage = () => document.querySelector(
+        '.st-key-bypo_stage_content, .st-key-bypo_stage_content_full'
+    );
+
+    const schedule = () => {
+        clearTimeout(idleTimer);
+        if (!destroyed && !active && pool.length > 1) {
+            idleTimer = setTimeout(show, activeIdleMs);
+        }
+    };
+
+    const hide = () => {
+        active = false;
+        clearInterval(renewTimer);
+        renewTimer = null;
+        if (instance) {
+            try { instance.destroy(); } catch (_) {}
+            instance = null;
+        }
+        if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
+        overlay = null;
+        cloudRoot = null;
+        schedule();
+    };
+
+    const replacement = () => {
+        if (pool.length <= current.length) return null;
+        const occupied = new Set(current);
+        const candidates = pool.filter((tema) => !occupied.has(tema));
+        if (!candidates.length) return null;
+        return candidates[Math.floor(Math.random() * candidates.length)];
+    };
+
+    const renewOne = () => {
+        if (!active || !instance || !current.length) return;
+        const tema = replacement();
+        if (!tema) return;
+        const index = Math.floor(Math.random() * current.length);
+        current[index] = tema;
+        try { instance.update(current); } catch (_) {}
+    };
+
+    const selectTheme = (tema) => {
+        if (!tema) return;
+        hide();
+        setTriggerValue('theme', tema);
+    };
+
+    const mountCloud = () => {
+        const host = stage();
+        if (!host || destroyed || active || typeof window.TagCloud !== 'function') return;
+
+        active = true;
+        current = shuffled().slice(0, visible);
+        const style = window.getComputedStyle(host);
+        if (style.position === 'static') host.style.position = 'relative';
+
+        overlay = document.createElement('div');
+        overlay.className = 'machina-tagcloud-idle';
+        Object.assign(overlay.style, {
+            position: 'absolute',
+            inset: '0',
+            zIndex: '50',
+            overflow: 'hidden',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: (
+                style.backgroundColor && style.backgroundColor !== 'rgba(0, 0, 0, 0)'
+            ) ? style.backgroundColor : 'var(--background-color, #ffffff)'
+        });
+
+        cloudRoot = document.createElement('div');
+        cloudRoot.className = 'machina-tagcloud-root';
+        cloudRoot.style.marginTop = '1.50rem';
+        overlay.appendChild(cloudRoot);
+        host.appendChild(overlay);
+
+        const rect = host.getBoundingClientRect();
+        const radius = Math.max(
+            115,
+            Math.min(285, Math.floor(Math.min(rect.width, rect.height) * 0.38))
+        );
+
+
+        const TAG_COLORS = [
+            "#7A3E9D",
+            "#0F6B78",
+            "#A4512D",
+            "#486B2F",
+            "#8A3B62",
+            "#3E5F8A"
+        ];
+
+        function applyTagColors(root) {
+            const items = root.querySelectorAll(".tagcloud--item");
+            items.forEach((item, index) => {
+                item.style.color = TAG_COLORS[index % TAG_COLORS.length];
+            });
+        }
+
+        instance = window.TagCloud(cloudRoot, current, {
+            radius: radius,
+            maxSpeed: 'normal',
+            initSpeed: 'slow',
+            direction: 135,
+            keep: true
+        });
+
+        cloudRoot.querySelectorAll('.tagcloud--item').forEach((item) => {
+            item.style.cursor = 'pointer';
+            item.style.textDecoration = 'none';
+            item.style.userSelect = 'none';
+        });
+        applyTagColors(cloudRoot);
+
+        on(cloudRoot, 'click', (ev) => {
+            const item = ev.target.closest('.tagcloud--item');
+            if (!item) return;
+            ev.preventDefault();
+            ev.stopPropagation();
+            selectTheme((item.textContent || '').trim());
+        }, true);
+
+        renewTimer = setInterval(renewOne, renewMs);
+    };
+
+    const show = () => {
+        if (destroyed || active || pool.length < 2) return;
+        if (typeof window.TagCloud === 'function') {
+            mountCloud();
+            return;
+        }
+
+        let script = document.querySelector('script[data-machina-tagcloud="1"]');
+        if (!script) {
+            script = document.createElement('script');
+            script.src = src;
+            script.async = true;
+            script.dataset.machinaTagcloud = '1';
+            document.head.appendChild(script);
+        }
+        script.addEventListener('load', mountCloud, { once: true });
+    };
+
+    const activity = (ev) => {
+        if (destroyed) return;
+        if (active) {
+            // Durante o CLOUD, o mouse continua comandando a dança.
+            if (ev.type === 'mousemove') return;
+            if (
+                ev.target && ev.target.closest &&
+                ev.target.closest('.machina-tagcloud-root')
+            ) return;
+            hide();
+            return;
+        }
+        schedule();
+    };
+
+    on(document, 'mousemove', activity, { passive: true, capture: true });
+    on(document, 'pointerdown', activity, { passive: true, capture: true });
+    on(document, 'keydown', activity, true);
+    on(document, 'wheel', activity, { passive: true, capture: true });
+    on(document, 'scroll', activity, { passive: true, capture: true });
+    on(document, 'touchstart', activity, { passive: true, capture: true });
+
+    schedule();
+
+    return () => {
+        destroyed = true;
+        clearTimeout(idleTimer);
+        clearInterval(renewTimer);
+        if (instance) {
+            try { instance.destroy(); } catch (_) {}
+        }
+        if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
+        listeners.forEach(([target, type, fn, opts]) => {
+            try { target.removeEventListener(type, fn, opts); } catch (_) {}
+        });
+    };
+}
+"""
+
+_TAG_CLOUD_COMPONENT = st.components.v2.component(
+    "machina_tagcloud_idle",
+    js=_TAG_CLOUD_COMPONENT_JS,
+)
+
+
+def _tagcloud_temas_autorais():
+    """Lê os nomes autorais diretamente do rol geral, preservando a ordem."""
+    path = _project_path("base", "rol_todos os temas.txt")
+    temas = []
+    vistos = set()
+    try:
+        with open(path, encoding="utf-8-sig") as arquivo:
+            for raw in arquivo:
+                tema = raw.strip()
+                chave = tema.casefold()
+                if tema and chave not in vistos:
+                    vistos.add(chave)
+                    temas.append(tema)
+    except OSError:
+        return []
+    return temas
+
+
+def _tagcloud_aplicar_tema(tema):
+    """Entrega o tema clicado ao fluxo normal de yPoemas, na mesma sessão."""
+    tema = str(tema or "").strip()
+    if not tema:
+        return False
+
+    temas_autorais = _tagcloud_temas_autorais()
+    tema_real = next(
+        (item for item in temas_autorais if item.casefold() == tema.casefold()),
+        "",
+    )
+    if not tema_real:
+        return False
+
+    temas = load_temas("todos os temas")
+    if tema_real not in temas:
+        return False
+
+    _clear_off_print_current()
+    limpar_retratos()
+    limpar_copias_palco()
+    st.session_state.book = "todos os temas"
+    st.session_state.take = temas.index(tema_real)
+    st.session_state.tema = tema_real
+    st.session_state["tagcloud_force_generate"] = True
+    next_tema_key()
+    _set_machina_page("yPoemas", "2")
+    return True
+
+
+def _tagcloud_on_theme_change():
+    """Aplica o tema do clique antes do render normal da página."""
+    payload = st.session_state.get("machina_tagcloud_idle")
+    tema = None
+    if payload is not None:
+        try:
+            tema = payload.get("theme")
+        except Exception:
+            tema = getattr(payload, "theme", None)
+    if tema:
+        _tagcloud_aplicar_tema(tema)
+
+
+def _render_tagcloud_idle():
+    """Monta somente o comportamento idle; nenhum controle aparece no palco."""
+    temas = _tagcloud_temas_autorais()
+    if len(temas) < 2:
+        return
+
+    _TAG_CLOUD_COMPONENT(
+        data={
+            "temas": temas,
+            "idle_ms": max(1, int(TAG_IDLE_TIME)) * 1000,
+            "read_ms": max(1, int(TAG_READ_TIME)) * 1000,
+            "read_mode": str(st.session_state.get("pagina", "")) == "2",
+            "renew_ms": max(1, int(TAG_CLOUD_RENEW_TIME)) * 1000,
+            "visible": max(2, min(int(TAG_CLOUD_VISIBLE), len(temas))),
+            "src": TAG_CLOUD_JS,
+        },
+        on_theme_change=_tagcloud_on_theme_change,
+        key="machina_tagcloud_idle",
+    )
 
 
 # =============================================================================
@@ -6573,7 +6931,7 @@ def start_machina(app_variant="bypo"):
     sidebar_open = _sidebar_house_open()
     chosen_label = st.session_state["pick_pagina"]
     chosen_id = str(st.session_state.get("pagina", page_ids.get(chosen_label, "2")))
-    _sync_off_sidebar_image_before_render(chosen_id)
+    _sync_sidebar_context_before_render(chosen_id)
     sidebar_slot = None
 
     if sidebar_open:
@@ -6620,6 +6978,7 @@ def start_machina(app_variant="bypo"):
                 with st.container(key="bypo_stage_content_full", border=False):
                     _bypo_render_real_page(chosen_id)
 
+    _render_tagcloud_idle()
 
 
 if __name__ == "__main__":
