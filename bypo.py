@@ -1,6 +1,6 @@
 # =============================================================================
 # bypo.py — BASIC YPO / MACHINA HORIZONTAL
-# Build 2026-09-24_124 — CLOUD_BALANCEADO
+# Build 2026-09-25_127 — TAG_ABRE_YPOEMAS
 #
 # BASE / PROVENIÊNCIA
 # - Base funcional: basico.py GitHub de 08/09/2026, copiado para isolamento.
@@ -92,6 +92,9 @@
 # - 122 TAG_CLICK_CLOSE: clique em tema fecha o overlay TAG antes de entregar o tema à Machina.
 # - 123 TAG_READ_IDLE: yPoemas usa idle de leitura próprio; atividade/scroll reiniciam o tempo ativo.
 # - 124 CLOUD_BALANCEADO: lê opcionalmente base/config_cloud.txt; defaults permanecem internos.
+# - 125 CLOUD_RETORNO_IMAGEM: retorno CLOUD→palco renova a imagem do mesmo tema/banco.
+# - 126 TEXTO_NOVO_IMAGEM_NOVA: geração nova em MINI/yPoemas/EUREKA renova a imagem do mesmo banco.
+# - 127 TAG_ABRE_YPOEMAS: TAG é processado antes do palco; clique já abre yPoemas/tema no mesmo ciclo.
 #   sem controles visíveis; clique no tema abre yPoemas; atividade normal encerra o TAG.
 # =============================================================================
 # Leitura da casa:
@@ -2345,6 +2348,7 @@ def resolve_lypo_typo(context, generate_lypo=None, force_generate=False):
     lypo_exists = os.path.isfile(_lypo_path())
     context_changed = st.session_state.get("lypo_context", "") != context_key
     must_generate = bool(force_generate or context_changed or not lypo_exists)
+    st.session_state["_lypo_generated_now"] = must_generate
 
     if must_generate:
         if generate_lypo is None:
@@ -4254,20 +4258,16 @@ def load_image_tema(nome_tema):
     return logo or ""
 
 
-def _sync_tema_imagem_antes_do_palco(page_id, tema):
-    """Autoridade única para o par tema/imagem exibido ao leitor.
-
-    A imagem é preparada antes da sidebar. Se uma ação interna trocar o tema
-    durante o rerun, a página reinicia antes de produzir o texto: nunca há
-    texto novo ao lado da imagem anterior.
-    """
+def _sync_tema_imagem_antes_do_palco(page_id, tema, force=False):
+    """Autoridade única para o par tema/imagem exibido ao leitor."""
     tema = str(tema or "").strip()
     if not tema:
         return False
 
     contexto = (str(page_id), tema, str(st.session_state.get("lang", "pt")))
     if (
-        tuple(st.session_state.get("bypo_tema_imagem_context") or ()) == contexto
+        not force
+        and tuple(st.session_state.get("bypo_tema_imagem_context") or ()) == contexto
         and st.session_state.get("save_image_tema")
     ):
         return False
@@ -4277,8 +4277,21 @@ def _sync_tema_imagem_antes_do_palco(page_id, tema):
     return True
 
 
+def _sync_imagem_apos_texto(page_id, tema):
+    """Texto realmente novo no mesmo tema recebe nova imagem do mesmo banco."""
+    gerou_texto = bool(st.session_state.pop("_lypo_generated_now", False))
+    contexto = (str(page_id), str(tema or "").strip(), str(st.session_state.get("lang", "pt")))
+    preparado = tuple(st.session_state.get("bypo_sidebar_image_prepared_context") or ())
+
+    if gerou_texto and preparado != contexto:
+        return _sync_tema_imagem_antes_do_palco(page_id, tema, force=True)
+
+    return _sync_tema_imagem_antes_do_palco(page_id, tema)
+
+
 def _sync_sidebar_context_before_render(chosen_id):
     """Prepara a imagem do contexto ativo antes de renderizar a sidebar."""
+    st.session_state.pop("bypo_sidebar_image_prepared_context", None)
     chosen_id = str(chosen_id)
     if chosen_id == "4":
         _sync_off_sidebar_image_before_render(chosen_id)
@@ -4291,16 +4304,27 @@ def _sync_sidebar_context_before_render(chosen_id):
             st.session_state["mini"] = indice
             tema = temas[indice]
             st.session_state["tema"] = tema
-            _sync_tema_imagem_antes_do_palco(chosen_id, tema)
+            if _sync_tema_imagem_antes_do_palco(chosen_id, tema):
+                st.session_state["bypo_sidebar_image_prepared_context"] = (
+                    chosen_id, str(tema), str(st.session_state.get("lang", "pt"))
+                )
         return
 
     if chosen_id == "2":
         sync_livro_tema()
-        _sync_tema_imagem_antes_do_palco(chosen_id, st.session_state.get("tema", ""))
+        tema = st.session_state.get("tema", "")
+        if _sync_tema_imagem_antes_do_palco(chosen_id, tema):
+            st.session_state["bypo_sidebar_image_prepared_context"] = (
+                chosen_id, str(tema), str(st.session_state.get("lang", "pt"))
+            )
         return
 
     if chosen_id == "3":
-        _sync_tema_imagem_antes_do_palco(chosen_id, st.session_state.get("tema", ""))
+        tema = st.session_state.get("tema", "")
+        if _sync_tema_imagem_antes_do_palco(chosen_id, tema):
+            st.session_state["bypo_sidebar_image_prepared_context"] = (
+                chosen_id, str(tema), str(st.session_state.get("lang", "pt"))
+            )
 
 def _resolve_off_machina_book_image(book_name):
     """Localiza capa_<livro>.jpg na mesma pasta física do arquivo .Pip."""
@@ -5612,7 +5636,7 @@ def page_mini():
 
         update_readings(st.session_state.tema)
         LOGO_TEXTO = curr_ypoema
-        if _sync_tema_imagem_antes_do_palco("1", st.session_state.tema):
+        if _sync_imagem_apos_texto("1", st.session_state.tema):
             st.rerun()
 
         mini_status = (
@@ -5667,7 +5691,7 @@ def page_mini():
 
                     update_readings(st.session_state.tema)
                     LOGO_TEXTO = curr_ypoema
-                    if _sync_tema_imagem_antes_do_palco("1", st.session_state.tema):
+                    if _sync_imagem_apos_texto("1", st.session_state.tema):
                         st.rerun()
 
                     with mini_place_holder:
@@ -5855,7 +5879,7 @@ def page_ypoemas():
             st.session_state["ypo_keep_tema"] = st.session_state.get("tema", "")
 
             LOGO_TEXTO = curr_ypoema
-            if _sync_tema_imagem_antes_do_palco("2", st.session_state.tema):
+            if _sync_imagem_apos_texto("2", st.session_state.tema):
                 st.rerun()
 
             render_conteudo_palco("ypo", LOGO_TEXTO, st.session_state.tema, fonte_original=load_lypo())
@@ -6135,7 +6159,7 @@ def page_eureka():
                 eureka_expander = st.expander("", expanded=True)
                 with eureka_expander:
                     LOGO_TEXTO = curr_ypoema if usou_xerox_eureka else _eureka_mark_html(curr_ypoema, find_what)
-                    if _sync_tema_imagem_antes_do_palco("3", seed_tema):
+                    if _sync_imagem_apos_texto("3", seed_tema):
                         st.rerun()
 
                     render_conteudo_palco("eureka", LOGO_TEXTO, seed_tema, fonte_original=load_lypo())
@@ -6588,7 +6612,7 @@ export default function(component) {
         }
     };
 
-    const hide = () => {
+    const hide = (resumePalco = false) => {
         active = false;
         clearInterval(renewTimer);
         renewTimer = null;
@@ -6600,6 +6624,9 @@ export default function(component) {
         overlay = null;
         cloudRoot = null;
         schedule();
+        if (resumePalco) {
+            setTriggerValue('resume', Date.now());
+        }
     };
 
     const replacement = () => {
@@ -6621,7 +6648,7 @@ export default function(component) {
 
     const selectTheme = (tema) => {
         if (!tema) return;
-        hide();
+        hide(false);
         setTriggerValue('theme', tema);
     };
 
@@ -6731,7 +6758,7 @@ export default function(component) {
                 ev.target && ev.target.closest &&
                 ev.target.closest('.machina-tagcloud-root')
             ) return;
-            hide();
+            hide(true);
             return;
         }
         schedule();
@@ -6828,6 +6855,11 @@ def _tagcloud_on_theme_change():
         _tagcloud_aplicar_tema(tema)
 
 
+def _tagcloud_on_resume_change():
+    """Retorno CLOUD→palco: força novo sorteio da imagem do tema atual."""
+    st.session_state.pop("bypo_tema_imagem_context", None)
+
+
 def _render_tagcloud_idle():
     """Monta somente o comportamento idle; nenhum controle aparece no palco."""
     temas = _tagcloud_temas_autorais()
@@ -6846,6 +6878,7 @@ def _render_tagcloud_idle():
             "src": TAG_CLOUD_JS,
         },
         on_theme_change=_tagcloud_on_theme_change,
+        on_resume_change=_tagcloud_on_resume_change,
         key="machina_tagcloud_idle",
     )
 
@@ -6958,6 +6991,10 @@ def start_machina(app_variant="bypo"):
         nav_items.append(("Z", "TOOLS", 0.5))
     _sync_machina_page_state(page_labels, page_ids)
 
+    # TAG precisa ser processado antes de escolher/renderizar a página.
+    # Assim o clique altera página/tema antes do palco deste mesmo ciclo.
+    _render_tagcloud_idle()
+
     sidebar_open = _sidebar_house_open()
     chosen_label = st.session_state["pick_pagina"]
     chosen_id = str(st.session_state.get("pagina", page_ids.get(chosen_label, "2")))
@@ -7007,8 +7044,6 @@ def start_machina(app_variant="bypo"):
             ):
                 with st.container(key="bypo_stage_content_full", border=False):
                     _bypo_render_real_page(chosen_id)
-
-    _render_tagcloud_idle()
 
 
 if __name__ == "__main__":
