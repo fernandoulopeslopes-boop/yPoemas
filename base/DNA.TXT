@@ -17,7 +17,7 @@
 |Batismo|S|metalinguagem|machina|4|10|91|51|32640|3.26e+04|
 |Beaba|S|livro vivo;metalinguagem|machina|5|17|117|128|17923368960000|1.79e+13|
 |Becos|S|poemas;sociais|persona|8|22|302|264|298456756332134400|2.98e+17|
-|bi-palavras|S|todos os temas|machina|4|9|65|44|18928|1.89e+04|
+|bi-palavras|S|todos os temas|machina|4|9|70|44|6370|6.37e+03|
 |Blablabla|S|variações;metalinguagem|joco|3|6|398|270|24360000|2.44e+07|
 |Bolero|S|variações|author|8|19|266|418|157517650667520000|1.58e+17|
 |Brado|S|livro vivo;jocosos;sociais|joco|5|15|224|168|747242496000|7.47e+11|
@@ -100,7 +100,7 @@
 |Meteoro|S|livro vivo;jocosos|joco|10|33|321|316|65044548902931333120000|6.50e+22|
 |Minuto|S|livro vivo|esoteric|6|12|285|213|2817522540000|2.82e+12|
 |Mirante|S|livro vivo;poemas;variações|persona|5|23|159|219|8113386580992000|8.11e+15|
-|Nhô-Borges|S|livro vivo|Machina|3|15|65|74|110638080|1.11e+08|
+|Nhô-Borges|S|todos os temas|Machina|3|15|65|74|110638080|1.11e+08|
 |Niver|S|todos os temas|anima|3|11|120|114|3692304|3.69e+06|
 |Niver-B|S|todos os temas|anima|5|11|116|113|22619520|2.26e+07|
 |Nonono|S|variações;metalinguagem|machina|9|27|426|572|145218793269173944320000|1.45e+23|
