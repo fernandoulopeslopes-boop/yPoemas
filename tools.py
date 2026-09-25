@@ -1,14 +1,14 @@
 # =============================================================================
 # tools.py — MACHINA / PÁGINA Z / TOOLS
-# Build 2026-09-13_002 — PAGINA_Z_GRUPOS_TOOLS
+# Build 2026-09-24_003 — CONFIG_CLOUD
 #
 # - Página Z reorganizada em quatro grupos identificados: temas, construtores, padronização e ferramentas.
+# - config_cloud acrescentado em ferramentas para avaliar os 4 parâmetros do TAG CLOUD.
 # - build_utf-8 retirado da Página Z; rotina local descartada.
 # - Autoridade absoluta dos TOOLS: C:\\ypo.
 # - Nenhuma ação de TOOLS usa cwd, /mount/src, deploy, www ou cópia do repo como raiz.
 # - Ao entrar em TOOLS, o cwd operacional é temporariamente C:\\ypo.
 # - Se C:\\ypo não estiver fisicamente acessível, a ação é bloqueada explicitamente.
-                                                                                  
 # =============================================================================
 """Tools — central local de ferramentas e garantias da Machina.
 
@@ -2352,101 +2352,113 @@ def render_resize_images_tool():
             st.error(f"resize_images falhou: {exc}")
 
 
-                 
-                                                                          
-                         
-                                
-                                
-                                                                                 
-                
+def _config_cloud_path():
+    return _tools_path("base", "config_cloud.txt")
 
 
-                    
-                                                                         
-                        
-               
-                                  
-                                                     
-                                           
-                                                                                            
-                                                        
-                                                              
+def _config_cloud_defaults():
+    return {
+        "TAG_CLOUD_VISIBLE": int(globals().get("TAG_CLOUD_VISIBLE", 18)),
+        "TAG_IDLE_TIME": int(globals().get("TAG_IDLE_TIME", 10)),
+        "TAG_READ_TIME": int(globals().get("TAG_READ_TIME", 30)),
+        "TAG_CLOUD_RENEW_TIME": int(globals().get("TAG_CLOUD_RENEW_TIME", 8)),
+    }
 
 
-                                
-                                                                         
-                                                              
-                                                                    
+def _config_cloud_ler():
+    cfg = _config_cloud_defaults()
+    try:
+        with open(_config_cloud_path(), encoding="utf-8-sig") as file:
+            for raw in file:
+                line = raw.strip()
+                if not line or line.startswith("#") or "=" not in line:
+                    continue
+                chave, valor = line.split("=", 1)
+                chave = chave.strip()
+                if chave in cfg:
+                    numero = int(valor.strip())
+                    if numero > 0:
+                        cfg[chave] = numero
+    except (OSError, ValueError, TypeError):
+        pass
+    return cfg
 
 
-                                            
-                                                                                      
-               
-                                  
-                                  
-                 
-                                              
-                                     
+def _config_cloud_salvar(cfg):
+    texto = "\n".join([
+        "# TAG CLOUD — ajuste local da Machina",
+        f"TAG_CLOUD_VISIBLE={int(cfg['TAG_CLOUD_VISIBLE'])}",
+        f"TAG_IDLE_TIME={int(cfg['TAG_IDLE_TIME'])}",
+        f"TAG_READ_TIME={int(cfg['TAG_READ_TIME'])}",
+        f"TAG_CLOUD_RENEW_TIME={int(cfg['TAG_CLOUD_RENEW_TIME'])}",
+        "",
+    ])
+    _tools_write_text(_config_cloud_path(), texto)
+    return _config_cloud_path()
 
 
-                                            
-                                                    
-                                                                       
-                                                           
-                                                                         
-                                                       
-                                                                                             
+def render_config_cloud_tool():
+    """Bancada local para equilibrar carga visual e tempos do TAG CLOUD."""
+    st.markdown("### config_cloud")
 
+    cfg = _config_cloud_ler()
+    try:
+        total_temas = len(_tools_lista_simples(_tools_path("base", "rol_todos os temas.txt")))
+    except Exception:
+        total_temas = 174
+    total_temas = max(2, int(total_temas or 174))
 
-                               
-                                                                           
-                                                    
-                                  
-                                             
-                         
-                                                                                        
-                                       
-                 
-                                                           
+    col_qtd, col_renew = st.columns(2)
+    with col_qtd:
+        qtd = st.number_input(
+            "qtd. de TAGs",
+            min_value=2,
+            max_value=total_temas,
+            value=max(2, min(int(cfg["TAG_CLOUD_VISIBLE"]), total_temas)),
+            step=1,
+            key="config_cloud_visible",
+        )
+    with col_renew:
+        renew = st.number_input(
+            "renew (seg.)",
+            min_value=1,
+            max_value=300,
+            value=max(1, int(cfg["TAG_CLOUD_RENEW_TIME"])),
+            step=1,
+            key="config_cloud_renew",
+        )
 
-                                                                                         
-                        
-                                                             
-                                                                        
-                                 
-        
-                                                                              
-                                               
-                                       
-                     
-            
-                                          
-                                     
-                
-                 
-                                
+    col_idle, col_read = st.columns(2)
+    with col_idle:
+        idle = st.number_input(
+            "idle (seg.)",
+            min_value=1,
+            max_value=3600,
+            value=max(1, int(cfg["TAG_IDLE_TIME"])),
+            step=1,
+            key="config_cloud_idle",
+        )
+    with col_read:
+        read = st.number_input(
+            "read (seg.)",
+            min_value=1,
+            max_value=7200,
+            value=max(1, int(cfg["TAG_READ_TIME"])),
+            step=1,
+            key="config_cloud_read",
+        )
 
+    st.caption(f"temas disponíveis: {total_temas}")
+    if st.button("salvar config_cloud", use_container_width=True, key="config_cloud_save"):
+        destino = _config_cloud_salvar({
+            "TAG_CLOUD_VISIBLE": int(qtd),
+            "TAG_IDLE_TIME": int(idle),
+            "TAG_READ_TIME": int(read),
+            "TAG_CLOUD_RENEW_TIME": int(renew),
+        })
+        st.success("config_cloud salvo.")
+        st.text(os.path.relpath(destino, _tools_path()).replace("\\", "/"))
 
-                              
-                                                                      
-        
-                                
-                           
-                           
-              
-                  
-                                                                                 
-              
-
-                                               
-                                                                      
-                                                          
-            
-                                                      
-                                                           
-                                                                                  
-                                 
-                                                   
 
 def _tools_help_text():
     return """help_? — Tools da Machina
@@ -2510,9 +2522,8 @@ resize_images
 build_rimas
   Off Sina: extrai palavras únicas e gera mapa de rimas para curadoria.
 
-           
-                                                                           
-                                                                
+config_cloud
+  Ajusta localmente quantidade de TAGs, idle, read e renew do TAG CLOUD.
 """
 
 
@@ -2544,7 +2555,7 @@ def page_tools():
             ("atelier", "atelier"),
             ("resize_images", "resize_images"),
             ("build_rimas", "build_rimas"),
-                                           
+            ("config_cloud", "config_cloud"),
         ],
     }
 
@@ -2629,9 +2640,9 @@ def page_tools():
     if escolha == "build_rimas":
         render_build_rimas_tool()
         return
-                                
-                                 
-              
+    if escolha == "config_cloud":
+        render_config_cloud_tool()
+        return
     if escolha == "make_pip":
         render_make_pip_tool()
         return

@@ -1,6 +1,6 @@
 # =============================================================================
 # bypo.py — BASIC YPO / MACHINA HORIZONTAL
-# Build 2026-09-24_123 — TAG_READ_IDLE
+# Build 2026-09-24_124 — CLOUD_BALANCEADO
 #
 # BASE / PROVENIÊNCIA
 # - Base funcional: basico.py GitHub de 08/09/2026, copiado para isolamento.
@@ -91,6 +91,7 @@
 # - 121 TAG_CLICK_TEXT: clique no TAG aplica o tema antes do render e força novo yPoema.
 # - 122 TAG_CLICK_CLOSE: clique em tema fecha o overlay TAG antes de entregar o tema à Machina.
 # - 123 TAG_READ_IDLE: yPoemas usa idle de leitura próprio; atividade/scroll reiniciam o tempo ativo.
+# - 124 CLOUD_BALANCEADO: lê opcionalmente base/config_cloud.txt; defaults permanecem internos.
 #   sem controles visíveis; clique no tema abre yPoemas; atividade normal encerra o TAG.
 # =============================================================================
 # Leitura da casa:
@@ -143,12 +144,40 @@ APP_BUILD_NOTES = (
 
 APP_VARIANT = "local"
 
-# TAG_CLOUD :: parâmetros internos; nenhum controle é exposto ao leitor.
-TAG_IDLE_TIME = 10          # TESTE: idle geral da Machina
-TAG_READ_TIME = 30          # TESTE: idle durante leitura de yPoemas
-TAG_CLOUD_VISIBLE = 18      # temas simultâneos no palco
-TAG_CLOUD_RENEW_TIME = 8    # segundos para renovar uma célula
+# TAG_CLOUD :: defaults internos; nenhum controle é exposto ao leitor.
+# Em BYPO_CFG, base/config_cloud.txt pode sobrescrever somente estes 4 valores.
+TAG_IDLE_TIME = 10
+TAG_READ_TIME = 30
+TAG_CLOUD_VISIBLE = 18
+TAG_CLOUD_RENEW_TIME = 8
 TAG_CLOUD_JS = "https://cdn.jsdelivr.net/npm/TagCloud@2.5.0/dist/TagCloud.min.js"
+
+
+def _tagcloud_config():
+    """Lê os 4 ajustes do CLOUD; ausência/erro mantém os defaults internos."""
+    cfg = {
+        "TAG_IDLE_TIME": int(TAG_IDLE_TIME),
+        "TAG_READ_TIME": int(TAG_READ_TIME),
+        "TAG_CLOUD_VISIBLE": int(TAG_CLOUD_VISIBLE),
+        "TAG_CLOUD_RENEW_TIME": int(TAG_CLOUD_RENEW_TIME),
+    }
+    path = _project_path("base", "config_cloud.txt")
+    try:
+        with open(path, encoding="utf-8-sig") as file:
+            for raw in file:
+                line = raw.strip()
+                if not line or line.startswith("#") or "=" not in line:
+                    continue
+                chave, valor = line.split("=", 1)
+                chave = chave.strip()
+                if chave not in cfg:
+                    continue
+                numero = int(valor.strip())
+                if numero > 0:
+                    cfg[chave] = numero
+    except (OSError, ValueError, TypeError):
+        pass
+    return cfg
 
 from lay_2_ypo import gera_poema, fala_nome_OLA
 
@@ -6805,14 +6834,15 @@ def _render_tagcloud_idle():
     if len(temas) < 2:
         return
 
+    cloud_cfg = _tagcloud_config()
     _TAG_CLOUD_COMPONENT(
         data={
             "temas": temas,
-            "idle_ms": max(1, int(TAG_IDLE_TIME)) * 1000,
-            "read_ms": max(1, int(TAG_READ_TIME)) * 1000,
+            "idle_ms": max(1, int(cloud_cfg["TAG_IDLE_TIME"])) * 1000,
+            "read_ms": max(1, int(cloud_cfg["TAG_READ_TIME"])) * 1000,
             "read_mode": str(st.session_state.get("pagina", "")) == "2",
-            "renew_ms": max(1, int(TAG_CLOUD_RENEW_TIME)) * 1000,
-            "visible": max(2, min(int(TAG_CLOUD_VISIBLE), len(temas))),
+            "renew_ms": max(1, int(cloud_cfg["TAG_CLOUD_RENEW_TIME"])) * 1000,
+            "visible": max(2, min(int(cloud_cfg["TAG_CLOUD_VISIBLE"]), len(temas))),
             "src": TAG_CLOUD_JS,
         },
         on_theme_change=_tagcloud_on_theme_change,
