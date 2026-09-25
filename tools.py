@@ -1,9 +1,10 @@
 # =============================================================================
 # tools.py — MACHINA / PÁGINA Z / TOOLS
-# Build 2026-09-24_003 — CONFIG_CLOUD
+# Build 2026-09-25_004 — CFG_WWW
 #
 # - Página Z reorganizada em quatro grupos identificados: temas, construtores, padronização e ferramentas.
 # - config_cloud acrescentado em ferramentas para avaliar os 4 parâmetros do TAG CLOUD.
+# - Página Z liberada no bypo_cfg WWW; somente ferramentas que exigem C:\\ypo continuam bloqueadas.
 # - build_utf-8 retirado da Página Z; rotina local descartada.
 # - Autoridade absoluta dos TOOLS: C:\\ypo.
 # - Nenhuma ação de TOOLS usa cwd, /mount/src, deploy, www ou cópia do repo como raiz.
@@ -2353,6 +2354,10 @@ def render_resize_images_tool():
 
 
 def _config_cloud_path():
+    """Config do CLOUD no mesmo ambiente em que o bypo_cfg está rodando."""
+    project_path = globals().get("_project_path")
+    if callable(project_path):
+        return project_path("base", "config_cloud.txt")
     return _tools_path("base", "config_cloud.txt")
 
 
@@ -2574,6 +2579,15 @@ def page_tools():
     )
     escolha = chave_por_rotulo[rotulo_escolhido]
 
+    # bypo_cfg pode abrir TOOLS no WWW. Somente ferramentas realmente locais
+    # continuam dependentes da autoridade física C:\ypo.
+    if escolha != "config_cloud" and not os.path.isdir(_tools_root()):
+        st.warning(
+            "Esta ferramenta exige a raiz física local C:\\ypo. "
+            "No WWW, use apenas configurações próprias do ambiente CFG."
+        )
+        return
+
     with st.expander("help_?"):
         st.text(_tools_help_text())
 
@@ -2679,21 +2693,17 @@ def page_tools():
     if st.button(rotulo_escolhido, use_container_width=True):
         with st.spinner(rotulo_escolhido + "..."):
             try:
-                resultado = func(*args)
+                with _tools_working_root():
+                    resultado = func(*args)
                 st.success(rotulo_escolhido + " concluído.")
                 st.text(resultado)
             except Exception as exc:
                 st.error(f"{rotulo_escolhido} falhou: {exc}")
 
 def show_tools(host_globals=None):
-    """Entrada pública dos TOOLS; toda operação ocorre exclusivamente em C:\\ypo."""
+    """Entrada do bypo_cfg; a página abre no LOCAL e no WWW."""
     _bind_host(host_globals)
-    try:
-        with _tools_working_root():
-            return page_tools()
-    except FileNotFoundError as exc:
-        st.error(str(exc))
-        return None
+    return page_tools()
 
 
 def render_page(host_globals=None):
