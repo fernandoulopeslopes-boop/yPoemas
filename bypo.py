@@ -5547,7 +5547,7 @@ def _load_md_catalog_file(file_spec):
 # < PAGE > 1 — MINI
 # =============================================================================
 def page_mini():
-    temas = load_temas("todos os temas")
+    temas = load_temas("livro vivo")
     maxy_mini = len(temas)
 
     if st.session_state.mini >= maxy_mini:  # just in case
@@ -6963,7 +6963,7 @@ def start_machina(app_variant="bypo"):
         if temas:
             st.session_state.take = random.randrange(0, len(temas))
             st.session_state.tema = temas[st.session_state.take]
-        temas = load_temas("todos os temas")
+        temas = load_temas("livro vivo")
         if temas:
             st.session_state.mini = random.randrange(0, len(temas))
         st.session_state.draw = True
