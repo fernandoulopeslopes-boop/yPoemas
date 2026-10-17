@@ -4298,7 +4298,7 @@ def _sync_sidebar_context_before_render(chosen_id):
         return
 
     if chosen_id == "1":
-        temas = load_temas("todos os temas")
+        temas = load_temas("livro vivo")
         if temas:
             indice = max(0, min(int(st.session_state.get("mini", 0)), len(temas) - 1))
             st.session_state["mini"] = indice
