@@ -84,7 +84,7 @@
 #   sem sobrescrever o transform de ancoragem do Streamlit.
 # - 116 HINTS_UP_ROLE_TOOLTIP: corrige o seletor para o tooltip atual do Streamlit;
 #   somente HINTs posicionados embaixo são deslocados para cima.
-# - 117 TAG_CLOUD_MEM: idle visual com temas autorais de base/rol_todos os temas.txt;
+# - 117 TAG_CLOUD_MEM: idle visual com temas autorais de base/rol_ os temas.txt;
 # - 118 TAG_CLOUD_IDLE_TEST: reduz TAG_IDLE_TIME para 10s apenas para teste visual.
 # - 119 COLOR_TAG: aumenta o corpo e aplica paleta fixa curta aos temas do TAG.
 # - 120 COLOR_CENTER_FIX: preserva as cores dos itens e baixa levemente o centro do TAG.
@@ -1036,7 +1036,7 @@ def init_session_state():
         "lypo_signature": "",
         "typo_lang": "",
         "typo_lypo_signature": "",
-        "book": "todos os temas",
+        "book": "livro vivo",
         "take": 0,
         "mini": 0,
         "tema": "Fatos",
