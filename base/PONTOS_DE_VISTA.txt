@@ -8,6 +8,7 @@ PONTOS_DE_VISTA = {
     "Cervantes": "aventura irônica, ilusão heroica, comédia da realidade, cavalaria, sonho impossível",
     "Spinoza": "razão geométrica, unidade do ser, ética da alegria, sistema, imanência",
     "Machado de Assis": "ironia fina, narrador não-confiável, ambiguidade, salão, sarcasmo",
+    "Descartes": "metódico", "inovador", "racionalista", "analítico", "dualista",
     "Borges": "labirinto, infinito, biblioteca, jogo metafísico, espelhos",
     "Buda": "desapego, cessação do desejo, impermanência, compaixão, dissolução do eu",
     "Krishnamurti": "observação, presença, silêncio interior, desapego, verdade sem autor",
